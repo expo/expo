@@ -1,4 +1,4 @@
-import { ExpoModifier } from '../types';
+import type { ExpoModifier } from '../types';
 export type PrimitiveBaseProps = {
     /**
      * Modifiers for the component.
@@ -21,6 +21,6 @@ export declare function transformProps<T extends PrimitiveBaseProps>(props: T): 
             payload: [eventName: string, params: Record<string, any>];
         };
     }) => void) | undefined;
-    modifiers: import("../types").ModifierConfig[] | undefined;
+    modifiers: import("./modifiers").ModifierConfig[] | undefined;
 } & Omit<T, "modifiers">;
 //# sourceMappingURL=layout-types.d.ts.map

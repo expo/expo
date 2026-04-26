@@ -1,0 +1,32 @@
+package <%- project.package %>
+
+import android.content.Context
+import android.graphics.Color
+import android.view.Gravity
+import android.widget.LinearLayout
+import android.widget.TextView
+import expo.modules.kotlin.AppContext
+<% if (project.features.includes('ViewEvent')) { %>import expo.modules.kotlin.viewevent.EventDispatcher
+<% } %>import expo.modules.kotlin.views.ExpoView
+
+class <%- project.viewName %>(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+<% if (project.features.includes('ViewEvent')) { %>  private val onTap by EventDispatcher<Unit>()
+
+<% } %>  init {
+    val container = LinearLayout(context).apply {
+      layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+      orientation = LinearLayout.VERTICAL
+      gravity = Gravity.CENTER
+      setBackgroundColor(Color.parseColor("#aabbcc"))
+    }
+    val label = TextView(context).apply {
+      text = "<%- project.name %> - native view<% if (project.features.includes('ViewEvent')) { %>\nTap the view to emit a view event<% } %>"
+      gravity = Gravity.CENTER
+    }
+    container.addView(label)
+    addView(container)
+<% if (project.features.includes('ViewEvent')) { %>    setOnClickListener {
+      onTap(Unit)
+    }
+<% } %>  }
+}

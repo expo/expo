@@ -104,6 +104,19 @@ module Expo
         }
       end
 
+      # @react-native-community/cli autolinking output (same shape as RN CLI's `config`).
+      # Used to locate 3rd-party packages via real node resolution so non-flat node_modules
+      # layouts (pnpm non-hoisted, yarn PnP, aliased specifiers) resolve correctly.
+      def react_native_config
+        @react_native_config ||= invoke_autolinking('react-native-config', platform: 'ios')
+      end
+
+      # The resolved Expo modules list. Used by scan_node_modules_configs to locate
+      # each internal package's spm.config.json via its resolved podspec dir.
+      def resolved_modules
+        @resolved_modules ||= invoke_autolinking('resolve', platform: 'apple').fetch('modules', [])
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Facade methods — called from installer.rb / autolinking_manager.rb
       # ──────────────────────────────────────────────────────────────────────
@@ -336,6 +349,107 @@ module Expo
         end
       end
 
+      # Registers companion pods gated by a Podfile property.
+      # A product can declare `autolinkWhen` in its spm.config.json to opt into this flow.
+      # The pod is auto-registered when:
+      #   1. The podspec exists (source build) or prebuilt xcframework exists (precompiled)
+      #   2. The gating Podfile.properties.json value is not the disabled value
+      #   3. It's not already registered in the Podfile
+      #   4. All of its local dependencies (pods in the lookup map) are already registered
+      #
+      # Works for both precompiled and source builds. For precompiled builds, the
+      # podspec is patched to use the xcframework. For source builds, CocoaPods
+      # builds from source via :podspec.
+      #
+      # Companion pods are production-only code (they never declare test specs) and
+      # typically depend on their sibling main pod. When the Podfile calls
+      # `use_expo_modules_tests!` (tests_only), main pods without test specs are skipped,
+      # so registering a companion that depends on a skipped main pod would fail
+      # dependency resolution. Skip companions entirely in tests-only mode.
+      #
+      # Example spm.config.json:
+      #   "autolinkWhen": {
+      #     "podfileProperty": "expo.camera.barcode-scanner-enabled",
+      #     "disabledValue": "false"
+      #   }
+      def register_companion_pods(podfile, target_definition, project_directory, tests_only: false)
+        return if tests_only
+
+        properties = read_podfile_properties(project_directory)
+
+        pod_lookup_map.each do |pod_name, info|
+          condition = info[:autolink_when]
+          next unless condition
+          next if target_definition.dependencies.any? { |dep| dep.name == pod_name }
+
+          property = condition['podfileProperty']
+          disabled_value = condition['disabledValue']
+          next unless property
+
+          current_value = properties[property]
+          # Only skip if the property is explicitly set to the disabled value
+          next if current_value == disabled_value
+
+          podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
+          unless File.exist?(podspec_file)
+            Pod::UI.warn "[Expo] Companion pod #{pod_name}: podspec not found at #{podspec_file}"
+            next
+          end
+
+          podspec_rel = Pathname.new(podspec_file).relative_path_from(project_directory).to_s
+
+          # Parse the companion podspec to inspect its dependencies.
+          begin
+            spec = Pod::Specification.from_file(podspec_file)
+          rescue => e
+            Pod::UI.warn "[Expo] Companion pod #{pod_name}: failed to parse podspec: #{e.message}"
+            next
+          end
+
+          # Skip companion pods whose local dependencies (sibling pods from the same
+          # monorepo / node_modules) aren't registered in the Podfile. For example,
+          # ExpoCameraBarcodeScanning depends on ExpoCamera — if expo-camera isn't
+          # installed in the project, ExpoCamera won't be in the Podfile and CocoaPods
+          # would fail with "Unable to find a specification for ExpoCamera".
+          registered_pod_names = target_definition.dependencies.map(&:name)
+          missing_local_dep = spec.all_dependencies.find do |dep|
+            root_spec_name = dep.name.partition('/').first
+            pod_lookup_map.key?(root_spec_name) && !registered_pod_names.include?(root_spec_name)
+          end
+          if missing_local_dep
+            Pod::UI.message "[Expo] Skipping companion pod #{pod_name}: dependency #{missing_local_dep.name} is not installed"
+            next
+          end
+
+          # Enable modular headers for the companion pod's transitive Objective-C dependencies so
+          # the Swift pod can `import` them. Mirrors the logic in autolinking_manager.rb's
+          # `use_modular_headers_for_dependencies`.
+          spec.all_dependencies.each do |dep|
+            root_spec_name = dep.name.partition('/').first
+            unless target_definition.build_pod_as_module?(root_spec_name)
+              target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
+            end
+          end
+
+          if enabled? && has_prebuilt_xcframework?(pod_name)
+            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{property})"
+            podfile.pod(pod_name, :podspec => podspec_rel)
+          else
+            Pod::UI.message "— #{pod_name.green} (companion, gated by #{property})"
+            podspec_dir_rel = Pathname.new(info[:podspec_dir]).relative_path_from(project_directory).to_s
+            podfile.pod(pod_name, :path => podspec_dir_rel)
+          end
+        end
+      end
+
+      # Reads Podfile.properties.json from the Podfile's directory (installation root).
+      # Returns an empty hash if the file doesn't exist or fails to parse.
+      def read_podfile_properties(_project_directory)
+        props_path = File.join(Pod::Config.instance.installation_root.to_s, 'Podfile.properties.json')
+        return {} unless File.exist?(props_path)
+        JSON.parse(File.read(props_path)) rescue {}
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Spec patching (called from sandbox.rb / podspecs)
       # ──────────────────────────────────────────────────────────────────────
@@ -462,19 +576,37 @@ module Expo
         prefix = "[Expo-precompiled] ".blue
         Pod::UI.info "#{prefix}Precompiled modules:"
         @linked_pods.sort_by { |name, _| name.downcase }.each do |pod_name, info|
+          version = installed_version_for(pod_name)
+          version_suffix = version ? " #{"(#{version})".dark}" : ""
           if info[:found]
-            Pod::UI.info "#{prefix}  📦 #{pod_name.green}"
+            Pod::UI.info "#{prefix}  📦 #{pod_name.green}#{version_suffix}"
           else
-            Pod::UI.info "#{prefix}  ⚠️  #{pod_name} #{"(Build from source: framework not found #{info[:path]})".yellow}"
+            Pod::UI.info "#{prefix}  ⚠️  #{pod_name}#{version_suffix} #{"(Build from source: framework not found #{info[:path]})".yellow}"
           end
+          spm_versions = pod_lookup_map.dig(pod_name, :spm_dependency_versions) || {}
           info[:spm_deps].each do |dep_name|
-            Pod::UI.info "#{prefix}      ∟ #{dep_name}.xcframework".green
+            dep_version = spm_versions[dep_name]
+            dep_suffix = dep_version ? " #{"(#{dep_version})".dark}" : ""
+            Pod::UI.info "#{prefix}      ∟ #{"#{dep_name}.xcframework".green}#{dep_suffix}"
           end
         end
 
         if @linked_pods.none? { |_, info| info[:found] }
           Pod::UI.warn "#{prefix}⚠️  Precompiled modules enabled but no xcframeworks found. All modules will build from source."
         end
+      end
+
+      # Returns the installed version for a pod by reading its package.json, or nil.
+      def installed_version_for(pod_name)
+        package_root = pod_lookup_map.dig(pod_name, :package_root)
+        return nil unless package_root
+
+        pkg_json = File.join(package_root, 'package.json')
+        return nil unless File.exist?(pkg_json)
+
+        JSON.parse(File.read(pkg_json))['version']
+      rescue JSON::ParserError, Errno::ENOENT
+        nil
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -554,6 +686,11 @@ module Expo
       # 1. Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS
       # 2. Patches framework modulemaps to remove `framework module React` (keep React_RCTAppDelegate)
       # 3. Injects -isystem and -fmodule-map-file into all pod and aggregate xcconfigs
+      #
+      # The modulemap is placed in Target Support Files/ rather than in the pod
+      # directory itself, because React Native's replace-rncore-version.js script
+      # phase deletes and re-extracts the entire React-Core-prebuilt/ directory at
+      # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
@@ -562,9 +699,12 @@ module Expo
         xcframework_path = File.join(react_prebuilt_dir, 'React.xcframework')
         return unless File.exist?(xcframework_path)
 
-        create_nonframework_modulemap(react_prebuilt_dir)
+        target_support_dir = File.join(installer.sandbox.root, 'Target Support Files', 'React-Core-prebuilt')
+        FileUtils.mkdir_p(target_support_dir)
+
+        create_nonframework_modulemap(target_support_dir, installer.sandbox.root)
         patch_framework_modulemaps(xcframework_path)
-        inject_isystem_flags(installer, react_prebuilt_dir)
+        inject_isystem_flags(installer, target_support_dir)
 
         Pod::UI.puts "[Expo] ".blue + "Created non-framework React modulemap for use_frameworks! compatibility"
       end
@@ -686,6 +826,11 @@ module Expo
         installer.pods_project.save
       end
 
+      # Returns the package_root for a given pod name, or nil if not found.
+      def package_root_for(pod_name)
+        pod_lookup_map[pod_name]&.dig(:package_root)
+      end
+
       private
 
       # ──────────────────────────────────────────────────────────────────────
@@ -702,11 +847,12 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Creates a non-framework modulemap so <React/X.h> resolves through -isystem + VFS.
-      def create_nonframework_modulemap(react_prebuilt_dir)
-        modulemap_path = File.join(react_prebuilt_dir, 'React-use-frameworks.modulemap')
+      def create_nonframework_modulemap(target_support_dir, pods_root)
+        modulemap_path = File.join(target_support_dir, 'React-use-frameworks.modulemap')
+        umbrella_header = File.join(pods_root, 'React-Core-prebuilt', 'React.xcframework', 'Headers', 'React_Core', 'React_Core-umbrella.h')
         modulemap_content = <<~MODULEMAP
           module React {
-            umbrella header "React.xcframework/Headers/React_Core/React_Core-umbrella.h"
+            umbrella header "#{umbrella_header}"
             export *
           }
         MODULEMAP
@@ -732,10 +878,10 @@ module Expo
 
       # Injects -fmodule-map-file and -isystem into all pod and aggregate xcconfigs.
       # Module builds don't inherit -I (HEADER_SEARCH_PATHS) but DO inherit -isystem.
-      def inject_isystem_flags(installer, react_prebuilt_dir)
-        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+      def inject_isystem_flags(installer, target_support_dir)
+        modulemap_flag = "-fmodule-map-file=\"${PODS_ROOT}/Target\\ Support\\ Files/React-Core-prebuilt/React-use-frameworks.modulemap\""
         extra_isystem = "-isystem \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
-        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/React-Core-prebuilt/React-use-frameworks.modulemap\""
+        swift_modulemap = "-Xcc -fmodule-map-file=\"${PODS_ROOT}/Target\\ Support\\ Files/React-Core-prebuilt/React-use-frameworks.modulemap\""
         swift_extra_isystem = "-Xcc -isystem -Xcc \"${PODS_ROOT}/React-Core-prebuilt/React.xcframework/Headers\""
         skip_marker = 'React-use-frameworks.modulemap'
 
@@ -1114,23 +1260,18 @@ module Expo
         scan_external_configs(repo_root)
       end
 
-      # Scans node_modules for spm.config.json files in standalone projects.
-      # Used when EXPO_PRECOMPILED_MODULES_PATH is set but no monorepo root is found.
+      # Locates spm.config.json for internal Expo modules in standalone projects
+      # (no monorepo root). Uses resolved podspec dirs so non-flat layouts work.
       def scan_node_modules_configs(project_root)
-        node_modules = File.join(project_root, 'node_modules')
-        return unless File.directory?(node_modules)
-
-        # Internal Expo packages: node_modules/*/spm.config.json
-        Dir.glob(File.join(node_modules, '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :internal, project_root)
+        resolved_modules.each do |mod|
+          (mod['pods'] || []).each do |pod|
+            next unless pod['podspecDir']
+            # Convention: podspecDir is `<package>/ios`; spm.config.json lives at `<package>/`.
+            config_path = File.join(File.dirname(pod['podspecDir']), 'spm.config.json')
+            process_spm_config(config_path, :internal, project_root) if File.exist?(config_path)
+          end
         end
 
-        # Internal Expo scoped packages: node_modules/@scope/*/spm.config.json
-        Dir.glob(File.join(node_modules, '@*', '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :internal, project_root)
-        end
-
-        # External 3rd-party packages: bundled in external-configs/ios/
         scan_external_configs(project_root)
       end
 
@@ -1138,44 +1279,45 @@ module Expo
       # (e.g. react-native-screens, react-native-svg) that don't ship their own spm.config.json.
       # Shared by both monorepo and standalone project paths.
       #
-      # @param effective_root [String] The project or repo root used to locate node_modules
+      # @param effective_root [String] The project or repo root (used to compute the default build output dir)
       def scan_external_configs(effective_root)
         external_configs_dir = File.join(__dir__, '..', '..', 'external-configs', 'ios')
         return unless File.directory?(external_configs_dir)
 
-        node_modules = File.join(effective_root, 'node_modules')
-
         # Non-scoped: external-configs/ios/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '*', 'spm.config.json')).each do |config_path|
           npm_package = File.basename(File.dirname(config_path))
-          process_external_config(config_path, npm_package, node_modules, effective_root)
+          process_external_config(config_path, npm_package, effective_root)
         end
 
         # Scoped: external-configs/ios/@scope/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '@*', '*', 'spm.config.json')).each do |config_path|
           rel = config_path.sub("#{external_configs_dir}/", '')
           npm_package = File.dirname(rel) # e.g. "@shopify/react-native-skia"
-          process_external_config(config_path, npm_package, node_modules, effective_root)
+          process_external_config(config_path, npm_package, effective_root)
         end
       end
 
       # Processes a single external spm.config.json for a 3rd-party package.
-      def process_external_config(config_path, npm_package, node_modules, effective_root)
+      def process_external_config(config_path, npm_package, effective_root)
         config = JSON.parse(File.read(config_path))
         products = config['products'] || []
-        package_root = File.join(node_modules, npm_package)
 
-        # Only process if the package is actually installed
-        return unless File.directory?(package_root)
+        # Resolve via rncli autolinking so we use real node resolution (handles pnpm,
+        # yarn resolutions/PnP, aliased specifiers). Skip if the package isn't installed.
+        dep = react_native_config.dig('dependencies', npm_package)
+        return unless dep
 
-        # Prefer codegenConfig.name from the installed package.json
+        package_root = dep['root']
+        pkg_version = dep.dig('platforms', 'ios', 'version')
+
+        # codegenConfig.name isn't surfaced by rncli; read it from package.json.
         installed_codegen_name = nil
-        pkg_version = nil
         pkg_json_path = File.join(package_root, 'package.json')
         if File.exist?(pkg_json_path)
           pkg_json = JSON.parse(File.read(pkg_json_path))
           installed_codegen_name = pkg_json.dig('codegenConfig', 'name')
-          pkg_version = pkg_json['version']
+          pkg_version ||= pkg_json['version']
         end
 
         base_dir = custom_modules_path || File.join(effective_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
@@ -1216,6 +1358,7 @@ module Expo
             .map { |t| { name: t['name'], path: t['path'] } }
 
           spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+          spm_dependency_versions = spm_package_versions(product['spmPackages'])
 
           @pod_lookup_map[pod_name] = {
             type: :external,
@@ -1226,11 +1369,21 @@ module Expo
             codegen_name: codegen_name,
             product_name: product_name,
             targets: targets,
-            spm_dependency_frameworks: spm_dependency_frameworks
+            spm_dependency_frameworks: spm_dependency_frameworks,
+            spm_dependency_versions: spm_dependency_versions,
+            autolink_when: product['autolinkWhen']
           }
         end
       rescue JSON::ParserError, StandardError => e
         Pod::UI.warn "[Expo-precompiled] Failed to read external config at #{config_path}: #{e.message}"
+      end
+
+      # Returns { productName => versionString } from a spm.config.json spmPackages array.
+      def spm_package_versions(spm_packages)
+        (spm_packages || []).each_with_object({}) do |pkg, h|
+          version = pkg['version'].is_a?(Hash) ? pkg['version']['exact'] : pkg['version']
+          h[pkg['productName']] = version if pkg['productName'] && version
+        end
       end
 
       # Processes a single spm.config.json file and adds entries to @pod_lookup_map.
@@ -1286,6 +1439,7 @@ module Expo
           .map { |t| { name: t['name'], path: t['path'] } }
 
         spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+        spm_dependency_versions = spm_package_versions(product['spmPackages'])
 
         {
           type: type,
@@ -1296,7 +1450,9 @@ module Expo
           codegen_name: codegen_name,
           product_name: product_name,
           targets: targets,
-          spm_dependency_frameworks: spm_dependency_frameworks
+          spm_dependency_frameworks: spm_dependency_frameworks,
+          spm_dependency_versions: spm_dependency_versions,
+          autolink_when: product['autolinkWhen']
         }
       end
 
@@ -1378,6 +1534,16 @@ module Expo
         nil
       end
 
+      # Invokes `expo-modules-autolinking <subcommand> --json` and parses the output.
+      # Used by `react_native_config` and `resolved_modules` above.
+      def invoke_autolinking(subcommand, platform:)
+        args = ['node', '--no-warnings', '--eval', "require('expo/bin/autolinking')",
+                'expo-modules-autolinking', subcommand, '--platform', platform, '--json']
+        JSON.parse(IO.popen(args, &:read))
+      rescue => error
+        raise "Failed to invoke `expo-modules-autolinking #{subcommand}`: #{error}"
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Helpers: bundled frameworks
       # ──────────────────────────────────────────────────────────────────────
@@ -1413,7 +1579,13 @@ module Expo
         results = []
         pod_lookup_map.each do |pod_name, info|
           next unless info[:type] == :external
-          next unless has_prebuilt_xcframework?(pod_name)
+
+          unless has_prebuilt_xcframework?(pod_name)
+            product_name = info[:product_name] || pod_name
+            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            Pod::UI.warn "[Expo-precompiled] #{pod_name}: prebuilt xcframework not found. Expected tarball at #{expected}"
+            next
+          end
 
           podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
           next unless File.exist?(podspec_file)
@@ -1453,11 +1625,15 @@ module Expo
       # Helpers: version resolution for 3rd-party prebuild versioning
       # ──────────────────────────────────────────────────────────────────────
 
-      # Returns the installed React Native version from node_modules.
+      # RN package path, as resolved by rncli (handles pnpm workspaces correctly).
+      def react_native_path
+        react_native_config['reactNativePath']
+      end
+
       def react_native_version
         @react_native_version ||= begin
-          rn_pkg = File.join(find_node_modules_dir, 'react-native', 'package.json')
-          File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
+          rn_pkg = react_native_path && File.join(react_native_path, 'package.json')
+          rn_pkg && File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
         end
       end
 
@@ -1465,37 +1641,21 @@ module Expo
       # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
       def hermes_version
         @hermes_version ||= begin
-          rn_path = File.join(find_node_modules_dir, 'react-native')
-          is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
-          version = nil
+          rn_path = react_native_path
+          if rn_path
+            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
+            props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
+            version = File.exist?(props_path) ?
+              parse_version_properties(props_path)[is_v1 ? 'HERMES_V1_VERSION_NAME' : 'HERMES_VERSION_NAME'] : nil
 
-          # Read from version.properties (primary source)
-          props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
-          if File.exist?(props_path)
-            props = parse_version_properties(props_path)
-            version = is_v1 ? props['HERMES_V1_VERSION_NAME'] : props['HERMES_VERSION_NAME']
-          end
+            # Fallback to tag files
+            unless version
+              tag_path = File.join(rn_path, 'sdks', is_v1 ? '.hermesv1version' : '.hermesversion')
+              version = File.read(tag_path).strip if File.exist?(tag_path)
+            end
 
-          # Fallback to tag files
-          unless version
-            tag_file = is_v1 ? '.hermesv1version' : '.hermesversion'
-            tag_path = File.join(rn_path, 'sdks', tag_file)
-            version = File.read(tag_path).strip if File.exist?(tag_path)
-          end
-
-          # Normalize: strip "hermes-" prefix and "v" prefix
-          version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
-        end
-      end
-
-      # Returns the node_modules directory for the project.
-      def find_node_modules_dir
-        @node_modules_dir ||= begin
-          repo_root = find_repo_root
-          if repo_root
-            File.join(repo_root, 'node_modules')
-          else
-            File.join(File.dirname(Dir.pwd), 'node_modules')
+            # Normalize: strip "hermes-" prefix and "v" prefix
+            version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
           end
         end
       end

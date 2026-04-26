@@ -44,9 +44,9 @@ If you plan to contribute to the documentation, run `npm run setup:docs`.
 If you plan to contribute to Android, run `npm run setup:native`. This command does the following for you:
 
 - Downloads submodules (like `react-native`) with `git submodule update --init`
-- Ensures Yarn is installed
+- Ensures pnpm is installed
 - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
-- Downloads the Node packages (`yarn install`)
+- Downloads the Node packages (`pnpm install`)
 
 We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal window to install it:
 
@@ -72,8 +72,8 @@ If you will be working with the iOS project, ensure **ruby 3.3** is installed on
 1. Navigate to the bare sandbox project `cd apps/bare-expo`
 2. Run the project on any native platform:
 
-   - iOS: `yarn ios`
-   - Android: `yarn android`
+   - iOS: `pnpm ios`
+   - Android: `pnpm android`
    - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
 
 3. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
@@ -85,17 +85,17 @@ If you will be working with the iOS project, ensure **ruby 3.3** is installed on
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
-2. Start the TypeScript build in watch mode: `yarn build` (skip this if such script is not present)
+2. Start the TypeScript build in watch mode: `pnpm build` (skip this if such script is not present)
 3. Edit code in that package's `src/` directory
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
-   - To see native changes, you will need to run the `test-suite` with the `apps/bare-expo` project using `yarn <android | ios>`.
+   - To see native changes, you will need to run the `test-suite` with the `apps/bare-expo` project using `pnpm <android | ios>`.
    - If you are only making JavaScript changes, you can run `test-suite` from the `apps/test-suite` project using `expo start`.
-   - To run the full test suite, you can run the tests `yarn test:<android | ios>`.
+   - To run the full test suite, you can run the tests `pnpm test:<android | ios>`.
 5. You can edit a package's native code directly from its respective folder in the `packages/` directory or by opening `bare-expo` in a native editor:
    - Navigate to the `bare-expo` app directory: `cd apps/bare-expo`
-   - Android Studio: `yarn edit:android`
-   - Xcode: `yarn edit:ios`
+   - Android Studio: `pnpm edit:android`
+   - Xcode: `pnpm edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
 6. (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
 
@@ -130,7 +130,7 @@ The best way to get your changes merged is to build good tests for them! We have
 
 1. Create a test for your feature in the appropriate package's `src/__tests__` directory (if the file doesn't exist already, create it with the `*-test.ts` or `*-test.tsx` extension).
 2. Any new bridged native functions have to be added to the [jest-expo](https://github.com/expo/expo/blob/main/packages/jest-expo/src/preset/expoModules.js) package to ensure they are mocked. To help you do this more easily, we've written a tool and a guide on how to do this. Check out [Generating Jest Mocks](https://github.com/expo/expo/blob/main/guides/Generating%20Jest%20Mocks.md)!
-3. Run the test with `yarn test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `.test.ios.ts`, `.test.native.ts`, `.test.web.ts`...
+3. Run the test with `pnpm test` and ensure it handles all platforms (iOS, Android, and web). If the feature doesn't support a platform, then you can exclude it by putting your test in a file with a platform extension like: `.test.ios.ts`, `.test.native.ts`, `.test.web.ts`...
 4. You can also test platforms one at a time by pressing <kbd>X</kbd> and selecting the platform you want to test!
 
 ### 🏁 E2E Testing
@@ -139,7 +139,7 @@ The best way to get your changes merged is to build good tests for them! We have
    - These tests are written with a non-feature-complete version of Jasmine that runs on the Android and iOS clients, so no special features like snapshot testing will be available.
    - If you created a new test file, be sure to add it in `apps/test-suite/TestUtils.js`.
    - If the new test file could be running automatically from the `bare-expo` testing, add it in `apps/bare-expo/e2e/TestSuite-test.native.js`.
-2. Run your tests locally from the `bare-expo` directory with `yarn test:android`, or `yarn test:ios`.
+2. Run your tests locally from the `bare-expo` directory with `pnpm test:android`, or `pnpm test:ios`.
    - It's important you test locally because native CI tests can be fragile, take a while to finish, and be frustrating when they fail.
 3. Remember to try and get your feature running on as many platforms as possible.
 
@@ -151,10 +151,10 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 
 **TL;DR:**
 
-Note: Running docs yarn commands requires a specific version of Node. You can find this version under the `volta` section in [./docs/package.json](./docs/package.json).
+Note: Running docs pnpm commands requires a specific version of Node. You can find this version under the `volta` section in [./docs/package.json](./docs/package.json).
 
-1. Navigate to the **docs** directory and run `yarn`.
-2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`). Note: Requires Node `22.13.1` or higher.
+1. Navigate to the **docs** directory and run `pnpm install`.
+2. Start the project with `pnpm dev` (make sure you don't have another server running on port `3002`). Note: Requires Node `22.13.1` or higher.
 3. Navigate to the docs you want to edit: `cd docs/pages/`.
 4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
 5. Package API docs are generated from sources. To regenerate the docs, run `et generate-docs-api-data -p <package-name>` (for the next SDK version) or `et generate-docs-api-data -p <package-name> -s <number>` (for a specific SDK version).
@@ -173,9 +173,9 @@ To keep CI green, please make sure of the following:
 
 ### If you modified anything in `packages/`:
 
-  - You transpiled the TypeScript with `yarn build` in the directory of whichever package you modified.
-  - Run `yarn lint --fix` to fix the formatting of the code. Ensure that `yarn lint` succeeds without errors or warnings.
-  - Run `yarn test` to ensure all existing tests pass for that package, along with any new tests you would've written.
+  - You transpiled the TypeScript with `pnpm build` in the directory of whichever package you modified.
+  - Run `pnpm lint --fix` to fix the formatting of the code. Ensure that `pnpm lint` succeeds without errors or warnings.
+  - Run `pnpm test` to ensure all existing tests pass for that package, along with any new tests you would've written.
   - (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
   - All `console.log`s or commented out code blocks are removed!
 

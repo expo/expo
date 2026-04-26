@@ -1,4 +1,4 @@
-import { ImageContentPositionObject, ImageContentPositionValue } from '../Image.types';
+import type { ImageContentPositionObject, ImageContentPositionValue } from '../Image.types';
 
 export function ensureValueIsWebUnits(value: string | number) {
   const trimmedValue = String(value).trim();

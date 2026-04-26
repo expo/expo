@@ -60,7 +60,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-text="true"
           >
             string
@@ -213,7 +213,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-text="true"
           >
             object
@@ -365,7 +365,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
               data-text="true"
             >
               enum
@@ -374,7 +374,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             One of: 
             <span>
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
                 data-text="true"
               >
                 cover
@@ -383,7 +383,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             <span>
               , 
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
                 data-text="true"
               >
                 contain
@@ -468,7 +468,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
                 data-text="true"
               >
                 boolean
@@ -554,7 +554,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
               data-text="true"
             >
               string
@@ -589,7 +589,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             '#000000'
@@ -654,7 +654,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
             data-text="true"
           >
             array
@@ -763,7 +763,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           data-text="true"
         >
           <code
-            class="text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle rounded-md border px-1 py-0.5 text-3xs! text-default block w-full p-1.5!"
+            class="text-xs leading-[130%] font-normal border-secondary bg-subtle rounded-md border px-1 py-0.5 text-default text-xs! block w-full p-1.5!"
             data-text="true"
           >
             [
@@ -834,7 +834,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
               data-text="true"
             >
               boolean
@@ -919,7 +919,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
               data-text="true"
             >
               array || object
@@ -997,7 +997,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="text-inherit text-[13px] leading-[130%] font-normal tracking-[-0.003rem] border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
                 data-text="true"
               >
                 string

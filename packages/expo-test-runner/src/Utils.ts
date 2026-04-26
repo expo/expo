@@ -1,5 +1,4 @@
 import spawnAsync from '@expo/spawn-async';
-import { spawnSync } from 'child_process';
 
 import { Platform } from './Platform';
 

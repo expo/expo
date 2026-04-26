@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 
-import { CreateURLOptions, ParsedURL } from './Linking.types';
+import type { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 import { validateURL } from './validateURL';
 

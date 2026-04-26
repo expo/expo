@@ -98,7 +98,7 @@ export interface LinkMenuActionProps {
  *
  * @platform ios
  */
-export declare function LinkMenuAction(props: LinkMenuActionProps): React.JSX.Element | null;
+export declare function LinkMenuAction(props: LinkMenuActionProps): import("react/jsx-runtime").JSX.Element | null;
 export interface LinkMenuProps {
     /**
      * The title of the menu item
@@ -192,7 +192,7 @@ export interface LinkMenuProps {
  *
  * @platform ios
  */
-export declare const LinkMenu: (props: LinkMenuProps) => React.JSX.Element | null;
+export declare const LinkMenu: (props: LinkMenuProps) => import("react/jsx-runtime").JSX.Element | null;
 export type LinkPreviewStyle = Omit<ViewStyle, 'position' | 'width' | 'height'> & {
     /**
      * Sets the preferred width of the preview.
@@ -245,7 +245,7 @@ export interface LinkPreviewProps {
  *
  * @platform ios
  */
-export declare function LinkPreview(props: LinkPreviewProps): React.JSX.Element | null;
+export declare function LinkPreview(props: LinkPreviewProps): import("react/jsx-runtime").JSX.Element | null;
 export interface LinkTriggerProps extends PropsWithChildren {
     /**
      * A shorthand for enabling the Apple Zoom Transition on this link trigger.
@@ -275,5 +275,5 @@ export interface LinkTriggerProps extends PropsWithChildren {
  *
  * @platform ios
  */
-export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | React.JSX.Element | null | undefined;
+export declare function LinkTrigger({ withAppleZoom, ...props }: LinkTriggerProps): string | number | bigint | boolean | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | import("react/jsx-runtime").JSX.Element | null | undefined;
 //# sourceMappingURL=elements.d.ts.map

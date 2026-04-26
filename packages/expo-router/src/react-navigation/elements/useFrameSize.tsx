@@ -1,7 +1,7 @@
 'use client';
 import * as React from 'react';
 import { use } from 'react';
-import { type LayoutChangeEvent, Platform, View } from 'react-native';
+import { View, type LayoutChangeEvent, Platform } from 'react-native';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';

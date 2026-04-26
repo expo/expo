@@ -1,4 +1,4 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import semver from 'semver';
 
 import {
@@ -9,6 +9,7 @@ import { env } from './env';
 import { Log } from './log';
 import { AppConfigFieldsNotSyncedToNativeProjectsCheck } from '../checks/AppConfigFieldsNotSyncedToNativeProjectsCheck';
 import { AutolinkingDependencyDuplicatesCheck } from '../checks/AutolinkingDependencyDuplicatesCheck';
+import { DependencyVersionOverrideCheck } from '../checks/DependencyVersionOverrideCheck';
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
@@ -25,7 +26,7 @@ import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
-import { DoctorCheck } from '../checks/checks.types';
+import type { DoctorCheck } from '../checks/checks.types';
 
 /**
  * Resolves the checks that should be run for a given project.
@@ -55,6 +56,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     // Version Checks
     new SupportPackageVersionCheck(),
     new NativeToolingVersionCheck(),
+    new DependencyVersionOverrideCheck(),
 
     // Compatibility Checks
     new StoreCompatibilityCheck(),

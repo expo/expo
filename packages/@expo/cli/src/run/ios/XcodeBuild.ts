@@ -1,16 +1,17 @@
 import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
 import chalk from 'chalk';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import type { SpawnOptionsWithoutStdio } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { BuildProps, ProjectInfo } from './XcodeBuild.types';
+import type { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 import * as Log from '../../log';
-import { OSType } from '../../start/platforms/ios/simctl';
+import type { OSType } from '../../start/platforms/ios/simctl';
 import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';

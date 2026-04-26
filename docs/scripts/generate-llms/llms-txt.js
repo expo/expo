@@ -4,7 +4,7 @@ import path from 'node:path';
 import ts from 'typescript';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
-import { generateCrossLinksSection } from './shared.js';
+import { generateCrossLinksSection, toBlockquote } from './shared.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
@@ -54,7 +54,7 @@ function generateFullMarkdown({ title, description, sections }) {
   });
 
   return (
-    `# ${title}\n\n${description}\n\n` +
+    `# ${title}\n\n${toBlockquote(description)}\n\n` +
     filteredSections.map(generateSectionMarkdown).join('') +
     '\n' +
     generateCrossLinksSection(OUTPUT_FILENAME_LLMS_TXT)

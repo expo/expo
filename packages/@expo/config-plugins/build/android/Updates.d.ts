@@ -1,8 +1,7 @@
-import { AndroidManifest } from './Manifest';
-import { ResourceXML } from './Resources';
-import * as Resources from './Resources';
-import { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
-import { ExpoConfigUpdates } from '../utils/Updates';
+import type { AndroidManifest } from './Manifest';
+import { type ResourceXML } from './Resources';
+import type { ConfigPlugin, ExportedConfigWithProps } from '../Plugin.types';
+import type { ExpoConfigUpdates } from '../utils/Updates';
 export declare enum Config {
     ENABLED = "expo.modules.updates.ENABLED",
     CHECK_ON_LAUNCH = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",
@@ -17,7 +16,7 @@ export declare enum Config {
     BSDIFF_PATCH_SUPPORT = "expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT"
 }
 export declare const withUpdates: ConfigPlugin;
-export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfigWithProps<Resources.ResourceXML>, stringsJSON: ResourceXML): Promise<ResourceXML>;
+export declare function applyRuntimeVersionFromConfigAsync(config: ExportedConfigWithProps<ResourceXML>, stringsJSON: ResourceXML): Promise<ResourceXML>;
 export declare function applyRuntimeVersionFromConfigForProjectRootAsync(projectRoot: string, config: ExpoConfigUpdates, stringsJSON: ResourceXML): Promise<ResourceXML>;
 export declare function setUpdatesConfigAsync(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, expoUpdatesPackageVersion?: string | null): Promise<AndroidManifest>;
 export declare function setVersionsConfigAsync(projectRoot: string, config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, androidManifest: AndroidManifest): Promise<AndroidManifest>;

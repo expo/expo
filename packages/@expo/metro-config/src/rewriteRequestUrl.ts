@@ -1,5 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
 import chalk from 'chalk';
 import fs from 'fs';

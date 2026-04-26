@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type representing dictionary types. Requires the dictionary's value type
  for the initialization as it delegates casting to that type for each element in the dictionary.
@@ -31,7 +33,7 @@ internal struct DynamicDictionaryType: AnyDynamicType {
       }
       return result
     }
-    throw Conversions.CastingException<JavaScriptObject>(jsValue)
+    throw Conversions.CastingJSValueException<[AnyHashable: Any]>(jsValue.kind)
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
@@ -46,6 +48,24 @@ internal struct DynamicDictionaryType: AnyDynamicType {
       return result.mapValues { Conversions.convertFunctionResult($0, appContext: appContext) }
     }
     return result
+  }
+
+  /**
+   Type-aware conversion: converts each value using `valueType.castToJS` so types like
+   `SharedObject` — which need per-type JS representations — are handled correctly when
+   nested inside a dictionary.
+   */
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    guard let dict = value as? [AnyHashable: Any] else {
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext)
+    }
+    let runtime = try appContext.runtime
+    let jsObject = runtime.createObject()
+    for (key, element) in dict {
+      guard let key = key as? String else { continue }
+      jsObject.setProperty(key, value: try valueType.castToJS(element, appContext: appContext))
+    }
+    return jsObject.asValue()
   }
 
   var description: String {

@@ -20,9 +20,32 @@ const LLMS_FILES = [
     filename: 'llms-sdk.txt',
     description: 'Complete documentation for the latest Expo SDK',
   },
+  {
+    filename: 'llms-sdk-v54.0.0.txt',
+    description: 'Complete documentation for Expo SDK 54',
+  },
+  {
+    filename: 'llms-sdk-v53.0.0.txt',
+    description: 'Complete documentation for Expo SDK 53',
+  },
+  {
+    filename: 'llms-sdk-v52.0.0.txt',
+    description: 'Complete documentation for Expo SDK 52',
+  },
+  {
+    filename: 'llms-sdk-v51.0.0.txt',
+    description: 'Complete documentation for Expo SDK 51',
+  },
 ];
 
 const CONTENT_SEPARATOR = '\n\n---\n\n';
+
+export function toBlockquote(text) {
+  return text
+    .split('\n')
+    .map(line => (line.length > 0 ? `> ${line}` : '>'))
+    .join('\n');
+}
 
 export function ensureBuildOutputDir(buildOutputDirName = BUILD_OUTPUT_DIR) {
   const buildDir = path.join(process.cwd(), buildOutputDirName);
@@ -130,7 +153,7 @@ export function generateCrossLinksSection(currentFilename) {
 }
 
 export function composeMarkdownDocument({ title, description, contentChunks, currentFilename }) {
-  let fullContent = `# ${title}\n\n${description}\n\n`;
+  let fullContent = `# ${title}\n\n${toBlockquote(description)}\n\n`;
 
   for (const content of contentChunks) {
     fullContent += content + CONTENT_SEPARATOR;

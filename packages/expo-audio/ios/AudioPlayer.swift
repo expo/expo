@@ -156,6 +156,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable {
 
   func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
     self.metadata = metadata
+    self.isActiveForLockScreen = active
     if active {
       MediaController.shared.setActivePlayer(self, options: options)
     } else {

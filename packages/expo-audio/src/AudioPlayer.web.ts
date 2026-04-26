@@ -1,13 +1,13 @@
-import {
+import type {
   AudioMetadata,
   AudioPlayerOptions,
   AudioSource,
   AudioStatus,
   PitchCorrectionQuality,
 } from './Audio.types';
-import { AudioLockScreenOptions } from './AudioConstants';
+import type { AudioLockScreenOptions } from './AudioConstants';
 import { AUDIO_SAMPLE_UPDATE, PLAYBACK_STATUS_UPDATE } from './AudioEventKeys';
-import { AudioPlayer, AudioEvents } from './AudioModule.types';
+import type { AudioPlayer, AudioEvents } from './AudioModule.types';
 import { isAudioActive } from './AudioModule.web';
 import {
   getAudioContext,

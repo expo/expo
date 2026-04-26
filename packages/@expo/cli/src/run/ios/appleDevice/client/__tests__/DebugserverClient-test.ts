@@ -1,4 +1,4 @@
-import { GDBMessage } from '../../protocol/GDBProtocol';
+import type { GDBMessage } from '../../protocol/GDBProtocol';
 import { DebugserverClient } from '../DebugserverClient';
 
 function mockSocket() {

@@ -5,7 +5,7 @@
       "name": "ExpoLinking",
       "podName": "ExpoLinking",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

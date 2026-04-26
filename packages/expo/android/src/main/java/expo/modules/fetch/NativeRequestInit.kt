@@ -4,7 +4,9 @@ package expo.modules.fetch
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal data class NativeRequestInit(
   @Field val credentials: NativeRequestCredentials = NativeRequestCredentials.INCLUDE,
   @Field val headers: List<Pair<String, String>> = emptyList(),

@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { ReadableStream } from 'node:stream/web';
 
 import { FileSystemResponseCache } from '../FileSystemResponseCache';
-import { ResponseCacheEntry } from '../ResponseCache';
+import type { ResponseCacheEntry } from '../ResponseCache';
 
 describe('FileSystemResponseCache', () => {
   const cacheDirectory = join(tmpdir(), 'test-cache');

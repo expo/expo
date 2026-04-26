@@ -6,7 +6,7 @@ import {
   Image,
 } from 'react-native';
 
-import { ModifierConfig } from '../../types';
+import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type IconProps = {

@@ -1,5 +1,5 @@
-import { ModPlatform } from '@expo/config-plugins';
-import { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
+import type { ModPlatform } from '@expo/config-plugins';
+import type { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';

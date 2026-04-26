@@ -104,7 +104,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           href="#code-heading-depth-1"
         >
           <code
-            class="leading-[1.6154] text-inherit text-secondary! hocus:text-link! w-full text-2xs! truncate"
+            class="leading-[1.6154] text-inherit text-secondary! hocus:text-link! w-full truncate text-xs!"
             data-text="true"
           >
             Code heading depth 1

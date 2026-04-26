@@ -45,7 +45,7 @@ function DeviceMethods({ name = '', method }: DeviceMethod) {
       } else if (Array.isArray(value)) {
         value = value.join('\n');
       }
-    } catch (error) {
+    } catch (error: any) {
       alert(error);
       value = error.message;
     }

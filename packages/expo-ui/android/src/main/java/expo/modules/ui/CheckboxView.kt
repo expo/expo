@@ -11,7 +11,10 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class CheckboxColors(
   @Field val checkedColor: Color? = null,
   @Field val disabledCheckedColor: Color? = null,
@@ -21,6 +24,7 @@ data class CheckboxColors(
   @Field val disabledIndeterminateColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class CheckboxProps(
   val value: Boolean = false,
   val enabled: Boolean = true,
@@ -60,6 +64,7 @@ enum class ToggleableStateValue(val value: String) : Enumerable {
   INDETERMINATE("indeterminate")
 }
 
+@OptimizedComposeProps
 data class TriStateCheckboxProps(
   val state: ToggleableStateValue = ToggleableStateValue.OFF,
   val enabled: Boolean = true,

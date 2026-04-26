@@ -1,4 +1,5 @@
 import { getResourceXMLPathAsync } from './Paths';
+import type { ResourceGroupXML, ResourceItemXML, ResourceKind, ResourceXML } from './Resources';
 import {
   buildResourceGroup,
   buildResourceItem,
@@ -6,10 +7,6 @@ import {
   findResourceGroup,
   getResourceItemsAsObject,
   readResourcesXMLAsync,
-  ResourceGroupXML,
-  ResourceItemXML,
-  ResourceKind,
-  ResourceXML,
 } from './Resources';
 
 // Adds support for `tools:x`

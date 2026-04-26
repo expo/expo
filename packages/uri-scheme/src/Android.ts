@@ -1,5 +1,5 @@
+import type { AndroidManifest } from '@expo/config-plugins/build/android/Manifest';
 import {
-  AndroidManifest,
   readAndroidManifestAsync,
   writeAndroidManifestAsync,
 } from '@expo/config-plugins/build/android/Manifest';
@@ -10,7 +10,8 @@ import chalk from 'chalk';
 import { existsSync } from 'fs';
 import path from 'path';
 
-import { CommandError, Options } from './Options';
+import type { Options } from './Options';
+import { CommandError } from './Options';
 
 const CANT_START_ACTIVITY_ERROR = 'Activity not started, unable to resolve Intent';
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';

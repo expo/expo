@@ -47,7 +47,7 @@ export declare function useNavigationCache<State extends NavigationState, Screen
             merge?: boolean;
         } : never): void;
         preload<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined] : never): void;
-        reset(state: State | import("../routers").PartialState<State>): void;
+        reset(state: State | import(".").PartialState<State>): void;
         goBack(): void;
         isFocused(): boolean;
         canGoBack(): boolean;
@@ -60,7 +60,7 @@ export declare function useNavigationCache<State extends NavigationState, Screen
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../routers").NavigationRoute<ParamListBase, string>[];
+            routes: import(".").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, {}, {}> | undefined>(id?: string | undefined): T;

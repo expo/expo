@@ -7,7 +7,7 @@ import React from 'react';
 import { AppState } from 'react-native';
 
 import { getBaseURL } from './base';
-import { DOMPropsInternal } from './dom-internal.types';
+import type { DOMPropsInternal } from './dom-internal.types';
 import type { BridgeMessage, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {

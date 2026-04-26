@@ -1,7 +1,8 @@
-import { NativeModule, PermissionResponse } from 'expo-modules-core';
-import { ProcessedColorValue } from 'react-native';
-import { ExpoCalendar, ExpoCalendarAttendee, ExpoCalendarEvent, ExpoCalendarReminder } from './ExpoCalendar.types';
-import { Calendar, EntityTypes, Source } from '../Calendar';
+import type { PermissionResponse } from 'expo-modules-core';
+import { NativeModule } from 'expo-modules-core';
+import type { ProcessedColorValue } from 'react-native';
+import type { ExpoCalendar, ExpoCalendarAttendee, ExpoCalendarEvent, ExpoCalendarReminder } from './ExpoCalendar.types';
+import type { Calendar, EntityTypes, Source } from '../Calendar';
 declare class ExpoCalendarNextModule extends NativeModule {
     ExpoCalendar: typeof ExpoCalendar;
     ExpoCalendarEvent: typeof ExpoCalendarEvent;

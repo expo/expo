@@ -5,7 +5,9 @@ import android.provider.CalendarContract
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.Required
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class CalendarUpdateInput(
   @Field @Required val id: String,
   @Field val name: String?,

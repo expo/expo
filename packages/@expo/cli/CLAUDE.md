@@ -85,6 +85,7 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 Read additional resource files:
 
 - ./docs/testing.md - Anything related to testing
+- ./docs/events.md - Anything related to event logging
 
 ## Windows
 
@@ -149,32 +150,7 @@ debug('hello');
 ```
 
 **New debugging system:**
-Newer modules use the `events` helper from `src/events/index.ts` to define structured events in JSON format.
-
-```ts
-export const event = events('metro', (t) => [
-  t.event<'example:start', {
-    value: string;
-  }>(),
-]);
-
-event('metro:example:start', { value: 'hello' });
-```
-
-The `events` function accepts a category name and a function that is used to define the event types, but never called.
-When setting `LOG_EVENTS=1` JSONL events will be logged to the standard output, or with `LOG_EVENTS=events.log` events will log to an events.log file.
-This is a faster events system than `debug`, captures structured JSON events, and is scalable, and can be used in any module to add richer debug output.
-
-When creatin a nwe events category, add the `event` function it returns to the `Events` type in `src/events/types.ts` to collect all the events' types in one place:
-
-```
-// Add a new import:
-import type { event as myNewEvent } from '...';
-
-export type Events = collectEventLoggers<[
-  typeof myNewEvent, // Add the imported new event function here
-]>;
-```
+Newer modules use the `events` helper from `src/events` as documented in `./docs/events.md` to define structured events in JSON format.
 
 ## Production
 

@@ -1,6 +1,6 @@
-import React from 'react';
-import { type ModifierConfig } from '../../types';
-import { PrimitiveBaseProps } from '../layout';
+import type { ReactElement } from 'react';
+import type { ModifierConfig } from '../../types';
+import type { PrimitiveBaseProps } from '../layout';
 export interface RNHostProps extends PrimitiveBaseProps {
     /**
      * When `true`, the RNHost will update its size in the Jetpack Compose view tree to match the children's size.
@@ -12,11 +12,11 @@ export interface RNHostProps extends PrimitiveBaseProps {
     /**
      * The RN View to be hosted.
      */
-    children: React.ReactElement;
+    children: ReactElement;
     /**
      * Modifiers for the component.
      */
     modifiers?: ModifierConfig[];
 }
-export declare function RNHostView(props: RNHostProps): React.JSX.Element;
+export declare function RNHostView(props: RNHostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

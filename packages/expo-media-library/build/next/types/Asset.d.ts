@@ -1,8 +1,9 @@
-import { Album } from './Album';
-import { AssetInfo } from './AssetInfo';
-import { Location } from './Location';
-import { MediaType } from './MediaType';
-import { Shape } from './Shape';
+import type { Album } from './Album';
+import type { AssetInfo } from './AssetInfo';
+import type { Location } from './Location';
+import type { MediaSubtype } from './MediaSubtype';
+import type { MediaType } from './MediaType';
+import type { Shape } from './Shape';
 /**
  * Represents a single media asset on the device (image, video, or audio).
  *
@@ -57,6 +58,37 @@ export declare class Asset {
      */
     getMediaType(): Promise<MediaType>;
     /**
+     * Gets the media subtypes of the asset, describing specific variations such as Live Photo, panorama, HDR, etc.
+     * @returns A promise resolving to an array of {@link MediaSubtype} strings. Returns an empty array if no subtypes apply.
+     * @throws An exception if the asset could not be found.
+     * @platform ios
+     */
+    getMediaSubtypes(): Promise<MediaSubtype[]>;
+    /**
+     * Gets the URI of the paired video for a Live Photo asset.
+     * The video is extracted to a temporary file.
+     * @returns A promise resolving to a `file://` URI string, or `null` if the asset is not a Live Photo.
+     * @throws An exception if the asset could not be found.
+     * @platform ios
+     */
+    getLivePhotoVideoUri(): Promise<string | null>;
+    /**
+     * Gets whether the asset is stored in iCloud and not available locally.
+     * This does not trigger a download of the asset.
+     * @returns A promise resolving to `true` if the asset is stored in iCloud and not available locally.
+     * @throws An exception if the asset could not be found.
+     * @platform ios
+     */
+    getIsInCloud(): Promise<boolean>;
+    /**
+     * Gets the EXIF display orientation of the asset.
+     * Only applicable for assets with media type {@link MediaType.image}.
+     * @returns A promise resolving to a value between 1 and 8 as defined by the [EXIF orientation specification](http://sylvana.net/jpegcrop/exif_orientation.html), or `null` if unavailable.
+     * @throws An exception if the asset could not be found.
+     * @platform ios
+     */
+    getOrientation(): Promise<number | null>;
+    /**
      * Gets the last modification time of the asset.
      * @returns A promise resolving to the UNIX timestamp in milliseconds, or `null` if unavailable.
      * @throws An exception if the asset could not be found.
@@ -88,6 +120,20 @@ export declare class Asset {
      * @throws An exception if the asset could not be found.
      */
     getInfo(): Promise<AssetInfo>;
+    /**
+     * Gets the albums containing this asset.
+     * On Android, an asset is typically associated with a single album.
+     * On iOS, an asset may belong to multiple albums.
+     * @returns A promise resolving to an array of {@link Album} objects.
+     * @throws An exception if the asset could not be found.
+     *
+     * @example
+     * ```ts
+     * const albums = await asset.getAlbums();
+     * console.log(albums.length);
+     * ```
+     */
+    getAlbums(): Promise<Album[]>;
     /**
      * Gets the location of the asset.
      * On Android, this method requires the `ACCESS_MEDIA_LOCATION` permission to access location metadata.
@@ -140,5 +186,11 @@ export declare class Asset {
      */
     setFavorite(isFavorite: boolean): Promise<void>;
     static create(filePath: string, album?: Album): Promise<Asset>;
+    /**
+     * A static function. Deletes multiple assets from the device's media store.
+     * @param assets - An array of {@link Asset} instances to delete.
+     * @returns A promise that resolves once the deletion has completed.
+     */
+    static delete(assets: Asset[]): Promise<void>;
 }
 //# sourceMappingURL=Asset.d.ts.map

@@ -7,7 +7,7 @@ import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
-import { Parcel, TaskArgs } from '../types';
+import { CommandOptions, Parcel, TaskArgs } from '../types';
 
 /**
  * Packages whose iOS prebuilt xcframeworks should be bundled into the npm tarball.
@@ -27,7 +27,7 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-modules-core',
   'expo-print',
   'expo-sensors',
-  'expo-ui',
+  //'expo-ui', // Until we have support for worklets (3rd party frameworks) in prebuilds, we can't include this package because it has a dependency on react-native-worklets
   'expo-video',
 ];
 
@@ -43,7 +43,12 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
     name: 'bundleIOSPrebuilds',
     dependsOn: [loadRequestedParcels],
   },
-  async (parcels: Parcel[]) => {
+  async (parcels: Parcel[], options: CommandOptions) => {
+    if (options.skipIosPrebuilds) {
+      logger.debug('\n📱 Skipping iOS prebuilds due to --skip-ios-prebuilds flag.');
+      return;
+    }
+
     logger.log('\n📱 Building iOS prebuilds...');
 
     const relevantParcels = IOS_PREBUILD_PACKAGES.filter((name) =>

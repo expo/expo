@@ -6,76 +6,51 @@ import ExpoModulesCore
 
 internal class VideoAsset: AVURLAsset, @unchecked Sendable {
   internal let videoSource: VideoSource
-  private var resourceLoaderDelegate: ResourceLoaderDelegate?
-  private let initialScheme: String?
-  private let saveFilePath: String?
-  private var customFileExtension: String?
-  private let useCaching: Bool
+  internal let effectivePlaybackURL: URL
+  internal let effectiveContentType: ContentType
+  private var resourceLoaderDelegateRef: (any AVAssetResourceLoaderDelegate)?
+  private var retainedTransportObjects: [AnyObject] = []
+  private let preAssetLoadCallback: ((AVURLAsset) async throws -> Void)?
+  private let onAssetDeinit: (() -> Void)?
 
-  var cachingError: Error?
-
-  internal var urlRequestHeaders: [String: String]?
+  var transportError: Error?
 
   init(url: URL, videoSource: VideoSource) {
     self.videoSource = videoSource
-    let cachedMimeType = MediaInfo(forResourceUrl: url)?.mimeType
-    let cachedExtension = mimeTypeToExtension(mimeType: cachedMimeType) ?? ""
-    let fileExtension = url.pathExtension.isEmpty ? cachedExtension : url.pathExtension
-    self.saveFilePath = Self.pathForUrl(url: url, fileExtension: fileExtension)
-    self.urlRequestHeaders = videoSource.headers
-    self.initialScheme = URLComponents(url: url, resolvingAgainstBaseURL: false)?.scheme
+    VideoAssetTransportRegistry.registerDefaultProviders()
 
-    // Creates an URL that will delegate it's requests to ResourceLoaderDelegate
-    let urlWithCustomScheme = url.withScheme(VideoCacheManager.expoVideoCacheScheme)
+    if let loadPlan = VideoAssetTransportRegistry.resolveLoadPlan(for: videoSource, url: url) {
+      self.effectivePlaybackURL = loadPlan.assetURL
+      self.effectiveContentType = loadPlan.reportedContentTypeHint ?? videoSource.contentType
+      self.preAssetLoadCallback = loadPlan.prepareAsset
+      self.onAssetDeinit = loadPlan.onAssetDeinit
+      super.init(url: loadPlan.assetURL, options: loadPlan.assetOptions ?? Self.assetOptions(headers: videoSource.headers))
 
-    let assetOptions: [String: Any]? = if let headers = videoSource.headers {
-      ["AVURLAssetHTTPHeaderFieldsKey": headers]
-    } else {
-      nil
-    }
+      if let resourceLoaderDelegate = loadPlan.resourceLoaderDelegate {
+        self.resourceLoaderDelegateRef = resourceLoaderDelegate
+        self.resourceLoader.setDelegate(resourceLoaderDelegate, queue: loadPlan.resourceLoaderQueue)
+      }
 
-    let canCache = Self.canCache(videoSource: videoSource)
-
-    if saveFilePath == nil && videoSource.useCaching {
-      log.warn("[expo-video] Failed to create a cache file path for the provided source with uri: \(videoSource.uri?.absoluteString ?? "null")")
-    }
-
-    if !canCache && videoSource.useCaching {
-      log.warn("[expo-video] Provided source with uri: \(videoSource.uri?.absoluteString ?? "null") cannot be cached. Caching will be disabled")
-    }
-
-    if urlWithCustomScheme == nil && videoSource.useCaching {
-      log.warn("[expo-video] CachingPlayerItem error: Urls without a scheme are not supported, the resource won't be cached")
-    }
-
-    guard let saveFilePath, let urlWithCustomScheme, videoSource.useCaching else {
-      // Initialize with no caching
-      useCaching = false
-      super.init(url: url, options: assetOptions)
+      self.retainedTransportObjects = loadPlan.retainedObjects
+      loadPlan.attachErrorHandler? { [weak self] error in
+        self?.transportError = error
+      }
       return
     }
 
-    // Enable caching
-    useCaching = true
-    VideoCacheManager.shared.ensureCacheIntegrity(forSavePath: saveFilePath)
-    Self.createCacheDirectoryIfNeeded()
-    resourceLoaderDelegate = ResourceLoaderDelegate(url: url, saveFilePath: saveFilePath, fileExtension: fileExtension, urlRequestHeaders: urlRequestHeaders)
-    super.init(url: urlWithCustomScheme, options: assetOptions)
-
-    resourceLoaderDelegate?.onError = { [weak self] error in
-      self?.cachingError = error
-    }
-    self.resourceLoader.setDelegate(resourceLoaderDelegate, queue: VideoCacheManager.shared.cacheQueue)
+    self.effectivePlaybackURL = url
+    self.effectiveContentType = videoSource.contentType
+    self.preAssetLoadCallback = nil
+    self.onAssetDeinit = nil
+    super.init(url: url, options: Self.assetOptions(headers: videoSource.headers))
   }
 
   deinit {
-    guard useCaching else {
-      return
-    }
-    if let saveFilePath, let cachedFileUrl = URL(string: saveFilePath) {
-      VideoCacheManager.shared.unregisterOpenFile(at: cachedFileUrl)
-    }
-    VideoCacheManager.shared.ensureCacheSize()
+    onAssetDeinit?()
+  }
+
+  internal func prepareForLoadingIfNeeded() async throws {
+    try await preAssetLoadCallback?(self)
   }
 
   static func pathForUrl(url: URL, fileExtension: String) -> String? {
@@ -100,14 +75,14 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
     return cachesDirectory.path
   }
 
-  static func canCache(videoSource: VideoSource) -> Bool {
-    guard videoSource.uri?.scheme?.starts(with: "http") == true else {
-      return false
+  static func assetOptions(headers: [String: String]?) -> [String: Any]? {
+    if let headers {
+      return ["AVURLAssetHTTPHeaderFieldsKey": headers]
     }
-    return videoSource.drm == nil
+    return nil
   }
 
-  private static func createCacheDirectoryIfNeeded() {
+  static func createCacheDirectoryIfNeeded() {
     guard var cachesDirectory = try? FileManager.default.url(
       for: .cachesDirectory,
       in: .userDomainMask,

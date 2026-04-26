@@ -1,11 +1,12 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 import path from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { format } from '../../utils/XML';
 import * as XML from '../../utils/XML';
-import { AndroidManifest, getMainApplication } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
+import { getMainApplication } from '../Manifest';
 import { readResourcesXMLAsync } from '../Resources';
 import * as Updates from '../Updates';
 

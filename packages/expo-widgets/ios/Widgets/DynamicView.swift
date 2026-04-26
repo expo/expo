@@ -65,6 +65,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(CircleView.self, CircleViewProps.self)
     case "ImageView":
       render(ImageView.self, ImageViewProps.self)
+    case "AccessoryWidgetBackgroundView":
+      render(AccessoryWidgetBackgroundView.self, AccessoryWidgetBackgroundProps.self)
     case "DividerView":
       render(DividerView.self, DividerProps.self)
     case "EllipseView":

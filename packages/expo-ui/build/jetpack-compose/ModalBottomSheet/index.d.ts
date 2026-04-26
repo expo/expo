@@ -1,5 +1,5 @@
-import React, { Ref } from 'react';
-import { type ColorValue } from 'react-native';
+import type { Ref, ReactNode } from 'react';
+import type { ColorValue } from 'react-native';
 import { type ModifierConfig } from '../../types';
 export type ModalBottomSheetRef = {
     /**
@@ -25,7 +25,7 @@ export type ModalBottomSheetProps = {
      * The children of the `ModalBottomSheet` component.
      * Can include a `ModalBottomSheet.DragHandle` slot for a custom drag handle.
      */
-    children: React.ReactNode;
+    children: ReactNode;
     /**
      * Can be used to imperatively hide the bottom sheet with an animation.
      */
@@ -75,11 +75,11 @@ export type ModalBottomSheetProps = {
 /**
  * A Material Design modal bottom sheet.
  */
-declare function ModalBottomSheetComponent(props: ModalBottomSheetProps): React.JSX.Element;
+declare function ModalBottomSheetComponent(props: ModalBottomSheetProps): import("react/jsx-runtime").JSX.Element;
 declare namespace ModalBottomSheetComponent {
     var DragHandle: (props: {
-        children: React.ReactNode;
-    }) => React.JSX.Element;
+        children: ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export declare const ModalBottomSheet: typeof ModalBottomSheetComponent;
 export {};

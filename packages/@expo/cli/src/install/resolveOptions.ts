@@ -1,4 +1,4 @@
-import { NodePackageManagerForProject } from '@expo/package-manager';
+import type { NodePackageManagerForProject } from '@expo/package-manager';
 
 import { CommandError } from '../utils/errors';
 import { assertUnexpectedVariadicFlags, parseVariadicArguments } from '../utils/variadic';

@@ -196,7 +196,12 @@ export type BuildPlatform =
 /**
  * Product platforms to emit to Package.swift
  */
-export type ProductPlatform = 'iOS(.v15)' | 'macOS(.v11)' | 'tvOS(.v15)' | 'macCatalyst(.v15)';
+export type ProductPlatform =
+  | 'iOS(.v15)'
+  | 'iOS(.v16)'
+  | 'macOS(.v11)'
+  | 'tvOS(.v15)'
+  | 'macCatalyst(.v15)';
 
 /**
  * A Swift Package product definition

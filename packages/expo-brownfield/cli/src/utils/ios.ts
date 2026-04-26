@@ -6,7 +6,7 @@ import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
 import { withSpinner } from './spinner';
-import { IosConfig, XCFrameworkSpec } from './types';
+import type { IosConfig } from './types';
 
 export const cleanUpArtifacts = async (config: IosConfig) => {
   if (config.dryRun) {
@@ -179,6 +179,8 @@ export const findScheme = (): string | undefined => {
     const errorMessage = error instanceof Error ? error.message : '';
     CLIError.handle('ios-directory-unknown-error', errorMessage);
   }
+
+  return;
 };
 
 export const findWorkspace = (dryRun: boolean): string | undefined => {
@@ -205,6 +207,8 @@ export const findWorkspace = (dryRun: boolean): string | undefined => {
     const errorMessage = error instanceof Error ? error.message : '';
     CLIError.handle('ios-workspace-unknown-error', errorMessage);
   }
+
+  return;
 };
 
 // TODO(pmleczek): Add support for prebuilt RN frameworks in future PR

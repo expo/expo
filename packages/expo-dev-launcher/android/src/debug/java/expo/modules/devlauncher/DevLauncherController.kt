@@ -16,6 +16,7 @@ import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.helpers.DevLauncherMetadataHelper
 import expo.modules.devlauncher.helpers.DevLauncherUrl
@@ -47,7 +48,6 @@ import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 
 private const val NEW_ACTIVITY_FLAGS = Intent.FLAG_ACTIVITY_NEW_TASK or
   Intent.FLAG_ACTIVITY_CLEAR_TASK or
@@ -65,7 +65,7 @@ class DevLauncherController private constructor(
   val nullableContext: Context?
     get() = contextHolder.get()
 
-  val httpClient by lazy { OkHttpClient() }
+  val httpClient by lazy { OkHttpClientProvider.getOkHttpClient() }
   val lifecycle by lazy { DevLauncherLifecycle() }
   private val pendingIntentRegistry by lazy { DevLauncherIntentRegistry() }
   private val installationIDHelper by lazy { DevLauncherInstallationIDHelper() }
@@ -281,7 +281,20 @@ class DevLauncherController private constructor(
     context.applicationContext.startActivity(createLauncherIntent())
   }
 
+  fun launchDefaultUrlOrNavigateToLauncher(scope: CoroutineScope, defaultLaunchUrl: Uri, activityToBeInvalidated: ReactActivity?) {
+    scope.launch{
+      try {
+        loadApp(defaultLaunchUrl, activityToBeInvalidated)
+      } catch (_: Throwable) {
+        navigateToLauncher()
+      }
+    }
+  }
+
   override fun handleIntent(intent: Intent?, activityToBeInvalidated: ReactActivity?): Boolean {
+    val defaultLaunchUrlValue = getMetadataValue(context, "DEV_CLIENT_DEFAULT_LAUNCHER_URL", "")
+    val defaultLaunchUrl = defaultLaunchUrlValue.toUri()
+    val useDefaultLaunchUrlFallback = defaultLaunchUrlValue.isNotEmpty()
     intent
       ?.data
       ?.let { uri ->
@@ -298,6 +311,11 @@ class DevLauncherController private constructor(
         if (!hasUrlQueryParam(uri)) {
           // edge case: this is a dev launcher url but it does not specify what url to open
           // fallback to navigating to the launcher home screen
+
+          if (useDefaultLaunchUrlFallback) {
+            launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+            return true
+          }
           navigateToLauncher()
           return true
         }
@@ -322,13 +340,12 @@ class DevLauncherController private constructor(
       val shouldTryToLaunchLastOpenedBundle = getMetadataValue(context, "DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE", "true").toBoolean()
       val lastOpenedApp = recentlyOpedAppsRegistry.getMostRecentApp()
       if (shouldTryToLaunchLastOpenedBundle && lastOpenedApp != null) {
-        coroutineScope.launch {
-          try {
-            loadApp(lastOpenedApp.url.toUri(), activityToBeInvalidated)
-          } catch (_: Throwable) {
-            navigateToLauncher()
-          }
-        }
+        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
+        return true
+      }
+
+      if (useDefaultLaunchUrlFallback) {
+        launchDefaultUrlOrNavigateToLauncher(coroutineScope, defaultLaunchUrl, activityToBeInvalidated)
         return true
       }
       return handleExternalIntent(it)

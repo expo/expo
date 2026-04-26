@@ -5,7 +5,7 @@
       "name": "ExpoCamera",
       "podName": "ExpoCamera",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -13,6 +13,38 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoCamera",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "exclude": ["barcode-scanning/**"],
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit",
+            "AVFoundation"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ExpoCameraBarcodeScanning",
+      "podName": "ExpoCameraBarcodeScanning",
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "autolinkWhen": {
+        "podfileProperty": "expo.camera.barcode-scanner-enabled",
+        "disabledValue": "false"
+      },
+      "externalDependencies": [],
       "spmPackages": [
         {
           "url": "https://github.com/zxingify/zxingify-objc.git",
@@ -25,20 +57,12 @@
       "targets": [
         {
           "type": "swift",
-          "name": "ExpoCamera",
-          "path": "ios",
+          "name": "ExpoCameraBarcodeScanning",
+          "path": "ios/barcode-scanning",
           "pattern": "**/*.swift",
           "dependencies": [
-            "ReactNativeDependencies",
-            "React",
-            "Hermes",
-            "expo-modules-core/ExpoModulesCore",
+            "ExpoCamera",
             "ZXingObjC"
-          ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "AVFoundation"
           ],
           "compilerFlags": {
             "swift": [

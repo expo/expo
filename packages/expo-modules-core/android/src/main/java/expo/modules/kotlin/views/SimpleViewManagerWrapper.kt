@@ -46,7 +46,7 @@ class SimpleViewManagerWrapper(
   override fun getNativeProps(): MutableMap<String, String> {
     val props = super.getNativeProps()
     viewWrapperDelegate.props.forEach { (key, prop) ->
-      props[key] = prop.type.typeDescriptor.kClass.toString()
+      props[key] = prop.type.typeDescriptor.jClass.toString()
     }
     return props
   }

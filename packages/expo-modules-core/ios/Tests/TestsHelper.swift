@@ -3,7 +3,7 @@ import Testing
 import Foundation
 
 internal func expectEventually(
-  _ condition: @escaping () async throws -> Bool,
+  _ condition: @escaping @Sendable () async throws -> Bool,
   timeout: TimeInterval = 2.0,
   pollInterval: TimeInterval = 0.05
 ) async throws {

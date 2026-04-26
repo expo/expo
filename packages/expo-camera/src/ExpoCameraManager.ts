@@ -1,5 +1,5 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import { CameraNativeModule } from './Camera.types';
+import type { CameraNativeModule } from './Camera.types';
 
 export default requireNativeModule<CameraNativeModule>('ExpoCamera');

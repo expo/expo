@@ -1,3 +1,5 @@
+import ExpoModulesJSI
+
 public struct Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
@@ -77,95 +79,6 @@ public struct Conversions {
   }
 
   /**
-   Converts color string to `UIColor` or throws an exception if the string is corrupted.
-   */
-  static func toColor(colorString: String) throws -> UIColor {
-    let input = colorString.trimmingCharacters(in: .whitespacesAndNewlines)
-
-    // Handle RGB format
-    if input.hasPrefix("rgb") {
-      return try fromRGBString(input)
-    }
-
-    var hexStr = input
-      .replacingOccurrences(of: "#", with: "")
-
-    // If just RGB, set alpha to maximum
-    if hexStr.count == 6 { hexStr += "FF" }
-    if hexStr.count == 3 { hexStr += "F" }
-
-    // Expand short form (supported by Web)
-    if hexStr.count == 4 {
-      let chars = Array(hexStr)
-      hexStr = [
-        String(repeating: chars[0], count: 2),
-        String(repeating: chars[1], count: 2),
-        String(repeating: chars[2], count: 2),
-        String(repeating: chars[3], count: 2)
-      ].joined(separator: "")
-    }
-
-    var rgba: UInt64 = 0
-
-    guard hexStr.range(of: #"^[0-9a-fA-F]{8}$"#, options: .regularExpression) != nil,
-          Scanner(string: hexStr).scanHexInt64(&rgba) else {
-      throw InvalidHexColorException(input)
-    }
-    return try toColor(rgba: rgba)
-  }
-
-  private static func fromRGBString(_ rgbString: String) throws -> UIColor {
-    let components = rgbString
-      .replacingOccurrences(of: "rgba(", with: "")
-      .replacingOccurrences(of: "rgb(", with: "")
-      .replacingOccurrences(of: ")", with: "")
-      .split(separator: ",")
-      .compactMap { Double($0.trimmingCharacters(in: .whitespaces)) }
-
-    guard components.count >= 3,
-      components[0] >= 0 && components[0] <= 255,
-      components[1] >= 0 && components[1] <= 255,
-      components[2] >= 0 && components[2] <= 255 else {
-      throw InvalidRGBColorException(rgbString)
-    }
-
-    let alpha = components.count > 3 ? Double(components[3]) : 1.0
-    return UIColor(
-      red: CGFloat(components[0]) / 255.0,
-      green: CGFloat(components[1]) / 255.0,
-      blue: CGFloat(components[2]) / 255.0,
-      alpha: alpha)
-  }
-  /**
-   Converts an integer for ARGB color to `UIColor`. Since the alpha channel is represented by first 8 bits,
-   it's optional out of the box. React Native converts colors to such format.
-   */
-  static func toColor(argb: UInt64) throws -> UIColor {
-    guard argb <= UInt32.max else {
-      throw HexColorOverflowException(argb)
-    }
-    let alpha = CGFloat((argb >> 24) & 0xff) / 255.0
-    let red   = CGFloat((argb >> 16) & 0xff) / 255.0
-    let green = CGFloat((argb >> 8) & 0xff) / 255.0
-    let blue  = CGFloat(argb & 0xff) / 255.0
-    return UIColor(red: red, green: green, blue: blue, alpha: alpha)
-  }
-
-  /**
-   Converts an integer for RGBA color to `UIColor`.
-   */
-  static func toColor(rgba: UInt64) throws -> UIColor {
-    guard rgba <= UInt32.max else {
-      throw HexColorOverflowException(rgba)
-    }
-    let red   = CGFloat((rgba >> 24) & 0xff) / 255.0
-    let green = CGFloat((rgba >> 16) & 0xff) / 255.0
-    let blue  = CGFloat((rgba >> 8) & 0xff) / 255.0
-    let alpha = CGFloat(rgba & 0xff) / 255.0
-    return UIColor(red: red, green: green, blue: blue, alpha: alpha)
-  }
-
-  /**
    Formats an array of keys to the string with keys in apostrophes separated by commas.
    */
   static func formatKeys(_ keys: [String]) -> String {
@@ -180,17 +93,17 @@ public struct Conversions {
    Converts the function result to the type compatible with JavaScript.
    */
   static func convertFunctionResult<ValueType>(
-    _ value: ValueType?,
+    _ value: ValueType,
     appContext: AppContext? = nil,
     dynamicType: AnyDynamicType? = nil
   ) -> Any {
     if let appContext {
       // Dynamic type is provided
-      if dynamicType as? DynamicVoidType == nil, let result = try? dynamicType?.convertResult(value as Any, appContext: appContext) {
+      if let result = try? dynamicType?.convertResult(value, appContext: appContext) {
         return result
       }
       // Dynamic type can be obtained from the value
-      if let value = value as? AnyArgument, let result = try? type(of: value).getDynamicType().convertResult(value as Any, appContext: appContext) {
+      if let argument = value as? AnyArgument, let result = try? type(of: argument).getDynamicType().convertResult(value, appContext: appContext) {
         return result
       }
     }
@@ -203,7 +116,7 @@ public struct Conversions {
    so it is quite limited, e.g. it does not handle shared objects.
    Currently it is required to handle results of the promise.
    */
-  static func convertFunctionResultInRuntime<ValueType>(_ value: ValueType?, appContext: AppContext? = nil) -> Any {
+  static func convertFunctionResultInRuntime<ValueType>(_ value: ValueType, appContext: AppContext? = nil) -> Any {
     if let value = value as? Record {
       return value.toDictionary(appContext: appContext)
     }
@@ -213,7 +126,86 @@ public struct Conversions {
     if let value = value as? any Enumerable {
       return value.anyRawValue
     }
-    return value as Any
+    return value
+  }
+
+  // MARK: - Any to JavaScript
+
+  /**
+   Converts a native value to a `JavaScriptValue`. When the value conforms to `AnyArgument`,
+   the fast path via `getDynamicType().castToJS()` is used. Otherwise falls back to
+   `unknownToJavaScriptValue` which handles type-erased values through `NSNumber`/`NSDictionary` matching.
+   */
+  static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if ValueType.self is AnyOptional.Type, Optional.isNil(value) {
+      return .null
+    }
+    if let value = value as? AnyArgument {
+      return try type(of: value).getDynamicType().castToJS(value, appContext: appContext)
+    }
+    return try unknownToJavaScriptValue(value, appContext: appContext)
+  }
+
+  /**
+   Slow path for values whose concrete type is erased to `Any`.
+   Kept separate from `anyToJavaScriptValue` so that the default `AnyDynamicType.castToJS`
+   can call this without re-entering the `AnyArgument` check and causing infinite recursion.
+   */
+  static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
+    if let value = value as? JavaScriptRepresentable {
+      return .representing(value: value, in: try appContext.runtime)
+    }
+
+    let runtime = try appContext.runtime
+
+    switch value {
+    case is Void:
+      return .undefined
+    case is NSNull:
+      return .null
+    case let number as NSNumber:
+      if number === kCFBooleanTrue {
+        return .true()
+      }
+      if number === kCFBooleanFalse {
+        return .false()
+      }
+      return .number(number.doubleValue)
+    case let string as NSString:
+      return .representing(value: string as String, in: runtime)
+    case let data as Data:
+      return try dataToUint8Array(data, runtime: runtime)
+    case let array as NSArray:
+      let jsArray = runtime.createArray(length: array.count)
+      for (index, element) in array.enumerated() {
+        try jsArray.set(value: anyToJavaScriptValue(element, appContext: appContext), at: index)
+      }
+      return jsArray.asValue()
+    case let dict as NSDictionary:
+      let jsObject = runtime.createObject()
+      for (key, element) in dict {
+        guard let key = key as? String else { continue }
+        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, appContext: appContext))
+      }
+      return jsObject.asValue()
+    default:
+      log.warn("unknownToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
+      return .undefined
+    }
+  }
+
+  /**
+   Copies the given `Data` into a new JS `ArrayBuffer` and wraps it in a `Uint8Array`.
+   */
+  private static func dataToUint8Array(_ data: Data, runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    let arrayBuffer = runtime.createArrayBuffer(size: data.count)
+    data.withUnsafeBytes { rawBuffer in
+      if let baseAddress = rawBuffer.baseAddress, data.count > 0 {
+        memcpy(arrayBuffer.data(), baseAddress, data.count)
+      }
+    }
+    let uint8ArrayCtor = runtime.global().getPropertyAsFunction("Uint8Array")
+    return try uint8ArrayCtor.callAsConstructor(arrayBuffer.asValue())
   }
 
   // MARK: - Exceptions
@@ -230,7 +222,7 @@ public struct Conversions {
   /**
    An exception thrown when the native value cannot be converted to JavaScript value.
    */
-  internal final class ConversionToJSFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+  internal final class ConversionToJSFailedException: GenericException<(kind: JavaScriptValue.Kind, nativeType: Any.Type)> {
     override var code: String {
       "ERR_CONVERTING_TO_JS_FAILED"
     }
@@ -242,7 +234,7 @@ public struct Conversions {
   /**
    An exception thrown when the JavaScript value cannot be converted to native value.
    */
-  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValueKind, nativeType: Any.Type)> {
+  internal final class ConversionToNativeFailedException: GenericException<(kind: JavaScriptValue.Kind, nativeType: Any.Type)> {
     override var code: String {
       "ERR_CONVERTING_TO_NATIVE_FAILED"
     }
@@ -272,6 +264,24 @@ public struct Conversions {
     }
     override var reason: String {
       "Cannot cast '\(String(describing: param))' to \(TargetType.self)"
+    }
+  }
+
+  internal class CastingJSValueException<TargetType>: GenericException<JavaScriptValue.Kind>, @unchecked Sendable {
+    override var code: String {
+      "ERR_CASTING_JS_VALUE_FAILED"
+    }
+    override var reason: String {
+      "Cannot cast from JavaScript value of kind '\(param)' to \(TargetType.self)"
+    }
+  }
+
+  internal class UnexpectedValueType: GenericException<(received: JavaScriptValue.Kind, expected: JavaScriptValue.Kind)>, @unchecked Sendable {
+    override var code: String {
+      "ERR_UNEXPECTED_VALUE_TYPE"
+    }
+    override var reason: String {
+      "Received JavaScript value of type '\(param.received)', but expected '\(param.expected)'"
     }
   }
 
@@ -307,30 +317,4 @@ public struct Conversions {
     }
   }
 
-  /**
-   An exception used when the hex color string is invalid (e.g. contains non-hex characters).
-   */
-  internal class InvalidHexColorException: GenericException<String> {
-    override var reason: String {
-      "Provided hex color '\(param)' is invalid"
-    }
-  }
-
-  /**
-   An exception used when the rgb color string is invalid.
-   */
-  internal class InvalidRGBColorException: GenericException<String> {
-    override var reason: String {
-      "Provided rgb color string '\(param)' is invalid"
-    }
-  }
-
-  /**
-   An exception used when the integer value of the color would result in an overflow of `UInt32`.
-   */
-  internal class HexColorOverflowException: GenericException<UInt64> {
-    override var reason: String {
-      "Provided hex color '\(param)' would result in an overflow"
-    }
-  }
 }

@@ -1,14 +1,14 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import {
+import type {
   BarcodeType,
   BarcodeScanningResult,
   CameraCapturedPicture,
   CameraPictureOptions,
   PermissionResponse,
-  PermissionStatus,
 } from './Camera.types';
-import { ExponentCameraRef } from './ExpoCamera.web';
+import { PermissionStatus } from './Camera.types';
+import type { ExponentCameraRef } from './ExpoCamera.web';
 import * as WebBarcodeScanner from './web/WebBarcodeScanner';
 import {
   canGetUserMedia,

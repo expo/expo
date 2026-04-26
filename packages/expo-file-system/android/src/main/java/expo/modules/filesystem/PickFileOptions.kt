@@ -3,7 +3,9 @@ package expo.modules.filesystem
 import android.net.Uri
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class PickFileOptions(
   @Field
   val initialUri: Uri?,

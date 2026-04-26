@@ -4,6 +4,7 @@ import {
   TextFieldKeyboardType,
   TextFieldImeAction,
   TextFieldCapitalization,
+  TextFieldValue,
   OutlinedTextField,
   Button,
   Host,
@@ -15,15 +16,22 @@ import {
   Column,
   FlowRow,
   Text as ComposeText,
+  useNativeState,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding, weight } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 export default function TextFieldScreen() {
+  const fieldValue = useNativeState('defaultvalue');
   const [textValue, setTextValue] = React.useState('');
   const [focusedState, setFocusedState] = React.useState(false);
   const [lastAction, setLastAction] = React.useState('');
   const textRef = React.useRef<TextFieldRef>(null);
+
+  const maskedPhone = useNativeState<TextFieldValue>({
+    text: '',
+    selection: { start: 0, end: 0 },
+  });
 
   const [outlined, setOutlined] = React.useState(false);
   const [enabled, setEnabled] = React.useState(true);
@@ -48,6 +56,7 @@ export default function TextFieldScreen() {
 
   const sharedProps = {
     ref: textRef,
+    value: fieldValue,
     enabled,
     readOnly,
     isError,
@@ -128,6 +137,44 @@ export default function TextFieldScreen() {
             <ComposeText style={{ typography: 'bodySmall' }}>
               Value: {JSON.stringify(textValue)} | Focused: {String(focusedState)} | Action:{' '}
               {lastAction || 'none'}
+            </ComposeText>
+          </Column>
+        </Card>
+
+        {/* Worklet phone masking */}
+        <Card modifiers={cardModifiers}>
+          <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
+            <ComposeText style={{ typography: 'labelLarge' }}>Worklet Phone Masking</ComposeText>
+            <TextField
+              value={maskedPhone}
+              keyboardOptions={{ keyboardType: 'phone' }}
+              modifiers={[fillMaxWidth()]}
+              onValueChange={(v) => {
+                'worklet';
+                const digits = v.text.replace(/\D/g, '').slice(0, 10);
+                let formatted: string;
+                if (digits.length === 0) {
+                  formatted = '';
+                } else if (digits.length <= 3) {
+                  formatted = digits;
+                } else if (digits.length <= 6) {
+                  formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+                } else {
+                  formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+                }
+                if (formatted !== v.text) {
+                  maskedPhone.value = {
+                    text: formatted,
+                    selection: { start: formatted.length, end: formatted.length },
+                  };
+                }
+              }}>
+              <TextField.Placeholder>
+                <ComposeText>(555) 123-4567</ComposeText>
+              </TextField.Placeholder>
+            </TextField>
+            <ComposeText style={{ typography: 'bodySmall' }}>
+              Formats on the UI thread — no flicker between typed and masked value.
             </ComposeText>
           </Column>
         </Card>

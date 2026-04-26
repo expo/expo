@@ -1,53 +1,26 @@
-import * as Bitcode from './Bitcode';
-import * as BuildProperties from './BuildProperties';
-import * as BuildScheme from './BuildScheme';
-import * as BundleIdentifier from './BundleIdentifier';
-import * as DevelopmentTeam from './DevelopmentTeam';
-import * as DeviceFamily from './DeviceFamily';
-import * as Entitlements from './Entitlements';
-import * as Google from './Google';
-import { ExpoPlist, InfoPlist } from './IosConfig.types';
-import * as Locales from './Locales';
-import * as Maps from './Maps';
-import * as Name from './Name';
-import * as Orientation from './Orientation';
-import * as Paths from './Paths';
-import * as Permissions from './Permissions';
-import * as PrivacyInfo from './PrivacyInfo';
-import * as ProvisioningProfile from './ProvisioningProfile';
-import * as RequiresFullScreen from './RequiresFullScreen';
-import * as Scheme from './Scheme';
-import * as Target from './Target';
-import * as Updates from './Updates';
-import * as UsesNonExemptEncryption from './UsesNonExemptEncryption';
-import * as Version from './Version';
-import * as XcodeProjectFile from './XcodeProjectFile';
-import * as XcodeUtils from './utils/Xcodeproj';
-
-// We can change this to export * as X with TypeScript 3.8+
-// https://devblogs.microsoft.com/typescript/announcing-typescript-3-8-beta/#export-star-as-namespace-syntax
-// .. but we should wait for this to be the default VSCode version.
-export { InfoPlist, ExpoPlist, Entitlements, Paths, Permissions, XcodeUtils };
-
-export {
-  Bitcode,
-  BundleIdentifier,
-  BuildProperties,
-  BuildScheme,
-  DevelopmentTeam,
-  DeviceFamily,
-  Google,
-  Maps,
-  Locales,
-  Name,
-  Orientation,
-  ProvisioningProfile,
-  RequiresFullScreen,
-  Scheme,
-  Target,
-  Updates,
-  UsesNonExemptEncryption,
-  Version,
-  XcodeProjectFile,
-  PrivacyInfo,
-};
+export * as Bitcode from './Bitcode';
+export * as BuildProperties from './BuildProperties';
+export * as BuildScheme from './BuildScheme';
+export * as BundleIdentifier from './BundleIdentifier';
+export * as DeploymentTarget from './DeploymentTarget';
+export * as DevelopmentTeam from './DevelopmentTeam';
+export * as DeviceFamily from './DeviceFamily';
+export * as Entitlements from './Entitlements';
+export * as Google from './Google';
+export * as Locales from './Locales';
+export * as Maps from './Maps';
+export * as Name from './Name';
+export * as Orientation from './Orientation';
+export * as Paths from './Paths';
+export * as Permissions from './Permissions';
+export * as PrivacyInfo from './PrivacyInfo';
+export * as ProvisioningProfile from './ProvisioningProfile';
+export * as RequiresFullScreen from './RequiresFullScreen';
+export * as Scheme from './Scheme';
+export * as Target from './Target';
+export * as Updates from './Updates';
+export * as UsesNonExemptEncryption from './UsesNonExemptEncryption';
+export * as Version from './Version';
+export * as XcodeProjectFile from './XcodeProjectFile';
+export * as XcodeUtils from './utils/Xcodeproj';
+export type { ExpoPlist, InfoPlist } from './IosConfig.types';

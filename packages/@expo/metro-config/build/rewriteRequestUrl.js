@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRouterDirectory = getRouterDirectory;
 exports.getRewriteRequestUrl = getRewriteRequestUrl;
-// Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const chalk_1 = __importDefault(require("chalk"));

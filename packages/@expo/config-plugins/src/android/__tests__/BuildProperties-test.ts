@@ -1,114 +1,66 @@
-import { compileMockModWithResultsAsync } from '../../plugins/__tests__/mockMods';
-import { withGradleProperties } from '../../plugins/android-plugins';
+import type { ExpoConfig } from '@expo/config-types';
+
 import {
   updateAndroidBuildPropertiesFromConfig,
   updateAndroidBuildProperty,
-  withJsEngineGradleProps,
 } from '../BuildProperties';
-import { parsePropertiesFile, PropertiesItem } from '../Properties';
+import type { PropertiesItem } from '../Properties';
 
 jest.mock('../../plugins/android-plugins');
 
-const HERMES_PROP_KEY = 'hermesEnabled';
-
-describe(withJsEngineGradleProps, () => {
-  it('set the property from shared `jsEngine` config', async () => {
-    const { modResults } = await compileMockModWithResultsAsync(
-      { jsEngine: 'hermes' },
-      {
-        plugin: withJsEngineGradleProps,
-        mod: withGradleProperties,
-        modResults: [],
-      }
-    );
-    expect(modResults).toContainEqual({
-      type: 'property',
-      key: HERMES_PROP_KEY,
-      value: 'true',
-    });
-  });
-
-  it('set the property from platform override `jsEngine`', async () => {
-    const { modResults } = await compileMockModWithResultsAsync(
-      { jsEngine: 'hermes', android: { jsEngine: 'jsc' } },
-      {
-        plugin: withJsEngineGradleProps,
-        mod: withGradleProperties,
-        modResults: [],
-      }
-    );
-    expect(modResults).toContainEqual({
-      type: 'property',
-      key: HERMES_PROP_KEY,
-      value: 'false',
-    });
-  });
-
-  it('overwrite the property if an old property is existed', async () => {
-    const originalGradleProperties = parsePropertiesFile(`
-android.useAndroidX=true
-android.enableJetifier=true
-hermesEnabled=false
-`);
-
-    const { modResults } = await compileMockModWithResultsAsync(
-      { android: { jsEngine: 'hermes' } },
-      {
-        plugin: withJsEngineGradleProps,
-        mod: withGradleProperties,
-        modResults: originalGradleProperties,
-      }
-    );
-    expect(modResults).toContainEqual({
-      type: 'property',
-      key: HERMES_PROP_KEY,
-      value: 'true',
-    });
-  });
-});
+const EX_UPDATES_NATIVE_DEBUG_PROP_KEY = 'EX_UPDATES_NATIVE_DEBUG';
 
 describe(updateAndroidBuildPropertiesFromConfig, () => {
-  it('should respect `propValueGetter` order', () => {
-    const gradleProperties = [];
-    const configToPropertyRules = [
-      {
-        propName: HERMES_PROP_KEY,
-        propValueGetter: (config) =>
-          ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
-      },
-    ];
+  const configToPropertyRules = [
+    {
+      propName: EX_UPDATES_NATIVE_DEBUG_PROP_KEY,
+      propValueGetter: (config: Omit<ExpoConfig, 'name' | 'slug'>) =>
+        config?.updates?.useNativeDebug === true ? 'true' : undefined,
+    },
+  ];
+
+  it('should add property when useNativeDebug is true', () => {
+    const gradleProperties: PropertiesItem[] = [];
 
     expect(
       updateAndroidBuildPropertiesFromConfig(
-        { jsEngine: 'hermes', android: { jsEngine: 'jsc' } },
+        { updates: { useNativeDebug: true } },
         gradleProperties,
         configToPropertyRules
       )
     ).toContainEqual({
       type: 'property',
-      key: HERMES_PROP_KEY,
-      value: 'false',
+      key: EX_UPDATES_NATIVE_DEBUG_PROP_KEY,
+      value: 'true',
     });
+  });
+
+  it('should not add property when useNativeDebug is false', () => {
+    const gradleProperties: PropertiesItem[] = [];
 
     expect(
       updateAndroidBuildPropertiesFromConfig(
-        { jsEngine: 'jsc' },
+        { updates: { useNativeDebug: false } },
         gradleProperties,
         configToPropertyRules
       )
-    ).toContainEqual({
-      type: 'property',
-      key: HERMES_PROP_KEY,
-      value: 'false',
-    });
+    ).not.toContainEqual(
+      expect.objectContaining({
+        key: EX_UPDATES_NATIVE_DEBUG_PROP_KEY,
+      })
+    );
+  });
+
+  it('should not add property when updates config is not set', () => {
+    const gradleProperties: PropertiesItem[] = [];
 
     expect(
       updateAndroidBuildPropertiesFromConfig({}, gradleProperties, configToPropertyRules)
-    ).toContainEqual({
-      type: 'property',
-      key: HERMES_PROP_KEY,
-      value: 'true',
-    });
+    ).not.toContainEqual(
+      expect.objectContaining({
+        key: EX_UPDATES_NATIVE_DEBUG_PROP_KEY,
+      })
+    );
   });
 });
 

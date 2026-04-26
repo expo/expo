@@ -1,3 +1,4 @@
+export {};
 /**
  * A class that represents an instance of the SQLite session extension.
  * @see [Session Extension](https://www.sqlite.org/sessionintro.html)

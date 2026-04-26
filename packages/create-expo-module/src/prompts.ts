@@ -3,6 +3,8 @@ import type { Answers, PromptObject } from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
 import { ensureSafeModuleName } from './appleFrameworks';
+import { ALL_FEATURES } from './features';
+import { PACKAGE_MANAGERS, type PackageManagerName } from './packageManager';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 
@@ -123,7 +125,48 @@ export async function getSubstitutionDataPrompts(slug: string): Promise<PromptOb
       initial: async (_, answers: Answers<string>) => await guessRepoUrl(answers.authorUrl, slug),
       validate: (input) => /^https?:\/\//.test(input) || 'Must be a valid URL',
     },
+    {
+      type: 'text',
+      name: 'license',
+      message: 'What license does the module use?',
+      initial: 'MIT',
+      validate: (input) => !!input || 'The license cannot be empty',
+    },
+    {
+      type: 'text',
+      name: 'version',
+      message: 'What is the initial version of the module?',
+      initial: '0.1.0',
+      validate: (input) => !!input || 'The version cannot be empty',
+    },
   ];
+}
+
+export function getFeaturesPrompt(): PromptObject {
+  return {
+    type: 'multiselect',
+    name: 'features',
+    message: 'Which feature examples should this module include?',
+    choices: ALL_FEATURES.map((f) => ({
+      title: f,
+      value: f,
+      selected: false,
+    })),
+    hint: '- Space to select. Enter to confirm (empty = minimal module).',
+  };
+}
+
+export function getPackageManagerPrompt(defaultPackageManager: PackageManagerName): PromptObject {
+  return {
+    type: 'select',
+    name: 'packageManager',
+    message: 'Which package manager would you like to use?',
+    choices: PACKAGE_MANAGERS.map((packageManager) => ({
+      title: packageManager,
+      value: packageManager,
+    })),
+    initial: PACKAGE_MANAGERS.indexOf(defaultPackageManager),
+  };
 }
 
 export async function getLocalSubstitutionDataPrompts(

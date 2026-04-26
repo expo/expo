@@ -9,8 +9,6 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
-import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
@@ -186,6 +184,8 @@ const transform: BabelTransformer['transform'] = ({
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
+  const { enableBabelRCLookup = true } = options;
+
   try {
     const babelConfig: TransformOptions = {
       // ES modules require sourceType='module' but OSS may not always want that
@@ -208,8 +208,8 @@ const transform: BabelTransformer['transform'] = ({
       // Load the project babel config file.
       ...loadBabelConfig(options),
 
-      babelrc:
-        typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+      babelrc: enableBabelRCLookup,
+      ...(enableBabelRCLookup === false && { configFile: false }),
 
       plugins,
 

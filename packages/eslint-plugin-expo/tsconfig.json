@@ -3,9 +3,8 @@
   "include": ["./src"],
   "exclude": ["**/__tests__/*"],
   "compilerOptions": {
-    "outDir": "build",
-    "resolveJsonModule": true,
-    "declaration": false,
-    "composite": false
+    "rootDir": "./src",
+    "outDir": "./build",
+    "declaration": false
   }
 }

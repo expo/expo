@@ -1,6 +1,6 @@
 import { parse } from 'url';
 
-import { ServerRequest } from './server.types';
+import type { ServerRequest } from './server.types';
 import { CommandError } from '../../../utils/errors';
 
 const debug = require('debug')(

@@ -1,4 +1,4 @@
-import { ColorValue, ViewProps } from 'react-native';
+import type { ColorValue, ViewProps } from 'react-native';
 
 export interface VideoAirPlayButtonProps extends Omit<ViewProps, 'children'> {
   /**

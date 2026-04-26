@@ -6,7 +6,8 @@ import prompts from 'prompts';
 
 import * as Android from './Android';
 import * as Ios from './Ios';
-import { CommandError, Options } from './Options';
+import type { Options } from './Options';
+import { CommandError } from './Options';
 
 function fileExists(filePath: string): boolean {
   try {

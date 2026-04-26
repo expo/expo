@@ -113,10 +113,10 @@
 /routing/installation /router/installation 301
 /routing/create-pages /router/create-pages 301
 /routing/navigating-pages /router/navigating-pages 301
-/routing/layouts /router/basics/layout 301
+/routing/layouts /router/basics/navigation-layouts 301
 /routing/appearance /router/introduction 301
 /routing/error-handling /router/error-handling 301
-/router/advance/root-layout /router/basics/layout/#root-layout 301
+/router/advance/root-layout /router/basics/navigation-layouts/#root-layout 301
 /router/advance/stack /router/advanced/stack 301
 /router/advance/tabs /router/advanced/tabs 301
 /router/advance/drawer /router/advanced/drawer 301
@@ -272,10 +272,11 @@
 
 # After Expo Router Getting Started Guide
 /router/reference/authentication /router/advanced/authentication 301
-/router/advanced/root-layout /router/basics/layout/#root-layout 301
+/router/advanced/root-layout /router/basics/navigation-layouts/#root-layout 301
 /router/reference/not-found /router/error-handling 301
 /router/navigating-pages /router/basics/navigation 301
 /router/create-pages /router/basics/core-concepts 301
+/router/basics/layout /router/basics/navigation-layouts 301
 
 # After updating config plugin section
 /config-plugins/plugins-and-mods /config-plugins/plugins 301

@@ -56,7 +56,7 @@ export type PlainTooltipProps = {
  * A simple tooltip. Place inside `TooltipBox` as `TooltipBox.PlainTooltip`.
  * Children become the tooltip content.
  */
-declare function PlainTooltipComponent(props: PlainTooltipProps): import("react").JSX.Element;
+declare function PlainTooltipComponent(props: PlainTooltipProps): import("react/jsx-runtime").JSX.Element;
 export type RichTooltipProps = {
     containerColor?: ColorValue;
     contentColor?: ColorValue;
@@ -67,18 +67,18 @@ export type RichTooltipProps = {
 };
 declare function RichTooltipTitle(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 declare function RichTooltipText(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 declare function RichTooltipAction(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * A detailed tooltip with optional title, body text, and action. Place inside `TooltipBox` as `TooltipBox.RichTooltip`.
  * Content is provided via sub-components: `TooltipBox.RichTooltip.Title`, `TooltipBox.RichTooltip.Text`, `TooltipBox.RichTooltip.Action`.
  */
-declare function RichTooltipComponent(props: RichTooltipProps): import("react").JSX.Element;
+declare function RichTooltipComponent(props: RichTooltipProps): import("react/jsx-runtime").JSX.Element;
 declare namespace RichTooltipComponent {
     var Title: typeof RichTooltipTitle;
     var Text: typeof RichTooltipText;
@@ -91,7 +91,7 @@ declare namespace RichTooltipComponent {
  *
  * Use `ref` to imperatively `show()` or `dismiss()` the tooltip.
  */
-declare function TooltipBoxComponent(props: TooltipBoxProps): import("react").JSX.Element;
+declare function TooltipBoxComponent(props: TooltipBoxProps): import("react/jsx-runtime").JSX.Element;
 declare namespace TooltipBoxComponent {
     var PlainTooltip: typeof PlainTooltipComponent;
     var RichTooltip: typeof RichTooltipComponent;

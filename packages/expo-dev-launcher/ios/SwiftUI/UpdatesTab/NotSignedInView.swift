@@ -13,12 +13,12 @@ struct NotSignedInView: View {
         .foregroundColor(.blue)
 
       VStack(spacing: 8) {
-        Text("Sign in to view updates")
+        Text("Log in to view updates")
           .font(.title3)
           .fontWeight(.semibold)
           .multilineTextAlignment(.center)
 
-        Text("Sign in to your Expo account to see available EAS Updates for this project.")
+        Text("Log in to your Expo account to see available EAS updates for this project.")
           .font(.system(size: 14))
           .multilineTextAlignment(.center)
           .foregroundStyle(.secondary)
@@ -27,7 +27,7 @@ struct NotSignedInView: View {
       Button {
         navigation.showUserProfile()
       } label: {
-        Text("Sign in")
+        Text("Log in")
           .padding(.horizontal, 16)
           .padding(.vertical, 8)
           .background(Color.black)
@@ -38,8 +38,4 @@ struct NotSignedInView: View {
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
-}
-
-#Preview {
-  NotSignedInView()
 }

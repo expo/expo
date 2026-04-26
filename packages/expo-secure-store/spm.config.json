@@ -5,7 +5,7 @@
       "name": "ExpoSecureStore",
       "podName": "ExpoSecureStore",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

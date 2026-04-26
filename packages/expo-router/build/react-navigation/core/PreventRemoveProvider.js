@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PreventRemoveProvider = PreventRemoveProvider;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const non_secure_1 = require("nanoid/non-secure");
 const React = __importStar(require("react"));
 const react_1 = require("react");
@@ -112,6 +113,6 @@ function PreventRemoveProvider({ children }) {
         setPreventRemove,
         preventedRoutes: transformPreventedRoutes(preventedRoutesMap),
     }), [setPreventRemove, preventedRoutesMap]);
-    return <PreventRemoveContext_1.PreventRemoveContext.Provider value={value}>{children}</PreventRemoveContext_1.PreventRemoveContext.Provider>;
+    return (0, jsx_runtime_1.jsx)(PreventRemoveContext_1.PreventRemoveContext.Provider, { value: value, children: children });
 }
 //# sourceMappingURL=PreventRemoveProvider.js.map

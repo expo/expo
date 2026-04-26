@@ -1,4 +1,4 @@
-import { ExpoUpdatesModule } from './ExpoUpdatesModule.types';
+import type { ExpoUpdatesModule } from './ExpoUpdatesModule.types';
 /**
  * @internal
  */

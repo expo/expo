@@ -1,4 +1,4 @@
-import { WebSetBadgeCountOptions } from './BadgeModule.types';
+import type { WebSetBadgeCountOptions } from './BadgeModule.types';
 export interface SetBadgeCountOptions {
     /**
      * A configuration object described [in the `badgin` documentation](https://github.com/jaulz/badgin#options).

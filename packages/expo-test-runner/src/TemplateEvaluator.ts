@@ -1,4 +1,5 @@
-import { Definitions, template } from 'dot';
+import type { Definitions } from 'dot';
+import { template } from 'dot';
 import fs from 'fs';
 
 export default class TemplateEvaluator {

@@ -1,6 +1,7 @@
 import { CodedError, Platform, type EventSubscription } from 'expo-modules-core';
 
-import { KeepAwakeEventState, KeepAwakeListener } from './KeepAwake.types';
+import type { KeepAwakeListener } from './KeepAwake.types';
+import { KeepAwakeEventState } from './KeepAwake.types';
 
 const wakeLockMap: Record<string, WakeLockSentinel> = {};
 

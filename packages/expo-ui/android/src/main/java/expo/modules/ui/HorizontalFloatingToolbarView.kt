@@ -8,15 +8,16 @@ import androidx.compose.material3.FloatingToolbarScrollBehavior
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class HorizontalFloatingToolbarVariant(val value: String) : Enumerable {
   STANDARD("standard"),
   VIBRANT("vibrant")
 }
 
+@OptimizedComposeProps
 data class HorizontalFloatingToolbarProps(
   val variant: HorizontalFloatingToolbarVariant? =
     HorizontalFloatingToolbarVariant.STANDARD,
@@ -41,11 +42,11 @@ fun FunctionalComposableScope.HorizontalFloatingToolbarContent(props: Horizontal
       HorizontalFloatingToolbarVariant.VIBRANT -> FloatingToolbarDefaults.VibrantFloatingActionButton(
         onClick = fabOnClick
       ) {
-        Children(ComposableScope(), filter = { isSlotWithName(it, "floatingActionButton") })
+        Children(UIComposableScope(), filter = { isSlotWithName(it, "floatingActionButton") })
       }
 
       else -> FloatingToolbarDefaults.StandardFloatingActionButton(onClick = fabOnClick) {
-        Children(ComposableScope(), filter = { isSlotWithName(it, "floatingActionButton") })
+        Children(UIComposableScope(), filter = { isSlotWithName(it, "floatingActionButton") })
       }
     }
   }
@@ -61,7 +62,7 @@ fun FunctionalComposableScope.HorizontalFloatingToolbarContent(props: Horizontal
       scrollBehavior = scrollBehavior,
       modifier = modifier,
     ) {
-      Children(ComposableScope(), filter = { !isSlotView(it) })
+      Children(UIComposableScope(), filter = { !isSlotView(it) })
     }
   } else {
     HorizontalFloatingToolbar(
@@ -70,7 +71,7 @@ fun FunctionalComposableScope.HorizontalFloatingToolbarContent(props: Horizontal
       scrollBehavior = scrollBehavior,
       modifier = modifier,
     ) {
-      Children(ComposableScope(), filter = { !isSlotView(it) })
+      Children(UIComposableScope(), filter = { !isSlotView(it) })
     }
   }
 }

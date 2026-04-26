@@ -25,13 +25,13 @@ export const Table = ({
     )}>
     <table
       className={mergeClasses(
-        'text-default w-full rounded-none border-0 text-xs',
-        '[&_p]:text-xs',
-        '[&_li]:text-xs',
-        '[&_span]:text-xs',
+        'text-default w-full rounded-none border-0 text-sm',
+        '[&_p]:text-sm',
+        '[&_li]:text-sm',
+        '[&_span]:text-sm',
         '[&_code_span]:text-inherit',
-        '[&_strong]:text-xs',
-        '[&_blockquote_div]:text-xs',
+        '[&_strong]:text-sm',
+        '[&_blockquote_div]:text-sm',
         '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',
         className
       )}>

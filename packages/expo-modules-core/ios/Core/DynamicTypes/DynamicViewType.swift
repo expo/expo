@@ -1,5 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicViewType: AnyDynamicType {
   let innerType: UIView.Type
 

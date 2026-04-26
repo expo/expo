@@ -1,7 +1,7 @@
 import { useReleasingSharedObject } from 'expo-modules-core';
 
 import NativeVideoModule from './NativeVideoModule';
-import { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
+import type { VideoSource, VideoPlayer, PlayerBuilderOptions } from './VideoPlayer.types';
 import resolveAssetSource from './resolveAssetSource';
 
 // TODO: Temporary solution until we develop a way of overriding prototypes that won't break the lazy loading of the module.

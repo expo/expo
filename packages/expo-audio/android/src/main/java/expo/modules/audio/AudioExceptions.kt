@@ -57,3 +57,9 @@ internal class AudioRecordingServiceException(message: String?, cause: Throwable
 
 internal class AudioPlaybackServiceException(message: String?, cause: Throwable? = null) :
   CodedException(getPlaybackServiceErrorMessage(message), cause)
+
+internal class AudioStreamUnsupportedConfigException(message: String) :
+  CodedException(message)
+
+internal class AudioStreamInitializationException(message: String) :
+  CodedException(message)

@@ -1,5 +1,5 @@
-import { ModPlatform, StaticPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ModPlatform, StaticPlugin } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 /**
  * Returns a list of packages that are autolinked to a project.
  *

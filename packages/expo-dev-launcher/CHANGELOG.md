@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [plugin] add `defaultLaunchURL` option to have a default fallback launch URL to launch into. ([#44419](https://github.com/expo/expo/pull/44419) by [@HubertBer](https://github.com/HubertBer))
+- Add a "Copy" button to the error screen that copies the error info to the clipboard. ([#44723](https://github.com/expo/expo/pull/44723) by [@vonovak](https://github.com/vonovak))
 - [Android] Implement edge-to-edge. ([#44529](https://github.com/expo/expo/pull/44529) by [@zoontek](https://github.com/zoontek))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [Android] Add NDS service discovery.
@@ -16,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix JSI crash (`EXC_BAD_ACCESS` in `jsi::Pointer::~Pointer`) when an embedded `main.jsbundle` and dev-launcher race on startup. ([#44799](https://github.com/expo/expo/pull/44799) by [@fabriziocucci](https://github.com/fabriziocucci))
 - [iOS] Fixed deep links not reaching the app because `EXDevLauncherController.isAppRunning` always returned `false`. ([#44609](https://github.com/expo/expo/pull/44609) by [@vonovak](https://github.com/vonovak))
 - [Android] Fix `DevLauncherErrorActivity` dark theme. ([#44529](https://github.com/expo/expo/pull/44529) by [@zoontek](https://github.com/zoontek))
 - [iOS] Fix issue when using `fullScreenModal` with `expo-router`. ([#43520](https://github.com/expo/expo/pull/43520) by [@alanjhughes](https://github.com/alanjhughes))
@@ -23,9 +26,14 @@
 - [iOS] Fix orientation change regression. ([#43847](https://github.com/expo/expo/pull/43847) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix hard-coded usage of http with exps URLs ([#43982](https://github.com/expo/expo/pull/43982) by [@muvaf](https://github.com/muvaf))
 - [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
+- [macOS] Fix LocalNetworkPermissionView max height ([#44745](https://github.com/expo/expo/pull/44745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Use `OkHttpClientProvider` instead of bare `OkHttpClient` so custom interceptors are applied. ([#44798](https://github.com/expo/expo/pull/44798) by [@fabriziocucci](https://github.com/fabriziocucci))
+- [iOS] Fix safe area insets not being applied on settings screen. ([#45074](https://github.com/expo/expo/pull/45074) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
+- Improved URL input in the launcher home screen. ([#44886](https://github.com/expo/expo/pull/44886) by [@vonovak](https://github.com/vonovak))
+- Align dev launcher labels across iOS and Android. ([#44720](https://github.com/expo/expo/pull/44720) by [@vonovak](https://github.com/vonovak))
 - Removed `DevLauncherExpoActivityConfigurator`. System bars configuration is now handled by the `expo-status-bar` and `expo-navigation-bar` modules. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
 - Enforce transparent status bar and navigation bar on Android, remove unused `backgroundColor` / `translucent` options handling. ([#43518](https://github.com/expo/expo/pull/43518) by [@zoontek](https://github.com/zoontek))
 - [Android] Bump Apollo Kotlin from 4.3.1 to 4.4.2. ([#44386](https://github.com/expo/expo/pull/44386) by [@radko93](https://github.com/radko93))

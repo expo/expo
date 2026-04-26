@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import RegexBuilder
+
 extension UIColor: Convertible {
   public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     return try convert(from: value)
@@ -9,15 +11,15 @@ extension UIColor: Convertible {
     // swiftlint:disable force_cast
     if let value = value as? String {
       if let namedColorComponents = namedColors[value] {
-        return uiColorWithComponents(namedColorComponents.map { $0 / 255 }) as! Self
+        return try uiColorWithComponents(namedColorComponents) as! Self
       }
-      return try Conversions.toColor(colorString: value) as! Self
+      return try colorFromString(value) as! Self
     }
     if let components = value as? [Double] {
-      return uiColorWithComponents(components) as! Self
+      return try uiColorWithComponents(components) as! Self
     }
     if let value = value as? Int {
-      return try Conversions.toColor(argb: UInt64(value)) as! Self
+      return try colorFromArgb(UInt64(value)) as! Self
     }
 
     // Handle `PlatformColor` and `DynamicColorIOS`
@@ -96,14 +98,18 @@ extension UIColor {
     var b: CGFloat = 0
     var a: CGFloat = 0
 
-#if os(macOS)
+    #if os(macOS)
     getRed(&r, green: &g, blue: &b, alpha: &a)
-    return String(format: "#%02x%02x%02x%02x", Int(r * 255), Int(g * 255), Int(b * 255), Int(a * 255) )
-#else
+    return String(
+      format: "#%02x%02x%02x%02x", Int((r * 255).rounded()), Int((g * 255).rounded()),
+      Int((b * 255).rounded()), Int((a * 255).rounded()))
+    #else
     if getRed(&r, green: &g, blue: &b, alpha: &a) {
-      return String(format: "#%02x%02x%02x%02x", Int(r * 255), Int(g * 255), Int(b * 255), Int(a * 255) )
+      return String(
+        format: "#%02x%02x%02x%02x", Int((r * 255).rounded()), Int((g * 255).rounded()),
+        Int((b * 255).rounded()), Int((a * 255).rounded()))
     }
-#endif
+    #endif
     return "#00000000"
   }
 }
@@ -127,6 +133,8 @@ extension CGColor: Convertible {
   }
 }
 
+// MARK: - Platform Color Helpers
+
 private func resolveNamedColor(name: String) -> UIColor? {
   return UIColor(named: name) ?? uiColorFromSemanticName(name: name)
 }
@@ -145,9 +153,269 @@ private func uiColorFromSemanticName(name: String) -> UIColor? {
   return UIColor.perform(selector).takeUnretainedValue() as? UIColor
 }
 
-private func uiColorWithComponents(_ components: [Double]) -> UIColor {
+private func uiColorWithComponents(_ components: [Double]) throws -> UIColor {
+  guard components.count >= 3 else {
+    throw InvalidColorComponentsException(components.count)
+  }
   let alpha = components.count > 3 ? components[3] : 1.0
   return UIColor(red: components[0], green: components[1], blue: components[2], alpha: alpha)
+}
+
+// MARK: - Color String Parsing
+
+/**
+ Parses a color string (hex, rgb, hsl, hwb) into a UIColor.
+ */
+private func colorFromString(_ value: String) throws -> UIColor {
+  let input = value.trimmingCharacters(in: .whitespacesAndNewlines)
+  let lowercased = input.lowercased()
+
+  if lowercased.hasPrefix("rgb") {
+    return try colorFromRGBString(lowercased)
+  }
+  if lowercased.hasPrefix("hsl") {
+    return try colorFromHSLString(lowercased)
+  }
+  if lowercased.hasPrefix("hwb") {
+    return try colorFromHWBString(lowercased)
+  }
+
+  var hexStr = input.replacingOccurrences(of: "#", with: "")
+
+  if hexStr.count == 6 { hexStr += "FF" }
+  if hexStr.count == 3 { hexStr += "F" }
+
+  // Expand short form (supported by Web)
+  if hexStr.count == 4 {
+    let chars = Array(hexStr)
+    hexStr = [
+      String(repeating: chars[0], count: 2),
+      String(repeating: chars[1], count: 2),
+      String(repeating: chars[2], count: 2),
+      String(repeating: chars[3], count: 2),
+    ].joined(separator: "")
+  }
+
+  var rgba: UInt64 = 0
+
+  guard hexStr.range(of: #"^[0-9a-fA-F]{8}$"#, options: .regularExpression) != nil,
+    Scanner(string: hexStr).scanHexInt64(&rgba)
+  else {
+    throw InvalidHexColorException(input)
+  }
+  return try colorFromRgba(rgba)
+}
+
+private func colorFromArgb(_ argb: UInt64) throws -> UIColor {
+  guard argb <= UInt32.max else {
+    throw HexColorOverflowException(argb)
+  }
+  let alpha = CGFloat((argb >> 24) & 0xff) / 255.0
+  let red = CGFloat((argb >> 16) & 0xff) / 255.0
+  let green = CGFloat((argb >> 8) & 0xff) / 255.0
+  let blue = CGFloat(argb & 0xff) / 255.0
+  return UIColor(red: red, green: green, blue: blue, alpha: alpha)
+}
+
+private func colorFromRgba(_ rgba: UInt64) throws -> UIColor {
+  guard rgba <= UInt32.max else {
+    throw HexColorOverflowException(rgba)
+  }
+  let red = CGFloat((rgba >> 24) & 0xff) / 255.0
+  let green = CGFloat((rgba >> 16) & 0xff) / 255.0
+  let blue = CGFloat((rgba >> 8) & 0xff) / 255.0
+  let alpha = CGFloat(rgba & 0xff) / 255.0
+  return UIColor(red: red, green: green, blue: blue, alpha: alpha)
+}
+
+// MARK: - CSS Color Function Regex Patterns
+
+nonisolated(unsafe) private let cssNumber = /[-+]?\d*\.?\d+/
+nonisolated(unsafe) private let cssNumberOrPercent = /[-+]?\d*\.?\d+%?/
+
+nonisolated(unsafe) private let rgbCommaRegex = Regex {
+  /rgba?\(\s*/
+  Capture { cssNumberOrPercent }
+  /\s*,\s*/
+  Capture { cssNumberOrPercent }
+  /\s*,\s*/
+  Capture { cssNumberOrPercent }
+  Optionally {
+    /\s*,\s*/
+    Capture { cssNumberOrPercent }
+  }
+  /\s*\)/
+}.ignoresCase()
+
+nonisolated(unsafe) private let rgbSpaceRegex = Regex {
+  /rgba?\(\s*/
+  Capture { cssNumberOrPercent }
+  /\s+/
+  Capture { cssNumberOrPercent }
+  /\s+/
+  Capture { cssNumberOrPercent }
+  Optionally {
+    /\s*\/\s*/
+    Capture { cssNumberOrPercent }
+  }
+  /\s*\)/
+}.ignoresCase()
+
+nonisolated(unsafe) private let hslCommaRegex = Regex {
+  /hsla?\(\s*/
+  Capture { cssNumber }
+  /\s*,\s*/
+  Capture { cssNumber }
+  /%\s*,\s*/
+  Capture { cssNumber }
+  /%\s*/
+  Optionally {
+    /,\s*/
+    Capture { cssNumberOrPercent }
+  }
+  /\s*\)/
+}.ignoresCase()
+
+nonisolated(unsafe) private let hslSpaceRegex = Regex {
+  /hsla?\(\s*/
+  Capture { cssNumber }
+  /\s+/
+  Capture { cssNumber }
+  /%\s+/
+  Capture { cssNumber }
+  /%\s*/
+  Optionally {
+    /\/\s*/
+    Capture { cssNumberOrPercent }
+  }
+  /\s*\)/
+}.ignoresCase()
+
+nonisolated(unsafe) private let hwbRegex = Regex {
+  /hwb\(\s*/
+  Capture { cssNumber }
+  /\s+/
+  Capture { cssNumber }
+  /%\s+/
+  Capture { cssNumber }
+  /%\s*/
+  Optionally {
+    /\/\s*/
+    Capture { cssNumberOrPercent }
+  }
+  /\s*\)/
+}.ignoresCase()
+
+// MARK: - CSS Color Function Parsers
+
+private func parseRgbComponent(_ value: Substring) -> CGFloat {
+  if value.hasSuffix("%") {
+    let num = Double(value.dropLast()) ?? 0
+    return CGFloat(min(max(num / 100.0, 0), 1))
+  }
+  let num = Double(value) ?? 0
+  return CGFloat(min(max(num / 255.0, 0), 1))
+}
+
+private func parseCssAlpha(_ value: Substring?) -> CGFloat {
+  guard let value else {
+    return 1.0
+  }
+  if value.hasSuffix("%") {
+    let num = Double(value.dropLast()) ?? 0
+    return CGFloat(min(max(num / 100.0, 0), 1))
+  }
+  let num = Double(value) ?? 0
+  return CGFloat(min(max(num, 0), 1))
+}
+
+private func hueToRgb(_ p: CGFloat, _ q: CGFloat, _ t: CGFloat) -> CGFloat {
+  var t = t
+  if t < 0 { t += 1 }
+  if t > 1 { t -= 1 }
+  if t < 1.0 / 6.0 { return p + (q - p) * 6.0 * t }
+  if t < 1.0 / 2.0 { return q }
+  if t < 2.0 / 3.0 { return p + (q - p) * (2.0 / 3.0 - t) * 6.0 }
+  return p
+}
+
+private func hslToUIColor(h: CGFloat, s: CGFloat, l: CGFloat, a: CGFloat) -> UIColor {
+  let hue =
+    ((h.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)) / 360.0
+  let r: CGFloat
+  let g: CGFloat
+  let b: CGFloat
+  if s == 0 {
+    r = l
+    g = l
+    b = l
+  } else {
+    let q = l < 0.5 ? l * (1 + s) : l + s - l * s
+    let p = 2 * l - q
+    r = hueToRgb(p, q, hue + 1.0 / 3.0)
+    g = hueToRgb(p, q, hue)
+    b = hueToRgb(p, q, hue - 1.0 / 3.0)
+  }
+  return UIColor(
+    red: min(max(r, 0), 1),
+    green: min(max(g, 0), 1),
+    blue: min(max(b, 0), 1),
+    alpha: a
+  )
+}
+
+private func hwbToUIColor(h: CGFloat, w: CGFloat, b: CGFloat, a: CGFloat) -> UIColor {
+  let ww = min(max(w, 0), 1 as CGFloat)
+  let bb = min(max(b, 0), 1 as CGFloat)
+  let sum = ww + bb
+  let white = sum > 1 ? ww / sum : ww
+  let black = sum > 1 ? bb / sum : bb
+  let hue =
+    ((h.truncatingRemainder(dividingBy: 360) + 360).truncatingRemainder(dividingBy: 360)) / 360.0
+  let r = hueToRgb(0, 1, hue + 1.0 / 3.0) * (1 - white - black) + white
+  let g = hueToRgb(0, 1, hue) * (1 - white - black) + white
+  let bl = hueToRgb(0, 1, hue - 1.0 / 3.0) * (1 - white - black) + white
+  return UIColor(
+    red: min(max(r, 0), 1),
+    green: min(max(g, 0), 1),
+    blue: min(max(bl, 0), 1),
+    alpha: a
+  )
+}
+
+private func colorFromRGBString(_ rgbString: String) throws -> UIColor {
+  if let match = rgbString.wholeMatch(of: rgbCommaRegex) ?? rgbString.wholeMatch(of: rgbSpaceRegex)
+  {
+    let r = parseRgbComponent(match.1)
+    let g = parseRgbComponent(match.2)
+    let b = parseRgbComponent(match.3)
+    let a = parseCssAlpha(match.4)
+    return UIColor(red: r, green: g, blue: b, alpha: a)
+  }
+  throw InvalidRGBColorException(rgbString)
+}
+
+private func colorFromHSLString(_ hslString: String) throws -> UIColor {
+  if let match = hslString.wholeMatch(of: hslCommaRegex) ?? hslString.wholeMatch(of: hslSpaceRegex)
+  {
+    let h = CGFloat(Double(match.1) ?? 0)
+    let s = CGFloat(min(max((Double(match.2) ?? 0) / 100.0, 0), 1))
+    let l = CGFloat(min(max((Double(match.3) ?? 0) / 100.0, 0), 1))
+    let a = parseCssAlpha(match.4)
+    return hslToUIColor(h: h, s: s, l: l, a: a)
+  }
+  throw InvalidHSLColorException(hslString)
+}
+
+private func colorFromHWBString(_ hwbString: String) throws -> UIColor {
+  if let match = hwbString.wholeMatch(of: hwbRegex) {
+    let h = CGFloat(Double(match.1) ?? 0)
+    let w = CGFloat((Double(match.2) ?? 0) / 100.0)
+    let b = CGFloat((Double(match.3) ?? 0) / 100.0)
+    let a = parseCssAlpha(match.4)
+    return hwbToUIColor(h: h, w: w, b: b, a: a)
+  }
+  throw InvalidHWBColorException(hwbString)
 }
 
 /**
@@ -303,5 +571,43 @@ private let namedColors: [String: [Double]] = [
   "white": [255, 255, 255, 255],
   "whitesmoke": [245, 245, 245, 255],
   "yellow": [255, 255, 0, 255],
-  "yellowgreen": [154, 205, 50, 255]
-]
+  "yellowgreen": [154, 205, 50, 255],
+].mapValues { $0.map { $0 / 255.0 } }
+
+// MARK: - Color Conversion Exceptions
+
+internal class InvalidHexColorException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Provided hex color '\(param)' is invalid"
+  }
+}
+
+internal class InvalidRGBColorException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Provided rgb color string '\(param)' is invalid"
+  }
+}
+
+internal class InvalidHSLColorException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Provided hsl color string '\(param)' is invalid"
+  }
+}
+
+internal class InvalidHWBColorException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Provided hwb color string '\(param)' is invalid"
+  }
+}
+
+internal class HexColorOverflowException: GenericException<UInt64>, @unchecked Sendable {
+  override var reason: String {
+    "Provided hex color '\(param)' would result in an overflow"
+  }
+}
+
+internal class InvalidColorComponentsException: GenericException<Int>, @unchecked Sendable {
+  override var reason: String {
+    "Color components array must contain at least 3 values (red, green, blue), but got \(param)"
+  }
+}

@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { DevicePushToken } from './Tokens.types';
+import type { DevicePushToken } from './Tokens.types';
 /**
  * A function accepting a device push token ([`DevicePushToken`](#devicepushtoken)) as an argument.
  * > **Note:** You should not call `getDevicePushTokenAsync` inside this function, as it triggers the listener and may lead to an infinite loop.

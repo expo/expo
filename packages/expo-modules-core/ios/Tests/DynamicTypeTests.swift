@@ -6,6 +6,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("DynamicType")
+@JavaScriptActor
 struct DynamicTypeTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -113,6 +114,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicNumberType
 
   @Suite("DynamicNumberType")
+  @JavaScriptActor
   struct DynamicNumberTypeTests {
     let appContext: AppContext
 
@@ -161,6 +163,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicStringType
 
   @Suite("DynamicStringType")
+  @JavaScriptActor
   struct DynamicStringTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -185,13 +188,14 @@ struct DynamicTypeTests {
 
     @Test
     func `casts from JS value`() throws {
-      #expect(try (~String.self).cast(jsValue: .string("bar", runtime: runtime), appContext: appContext) as? String == "bar")
+      #expect(try (~String.self).cast(jsValue: JavaScriptValue(runtime, "bar"), appContext: appContext) as? String == "bar")
     }
   }
 
   // MARK: - DynamicArrayType
 
   @Suite("DynamicArrayType")
+  @JavaScriptActor
   struct DynamicArrayTypeTests {
     let appContext: AppContext
 
@@ -254,15 +258,15 @@ struct DynamicTypeTests {
     
     @Test
     func `returns mixed elements to JS`() throws {
-      let mixedArray: [Any] = [1, ArrayBuffer.allocate(size: 3)]
+      let mixedArray: [Any] = [1, NativeArrayBuffer.allocate(size: 3)]
 
       let converted = try (~[Any].self).convertResult(mixedArray, appContext: appContext)
       let jsValue = try (~[Any].self).castToJS(converted, appContext: appContext)
       
       #expect(jsValue.kind == .object)
       let jsArray = try jsValue.asArray()
-      #expect(try jsArray.first??.getInt() == 1)
-      #expect(try jsArray.last??.isArrayBuffer() == true)
+      #expect(try jsArray[0].getInt() == 1)
+      #expect(try jsArray[jsArray.length - 1].isArrayBuffer() == true)
     }
 
     @Test
@@ -296,6 +300,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicDictionaryType
 
   @Suite("DynamicDictionaryType")
+  @JavaScriptActor
   struct DynamicDictionaryTypeTests {
     let appContext: AppContext
 
@@ -336,7 +341,7 @@ struct DynamicTypeTests {
 
     @Test
     func `returns mixed elements to JS`() throws {
-      let mixedDict: [String: Any] = ["num": 1, "buf": ArrayBuffer.allocate(size: 3)]
+      let mixedDict: [String: Any] = ["num": 1, "buf": NativeArrayBuffer.allocate(size: 3)]
 
       let converted = try (~[String: Any].self).convertResult(mixedDict, appContext: appContext)
       let jsValue = try (~[String: Any].self).castToJS(converted, appContext: appContext)
@@ -598,6 +603,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicSharedObjectType
 
   @Suite("DynamicSharedObjectType")
+  @JavaScriptActor
   struct DynamicSharedObjectTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -691,6 +697,7 @@ struct DynamicTypeTests {
   // MARK: - DynamicEncodableType
 
   @Suite("DynamicEncodableType")
+  @JavaScriptActor
   struct DynamicEncodableTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -778,7 +785,7 @@ struct DynamicTypeTests {
       let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
       let array = result.getObject().getProperty("array").getArray()
 
-      #expect(array.count == encodable.array?.count)
+      #expect(array.length == encodable.array?.count)
       #expect(array.map({ $0.getInt() }) == encodable.array)
     }
   }

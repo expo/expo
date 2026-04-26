@@ -1,0 +1,3 @@
+        <Group name="Views">
+          <<%- project.viewName %><% if (project.features.includes('ViewEvent')) { %> onTap={() => console.log('Tapped!')}<% } %> style={styles.view} />
+        </Group>

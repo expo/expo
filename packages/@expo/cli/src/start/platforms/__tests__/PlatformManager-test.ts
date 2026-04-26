@@ -1,5 +1,5 @@
 import * as Log from '../../../log';
-import { DeviceManager } from '../DeviceManager';
+import type { DeviceManager } from '../DeviceManager';
 import { PlatformManager } from '../PlatformManager';
 
 // NOTE(Bacon): An extremely self contained system for testing the majority of the complex 'open in device' logic.

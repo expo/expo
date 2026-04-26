@@ -1,6 +1,8 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 
-import { LocaleMap, getResolvedLocalesAsync } from './getResolvedLocales';
+import type { LocaleMap } from './getResolvedLocales';
+import { getResolvedLocalesAsync } from './getResolvedLocales';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 

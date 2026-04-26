@@ -32,5 +32,5 @@ export type LinkProps = {
  * />
  * ```
  */
-export declare function Link(props: LinkProps): import("react").JSX.Element;
+export declare function Link(props: LinkProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

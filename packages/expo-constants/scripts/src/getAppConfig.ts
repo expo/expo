@@ -1,9 +1,10 @@
-import { getConfig } from '@expo/config';
+import { getConfig } from 'expo/config';
 import fs from 'fs';
 import path from 'path';
 
-const possibleProjectRoot = process.argv[2];
-const destinationDir = process.argv[3];
+const cwd = process.cwd();
+const possibleProjectRoot = process.argv[2] ?? cwd;
+const destinationDir = process.argv[3] ?? cwd;
 
 // TODO: Verify we can remove projectRoot validation, now that we no longer
 // support React Native <= 62

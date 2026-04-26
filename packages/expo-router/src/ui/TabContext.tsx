@@ -1,8 +1,8 @@
 import { createContext } from 'react';
 
-import { TriggerMap } from './common';
-import { BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
-import {
+import type { TriggerMap } from './common';
+import type { BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
+import type {
   DefaultNavigatorOptions,
   NavigationAction,
   NavigationProp,

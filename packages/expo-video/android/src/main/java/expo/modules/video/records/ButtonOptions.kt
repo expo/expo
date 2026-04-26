@@ -2,7 +2,9 @@ package expo.modules.video.records
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class ButtonOptions(
   @Field val showNext: Boolean = false,
   @Field val showPrevious: Boolean = false,

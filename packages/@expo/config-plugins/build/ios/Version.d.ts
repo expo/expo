@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { InfoPlist } from './IosConfig.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { InfoPlist } from './IosConfig.types';
 export declare const withVersion: import("..").ConfigPlugin;
 export declare const withBuildNumber: import("..").ConfigPlugin;
 export declare function getVersion(config: Pick<ExpoConfig, 'version' | 'ios'>): string;

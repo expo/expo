@@ -5,7 +5,7 @@
       "name": "EXApplication",
       "podName": "EXApplication",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

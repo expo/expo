@@ -27,11 +27,35 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community DateTimePicker replacement',
     route: 'ui/community-datetimepicker',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunityDateTimePickerScreen'));
+    },
+  },
+  {
+    name: 'Community SegmentedControl replacement',
+    route: 'ui/community-segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'TabView component',
+    route: 'ui/tabview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TabViewScreen'));
     },
   },
   {
@@ -211,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyVStack / LazyHStack',
+    route: 'ui/lazy-stack',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyStackScreen'));
+    },
+  },
+  {
     name: 'ScrollView component',
     route: 'ui/scrollview',
     options: {},
@@ -248,6 +280,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./LinkScreen'));
+    },
+  },
+  {
+    name: 'Overlay component',
+    route: 'ui/overlay',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./OverlayScreen'));
     },
   },
   {

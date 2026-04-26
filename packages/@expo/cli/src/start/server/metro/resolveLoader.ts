@@ -1,5 +1,5 @@
 import type { RouteNode } from 'expo-router/build/Route';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 /**
  * Unified route information needed for loader execution

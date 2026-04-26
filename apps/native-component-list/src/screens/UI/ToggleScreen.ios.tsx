@@ -76,7 +76,14 @@ function SharedStateToggle() {
 
   return (
     <>
-      <SyncToggle isOn={isOn} label="Shared State Toggle" />
+      <SyncToggle
+        isOn={isOn}
+        label="Shared State Toggle"
+        onIsOnChangeSync={(value) => {
+          'worklet';
+          console.log('[UI thread] isOn:', value);
+        }}
+      />
       <Button label="Toggle from JS" onPress={() => (isOn.value = !isOn.value)} />
       <Button label="Toggle from Worklet" onPress={toggleFromWorklet} />
     </>

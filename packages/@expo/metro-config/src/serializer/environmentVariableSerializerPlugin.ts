@@ -13,7 +13,7 @@ import type {
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 
-import { SerializerParameters } from './withExpoSerializers';
+import type { SerializerParameters } from './withExpoSerializers';
 
 const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof console.log;
 

@@ -1,4 +1,4 @@
-import { DynamicConvention, RouteNode } from './Route';
+import type { DynamicConvention, RouteNode } from './Route';
 import { matchGroupName } from './matchers';
 
 function sortDynamicConvention(a: DynamicConvention, b: DynamicConvention) {

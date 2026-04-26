@@ -1,18 +1,18 @@
 import { NativeModule, registerWebModule } from 'expo-modules-core';
 
-import {
+import type {
   UpdatesCheckAutomaticallyNativeValue,
   UpdatesEvents,
   UpdatesModuleInterface,
 } from './ExpoUpdatesModule.types';
-import {
+import type {
   Manifest,
   UpdatesNativeStateMachineContext,
   UpdateCheckResultNotAvailable,
   UpdatesLogEntry,
   UpdateFetchResultFailure,
-  UpdateCheckResultNotAvailableReason,
 } from './Updates.types';
+import { UpdateCheckResultNotAvailableReason } from './Updates.types';
 
 class ExpoUpdatesModule extends NativeModule<UpdatesEvents> implements UpdatesModuleInterface {
   isEmergencyLaunch: boolean = false;

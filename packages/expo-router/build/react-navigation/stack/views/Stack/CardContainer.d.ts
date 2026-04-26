@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Animated } from 'react-native';
+import type { Animated } from 'react-native';
 import { type Route } from '../../../native';
 import type { Layout, Scene } from '../../types';
 import type { Props as HeaderContainerProps } from '../Header/HeaderContainer';
@@ -55,7 +55,7 @@ type Props = {
     isNextScreenTransparent: boolean;
     detachCurrentScreen: boolean;
 };
-declare function CardContainerInner({ interpolationIndex, index, active, opening, closing, gesture, focused, modal, getPreviousScene, getFocusedRoute, hasAbsoluteFloatHeader, headerHeight, onHeaderHeightChange, isParentHeaderShown, isNextScreenTransparent, detachCurrentScreen, layout, onCloseRoute, onOpenRoute, onGestureCancel, onGestureEnd, onGestureStart, onTransitionEnd, onTransitionStart, preloaded, renderHeader, safeAreaInsetBottom, safeAreaInsetLeft, safeAreaInsetRight, safeAreaInsetTop, scene, }: Props): React.JSX.Element;
+declare function CardContainerInner({ interpolationIndex, index, active, opening, closing, gesture, focused, modal, getPreviousScene, getFocusedRoute, hasAbsoluteFloatHeader, headerHeight, onHeaderHeightChange, isParentHeaderShown, isNextScreenTransparent, detachCurrentScreen, layout, onCloseRoute, onOpenRoute, onGestureCancel, onGestureEnd, onGestureStart, onTransitionEnd, onTransitionStart, preloaded, renderHeader, safeAreaInsetBottom, safeAreaInsetLeft, safeAreaInsetRight, safeAreaInsetTop, scene, }: Props): import("react/jsx-runtime").JSX.Element;
 export declare const CardContainer: React.MemoExoticComponent<typeof CardContainerInner>;
 export {};
 //# sourceMappingURL=CardContainer.d.ts.map

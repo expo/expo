@@ -5,7 +5,7 @@
       "name": "ExpoBackgroundTask",
       "podName": "ExpoBackgroundTask",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",
@@ -19,6 +19,9 @@
           "name": "ExpoBackgroundTask",
           "path": "ios",
           "pattern": "*.swift",
+          "exclude": [
+            "Tests/**"
+          ],
           "dependencies": [
             "Hermes",
             "React",

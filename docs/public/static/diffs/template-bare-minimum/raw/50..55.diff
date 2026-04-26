@@ -139,21 +139,27 @@ index 00000000000..3ec2507bab7
 +    <application android:usesCleartextTraffic="true" tools:targetApi="28" tools:ignore="GoogleAppIndexingWarning" tools:replace="android:usesCleartextTraffic" />
 +</manifest>
 diff --git a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-index f8d77fc832f..c1f2105809f 100644
+index f8d77fc832f..14bdba124ab 100644
 --- a/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
 +++ b/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
-@@ -5,8 +5,8 @@
+@@ -1,12 +1,13 @@
+-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
++<manifest xmlns:android="http://schemas.android.com/apk/res/android"
++  xmlns:tools="http://schemas.android.com/tools">
+ 
+   <uses-permission android:name="android.permission.INTERNET"/>
+   <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
    <uses-permission android:name="android.permission.VIBRATE"/>
    <!-- These require runtime permissions on M -->
 -  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 -  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
++  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
++  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
    <!-- END OPTIONAL PERMISSIONS -->
  
    <queries>
-@@ -18,15 +18,12 @@
+@@ -18,15 +19,12 @@
      </intent>
    </queries>
  
@@ -1345,7 +1351,7 @@ index b3978b9515d..03484edf156 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index f8f8993585f..01e53f014e3 100644
+index f8f8993585f..7d81baed15d 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -1,7 +1,8 @@
@@ -1354,7 +1360,7 @@ index f8f8993585f..01e53f014e3 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
 -  "version": "50.0.43",
 +  "license": "0BSD",
-+  "version": "55.0.8",
++  "version": "55.0.26",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -1369,9 +1375,9 @@ index f8f8993585f..01e53f014e3 100644
 -  },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"
-+    "expo": "~55.0.0-preview.9",
-+    "expo-status-bar": "~55.0.2",
++    "expo": "~55.0.14",
++    "expo-status-bar": "~55.0.5",
 +    "react": "19.2.0",
-+    "react-native": "0.83.1"
++    "react-native": "0.83.4"
    }
  }

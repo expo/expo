@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_1 = require("@expo/config");
+const config_1 = require("expo/config");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const possibleProjectRoot = process.argv[2];
-const destinationDir = process.argv[3];
+const cwd = process.cwd();
+const possibleProjectRoot = process.argv[2] ?? cwd;
+const destinationDir = process.argv[3] ?? cwd;
 // TODO: Verify we can remove projectRoot validation, now that we no longer
 // support React Native <= 62
 let projectRoot;

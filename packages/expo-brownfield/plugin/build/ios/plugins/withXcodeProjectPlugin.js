@@ -53,6 +53,11 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
         (0, utils_1.configureBuildPhases)(xcodeProject, target, pluginConfig.targetName, projectName, templateFiles.map((file) => `${pluginConfig.targetName}/${file}`));
         // Add the required build settings
         (0, utils_1.configureBuildSettings)(xcodeProject, pluginConfig.targetName, config.ios?.buildNumber || '1', pluginConfig.bundleIdentifier, config.ios?.version || config.version);
+        // Add Expo.plist to the framework target's resources so expo-updates
+        // can read its configuration from the framework bundle at runtime.
+        // Uses addBuildPhase to create a PBXResourcesBuildPhase for the framework target
+        // since addResourceFile requires an existing Resources phase which framework targets lack.
+        xcodeProject.addBuildPhase([`${projectName}/Supporting/Expo.plist`], 'PBXResourcesBuildPhase', 'Resources', target.uuid, 'framework', '""');
         return config;
     });
 };

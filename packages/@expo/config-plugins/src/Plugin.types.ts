@@ -1,13 +1,17 @@
-import { ExpoConfig } from '@expo/config-types';
-import { JSONObject } from '@expo/json-file';
+import type { ExpoConfig } from '@expo/config-types';
+import type { JSONObject } from '@expo/json-file';
 import { XcodeProject } from 'xcode';
 
-import { Properties } from './android';
-import { AndroidManifest } from './android/Manifest';
-import * as AndroidPaths from './android/Paths';
-import { ResourceXML } from './android/Resources';
-import { ExpoPlist, InfoPlist } from './ios/IosConfig.types';
-import { AppDelegateProjectFile } from './ios/Paths';
+import type { Properties } from './android';
+import type { AndroidManifest } from './android/Manifest';
+import type * as AndroidPaths from './android/Paths';
+import type { ResourceXML } from './android/Resources';
+import type { InfoPlist } from './ios/IosConfig.types';
+import type { AppDelegateProjectFile } from './ios/Paths';
+
+export { XcodeProject } from 'xcode';
+export type { ExpoPlist, InfoPlist } from './ios/IosConfig.types';
+export type { AndroidManifest } from './android/Manifest';
 
 type OptionalPromise<T> = Promise<T> | T;
 
@@ -201,5 +205,3 @@ export interface ModConfig {
 }
 
 export type ModPlatform = keyof ModConfig;
-
-export { XcodeProject, InfoPlist, ExpoPlist, AndroidManifest };

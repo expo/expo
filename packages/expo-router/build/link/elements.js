@@ -38,6 +38,7 @@ exports.LinkMenu = void 0;
 exports.LinkMenuAction = LinkMenuAction;
 exports.LinkPreview = LinkPreview;
 exports.LinkTrigger = LinkTrigger;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const InternalLinkPreviewContext_1 = require("./InternalLinkPreviewContext");
 const NativeMenuContext_1 = require("./NativeMenuContext");
@@ -72,7 +73,7 @@ function LinkMenuAction(props) {
         ? iconComponent.props.xcasset
         : undefined;
     const xcassetName = typeof rawXcasset === 'string' ? rawXcasset : undefined;
-    return (<native_1.NativeLinkPreviewAction {...rest} identifier={identifier} icon={sf} xcassetName={xcassetName} title={label ?? title ?? ''} keepPresented={unstable_keepPresented} onSelected={() => onPress?.()}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeLinkPreviewAction, { ...rest, identifier: identifier, icon: sf, xcassetName: xcassetName, title: label ?? title ?? '', keepPresented: unstable_keepPresented, onSelected: () => onPress?.() }));
 }
 /**
  * Groups context menu actions for a link.
@@ -98,7 +99,7 @@ const LinkMenu = (props) => {
     const children = react_1.default.Children.toArray(props.children).filter((child) => (0, react_1.isValidElement)(child) && (child.type === LinkMenuAction || child.type === exports.LinkMenu));
     const displayAsPalette = props.palette ?? props.displayAsPalette;
     const displayInline = props.inline ?? props.displayInline;
-    return (<native_1.NativeLinkPreviewAction {...props} displayAsPalette={displayAsPalette} displayInline={displayInline} preferredElementSize={props.elementSize} title={props.title ?? ''} onSelected={() => { }} children={children} identifier={identifier}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeLinkPreviewAction, { ...props, displayAsPalette: displayAsPalette, displayInline: displayInline, preferredElementSize: props.elementSize, title: props.title ?? '', onSelected: () => { }, children: children, identifier: identifier }));
 };
 exports.LinkMenu = LinkMenu;
 /**
@@ -145,11 +146,9 @@ function LinkPreview(props) {
         content = isVisible ? children : null;
     }
     else {
-        content = isVisible ? <HrefPreview_1.HrefPreview href={href}/> : null;
+        content = isVisible ? (0, jsx_runtime_1.jsx)(HrefPreview_1.HrefPreview, { href: href }) : null;
     }
-    return (<native_1.NativeLinkPreviewContent style={restOfStyle} preferredContentSize={contentSize}>
-      {content}
-    </native_1.NativeLinkPreviewContent>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeLinkPreviewContent, { style: restOfStyle, preferredContentSize: contentSize, children: content }));
 }
 /**
  * Serves as the trigger for a link.
@@ -177,9 +176,9 @@ function LinkTrigger({ withAppleZoom, ...props }) {
         }
         return props.children;
     }
-    const content = <Slot_1.Slot {...props}/>;
+    const content = (0, jsx_runtime_1.jsx)(Slot_1.Slot, { ...props });
     if (withAppleZoom) {
-        return <link_apple_zoom_1.LinkAppleZoom>{content}</link_apple_zoom_1.LinkAppleZoom>;
+        return (0, jsx_runtime_1.jsx)(link_apple_zoom_1.LinkAppleZoom, { children: content });
     }
     return content;
 }

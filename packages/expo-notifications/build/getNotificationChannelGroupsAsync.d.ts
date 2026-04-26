@@ -1,4 +1,4 @@
-import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
+import type { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 /**
  * Fetches information about all known notification channel groups.
  * @return A Promise which resoles to an array of channel groups. On platforms that do not support notification channel groups,

@@ -80,6 +80,23 @@ You can configure `expo-screen-orientation` using its built-in [config plugin](/
 
 </ConfigReactNative>
 
+## Per-screen orientation with Expo Router
+
+If you use [Expo Router](/router/introduction/), you can set the orientation per screen using the `orientation` option on [`Stack.Screen`](/router/advanced/stack/). This is powered by `react-native-screens` and is the recommended approach for per-screen orientation in stack navigators.
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ orientation: 'portrait' }} />
+      <Stack.Screen name="landscape" options={{ orientation: 'landscape' }} />
+    </Stack>
+  );
+}
+```
+
 ## API
 
 ```js

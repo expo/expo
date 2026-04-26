@@ -28,7 +28,7 @@ struct JavaScriptRuntimeTests {
   @Test
   func `create function`() {
     let fn = runtime.createFunction("function name") { this, arguments in
-      return .undefined()
+      return .undefined
     }
     #expect(fn.asValue().isFunction() == true)
   }
@@ -127,7 +127,7 @@ struct JavaScriptRuntimeTests {
         if name == "foo" {
           return JavaScriptValue(self.runtime, 42)
         }
-        return .undefined()
+        return .undefined
       },
       set: { _, _ in },
       getPropertyNames: { ["foo"] },
@@ -147,7 +147,7 @@ struct JavaScriptRuntimeTests {
         if name == "value", let storedValue {
           return JavaScriptValue(self.runtime, storedValue)
         }
-        return .undefined()
+        return .undefined
       },
       set: { name, value in
         if name == "value" {
@@ -170,7 +170,7 @@ struct JavaScriptRuntimeTests {
         switch name {
         case "a": return JavaScriptValue(self.runtime, 1)
         case "b": return JavaScriptValue(self.runtime, 2)
-        default: return .undefined()
+        default: return .undefined
         }
       },
       set: { _, _ in },
@@ -193,7 +193,7 @@ struct JavaScriptRuntimeTests {
         if name == "greeting" {
           return JavaScriptValue(self.runtime, "hello")
         }
-        return .undefined()
+        return .undefined
       },
       set: { _, _ in },
       getPropertyNames: { ["greeting"] },
@@ -204,6 +204,63 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval("globalThis.hostObj.greeting")
 
     #expect(result.getString() == "hello")
+  }
+
+  // MARK: - Host function error propagation
+
+  @Test
+  func `throwing host function propagates error to JavaScript`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "something went wrong" }
+    }
+
+    let fn = runtime.createFunction("failing") { this, arguments in
+      throw TestError()
+    }
+
+    runtime.global().setProperty("failing", value: fn.asValue())
+
+    let result = try runtime.eval("""
+      try { failing(); 'no error' } catch (e) { e.message }
+    """)
+
+    #expect(result.getString().contains("something went wrong"))
+  }
+
+  @Test
+  func `throwing host function is catchable in JavaScript try-catch`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "custom error message" }
+    }
+
+    let fn = runtime.createFunction("throwIt") { this, arguments in
+      throw TestError()
+    }
+
+    runtime.global().setProperty("throwIt", value: fn.asValue())
+
+    let result = try runtime.eval("""
+      var caught = false;
+      var message = '';
+      try { throwIt(); } catch (e) { caught = true; message = e.message; }
+      [caught, message]
+    """).getArray()
+
+    #expect(result[0].getBool() == true)
+    #expect(result[1].getString().contains("custom error message"))
+  }
+
+  @Test
+  func `non-throwing host function does not trigger error`() throws {
+    let fn = runtime.createFunction("ok") { this, arguments in
+      return JavaScriptValue(self.runtime, 42)
+    }
+
+    runtime.global().setProperty("ok", value: fn.asValue())
+
+    let result = try runtime.eval("try { ok() } catch (e) { -1 }")
+
+    #expect(result.getInt() == 42)
   }
 
   // MARK: - Async functions

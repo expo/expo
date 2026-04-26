@@ -32,7 +32,7 @@ export default function AudioModeSelector() {
     try {
       await setAudioModeAsync(state.next);
       setState((state) => ({ ...state, current: state.next }));
-    } catch (error) {
+    } catch (error: any) {
       alert(error.message);
     }
   };

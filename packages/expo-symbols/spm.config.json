@@ -5,7 +5,7 @@
       "name": "ExpoSymbols",
       "podName": "ExpoSymbols",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

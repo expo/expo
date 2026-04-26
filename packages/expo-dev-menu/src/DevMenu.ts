@@ -1,7 +1,7 @@
 import { DeviceEventEmitter } from 'react-native';
 
 import ExpoDevMenu from './ExpoDevMenu';
-import { ExpoDevMenuItem } from './ExpoDevMenu.types';
+import type { ExpoDevMenuItem } from './ExpoDevMenu.types';
 
 /**
  * A method that opens development client menu when called.
@@ -59,4 +59,4 @@ export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<vo
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
 }
 
-export { ExpoDevMenuItem } from './ExpoDevMenu.types';
+export type { ExpoDevMenuItem } from './ExpoDevMenu.types';

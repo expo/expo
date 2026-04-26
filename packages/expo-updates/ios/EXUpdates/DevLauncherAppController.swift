@@ -55,6 +55,7 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
   public var embeddedUpdateId: UUID?
 
   public var isEnabled: Bool
+  public let isStarted = false
 
   public let eventManager: UpdatesEventManager = NoOpUpdatesEventManager()
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()

@@ -1,4 +1,4 @@
-import { SpawnPromise } from '@expo/spawn-async';
+import type { SpawnPromise } from '@expo/spawn-async';
 /**
  * The pending spawn promise is similar to the spawn promise from `@expo/spawn-async`.
  * Instead of the `child` process being available immediately, the `child` is behind another promise.

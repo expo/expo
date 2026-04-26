@@ -1,4 +1,4 @@
-import { PermissionResponse, PermissionStatus, PermissionExpiration, EventSubscription } from 'expo-modules-core';
+import { type EventSubscription, type PermissionResponse } from 'expo-modules-core';
 import { type ShareOptions } from 'react-native';
 export declare const onContactsChangeEventName = "onContactsChange";
 export type ContactsPermissionResponse = PermissionResponse & {
@@ -547,7 +547,7 @@ export type Container = {
     id: string;
     type: ContainerType;
 };
-export { PermissionStatus, PermissionResponse, PermissionExpiration };
+export { PermissionStatus, type PermissionResponse, type PermissionExpiration, } from 'expo-modules-core';
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
  * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.

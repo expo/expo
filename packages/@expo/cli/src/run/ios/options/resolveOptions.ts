@@ -3,11 +3,12 @@ import { getConfig } from '@expo/config';
 import { isSimulatorDevice, resolveDeviceAsync } from './resolveDevice';
 import { resolveNativeSchemePropsAsync } from './resolveNativeScheme';
 import { resolveXcodeProject } from './resolveXcodeProject';
-import { OSType, isOSType } from '../../../start/platforms/ios/simctl';
+import type { OSType } from '../../../start/platforms/ios/simctl';
+import { isOSType } from '../../../start/platforms/ios/simctl';
 import { resolveBuildCacheProvider } from '../../../utils/build-cache-providers';
 import { profile } from '../../../utils/profile';
 import { resolveBundlerPropsAsync } from '../../resolveBundlerProps';
-import { BuildProps, Options } from '../XcodeBuild.types';
+import type { BuildProps, Options } from '../XcodeBuild.types';
 
 /** Resolve arguments for the `run:ios` command. */
 export async function resolveOptionsAsync(

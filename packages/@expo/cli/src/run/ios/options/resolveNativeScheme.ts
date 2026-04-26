@@ -6,7 +6,7 @@ import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { selectAsync } from '../../../utils/prompts';
-import { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
+import type { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
 
 const debug = require('debug')('expo:run:ios:options:resolveNativeScheme') as typeof console.log;
 

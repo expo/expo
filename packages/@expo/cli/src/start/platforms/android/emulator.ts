@@ -3,7 +3,8 @@ import chalk from 'chalk';
 import { spawn } from 'child_process';
 import os from 'os';
 
-import { Device, getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
+import type { Device } from './adb';
+import { getAttachedDevicesAsync, isBootAnimationCompleteAsync } from './adb';
 import * as Log from '../../../log';
 import { AbortCommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';

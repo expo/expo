@@ -1,9 +1,9 @@
 import { vol } from 'memfs';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { DependencyResolutionSource } from '../../dependencies/types';
 import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
-import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
+import type { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 import {
@@ -438,7 +438,7 @@ describe(resolveReactNativeModule, () => {
   });
 
   itWithMemoize(
-    'should call platform resolver with merged config and project config will override library config',
+    'should preserve library config when project config sets platform to null (deep merge)',
     async () => {
       const projectConfig: RNConfigReactNativeProjectConfig = {
         dependencies: {
@@ -476,9 +476,68 @@ describe(resolveReactNativeModule, () => {
         new Set()
       );
 
+      // Deep merge preserves the target object when the source is null,
+      // so the library's ios config is kept.
       expect(mockPlatformResolverIos).toHaveBeenCalledWith(
         expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
-        null,
+        {
+          configurations: ['Debug'],
+          scriptPhases: [{ name: 'test', path: './test.js' }],
+        },
+        undefined
+      );
+    }
+  );
+
+  itWithMemoize(
+    'should deep merge project config into library config preserving nested sibling keys',
+    async () => {
+      const projectConfig: RNConfigReactNativeProjectConfig = {
+        dependencies: {
+          'react-native-test': {
+            platforms: {
+              ios: {
+                sourceDir: './mock-ios',
+                scriptPhases: [{ name: 'test', path: './override.js' }],
+              },
+            },
+          },
+        },
+      };
+      const libraryConfig: RNConfigReactNativeLibraryConfig = {
+        dependency: {
+          platforms: {
+            ios: {
+              configurations: ['Debug'],
+              scriptPhases: [{ name: 'test', path: './test.js' }],
+            },
+          },
+        },
+      };
+      mockLoadReactNativeConfigAsync.mockResolvedValueOnce(libraryConfig);
+
+      await resolveReactNativeModule(
+        {
+          name: 'react-native-test',
+          version: '',
+          path: '/app/node_modules/react-native-test',
+          originPath: '/app/node_modules/react-native-test',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          duplicates: null,
+          depth: 0,
+        },
+        projectConfig,
+        'ios',
+        new Set()
+      );
+
+      expect(mockPlatformResolverIos).toHaveBeenCalledWith(
+        expect.objectContaining({ path: '/app/node_modules/react-native-test' }),
+        {
+          sourceDir: './mock-ios',
+          configurations: ['Debug'],
+          scriptPhases: [{ name: 'test', path: './override.js' }],
+        },
         undefined
       );
     }

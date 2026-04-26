@@ -1,66 +1,39 @@
-import { HeaderBackButton } from '@react-navigation/elements';
 import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useTheme } from 'ThemeProvider';
 import Fuse from 'fuse.js';
 import React from 'react';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import ComponentListScreen from './ComponentListScreen';
+import { useTheme } from '../../../common/ThemeProvider';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import SearchBar from '../components/SearchBar';
 import { screenApiItems as ApiScreenApiItems } from '../navigation/ExpoApisStackNavigator';
 import { screenApiItems as ComponentScreenApiItems } from '../navigation/ExpoComponentsStackNavigator';
 
 const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 50 : 56;
-const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
+function SearchScreen({ navigation }: NativeStackScreenProps<SearchStack, 'search'>) {
+  const { theme } = useTheme();
+  const [query, setQuery] = React.useState('');
 
-function Header({
-  children,
-  backButton,
-  tintColor,
-  navigation,
-}: {
-  children?: React.ReactNode;
-  backButton?: boolean;
-  tintColor?: string;
-  navigation: any;
-}) {
-  const { top } = useSafeAreaInsets();
-  // @todo: this is static and we don't know if it's visible or not on iOS.
-  // need to use a more reliable and cross-platform API when one exists, like
-  // LayoutContext. We also don't know if it's translucent or not on Android
-  // and depend on react-native-safe-area-context to tell us.
-  const STATUSBAR_HEIGHT = top || 8;
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerSearchBarOptions: {
+        placeholder: 'Search',
+        autoFocus: true,
+        textColor: theme.text.default,
+        tintColor: theme.icon.info,
+        headerIconColor: theme.icon.secondary,
+        hintTextColor: theme.text.quaternary,
+        onChangeText: (event: { nativeEvent: { text: string } }) =>
+          setQuery(event.nativeEvent.text),
+        onCancelButtonPress: () => navigation.goBack(),
+      },
+    });
+  }, [navigation, theme]);
 
-  return (
-    <Animated.View
-      style={[
-        styles.container,
-        { paddingTop: STATUSBAR_HEIGHT, height: STATUSBAR_HEIGHT + APPBAR_HEIGHT },
-      ]}>
-      <View style={styles.appBar}>
-        <View style={[StyleSheet.absoluteFill, { flexDirection: 'row' }]}>
-          {backButton && (
-            <HeaderBackButton
-              onPress={() => navigation.goBack()}
-              pressColor={tintColor || '#fff'}
-              tintColor={tintColor}
-            />
-          )}
-          {children}
-        </View>
-      </View>
-    </Animated.View>
-  );
-}
-
-function SearchScreen({ route }: NativeStackScreenProps<SearchStack, 'search'>) {
-  const query = route?.params?.q ?? '';
-
-  const apis = React.useMemo(() => fuse.search(query).map(({ item }) => item), [query]);
+  const apis = React.useMemo(() => {
+    if (!query) return [];
+    return fuse.search(query).map(({ item }) => item);
+  }, [query]);
 
   const renderItemRight = React.useCallback(
     ({ name }: { name: string }) => (
@@ -73,7 +46,7 @@ function SearchScreen({ route }: NativeStackScreenProps<SearchStack, 'search'>) 
 }
 
 type SearchStack = {
-  search: { q?: string };
+  search: undefined;
 };
 
 const Stack = createNativeStackNavigator<SearchStack>();
@@ -81,80 +54,13 @@ const Stack = createNativeStackNavigator<SearchStack>();
 export default function SearchScreenStack() {
   const { theme } = useTheme();
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="search"
-        component={SearchScreen}
-        options={({ navigation, route }) => ({
-          header: () => (
-            <Header
-              navigation={navigation}
-              tintColor={theme.icon.info}
-              backButton={Platform.OS === 'android'}>
-              <SearchBar
-                initialValue={route?.params?.q ?? ''}
-                onChangeQuery={(q) => navigation.setParams({ q })}
-                underlineColorAndroid="#fff"
-                tintColor={theme.text.info}
-              />
-            </Header>
-          ),
-        })}
-      />
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: theme.background.default },
+        headerTintColor: theme.icon.info,
+        headerTitleStyle: { color: theme.text.default },
+      }}>
+      <Stack.Screen name="search" component={SearchScreen} options={{ title: 'Search' }} />
     </Stack.Navigator>
   );
 }
-
-const styles = {
-  container: {
-    backgroundColor: '#fff',
-
-    ...Platform.select({
-      ios: {
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#A7A7AA',
-      },
-      default: {
-        shadowColor: 'black',
-        shadowOpacity: 0.1,
-        shadowRadius: StyleSheet.hairlineWidth,
-        shadowOffset: {
-          width: 0,
-          height: StyleSheet.hairlineWidth,
-        },
-        elevation: 4,
-      },
-    }),
-  },
-  appBar: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-  },
-  item: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  title: {
-    bottom: 0,
-    left: TITLE_OFFSET,
-    right: TITLE_OFFSET,
-    top: 0,
-    position: 'absolute',
-    alignItems: Platform.OS === 'ios' ? 'center' : 'flex-start',
-  },
-  left: {
-    left: 0,
-    bottom: 0,
-    top: 0,
-    position: 'absolute',
-  },
-  right: {
-    right: 0,
-    bottom: 0,
-    top: 0,
-    position: 'absolute',
-  },
-};

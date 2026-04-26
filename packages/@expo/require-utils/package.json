@@ -27,7 +27,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0 || ^5.0.0-0"
+    "typescript": "^5.0.0 || ^5.0.0-0 || ^6.0.0"
   },
   "peerDependenciesMeta": {
     "typescript": {
@@ -45,8 +45,7 @@
     "@types/babel__code-frame": "^7.27.0",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0",
-    "typescript": "^5.9.2"
+    "memfs": "^3.2.0"
   },
   "publishConfig": {
     "access": "public"

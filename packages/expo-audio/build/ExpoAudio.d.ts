@@ -1,7 +1,7 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
+import type { PermissionResponse } from 'expo-modules-core';
+import type { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
+import type { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 /**
  * Creates an `AudioPlayer` instance that automatically releases when the component unmounts.
  *
@@ -400,5 +400,6 @@ export declare function clearAllPreloadedSources(): Promise<void>;
  * @returns An array of URI strings for sources currently in the preload cache.
  */
 export declare function getPreloadedSources(): Promise<string[]>;
+export { useAudioStream } from './AudioStream';
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.d.ts.map

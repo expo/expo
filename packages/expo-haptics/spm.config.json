@@ -5,7 +5,7 @@
       "name": "ExpoHaptics",
       "podName": "ExpoHaptics",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

@@ -40,10 +40,10 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     self.runtime = runtime
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
-    let setup = runtime.createFunction { [resolveFunction, rejectFunction] this, arguments in
-      resolveFunction.reset(arguments[0])
-      rejectFunction.reset(arguments[1])
-      return .undefined()
+    let setup = runtime.createFunction { [weak resolveFunction, weak rejectFunction] this, arguments in
+      resolveFunction?.reset(arguments[0])
+      rejectFunction?.reset(arguments[1])
+      return .undefined
     }
 
     self.object = try! runtime
@@ -103,7 +103,8 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     // `reject` is not isolated, so make sure to jump to JS thread.
     runtime.schedule(priority: .immediate) { [resolveFunction, rejectFunction] in
       // Create a JS error from any (native) error.
-      let errorValue = JavaScriptError(runtime, message: error.localizedDescription).asValue()
+      let errorMessage = String(describing: error)
+      let errorValue = JavaScriptError(runtime, message: errorMessage).asValue()
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
@@ -119,19 +120,21 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    let onFulfilled = runtime.createFunction { [deferredPromise] this, arguments in
+    let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
+      guard let deferredPromise else { return .undefined }
       let value = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.resolve(value)
       }
-      return .undefined()
+      return .undefined
     }
-    let onRejected = runtime.createFunction { [deferredPromise] this, arguments in
+    let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
+      guard let deferredPromise else { return .undefined }
       let error = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.reject(error)
       }
-      return .undefined()
+      return .undefined
     }
     try object.callFunction(.cached(runtime, "then"), arguments: onFulfilled.asValue(), onRejected.asValue())
   }

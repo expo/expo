@@ -3,17 +3,21 @@ package expo.modules.filesystem.legacy
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class InfoOptionsLegacy(
   @Field
   val md5: Boolean?
 ) : Record
 
+@OptimizedRecord
 data class DeletingOptions(
   @Field
   val idempotent: Boolean = false
 ) : Record
 
+@OptimizedRecord
 data class ReadingOptions(
   @Field
   val encoding: EncodingType = EncodingType.UTF8,
@@ -38,11 +42,13 @@ enum class FileSystemUploadType(val value: Int) : Enumerable {
   MULTIPART(1)
 }
 
+@OptimizedRecord
 data class MakeDirectoryOptions(
   @Field
   val intermediates: Boolean = false
 ) : Record
 
+@OptimizedRecord
 data class RelocatingOptions(
   @Field
   val from: String,
@@ -50,6 +56,7 @@ data class RelocatingOptions(
   val to: String
 ) : Record
 
+@OptimizedRecord
 data class DownloadOptionsLegacy(
   @Field
   val md5: Boolean = false,
@@ -61,6 +68,7 @@ data class DownloadOptionsLegacy(
   val sessionType: SessionType = SessionType.BACKGROUND
 ) : Record
 
+@OptimizedRecord
 data class WritingOptions(
   @Field
   val encoding: EncodingType = EncodingType.UTF8,
@@ -68,6 +76,7 @@ data class WritingOptions(
   val append: Boolean = false
 ) : Record
 
+@OptimizedRecord
 data class FileSystemUploadOptions(
   @Field
   val headers: Map<String, String>?,

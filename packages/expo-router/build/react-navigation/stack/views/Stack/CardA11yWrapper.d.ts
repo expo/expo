@@ -11,6 +11,6 @@ type Props = {
 export type CardA11yWrapperRef = {
     setInert: (value: boolean) => void;
 };
-export declare const CardA11yWrapper: ({ ref, focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children, }: Props) => React.JSX.Element;
+export declare const CardA11yWrapper: ({ ref, focused, active, animated, isNextScreenTransparent, detachCurrentScreen, children, }: Props) => import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=CardA11yWrapper.d.ts.map

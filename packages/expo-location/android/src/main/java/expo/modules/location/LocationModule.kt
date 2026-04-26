@@ -131,7 +131,11 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     AsyncFunction("requestForegroundPermissionsAsync") Coroutine { ->
       val permissionsManager = appContext.permissions ?: throw NoPermissionsModuleException()
 
-      LocationHelpers.askForPermissionsWithPermissionsManager(permissionsManager, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+      LocationHelpers.askForPermissionsWithPermissionsManager(
+        permissionsManager,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION
+      )
       // We aren't using the values returned above, because we need to check if the user has provided fine location permissions
       return@Coroutine getForegroundPermissionsAsync()
     }

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [SwiftUI] Use `fixedSize` modifier for Host `matchContents` ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
+- [SwiftUI] `TextField`: removed `defaultValue`, added `text` prop backed by an `ObservableState` (from `useNativeState`), added worklet support for `onTextChange`, and renamed `onValueChange` → `onTextChange`. ([#44988](https://github.com/expo/expo/pull/44988) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Match `TextField` and `SecureField` API with SwiftUI: replaced `multiline`, `numberOfLines`, `allowNewlines` with `axis` prop. Moved `keyboardType`, `autocorrectionDisabled`, `onSubmit` from props to modifier registry. Renamed events `onValueChanged` → `onValueChange`, `onFocusChanged` → `onFocusChange`, `onSelectionChanged` → `onSelectionChange`. Removed hardcoded `fixedSize`. Added `LineLimitModifier` with `reservesSpace` and range support. Added `OnSubmitModifier` and `KeyboardTypeModifier`. ([#44549](https://github.com/expo/expo/pull/44549) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `TextField` API to native Compose: renamed `TextInput` to `TextField`/`OutlinedTextField`, replaced individual keyboard props with `keyboardOptions`/`keyboardActions` matching `KeyboardOptions`/`KeyboardActions`, added `enabled`, `readOnly`, `isError`, `singleLine`, `maxLines`, `minLines`, `shape`, `colors`. Added composable slots: `placeholder`, `leadingIcon`, `trailingIcon`, `prefix`, `suffix`, `supportingText`. Added imperative `focus()`/`blur()` and `onFocusChanged` event. ([#44545](https://github.com/expo/expo/pull/44545) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Match `Icon` API to native: renamed `tintColor` to `tint`. Match `ListItem` API to native: replaced string props with slot sub-components (`HeadlineContent`, `SupportingContent`, `OverlineContent`, `LeadingContent`, `TrailingContent`). Renamed color props to match `ListItemDefaults.colors()`. Added `tonalElevation`, `shadowElevation`. Removed `color`, `onPress`. ([#44054](https://github.com/expo/expo/pull/44054) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -25,17 +27,28 @@
 - [android] configure ContextMenu by using native children ([#43792](https://github.com/expo/expo/pull/43792) by [@Ubax](https://github.com/Ubax))
 - [android] control ContextMenu expanded state from JS ([#43793](https://github.com/expo/expo/pull/43793) by [@Ubax](https://github.com/Ubax))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- [jetpack-compose] Changed `Host` underlying `MaterialTheme` to `MaterialExpressiveTheme`. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
+- [compose] Added worklet and `ObservableState` support to `TextField`. Added `value` prop accepting `ObservableState<string | TextFieldValue>` (create via `useNativeState`). `onValueChange` now supports worklets for synchronous UI-thread updates. Added `TextFieldValue` type with `text` + `selection` for worklet-driven caret control. Replaced `defaultValue`, callers pass state via `useNativeState` or omit for an empty field. ([#45024](https://github.com/expo/expo/pull/45024) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
+- add ExposedDropdownMenuBox ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
+- Added `@expo/ui/community/segmented-control` — a drop-in replacement for `@react-native-segmented-control/segmented-control`. ([#44611](https://github.com/expo/expo/pull/44611) by [@vonovak](https://github.com/vonovak))
+- Added `@expo/ui/community/picker` — Android, iOS and web `Picker` drop-in replacement for `@react-native-picker/picker`. ([#44058](https://github.com/expo/expo/pull/44058) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `TabView` and `TabView.Tab` components wrapping SwiftUI's `TabView`, with `tabViewStyle` and `indexViewStyle` modifiers for the page (swipeable) and bottom-tab styles. ([#44780](https://github.com/expo/expo/pull/44780) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `containerRelativeShape` to shape types for `clipShape`, `mask`, `background`, `containerShape`, `contentShape`, and `glassEffect` modifiers. Enables proper shape adaptation in widgets and container-relative contexts using SwiftUI's `ContainerRelativeShape`. ([#44704](https://github.com/expo/expo/pull/44704) by [@hypnokermit](https://github.com/hypnokermit))
 - [iOS] Add `ObservableState` shared object and `useNativeState` hook for controlling native SwiftUI state from JS. ([#44214](https://github.com/expo/expo/pull/44214) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Add shared object worklet support with `.value` property API for `ObservableState`. ([#44215](https://github.com/expo/expo/pull/44215) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `TooltipBox`, `PlainTooltip`, and `RichTooltip` components matching native Compose Tooltip API. Supports plain and rich tooltips with slot-based content, programmatic show/dismiss via ref, and `isPersistent`, `hasAction`, `enableUserInput`, `focusable` props. ([#44373](https://github.com/expo/expo/pull/44373) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `Badge` and `BadgedBox` components wrapping Jetpack Compose's Badge API for status indicators and count overlays. ([#44139](https://github.com/expo/expo/pull/44139) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Added `shape`, `border`, `selected`, `checked`, `onClick`, and `onCheckedChange` props to `Surface`, supporting clickable, selectable, and toggleable variants. ([#44079](https://github.com/expo/expo/pull/44079) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added nested text support for Compose `Text` with style inheritance, custom fonts via `expo-font`, `background`, `shadow`, and `lineBreak` properties. ([#44094](https://github.com/expo/expo/pull/44094) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Added `outlined` variant to `TextInput` component. ([#43719](https://github.com/expo/expo/pull/43719) by [@benjaminkomen](https://github.com/benjaminkomen))
-- Added `@expo/ui/datetimepicker` — a cross-platform `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
+- Added `@expo/ui/datetimepicker` — an Android and iOS `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `locale` and `timeZone` support to `modifiers`. ([#44013](https://github.com/expo/expo/pull/44013) by [@vonovak](https://github.com/vonovak))
 - [android] Added `ref.hide()` for animated dismiss and more configurable props (`containerColor`, `contentColor`, `scrimColor`, `showDragHandle`, `sheetGesturesEnabled`, `properties`, `DragHandle` slot) to `BottomSheet`. ([#43972](https://github.com/expo/expo/pull/43972) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `date`, `dateStyle`, `timerInterval`, `countsDown`, and `pauseTime` props to `Text` component for displaying auto-updating dates, timers, and countdowns using SwiftUI's `Text.DateStyle`. ([#43552](https://github.com/expo/expo/pull/43552) by [@LouisRaverdy](https://github.com/LouisRaverdy))
@@ -60,6 +73,13 @@
 - [android] add `imePadding` modifier ([#43652](https://github.com/expo/expo/pull/43652) by [@Ubax](https://github.com/Ubax))
 - [iOS] Add `Link` view. ([#43983](https://github.com/expo/expo/pull/43983) by [@jakex7](https://github.com/jakex7))
 - [iOS] Add `widgetURL` modifier. ([#43984](https://github.com/expo/expo/pull/43984) by [@jakex7](https://github.com/jakex7))
+- [swift-ui] Added `LazyHStack` and `LazyVStack`. ([#44612](https://github.com/expo/expo/pull/44612) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] Added `LazyRow` component and `onVisibilityChanged` modifier. ([#44615](https://github.com/expo/expo/pull/44615) by [@kudo](https://github.com/kudo))
+- Added universal components. ([#44601](https://github.com/expo/expo/pull/44601) by [@kudo](https://github.com/kudo))
+- [iOS] Add `containerBackground` modifier. ([#44192](https://github.com/expo/expo/pull/44192) by [@jakex7](https://github.com/jakex7))
+- [jetpack-compose] Added `defaultMinSize` modifier. ([#44813](https://github.com/expo/expo/pull/44813) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] Added Material 3 dynamic colors support. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
+- Added universal `FieldGroup` and `Spacer`. ([#44814](https://github.com/expo/expo/pull/44814) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -74,7 +94,7 @@
 - [Android] Fix `ContextMenu` not expanding when triggered by `IconButton`. ([#43592](https://github.com/expo/expo/pull/43592) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] fix modifiers export ([#43639](https://github.com/expo/expo/pull/43639) by [@Ubax](https://github.com/Ubax))
 - [jetpack-compose] Fixed `RNHostView` re-parenting exception. ([#44522](https://github.com/expo/expo/pull/44522) by [@kudo](https://github.com/kudo))
-- [iOS] Fix `matchContents` Host layout to propose `nil` for matching dimensions ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fixed runtime crash when missing `Host` component for SwiftUI or Jetpack Compose components. ([#44118](https://github.com/expo/expo/pull/44118) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
@@ -82,6 +102,12 @@
 - [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
+- Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] Reuse `HorizontalAlignment` converter in `LazyColumn`. ([#44755](https://github.com/expo/expo/pull/44755) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] Added `horizontalScroll` and `verticalScroll` modifiers. ([#44464](https://github.com/expo/expo/pull/44464) by [@kudo](https://github.com/kudo))
+- [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
+- [iOS] Fixed build error when using precompiled `ExpoModulesCore.xcframework`. ([#45016](https://github.com/expo/expo/pull/45016) by [@kudo](https://github.com/kudo))
+- [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.1 — 2026-02-25
 

@@ -1,4 +1,4 @@
-import { StyleProp, ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
     /**
@@ -47,5 +47,5 @@ export type HostProps = {
 /**
  * A hosting component for SwiftUI views.
  */
-export declare function Host(props: HostProps): import("react").JSX.Element;
+export declare function Host(props: HostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

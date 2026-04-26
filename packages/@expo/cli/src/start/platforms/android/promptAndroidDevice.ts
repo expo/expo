@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
-import { Device, logUnauthorized } from './adb';
+import type { Device } from './adb';
+import { logUnauthorized } from './adb';
 import { AbortCommandError } from '../../../utils/errors';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 

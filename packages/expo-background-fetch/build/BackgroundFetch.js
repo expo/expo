@@ -1,7 +1,7 @@
 import { isRunningInExpoGo } from 'expo';
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import * as TaskManager from 'expo-task-manager';
-import { BackgroundFetchResult, BackgroundFetchStatus, } from './BackgroundFetch.types';
+import { BackgroundFetchStatus } from './BackgroundFetch.types';
 import ExpoBackgroundFetch from './ExpoBackgroundFetch';
 let didShowDeprecationWarning = false;
 const showDeprecationWarning = () => {
@@ -112,5 +112,5 @@ export async function unregisterTaskAsync(taskName) {
     _validate(taskName);
     await ExpoBackgroundFetch.unregisterTaskAsync(taskName);
 }
-export { BackgroundFetchResult, BackgroundFetchStatus };
+export { BackgroundFetchResult, BackgroundFetchStatus, } from './BackgroundFetch.types';
 //# sourceMappingURL=BackgroundFetch.js.map

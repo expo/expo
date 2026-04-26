@@ -8,12 +8,7 @@ import type { ColorType } from '../../color';
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
-import {
-  type DrawableIcon,
-  type MaterialIcon,
-  type SFSymbolIcon,
-  type SrcIcon,
-} from '../common/elements';
+import type { DrawableIcon, MaterialIcon, SFSymbolIcon, SrcIcon } from '../common/elements';
 
 // Mock Color API with known test values
 jest.mock('../../color', (): typeof import('../../color') => ({

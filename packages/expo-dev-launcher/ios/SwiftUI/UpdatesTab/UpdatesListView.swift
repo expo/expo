@@ -190,8 +190,4 @@ struct UpdatesListView: View {
     }
   }
 }
-
-#Preview {
-  UpdatesListView()
-}
 // swiftlint:enable closure_body_length

@@ -144,3 +144,8 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     this.removeAllListeners('didFailWithError');
   };
 }
+
+Object.defineProperty(FetchResponse.prototype, Symbol.toStringTag, {
+  value: 'Response',
+  configurable: true,
+});

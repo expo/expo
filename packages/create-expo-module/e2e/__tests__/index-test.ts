@@ -17,9 +17,6 @@ import {
 /** Absolute path to the local expo-module-template package */
 const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
 
-/** Absolute path to the local expo-module-template-local package */
-const localTemplateLocalPath = path.resolve(__dirname, '../../../expo-module-template-local');
-
 beforeAll(async () => {
   ensureFolderExists(projectRoot);
 });
@@ -42,6 +39,9 @@ describe('CLI flags', () => {
     expect(result.stdout).toMatch(/--author-name/);
     expect(result.stdout).toMatch(/--barrel/);
     expect(result.stdout).toMatch(/--platform/);
+    expect(result.stdout).toMatch(/--package-manager/);
+    expect(result.stdout).toMatch(/--license/);
+    expect(result.stdout).toMatch(/--module-version/);
   });
 
   it('shows version with --version flag', async () => {
@@ -79,14 +79,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'ios');
     expectFileNotExists(projectName, 'android');
 
-    // Web files should exist but contain the "not available" stub
+    // Web module stub should exist (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/PlatformTestModule.web.ts');
-    expectFileExists(projectName, 'src/PlatformTestView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/PlatformTestModule.web.ts'), 'utf8')
-    ).toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/PlatformTestView.web.tsx'), 'utf8')
     ).toContain('not available on the web platform');
   });
 
@@ -116,14 +112,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'ios');
     expectFileExists(projectName, 'android');
 
-    // Web files should exist but contain the "not available" stub
+    // Web module stub should exist (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/MultiPlatformModule.web.ts');
-    expectFileExists(projectName, 'src/MultiPlatformView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/MultiPlatformModule.web.ts'), 'utf8')
-    ).toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/MultiPlatformView.web.tsx'), 'utf8')
     ).toContain('not available on the web platform');
   });
 
@@ -150,14 +142,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'ios');
     expectFileExists(projectName, 'android');
 
-    // Web files should exist with the full implementation
+    // Web module file should exist with the full implementation (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/DefaultPlatformModule.web.ts');
-    expectFileExists(projectName, 'src/DefaultPlatformView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/DefaultPlatformModule.web.ts'), 'utf8')
-    ).not.toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/DefaultPlatformView.web.tsx'), 'utf8')
     ).not.toContain('not available on the web platform');
   });
 
@@ -186,14 +174,10 @@ describe('--platform option', () => {
     expectFileNotExists(projectName, 'ios');
     expectFileNotExists(projectName, 'android');
 
-    // Web files should exist with the full implementation
+    // Web module file should exist with the full implementation (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/WebOnlyModule.web.ts');
-    expectFileExists(projectName, 'src/WebOnlyView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/WebOnlyModule.web.ts'), 'utf8')
-    ).not.toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/WebOnlyView.web.tsx'), 'utf8')
     ).not.toContain('not available on the web platform');
   });
 
@@ -222,14 +206,10 @@ describe('--platform option', () => {
     expectFileExists(projectName, 'android');
     expectFileNotExists(projectName, 'ios');
 
-    // Web files should exist but contain the "not available" stub
+    // Web module stub should exist (View is opt-in, so no View web file expected)
     expectFileExists(projectName, 'src/AndroidOnlyModule.web.ts');
-    expectFileExists(projectName, 'src/AndroidOnlyView.web.tsx');
     expect(
       fs.readFileSync(getTestPath(projectName, 'src/AndroidOnlyModule.web.ts'), 'utf8')
-    ).toContain('not available on the web platform');
-    expect(
-      fs.readFileSync(getTestPath(projectName, 'src/AndroidOnlyView.web.tsx'), 'utf8')
     ).toContain('not available on the web platform');
   });
 
@@ -238,7 +218,7 @@ describe('--platform option', () => {
 
     // "ios" is not a valid platform value (the correct value is "apple")
     const result = await executePassing(
-      ['my-module', '--local', '--platform', 'ios', '--source', localTemplateLocalPath],
+      ['my-module', '--local', '--platform', 'ios', '--source', localTemplatePath],
       { cwd: fakeProject }
     );
 
@@ -261,7 +241,7 @@ describe('--platform option', () => {
 
     // "ios" is invalid; "apple" is the correct value — only apple should be used
     const result = await executePassing(
-      ['my-module', '--local', '--platform', 'apple', 'ios', '--source', localTemplateLocalPath],
+      ['my-module', '--local', '--platform', 'apple', 'ios', '--source', localTemplatePath],
       { cwd: fakeProject }
     );
 
@@ -282,7 +262,7 @@ describe('--platform option', () => {
     const fakeProject = createFakeProject('local-platform-project');
 
     await executePassing(
-      ['my-module', '--local', '--platform', 'android', '--source', localTemplateLocalPath],
+      ['my-module', '--local', '--platform', 'android', '--source', localTemplatePath],
       { cwd: fakeProject }
     );
 
@@ -377,10 +357,6 @@ describe('non-interactive module creation', () => {
 });
 
 describe('--barrel option', () => {
-  const localTemplatePath = path.resolve(
-    __dirname,
-    '../../../../packages/expo-module-template-local'
-  );
   let localProjectRoot: string;
 
   beforeAll(() => {
@@ -413,9 +389,10 @@ describe('--barrel option', () => {
   it('generates index.ts barrel file with correct re-exports when --barrel is set', async () => {
     const slug = 'barrel-module';
 
-    await executePassing([slug, '--local', '--barrel', '--source', localTemplatePath], {
-      cwd: localProjectRoot,
-    });
+    await executePassing(
+      [slug, '--local', '--barrel', '--features', 'View', '--source', localTemplatePath],
+      { cwd: localProjectRoot }
+    );
 
     const indexPath = path.join(localProjectRoot, 'modules', slug, 'index.ts');
     expect({ [indexPath]: fs.existsSync(indexPath) }).toEqual({ [indexPath]: true });
@@ -455,10 +432,6 @@ describe('--barrel option', () => {
 });
 
 describe('CI mode detection', () => {
-  const localTemplatePath = path.resolve(
-    __dirname,
-    '../../../../packages/expo-module-template-local'
-  );
   let ciProjectRoot: string;
 
   beforeAll(() => {
@@ -514,5 +487,73 @@ describe('CI mode detection', () => {
       { cwd: ciProjectRoot, env: { CI: '0' } }
     );
     expect(result.stdout).toMatch(/Successfully created/);
+  });
+});
+
+describe('non-interactive defaults warning', () => {
+  it('warns about defaulted fields when none are explicitly provided', async () => {
+    const projectName = 'defaults-warning-module';
+
+    const result = await executePassing([
+      projectName,
+      '--no-example',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    // Warning should appear on stderr
+    expect(result.stderr).toMatch(/The following fields were not explicitly provided/);
+    // All non-explicitly-provided fields are listed — hardcoded defaults and auto-derived values
+    expect(result.stderr).toMatch(/\bname\b/);
+    expect(result.stderr).toMatch(/\bpackage\b/);
+    expect(result.stderr).toMatch(/\bdescription\b/);
+    expect(result.stderr).toMatch(/\blicense\b/);
+    expect(result.stderr).toMatch(/\bversion\b/);
+    expect(result.stderr).toMatch(/\bauthorName\b/);
+    expect(result.stderr).toMatch(/\bauthorEmail\b/);
+    expect(result.stderr).toMatch(/\bauthorUrl\b/);
+    expect(result.stderr).toMatch(/\brepo\b/);
+  });
+
+  it('omits fields from the warning when they are explicitly provided', async () => {
+    const projectName = 'partial-defaults-warning';
+
+    const result = await executePassing([
+      projectName,
+      '--no-example',
+      '--name', 'PartialDefaults',
+      '--description', 'Provided description',
+      '--package', 'com.test.partial',
+      '--author-name', 'Test Author',
+      '--author-email', 'test@example.com',
+      '--author-url', 'https://github.com/test',
+      '--repo', 'https://github.com/test/partial',
+      '--license', 'Apache-2.0',
+      '--module-version', '1.0.0',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    // All fields were explicitly provided — no warning
+    expect(result.stderr).not.toMatch(/The following fields were not explicitly provided/);
+  });
+
+  it('respects --license and --module-version in the generated package.json', async () => {
+    const projectName = 'custom-license-version';
+
+    await executePassing([
+      projectName,
+      '--no-example',
+      '--name', 'CustomLicenseVersion',
+      '--package', 'com.test.custom',
+      '--license', 'Apache-2.0',
+      '--module-version', '2.0.0',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const packageJson = readJson(projectName, 'package.json');
+    expect(packageJson.license).toBe('Apache-2.0');
+    expect(packageJson.version).toBe('2.0.0');
   });
 });

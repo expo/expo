@@ -1,6 +1,6 @@
+import type { ConfigPlugin } from 'expo/config-plugins';
 import {
   AndroidConfig,
-  ConfigPlugin,
   History,
   withAndroidManifest,
   withAndroidStyles,
@@ -12,7 +12,8 @@ import path from 'path';
 
 import { renderQueryIntents, renderQueryPackages, renderQueryProviders } from './androidQueryUtils';
 import { appendContents, purgeContents } from './fileContentsUtils';
-import { PluginConfigType, resolveConfigValue } from './pluginConfig';
+import type { PluginConfigType } from './pluginConfig';
+import { resolveConfigValue } from './pluginConfig';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 

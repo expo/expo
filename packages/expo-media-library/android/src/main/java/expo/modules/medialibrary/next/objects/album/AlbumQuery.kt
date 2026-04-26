@@ -4,6 +4,7 @@ import android.content.Context
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumId
+import expo.modules.medialibrary.next.extensions.resolver.queryAllAlbumIds
 import expo.modules.medialibrary.next.objects.album.factories.AlbumFactory
 import java.lang.ref.WeakReference
 
@@ -19,5 +20,10 @@ class AlbumQuery(val albumFactory: AlbumFactory, context: Context) {
     val id = contentResolver.queryAlbumId(title)
       ?: return null
     return albumFactory.create(id)
+  }
+
+  suspend fun getAllAlbums(): List<Album> {
+    val ids = contentResolver.queryAllAlbumIds()
+    return ids.map { albumFactory.create(it) }
   }
 }

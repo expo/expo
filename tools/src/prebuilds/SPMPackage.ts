@@ -318,6 +318,29 @@ async function generatePackageSwiftAsync(
   return generatePackageSwiftContent(context);
 }
 
+/**
+ * Finds target dependencies that reference sibling products in the same spm.config.json.
+ * Returns the dependency names that are sibling products.
+ */
+export function findSiblingProductDependencies(
+  product: SPMProduct,
+  allProducts: SPMProduct[]
+): string[] {
+  const siblingNames = new Set(
+    allProducts.filter((p) => p.name !== product.name).map((p) => p.name)
+  );
+  const result: string[] = [];
+  for (const target of product.targets) {
+    if (target.type === 'framework') continue;
+    for (const dep of target.dependencies || []) {
+      if (siblingNames.has(dep) && !result.includes(dep)) {
+        result.push(dep);
+      }
+    }
+  }
+  return result;
+}
+
 // Main Export: SPMPackage
 
 export const SPMPackage = {
@@ -1206,8 +1229,20 @@ async function buildPackageSwiftContext(
     { buildPath: string; productName: string; versionPrefix?: string }
   >();
 
+  // Compute effective external dependencies: the product's own, plus any transitive
+  // external deps from sibling products this target depends on. The Swift compiler
+  // needs sibling's transitive deps to resolve imports in their .swiftinterface.
+  const spmConfig = pkg.getSwiftPMConfiguration();
+  const siblingDeps = findSiblingProductDependencies(product, spmConfig.products);
+  const transitiveExternalDeps = siblingDeps.flatMap((dep) => {
+    const sibling = spmConfig.products.find((p) => p.name === dep);
+    return sibling?.externalDependencies || [];
+  });
+
   // Add external dependencies as binary targets
-  const externalDeps = product.externalDependencies || [];
+  const externalDeps = Array.from(
+    new Set([...(product.externalDependencies || []), ...transitiveExternalDeps])
+  );
   for (const depName of externalDeps) {
     spinner.info(`Resolving external dependency: ${depName}`);
 
@@ -1379,6 +1414,43 @@ async function buildPackageSwiftContext(
         linkedFrameworks: target.linkedFrameworks || [],
       });
       addedTargets.add(target.name);
+    }
+  }
+
+  // Add sibling products (other products in the same spm.config.json) as binary targets.
+  // Products are built in definition order, so the dependency's xcframework must already exist.
+  for (const dep of siblingDeps) {
+    if (addedTargets.has(dep)) continue;
+    const xcframeworkPath = Frameworks.getFrameworkPath(pkg.buildPath, dep, buildType);
+    if (!(await fs.pathExists(xcframeworkPath))) {
+      throw new SpinnerError(
+        `Sibling product "${dep}" xcframework not found at ${xcframeworkPath}. ` +
+          `Ensure "${dep}" is defined before "${product.name}" in the products array of spm.config.json.`,
+        spinner
+      );
+    }
+    const relativePath = path.relative(packageSwiftDir, xcframeworkPath);
+    spinner.info(`Adding sibling product: ${dep}`);
+    resolvedTargets.push({
+      type: 'binary',
+      name: dep,
+      path: relativePath,
+      dependencies: [],
+      linkedFrameworks: [],
+    });
+    addedTargets.add(dep);
+    xcframeworkPaths.set(dep, { buildPath: pkg.buildPath, productName: dep });
+  }
+
+  // Inject transitive external deps into source target deps so Swift can resolve
+  // module imports from the sibling's .swiftinterface files.
+  if (transitiveExternalDeps.length > 0) {
+    for (const target of product.targets) {
+      if (target.type === 'framework') continue;
+      const deps = target.dependencies || [];
+      if (deps.some((d) => siblingDeps.includes(d))) {
+        target.dependencies = Array.from(new Set([...deps, ...transitiveExternalDeps]));
+      }
     }
   }
 

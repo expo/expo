@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `expo-modules-core` dependency. ([#44874](https://github.com/expo/expo/pull/44874) by [@zoontek](https://github.com/zoontek))
 - Add `@react-native/babel-preset` to ignored transform patterns, since it's part of the transformer pipeline ([#44152](https://github.com/expo/expo/pull/44152) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Drop expo dependencies from `jest-expo` to prevent cycles ([#45048](https://github.com/expo/expo/pull/45048) by [@kitten](https://github.com/kitten))
+- Fixed `expo/fetch` testing. ([#44987](https://github.com/expo/expo/pull/44987) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

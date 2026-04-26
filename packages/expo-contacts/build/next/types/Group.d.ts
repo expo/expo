@@ -1,5 +1,5 @@
-import { Contact } from './Contact';
-import { ContactQueryOptions } from './Contact.props';
+import type { Contact } from './Contact';
+import type { ContactQueryOptions } from './Contact.props';
 export declare class Group {
     /**
      * Constructor for Group instance.

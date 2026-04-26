@@ -806,10 +806,11 @@ export type MaybeNotificationResponse = NotificationResponse | null | undefined;
  * */
 export type Subscription = EventSubscription;
 
+// TODO(@kitten): Remove re-exports from EMC
 export {
-  PermissionExpiration,
-  PermissionResponse,
-  EventSubscription,
+  type PermissionExpiration,
+  type PermissionResponse,
+  type EventSubscription,
   PermissionStatus,
 } from 'expo-modules-core';
 

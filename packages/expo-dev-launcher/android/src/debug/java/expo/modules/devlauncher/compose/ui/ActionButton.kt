@@ -26,12 +26,14 @@ fun ActionButton(
   textStyle: TextStyle = NewAppTheme.font.lg.merge(
     fontWeight = FontWeight.SemiBold
   ),
+  enabled: Boolean = true,
   onClick: () -> Unit = {}
 ) {
   Button(
     onClick = onClick,
+    enabled = enabled,
     shape = RoundedCornerShape(borderRadius),
-    backgroundColor = background,
+    backgroundColor = if (enabled) background else background.copy(alpha = 0.5f),
     indication = ripple(color = foreground)
   ) {
     Box(

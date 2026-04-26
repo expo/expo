@@ -166,5 +166,5 @@ export type TextProps = {
 /**
  * Renders a Text component using Jetpack Compose.
  */
-export declare function Text(props: TextProps): React.JSX.Element;
+export declare function Text(props: TextProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

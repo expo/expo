@@ -1,11 +1,11 @@
-import * as PackageManager from '@expo/package-manager';
+import type * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
 import { applyPluginsAsync } from './applyPlugins';
 import { installExpoPackageAsync } from './installExpoPackage';
 import * as Log from '../log';
 import { getOperationLog } from '../start/doctor/dependencies/getVersionedPackages';
-import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
+import type { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { groupBy } from '../utils/array';
 
 /**

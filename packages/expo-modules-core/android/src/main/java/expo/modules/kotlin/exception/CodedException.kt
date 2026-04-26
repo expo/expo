@@ -116,8 +116,10 @@ internal class MethodNotFoundException :
 internal class NullArgumentException :
   CodedException(message = "Cannot assigned null to not nullable type.")
 
-internal class FieldRequiredException(property: KProperty1<*, *>) :
-  CodedException(message = "Value for field '$property' is required, got nil")
+internal class FieldRequiredException(property: String) :
+  CodedException(message = "Value for field '$property' is required, got nil") {
+  constructor(property: KProperty1<*, *>) : this(property.toString())
+}
 
 @DoNotStrip
 class UnexpectedException(
@@ -217,6 +219,16 @@ internal class FieldCastException private constructor(
     cause: CodedException
   ) : this(
     message = "Cannot cast '${providedType.name}' for field '$fieldName' ('$fieldType').",
+    cause = cause
+  )
+
+  constructor(
+    fieldName: String,
+    fieldType: TypeDescriptor,
+    providedType: Any?,
+    cause: CodedException
+  ) : this(
+    message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$providedType'.",
     cause = cause
   )
 

@@ -14,14 +14,14 @@ export type BadgedBoxProps = {
  */
 declare function BadgeSlot(props: {
     children: React.ReactNode;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 /**
  * A badged box matching Compose's `BadgedBox`.
  * Overlays a badge on top of content (for example, an icon).
  *
  * @see [Jetpack Compose BadgedBox](https://developer.android.com/develop/ui/compose/components/badges)
  */
-declare function BadgedBoxComponent(props: BadgedBoxProps): import("react").JSX.Element;
+declare function BadgedBoxComponent(props: BadgedBoxProps): import("react/jsx-runtime").JSX.Element;
 declare namespace BadgedBoxComponent {
     var Badge: typeof BadgeSlot;
 }

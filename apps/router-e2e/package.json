@@ -69,17 +69,18 @@
     "expo-linking": "workspace:*",
     "expo-router": "workspace:*",
     "expo-speech": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "expo-sqlite": "workspace:*",
     "expo-symbols": "workspace:*",
     "jose": "^5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0",
+    "react-native": "0.85.2",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.24.0",
     "react-native-web": "^0.21.0",
-    "react-native-webview": "13.16.0"
+    "react-native-webview": "13.16.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",

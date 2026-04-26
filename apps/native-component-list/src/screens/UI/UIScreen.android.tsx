@@ -91,6 +91,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ExposedDropdownMenuBox component',
+    route: 'ui/exposed-dropdown-menu-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExposedDropdownMenuBoxScreen'));
+    },
+  },
+  {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community DateTimePicker replacement',
     route: 'ui/community-datetimepicker',
     options: {},
@@ -99,11 +115,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community SegmentedControl replacement',
+    route: 'ui/community-segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./SwitchScreen'));
+    },
+  },
+  {
+    name: 'SyncSwitch component',
+    route: 'ui/sync-switch',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncSwitchScreen'));
     },
   },
   {
@@ -152,6 +184,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ColorPickerScreen'));
+    },
+  },
+  {
+    name: 'Material Colors',
+    route: 'ui/material-colors',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaterialColorsScreen'));
     },
   },
   {
@@ -208,6 +248,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CarouselScreen'));
+    },
+  },
+  {
+    name: 'LazyColumn / LazyRow',
+    route: 'ui/lazy-column-row',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyColumnRowScreen'));
     },
   },
   {

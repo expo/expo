@@ -133,5 +133,6 @@ export const useTrackingPermissions = createPermissionHook({
 export function isAvailable() {
     return Boolean(ExpoTrackingTransparency);
 }
-export { PermissionStatus };
+// TODO(@kitten): Remove re-exports from EMC
+export { PermissionStatus, };
 //# sourceMappingURL=TrackingTransparency.js.map

@@ -5,14 +5,14 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
+import type { RuntimePlatform } from './resolvePlatform';
 import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
   resolvePlatformFromUserAgentHeader,
-  RuntimePlatform,
 } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
+import type { ServerRequest, ServerResponse } from './server.types';
 
 type ProjectVersion = {
   type: 'sdk' | 'runtime';

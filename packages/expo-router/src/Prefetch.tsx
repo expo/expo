@@ -2,7 +2,7 @@ import { useLayoutEffect } from 'react';
 
 import { router } from './imperative-api';
 import { useOptionalNavigation } from './link/useLoadedNavigation';
-import { Href } from './types';
+import type { Href } from './types';
 
 export type PreloadProps = {
   href: Href;

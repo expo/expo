@@ -3,7 +3,8 @@
     <provider
       android:name=".ClipboardFileProvider"
       android:authorities="${applicationId}.ClipboardFileProvider"
-      android:exported="true">
+      android:exported="false"
+      android:grantUriPermissions="true">
       <meta-data
         android:name="expo.modules.clipboard.CLIPBOARD_FILE_PROVIDER_PATHS"
         android:resource="@xml/clipboard_provider_paths"/>

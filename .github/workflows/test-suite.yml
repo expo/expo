@@ -57,7 +57,8 @@ jobs:
         with:
           android-paths: >-
             "packages/**/android/**",
-            "apps/bare-expo/**/android/**"
+            "apps/bare-expo/**/android/**",
+            "packages/expo-modules-core/expo-module-gradle-plugin/**"
 
           ios-paths: >-
             "packages/**/ios/**",
@@ -71,6 +72,7 @@ jobs:
             "packages/**",
             "!packages/@expo/cli/**",
             "!packages/{create-expo,create-expo-nightly,create-expo-module}/**",
+            "!packages/expo-modules-core/expo-module-gradle-plugin/**",
             pnpm-lock.yaml,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
@@ -80,6 +82,8 @@ jobs:
         uses: ./.github/actions/detect-platform-change
         with:
           android-paths: >-
+            "packages/expo-modules-core/expo-module-gradle-plugin/**",
+            "packages/**/{settings,build}.gradle",
             "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
@@ -117,6 +121,7 @@ jobs:
             "apps/bare-expo/**",
             "apps/test-suite/**",
             "packages/expo-modules-core/**",
+            "!packages/expo-modules-core/expo-module-gradle-plugin/**",
             "packages/expo-modules-autolinking/**",
             "packages/expo/**",
             "packages/expo-constants/**",

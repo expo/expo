@@ -1,0 +1,32 @@
+<% if (project.platforms.includes('web')) { -%>
+import * as React from 'react';
+
+import { <%- project.viewName %>Props } from './<%- project.name %>.types';
+
+export default function <%- project.viewName %>(<% if (project.features.includes('ViewEvent')) { %>props<% } else { %>_props<% } %>: <%- project.viewName %>Props) {
+  return (
+    <div
+      style={{
+        backgroundColor: '#aabbcc',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}<% if (project.features.includes('ViewEvent')) { %>
+      onClick={() => props.onTap({ nativeEvent: {} })}<% } %>>
+      <span><%- project.name %> - native view</span>
+<% if (project.features.includes('ViewEvent')) { -%>
+      <span>Tap the view to emit a view event</span>
+<% } -%>
+    </div>
+  );
+}
+<% } else { -%>
+import { <%- project.viewName %>Props } from './<%- project.name %>.types';
+
+// <%- project.viewName %> is not available on the web platform.
+export default function <%- project.viewName %>(_props: <%- project.viewName %>Props) {
+  throw new Error('<%- project.viewName %> is not available on the web platform.');
+}
+<% } -%>

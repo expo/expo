@@ -4,6 +4,7 @@ import type { TransformOptions } from './babel-core';
  * project-level .babelrc file. If it doesn't exist, it reads the
  * default React Native babelrc file and uses that.
  */
-export declare const loadBabelConfig: ({ projectRoot }: {
+export declare const loadBabelConfig: ({ projectRoot, enableBabelRCLookup, }: {
     projectRoot: string;
+    enableBabelRCLookup?: boolean;
 }) => Pick<TransformOptions, "extends" | "presets">;

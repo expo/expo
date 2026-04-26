@@ -116,8 +116,4 @@ struct NetworkPermissionsBanner: View {
     .cornerRadius(18)
   }
 }
-
-#Preview {
-  HomeTabView()
-}
 // swiftlint:enable closure_body_length

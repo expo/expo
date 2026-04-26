@@ -1,4 +1,4 @@
-import { ImageSource } from '../Image.types';
+import type { ImageSource } from '../Image.types';
 
 type ImageHashType = 'blurhash' | 'thumbhash';
 

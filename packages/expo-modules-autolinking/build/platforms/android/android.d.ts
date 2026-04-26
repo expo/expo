@@ -1,4 +1,4 @@
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
 interface AndroidConfigurationOutput {
     buildFromSource: string[];

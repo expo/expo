@@ -8,7 +8,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
 import java.util.Locale
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class SubtitleTrack(
   @Field val id: String,
   @Field val language: String?,
@@ -39,6 +41,7 @@ class SubtitleTrack(
   }
 }
 
+@OptimizedRecord
 class AudioTrack(
   @Field val id: String,
   @Field val language: String?,
@@ -70,6 +73,7 @@ class AudioTrack(
 }
 
 @OptIn(UnstableApi::class)
+@OptimizedRecord
 class VideoTrack(
   @Field val id: String,
   @Field val url: Uri?,
@@ -80,6 +84,7 @@ class VideoTrack(
   @Field val averageBitrate: Int? = null,
   @Field val peakBitrate: Int? = null,
   @Field val frameRate: Float? = null,
+  @Field val videoRange: VideoRange = VideoRange.SDR,
   var format: Format? = null
 ) : Record, Serializable {
   companion object {
@@ -90,6 +95,7 @@ class VideoTrack(
       val averageBitrate = format.averageBitrate.takeIf { it != Format.NO_VALUE }
       val peakBitrate = format.peakBitrate.takeIf { it != Format.NO_VALUE }
       val frameRate = format.frameRate.takeIf { it != Format.NO_VALUE.toFloat() }
+      val videoRange = VideoRange.fromCColorTransfer(format.colorInfo?.colorTransfer)
 
       return VideoTrack(
         id = id,
@@ -101,6 +107,7 @@ class VideoTrack(
         averageBitrate = averageBitrate,
         peakBitrate = peakBitrate,
         frameRate = frameRate,
+        videoRange = videoRange,
         format = format
       )
     }

@@ -1,5 +1,6 @@
-import { DoctorMultiCheck, DoctorMultiCheckItemBase } from './DoctorMultiCheck';
-import { DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorMultiCheckItemBase } from './DoctorMultiCheck';
+import { DoctorMultiCheck } from './DoctorMultiCheck';
+import type { DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 
 export type DirectPackageInstallCheckItem = { packageName: string } & DoctorMultiCheckItemBase;

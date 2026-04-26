@@ -1,5 +1,5 @@
 /* eslint-disable no-global-assign */
-import { type ExpoFormData } from '../FormData';
+import type { ExpoFormData } from '../FormData';
 
 const { installFormDataPatch } = jest.requireActual('../FormData');
 const jestFormDataPolyfill = FormData;

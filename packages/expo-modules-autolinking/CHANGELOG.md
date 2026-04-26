@@ -8,14 +8,18 @@
 
 - Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
 - Add support for loading precompiled frameworks from npm. ([#44360](https://github.com/expo/expo/pull/44360) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Expose `isNativeModuleAsync` utility in internal exports ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
+- [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
 - Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
 - Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
 - Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
 - [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixes an issue where the modulemap is destroyed when switching between Debug and Release configurations. ([#44665](https://github.com/expo/expo/pull/44665) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -23,6 +27,8 @@
 - Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
 - [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that hasn't changed ([#44289](https://github.com/expo/expo/pull/44289) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
+- [iOS] Add more detailed warnings when a package is not linked due to a mismatch between project and package deployment target. ([#44200](https://github.com/expo/expo/pull/44200) by [@behenate](https://github.com/behenate))
+- Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
 
 ## 55.0.8 — 2026-02-25
 
@@ -179,6 +185,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- [iOS] Added modular headers for companion pods ([#44805](https://github.com/expo/expo/pull/44805) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added support for pre-install step when USE_FRAMEWORKS is set in Podfile ([#39479](https://github.com/expo/expo/pull/39479) by [@chrfalch](https://github.com/chrfalch))
 - Remove dependency on `find-up` ([#39470](https://github.com/expo/expo/pull/39470) by [@kitten](https://github.com/kitten))
 - [iOS] Force codegen for `FBReactNativeSpec` when generated files are missing in React Native source ([#39512](https://github.com/expo/expo/pull/39512) by [@kitten](https://github.com/kitten))

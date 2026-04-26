@@ -1,4 +1,4 @@
-import { SupportedPlatform } from '../types';
+import type { SupportedPlatform } from '../types';
 
 interface PlatformImplementations {
   ios: typeof import('./apple/apple');

@@ -1,5 +1,6 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
-import React, { createContext, Dispatch, SetStateAction, use, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
+import { createContext, use, useState } from 'react';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
