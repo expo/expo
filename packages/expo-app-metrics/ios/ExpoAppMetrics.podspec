@@ -44,5 +44,8 @@ Pod::Spec.new do |s|
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests'
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '-lc++'
+    }
   end
 end
