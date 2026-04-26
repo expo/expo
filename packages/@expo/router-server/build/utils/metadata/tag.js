@@ -4,7 +4,11 @@ exports.renderMetadataTag = renderMetadataTag;
 exports.pushName = pushName;
 exports.pushProperty = pushProperty;
 exports.pushLink = pushLink;
+const types_1 = require("./types");
 function renderMetadataTag(tag) {
+    if ((0, types_1.isTitleTag)(tag)) {
+        return `<title>${escapeHtmlTextNode(tag.content ?? '')}</title>`;
+    }
     const attributes = tag.attributes
         ? ' ' +
             Object.entries(tag.attributes)
@@ -12,9 +16,6 @@ function renderMetadataTag(tag) {
                 .map(([key, value]) => `${key}="${escapeHtmlAttributeValue(value)}"`)
                 .join(' ')
         : '';
-    if (tag.tagName === 'title') {
-        return `<title>${escapeHtmlTextNode(tag.content ?? '')}</title>`;
-    }
     return `<${tag.tagName}${attributes}>`;
 }
 function pushName(tags, key, value) {

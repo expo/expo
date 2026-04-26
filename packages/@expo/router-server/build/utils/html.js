@@ -9,7 +9,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.escapeUnsafeCharacters = escapeUnsafeCharacters;
 exports.createInjectedCssAsString = createInjectedCssAsString;
 exports.createInjectedScriptsAsString = createInjectedScriptsAsString;
+exports.getHydrationFlagScriptContents = getHydrationFlagScriptContents;
 exports.getHydrationFlagScriptAsString = getHydrationFlagScriptAsString;
+exports.getLoaderDataScriptContents = getLoaderDataScriptContents;
 exports.createLoaderDataScriptAsString = createLoaderDataScriptAsString;
 exports.serializeHelmetToHtml = serializeHelmetToHtml;
 // See: https://github.com/urql-graphql/urql/blob/ad0276ae616b2b2f2cd01a527b4217ae35c3fa2d/packages/next-urql/src/htmlescape.ts#L10
@@ -56,6 +58,15 @@ function createInjectedScriptsAsString(srcs) {
     return srcs.map((src) => `<script src="${src}" defer></script>`).join('\n');
 }
 /**
+ * Returns the string content of the hydration flag script, which sets the
+ * `__EXPO_ROUTER_HYDRATE__` global flag to `true`.
+ *
+ * @see {@link getHydrationFlagScriptAsString} for the full `<script>` tag wrapper.
+ */
+function getHydrationFlagScriptContents() {
+    return `globalThis.__EXPO_ROUTER_HYDRATE__=true;`;
+}
+/**
  * Returns a module script that sets the `__EXPO_ROUTER_HYDRATE__` global flag, which tells the
  * client-side Expo Router entrypoint to hydrate the server-rendered markup instead of performing
  * a full client render.
@@ -63,7 +74,17 @@ function createInjectedScriptsAsString(srcs) {
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
 function getHydrationFlagScriptAsString() {
-    return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
+    return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
+}
+/**
+ * Returns the string content of the loader data script, which sets
+ * `globalThis.__EXPO_ROUTER_LOADER_DATA__` to the given data using double-serialized JSON.
+ *
+ * @see {@link createLoaderDataScriptAsString} for the full `<script>` tag wrapper.
+ */
+function getLoaderDataScriptContents(data) {
+    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+    return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
 }
 /**
  * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
@@ -73,8 +94,7 @@ function getHydrationFlagScriptAsString() {
  * @see https://v8.dev/blog/cost-of-javascript-2019#json
  */
 function createLoaderDataScriptAsString(data) {
-    const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
-    return `<script id="expo-router-data">globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});</script>`;
+    return `<script id="expo-router-data">${getLoaderDataScriptContents(data)}</script>`;
 }
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'];
 /**

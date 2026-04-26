@@ -1,9 +1,21 @@
 import type { Metadata, MetadataIconDescriptor, MetadataImage, MetadataValue, MetadataValueArray } from 'expo-server';
-export type MetadataTag = {
-    tagName: 'title' | 'meta' | 'link';
-    attributes?: Record<string, string>;
+type TitleTag = {
+    tagName: 'title';
+    content: string;
+};
+type MetaTag = {
+    tagName: 'meta';
+    attributes: Record<string, string>;
     content?: string;
 };
+type LinkTag = {
+    tagName: 'link';
+    attributes: Record<string, string>;
+};
+export type MetadataTag = TitleTag | MetaTag | LinkTag;
+export declare function isTitleTag(tag: MetadataTag): tag is TitleTag;
+export declare function isMetaTag(tag: MetadataTag): tag is MetaTag;
+export declare function isLinkTag(tag: MetadataTag): tag is LinkTag;
 type ArrayElement<T> = T extends readonly (infer U)[] ? U : T;
 export type MetadataAuthor = ArrayElement<NonNullable<Metadata['authors']>>;
 export type MetadataAudio = ArrayElement<NonNullable<NonNullable<Metadata['openGraph']>['audio']>>;
