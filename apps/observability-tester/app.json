@@ -1,0 +1,84 @@
+{
+  "expo": {
+    "name": "observability",
+    "slug": "observability",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "observability",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.expo.observe.demo",
+      "appleTeamId": "C8D8QTF339",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FFFFFF",
+        "foregroundImage": "./assets/images/android-icon-foreground.png"
+      },
+      "predictiveBackGestureEnabled": false,
+      "package": "dev.expo.observe.demo"
+    },
+    "web": {
+      "output": "server",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-image",
+      "expo-font",
+      "expo-web-browser",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/splash-icon.png",
+          "imageWidth": 200,
+          "backgroundColor": "#ffffff",
+          "resizeMode": "contain",
+          "dark": {
+            "image": "./assets/images/splash-icon-dark.png",
+            "backgroundColor": "#000000"
+          }
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "extraPods": [
+              {
+                "name": "ExpoObserve",
+                "path": "../../../packages/expo-observe/ios",
+                "testspecs": ["Tests"]
+              },
+              {
+                "name": "ExpoAppMetrics",
+                "path": "../../../packages/expo-app-metrics/ios",
+                "testspecs": ["Tests"]
+              }
+            ]
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a"
+      }
+    },
+    "runtimeVersion": "1.0.0",
+    "updates": {
+      "url": "https://u.expo.dev/5310c5f2-8ab4-4d5e-8f53-a5c90aa9594a"
+    },
+    "owner": "expo"
+  }
+}
