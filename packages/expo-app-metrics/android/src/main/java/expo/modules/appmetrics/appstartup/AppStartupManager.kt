@@ -100,16 +100,18 @@ object AppStartupManager {
     routeName: String? = null,
     params: Map<String, Any>? = null
   ) {
+    val metric = Metric(
+      sessionId = "",
+      name = metric.metricName,
+      category = AppStartupMetric.category.categoryName,
+      value = valueInMs.toDouble() / 1000.0,
+      timestamp = getCurrentTimestampInISOFormat(),
+      routeName = routeName,
+      params = params?.let { JSONObject(it).toString() }
+    )
+    Log.d("Metrics", metric.toString())
     _metrics.add(
-      Metric(
-        sessionId = "",
-        name = metric.metricName,
-        category = AppStartupMetric.category.categoryName,
-        value = valueInMs.toDouble() / 1000.0,
-        timestamp = getCurrentTimestampInISOFormat(),
-        routeName = routeName,
-        params = params?.let { JSONObject(it).toString() }
-      )
+      metric
     )
   }
 
@@ -226,5 +228,9 @@ object AppStartupManager {
     if (startupState != StartupState.LAUNCHING || hasRecordedFirstRender) return
     hasRecordedFirstRender = true
     addMetricSinceLaunch(AppStartupMetric.TimeToFirstRender)
+  }
+
+  fun markAnimationFrame() {
+    addMetricSinceLaunch(AppStartupMetric.AnimationFrame)
   }
 }

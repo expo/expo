@@ -121,8 +121,12 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
-            shrinkResources enableShrinkResources.toBoolean()
-            minifyEnabled enableMinifyInReleaseBuilds
+            // shrinkResources enableShrinkResources.toBoolean()
+            // minifyEnabled enableMinifyInReleaseBuilds
+
+           shrinkResources false // enableShrinkResources.toBoolean()
+           minifyEnabled false //enableMinifyInReleaseBuilds
+           debuggable true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }

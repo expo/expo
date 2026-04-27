@@ -115,6 +115,7 @@ export type MetricAttributes = {
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
+  markAnimationFrame(): void;
   getStoredEntries(): Promise<Metric[]>;
   clearStoredEntries(): Promise<void>;
 

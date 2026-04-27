@@ -61,6 +61,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           saveStartupMetricsIfNotSaved()
         }
       }
+       
+      Function("markAnimationFrame") {
+        AppStartupManager.markAnimationFrame()
+      }
 
       OnCreate {
         sessionManager = SessionManager(context)

@@ -4,6 +4,7 @@ import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
 import ExpoObserve from 'expo-observe';
+import Metrics from 'expo-app-metrics';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -89,6 +90,12 @@ export default function Main() {
       console.debug('Could not have added a listener for received notification responses.', e);
     }
   }, []);
+
+  React.useEffect(() => {
+    requestAnimationFrame(() => {
+      Metrics.markAnimationFrame();
+    });
+  });
 
   const isLoaded = useLoaded();
 

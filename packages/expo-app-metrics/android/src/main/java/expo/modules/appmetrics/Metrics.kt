@@ -7,7 +7,8 @@ enum class AppStartupMetric(
   WarmLaunchTime("warmLaunchTime"),
   TimeToInteractive("timeToInteractive"),
   TimeToFirstRender("timeToFirstRender"),
-  BundleLoadTime("bundleLoadTime");
+  BundleLoadTime("bundleLoadTime"),
+  AnimationFrame("animationFrame");
 
   companion object {
     val category = MetricCategory.AppStartup
