@@ -4,7 +4,7 @@ import Testing
 import ExpoAppMetrics
 
 @AppMetricsActor
-@Suite("ObserveUserDefaults")
+@Suite("ObserveUserDefaults", .serialized)
 struct ObserveUserDefaultsTests {
   init() {
     // Remove the persistent domain to simulate a fresh install between tests.

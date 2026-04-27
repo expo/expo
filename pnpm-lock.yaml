@@ -1209,6 +1209,9 @@ importers:
       expo-notifications:
         specifier: workspace:*
         version: link:../../packages/expo-notifications
+      expo-observe:
+        specifier: workspace:*
+        version: link:../../packages/expo-observe
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
