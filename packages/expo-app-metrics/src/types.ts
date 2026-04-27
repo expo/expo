@@ -112,11 +112,104 @@ export type MetricAttributes = {
   params?: Record<string, unknown>;
 };
 
+export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
+
+export type CrashKind =
+  | 'badAccess'
+  | 'fatalError'
+  | 'divideByZero'
+  | 'forceUnwrapNil'
+  | 'arrayOutOfBounds'
+  | 'objcException'
+  | 'stackOverflow';
+
+type SessionBase = {
+  id: string;
+  startDate: string;
+  endDate?: string | null;
+  metrics: Metric[];
+};
+
+export type MainSession = SessionBase & {
+  type: 'main';
+  crashReport?: CrashReport | null;
+};
+
+export type GenericSession = SessionBase & {
+  type: Exclude<SessionType, 'main'>;
+};
+
+export type Session = MainSession | GenericSession;
+
+export type CallStackFrame = {
+  binaryName?: string | null;
+  binaryUUID?: string | null;
+  address?: number | null;
+  offsetIntoBinaryTextSegment?: number | null;
+  sampleCount?: number | null;
+  subFrames?: CallStackFrame[] | null;
+};
+
+export type CallStack = {
+  threadAttributed?: boolean | null;
+  callStackRootFrames?: CallStackFrame[] | null;
+};
+
+export type CallStackTree = {
+  callStacks?: CallStack[] | null;
+};
+
+export type CrashReport = {
+  exceptionType?: number | null;
+  exceptionCode?: number | null;
+  signal?: number | null;
+  terminationReason?: string | null;
+  virtualMemoryRegionInfo?: string | null;
+  exceptionReason?: {
+    composedMessage: string;
+    formatString: string;
+    arguments: string[];
+    exceptionType: string;
+    className: string;
+    exceptionName: string;
+  } | null;
+  callStackTree?: CallStackTree | null;
+  timestampBegin: string;
+  timestampEnd: string;
+  ingestedAt: string;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
   getStoredEntries(): Promise<Metric[]>;
   clearStoredEntries(): Promise<void>;
+  /**
+   * Returns all sessions across the current and historical entries,
+   * ordered with the current launch first.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform ios
+   */
+  getAllSessions(): Promise<Session[]>;
+
+  /**
+   * Simulates a crash report, attributing it to the current main session.
+   * Intended for development and debugging only.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform ios
+   */
+  simulateCrashReport(): void;
+
+  /**
+   * Intentionally crashes the app to produce a real MetricKit diagnostic.
+   * Intended for development and debugging only.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform ios
+   */
+  triggerCrash(kind: CrashKind): void;
 
   /**
    * Starts a new app metrics session. Returns the session ID.

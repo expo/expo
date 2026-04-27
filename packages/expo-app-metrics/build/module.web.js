@@ -10,6 +10,11 @@ class ExpoAppMetricsModule extends NativeModule {
         return [];
     }
     async clearStoredEntries() { }
+    async getAllSessions() {
+        return [];
+    }
+    simulateCrashReport() { }
+    triggerCrash() { }
     startSession(metadata) {
         return '';
     }

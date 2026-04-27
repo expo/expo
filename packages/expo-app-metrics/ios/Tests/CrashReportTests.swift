@@ -114,6 +114,7 @@ private func makeCrashReport(timestampBegin: Date, timestampEnd: Date) -> CrashR
     callStackTree: nil,
     appVersion: "1.0.0",
     timestampBegin: timestampBegin,
-    timestampEnd: timestampEnd
+    timestampEnd: timestampEnd,
+    ingestedAt: Date.now
   )
 }
