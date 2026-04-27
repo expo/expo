@@ -7,7 +7,6 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.booleanOrNull
 import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
 @JvmInline
@@ -44,12 +43,6 @@ internal value class ExpoManifest(
    */
   val useOpenTelemetry: Boolean
     get() = getProperty("extra.eas.observe.useOpenTelemetry")?.jsonPrimitive?.booleanOrNull ?: true
-
-  /**
-   * Gets the extra.eas.observe.enableInDebug from the manifest. Defaults to false.
-   */
-  val enableInDebug: Boolean
-    get() = getProperty("extra.eas.observe.enableInDebug")?.jsonPrimitive?.booleanOrNull ?: false
 }
 
 internal fun getManifest(constants: ConstantsInterface?): ExpoManifest? {

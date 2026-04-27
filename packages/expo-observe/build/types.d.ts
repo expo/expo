@@ -8,7 +8,11 @@ export type Config = {
     /**
      * Whether to enable dispatching events to the server
      *
-     * @default true for production, false for development
+     * When `false`, any pending metrics are marked as sent without being dispatched
+     * and no further metrics are dispatched until this is set back to `true`.
+     *
+     * When unset, defaults to `false` for debug builds and `true` for release builds
+     * so dev metrics aren't shipped without explicit opt-in.
      */
     dispatchingEnabled?: boolean;
 };
