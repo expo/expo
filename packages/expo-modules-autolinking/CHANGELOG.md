@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
 
 ## 55.0.18 — 2026-04-21

@@ -28,6 +28,7 @@
 
 require 'fileutils'
 require 'json'
+require 'net/http'
 require 'uri'
 
 module Expo
@@ -40,6 +41,9 @@ module Expo
 
     # Environment variable for custom precompiled modules base path
     MODULES_PATH_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_PATH'.freeze
+
+    # Environment variable for a shared remote base URL used by external prebuilt packages.
+    EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_BASE_URL'.freeze
 
     # Subdirectory within each pod dir for tarballs and build state
     ARTIFACTS_DIR_NAME = 'artifacts'.freeze
@@ -79,6 +83,11 @@ module Expo
       #   <npm_package>/output/<flavor>/xcframeworks/<Product>.tar.gz
       def custom_modules_path
         ENV[MODULES_PATH_ENV_VAR]
+      end
+
+      # Returns the shared base URL for remote external prebuilt artifacts, if set.
+      def external_modules_base_url
+        ENV[EXTERNAL_MODULES_BASE_URL_ENV_VAR]
       end
 
       # Returns true if precompiled modules are enabled via environment variable
@@ -606,7 +615,7 @@ module Expo
 
           # Copy both flavor tarballs
           ['debug', 'release'].each do |flavor|
-            src = File.join(build_output_dir, flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            src = resolve_prebuilt_tarball(info, product_name, flavor, pod_name)
             dst = File.join(artifacts_dir, "#{product_name}-#{flavor}.tar.gz")
             FileUtils.cp(src, dst) if File.exist?(src) && !File.exist?(dst)
           end
@@ -618,7 +627,7 @@ module Expo
           # Self-healing: extract xcframework if missing (CocoaPods cache issue)
           xcframework_dir = File.join(pod_dir, "#{product_name}.xcframework")
           unless File.directory?(xcframework_dir)
-            tarball = File.join(build_output_dir, build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            tarball = resolve_prebuilt_tarball(info, product_name, build_flavor, pod_name)
             if File.exist?(tarball)
               Pod::UI.info "#{'[Expo-precompiled] '.blue}Extracting #{product_name}.xcframework (cache miss)"
               system("tar", "xzf", tarball, "-C", pod_dir)
@@ -1647,10 +1656,69 @@ module Expo
         return nil unless pod_info
 
         product_name = pod_info[:product_name] || pod_name
-        tarball = File.join(pod_info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+        tarball = resolve_prebuilt_tarball(pod_info, product_name, build_flavor, pod_name)
         return nil unless File.exist?(tarball)
 
         [pod_info, product_name, tarball]
+      end
+
+      def resolve_prebuilt_tarball(pod_info, product_name, flavor, pod_name = nil)
+        tarball = File.join(pod_info[:build_output_dir], flavor, 'xcframeworks', "#{product_name}.tar.gz")
+        return tarball if File.exist?(tarball)
+
+        base_url = external_modules_base_url
+        return tarball unless pod_info[:type] == :external && base_url
+
+        output_prefix = File.join(pod_info[:npm_package], 'output')
+        idx = pod_info[:build_output_dir].rindex(output_prefix)
+        relative_path = [
+          (idx ? pod_info[:build_output_dir][idx..] : output_prefix),
+          flavor,
+          'xcframeworks',
+          "#{product_name}.tar.gz"
+        ].join('/')
+        remote_url = "#{base_url.chomp('/')}/#{relative_path}"
+
+        download_remote_tarball(remote_url, tarball, pod_name || product_name, flavor)
+      end
+
+      def download_remote_tarball(remote_url, destination_path, pod_name, flavor)
+        FileUtils.mkdir_p(File.dirname(destination_path))
+        tmp_path = "#{destination_path}.download-#{Process.pid}"
+
+        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloading #{flavor} artifact from #{remote_url}"
+
+        download_to_file(remote_url, tmp_path)
+        FileUtils.mv(tmp_path, destination_path)
+        destination_path
+      rescue => e
+        FileUtils.rm_f(tmp_path) if tmp_path && File.exist?(tmp_path)
+        Pod::UI.warn "[Expo-precompiled] #{pod_name}: failed to download #{flavor} artifact from #{remote_url}: #{e.message}"
+        nil
+      end
+
+      def download_to_file(url, destination_path, limit = 5)
+        raise 'Too many HTTP redirects' if limit <= 0
+
+        uri = URI.parse(url)
+
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.is_a?(URI::HTTPS), open_timeout: 10, read_timeout: 120) do |http|
+          request = Net::HTTP::Get.new(uri.request_uri)
+
+          http.request(request) do |response|
+            case response
+            when Net::HTTPSuccess
+              File.open(destination_path, 'wb') do |file|
+                response.read_body { |chunk| file.write(chunk) }
+              end
+            when Net::HTTPRedirection
+              redirect_url = URI.join(uri.to_s, response['location']).to_s
+              return download_to_file(redirect_url, destination_path, limit - 1)
+            else
+              raise "HTTP #{response.code}"
+            end
+          end
+        end
       end
 
       # ──────────────────────────────────────────────────────────────────────
