@@ -141,7 +141,7 @@ PODS:
   - ExpoGL (16.0.10):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - ExpoGlassEffect (0.1.8):
+  - ExpoGlassEffect (0.1.9):
     - ExpoModulesCore
   - ExpoHaptics (15.0.8):
     - ExpoModulesCore
@@ -313,7 +313,7 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (6.0.8):
     - ExpoModulesCore
-  - ExpoVideo (3.0.15):
+  - ExpoVideo (3.0.16):
     - ExpoModulesCore
   - ExpoVideoThumbnails (10.0.8):
     - ExpoModulesCore
@@ -4337,7 +4337,7 @@ SPEC CHECKSUMS:
   ExpoFileSystem: aefcd337b94b874f88752ebefc52813b84992fad
   ExpoFont: c625dbd97ed57e9089b172b2a7bb99003d074664
   ExpoGL: b1036f8b2ae216ffedd544ca75f27055cf9a8a51
-  ExpoGlassEffect: 387b1124a00166283d9c762c4dc895e84fdb60e8
+  ExpoGlassEffect: 179b8eb7a6f4c9aeb6eb15c62897dde730ea94f1
   ExpoHaptics: 7240781406f4563c3f4eb1e72864302a8c643fd0
   ExpoHead: 3f6ed6cbda48f13bcaddae98f8e5dc525dcfb34f
   ExpoImage: f6bcd30bb98d4c484869668fbc32834bb3ee5bfb
@@ -4369,7 +4369,7 @@ SPEC CHECKSUMS:
   ExpoSymbols: a0e8217dc2789d9ed0f28b63a466fc5beafd5100
   ExpoSystemUI: 4611247a411f231229f7e04449856035bd18ba21
   ExpoTrackingTransparency: 1096e9082787daf71904fac651c6e73a3179f5b1
-  ExpoVideo: e28c2c362c591adb82c344690d64b770d29909b3
+  ExpoVideo: bd6b4f7de4ec34ba73470b8f955625e821048106
   ExpoVideoThumbnails: 9fccaa03acb8991317d1c26909003ea2bc064d73
   ExpoWebBrowser: 88b116cd378d9609c776c0903fe4070fca461588
   EXStructuredHeaders: c951e77f2d936f88637421e9588c976da5827368
@@ -4393,7 +4393,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleMaps: 8939898920281c649150e0af74aa291c60f2e77d
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: b775e38aae65834cb803ca728aac4d16c7e31147
+  hermes-engine: 2edae2e4655735438fa60eb2869307fed67d5c1e
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
