@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 import { type ImmutableRequest } from './ImmutableRequest';
 import type { AssetInfo, GetStreamingContentOptions } from './manifest';
 import type { Metadata } from './metadata';
@@ -9,7 +11,7 @@ export interface MatchedRouteMetadata {
 
 export interface ResolvedMetadata {
   metadata: Metadata;
-  headTags: string;
+  headNodes: ReactNode[];
 }
 
 export interface ResolveMetadataOptions {

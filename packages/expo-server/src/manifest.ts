@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 /**
  * Asset manifest for client hydration bundles.
  *
@@ -117,7 +119,7 @@ export interface GetStaticContentOptions {
 export interface GetStreamingContentOptions {
   loader?: { data?: unknown; key: string };
   metadata?: {
-    headTags: string;
+    headNodes: ReactNode[];
   } | null;
   request?: Request;
   assets?: AssetInfo;

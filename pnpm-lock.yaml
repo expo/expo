@@ -5203,6 +5203,9 @@ importers:
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.6
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts
