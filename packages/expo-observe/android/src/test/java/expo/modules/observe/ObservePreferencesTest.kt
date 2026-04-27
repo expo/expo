@@ -26,22 +26,30 @@ class ObservePreferencesTest {
   }
 
   @Test
-  fun `getEnabled returns true by default`() {
-    assertTrue(ObservePreferences.getDispatchingEnabled(context))
+  fun `getConfig returns null by default`() {
+    assertNull(ObservePreferences.getConfig(context))
   }
 
   @Test
-  fun `setDispatchingEnabled false persists`() {
-    ObservePreferences.setDispatchingEnabled(context, false)
-    assertFalse(ObservePreferences.getDispatchingEnabled(context))
+  fun `setConfig with dispatchingEnabled false persists false`() {
+    ObservePreferences.setConfig(context, PersistedConfig(dispatchingEnabled = false))
+    assertEquals(false, ObservePreferences.getConfig(context)?.dispatchingEnabled)
   }
 
   @Test
-  fun `setDispatchingEnabled true after false persists`() {
-    ObservePreferences.setDispatchingEnabled(context, false)
-    assertFalse(ObservePreferences.getDispatchingEnabled(context))
-    ObservePreferences.setDispatchingEnabled(context, true)
-    assertTrue(ObservePreferences.getDispatchingEnabled(context))
+  fun `setConfig overwrites previous value`() {
+    ObservePreferences.setConfig(context, PersistedConfig(dispatchingEnabled = false))
+    assertEquals(false, ObservePreferences.getConfig(context)?.dispatchingEnabled)
+    ObservePreferences.setConfig(context, PersistedConfig(dispatchingEnabled = true))
+    assertEquals(true, ObservePreferences.getConfig(context)?.dispatchingEnabled)
   }
 
+  @Test
+  fun `setConfig with null field clears previously set value`() {
+    ObservePreferences.setConfig(context, PersistedConfig(dispatchingEnabled = false))
+    assertEquals(false, ObservePreferences.getConfig(context)?.dispatchingEnabled)
+    ObservePreferences.setConfig(context, PersistedConfig(dispatchingEnabled = null))
+    assertNotNull(ObservePreferences.getConfig(context))
+    assertNull(ObservePreferences.getConfig(context)?.dispatchingEnabled)
+  }
 }
