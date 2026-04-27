@@ -19,36 +19,35 @@ Instructions are not available for older Expo SDK and React Native versions. Add
 
 > **warning** The following instructions may not work for all projects. The specifics of integrating EAS Update into existing projects depend heavily on the specifics of your app, and so you may need to adapt the instructions to your unique setup. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues) or open a pull request to suggest improvements to this guide.
 
-<Prerequisites numberOfRequirements={7}>
-  <Requirement number={1} title="A brownfield native project with React Native">
+<Prerequisites>
+  <Requirement title="A brownfield native project with React Native">
     You should have a brownfield native project with React Native installed and configured to render
     a root view. If you don't have this yet, follow the [Integration with Existing
     Apps](https://reactnative.dev/docs/integration-with-existing-apps) guide from the React Native
     documentation and then come back here.
   </Requirement>
-  <Requirement number={2} title="Latest Expo SDK and supported React Native">
+  <Requirement title="Latest Expo SDK and supported React Native">
     Your app must be using the [latest Expo SDK version and its supported React Native
     version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
   </Requirement>
-  <Requirement number={3} title="No other update libraries">
+  <Requirement title="No other update libraries">
     Remove any other update library integration from your app, such as `react-native-code-push`, and
     ensure that your app compiles and runs successfully in both debug and release on your supported
     platforms.
   </Requirement>
-  <Requirement number={4} title="Expo modules installed">
+  <Requirement title="Expo modules installed">
     Support for Expo modules (through the `expo` package) must be installed and configured in your
     project. See [Integrating Expo tools into existing native apps](/brownfield/overview/) for more
     information.
   </Requirement>
-  <Requirement number={5} title="metro.config.js extends expo/metro-config">
+  <Requirement title="metro.config.js extends expo/metro-config">
     Your **metro.config.js** [must extend
     `expo/metro-config`](/guides/customizing-metro/#customizing).
   </Requirement>
-  <Requirement number={6} title="babel.config.js extends babel-preset-expo">
+  <Requirement title="babel.config.js extends babel-preset-expo">
     Your **babel.config.js** [must extend `babel-preset-expo`](/versions/latest/config/babel/).
   </Requirement>
   <Requirement
-    number={7}
     title={
       <>
         <CODE>npx expo export</CODE> runs successfully

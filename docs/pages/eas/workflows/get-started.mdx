@@ -14,23 +14,23 @@ This page walks you through the process of creating your first EAS Workflows for
 
 ## Get started
 
-<Prerequisites numberOfRequirements={4}>
-  <Requirement number={1} title="Sign up for an Expo account">
+<Prerequisites>
+  <Requirement title="Sign up for an Expo account">
     You'll need to [sign up](https://expo.dev/signup) for an Expo account.
   </Requirement>
-  <Requirement number={2} title="Create a project">
+  <Requirement title="Create a project">
     You'll need to create a project with the following command:
 
     <Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-55']} />
 
   </Requirement>
-  <Requirement number={3} title="Sync the project with EAS">
+  <Requirement title="Sync the project with EAS">
     You'll need to sync the project with EAS with the following command. This will create an EAS project and link it to your local project:
 
     <Terminal cmd={['$ npx eas-cli@latest init']} />
 
   </Requirement>
-  <Requirement number={4} title="Add eas.json">
+  <Requirement title="Add eas.json">
     You'll need to add an `eas.json` file to the root of your project if it doesn't already exist:
 
     <Terminal cmd={['$ touch eas.json && echo "{}" > eas.json']} />
