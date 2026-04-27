@@ -7,7 +7,7 @@ exports.createDefaultGenerationContext = createDefaultGenerationContext;
 exports.getBasicTypesIdentifiers = getBasicTypesIdentifiers;
 exports.joinTSNodesWithNewlines = joinTSNodesWithNewlines;
 exports.mapTypeToTsTypeNode = mapTypeToTsTypeNode;
-exports.buildViewPropsTypeAlias = buildViewPropsTypeAlias;
+exports.buildViewPropsInterface = buildViewPropsInterface;
 exports.buildFunction = buildFunction;
 exports.buildConstructor = buildConstructor;
 exports.buildClass = buildClass;
@@ -213,11 +213,12 @@ function getMissingTypeIdentifiers(fileTypeInformation) {
         .difference(fileTypeInformation.declaredTypeIdentifiers)
         .difference(getBasicTypesIdentifiers());
 }
-function buildPropsTypeLiteral({ props, events }) {
+function buildPropsMembers({ props, events }) {
     const buildEventPropertySignature = (eventDeclaration) => {
         const name = eventDeclaration;
         const typeNode = typescript_1.default.factory.createFunctionTypeNode(undefined, [createParameter({ name: 'event', type: anyKeywordType() })], voidKeywordType());
-        return createPropertySignature({ name, typeNode });
+        // TODO(@HubertBer) check whether we have ways of making events not optional
+        return createPropertySignature({ name, typeNode, optional: true });
     };
     const buildPropPropertySignature = (propDeclaration) => {
         const propTypeArgument = propDeclaration.arguments[1]?.type;
@@ -228,21 +229,21 @@ function buildPropsTypeLiteral({ props, events }) {
         const typeNode = mapTypeToTsTypeNode(propTypeArgument);
         return createPropertySignature({ name, typeNode });
     };
-    return typescript_1.default.factory.createTypeLiteralNode([
+    return [
         ...props.map(buildPropPropertySignature).filter((p) => p),
         ...events.map(buildEventPropertySignature),
-    ]);
+    ];
 }
-function buildViewPropsTypeAlias(view, options) {
+function buildViewPropsInterface(view, options) {
     if (!view) {
         return [];
     }
     return [
-        createTypeAlias({
-            exported: options.exported ?? false,
-            alias: getViewPropsTypeName(view),
-            type: buildPropsTypeLiteral(view),
-        }),
+        typescript_1.default.factory.createInterfaceDeclaration(constructModifiersArray(options), getViewPropsTypeName(view), undefined, [
+            typescript_1.default.factory.createHeritageClause(typescript_1.default.SyntaxKind.ExtendsKeyword, [
+                typescript_1.default.factory.createExpressionWithTypeArguments(typescript_1.default.factory.createIdentifier('ViewProps'), undefined),
+            ]),
+        ], buildPropsMembers(view)),
     ];
 }
 function buildClassProperty(declaration) {
@@ -430,15 +431,18 @@ function buildViewDeclarationNodes(ctx) {
     const modifiers = [declareModifier(), constModifier()];
     return joinTSNodesWithNewlines([
         createGeneratedPrefix(),
+        createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
         buildMissingTypesDeclarations(ctx),
-        buildViewPropsTypeAlias(ctx.view, {}),
+        buildViewPropsInterface(ctx.view, {}),
         [createParameter({ modifiers, name: '_default', type: viewComponentType })],
         createExportDefault(),
     ]);
 }
 function buildJSXIntrinsicsViewNodes(ctx) {
     const name = ctx.module.name;
-    const propsTypeNode = ctx.view ? buildPropsTypeLiteral(ctx.view) : undefined;
+    const propsTypeNode = ctx.view
+        ? typescript_1.default.factory.createTypeLiteralNode(buildPropsMembers(ctx.view))
+        : undefined;
     const jsxIntrinsicElementsNodes = [];
     if (ctx.view) {
         const globalIdentifier = typescript_1.default.factory.createIdentifier('global');
@@ -458,8 +462,9 @@ function buildJSXIntrinsicsViewNodes(ctx) {
 function buildNativeModuleGeneratedNodes(ctx) {
     return joinTSNodesWithNewlines([
         createGeneratedPrefix(),
+        createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
         buildExposedTypesDeclarations(ctx, { exported: true }),
-        buildViewPropsTypeAlias(ctx.view, { exported: true }),
+        buildViewPropsInterface(ctx.view, { exported: true }),
         buildNativeModuleClassDeclaration({ moduleClassDeclaration: ctx.module }),
     ]);
 }
@@ -602,8 +607,9 @@ async function generateFullTsInterface(fileTypeInformation) {
     const moduleViewsFilesImportNames = [];
     const moduleTypesFileNodes = joinTSNodesWithNewlines([
         createGeneratedPrefix(),
+        createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
         buildExposedTypesDeclarations(ctx, { exported: true }),
-        ...ctx.module.views.map((view) => buildViewPropsTypeAlias(view, { exported: true })),
+        ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
     ]);
     const moduleViewFilesNodes = [];
     for (const view of ctx.module.views) {

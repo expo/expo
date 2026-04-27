@@ -412,7 +412,7 @@ function getMissingTypeIdentifiers(fileTypeInformation: FileTypeInformation): Se
     .difference(getBasicTypesIdentifiers());
 }
 
-function buildPropsTypeLiteral({ props, events }: ViewDeclaration): ts.TypeLiteralNode {
+function buildPropsMembers({ props, events }: ViewDeclaration): ts.TypeElement[] {
   const buildEventPropertySignature = (eventDeclaration: EventDeclaration) => {
     const name = eventDeclaration;
     const typeNode = ts.factory.createFunctionTypeNode(
@@ -420,7 +420,8 @@ function buildPropsTypeLiteral({ props, events }: ViewDeclaration): ts.TypeLiter
       [createParameter({ name: 'event', type: anyKeywordType() })],
       voidKeywordType()
     );
-    return createPropertySignature({ name, typeNode });
+    // TODO(@HubertBer) check whether we have ways of making events not optional
+    return createPropertySignature({ name, typeNode, optional: true });
   };
 
   const buildPropPropertySignature = (propDeclaration: PropDeclaration) => {
@@ -433,13 +434,13 @@ function buildPropsTypeLiteral({ props, events }: ViewDeclaration): ts.TypeLiter
     return createPropertySignature({ name, typeNode });
   };
 
-  return ts.factory.createTypeLiteralNode([
+  return [
     ...(props.map(buildPropPropertySignature).filter((p) => p) as ts.PropertySignature[]),
     ...events.map(buildEventPropertySignature),
-  ]);
+  ];
 }
 
-export function buildViewPropsTypeAlias(
+export function buildViewPropsInterface(
   view: ViewDeclaration | null,
   options: { exported?: boolean }
 ): ts.Node[] {
@@ -447,11 +448,20 @@ export function buildViewPropsTypeAlias(
     return [];
   }
   return [
-    createTypeAlias({
-      exported: options.exported ?? false,
-      alias: getViewPropsTypeName(view),
-      type: buildPropsTypeLiteral(view),
-    }),
+    ts.factory.createInterfaceDeclaration(
+      constructModifiersArray(options),
+      getViewPropsTypeName(view),
+      undefined,
+      [
+        ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
+          ts.factory.createExpressionWithTypeArguments(
+            ts.factory.createIdentifier('ViewProps'),
+            undefined
+          ),
+        ]),
+      ],
+      buildPropsMembers(view)
+    ),
   ];
 }
 
@@ -806,8 +816,9 @@ function buildViewDeclarationNodes(ctx: GenerationContext): ts.Node[] {
   const modifiers = [declareModifier(), constModifier()];
   return joinTSNodesWithNewlines([
     createGeneratedPrefix(),
+    createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
     buildMissingTypesDeclarations(ctx),
-    buildViewPropsTypeAlias(ctx.view, {}),
+    buildViewPropsInterface(ctx.view, {}),
     [createParameter({ modifiers, name: '_default', type: viewComponentType })],
     createExportDefault(),
   ]);
@@ -815,7 +826,9 @@ function buildViewDeclarationNodes(ctx: GenerationContext): ts.Node[] {
 
 function buildJSXIntrinsicsViewNodes(ctx: GenerationContext): ts.Node[] {
   const name = ctx.module.name;
-  const propsTypeNode = ctx.view ? buildPropsTypeLiteral(ctx.view) : undefined;
+  const propsTypeNode = ctx.view
+    ? ts.factory.createTypeLiteralNode(buildPropsMembers(ctx.view))
+    : undefined;
 
   const jsxIntrinsicElementsNodes = [];
   if (ctx.view) {
@@ -856,8 +869,9 @@ function buildJSXIntrinsicsViewNodes(ctx: GenerationContext): ts.Node[] {
 function buildNativeModuleGeneratedNodes(ctx: GenerationContext): ts.Node[] {
   return joinTSNodesWithNewlines([
     createGeneratedPrefix(),
+    createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
     buildExposedTypesDeclarations(ctx, { exported: true }),
-    buildViewPropsTypeAlias(ctx.view, { exported: true }),
+    buildViewPropsInterface(ctx.view, { exported: true }),
     buildNativeModuleClassDeclaration({ moduleClassDeclaration: ctx.module }),
   ]);
 }
@@ -1060,8 +1074,9 @@ export async function generateFullTsInterface(fileTypeInformation: FileTypeInfor
   const moduleViewsFilesImportNames: string[] = [];
   const moduleTypesFileNodes = joinTSNodesWithNewlines([
     createGeneratedPrefix(),
+    createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
     buildExposedTypesDeclarations(ctx, { exported: true }),
-    ...ctx.module.views.map((view) => buildViewPropsTypeAlias(view, { exported: true })),
+    ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
   ]);
 
   const moduleViewFilesNodes = [];

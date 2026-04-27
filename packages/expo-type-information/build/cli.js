@@ -12,6 +12,7 @@ const node_crypto_1 = require("node:crypto");
 const mockgen_1 = require("./mockgen");
 const typeInformation_1 = require("./typeInformation");
 const typescriptGeneration_1 = require("./typescriptGeneration");
+const utils_1 = require("./utils");
 let sourcekittenInstalled = null;
 function isSourceKittenInstalled() {
     if (sourcekittenInstalled !== null) {
@@ -32,7 +33,9 @@ function addCommonOptions(command) {
         .option('-i, --input-paths <filePaths...>', 'Paths to Swift files for some module, glob patterns are allowed.')
         .option('-m --module-path <modulePath>', 'Path to expo module root directory.')
         .option('-o, --output-path <filePath>', 'Path to save the generated output. If this option is not provided the generated output is printed to console.')
-        .option('-t, --type-inference <typeInference>', 'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE', 'PREPROCESS_AND_INFERENCE')
+        .option('-t, --type-inference <typeInference>', 
+    // TODO(@HubertBer) Fix the PREPROCESS_AND_INFERENCE option.
+    'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE. Note that the last option rarely fails for some modules, use the 2nd or 1st in that case.', 'SIMPLE_INFERENCE')
         .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
 /**
@@ -85,24 +88,29 @@ function sanitizeAndValidateOutputPath(rawPath, isFilePath = true) {
         if (fs_1.default.existsSync(resolvedPath)) {
             const pathStat = fs_1.default.statSync(resolvedPath);
             if (isFilePath && !pathStat.isFile()) {
+                console.log('1');
                 return null;
             }
             if (!isFilePath && !pathStat.isDirectory()) {
+                console.log('2');
                 return null;
             }
         }
         else if (isFilePath) {
             const parentDir = path_1.default.dirname(resolvedPath);
             if (!fs_1.default.existsSync(parentDir)) {
+                console.log('3');
                 return null;
             }
         }
         else {
+            console.log('4');
             return null;
         }
         return resolvedPath;
     }
     catch (error) {
+        console.log('5');
         return null;
     }
 }
@@ -144,13 +152,14 @@ function uniqueStrings(strings) {
     return [...new Set(strings)];
 }
 function parseCommandArguments(options, isOutputFile = true) {
+    const appJsonPath = options.appJson ?? undefined;
     let realInputPaths = options.inputPaths ?? [].flatMap(getFilesForGlobPattern).filter((p) => p != null);
     if (options.modulePath) {
         const modulePaths = getModuleFilePathsFromPodspec(options.modulePath) ?? [];
         realInputPaths.push(...modulePaths);
     }
     realInputPaths = uniqueStrings(realInputPaths);
-    if (!realInputPaths || realInputPaths.length === 0) {
+    if ((!realInputPaths || realInputPaths.length === 0) && !appJsonPath) {
         console.error(`Provide valid globs to existing files or a path to a module with valid podspec.`);
         return null;
     }
@@ -163,13 +172,18 @@ function parseCommandArguments(options, isOutputFile = true) {
         }
         realOutputPath = validatedOutPath;
     }
+    else if (options.modulePath) {
+        // if path to module directory is provided, we can generate ts types under src directory
+        realOutputPath =
+            sanitizeAndValidateOutputPath(path_1.default.join(options.modulePath, 'src'), false) ?? undefined;
+    }
     const typeInference = parseInferenceOption(options.typeInference);
     if (typeInference === null) {
         console.error(`Invalid typeInference option. ${options.typeInference}`);
         return null;
     }
     const watcher = options.watcher ?? false;
-    return { realInputPaths, realOutputPath, typeInference, watcher };
+    return { realInputPaths, realOutputPath, typeInference, watcher, appJsonPath };
 }
 async function getFileTypeInformationFromArgs({ realInputPaths, typeInference, }) {
     const typeInfo = await (0, typeInformation_1.getFileTypeInformation)({
@@ -296,6 +310,28 @@ function insertFileHashComment(fileContent) {
     return `// File hash: ${hashString}
 ${fileContent}`;
 }
+async function generateConciseTsFiles(parsedArgs) {
+    const { realInputPaths, realOutputPath } = parsedArgs;
+    const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
+    if (!typeInfo)
+        return;
+    const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } = await (0, typescriptGeneration_1.generateConciseTsInterface)(typeInfo);
+    const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
+    const dirName = realOutputPath ?? path_1.default.dirname(realInputPaths[0]);
+    try {
+        await Promise.all([
+            fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.generated.ts`), volitileGeneratedFileContent, {
+                flag: 'w',
+                encoding: 'utf-8',
+            }),
+            writeToStableFile({
+                filePath: path_1.default.resolve(dirName, `${moduleName}.tsx`),
+                content: moduleTypescriptInterfaceFileContent,
+            }),
+        ]);
+    }
+    catch (e) { }
+}
 function generateConciseExpoModuleTSInterfaceCommand(cli) {
     addCommonOptions(cli
         .command('generate-concise-ts')
@@ -304,28 +340,7 @@ function generateConciseExpoModuleTSInterfaceCommand(cli) {
         const parsedArgs = await parseCommandArguments(options, false);
         if (!parsedArgs)
             return;
-        const { realInputPaths, realOutputPath } = parsedArgs;
-        const command = async () => {
-            const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
-                return;
-            const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } = await (0, typescriptGeneration_1.generateConciseTsInterface)(typeInfo);
-            const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
-            const dirName = realOutputPath ?? path_1.default.dirname(realInputPaths[0]);
-            try {
-                await Promise.all([
-                    fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.generated.ts`), volitileGeneratedFileContent, {
-                        flag: 'w',
-                        encoding: 'utf-8',
-                    }),
-                    writeToStableFile({
-                        filePath: path_1.default.resolve(dirName, `${moduleName}.tsx`),
-                        content: moduleTypescriptInterfaceFileContent,
-                    }),
-                ]);
-            }
-            catch (e) { }
-        };
+        const command = () => generateConciseTsFiles(parsedArgs);
         runCommandOnWatch(parsedArgs, command);
     });
 }
@@ -346,7 +361,7 @@ async function writeToStableFile({ filePath, content }) {
         console.error(`Error writing to file.${e}`);
     }
 }
-function generateTypeFiles(cli) {
+function generateTypeFilesCommand(cli) {
     return addCommonOptions(cli.command('generate-type-files')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options, false);
         if (!parsedArgs)
@@ -379,6 +394,104 @@ function generateTypeFiles(cli) {
         runCommandOnWatch(parsedArgs, command);
     });
 }
+async function getResolvedWatchedDirectoriesFromAppJson(appJsonPath) {
+    const watchedDirectories = JSON.parse(await fs_1.default.promises.readFile(appJsonPath, 'utf-8'))?.expo
+        ?.experiments?.inlineModules?.watchedDirectories;
+    if (!Array.isArray(watchedDirectories)) {
+        return null;
+    }
+    const rootDir = path_1.default.dirname(path_1.default.resolve(appJsonPath));
+    return watchedDirectories.map((relativePath) => path_1.default.resolve(rootDir, relativePath));
+}
+async function generateInlineModulesTypesCommand(cli) {
+    return cli
+        .command('inline-modules-types')
+        .requiredOption('-a --app-json <appJsonPathPath>', 'A path to the `app.json` where the inline.modules.watchedDirectories are defined.')
+        .option('-w --watcher', 'Starts a watcher that checks for changes in inline modules files.')
+        .action(async (options) => {
+        const parsedArgs = parseCommandArguments(options);
+        if (!parsedArgs) {
+            return;
+        }
+        const { appJsonPath, watcher } = parsedArgs;
+        if (!appJsonPath) {
+            return;
+        }
+        const watchedDirectories = await getResolvedWatchedDirectoriesFromAppJson(appJsonPath);
+        if (!watchedDirectories) {
+            return;
+        }
+        const generateInlineModuleTSFiles = async (filePath, dirPath) => {
+            await generateConciseTsFiles({
+                realInputPaths: [filePath],
+                realOutputPath: dirPath,
+                typeInference: parsedArgs.typeInference,
+                watcher: false,
+            });
+        };
+        const dirents = [];
+        for (const dir of watchedDirectories) {
+            for await (const dirent of (0, utils_1.scanFilesRecursively)(dir)) {
+                if (!dirent.name.endsWith('.swift')) {
+                    continue;
+                }
+                dirents.push(dirent);
+            }
+        }
+        await taskAll(dirents, async (dirent) => await generateInlineModuleTSFiles(dirent.path, dirent.parentPath));
+        if (!watcher) {
+            return;
+        }
+        const debouncedInlineModulesTsGeneration = debounce(generateInlineModuleTSFiles);
+        const watchedDirectoriesWatchers = new Map();
+        const setupWatchedDirectoriesWatchers = async () => {
+            const watchedDirectories = await getResolvedWatchedDirectoriesFromAppJson(appJsonPath);
+            // Merge new watchers with old watchers.
+            // Let's first find and remove the obsolete ones.
+            const watchedDirsSet = new Set(watchedDirectories ?? []);
+            const obsoleteWatchersKeys = [];
+            for (const [key] of watchedDirectoriesWatchers) {
+                if (!watchedDirsSet.has(key)) {
+                    obsoleteWatchersKeys.push(key);
+                }
+            }
+            for (const key of obsoleteWatchersKeys) {
+                const watcher = watchedDirectoriesWatchers.get(key);
+                watcher?.close();
+                watchedDirectoriesWatchers.delete(key);
+            }
+            // Now let's create and add new watchers
+            const createWatcherForDir = (dir) => {
+                return fs_1.default.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
+                    if (!fileName) {
+                        return;
+                    }
+                    const resolvedFilePath = path_1.default.resolve(dir, fileName);
+                    if (fs_1.default.existsSync(resolvedFilePath)) {
+                        debouncedInlineModulesTsGeneration(resolvedFilePath, path_1.default.dirname(resolvedFilePath));
+                    }
+                });
+            };
+            for (const dir of watchedDirectories ?? []) {
+                const watcher = watchedDirectoriesWatchers.get(dir);
+                if (!watcher) {
+                    watchedDirectoriesWatchers.set(dir, createWatcherForDir(dir));
+                }
+            }
+        };
+        await setupWatchedDirectoriesWatchers();
+        const appJsonWatcher = fs_1.default.watch(appJsonPath, 'utf-8', async (event) => {
+            if (event === 'rename' && !fs_1.default.existsSync(appJsonPath)) {
+                for (const [_, watcher] of watchedDirectoriesWatchers) {
+                    watcher.close();
+                }
+                appJsonWatcher.close();
+                return;
+            }
+            await setupWatchedDirectoriesWatchers();
+        });
+    });
+}
 async function main(args) {
     if (!isSourceKittenInstalled()) {
         console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');
@@ -391,7 +504,8 @@ async function main(args) {
         .description('CLI commands for retrieving type information from native files.');
     generateConciseExpoModuleTSInterfaceCommand(cli);
     generateMocksForFileCommand(cli);
-    generateTypeFiles(cli);
+    generateTypeFilesCommand(cli);
+    generateInlineModulesTypesCommand(cli);
     const otherCommands = cli.command('other').description('internal or very specific commands');
     typeInformationCommand(otherCommands);
     generateModuleTypesCommand(otherCommands);

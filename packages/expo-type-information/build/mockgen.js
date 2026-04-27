@@ -172,7 +172,7 @@ function getMockedClass(classDeclaration, fileInfo) {
 }
 function getMockedView(viewDeclaration) {
     const propsTypeName = (0, typescriptGeneration_1.getViewPropsTypeName)(viewDeclaration);
-    const propsType = (0, typescriptGeneration_1.buildViewPropsTypeAlias)(viewDeclaration, { exported: true });
+    const propsType = (0, typescriptGeneration_1.buildViewPropsInterface)(viewDeclaration, { exported: true });
     const propsParameter = typescript_1.default.factory.createParameterDeclaration(undefined, undefined, 'props', undefined, typescript_1.default.factory.createTypeReferenceNode(propsTypeName, undefined), undefined);
     const viewFunction = typescript_1.default.factory.createFunctionDeclaration([typescript_1.default.factory.createModifier(typescript_1.default.SyntaxKind.ExportKeyword)], undefined, (viewDeclaration.name?.length ?? 0) > 0 ? viewDeclaration.name : 'View', undefined, [propsParameter], undefined, typescript_1.default.factory.createBlock([]));
     return [...propsType, viewFunction];

@@ -24,7 +24,7 @@ import {
 import {
   getBasicTypesIdentifiers,
   buildEnumTypeDeclaration,
-  buildViewPropsTypeAlias,
+  buildViewPropsInterface,
   buildRecordTypeAlias,
   buildClass,
   buildFunction,
@@ -214,7 +214,7 @@ function getMockedClass(
 
 function getMockedView(viewDeclaration: ViewDeclaration): ts.Node[] {
   const propsTypeName = getViewPropsTypeName(viewDeclaration);
-  const propsType = buildViewPropsTypeAlias(viewDeclaration, { exported: true });
+  const propsType = buildViewPropsInterface(viewDeclaration, { exported: true });
   const propsParameter = ts.factory.createParameterDeclaration(
     undefined,
     undefined,
