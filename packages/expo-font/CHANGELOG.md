@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] include xml-fonts in the `getLoadedFonts()` list ([#43860](https://github.com/expo/expo/pull/43860) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-16
