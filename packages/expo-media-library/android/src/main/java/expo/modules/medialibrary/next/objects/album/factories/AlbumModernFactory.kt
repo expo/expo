@@ -15,7 +15,6 @@ import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
-import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 import java.io.IOException
 import java.lang.ref.WeakReference
 
