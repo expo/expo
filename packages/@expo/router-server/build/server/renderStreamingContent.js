@@ -55,8 +55,8 @@ const static_1 = require("expo-router/internal/static");
 const server_1 = __importDefault(require("react-dom/server"));
 const getRootComponent_1 = require("../static/getRootComponent");
 const debug_1 = require("../utils/debug");
-const html_1 = require("../utils/html");
-const streams_1 = require("../utils/streams");
+const server_2 = require("expo-router/internal/server");
+const react_1 = require("../utils/react");
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStreamingContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
@@ -95,45 +95,31 @@ function prepareRenderContext(location, options) {
         : null;
     return { headContext, element, getStyleElement, loadedData };
 }
+function FontResources() {
+    const descriptors = Font.getServerResourceDescriptors();
+    debug(`Pushing fonts: (count: ${descriptors.length})`, descriptors);
+    return (0, react_1.createInjectedFontsAsNodes)(descriptors);
+}
 /**
  * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
  * that emits the full HTML document with head injections applied.
- *
- * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
- * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
- * the client after hydration instead.
  */
 async function getStreamingContent(location, options) {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
-    const stream = await server_1.default.renderToReadableStream((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }), {
+    const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
+    const serverDocumentData = {
+        headNodes: [
+            ...(options?.metadata?.headNodes ?? []),
+            getStyleElement({ key: 'rnw-style-element' }),
+            ...(headCssNodes ?? []),
+        ],
+        bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {})],
+    };
+    return await server_1.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_2.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
+        bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
     });
-    // Collect head injection content after the shell stream is ready.
-    const css = server_1.default.renderToStaticMarkup(getStyleElement());
-    const { headTags, htmlAttributes, bodyAttributes } = (0, html_1.serializeHelmetToHtml)(headContext.helmet);
-    const fonts = Font.getServerResources();
-    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-    const injectionParts = [];
-    if (options?.metadata?.headTags)
-        injectionParts.push(options.metadata.headTags);
-    if (headTags)
-        injectionParts.push(headTags);
-    injectionParts.push((0, html_1.getHydrationFlagScriptAsString)());
-    if (css)
-        injectionParts.push(css);
-    if (fonts.length > 0)
-        injectionParts.push(fonts.join(''));
-    if (loadedData)
-        injectionParts.push((0, html_1.createLoaderDataScriptAsString)(loadedData));
-    if (options?.assets?.css && options.assets.css.length > 0) {
-        injectionParts.push((0, html_1.createInjectedCssAsString)(options.assets.css));
-    }
-    return stream.pipeThrough((0, streams_1.createDocumentMetadataInjectionTransform)({
-        injectionParts,
-        htmlAttributes,
-        bodyAttributes,
-    }));
 }
 var metadata_1 = require("./metadata");
 Object.defineProperty(exports, "resolveMetadata", { enumerable: true, get: function () { return metadata_1.resolveMetadata; } });

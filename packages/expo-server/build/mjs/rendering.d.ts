@@ -1,13 +1,14 @@
 import { type ImmutableRequest } from './ImmutableRequest';
 import type { AssetInfo, GetStreamingContentOptions } from './manifest';
 import type { Metadata } from './metadata';
+import type { ReactNode } from 'react';
 export interface MatchedRouteMetadata {
     file: string;
     page: string;
 }
 export interface ResolvedMetadata {
     metadata: Metadata;
-    headTags: string;
+    headNodes: ReactNode[];
 }
 export interface ResolveMetadataOptions {
     route: MatchedRouteMetadata;

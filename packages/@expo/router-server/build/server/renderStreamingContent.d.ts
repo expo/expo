@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ReactNode } from 'react';
 export type GetStreamingContentOptions = {
     loader?: {
         data?: any;
@@ -11,7 +12,7 @@ export type GetStreamingContentOptions = {
         key: string;
     };
     metadata?: {
-        headTags: string;
+        headNodes: ReactNode[];
     } | null;
     request?: Request;
     /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
@@ -23,10 +24,6 @@ export type GetStreamingContentOptions = {
 /**
  * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
  * that emits the full HTML document with head injections applied.
- *
- * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
- * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
- * the client after hydration instead.
  */
 export declare function getStreamingContent(location: URL, options?: GetStreamingContentOptions): Promise<ReadableStream<Uint8Array>>;
 export { resolveMetadata } from './metadata';
