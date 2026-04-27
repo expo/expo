@@ -2,6 +2,7 @@ import chalk from 'chalk';
 import commander, { Command } from 'commander';
 import fs from 'fs';
 import path from 'path';
+import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
 import { generateMocks } from './mockgen';
@@ -26,6 +27,21 @@ export type TypeInformationCommandCommonArguments = {
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
   watcher?: boolean;
 };
+
+let sourcekittenInstalled: boolean | null = null;
+function isSourceKittenInstalled(): boolean {
+  if (sourcekittenInstalled !== null) {
+    return sourcekittenInstalled;
+  }
+  try {
+    execSync('which sourcekitten', { stdio: 'ignore' });
+    sourcekittenInstalled = true;
+    return true;
+  } catch (e) {
+    sourcekittenInstalled = false;
+    return false;
+  }
+}
 
 function addCommonOptions(command: commander.Command): commander.Command {
   return command
@@ -475,6 +491,10 @@ function generateTypeFiles(cli: commander.Command) {
 }
 
 async function main(args: string[]) {
+  if (!isSourceKittenInstalled()) {
+    console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');
+    return;
+  }
   const cli = new Command();
   cli
     .name('expo-type-information')
