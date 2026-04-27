@@ -26,6 +26,8 @@ class PersistentFileLog(
   category: String,
   filesDirectory: File
 ) {
+  private val filePath = "${filesDirectory.path}/$FILE_NAME_PREFIX.$category"
+
   init {
     ensureFileExists()
   }
@@ -97,8 +99,6 @@ class PersistentFileLog(
   }
 
   // Private functions
-
-  private val filePath = "${filesDirectory.path}/$FILE_NAME_PREFIX.$category"
 
   private fun ensureFileExists() {
     val fd = File(filePath)
