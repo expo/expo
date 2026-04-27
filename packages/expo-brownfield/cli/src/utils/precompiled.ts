@@ -146,11 +146,24 @@ export const resolvedFixedXCFrameworks = (): string[] => {
 };
 
 /**
- * Walks up from `startDir` looking for `packages/precompile/.build/.spm-deps/`. The Expo monorepo
- * stages shared SPM-dependency xcframeworks (SDWebImage, libavif, lottie-ios, …) under that path
- * — one xcframework per `<productName>/<flavor>/`. Returns the absolute path or null.
+ * Locates the shared SPM-deps cache root. Resolution order:
+ *
+ *  1. `$EXPO_PRECOMPILED_MODULES_PATH/.spm-deps/` — explicit override matching the Ruby
+ *     autolinking convention (precompiled_modules.rb's MODULES_PATH_ENV_VAR).
+ *  2. Walk up from `startDir` looking for `packages/precompile/.build/.spm-deps/` — the Expo
+ *     monorepo's centralized cache.
+ *
+ * Returns the absolute path to the `.spm-deps/` dir, or null when neither is reachable.
  */
 export const findSpmDepsRoot = (startDir: string): string | null => {
+  const envOverride = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+  if (envOverride) {
+    const candidate = path.join(envOverride, '.spm-deps');
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
   let dir = path.resolve(startDir);
   while (true) {
     const candidate = path.join(dir, SPM_DEPS_RELATIVE);
@@ -209,6 +222,260 @@ export const enumerateSpmDepsXcframeworks = (
       // so flavor reconcile is a no-op for them. mainProduct mirrors `name` defensively.
       mainProduct: entry.name,
     });
+  }
+
+  return results;
+};
+
+/**
+ * Subset of the `spm.config.json` schema we actually care about for resolving deps. Each
+ * Expo precompiled module ships one of these (e.g. `node_modules/expo-image/spm.config.json`).
+ */
+export interface SpmConfig {
+  products?: SpmProduct[];
+}
+
+export interface SpmProduct {
+  name?: string;
+  podName?: string;
+  spmPackages?: SpmPackageEntry[];
+}
+
+export interface SpmPackageEntry {
+  productName?: string;
+  url?: string;
+}
+
+export interface NpmPackageInfo {
+  npmPackage: string;
+  packageRoot: string;
+  spmConfig: SpmConfig;
+}
+
+const SPM_CONFIG_FILENAME = 'spm.config.json';
+
+/** Reads + parses an `spm.config.json` file. Returns null on any read/parse failure. */
+const readSpmConfig = (filePath: string): SpmConfig | null => {
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf8')) as SpmConfig;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Builds a `Map<podName, NpmPackageInfo>` for every npm package reachable from `cwd` that has
+ * an `spm.config.json` declaring a `podName`. Used to walk an enumerated pod (e.g. `ExpoImage`)
+ * back to its npm package so we can read its declared `spmPackages`.
+ *
+ * The scan looks at:
+ *  - `<cwd>/node_modules/*\/spm.config.json`
+ *  - `<cwd>/node_modules/@scope/*\/spm.config.json`
+ * Each candidate is `realpath`'d so pnpm's symlinked store layout (`node_modules/.pnpm/...`)
+ * resolves to the actual package root.
+ */
+export const buildPodToNpmPackageMap = (cwd: string): Map<string, NpmPackageInfo> => {
+  const map = new Map<string, NpmPackageInfo>();
+  const nodeModules = path.join(cwd, 'node_modules');
+  if (!fs.existsSync(nodeModules)) {
+    return map;
+  }
+
+  const indexCandidate = (candidate: string) => {
+    const configPath = path.join(candidate, SPM_CONFIG_FILENAME);
+    if (!fs.existsSync(configPath)) {
+      return;
+    }
+    let packageRoot: string;
+    try {
+      packageRoot = fs.realpathSync(candidate);
+    } catch {
+      packageRoot = candidate;
+    }
+    const spmConfig = readSpmConfig(path.join(packageRoot, SPM_CONFIG_FILENAME));
+    if (!spmConfig?.products?.length) {
+      return;
+    }
+    let npmPackage: string | undefined;
+    try {
+      const pkgJson = JSON.parse(
+        fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8')
+      ) as { name?: string };
+      npmPackage = pkgJson.name;
+    } catch {
+      // Best-effort — fall back to dir basename.
+    }
+    if (!npmPackage) {
+      npmPackage = path.basename(packageRoot);
+    }
+    for (const product of spmConfig.products) {
+      if (!product.podName) {
+        continue;
+      }
+      if (!map.has(product.podName)) {
+        map.set(product.podName, { npmPackage, packageRoot, spmConfig });
+      }
+    }
+  };
+
+  for (const entry of fs.readdirSync(nodeModules, { withFileTypes: true })) {
+    if (!entry.isDirectory() && !entry.isSymbolicLink()) {
+      continue;
+    }
+    if (entry.name.startsWith('.')) {
+      continue;
+    }
+    if (entry.name.startsWith('@')) {
+      const scopeDir = path.join(nodeModules, entry.name);
+      let scopedEntries: fs.Dirent[];
+      try {
+        scopedEntries = fs.readdirSync(scopeDir, { withFileTypes: true });
+      } catch {
+        continue;
+      }
+      for (const scoped of scopedEntries) {
+        if (!scoped.isDirectory() && !scoped.isSymbolicLink()) {
+          continue;
+        }
+        indexCandidate(path.join(scopeDir, scoped.name));
+      }
+    } else {
+      indexCandidate(path.join(nodeModules, entry.name));
+    }
+  }
+
+  return map;
+};
+
+/**
+ * Recursively searches `<packageRoot>/prebuilds/output/` for an xcframework matching the
+ * requested name + flavor. The npm-publish pipeline writes deps under either:
+ *   `prebuilds/output/<pkgVer>/<rnVer>/<hermesVer>/<flavor>/xcframeworks/<name>.xcframework` (versioned)
+ *   `prebuilds/output/<flavor>/xcframeworks/<name>.xcframework` (flat)
+ * We treat the layout as opaque and return the first match — RN/Hermes versions in the
+ * consumer's project may not align with what was published, so an exact path match would be
+ * brittle.
+ *
+ * Bounded depth to avoid pathological scans.
+ */
+const findBundledXcframework = (
+  packageRoot: string,
+  name: string,
+  flavor: string,
+  maxDepth = 6
+): string | null => {
+  const root = path.join(packageRoot, 'prebuilds', 'output');
+  if (!fs.existsSync(root)) {
+    return null;
+  }
+  const target = path.join(flavor, 'xcframeworks', `${name}.xcframework`);
+
+  const walk = (dir: string, depth: number): string | null => {
+    if (depth > maxDepth) {
+      return null;
+    }
+    const candidate = path.join(dir, target);
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return null;
+    }
+    for (const entry of entries) {
+      if (!entry.isDirectory()) {
+        continue;
+      }
+      const found = walk(path.join(dir, entry.name), depth + 1);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
+  };
+
+  return walk(root, 0);
+};
+
+/**
+ * Returns the unique set of declared SPM-dep product names across the given pods, looked up
+ * via each pod's npm package's `spm.config.json`. Used both as the source-of-truth completeness
+ * check and as the input to bundled-dep enumeration.
+ */
+export const collectDeclaredSpmDeps = (
+  modules: ModuleXCFramework[],
+  podToNpm: Map<string, NpmPackageInfo>
+): { name: string; declaringPod: string }[] => {
+  const seen = new Map<string, string>();
+  for (const module of modules) {
+    // Look up by pod name. The map is keyed on `spm.config.json`'s `podName`, but our enumerator
+    // uses the pod directory name; for first-party Expo modules these match exactly.
+    // Fall back to the xcframework basename for the rare case where they don't.
+    const podName = path.basename(module.podDir);
+    const info = podToNpm.get(podName) ?? podToNpm.get(module.mainProduct);
+    if (!info) {
+      continue;
+    }
+    for (const product of info.spmConfig.products ?? []) {
+      for (const pkg of product.spmPackages ?? []) {
+        if (pkg.productName && !seen.has(pkg.productName)) {
+          seen.set(pkg.productName, info.npmPackage);
+        }
+      }
+    }
+  }
+  return Array.from(seen.entries()).map(([name, declaringPod]) => ({ name, declaringPod }));
+};
+
+/**
+ * For each enumerated pod, walk back to its npm package, read declared `spmPackages`, and look
+ * for a matching `<name>.xcframework` under that package's `prebuilds/output/.../<flavor>/`
+ * tree. This is the npm-published consumer path — the precompile pipeline's `bundleSharedDeps`
+ * mode drops the SPM-dep xcframeworks alongside the main product when publishing, so external
+ * (non-monorepo) users have everything they need locally without any shared cache.
+ *
+ * Skips entries already in `existingNames` (pod-scan layer wins over bundled). Silently omits
+ * deps whose xcframework can't be found here — the strict completeness check downstream
+ * (in copyXCFrameworks) is the source of truth for surfacing unresolvable deps.
+ */
+export const enumerateBundledSpmDepsXcframeworks = (
+  modules: ModuleXCFramework[],
+  podToNpm: Map<string, NpmPackageInfo>,
+  buildConfiguration: BuildConfiguration,
+  existingNames: Set<string>
+): ModuleXCFramework[] => {
+  const flavor = buildConfiguration.toLowerCase();
+  const results: ModuleXCFramework[] = [];
+  const seen = new Set(existingNames);
+
+  for (const module of modules) {
+    const podName = path.basename(module.podDir);
+    const info = podToNpm.get(podName) ?? podToNpm.get(module.mainProduct);
+    if (!info) {
+      continue;
+    }
+    for (const product of info.spmConfig.products ?? []) {
+      for (const pkg of product.spmPackages ?? []) {
+        const depName = pkg.productName;
+        if (!depName || seen.has(depName)) {
+          continue;
+        }
+        const xcframeworkPath = findBundledXcframework(info.packageRoot, depName, flavor);
+        if (!xcframeworkPath) {
+          continue;
+        }
+        seen.add(depName);
+        results.push({
+          name: depName,
+          podDir: path.dirname(xcframeworkPath),
+          xcframeworkPath,
+          // No `artifacts/` dir → ensureCorrectFlavor is a no-op. mainProduct mirrors name.
+          mainProduct: depName,
+        });
+      }
+    }
   }
 
   return results;

@@ -70,6 +70,16 @@ When precompiled modules are detected, the resulting `artifacts/MyAppPackage-rel
 
 Swift Package Manager has no per-configuration overload for `.binaryTarget(path:)`, so each output package is pinned to the flavor it was built with. Run `build:ios` once per flavor (e.g. `--debug` and `--release`) and distribute the two packages side by side.
 
+### Shared SPM dependencies
+
+Several Expo modules link against shared Swift Package dependencies (e.g. `expo-image` → `SDWebImage`, `libavif`). To prevent runtime `Library not loaded: @rpath/...` crashes in the host app, `build:ios` looks for each declared SPM dependency in three locations and bundles the first match into the output package:
+
+1. **Inside the pod** — `ios/Pods/<PodName>/<Dep>.xcframework/`, when the prebuilt tarball already includes the dep.
+2. **Inside the published npm package** — `node_modules/<package>/prebuilds/output/.../<flavor>/xcframeworks/<Dep>.xcframework/`. This is the path used by Expo modules published with bundled SPM deps and is the recommended setup for projects outside the Expo monorepo.
+3. **Shared `.spm-deps/` cache** — either pointed at by `EXPO_PRECOMPILED_MODULES_PATH` (e.g. `EXPO_PRECOMPILED_MODULES_PATH=/path/to/.build`) or auto-discovered at `packages/precompile/.build/.spm-deps/` when running inside the Expo monorepo.
+
+If a declared SPM dependency can't be found in any of these locations, `build:ios` fails with an actionable error rather than shipping a Swift Package that would crash at runtime.
+
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
