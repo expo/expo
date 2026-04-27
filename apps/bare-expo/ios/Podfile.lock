@@ -3939,7 +3939,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: 87dd980cb26e47b1108e24c39bcfb88a9ab1030e
   ExpoAppIntegrity: 7e3ae77f96e3a3f742fe318d7aac24b66a7bead0
   ExpoAppleAuthentication: c8096cd35e4e4f88aec34fcbfcd9deae7cea04d3
-  ExpoAppMetrics: 1ec61573f49055c518fa80569b93d317ac55c2ac
+  ExpoAppMetrics: 3320bd4a3d48e76932a0faf20fee771bb5067f94
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
   ExpoAudio: 40c883c60ed3bb17ecb3744a00732fb47029535b
   ExpoBackgroundFetch: ee315c8d1a54a3f358fc0cedb68e808e95935c57
