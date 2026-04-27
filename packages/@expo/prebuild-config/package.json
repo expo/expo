@@ -45,6 +45,7 @@
     "@expo/image-utils": "workspace:^0.8.12",
     "@expo/json-file": "workspace:^10.0.12",
     "@react-native/normalize-colors": "0.85.2",
+    "expo-modules-autolinking": "workspace:~55.0.8",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
