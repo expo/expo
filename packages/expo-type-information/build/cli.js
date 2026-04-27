@@ -7,10 +7,26 @@ const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const node_child_process_1 = require("node:child_process");
 const node_crypto_1 = require("node:crypto");
 const mockgen_1 = require("./mockgen");
 const typeInformation_1 = require("./typeInformation");
 const typescriptGeneration_1 = require("./typescriptGeneration");
+let sourcekittenInstalled = null;
+function isSourceKittenInstalled() {
+    if (sourcekittenInstalled !== null) {
+        return sourcekittenInstalled;
+    }
+    try {
+        (0, node_child_process_1.execSync)('which sourcekitten', { stdio: 'ignore' });
+        sourcekittenInstalled = true;
+        return true;
+    }
+    catch (e) {
+        sourcekittenInstalled = false;
+        return false;
+    }
+}
 function addCommonOptions(command) {
     return command
         .option('-i, --input-paths <filePaths...>', 'Paths to Swift files for some module, glob patterns are allowed.')
@@ -364,6 +380,10 @@ function generateTypeFiles(cli) {
     });
 }
 async function main(args) {
+    if (!isSourceKittenInstalled()) {
+        console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');
+        return;
+    }
     const cli = new commander_1.Command();
     cli
         .name('expo-type-information')
