@@ -14,7 +14,6 @@ function initScreensFeatureFlags() {
         react_native_screens_1.featureFlags.experiment.synchronousScreenUpdatesEnabled = !areSynchronousUpdatesDisabled;
         react_native_screens_1.featureFlags.experiment.synchronousHeaderConfigUpdatesEnabled = !areSynchronousUpdatesDisabled;
         react_native_screens_1.featureFlags.experiment.synchronousHeaderSubviewUpdatesEnabled = !areSynchronousUpdatesDisabled;
-        react_native_screens_1.featureFlags.experiment.controlledBottomTabs = process.env.EXPO_OS !== 'ios';
     }
 }
 // Solves iOS bugs related to quick dismissal of several screens in a row

@@ -12,7 +12,6 @@ export function initScreensFeatureFlags() {
     featureFlags.experiment.synchronousScreenUpdatesEnabled = !areSynchronousUpdatesDisabled;
     featureFlags.experiment.synchronousHeaderConfigUpdatesEnabled = !areSynchronousUpdatesDisabled;
     featureFlags.experiment.synchronousHeaderSubviewUpdatesEnabled = !areSynchronousUpdatesDisabled;
-    featureFlags.experiment.controlledBottomTabs = process.env.EXPO_OS !== 'ios';
   }
 }
 

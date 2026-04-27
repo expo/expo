@@ -1,7 +1,7 @@
 import type {
-  TabsScreenAppearance,
-  TabsScreenItemAppearance,
-  TabsScreenItemStateAppearance,
+  TabsScreenAppearanceIOS,
+  TabsScreenItemAppearanceIOS,
+  TabsScreenItemStateAppearanceIOS,
 } from 'react-native-screens';
 
 import {
@@ -18,13 +18,13 @@ describe(createStandardAppearanceFromOptions, () => {
   it('empty options should create empty appearance', () => {
     const options: NativeTabOptions = {};
     const result = createStandardAppearanceFromOptions(options);
-    const expectedItemAppearance: TabsScreenItemAppearance = {
+    const expectedItemAppearance: TabsScreenItemAppearanceIOS = {
       normal: {},
       selected: {},
       disabled: {},
       focused: {},
     };
-    const expectedAppearance: TabsScreenAppearance = {
+    const expectedAppearance: TabsScreenAppearanceIOS = {
       stacked: expectedItemAppearance,
       inline: expectedItemAppearance,
       compactInline: expectedItemAppearance,
@@ -53,7 +53,7 @@ describe(createStandardAppearanceFromOptions, () => {
 
       const result = createStandardAppearanceFromOptions(options);
 
-      const expectedItemAppearance: TabsScreenItemAppearance = {
+      const expectedItemAppearance: TabsScreenItemAppearanceIOS = {
         normal: {
           tabBarItemBadgeBackgroundColor: 'green',
           tabBarItemIconColor: 'red',
@@ -74,7 +74,7 @@ describe(createStandardAppearanceFromOptions, () => {
         },
         disabled: {},
       };
-      const expectedAppearance: TabsScreenAppearance = {
+      const expectedAppearance: TabsScreenAppearanceIOS = {
         stacked: expectedItemAppearance,
         inline: expectedItemAppearance,
         compactInline: expectedItemAppearance,
@@ -91,13 +91,13 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
   it('empty options should create empty appearance', () => {
     const options: NativeTabOptions = {};
     const result = createScrollEdgeAppearanceFromOptions(options);
-    const expectedItemAppearance: TabsScreenItemAppearance = {
+    const expectedItemAppearance: TabsScreenItemAppearanceIOS = {
       normal: {},
       selected: {},
       disabled: {},
       focused: {},
     };
-    const expectedAppearance: TabsScreenAppearance = {
+    const expectedAppearance: TabsScreenAppearanceIOS = {
       stacked: expectedItemAppearance,
       inline: expectedItemAppearance,
       compactInline: expectedItemAppearance,
@@ -128,7 +128,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
       };
 
       const result = createScrollEdgeAppearanceFromOptions(options);
-      const expectedItemAppearance: TabsScreenItemAppearance = {
+      const expectedItemAppearance: TabsScreenItemAppearanceIOS = {
         normal: {
           tabBarItemBadgeBackgroundColor: 'green',
           tabBarItemIconColor: 'red',
@@ -149,7 +149,7 @@ describe(createScrollEdgeAppearanceFromOptions, () => {
         },
         disabled: {},
       };
-      const expectedAppearance: TabsScreenAppearance = {
+      const expectedAppearance: TabsScreenAppearanceIOS = {
         stacked: expectedItemAppearance,
         inline: expectedItemAppearance,
         compactInline: expectedItemAppearance,
@@ -167,7 +167,7 @@ describe(appendStyleToAppearance, () => {
     [['normal']],
     [['normal', 'focused']],
     [['normal', 'focused', 'selected']],
-  ] as (keyof TabsScreenItemAppearance)[][][])('for states %p', (states) => {
+  ] as (keyof TabsScreenItemAppearanceIOS)[][][])('for states %p', (states) => {
     it.each([
       [
         {
@@ -213,12 +213,15 @@ describe(appendStyleToAppearance, () => {
           },
         },
       ],
-    ] as [TabsScreenAppearance][])('empty style should not change appearance %p', (appearance) => {
-      const result = appendStyleToAppearance({}, appearance, states);
-      expect(result).toEqual(appearance);
-    });
+    ] as [TabsScreenAppearanceIOS][])(
+      'empty style should not change appearance %p',
+      (appearance) => {
+        const result = appendStyleToAppearance({}, appearance, states);
+        expect(result).toEqual(appearance);
+      }
+    );
     it('should append style correctly', () => {
-      const item: TabsScreenItemAppearance = {
+      const item: TabsScreenItemAppearanceIOS = {
         normal: {
           tabBarItemIconColor: '#f00',
           tabBarItemBadgeBackgroundColor: '#0f0',
@@ -230,7 +233,7 @@ describe(appendStyleToAppearance, () => {
         focused: {},
         disabled: {},
       };
-      const appearance: TabsScreenAppearance = {
+      const appearance: TabsScreenAppearanceIOS = {
         stacked: item,
         inline: item,
         compactInline: item,
@@ -269,7 +272,7 @@ describe(appendStyleToAppearance, () => {
             ...newStateAppearance,
           }
         : item.focused;
-      const expectedItem: TabsScreenItemAppearance = {
+      const expectedItem: TabsScreenItemAppearanceIOS = {
         normal,
         selected,
         focused,
@@ -300,7 +303,7 @@ describe(appendStyleToAppearance, () => {
       const normal = states.includes('normal') ? newStateAppearance : {};
       const selected = states.includes('selected') ? newStateAppearance : {};
       const focused = states.includes('focused') ? newStateAppearance : {};
-      const expectedItem: TabsScreenItemAppearance = {
+      const expectedItem: TabsScreenItemAppearanceIOS = {
         normal,
         selected,
         focused,
@@ -323,7 +326,7 @@ describe(convertStyleToAppearance, () => {
       blurEffect: 'light',
       fontFamily: 'Arial',
     };
-    const expected: TabsScreenItemStateAppearance = {
+    const expected: TabsScreenItemStateAppearanceIOS = {
       tabBarItemTitleFontFamily: 'Arial',
     };
     const result = convertStyleToAppearance(style);
@@ -341,7 +344,7 @@ describe(convertStyleToAppearance, () => {
       tabBarBlurEffect: style.blurEffect,
     });
   });
-  const cases: [AppearanceStyle, TabsScreenItemStateAppearance][] = [
+  const cases: [AppearanceStyle, TabsScreenItemStateAppearanceIOS][] = [
     [{}, {}],
     [{ fontFamily: 'xxx' }, { tabBarItemTitleFontFamily: 'xxx' }],
     [{ fontSize: 16 }, { tabBarItemTitleFontSize: 16 }],
@@ -420,7 +423,7 @@ describe(convertStyleToAppearance, () => {
   });
 });
 describe(convertStyleToItemStateAppearance, () => {
-  const cases: [AppearanceStyle, TabsScreenItemStateAppearance][] = [
+  const cases: [AppearanceStyle, TabsScreenItemStateAppearanceIOS][] = [
     [{}, {}],
     [{ backgroundColor: '#fff' }, {}],
     [{ blurEffect: 'none' }, {}],
