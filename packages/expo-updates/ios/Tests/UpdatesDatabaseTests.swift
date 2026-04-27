@@ -7,6 +7,7 @@ import Testing
 import EXManifests
 
 @Suite("UpdatesDatabase", .serialized)
+@MainActor
 class UpdatesDatabaseTests {
   var testDatabaseDir: URL
   var db: UpdatesDatabase
@@ -52,6 +53,7 @@ class UpdatesDatabaseTests {
   // MARK: - foreign keys
 
   @Suite("foreign keys", .serialized)
+  @MainActor
   struct ForeignKeysTests {
     var testDatabaseDir: URL
     var db: UpdatesDatabase
@@ -118,6 +120,7 @@ class UpdatesDatabaseTests {
   // MARK: - setExtraClientParams
 
   @Suite("setExtraClientParams", .serialized)
+  @MainActor
   struct SetExtraClientParamsTests {
     var testDatabaseDir: URL
     var db: UpdatesDatabase
@@ -179,6 +182,7 @@ class UpdatesDatabaseTests {
   // MARK: - setMetadata
 
   @Suite("setMetadata", .serialized)
+  @MainActor
   struct SetMetadataTests {
     var testDatabaseDir: URL
     var db: UpdatesDatabase
@@ -290,6 +294,7 @@ class UpdatesDatabaseTests {
   // MARK: - delete unused assets
 
   @Suite("delete unused assets", .serialized)
+  @MainActor
   struct DeleteUnusedAssetsTests {
     var testDatabaseDir: URL
     var db: UpdatesDatabase
@@ -394,6 +399,7 @@ class UpdatesDatabaseTests {
   // MARK: - encode/decode requestHeaders
 
   @Suite("encode/decode requestHeaders")
+  @MainActor
   struct EncodeDecodeRequestHeadersTests {
     @Test
     func `should encode to json string`() {
