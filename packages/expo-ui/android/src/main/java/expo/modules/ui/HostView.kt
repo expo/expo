@@ -157,21 +157,26 @@ internal class HostView(context: Context, appContext: AppContext) :
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
 
-      // When matchContents is used, constraints may have infinite maxWidth/maxHeight.
-      // Some components (like DatePicker, segmented buttons) use horizontal scrolling
-      // internally and crash with infinite constraints. Bound infinite values to screen size.
+      // useViewportSizeMeasurement: clamp Infinity/0 maxConstraints to the safe area so the                                                               
+      // content has a concrete size to fill. 
+      // matchContents: pass through, so children measure 
+      // at intrinsic size (the unbounded constraint comes from onMeasure's UNSPECIFIED). 
       val boundedConstraints = Constraints(
         minWidth = constraints.minWidth,
-        maxWidth = when {
-          constraints.maxWidth == Constraints.Infinity -> safeWidthPx
-          useViewportSizeMeasurement && constraints.maxWidth == 0 -> safeWidthPx
-          else -> constraints.maxWidth
+        maxWidth = if (useViewportSizeMeasurement &&
+          (constraints.maxWidth == Constraints.Infinity || constraints.maxWidth == 0)
+        ) {
+          safeWidthPx
+        } else {
+          constraints.maxWidth
         },
         minHeight = constraints.minHeight,
-        maxHeight = when {
-          constraints.maxHeight == Constraints.Infinity -> safeHeightPx
-          useViewportSizeMeasurement && constraints.maxHeight == 0 -> safeHeightPx
-          else -> constraints.maxHeight
+        maxHeight = if (useViewportSizeMeasurement &&
+          (constraints.maxHeight == Constraints.Infinity || constraints.maxHeight == 0)
+        ) {
+          safeHeightPx
+        } else {
+          constraints.maxHeight
         }
       )
       val placeables = measurables.map { it.measure(boundedConstraints) }
