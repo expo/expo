@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Export `ServerFontResourceDescriptor` type for external usage ([#45116](https://github.com/expo/expo/pull/45116) by [@hassankhan](https://github.com/hassankhan))
+
 ## 55.0.4 — 2026-02-16
 
 _This version does not introduce any user-facing changes._
