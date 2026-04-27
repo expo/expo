@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
+import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions, SetImageOptions } from './Clipboard.types';
 export declare const clipboardEventName = "onClipboardChanged";
 type ExpoClipboardEvents = {
     [clipboardEventName]: (event: ClipboardEvent) => void;
@@ -9,7 +9,7 @@ declare class NativeExpoClipboard extends NativeModule<ExpoClipboardEvents> {
     setStringAsync(text: string, options?: SetStringOptions): Promise<boolean>;
     hasStringAsync(): Promise<boolean>;
     getImageAsync(options: GetImageOptions): Promise<ClipboardImage | null>;
-    setImageAsync(base64Image: string): Promise<void>;
+    setImageAsync(base64Image: string, options?: SetImageOptions): Promise<void>;
     hasImageAsync(): Promise<boolean>;
     getUrlAsync?: () => Promise<string | null>;
     setUrlAsync?: (url: string) => Promise<void>;
