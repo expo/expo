@@ -36,25 +36,6 @@ internal protocol AnyFunctionDefinition: AnyDefinition, JavaScriptObjectBuilder,
   var takesOwner: Bool { get set }
 }
 
-extension AnyFunctionDefinition {
-  var requiredArgumentsCount: Int {
-    var trailingOptionalArgumentsCount: Int = 0
-
-    for dynamicArgumentType in dynamicArgumentTypes.reversed() {
-      if dynamicArgumentType is DynamicOptionalType {
-        trailingOptionalArgumentsCount += 1
-      } else {
-        break
-      }
-    }
-    return argumentsCount - trailingOptionalArgumentsCount
-  }
-
-  var argumentsCount: Int {
-    return dynamicArgumentTypes.count
-  }
-}
-
 internal final class FunctionCallException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Calling the '\(param)' function has failed"

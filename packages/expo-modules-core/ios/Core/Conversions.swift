@@ -4,30 +4,31 @@ public struct Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */
-  static func toTuple(_ array: [Any?]) throws -> Any? {
+  @_transparent
+  static func toTuple<Args>(_ array: [Any]) throws -> Args? {
     switch array.count {
     case 0:
-      return ()
+      return () as? Args
     case 1:
-      return (array[0])
+      return (array[0]) as? Args
     case 2:
-      return (array[0], array[1])
+      return (array[0], array[1]) as? Args
     case 3:
-      return (array[0], array[1], array[2])
+      return (array[0], array[1], array[2]) as? Args
     case 4:
-      return (array[0], array[1], array[2], array[3])
+      return (array[0], array[1], array[2], array[3]) as? Args
     case 5:
-      return (array[0], array[1], array[2], array[3], array[4])
+      return (array[0], array[1], array[2], array[3], array[4]) as? Args
     case 6:
-      return (array[0], array[1], array[2], array[3], array[4], array[5])
+      return (array[0], array[1], array[2], array[3], array[4], array[5]) as? Args
     case 7:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6]) as? Args
     case 8:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7]) as? Args
     case 9:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8]) as? Args
     case 10:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]) as? Args
     default:
       throw TooManyArgumentsException((count: array.count, limit: 10))
     }

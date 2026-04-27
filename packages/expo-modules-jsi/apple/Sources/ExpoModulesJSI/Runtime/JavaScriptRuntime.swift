@@ -286,16 +286,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     return createFunction(name) { this, arguments in
       let promise = JavaScriptPromise(self)
 
-      // Need to switch to reference semantics as Task escapes the closure (consumes on capture).
       // Arguments buffer needs to be copied to ensure safe async access.
-      let thisRef = this.ref()
       let argumentsRef = arguments.copy().ref()
 
       // Switch to asynchronous context.
       self.schedule(taskName: "[JS] Async function \(name)") {
         // Invoke the asynchronous function and resolve/reject the promise.
         do {
-          let result = try await function(thisRef.take(), argumentsRef.take())
+          let result = try await function(this, argumentsRef.take())
           promise.resolve(result)
         } catch {
           promise.reject(error)
