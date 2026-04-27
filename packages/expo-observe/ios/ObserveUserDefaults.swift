@@ -3,7 +3,7 @@
 import ExpoAppMetrics
 
 /**
- Snapshot of the last `configure(...)` payload. 
+ Snapshot of the last `configure(...)` payload.
  */
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
