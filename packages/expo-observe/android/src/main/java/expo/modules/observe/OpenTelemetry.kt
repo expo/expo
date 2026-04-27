@@ -169,6 +169,12 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
   metadata.appUpdateId?.let {
     attributes.add(OTAttribute.of("expo.app.update_id", it))
   }
+  metadata.appUpdateChannel?.let {
+    attributes.add(OTAttribute.of("expo.app.update_channel", it))
+  }
+  metadata.appUpdateRuntimeVersion?.let {
+    attributes.add(OTAttribute.of("expo.app.update_runtime_version", it))
+  }
   metadata.environment?.let {
     attributes.add(OTAttribute.of("expo.environment", it))
   }

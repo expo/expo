@@ -3,15 +3,18 @@ import { useCallback, useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 
 import { useRouterMetricsHelpers } from '@/router-metrics-integration';
-import { Button } from '../../../components/Button';
 import AppMetrics, { type Metric } from 'expo-app-metrics';
 import ExpoObserve from 'expo-observe';
+import { Button } from '../../../components/Button';
+
+import { checkForUpdateAsync, fetchUpdateAsync, reloadAsync, useUpdates } from 'expo-updates';
 
 export default function Index() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [showEntries, setShowEntries] = useState(false);
+  const { isUpdateAvailable, isUpdatePending, availableUpdate, currentlyRunning } = useUpdates();
 
   const { markPageInteractive } = useRouterMetricsHelpers();
 
@@ -44,6 +47,18 @@ export default function Index() {
     await updateStoredEntries();
   }
 
+  async function handleCheckForUpdate() {
+    await checkForUpdateAsync();
+  }
+
+  async function downloadUpdate() {
+    await fetchUpdateAsync();
+  }
+
+  async function reload() {
+    setTimeout(() => reloadAsync(), 2000);
+  }
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}
@@ -52,7 +67,23 @@ export default function Index() {
       <Button title="Dispatch events" onPress={handleDispatchEvents} theme="secondary" />
       <Button title="Clear stored entries" onPress={handleClearStoredEntries} theme="secondary" />
       <Button title="Get stored entries" onPress={handleGetStoredEntries} theme="secondary" />
-
+      <Button title="Check for update" onPress={() => handleCheckForUpdate()} theme="secondary" />
+      {isUpdateAvailable && !isUpdatePending ? (
+        <Button
+          title={`Download update ${availableUpdate?.updateId}`}
+          onPress={() => downloadUpdate()}
+          theme="secondary"
+        />
+      ) : null}
+      {isUpdatePending ? (
+        <Button
+          title={`Launch update ${availableUpdate?.updateId}`}
+          onPress={() => reload()}
+          theme="secondary"
+        />
+      ) : null}
+      <Text>{`Currently running ${currentlyRunning.updateId}`}</Text>
+      <Text>{`${currentlyRunning.isEmbeddedLaunch ? 'Embedded bundle' : 'OTA bundle'}`}</Text>
       <View style={[styles.divider, { backgroundColor: isDark ? '#333333' : '#E5E5E5' }]} />
 
       <View style={styles.header}>

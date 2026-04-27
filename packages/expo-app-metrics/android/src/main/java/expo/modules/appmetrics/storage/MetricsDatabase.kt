@@ -26,7 +26,7 @@ object MetricsConstants {
 
 @Database(
   entities = [Metric::class, Session::class],
-  version = 11,
+  version = 12,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -71,6 +71,8 @@ data class Session(
   @Field val appVersion: String? = null,
   @Field val appBuildNumber: String? = null,
   @Field val appUpdateId: String? = null,
+  @Field val appUpdateChannel: String? = null,
+  @Field val appUpdateRuntimeVersion: String? = null,
   @Field val appEasBuildId: String? = null,
   // Device Info
   @Field val deviceOs: String? = null,
