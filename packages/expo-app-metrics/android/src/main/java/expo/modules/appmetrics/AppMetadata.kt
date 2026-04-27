@@ -6,6 +6,8 @@ data class AppMetadata(
   val appVersion: String?,
   val appBuildNumber: String?,
   val appUpdateId: String?,
+  val appUpdateChannel: String?,
+  val appUpdateRuntimeVersion: String?,
   val appEasBuildId: String?,
   val languageTag: String?,
   val deviceOs: String?,

@@ -25,6 +25,8 @@ class OpenTelemetryTest {
     appVersion = "1.0.0",
     appBuildNumber = "1",
     appUpdateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+    appUpdateChannel = null,
+    appUpdateRuntimeVersion = null,
     appEasBuildId = null,
     languageTag = "en-US",
     deviceOs = "Android",

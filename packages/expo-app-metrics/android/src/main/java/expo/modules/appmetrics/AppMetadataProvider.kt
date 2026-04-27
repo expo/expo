@@ -47,6 +47,8 @@ public object AppMetadataProvider {
       appVersion = packageInfo.versionName,
       appBuildNumber = getAppBuildNumber(packageInfo),
       appUpdateId = getAppUpdateId(),
+      appUpdateChannel = getAppUpdateChannel(),
+      appUpdateRuntimeVersion = getAppUpdateRuntimeVersion(),
       appEasBuildId = BuildConfig.EXPO_EAS_BUILD_ID,
       languageTag = Locale.getDefault().getLanguageTag(),
       deviceOs = DEVICE_OS,
@@ -87,6 +89,16 @@ fun getAppUpdateId(): String? {
     return null
   }
   return launchedUpdateId?.toString()
+}
+
+fun getAppUpdateChannel(): String? {
+  val controller = UpdatesControllerRegistry.controller?.get() ?: return null
+  return controller.channel
+}
+
+fun getAppUpdateRuntimeVersion(): String? {
+  val controller = UpdatesControllerRegistry.controller?.get() ?: return null
+  return controller.runtimeVersion
 }
 
 fun getModelName(): String {

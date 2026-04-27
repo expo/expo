@@ -51,6 +51,8 @@ class SessionManager(
       appVersion = metadata?.appVersion,
       appBuildNumber = metadata?.appBuildNumber,
       appUpdateId = metadata?.appUpdateId,
+      appUpdateChannel = metadata?.appUpdateChannel,
+      appUpdateRuntimeVersion = metadata?.appUpdateRuntimeVersion,
       appEasBuildId = metadata?.appEasBuildId,
       deviceOs = metadata?.deviceOs,
       deviceOsVersion = metadata?.deviceOsVersion,

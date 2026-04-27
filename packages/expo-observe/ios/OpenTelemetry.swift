@@ -144,6 +144,12 @@ extension Event {
     if let appUpdateId = metadata.appUpdateId {
       attributes.append(OTAttribute(key: "expo.app.update_id", rawValue: appUpdateId))
     }
+    if let appUpdateChannel = metadata.appUpdateChannel {
+      attributes.append(OTAttribute(key: "expo.app.update_channel", rawValue: appUpdateChannel))
+    }
+    if let appUpdateRuntimeVersion = metadata.appUpdateRuntimeVersion {
+      attributes.append(OTAttribute(key: "expo.app.update_runtime_version", rawValue: appUpdateRuntimeVersion))
+    }
     if let environment = metadata.environment {
       attributes.append(OTAttribute(key: "expo.environment", rawValue: environment))
     }
