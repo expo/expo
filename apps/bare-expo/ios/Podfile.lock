@@ -4009,10 +4009,10 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 2340f0b7f599c9ce6ba49a885f783de919cf4dd3
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
-  EXUpdates: 9fc7e72640aae00b570854868e04ed592efc664e
+  EXUpdates: a0f980531cbcf45906b2489febd4e11a5895f332
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   FBLazyVector: 26fd21c75314e101f280d401e97f27d54f3f7064
-  hermes-engine: e1ae00897676f600a9439d408b42f8c8ba5dbc24
+  hermes-engine: 725fd85144e1348879039099a6be950c471a4f2c
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4030,7 +4030,7 @@ SPEC CHECKSUMS:
   React: 13cf8451582adb1bb324306e1893b91d1cba28c6
   React-callinvoker: 91e6a605826b684ad2e623811253b4d0c4196bef
   React-Core: 46818de5f211b2a2759ac823b591af8a0a95c2c1
-  React-Core-prebuilt: 1e81ce373ae6d21c61a961e1be02e77633de3007
+  React-Core-prebuilt: 4016009b4cc1d669b1a2369a5d707cdb39fa12ef
   React-CoreModules: a6a37afee48d4a31ab398640b0795462647d5c67
   React-cxxreact: 2ec3e2f7a8ae9303460d4ba94cde183ea90d64cd
   React-debug: 0d21117b897ce0359c9d2c9dfe952f237476a14a
@@ -4100,7 +4100,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 22e2265d86a4e871e5e858f4e7ef1c8d01103680
   ReactCodegen: f564776e1b15423920d439de1965d2000433dbd2
   ReactCommon: a804bb8d1dcf3ecdec3a77eb8bba19b7863bbbdb
-  ReactNativeDependencies: ceedcc3a6ff166bea3c3816a22f58c478ffad807
+  ReactNativeDependencies: a24dd0e4b4318c05556b4b7bb144738f83775e22
   RNCAsyncStorage: 2ad919e88b8bc2cd80e8697ce66d04d006743283
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNCPicker: d74667bdfc08ed389a2a277d95b8faf2349290a9
