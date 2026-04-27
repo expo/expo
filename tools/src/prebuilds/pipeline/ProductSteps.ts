@@ -79,7 +79,10 @@ export const generateStep: Step<PrebuildContext> = {
     const artifacts = ctx.artifactsByFlavor.get(flavor) ?? undefined;
 
     // customBuild products own their generation; nothing to do here.
-    if (product.customBuild) return setStage(ctx, 'generate', 'success');
+    if (product.customBuild) {
+      setStage(ctx, 'generate', 'success');
+      return;
+    }
 
     // Ensure codegen is generated for packages that need it (e.g., Fabric components)
     if (Codegen.hasCodegen(pkg)) {
@@ -120,9 +123,18 @@ export const buildStep: Step<PrebuildContext> = {
     const artifacts = ctx.artifactsByFlavor.get(flavor) ?? undefined;
 
     if (product.customBuild) {
-      if (!artifacts) throw new Error(`customBuild ${product.name}: artifacts missing for ${flavor}`);
-      await runCustomBuildAsync(pkg, product, artifacts, ctx.request.platformFilter, ctx.customBuiltProducts);
-      return setStage(ctx, 'build', 'success');
+      if (!artifacts) {
+        throw new Error(`customBuild ${product.name}: artifacts missing for ${flavor}`);
+      }
+      await runCustomBuildAsync(
+        pkg,
+        product,
+        artifacts,
+        ctx.request.platformFilter,
+        ctx.customBuiltProducts
+      );
+      setStage(ctx, 'build', 'success');
+      return;
     }
 
     // Compute hermes include paths for xcodebuild flags.
@@ -163,7 +175,8 @@ export const composeStep: Step<PrebuildContext> = {
 
     if (product.customBuild) {
       await composeCustomBuildAsync(pkg, product, flavor);
-      return setStage(ctx, 'compose', 'success');
+      setStage(ctx, 'compose', 'success');
+      return;
     }
 
     await Frameworks.composeXCFrameworkAsync(

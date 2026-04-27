@@ -375,13 +375,17 @@ export function expandTransitiveExternalDeps(
  * automatically gets ExpoModulesCore's own external deps (e.g. JSI).
  */
 export const resolveExternalDepsFromMonorepo: ExternalDepResolver = (depName) => {
-  if (!depName.includes('/')) return null;
+  if (!depName.includes('/')) {
+    return null;
+  }
   const parts = depName.split('/');
   const isScoped = parts[0].startsWith('@');
   const packageName = isScoped ? `${parts[0]}/${parts[1]}` : parts[0];
   const productName = isScoped ? parts[2] : parts[1];
   const depPkg = getPackageByName(packageName);
-  if (!depPkg?.hasSwiftPMConfiguration()) return null;
+  if (!depPkg?.hasSwiftPMConfiguration()) {
+    return null;
+  }
   const matched = depPkg.getSwiftPMConfiguration().products.find((p) => p.name === productName);
   return matched?.externalDependencies ?? null;
 };
