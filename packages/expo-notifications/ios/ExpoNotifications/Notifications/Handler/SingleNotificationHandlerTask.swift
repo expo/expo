@@ -42,13 +42,6 @@ public class SingleNotificationHandlerTask {
 
   public func processNotificationWithOptions(_ options: UNNotificationPresentationOptions) -> Bool {
     if let completionHandler = completionHandler {
-      // The completion handler must be invoked on the main thread. iOS delivers
-      // `userNotificationCenter(_:willPresent:withCompletionHandler:)` on the main
-      // thread, but `handleNotificationAsync` (the JS reply) is dispatched on
-      // expo-modules-core's `expo.modules.AsyncFunctionQueue` worker. On iOS 16
-      // the foreground-presentation pipeline (UIWindowScene/BSAction) asserts
-      // main-thread, so calling the handler from the worker trips a BaseBoard
-      // precondition (SIGTRAP). iOS 17+ relaxed this assertion.
       DispatchQueue.main.async {
         completionHandler(options)
       }
