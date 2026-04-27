@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 3.0.25 — 2026-04-27
+
+### 🐛 Bug fixes
+
+- Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
 
 ## 3.0.24 — 2026-01-06
 

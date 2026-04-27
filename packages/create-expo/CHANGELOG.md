@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.5.11 — 2026-04-27
+
+_This version does not introduce any user-facing changes._
+
 ## 3.5.10 — 2025-12-04
 
 ### 💡 Others

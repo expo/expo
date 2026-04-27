@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for auth universal links callback ([#42695](https://github.com/expo/expo/pull/42695) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.0.11 — 2026-04-27
+
+### 🎉 New features
+
+- Add support for auth universal links callback ([#42695](https://github.com/expo/expo/pull/42695) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 15.0.10 — 2025-12-05
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix react-native-macos 0.81 support ([#42869](https://github.com/expo/expo/pull/42869) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 3.0.30 — 2026-04-27
+
+### 🐛 Bug fixes
+
+- Fix react-native-macos 0.81 support ([#42869](https://github.com/expo/expo/pull/42869) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 3.0.29 — 2025-12-12
 

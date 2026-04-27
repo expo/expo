@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed incorrect MD5 checksum on Android. ([#43909](https://github.com/expo/expo/pull/43909) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 12.0.13 — 2026-04-27
+
+### 🐛 Bug fixes
+
+- Fixed incorrect MD5 checksum on Android. ([#43909](https://github.com/expo/expo/pull/43909) by [@kudo](https://github.com/kudo))
 
 ## 12.0.12 — 2025-12-18
 

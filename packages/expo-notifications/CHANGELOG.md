@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.32.17 — 2026-04-27
+
+### 🐛 Bug fixes
+
 - [ios] fix unhandled promise rejection in `getRegistrationInfoAsync`, relax keychain accessibility to allow access after device unlocked. ([#43829](https://github.com/expo/expo/pull/43829) by [@jmalmo](https://github.com/jmalmo))
 - [ios] Fix `EXC_BAD_ACCESS` crash in `EXNotificationSerializer` caused by thread-unsafe static `NSDictionary` initialization during cold launch from notification tap. ([#43342](https://github.com/expo/expo/pull/43342) by [@just1and0](https://github.com/just1and0))
 

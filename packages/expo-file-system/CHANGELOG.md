@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 19.0.22 — 2026-04-27
+
+_This version does not introduce any user-facing changes._
+
 ## 19.0.21 — 2025-12-12
 
 _This version does not introduce any user-facing changes._

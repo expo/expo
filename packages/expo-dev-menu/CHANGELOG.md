@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 7.0.19 — 2026-04-27
+
+_This version does not introduce any user-facing changes._
+
 ## 7.0.18 — 2025-12-04
 
 ### 🐛 Bug fixes
