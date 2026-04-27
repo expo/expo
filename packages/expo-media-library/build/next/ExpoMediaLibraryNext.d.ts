@@ -7,7 +7,6 @@ import type { MediaTypeFilter } from './types/MediaTypeFilter';
 import { Query } from './types/Query';
 declare class ExpoMediaLibraryNextModule extends NativeModule<{
     mediaLibraryDidChange: (event: MediaLibraryAssetsChangeEvent) => void;
-    onObserverReady: (event: any) => void;
 }> {
     Asset: typeof Asset;
     Album: typeof Album;
