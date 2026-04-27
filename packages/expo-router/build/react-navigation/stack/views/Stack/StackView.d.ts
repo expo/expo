@@ -27,7 +27,7 @@ export declare class StackView extends React.Component<Props, State> {
         closingRouteKeys?: undefined;
         replacingRouteKeys?: undefined;
     } | {
-        routes: import("../../../core").NavigationRoute<ParamListBase, string>[];
+        routes: import("../../..").NavigationRoute<ParamListBase, string>[];
         previousState: StackNavigationState<ParamListBase>;
         previousDescriptors: StackDescriptorMap;
         openingRouteKeys: string[];

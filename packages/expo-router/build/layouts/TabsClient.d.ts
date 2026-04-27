@@ -3,7 +3,7 @@ import type { BottomTabNavigationEventMap, BottomTabNavigationOptions } from '..
 import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { Protected } from '../views/Protected';
-declare const BottomTabNavigator: import("react").ComponentType<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/core").DefaultRouterOptions<string> & ({
+declare const BottomTabNavigator: import("react").ComponentType<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("..").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -44,7 +44,7 @@ declare const BottomTabNavigator: import("react").ComponentType<Omit<import("../
         payload?: object;
         source?: string;
         target?: string;
-    }>>(original: import("../react-navigation/core").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/core").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
+    }>>(original: import("..").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("..").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & ({
     id?: undefined;
@@ -55,7 +55,7 @@ export type BottomTabNavigator = typeof BottomTabNavigator;
 type TabsProps = BottomTabNavigationOptions & {
     href?: Href | null;
 };
-declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/core").DefaultRouterOptions<string> & ({
+declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("..").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -96,13 +96,13 @@ declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<impo
         payload?: object;
         source?: string;
         target?: string;
-    }>>(original: import("../react-navigation/core").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/core").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
+    }>>(original: import("..").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("..").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & ({
     id?: undefined;
 } | {
     id: string;
-})), "children"> & Partial<Pick<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("../react-navigation/core").DefaultRouterOptions<string> & ({
+})), "children"> & Partial<Pick<Omit<import("../react-navigation/bottom-tabs").BottomTabNavigatorProps, "children" | "initialRouteName" | "layout" | "screenListeners" | "screenOptions" | "screenLayout" | "UNSTABLE_router" | "UNSTABLE_routeNamesChangeBehavior" | "id"> & import("..").DefaultRouterOptions<string> & ({
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
@@ -143,7 +143,7 @@ declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<impo
         payload?: object;
         source?: string;
         target?: string;
-    }>>(original: import("../react-navigation/core").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("../react-navigation/core").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
+    }>>(original: import("..").Router<TabNavigationState<ParamListBase>, Action>) => Partial<import("..").Router<TabNavigationState<ParamListBase>, Action>>) | undefined;
     UNSTABLE_routeNamesChangeBehavior?: "firstMatch" | "lastUnhandled";
 } & ({
     id?: undefined;
