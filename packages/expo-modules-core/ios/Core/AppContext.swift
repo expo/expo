@@ -186,8 +186,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   // MARK: - UI
 
+  /**
+   Looks up a view by its React tag. Ensures the lookup runs on the main thread.
+   */
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    return hostWrapper?.findView(withTag: viewTag) as? ViewType
+    // TODO: Migrate to @MainActor to get compile-time thread safety instead of runtime dispatch
+    return performSynchronouslyOnMainThread {
+      return hostWrapper?.findView(withTag: viewTag) as? ViewType
+    }
   }
 
   // MARK: - Running on specific queues
