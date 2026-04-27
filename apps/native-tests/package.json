@@ -17,6 +17,7 @@
     "expo-image": "workspace:*",
     "expo-media-library": "workspace:*",
     "expo-notifications": "workspace:*",
+    "expo-observe": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "expo-updates": "workspace:*",
     "react": "19.2.3",
