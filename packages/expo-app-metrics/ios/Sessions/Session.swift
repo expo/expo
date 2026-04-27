@@ -36,6 +36,17 @@ public class Session: Codable, MetricsReceiver {
   }
 
   /**
+   Test-only initializer that builds a session with explicit values and skips registering it
+   with the global storage. Do not use from production code.
+   */
+  init(id: String, type: SessionType, startDate: Date, endDate: Date?) {
+    self.id = id
+    self.type = type
+    self.startDate = startDate
+    self.endDate = endDate
+  }
+
+  /**
    Whether the session is still running, i.e. did not end yet.
    */
   var isActive: Bool {
