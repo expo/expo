@@ -209,6 +209,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
     return config.updateUrl
   }
 
+  public var channel: String? {
+    return config.requestHeaders["expo-channel-name"]
+  }
+
   public var launchedUpdateId: UUID? {
     return startupProcedure.launchedUpdate()?.updateId
   }

@@ -142,6 +142,9 @@ class UpdatesDevLauncherController(
   override val updateUrl: Uri?
     get() = updatesConfiguration?.updateUrl
 
+  override val channel: String?
+    get() = updatesConfiguration?.requestHeaders?.get("expo-channel-name")
+
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     return DisabledUpdatesStateChangeSubscription()
   }
