@@ -62,6 +62,17 @@ public final class MetricsStorage: Sendable {
   }
 
   /**
+   Returns all main sessions across the current and historical entries, ordered with the
+   current launch first.
+   */
+  @AppMetricsActor
+  public func getAllMainSessions() -> [MainSession] {
+    return getAllEntries()
+      .flatMap({ $0.sessions })
+      .compactMap({ $0 as? MainSession })
+  }
+
+  /**
    Returns unexpired and non-empty entries.
    */
   @AppMetricsActor
@@ -96,6 +107,32 @@ public final class MetricsStorage: Sendable {
 
     public var metricsCount: Int {
       return sessions.reduce(0) { $0 + $1.metrics.count }
+    }
+
+    // MARK: - Codable
+
+    private enum CodingKeys: String, CodingKey {
+      case id, app, device, date, environment, sessions
+    }
+
+    public init(from decoder: any Decoder) throws {
+      let values = try decoder.container(keyedBy: CodingKeys.self)
+      id = try values.decode(Int.self, forKey: .id)
+      app = try values.decode(AppInfo.self, forKey: .app)
+      device = try values.decode(DeviceInfo.self, forKey: .device)
+      date = try values.decode(Date.self, forKey: .date)
+      environment = try values.decodeIfPresent(String.self, forKey: .environment)
+      sessions = try values.decodeIfPresent([SessionCoder].self, forKey: .sessions)?.map { $0.session } ?? []
+    }
+
+    public func encode(to encoder: any Encoder) throws {
+      var container = encoder.container(keyedBy: CodingKeys.self)
+      try container.encode(id, forKey: .id)
+      try container.encode(app, forKey: .app)
+      try container.encode(device, forKey: .device)
+      try container.encode(date, forKey: .date)
+      try container.encodeIfPresent(environment, forKey: .environment)
+      try container.encode(sessions.map(SessionCoder.init), forKey: .sessions)
     }
 
     // MARK: - Equatable
