@@ -14,7 +14,7 @@ export declare function createDefaultGenerationContext(fileInfo: FileTypeInforma
 export declare function getBasicTypesIdentifiers(): Set<string>;
 export declare function joinTSNodesWithNewlines(nodes: ts.Node[][]): ts.Node[];
 export declare function mapTypeToTsTypeNode(type: Type): ts.TypeNode;
-export declare function buildViewPropsTypeAlias(view: ViewDeclaration | null, options: {
+export declare function buildViewPropsInterface(view: ViewDeclaration | null, options: {
     exported?: boolean;
 }): ts.Node[];
 export declare function buildFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, omitReturnType, }: {
