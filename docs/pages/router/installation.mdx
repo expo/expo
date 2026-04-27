@@ -7,14 +7,17 @@ searchRank: 6
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 Follow the steps below if you have an existing project and want to add Expo Router. For new projects, see the [Quick start](/router/introduction/#quick-start) in the introduction guide.
 
-### Prerequisites
-
-Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+<Prerequisites numberOfRequirements={1}>
+  <Requirement number={1} title="Set up your development environment">
+    Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 

@@ -3,6 +3,7 @@ title: Repack app
 description: Repackage an existing APK, IPA, or .app with an updated JavaScript bundle without a full native rebuild.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -10,10 +11,16 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 To learn more about how fingerprint and repack work together to accelerate CI, see [Accelerating Continuous Integration with Fingerprint and Repack in EAS Workflows](https://expo.dev/blog/accelerating-continuous-integration-with-fingerprint-repack-in-eas-workflows) blog post.
 
-## Prerequisites
-
-- An existing build artifact produced from your Expo project: an APK for Android, or an IPA or **.app** bundle for iOS.
-- (Optional) Signing credentials if the repacked artifact needs to be installable on a device. For more information, see [Signing](#signing).
+<Prerequisites numberOfRequirements={2}>
+  <Requirement number={1} title="An existing build artifact">
+    A build artifact produced from your Expo project: an APK for Android, or an IPA or **.app**
+    bundle for iOS.
+  </Requirement>
+  <Requirement number={2} title="Signing credentials (optional)">
+    Required if the repacked artifact needs to be installable on a device. For more information, see
+    [Signing](#signing).
+  </Requirement>
+</Prerequisites>
 
 ## When to use repack
 
