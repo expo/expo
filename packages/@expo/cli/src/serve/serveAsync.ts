@@ -14,6 +14,7 @@ import { resolvePortAsync } from '../utils/port';
 
 type Options = {
   port?: number;
+  address?: string;
   isDefaultDirectory: boolean;
 };
 
@@ -54,7 +55,7 @@ export async function serveAsync(inputDir: string, options: Options) {
   } else {
     await startDynamicServerAsync(serverDist, options);
   }
-  Log.log(`Server running at http://localhost:${options.port}`);
+  Log.log(`Server running at http://${options.address || 'localhost'}:${options.port}`);
   // Detect the type of server we need to setup:
 }
 
@@ -80,7 +81,7 @@ async function startStaticServerAsync(dist: string, options: Options) {
       .pipe(res);
   });
 
-  server.listen(options.port!);
+  server.listen(options.port!, options.address!);
 }
 
 async function startDynamicServerAsync(dist: string, options: Options) {
@@ -153,7 +154,7 @@ async function startDynamicServerAsync(dist: string, options: Options) {
 
   middleware.use(serverHandler);
 
-  middleware.listen(options.port!);
+  middleware.listen(options.port!, options.address!);
 }
 
 function canParseURL(url: string): boolean {
