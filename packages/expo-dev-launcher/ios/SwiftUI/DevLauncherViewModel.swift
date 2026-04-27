@@ -123,7 +123,7 @@ class DevLauncherViewModel: ObservableObject {
       var discoveredServers: [DevServer] = []
 
       // swiftlint:disable number_separator
-      let portsToCheck = [8081, 8082, 8_083, 8084, 8085, 19000, 19001, 19002]
+      let portsToCheck = [8081, 8082, 8_083, 8084, 19000, 19001, 19002]
       // swiftlint:enable number_separator
 
       let ipsToScan = NetworkUtilities.getIPAddressesToScan()
