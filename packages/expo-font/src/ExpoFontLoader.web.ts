@@ -61,11 +61,11 @@ function getServerResourceDescriptors(): ServerFontResourceDescriptor[] {
     {
       css,
       id: ID,
-      type: 'style',
+      type: 'style' as const,
     },
     ...links.map((resourceId) => ({
       as: 'font' as const,
-      crossOrigin: '',
+      crossOrigin: '' as const,
       href: resourceId,
       rel: 'preload' as const,
       type: 'link' as const,
