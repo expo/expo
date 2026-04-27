@@ -54,8 +54,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         AppStartupManager.markFirstRender()
       }
 
-      Function("markInteractive") { routeName: String? ->
-        AppStartupManager.markInteractive(routeName)
+      Function("markInteractive") { attributes: MetricAttributes? ->
+        AppStartupManager.markInteractive(attributes?.routeName, attributes?.params)
 
         scope.launch {
           saveStartupMetricsIfNotSaved()
@@ -186,3 +186,8 @@ data class PartialMetric(
       params = params?.let { Json.encodeToString(it) }
     )
 }
+
+data class MetricAttributes(
+  @Field val routeName: String? = null,
+  @Field val params: Map<String, Any>? = null
+) : Record
