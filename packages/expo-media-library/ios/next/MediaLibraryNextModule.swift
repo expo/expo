@@ -3,8 +3,27 @@ import Photos
 import PhotosUI
 
 public final class MediaLibraryNextModule: Module {
+  private static let libraryDidChangeEvent = "mediaLibraryDidChange"
+  private lazy var observerManager = PhotoLibraryObserverManager(onChange: { [weak self] body in
+    guard let self = self else {
+      return
+    }
+    self.sendEvent(MediaLibraryNextModule.libraryDidChangeEvent, body)
+  })
+
   public func definition() -> ModuleDefinition {
     Name("ExpoMediaLibraryNext")
+
+    Events(MediaLibraryNextModule.libraryDidChangeEvent)
+
+    OnStartObserving(MediaLibraryNextModule.libraryDidChangeEvent) {
+      observerManager.startObserving()
+    }
+
+    OnStopObserving(MediaLibraryNextModule.libraryDidChangeEvent) {
+      observerManager.stopObserving()
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(Asset.self) {
       Constructor { (id: String) -> Asset in
