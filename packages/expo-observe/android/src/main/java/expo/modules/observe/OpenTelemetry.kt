@@ -2,6 +2,8 @@ package expo.modules.observe
 
 import expo.modules.appmetrics.utils.TimeUtils.timestampToDateNS
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 
 // MARK: -- Open Telemetry data classes
@@ -166,14 +168,23 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
   metadata.appBuildNumber?.let {
     attributes.add(OTAttribute.of("expo.app.build_number", it))
   }
-  metadata.appUpdateId?.let {
+  metadata.appUpdatesInfo?.updateId?.let {
+    // Fallback for backward compatibility
     attributes.add(OTAttribute.of("expo.app.update_id", it))
+    attributes.add(OTAttribute.of("expo.app.updates.id", it))
   }
-  metadata.appUpdateChannel?.let {
-    attributes.add(OTAttribute.of("expo.app.update_channel", it))
+  metadata.appUpdatesInfo?.requestHeaders?.let { headers ->
+    runCatching {
+      Json.encodeToString(
+        MapSerializer(String.serializer(), String.serializer()),
+        headers
+      )
+    }.getOrNull()?.let {
+      attributes.add(OTAttribute.of("expo.app.updates.request_headers", it))
+    }
   }
-  metadata.appUpdateRuntimeVersion?.let {
-    attributes.add(OTAttribute.of("expo.app.update_runtime_version", it))
+  metadata.appUpdatesInfo?.runtimeVersion?.let {
+    attributes.add(OTAttribute.of("expo.app.updates.runtime_version", it))
   }
   metadata.environment?.let {
     attributes.add(OTAttribute.of("expo.environment", it))

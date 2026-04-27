@@ -54,8 +54,8 @@ public final class DevLauncherAppController: NSObject, InternalAppControllerInte
 
   public var embeddedUpdateId: UUID?
 
-  public var channel: String?
-
+  public var requestHeaders: [String : String]?
+  
   public var isEnabled: Bool
   public let isStarted = false
 

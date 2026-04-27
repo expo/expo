@@ -1,6 +1,7 @@
 package expo.modules.appmetrics.updates
 
 import android.util.Log
+import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.storage.Metric
@@ -18,46 +19,33 @@ class UpdatesMonitoring(
 ) {
 
   /**
-   * Returns the launched OTA update ID, or null if the app was launched from the embedded bundle.
+   * Returns the current updates info (update ID, runtime version, request headers) for the
+   * launched app, or an empty info object when updates is not available.
    */
-  fun getLaunchedUpdateId(): String? {
-    val controller = UpdatesControllerRegistry.controller?.get() ?: return null
-    val launchedUpdateId = controller.launchedUpdateId ?: return null
-    val embeddedUpdateId = controller.embeddedUpdateId ?: return null
-
-    // Ignore embedded launches
-    if (launchedUpdateId == embeddedUpdateId) {
-      return null
-    }
-    return launchedUpdateId.toString().lowercase()
-  }
-
-  fun getUpdateChannel(): String? {
-    val controller = UpdatesControllerRegistry.controller?.get() ?: return null
-    return controller.channel
-  }
-
-  fun getUpdateRuntimeVersion(): String? {
-    val controller = UpdatesControllerRegistry.controller?.get() ?: return null
-    return controller.runtimeVersion
+  fun getUpdatesMetricsInfo(): AppUpdatesInfo {
+    val controller = UpdatesControllerRegistry.controller?.get()
+      ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
+    val launchedUpdateId = controller.launchedUpdateId
+    val embeddedUpdateId = controller.embeddedUpdateId
+    // Ignore embedded launches – they are not available on the website anyway.
+    val updateId = if (launchedUpdateId == embeddedUpdateId) null else launchedUpdateId?.toString()?.lowercase()
+    return AppUpdatesInfo(
+      updateId = updateId,
+      runtimeVersion = controller.runtimeVersion,
+      requestHeaders = controller.requestHeaders
+    )
   }
 
   /**
-   * Patches the app metadata with the OTA update ID, channel, and runtime version if applicable.
+   * Patches the app metadata with the OTA updates info if applicable.
    */
   fun patchAppInfoIfNeeded(currentMetadata: expo.modules.appmetrics.AppMetadata?): expo.modules.appmetrics.AppMetadata? {
     if (currentMetadata == null) return currentMetadata
-    val updateId = getLaunchedUpdateId()
-    val updateChannel = getUpdateChannel()
-    val updateRuntimeVersion = getUpdateRuntimeVersion()
-    if (updateId == null && updateChannel == null && updateRuntimeVersion == null) return currentMetadata
-    if (currentMetadata.appUpdateId != null && currentMetadata.appUpdateChannel != null && currentMetadata.appUpdateRuntimeVersion != null) return currentMetadata
+    val updatesInfo = getUpdatesMetricsInfo()
+    if (updatesInfo.updateId == null && updatesInfo.runtimeVersion == null) return currentMetadata
+    if (currentMetadata.appUpdatesInfo?.updateId != null) return currentMetadata
     Log.d(TAG, "OTA update info found, patching AppMetadata")
-    return currentMetadata.copy(
-      appUpdateId = currentMetadata.appUpdateId ?: updateId,
-      appUpdateChannel = currentMetadata.appUpdateChannel ?: updateChannel,
-      appUpdateRuntimeVersion = currentMetadata.appUpdateRuntimeVersion ?: updateRuntimeVersion
-    )
+    return currentMetadata.copy(appUpdatesInfo = updatesInfo)
   }
 
   /**
