@@ -13,6 +13,7 @@
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
 - Fix `"use no memo"` and `"use no forget"` default opt-out directives being ineffective in react-compiler transform ([#43521](https://github.com/expo/expo/pull/43521) by [@Titozzz](https://github.com/Titozzz), [@kitten](https://github.com/kitten))
 - Update plugin detection to resolve from project root ([#44197](https://github.com/expo/expo/pull/44197) by [@kitten](https://github.com/kitten))
+- Fix `NODE_ENV` inlining when running `expo export --dev` with SSR
 
 ### 💡 Others
 
