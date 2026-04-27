@@ -3,9 +3,13 @@ import os from 'node:os';
 import path from 'node:path';
 
 import {
+  buildPodToNpmPackageMap,
+  collectDeclaredSpmDeps,
+  enumerateBundledSpmDepsXcframeworks,
   enumeratePrecompiledModules,
   enumerateSpmDepsXcframeworks,
 } from '../../../cli/src/utils/precompiled';
+import type { ModuleXCFramework } from '../../../cli/src/utils/types';
 
 /**
  * Unit tests for the precompiled-modules enumerator. These tests construct a synthetic
@@ -203,5 +207,261 @@ describe('enumerateSpmDepsXcframeworks', () => {
 
   it('returns empty when no .spm-deps cache is reachable from cwd', () => {
     expect(enumerateSpmDepsXcframeworks(tmpDir, 'Release', new Set())).toEqual([]);
+  });
+
+  it('honors EXPO_PRECOMPILED_MODULES_PATH as an override for the cache root', () => {
+    seedSpmDep(tmpDir, 'SDWebImage', 'release');
+    const overrideRoot = path.join(tmpDir, 'packages/precompile/.build');
+    const previous = process.env.EXPO_PRECOMPILED_MODULES_PATH;
+    process.env.EXPO_PRECOMPILED_MODULES_PATH = overrideRoot;
+    try {
+      // cwd points outside any monorepo, but the env var still wins.
+      const isolatedCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-isolated-'));
+      try {
+        const found = enumerateSpmDepsXcframeworks(isolatedCwd, 'Release', new Set());
+        expect(found.map((m) => m.name)).toEqual(['SDWebImage']);
+      } finally {
+        fs.rmSync(isolatedCwd, { recursive: true, force: true });
+      }
+    } finally {
+      if (previous === undefined) {
+        delete process.env.EXPO_PRECOMPILED_MODULES_PATH;
+      } else {
+        process.env.EXPO_PRECOMPILED_MODULES_PATH = previous;
+      }
+    }
+  });
+});
+
+describe('buildPodToNpmPackageMap', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-podmap-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  const seedNpmPackage = (
+    cwd: string,
+    npmName: string,
+    spmConfig: object,
+    options: { scoped?: boolean } = {}
+  ) => {
+    const segments = options.scoped ? npmName.split('/') : [npmName];
+    const packageDir = path.join(cwd, 'node_modules', ...segments);
+    fs.mkdirSync(packageDir, { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ name: npmName }));
+    fs.writeFileSync(path.join(packageDir, 'spm.config.json'), JSON.stringify(spmConfig));
+    return packageDir;
+  };
+
+  it('indexes flat and scoped npm packages by their declared podName', () => {
+    seedNpmPackage(tmpDir, 'expo-image', {
+      products: [{ name: 'ExpoImage', podName: 'ExpoImage', spmPackages: [] }],
+    });
+    seedNpmPackage(
+      tmpDir,
+      '@scope/foo',
+      { products: [{ name: 'FooKit', podName: 'FooKit', spmPackages: [] }] },
+      { scoped: true }
+    );
+
+    const map = buildPodToNpmPackageMap(tmpDir);
+    expect(map.get('ExpoImage')?.npmPackage).toBe('expo-image');
+    expect(map.get('FooKit')?.npmPackage).toBe('@scope/foo');
+  });
+
+  it('skips node_modules entries without spm.config.json', () => {
+    fs.mkdirSync(path.join(tmpDir, 'node_modules', 'unrelated-lib'), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, 'node_modules', 'unrelated-lib', 'package.json'),
+      JSON.stringify({ name: 'unrelated-lib' })
+    );
+
+    expect(buildPodToNpmPackageMap(tmpDir).size).toBe(0);
+  });
+
+  it('returns an empty map when node_modules does not exist', () => {
+    expect(buildPodToNpmPackageMap(tmpDir).size).toBe(0);
+  });
+});
+
+describe('enumerateBundledSpmDepsXcframeworks', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-bundled-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  const seedNpmWithBundle = (
+    cwd: string,
+    npmName: string,
+    podName: string,
+    spmDeps: string[],
+    flavor: string,
+    options: { versioned?: string; missingDeps?: string[] } = {}
+  ) => {
+    const packageDir = path.join(cwd, 'node_modules', npmName);
+    fs.mkdirSync(packageDir, { recursive: true });
+    fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify({ name: npmName }));
+    fs.writeFileSync(
+      path.join(packageDir, 'spm.config.json'),
+      JSON.stringify({
+        products: [
+          {
+            name: podName,
+            podName,
+            spmPackages: spmDeps.map((p) => ({ productName: p })),
+          },
+        ],
+      })
+    );
+    const layoutBase = options.versioned
+      ? path.join(packageDir, 'prebuilds', 'output', options.versioned)
+      : path.join(packageDir, 'prebuilds', 'output');
+    const xcframeworksDir = path.join(layoutBase, flavor, 'xcframeworks');
+    fs.mkdirSync(xcframeworksDir, { recursive: true });
+    const skip = new Set(options.missingDeps ?? []);
+    for (const dep of spmDeps) {
+      if (skip.has(dep)) {
+        continue;
+      }
+      fs.mkdirSync(path.join(xcframeworksDir, `${dep}.xcframework`));
+    }
+    return packageDir;
+  };
+
+  const fakeModule = (name: string, podDir: string): ModuleXCFramework => ({
+    name,
+    podDir,
+    xcframeworkPath: path.join(podDir, `${name}.xcframework`),
+    mainProduct: name,
+  });
+
+  it('finds bundled SPM-dep xcframeworks under both flat and versioned layouts', () => {
+    seedNpmWithBundle(tmpDir, 'expo-image', 'ExpoImage', ['SDWebImage', 'libavif'], 'release', {
+      versioned: '1.0.0/0.85.0/1.0.0',
+    });
+    const podsDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podsDir, { recursive: true });
+
+    const map = buildPodToNpmPackageMap(tmpDir);
+    const found = enumerateBundledSpmDepsXcframeworks(
+      [fakeModule('ExpoImage', podsDir)],
+      map,
+      'Release',
+      new Set(['ExpoImage'])
+    );
+
+    expect(found.map((m) => m.name).sort()).toEqual(['SDWebImage', 'libavif']);
+    for (const m of found) {
+      expect(m.xcframeworkPath).toContain(path.join('1.0.0/0.85.0/1.0.0', 'release'));
+    }
+  });
+
+  it('skips deps already covered by the existingNames set', () => {
+    seedNpmWithBundle(tmpDir, 'expo-image', 'ExpoImage', ['SDWebImage', 'libavif'], 'release');
+    const podsDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podsDir, { recursive: true });
+
+    const map = buildPodToNpmPackageMap(tmpDir);
+    const found = enumerateBundledSpmDepsXcframeworks(
+      [fakeModule('ExpoImage', podsDir)],
+      map,
+      'Release',
+      new Set(['ExpoImage', 'SDWebImage'])
+    );
+    expect(found.map((m) => m.name)).toEqual(['libavif']);
+  });
+
+  it('ignores xcframeworks that exist only under a different flavor', () => {
+    seedNpmWithBundle(tmpDir, 'expo-image', 'ExpoImage', ['SDWebImage'], 'debug');
+    const podsDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podsDir, { recursive: true });
+
+    const map = buildPodToNpmPackageMap(tmpDir);
+    const found = enumerateBundledSpmDepsXcframeworks(
+      [fakeModule('ExpoImage', podsDir)],
+      map,
+      'Release',
+      new Set(['ExpoImage'])
+    );
+    expect(found).toEqual([]);
+  });
+
+  it('omits deps the package declares but failed to actually bundle (defers to completeness check)', () => {
+    seedNpmWithBundle(tmpDir, 'expo-image', 'ExpoImage', ['SDWebImage', 'libavif'], 'release', {
+      missingDeps: ['libavif'],
+    });
+    const podsDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podsDir, { recursive: true });
+
+    const map = buildPodToNpmPackageMap(tmpDir);
+    const found = enumerateBundledSpmDepsXcframeworks(
+      [fakeModule('ExpoImage', podsDir)],
+      map,
+      'Release',
+      new Set(['ExpoImage'])
+    );
+    expect(found.map((m) => m.name)).toEqual(['SDWebImage']);
+  });
+});
+
+describe('collectDeclaredSpmDeps', () => {
+  let tmpDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'brownfield-declared-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('aggregates and dedupes declared SPM dep names across enumerated pods', () => {
+    fs.mkdirSync(path.join(tmpDir, 'node_modules', 'expo-image'), { recursive: true });
+    fs.writeFileSync(
+      path.join(tmpDir, 'node_modules', 'expo-image', 'package.json'),
+      JSON.stringify({ name: 'expo-image' })
+    );
+    fs.writeFileSync(
+      path.join(tmpDir, 'node_modules', 'expo-image', 'spm.config.json'),
+      JSON.stringify({
+        products: [
+          {
+            name: 'ExpoImage',
+            podName: 'ExpoImage',
+            spmPackages: [{ productName: 'SDWebImage' }, { productName: 'libavif' }],
+          },
+        ],
+      })
+    );
+
+    const podsDir = path.join(tmpDir, 'ios', 'Pods', 'ExpoImage');
+    fs.mkdirSync(podsDir, { recursive: true });
+    const map = buildPodToNpmPackageMap(tmpDir);
+
+    const declared = collectDeclaredSpmDeps(
+      [
+        {
+          name: 'ExpoImage',
+          podDir: podsDir,
+          xcframeworkPath: path.join(podsDir, 'ExpoImage.xcframework'),
+          mainProduct: 'ExpoImage',
+        },
+      ],
+      map
+    );
+    expect(declared.map((d) => d.name).sort()).toEqual(['SDWebImage', 'libavif']);
+    for (const d of declared) {
+      expect(d.declaringPod).toBe('expo-image');
+    }
   });
 });

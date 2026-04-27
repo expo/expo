@@ -29,9 +29,14 @@ export declare const ensureCorrectFlavor: (module: ModuleXCFramework, buildConfi
 }) => Promise<void>;
 export declare const resolvedFixedXCFrameworks: () => string[];
 /**
- * Walks up from `startDir` looking for `packages/precompile/.build/.spm-deps/`. The Expo monorepo
- * stages shared SPM-dependency xcframeworks (SDWebImage, libavif, lottie-ios, …) under that path
- * — one xcframework per `<productName>/<flavor>/`. Returns the absolute path or null.
+ * Locates the shared SPM-deps cache root. Resolution order:
+ *
+ *  1. `$EXPO_PRECOMPILED_MODULES_PATH/.spm-deps/` — explicit override matching the Ruby
+ *     autolinking convention (precompiled_modules.rb's MODULES_PATH_ENV_VAR).
+ *  2. Walk up from `startDir` looking for `packages/precompile/.build/.spm-deps/` — the Expo
+ *     monorepo's centralized cache.
+ *
+ * Returns the absolute path to the `.spm-deps/` dir, or null when neither is reachable.
  */
 export declare const findSpmDepsRoot: (startDir: string) => string | null;
 /**
@@ -47,3 +52,57 @@ export declare const findSpmDepsRoot: (startDir: string) => string | null;
  * @rpath references for SPM deps may go unresolved.
  */
 export declare const enumerateSpmDepsXcframeworks: (cwd: string, buildConfiguration: BuildConfiguration, existingNames: Set<string>) => ModuleXCFramework[];
+/**
+ * Subset of the `spm.config.json` schema we actually care about for resolving deps. Each
+ * Expo precompiled module ships one of these (e.g. `node_modules/expo-image/spm.config.json`).
+ */
+export interface SpmConfig {
+    products?: SpmProduct[];
+}
+export interface SpmProduct {
+    name?: string;
+    podName?: string;
+    spmPackages?: SpmPackageEntry[];
+}
+export interface SpmPackageEntry {
+    productName?: string;
+    url?: string;
+}
+export interface NpmPackageInfo {
+    npmPackage: string;
+    packageRoot: string;
+    spmConfig: SpmConfig;
+}
+/**
+ * Builds a `Map<podName, NpmPackageInfo>` for every npm package reachable from `cwd` that has
+ * an `spm.config.json` declaring a `podName`. Used to walk an enumerated pod (e.g. `ExpoImage`)
+ * back to its npm package so we can read its declared `spmPackages`.
+ *
+ * The scan looks at:
+ *  - `<cwd>/node_modules/*\/spm.config.json`
+ *  - `<cwd>/node_modules/@scope/*\/spm.config.json`
+ * Each candidate is `realpath`'d so pnpm's symlinked store layout (`node_modules/.pnpm/...`)
+ * resolves to the actual package root.
+ */
+export declare const buildPodToNpmPackageMap: (cwd: string) => Map<string, NpmPackageInfo>;
+/**
+ * Returns the unique set of declared SPM-dep product names across the given pods, looked up
+ * via each pod's npm package's `spm.config.json`. Used both as the source-of-truth completeness
+ * check and as the input to bundled-dep enumeration.
+ */
+export declare const collectDeclaredSpmDeps: (modules: ModuleXCFramework[], podToNpm: Map<string, NpmPackageInfo>) => {
+    name: string;
+    declaringPod: string;
+}[];
+/**
+ * For each enumerated pod, walk back to its npm package, read declared `spmPackages`, and look
+ * for a matching `<name>.xcframework` under that package's `prebuilds/output/.../<flavor>/`
+ * tree. This is the npm-published consumer path — the precompile pipeline's `bundleSharedDeps`
+ * mode drops the SPM-dep xcframeworks alongside the main product when publishing, so external
+ * (non-monorepo) users have everything they need locally without any shared cache.
+ *
+ * Skips entries already in `existingNames` (pod-scan layer wins over bundled). Silently omits
+ * deps whose xcframework can't be found here — the strict completeness check downstream
+ * (in copyXCFrameworks) is the source of truth for surfacing unresolvable deps.
+ */
+export declare const enumerateBundledSpmDepsXcframeworks: (modules: ModuleXCFramework[], podToNpm: Map<string, NpmPackageInfo>, buildConfiguration: BuildConfiguration, existingNames: Set<string>) => ModuleXCFramework[];
