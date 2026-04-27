@@ -15,6 +15,7 @@ import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
 import { getPrecompileDir } from '../Directories';
+import { getPackageByName } from '../Packages';
 import {
   ObjcTarget,
   SwiftTarget,
@@ -340,6 +341,50 @@ export function findSiblingProductDependencies(
   }
   return result;
 }
+
+/**
+ * Resolves a dep name to that dep's own `externalDependencies`, or `null` to
+ * leave it as a leaf (cache deps, unknown packages, sibling targets).
+ */
+export type ExternalDepResolver = (depName: string) => string[] | null;
+
+/**
+ * BFS over `seedDeps`, pulling in each resolvable dep's transitive externals.
+ * Preserves first-occurrence order, deduplicates, terminates on cycles.
+ */
+export function expandTransitiveExternalDeps(
+  seedDeps: string[],
+  resolveDeps: ExternalDepResolver
+): string[] {
+  const visited = new Set<string>();
+  const result: string[] = [];
+  const queue: string[] = [...seedDeps];
+  while (queue.length > 0) {
+    const dep = queue.shift()!;
+    if (visited.has(dep)) continue;
+    visited.add(dep);
+    result.push(dep);
+    for (const next of resolveDeps(dep) ?? []) if (!visited.has(next)) queue.push(next);
+  }
+  return result;
+}
+
+/**
+ * Reads `package/Product` deps from the monorepo's spm.config.json files.
+ * Used so a consumer that depends on `expo-modules-core/ExpoModulesCore`
+ * automatically gets ExpoModulesCore's own external deps (e.g. JSI).
+ */
+export const resolveExternalDepsFromMonorepo: ExternalDepResolver = (depName) => {
+  if (!depName.includes('/')) return null;
+  const parts = depName.split('/');
+  const isScoped = parts[0].startsWith('@');
+  const packageName = isScoped ? `${parts[0]}/${parts[1]}` : parts[0];
+  const productName = isScoped ? parts[2] : parts[1];
+  const depPkg = getPackageByName(packageName);
+  if (!depPkg?.hasSwiftPMConfiguration()) return null;
+  const matched = depPkg.getSwiftPMConfiguration().products.find((p) => p.name === productName);
+  return matched?.externalDependencies ?? null;
+};
 
 // Main Export: SPMPackage
 
@@ -1239,9 +1284,11 @@ async function buildPackageSwiftContext(
     return sibling?.externalDependencies || [];
   });
 
-  // Add external dependencies as binary targets
-  const externalDeps = Array.from(
-    new Set([...(product.externalDependencies || []), ...transitiveExternalDeps])
+  // Walk cross-package transitive externalDependencies so the generated
+  // Package.swift includes binary targets for everything reachable.
+  const externalDeps = expandTransitiveExternalDeps(
+    [...(product.externalDependencies ?? []), ...transitiveExternalDeps],
+    resolveExternalDepsFromMonorepo
   );
   for (const depName of externalDeps) {
     spinner.info(`Resolving external dependency: ${depName}`);
@@ -1452,6 +1499,15 @@ async function buildPackageSwiftContext(
         target.dependencies = Array.from(new Set([...deps, ...transitiveExternalDeps]));
       }
     }
+  }
+
+  // Inject cross-package transitive external deps into source target deps so
+  // the Swift compiler can resolve `@_exported import` chains through them.
+  for (const target of product.targets) {
+    if (target.type === 'framework') continue;
+    const deps = target.dependencies ?? [];
+    const expanded = expandTransitiveExternalDeps(deps, resolveExternalDepsFromMonorepo);
+    if (expanded.length !== deps.length) target.dependencies = expanded;
   }
 
   // Process each product's targets

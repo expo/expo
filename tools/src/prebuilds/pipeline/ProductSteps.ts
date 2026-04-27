@@ -9,6 +9,7 @@ import path from 'path';
 
 import logger from '../../Logger';
 import { Codegen } from '../Codegen';
+import { composeCustomBuildAsync, runCustomBuildAsync } from '../CustomBuild';
 import { Frameworks } from '../Frameworks';
 import { SPMBuild } from '../SPMBuild';
 import { SPMGenerator } from '../SPMGenerator';
@@ -77,6 +78,9 @@ export const generateStep: Step<PrebuildContext> = {
     const flavor = ctx.currentFlavor!;
     const artifacts = ctx.artifactsByFlavor.get(flavor) ?? undefined;
 
+    // customBuild products own their generation; nothing to do here.
+    if (product.customBuild) return setStage(ctx, 'generate', 'success');
+
     // Ensure codegen is generated for packages that need it (e.g., Fabric components)
     if (Codegen.hasCodegen(pkg)) {
       const generated = await Codegen.ensureCodegenAsync(pkg, (msg) => logger.info(msg));
@@ -115,6 +119,12 @@ export const buildStep: Step<PrebuildContext> = {
     const flavor = ctx.currentFlavor!;
     const artifacts = ctx.artifactsByFlavor.get(flavor) ?? undefined;
 
+    if (product.customBuild) {
+      if (!artifacts) throw new Error(`customBuild ${product.name}: artifacts missing for ${flavor}`);
+      await runCustomBuildAsync(pkg, product, artifacts, ctx.request.platformFilter, ctx.customBuiltProducts);
+      return setStage(ctx, 'build', 'success');
+    }
+
     // Compute hermes include paths for xcodebuild flags.
     // Hermes includes can't go in Package.swift because destroot/include/
     // contains jsi/ headers that conflict with React VFS jsi/ mappings.
@@ -150,6 +160,11 @@ export const composeStep: Step<PrebuildContext> = {
     const pkg = ctx.currentPackage!;
     const product = ctx.currentProduct!;
     const flavor = ctx.currentFlavor!;
+
+    if (product.customBuild) {
+      await composeCustomBuildAsync(pkg, product, flavor);
+      return setStage(ctx, 'compose', 'success');
+    }
 
     await Frameworks.composeXCFrameworkAsync(
       pkg,

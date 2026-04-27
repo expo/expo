@@ -94,6 +94,11 @@ export interface PrebuildContext {
   // Downloaded artifacts, keyed by flavor (populated lazily during execution)
   artifactsByFlavor: Map<BuildFlavor, DownloadedDependencies | null>;
 
+  // Tracks customBuild products that have been built during this run, so we
+  // only invoke their scripts once even when iterating multiple flavors.
+  // Keys are `${packageName}/${productName}`.
+  customBuiltProducts: Set<string>;
+
   // Iteration pointers (set by Executor before each step)
   currentPackage: SPMPackageSource | null;
   currentProduct: SPMProduct | null;
@@ -160,6 +165,7 @@ export function createContext(request: PrebuildRequest): PrebuildContext {
     artifactsPath: '',
     dependsOn: new Map(),
     artifactsByFlavor: new Map(),
+    customBuiltProducts: new Set(),
     currentPackage: null,
     currentProduct: null,
     currentFlavor: null,

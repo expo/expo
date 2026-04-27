@@ -8,4 +8,6 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Added prebuild configuration for `ExpoModulesJSI` to be built with precompiled XCFrameworks.
+
 ### 💡 Others
