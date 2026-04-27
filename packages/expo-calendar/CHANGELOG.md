@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS][next] Add `calendar.addEventWithForm()` ([#44966](https://github.com/expo/expo/pull/44966) by [@Wenszel](https://github.com/Wenszel))
+- [iOS][next] Add `presentPicker()` ([#44965](https://github.com/expo/expo/pull/44965) by [@Wenszel](https://github.com/Wenszel))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
@@ -17,8 +19,7 @@
 
 ### 💡 Others
 
-- [iOS][next] Add `calendar.addEventWithForm()` ([#44966](https://github.com/expo/expo/pull/44966) by [@Wenszel](https://github.com/Wenszel))
-- [iOS][next] Add `presentPicker()` ([#44965](https://github.com/expo/expo/pull/44965) by [@Wenszel](https://github.com/Wenszel))
+- Add deprecation notes ([#45118](https://github.com/expo/expo/pull/45118) by [@Wenszel](https://github.com/Wenszel))
 - [next] Refactor Calendar@Next ([#43434](https://github.com/expo/expo/pull/43434) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - Use `export type` for type-only re-exports to fix TS1205 with `isolatedModules`. ([#44205](https://github.com/expo/expo/pull/44205) by [@hknakn](https://github.com/hknakn))
