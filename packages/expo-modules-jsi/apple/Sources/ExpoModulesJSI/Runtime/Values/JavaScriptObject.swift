@@ -71,10 +71,16 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     return pointee.isFunction(runtime.pointee)
   }
 
-// TODO: `isHostObject` is ambiguous for Swift as it's a template – we need specialization in C++
-//  public func isHostObject() -> Bool {
-//    return pointee.isHostObject(runtime.pointee)
-//  }
+  /**
+   Returns `true` if the object is backed by a `jsi::HostObject`, including host objects
+   created via `JavaScriptRuntime.createHostObject` and ones produced by other native code.
+   */
+  public func isHostObject() -> Bool {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    return expo.isHostObject(runtime.pointee, pointee)
+  }
 
   public func isArrayBuffer() -> Bool {
     guard let runtime else {

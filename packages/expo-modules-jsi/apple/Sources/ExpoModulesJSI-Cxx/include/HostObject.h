@@ -6,6 +6,7 @@
 #include <vector>
 #include <jsi/jsi.h>
 
+#include "CppError.h"
 #include "HostObjectCallbacks.h"
 
 namespace jsi = facebook::jsi;
@@ -22,11 +23,20 @@ public:
   }
 
   inline jsi::Value get(jsi::Runtime &runtime, const jsi::PropNameID &name) override {
-    return _callbacks.get(name.utf8(runtime).c_str());
+    auto result = _callbacks.get(name.utf8(runtime).c_str());
+    // If the Swift getter stored a pending error, rethrow its JSError directly
+    // to preserve all properties (message, code, stack, etc.).
+    if (auto *error = CppError::getCurrent()) {
+      throw error->release();
+    }
+    return result;
   }
 
   inline void set(jsi::Runtime &runtime, const jsi::PropNameID &name, const jsi::Value &value) override {
-    _callbacks.set(name.utf8(runtime).c_str(), value);
+    _callbacks.set(runtime, name.utf8(runtime).c_str(), value);
+    if (auto *error = CppError::getCurrent()) {
+      throw error->release();
+    }
   }
 
   inline std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &runtime) override {

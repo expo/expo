@@ -100,19 +100,31 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
 
   /**
    Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
+
+   Errors thrown from `get` or `set` propagate to JavaScript as a thrown `Error`. Conform
+   the thrown type to `JavaScriptThrowable` to control the resulting `message` and `code`.
+
+   Pass `nil` for `set` to make the host object read-only — assignment from JavaScript
+   then throws a `TypeError`-style error matching the engine's behavior for a property
+   with no setter. `getPropertyNames` and `dealloc` default to no-ops.
    */
   public func createHostObject(
-    get: @escaping @JavaScriptActor (_ propertyName: String) -> JavaScriptValue,
-    set: @escaping @JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) -> Void,
-    getPropertyNames: @escaping @JavaScriptActor () -> [String],
-    dealloc: @escaping @JavaScriptActor () -> Void
+    get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
+    set: (@JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) throws -> Void)? = nil,
+    getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
+    dealloc: @escaping @JavaScriptActor () -> Void = {}
   ) -> JavaScriptObject {
     func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
       let propertyName = String(cString: propertyName)
 
+      guard let runtime = context.runtime else {
+        FatalError.runtimeLost()
+      }
       return JavaScriptActor.assumeIsolated {
-        return context.get(propertyName).asJSIValue()
+        return forwardingSwiftErrorsToJS(runtime: runtime) {
+          return try context.get(propertyName).asJSIValue()
+        }
       }
     }
 
@@ -120,8 +132,19 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
       let value = JavaScriptValue(context.runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
       let propertyName = String(cString: propertyName)
-      return JavaScriptActor.assumeIsolated {
-        context.set(propertyName, value)
+
+      guard let runtime = context.runtime else {
+        FatalError.runtimeLost()
+      }
+      // The C++ side never dispatches here when the Swift setter is nil — it
+      // throws a `jsi::JSError` before reaching this trampoline.
+      guard let set = context.set else {
+        return
+      }
+      JavaScriptActor.assumeIsolated {
+        forwardingSwiftErrorsToJS(runtime: runtime) {
+          try set(propertyName, value)
+        }
       }
     }
 
@@ -156,7 +179,9 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc)).toOpaque()
-    let callbacks = expo.HostObjectCallbacks(context, getter, setter, propertyNamesGetter, deallocate)
+    // Pass a null setter to C++ when the Swift setter is nil so that JS assignment
+    // raises a `jsi::JSError` directly, without crossing the Swift boundary.
+    let callbacks = expo.HostObjectCallbacks(context, getter, set == nil ? nil : setter, propertyNamesGetter, deallocate)
     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)
 
     return JavaScriptObject(self, hostObject)
@@ -527,19 +552,9 @@ private func createFunctionClosure(runtime: JavaScriptRuntime, name: String? = n
     let argumentsRef = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount).ref()
 
     return JavaScriptActor.assumeIsolated {
-      do {
+      return forwardingSwiftErrorsToJS(runtime: runtime) {
         let thisValue = JavaScriptValue(runtime, this)
-        let result = try context.call(thisValue, argumentsRef.take())
-        return result.asJSIValue()
-      } catch let throwable as JavaScriptThrowable {
-        // Store the error in thread-local storage so the C++ caller can
-        // retrieve it and throw a jsi::JSError after this closure returns.
-        let jsError = JavaScriptError(runtime, from: throwable)
-        expo.CppError.setCurrent(jsError.toJSError())
-        return .undefined()
-      } catch let error {
-        expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
-        return .undefined()
+        return try context.call(thisValue, argumentsRef.take()).asJSIValue()
       }
     }
   }
