@@ -39,7 +39,6 @@ async function stagePodsRootAsync(
   const links: [string, string][] = [
     [path.join(artifacts.hermes, 'destroot'), 'hermes-engine/destroot'],
     [path.join(artifacts.react, 'React.xcframework'), 'React-Core-prebuilt/React.xcframework'],
-    [path.join(artifacts.react, 'React-VFS.yaml'), 'React-Core-prebuilt/React-VFS.yaml'],
     [
       path.join(artifacts.reactNativeDependencies, 'ReactNativeDependencies.xcframework'),
       'ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework',
@@ -51,6 +50,17 @@ async function stagePodsRootAsync(
     await fs.remove(link).catch(() => {});
     await fs.ensureSymlink(target, link);
   }
+
+  // Stage React-VFS.yaml as a rewritten copy (not a symlink) so the build
+  // script's `sed s|${PODS_ROOT}/React-Core-prebuilt|...|` substitution finds
+  // the prefix it expects. The cached yaml has absolute cache paths; we
+  // rewrite them to the staged React-Core-prebuilt location.
+  const vfsSource = await fs.readFile(path.join(artifacts.react, 'React-VFS.yaml'), 'utf8');
+  const cachePrefix = path.join(artifacts.react, 'React.xcframework');
+  const stagedPrefix = path.join(stage, 'React-Core-prebuilt', 'React.xcframework');
+  const vfsRewritten = vfsSource.split(cachePrefix).join(stagedPrefix);
+  await fs.writeFile(path.join(stage, 'React-Core-prebuilt', 'React-VFS.yaml'), vfsRewritten);
+
   return stage;
 }
 
