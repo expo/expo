@@ -21,7 +21,7 @@
 - [iOS] Prevent stale lock screen artwork updates from crashing or overwriting newer metadata. ([#44498](https://github.com/expo/expo/pull/44498) by [@kotadd](https://github.com/kotadd))
 - [Android] Fix lock screen controls on android 12 and earlier. ([#44754](https://github.com/expo/expo/pull/44754) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix playback progress continuing after pause by setting correct playback rate in now playing info. ([#44974](https://github.com/expo/expo/pull/44974) by [@JstUsername](https://github.com/JstUsername))
-- [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin.
+- [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45131](https://github.com/expo/expo/pull/45131) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
