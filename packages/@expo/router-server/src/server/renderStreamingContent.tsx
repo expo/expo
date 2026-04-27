@@ -12,18 +12,17 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
-import React from 'react';
+import React, { ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
+import { ServerDocument } from 'expo-router/internal/server';
 import {
-  createInjectedCssAsString,
-  createLoaderDataScriptAsString,
-  getHydrationFlagScriptAsString,
-  serializeHelmetToHtml,
-} from '../utils/html';
-import { createDocumentMetadataInjectionTransform } from '../utils/streams';
+  createInjectedCssAsNodes,
+  createInjectedFontsAsNodes,
+  getBootstrapContents,
+} from '../utils/react';
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
@@ -37,6 +36,7 @@ function resetReactNavigationContexts() {
   (globalThis as any)[contexts] = new Map<string, React.Context<any>>();
 }
 
+// NOTE(@hassankhan): Keep in sync with `expo-server/src/manifest.ts`
 export type GetStreamingContentOptions = {
   loader?: {
     data?: any;
@@ -44,7 +44,7 @@ export type GetStreamingContentOptions = {
     key: string;
   };
   metadata?: {
-    headTags: string;
+    headNodes: ReactNode[];
   } | null;
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
@@ -96,13 +96,15 @@ function prepareRenderContext(location: URL, options?: GetStreamingContentOption
   return { headContext, element, getStyleElement, loadedData };
 }
 
+function FontResources() {
+  const descriptors = Font.getServerResourceDescriptors();
+  debug(`Pushing fonts: (count: ${descriptors.length})`, descriptors);
+  return createInjectedFontsAsNodes(descriptors);
+}
+
 /**
  * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
  * that emits the full HTML document with head injections applied.
- *
- * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
- * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
- * the client after hydration instead.
  */
 export async function getStreamingContent(
   location: URL,
@@ -113,39 +115,29 @@ export async function getStreamingContent(
     options
   );
 
-  const stream = await ReactDOMServer.renderToReadableStream(
-    <Head.Provider context={headContext}>
-      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>,
+  const { headNodes: headCssNodes } = createInjectedCssAsNodes(options?.assets?.css ?? []);
+
+  const serverDocumentData = {
+    headNodes: [
+      ...(options?.metadata?.headNodes ?? []),
+      getStyleElement({ key: 'rnw-style-element' }),
+      ...(headCssNodes ?? []),
+    ],
+    bodyNodes: [<FontResources />],
+  };
+
+  return await ReactDOMServer.renderToReadableStream(
+    <ServerDocument data={serverDocumentData}>
+      {/* TODO(@hassankhan): Remove `<Head.Provider>` when `unstable_useServerRendering` is stabilized */}
+      <Head.Provider context={headContext}>
+        <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+      </Head.Provider>
+    </ServerDocument>,
     {
+      bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
       bootstrapScripts: options?.assets?.js,
       signal: options?.request?.signal,
     }
-  );
-
-  // Collect head injection content after the shell stream is ready.
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
-  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(headContext.helmet);
-  const fonts = Font.getServerResources();
-  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-
-  const injectionParts: string[] = [];
-  if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
-  if (headTags) injectionParts.push(headTags);
-  injectionParts.push(getHydrationFlagScriptAsString());
-  if (css) injectionParts.push(css);
-  if (fonts.length > 0) injectionParts.push(fonts.join(''));
-  if (loadedData) injectionParts.push(createLoaderDataScriptAsString(loadedData));
-  if (options?.assets?.css && options.assets.css.length > 0) {
-    injectionParts.push(createInjectedCssAsString(options.assets.css));
-  }
-
-  return stream.pipeThrough(
-    createDocumentMetadataInjectionTransform({
-      injectionParts,
-      htmlAttributes,
-      bodyAttributes,
-    })
   );
 }
 
