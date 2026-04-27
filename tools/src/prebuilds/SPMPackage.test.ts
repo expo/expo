@@ -80,12 +80,17 @@ describe('findSiblingProductDependencies', () => {
 
 // Synthetic resolver for tests. Keys map a `package/Product` to its further
 // externalDeps; anything not in the map resolves to null (matching production).
-const makeResolver = (graph: Record<string, string[]>): ExternalDepResolver =>
-  (dep) => (dep in graph ? graph[dep] : null);
+const makeResolver =
+  (graph: Record<string, string[]>): ExternalDepResolver =>
+  (dep) =>
+    dep in graph ? graph[dep] : null;
 
 describe('expandTransitiveExternalDeps', () => {
   it('passes through and deduplicates leaf-only seeds', () => {
-    assert.deepEqual(expandTransitiveExternalDeps(['A', 'B', 'A', 'C', 'B'], () => null), ['A', 'B', 'C']);
+    assert.deepEqual(
+      expandTransitiveExternalDeps(['A', 'B', 'A', 'C', 'B'], () => null),
+      ['A', 'B', 'C']
+    );
   });
 
   it('walks transitive deps across multiple levels', () => {
@@ -94,10 +99,12 @@ describe('expandTransitiveExternalDeps', () => {
       'pkg-b/B': ['pkg-c/C'],
       'pkg-c/C': ['Hermes'], // dup with seed-derived Hermes — must dedup
     });
-    assert.deepEqual(
-      expandTransitiveExternalDeps(['pkg-a/A'], resolver),
-      ['pkg-a/A', 'pkg-b/B', 'Hermes', 'pkg-c/C']
-    );
+    assert.deepEqual(expandTransitiveExternalDeps(['pkg-a/A'], resolver), [
+      'pkg-a/A',
+      'pkg-b/B',
+      'Hermes',
+      'pkg-c/C',
+    ]);
   });
 
   it('terminates on cycles', () => {
