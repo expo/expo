@@ -141,14 +141,16 @@ extension Event {
     if let appBuildNumber = metadata.appBuildNumber {
       attributes.append(OTAttribute(key: "expo.app.build_number", rawValue: appBuildNumber))
     }
-    if let appUpdateId = metadata.appUpdateId {
+    if let appUpdateId = metadata.appUpdatesInfo?.updateId {
+      // Fallback for backward compatibility
       attributes.append(OTAttribute(key: "expo.app.update_id", rawValue: appUpdateId))
+      attributes.append(OTAttribute(key: "expo.app.updates.id", rawValue: appUpdateId))
     }
-    if let appUpdateChannel = metadata.appUpdateChannel {
-      attributes.append(OTAttribute(key: "expo.app.update_channel", rawValue: appUpdateChannel))
+    if let requestHeadersString = try? metadata.appUpdatesInfo?.requestHeaders?.toJSONString() {
+      attributes.append(OTAttribute(key: "expo.app.updates.request_headers", rawValue: requestHeadersString))
     }
-    if let appUpdateRuntimeVersion = metadata.appUpdateRuntimeVersion {
-      attributes.append(OTAttribute(key: "expo.app.update_runtime_version", rawValue: appUpdateRuntimeVersion))
+    if let appUpdateRuntimeVersion = metadata.appUpdatesInfo?.runtimeVersion {
+      attributes.append(OTAttribute(key: "expo.app.updates.runtime_version", rawValue: appUpdateRuntimeVersion))
     }
     if let environment = metadata.environment {
       attributes.append(OTAttribute(key: "expo.environment", rawValue: environment))

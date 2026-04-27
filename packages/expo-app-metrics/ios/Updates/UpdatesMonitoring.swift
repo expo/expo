@@ -12,22 +12,18 @@ internal class UpdatesMonitoring: MetricReporter {
 
   // Patch the recorded update ID (if this is an OTA update)
   internal func patchAppInfoIfNeeded() {
-    let updateId = UpdatesMonitoring.getLaunchedUpdateId()
-    let updateChannel = UpdatesMonitoring.getUpdateChannel()
-    let updateRuntimeVersion = UpdatesMonitoring.getUpdateRuntimeVersion()
-    if updateId != nil || updateChannel != nil || updateRuntimeVersion != nil {
+    let updatesInfo = UpdatesMonitoring.getUpdatesMetricsInfo()
+    if updatesInfo.updateId != nil || updatesInfo.runtimeVersion != nil {
       logger.info("[AppMetrics] OTA update ID found, patching AppInfo")
       AppMetricsActor.isolated {
         let current = AppInfo.current
-        if current.updateId == nil {
+        if current.updatesInfo?.updateId == nil {
           let patched = AppInfo(
             appId: current.appId,
             appName: current.appName,
             appVersion: current.appVersion,
             buildNumber: current.buildNumber,
-            updateId: updateId,
-            updateChannel: updateChannel,
-            updateRuntimeVersion: updateRuntimeVersion
+            updatesInfo: updatesInfo
           )
           AppInfo.current = patched
           AppMetrics.storage.currentEntry.app = patched
@@ -36,33 +32,28 @@ internal class UpdatesMonitoring: MetricReporter {
     }
   }
 
-  nonisolated public static func getLaunchedUpdateId() -> String? {
+  nonisolated public static func getUpdatesMetricsInfo() -> AppInfo.UpdatesInfo {
     guard let updatesController = UpdatesControllerRegistry.sharedInstance.controller else {
-      return nil
+      return AppInfo.UpdatesInfo(
+        updateId: nil,
+        runtimeVersion: nil,
+        requestHeaders: nil
+      )
     }
     let launchedUpdateId = updatesController.launchedUpdateId
     let embeddedUpdateId = updatesController.embeddedUpdateId
 
     // Ignore embedded launches – they are not available on the website anyway.
-    if launchedUpdateId == embeddedUpdateId {
-      return nil
-    }
-    return launchedUpdateId?.uuidString.lowercased()
-  }
-
-  nonisolated public static func getUpdateRuntimeVersion() -> String? {
-    guard let updatesController = UpdatesControllerRegistry.sharedInstance.controller else {
-      return nil
-    }
+    let updateId = launchedUpdateId == embeddedUpdateId
+      ? nil
+      : launchedUpdateId?.uuidString.lowercased()
     let runtimeVersion = updatesController.runtimeVersion
-    return runtimeVersion
-  }
-
-  nonisolated public static func getUpdateChannel() -> String? {
-    guard let updatesController = UpdatesControllerRegistry.sharedInstance.controller else {
-      return nil
-    }
-    return updatesController.channel
+    let requestHeaders = updatesController.requestHeaders
+    return AppInfo.UpdatesInfo(
+      updateId: updateId,
+      runtimeVersion: runtimeVersion,
+      requestHeaders: requestHeaders
+    )
   }
 
   nonisolated func downloadTimeMetric(_ subscription: UpdatesStateChangeSubscription?) -> Metric? {
@@ -81,6 +72,4 @@ internal class UpdatesMonitoring: MetricReporter {
       updateId: updateId
     )
   }
-
-
 }
