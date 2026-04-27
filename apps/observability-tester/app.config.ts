@@ -10,7 +10,6 @@ const config = ({ config }: ConfigContext): ExpoConfig => ({
     eas: {
       ...config.extra?.eas,
       observe: {
-        enableInDebug: true,
         endpointUrl:
           process.env.OBSERVE_ENV === 'staging'
             ? 'https://staging-o.expo.dev/'

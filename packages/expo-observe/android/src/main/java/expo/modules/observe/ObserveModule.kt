@@ -13,6 +13,7 @@ import expo.modules.kotlin.records.Record
 class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
+  @Field val dispatchInDebug: Boolean? = null,
   @Field val sampleRate: Double? = null
 ) : Record
 
@@ -50,6 +51,7 @@ class ObserveModule : Module() {
           context,
           PersistedConfig(
             dispatchingEnabled = config.dispatchingEnabled,
+            dispatchInDebug = config.dispatchInDebug,
             sampleRate = config.sampleRate
           )
         )
