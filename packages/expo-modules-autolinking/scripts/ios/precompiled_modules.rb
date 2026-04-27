@@ -43,7 +43,7 @@ module Expo
     MODULES_PATH_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_PATH'.freeze
 
     # Environment variable for a shared remote base URL used by external prebuilt packages.
-    EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_EXTERNAL_MODULES_URL'.freeze
+    EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_BASE_URL'.freeze
 
     # Subdirectory within each pod dir for tarballs and build state
     ARTIFACTS_DIR_NAME = 'artifacts'.freeze
@@ -1725,17 +1725,9 @@ module Expo
           'xcframeworks',
           "#{product_name}.tar.gz"
         ].join('/')
-        remote_url = "#{normalize_remote_base_url(base_url)}/#{relative_path}"
-        return nil unless remote_url
+        remote_url = "#{base_url.chomp('/')}/#{relative_path}"
 
         download_remote_tarball(remote_url, tarball, pod_name || product_name, flavor)
-      end
-
-      def normalize_remote_base_url(base_url)
-        return base_url.chomp('/') unless base_url.start_with?('gs://')
-
-        bucket_and_prefix = base_url.delete_prefix('gs://').sub(%r{/+\z}, '')
-        "https://storage.googleapis.com/#{bucket_and_prefix}"
       end
 
       def download_remote_tarball(remote_url, destination_path, pod_name, flavor)
@@ -1756,10 +1748,9 @@ module Expo
       def download_to_file(url, destination_path, limit = 5)
         raise 'Too many HTTP redirects' if limit <= 0
 
-        uri = URI.parse(normalize_remote_base_url(url))
-        raise "Only HTTPS artifact URLs are supported: #{url}" unless uri.is_a?(URI::HTTPS)
+        uri = URI.parse(url)
 
-        Net::HTTP.start(uri.host, uri.port, use_ssl: true, open_timeout: 10, read_timeout: 120) do |http|
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.is_a?(URI::HTTPS), open_timeout: 10, read_timeout: 120) do |http|
           request = Net::HTTP::Get.new(uri.request_uri)
 
           http.request(request) do |response|
