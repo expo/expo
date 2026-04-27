@@ -2378,9 +2378,9 @@ importers:
 
   packages/@expo/inline-modules:
     dependencies:
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
+      '@expo/config-plugins':
+        specifier: workspace:~55.0.6
+        version: link:../config-plugins
     devDependencies:
       '@types/jest':
         specifier: ^29.2.1
