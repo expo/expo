@@ -7,30 +7,35 @@ import ExpoAppMetrics
 @Suite("ObserveUserDefaults")
 struct ObserveUserDefaultsTests {
   init() {
-    // Reset by explicitly clearing the key via the property itself,
-    // ensuring the singleton's in-memory cache is also cleared.
-    ObserveUserDefaults.dispatchingEnabled = true
+    // Remove the persistent domain to simulate a fresh install between tests.
+    UserDefaults.standard.removePersistentDomain(forName: "dev.expo.observe")
   }
 
   @Test
-  func `enabled defaults to true`() {
-    // Remove the persistent domain to simulate a fresh install
-    UserDefaults.standard.removePersistentDomain(forName: "dev.expo.eas.observe")
-    #expect(ObserveUserDefaults.dispatchingEnabled == true)
+  func `config defaults to nil`() {
+    #expect(ObserveUserDefaults.config == nil)
   }
 
   @Test
-  func `setDispatchingEnabled false persists false`() {
-    ObserveUserDefaults.dispatchingEnabled = false
-    #expect(ObserveUserDefaults.dispatchingEnabled == false)
+  func `setConfig with dispatchingEnabled false persists false`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false))
+    #expect(ObserveUserDefaults.config?.dispatchingEnabled == false)
   }
 
   @Test
-  func `setDispatchingEnabled true persists true`() {
-    ObserveUserDefaults.dispatchingEnabled = false
-    #expect(ObserveUserDefaults.dispatchingEnabled == false)
-    ObserveUserDefaults.dispatchingEnabled = true
-    #expect(ObserveUserDefaults.dispatchingEnabled == true)
+  func `setConfig overwrites previous value`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false))
+    #expect(ObserveUserDefaults.config?.dispatchingEnabled == false)
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: true))
+    #expect(ObserveUserDefaults.config?.dispatchingEnabled == true)
   }
 
+  @Test
+  func `setConfig with nil field clears previously set value`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false))
+    #expect(ObserveUserDefaults.config?.dispatchingEnabled == false)
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: nil))
+    #expect(ObserveUserDefaults.config != nil)
+    #expect(ObserveUserDefaults.config?.dispatchingEnabled == nil)
+  }
 }

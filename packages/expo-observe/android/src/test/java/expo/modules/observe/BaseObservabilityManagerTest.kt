@@ -38,7 +38,7 @@ class BaseObservabilityManagerTest {
 
     // Default to enabled so existing tests aren't short-circuited
     mockkObject(ObservePreferences)
-    every { ObservePreferences.getDispatchingEnabled(any()) } returns true
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
   }
 
   @After
@@ -226,7 +226,7 @@ class BaseObservabilityManagerTest {
   fun `when enabled is false, pending metrics are removed without dispatching`() =
     runTest {
       // Arrange
-      every { ObservePreferences.getDispatchingEnabled(any()) } returns false
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false)
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
 
       val removedIds = mutableListOf<String>()
@@ -255,7 +255,7 @@ class BaseObservabilityManagerTest {
   fun `when enabled is false, enableInDebug has no effect`() =
     runTest {
       // Arrange — enabled=false takes precedence over enableInDebug=true
-      every { ObservePreferences.getDispatchingEnabled(any()) } returns false
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false)
       coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
 
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs

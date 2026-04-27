@@ -34,9 +34,8 @@ public final class ObserveModule: Module {
 
     Function("configure") { (config: Config) in
       AppMetricsActor.isolated {
-        if let enabled = config.dispatchingEnabled {
-          ObserveUserDefaults.dispatchingEnabled = enabled
-        }
+        // Each call to `configure(...)` is a full replacement: absent fields reset prior values.
+        ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: config.dispatchingEnabled))
         if let environment = config.environment {
           AppMetrics.setEnvironment(environment)
         }
