@@ -1000,7 +1000,8 @@ const hasSwiftCode = (frameworkPath: string): boolean => {
  * We only verify that the swiftinterface files exist and have valid structure.
  */
 const verifySwiftInterfaceTypecheck = async (
-  slice: XCFrameworkSlice
+  slice: XCFrameworkSlice,
+  dependencyXcframeworkPaths: string[] = []
 ): Promise<XCFrameworkVerificationResult> => {
   // First check if this framework contains Swift code at all
   if (!hasSwiftCode(slice.frameworkPath)) {
@@ -1020,6 +1021,10 @@ const verifySwiftInterfaceTypecheck = async (
     };
   }
 
+  // Modules declared by sibling xcframeworks (external dependencies). Treat
+  // them as known so @_exported imports of those modules don't false-positive.
+  const dependencyModules = collectModulesFromXcframeworks(dependencyXcframeworkPaths);
+
   // Check that each swiftinterface file exists and is non-empty
   const issues: string[] = [];
   for (const iface of swiftInterfaces) {
@@ -1031,7 +1036,11 @@ const verifySwiftInterfaceTypecheck = async (
       }
 
       // Check for potentially invalid imports
-      const importIssues = await verifySwiftInterfaceImports(iface, slice.frameworkPath);
+      const importIssues = await verifySwiftInterfaceImports(
+        iface,
+        slice.frameworkPath,
+        dependencyModules
+      );
       issues.push(...importIssues);
     } catch (err) {
       issues.push(`${path.basename(iface)}: ${err}`);
@@ -1053,6 +1062,32 @@ const verifySwiftInterfaceTypecheck = async (
 };
 
 /**
+ * Reads the first available slice's modulemap of each xcframework and returns
+ * the union of module names it declares. Used to recognise modules supplied by
+ * sibling xcframeworks during swiftinterface validation.
+ */
+const collectModulesFromXcframeworks = (xcframeworkPaths: string[]): Set<string> => {
+  const modules = new Set<string>();
+  const moduleRe = /(?:framework\s+)?module\s+(\w+)\s*\{/g;
+  for (const xcfw of xcframeworkPaths) {
+    if (!fs.existsSync(xcfw)) continue;
+    for (const slice of fs.readdirSync(xcfw, { withFileTypes: true })) {
+      if (!slice.isDirectory()) continue;
+      const sliceDir = path.join(xcfw, slice.name);
+      const fwName = fs.readdirSync(sliceDir).find((n) => n.endsWith('.framework'));
+      if (!fwName) continue;
+      const mmPath = ['Modules', 'Headers']
+        .map((d) => path.join(sliceDir, fwName, d, 'module.modulemap'))
+        .find((p) => fs.existsSync(p));
+      if (!mmPath) continue;
+      for (const m of fs.readFileSync(mmPath, 'utf8').matchAll(moduleRe)) modules.add(m[1]);
+      break;
+    }
+  }
+  return modules;
+};
+
+/**
  * Verifies that imports in a swiftinterface file are valid.
  * Checks that:
  * 1. Imported modules are either well-known system/SDK modules or defined in the framework's modulemap
@@ -1060,11 +1095,13 @@ const verifySwiftInterfaceTypecheck = async (
  *
  * @param swiftInterfacePath Path to the .swiftinterface file
  * @param frameworkPath Path to the framework containing the swiftinterface
+ * @param dependencyModules Modules declared by sibling xcframeworks; treated as defined
  * @returns Array of issue descriptions (empty if all imports are valid)
  */
 const verifySwiftInterfaceImports = async (
   swiftInterfacePath: string,
-  frameworkPath: string
+  frameworkPath: string,
+  dependencyModules: Set<string> = new Set()
 ): Promise<string[]> => {
   const issues: string[] = [];
   const content = fs.readFileSync(swiftInterfacePath, 'utf8');
@@ -1075,7 +1112,7 @@ const verifySwiftInterfaceImports = async (
 
   // Parse the modulemap to find defined modules
   const moduleMapPath = path.join(frameworkPath, 'Modules', 'module.modulemap');
-  const definedModules = new Set<string>();
+  const definedModules = new Set<string>(dependencyModules);
 
   if (fs.existsSync(moduleMapPath)) {
     const moduleMapContent = fs.readFileSync(moduleMapPath, 'utf8');
@@ -1498,7 +1535,10 @@ const verifySlice = async (
 
   if (!options?.skipSwiftCheck) {
     spinner.info('Verifying Swift interface typecheck...');
-    swiftInterfaceTypecheck = await verifySwiftInterfaceTypecheck(slice);
+    swiftInterfaceTypecheck = await verifySwiftInterfaceTypecheck(
+      slice,
+      dependencyXcframeworkPaths
+    );
   }
 
   // dSYM verification: presence, UUID match, and debug prefix mapping

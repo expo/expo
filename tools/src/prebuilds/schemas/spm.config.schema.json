@@ -170,6 +170,22 @@
                     "items": {
                         "$ref": "#/definitions/target"
                     }
+                },
+                "customBuild": {
+                    "type": "object",
+                    "description": "Escape hatch for products whose xcframework is produced by a package-owned build script. When set, the prebuild pipeline skips source / Package.swift generation and runs the script instead.",
+                    "properties": {
+                        "script": {
+                            "type": "string",
+                            "description": "Path to the build script, relative to the package root."
+                        },
+                        "output": {
+                            "type": "string",
+                            "description": "Path to the xcframework the script produces, relative to the package root."
+                        }
+                    },
+                    "required": [ "script", "output" ],
+                    "additionalProperties": false
                 }
             },
             "required": [ "name", "podName", "targets" ],
