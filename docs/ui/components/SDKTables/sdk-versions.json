@@ -1,6 +1,20 @@
 {
   "sdkVersions": [
     {
+      "sdk": "56.0.0",
+      "android": "7+",
+      "compileSdkVersion": "36",
+      "targetSdkVersion": "36",
+      "buildToolsVersion": "36.0.0",
+      "ios": "16.4+",
+      "xcode": "26.2+",
+      "react-native": "0.85",
+      "react-native-web": "0.21.0",
+      "react-native-tvos": "0.85-stable",
+      "react": "19.2.3",
+      "node": "22.x.x"
+    },
+    {
       "sdk": "55.0.0",
       "android": "7+",
       "compileSdkVersion": "36",
