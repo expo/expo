@@ -77,11 +77,9 @@ class Album: SharedObject {
   private func resolvePHAssets(from assets: [Asset]) throws -> [PHAsset] {
     let localIdentifiers = assets.map(\.localIdentifier)
     let fetchedAssets = AssetRepository.shared.get(by: localIdentifiers)
-    var assetsByIdentifier: [String: PHAsset] = [:]
-
-    for asset in fetchedAssets {
-      assetsByIdentifier[asset.localIdentifier] = asset
-    }
+    let assetsByIdentifier = Dictionary(
+      uniqueKeysWithValues: fetchedAssets.map { ($0.localIdentifier, $0) }
+    )
 
     return try localIdentifiers.map { localIdentifier in
       guard let phAsset = assetsByIdentifier[localIdentifier] else {

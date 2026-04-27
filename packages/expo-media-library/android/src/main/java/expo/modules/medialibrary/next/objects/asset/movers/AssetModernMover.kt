@@ -8,7 +8,7 @@ import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
 
 @RequiresApi(Build.VERSION_CODES.R)
 class AssetModernMover(
-  val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate
+  private val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate
 ) : AssetMover {
   override suspend fun moveAssets(assets: List<Asset>, relativePath: RelativePath) {
     mediaStorePermissionsDelegate.requestMediaLibraryWritePermission(assets.map { it.contentUri })
