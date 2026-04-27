@@ -5,7 +5,6 @@ import {
   printIosConfig,
   resolveBuildConfigIos,
   validatePrebuild,
-  validatePrecompiledModules,
   shipSwiftPackage,
   shipFrameworks,
 } from '../utils';
@@ -13,9 +12,6 @@ import {
 const buildIos = async (command: Command) => {
   await validatePrebuild('ios');
   const config = resolveBuildConfigIos(command.opts());
-  if (config.usePrebuilds) {
-    validatePrecompiledModules();
-  }
   printIosConfig(config);
 
   await buildFramework(config);

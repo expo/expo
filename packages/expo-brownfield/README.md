@@ -4,13 +4,11 @@
 
 ## API Documentation
 
-<!-- TODO(pnleczek): Update link once 55 becomes latest -->
-You can find the API documentation for the beta release in the [Expo documentation](https://docs.expo.dev/versions/v55.0.0/sdk/brownfield/).
+You can find the API documentation for the beta release in the [Expo documentation](https://docs.expo.dev/versions/latest/sdk/brownfield/).
 
 ## Installation in managed Expo projects
 
-<!-- TODO(pnleczek): Update link and link title (to "stable release") once 55 becomes latest -->
-For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the beta release](https://docs.expo.dev/versions/v55.0.0/sdk/brownfield/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the beta release](https://docs.expo.dev/versions/latest/sdk/brownfield/).
 
 ## Installation in bare React Native projects
 
@@ -48,26 +46,27 @@ Ensure that you have the `expo-brownfield` plugin included in your `app.json` or
 
 Run `npx expo prebuild` after adding the plugin to your `app.json` file to generate the additional native targets for brownfield.
 
-For projects that don't use CNG please follow the manual steps at [How to add Expo to an existing native (brownfield) app](https://docs.expo.dev/brownfield/get-started/). 
+For projects that don't use CNG please follow the manual steps at [How to add Expo to an existing native (brownfield) app](https://docs.expo.dev/brownfield/get-started/).
 
-## Prebuilt modules on iOS (fast mode)
+## Using Prebuilt modules on iOS
 
-When `usePrebuilds` is enabled the generated Podfile sets `EXPO_USE_PRECOMPILED_MODULES=1`, so `pod install` downloads each Expo module as a prebuilt `.xcframework` instead of building it from source. Pair it with the `--use-prebuilds` CLI flag on `build:ios` to bundle every precompiled module into the output Swift Package alongside the brownfield framework, React, Hermes, and `ReactNativeDependencies`.
+Enable [`expo-build-properties`](https://docs.expo.dev/versions/latest/sdk/build-properties/)'s `ios.usePrecompiledModules` so `pod install` downloads each Expo module as a prebuilt `.xcframework` instead of building it from source. `build:ios` automatically detects those xcframeworks in `ios/Pods/` and bundles them into the output Swift Package alongside the brownfield framework, React, Hermes, and `ReactNativeDependencies`.
 
 ```json
 {
   "plugins": [
-    ["expo-brownfield", { "ios": { "usePrebuilds": true } }]
+    ["expo-build-properties", { "ios": { "usePrecompiledModules": true } }],
+    "expo-brownfield"
   ]
 }
 ```
 
 ```sh
 npx expo prebuild --platform ios
-npx expo-brownfield build:ios --release --use-prebuilds --package MyAppPackage
+npx expo-brownfield build:ios --release --package MyAppPackage
 ```
 
-The resulting `artifacts/MyAppPackage-release/` directory is a Swift Package with a single aggregate `.library` product — add it to your host iOS app via Xcode's **Add Package Dependencies → Add Local** and Xcode will link every bundled `.xcframework` automatically.
+When precompiled modules are detected, the resulting `artifacts/MyAppPackage-release/` directory is a Swift Package with a single aggregate `.library` product — add it to your host iOS app via Xcode's **Add Package Dependencies → Add Local** and Xcode will link every bundled `.xcframework` automatically.
 
 Swift Package Manager has no per-configuration overload for `.binaryTarget(path:)`, so each output package is pinned to the flavor it was built with. Run `build:ios` once per flavor (e.g. `--debug` and `--release`) and distribute the two packages side by side.
 

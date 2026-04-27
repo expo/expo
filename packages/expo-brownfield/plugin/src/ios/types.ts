@@ -2,7 +2,6 @@ export interface PluginConfig {
   bundleIdentifier: string;
   targetName: string;
   buildReactNativeFromSource: boolean;
-  usePrebuilds: boolean;
 }
 
 export type IOSPluginProps = Partial<PluginConfig>;

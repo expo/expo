@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.resolveTasksConfigAndroid = exports.resolveBuildConfigIos = exports.resolveBuildConfigAndroid = void 0;
 const node_path_1 = __importDefault(require("node:path"));
 const android_1 = require("./android");
-const error_1 = __importDefault(require("./error"));
 const ios_1 = require("./ios");
+const precompiled_1 = require("./precompiled");
 const resolveBuildConfigAndroid = (options) => {
     const variant = resolveVariant(options);
     return {
@@ -29,12 +29,13 @@ const resolveBuildConfigIos = (options) => {
     const device = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphoneos`);
     const scheme = resolveScheme(options);
     const simulator = node_path_1.default.join(buildProductsPath, `${buildConfiguration.toLowerCase()}-iphonesimulator`);
-    const usePrebuilds = !!options.usePrebuilds;
-    if (usePrebuilds && !options.package) {
-        error_1.default.handle('ios-prebuilds-require-swift-package');
-    }
+    // Detect prebuilt Expo module xcframeworks dropped into ios/Pods/ when the project's
+    // expo-build-properties config sets `ios.usePrecompiledModules` (or the user ran
+    // `EXPO_USE_PRECOMPILED_MODULES=1 pod install` manually). When present we bundle every
+    // precompiled module into the SPM output and emit the aggregate-product Package.swift.
+    const usePrebuilds = (0, precompiled_1.enumeratePrecompiledModules)(node_path_1.default.join(process.cwd(), 'ios')).length > 0;
     const basePackageName = options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
-    // SPM .binaryTarget has no per-configuration overload, so when prebuilds are enabled we
+    // SPM .binaryTarget has no per-configuration overload, so when prebuilds are bundled we
     // produce one flavored package per build configuration (e.g. "MyAppPackage-release").
     const packageName = usePrebuilds
         ? `${basePackageName}-${buildConfiguration.toLowerCase()}`

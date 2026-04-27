@@ -7,8 +7,6 @@ type ErrorType =
   | 'ios-directory-not-found'
   | 'ios-directory-unknown-error'
   | 'ios-hermes-framework-not-found'
-  | 'ios-prebuilds-not-found'
-  | 'ios-prebuilds-require-swift-package'
   | 'ios-scheme-not-found'
   | 'ios-workspace-not-found'
   | 'ios-workspace-unknown-error'
@@ -28,10 +26,6 @@ class CLIError {
     'ios-directory-not-found': 'Cannot find `ios` directory in the project',
     'ios-directory-unknown-error': 'Unknown error occurred while finding brownfield iOS scheme',
     'ios-hermes-framework-not-found': 'Could not find hermes framework in the project at path',
-    'ios-prebuilds-not-found':
-      'No precompiled Expo module xcframeworks found in `ios/Pods/`. Re-run `npx expo prebuild` with the `usePrebuilds` plugin prop enabled, or run `EXPO_USE_PRECOMPILED_MODULES=1 pod install` inside `ios/`. See https://docs.expo.dev/guides/precompiled-modules/.',
-    'ios-prebuilds-require-swift-package':
-      '`--use-prebuilds` requires `--package` because prebuilt Expo module xcframeworks are only shipped via the Swift Package output. Re-run with `--package [name]`.',
     'ios-scheme-not-found': 'Could not find brownfield iOS scheme',
     'ios-workspace-not-found': 'Could not find brownfield iOS workspace',
     'ios-workspace-unknown-error': 'Unknown error occurred while finding brownfield iOS workspace',

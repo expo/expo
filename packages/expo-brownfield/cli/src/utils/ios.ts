@@ -381,7 +381,7 @@ export const printIosConfig = (config: IosConfig) => {
   if (config.output !== 'frameworks') {
     console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
   }
-  console.log(` - Use prebuilds: ${chalk.blue(config.usePrebuilds)}`);
+  console.log(` - Bundle precompiled modules: ${chalk.blue(config.usePrebuilds)}`);
 
   console.log();
 };

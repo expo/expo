@@ -6,7 +6,6 @@ import prompts from 'prompts';
 
 import { runCommand } from './commands';
 import CLIError from './error';
-import { enumeratePrecompiledModules } from './precompiled';
 import { withSpinner } from './spinner';
 import type { Platform } from './types';
 
@@ -55,12 +54,4 @@ export const validatePackageInstalled = (): void => {
 const checkPrebuild = (platform: Platform): boolean => {
   const nativeDirectory = path.join(process.cwd(), platform);
   return fs.existsSync(nativeDirectory);
-};
-
-export const validatePrecompiledModules = (): void => {
-  const iosDir = path.join(process.cwd(), 'ios');
-  const modules = enumeratePrecompiledModules(iosDir);
-  if (modules.length === 0) {
-    CLIError.handle('ios-prebuilds-not-found');
-  }
 };
