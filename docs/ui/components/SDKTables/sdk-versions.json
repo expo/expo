@@ -12,7 +12,7 @@
       "react-native-web": "0.21.0",
       "react-native-tvos": "0.85-stable",
       "react": "19.2.3",
-      "node": "22.x.x"
+      "node": "22.13.x"
     },
     {
       "sdk": "55.0.0",
