@@ -127,6 +127,25 @@ When the build process is completed, the output is placed in the **./artifacts**
 
 See the [`expo-brownfield` API reference](/versions/v55.0.0/sdk/brownfield/) for more details on build options, such as building only debug or release, specifying a custom output directory, and more.
 
+### Shipping the artifacts as a Swift Package
+
+Pass the `--package [name]` flag to wrap the built artifacts into a self-contained Swift Package instead of leaving them as loose `.xcframework` directories. Consumers can then add the package to their host app via Xcode's **Add Package Dependencies → Add Local…** flow rather than dragging individual frameworks in and configuring **Embed & Sign** by hand.
+
+<Terminal cmd={['$ npx expo-brownfield build:ios --release --package MyAppPackage']} />
+
+The flag accepts an optional name; if you omit it, the package name defaults to **\{TargetName\}Artifacts**. The output directory becomes a complete Swift Package laid out like this:
+
+```txt
+artifacts/
+  MyAppPackage/
+    Package.swift
+    xcframeworks/
+      MyAppPackage.xcframework
+      hermesvm.xcframework
+      React.xcframework
+      ReactNativeDependencies.xcframework
+```
+
 </Tab>
 </Tabs>
 
@@ -217,7 +236,12 @@ startActivity(Intent(this, ExpoActivity::class.java))
 <Tab label="iOS">
 
 <Step label="1">
-#### Add XCFrameworks to your project
+#### Add the artifacts to your project
+
+The build output you integrate depends on whether you are using just XCFrameworks or SPM.
+
+<Tabs>
+<Tab label="XCFrameworks (default)">
 
 Drag both XCFramework files (\{TargetName\}**.xcframework** and **hermesvm.xcframework**) into your Xcode project navigator. In the dialog that appears:
 
@@ -229,6 +253,16 @@ Drag both XCFramework files (\{TargetName\}**.xcframework** and **hermesvm.xcfra
 Then, in your target's **General** tab under **Frameworks, Libraries, and Embedded Content**, ensure both frameworks are set to **Embed & Sign**.
 
 {/* vale on */}
+
+</Tab>
+<Tab label="Swift Package">
+
+When `build:ios` produced a Swift Package (for example, **./artifacts/MyAppPackage-release**), add it to your host app via **File → Add Package Dependencies → Add Local…** in Xcode and select the package directory. Xcode links every bundled `.xcframework` automatically through the single aggregate library product.
+
+If you build both **--debug** and **--release**, point your host app at the matching flavor for each configuration.
+
+</Tab>
+</Tabs>
 
 </Step>
 
