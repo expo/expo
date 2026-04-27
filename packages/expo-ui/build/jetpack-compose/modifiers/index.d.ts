@@ -327,4 +327,6 @@ export declare const verticalScroll: () => import("./createModifier").ModifierCo
  * Use on a Row to create a non-lazy scrollable container.
  */
 export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
+export * from './createModifier';
+export { createViewModifierEventListener } from './utils';
 //# sourceMappingURL=index.d.ts.map

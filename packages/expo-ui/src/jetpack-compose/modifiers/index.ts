@@ -497,3 +497,6 @@ export const verticalScroll = () => createModifier('verticalScroll');
  * Use on a Row to create a non-lazy scrollable container.
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
+
+export * from './createModifier';
+export { createViewModifierEventListener } from './utils';

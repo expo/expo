@@ -1,0 +1,43 @@
+// Added by extending Expo UI: pull in the Kotlin Compose compiler plugin classpath.
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose' // Added by extending Expo UI
+
+group = 'host.exp.exponent'
+version = '0.1.0'
+
+expoModule {
+  canBePublished false
+}
+
+android {
+  namespace "expo.modules.testexpoui"
+  defaultConfig {
+    versionCode 1
+    versionName "0.1.0"
+  }
+  // Added by extending Expo UI: turn on Jetpack Compose for this module.
+  buildFeatures {
+    compose true
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+// Added by extending Expo UI: depend on `expo-ui` plus the Compose libraries we use.
+dependencies {
+  implementation project(':expo-ui')
+  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
+  implementation 'androidx.compose.ui:ui-android:1.10.6'
+  implementation 'androidx.compose.material3:material3:1.5.0-alpha17'
+}
