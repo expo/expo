@@ -332,7 +332,7 @@ const printIosConfig = (config) => {
     if (config.output !== 'frameworks') {
         console.log(` - Package name: ${chalk_1.default.blue(config.output.packageName)}`);
     }
-    console.log(` - Use prebuilds: ${chalk_1.default.blue(config.usePrebuilds)}`);
+    console.log(` - Bundle precompiled modules: ${chalk_1.default.blue(config.usePrebuilds)}`);
     console.log();
 };
 exports.printIosConfig = printIosConfig;

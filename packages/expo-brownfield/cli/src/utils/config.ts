@@ -2,8 +2,8 @@ import type { OptionValues } from 'commander';
 import path from 'node:path';
 
 import { buildPublishingTask, findBrownfieldLibrary } from './android';
-import CLIError from './error';
 import { findScheme, findWorkspace } from './ios';
+import { enumeratePrecompiledModules } from './precompiled';
 import type {
   AndroidConfig,
   BuildConfiguration,
@@ -39,14 +39,15 @@ export const resolveBuildConfigIos = (options: OptionValues): IosConfig => {
     buildProductsPath,
     `${buildConfiguration.toLowerCase()}-iphonesimulator`
   );
-  const usePrebuilds = !!options.usePrebuilds;
-  if (usePrebuilds && !options.package) {
-    CLIError.handle('ios-prebuilds-require-swift-package');
-  }
+  // Detect prebuilt Expo module xcframeworks dropped into ios/Pods/ when the project's
+  // expo-build-properties config sets `ios.usePrecompiledModules` (or the user ran
+  // `EXPO_USE_PRECOMPILED_MODULES=1 pod install` manually). When present we bundle every
+  // precompiled module into the SPM output and emit the aggregate-product Package.swift.
+  const usePrebuilds = enumeratePrecompiledModules(path.join(process.cwd(), 'ios')).length > 0;
 
   const basePackageName =
     options.package && typeof options.package === 'string' ? options.package : `${scheme}Artifacts`;
-  // SPM .binaryTarget has no per-configuration overload, so when prebuilds are enabled we
+  // SPM .binaryTarget has no per-configuration overload, so when prebuilds are bundled we
   // produce one flavored package per build configuration (e.g. "MyAppPackage-release").
   const packageName = usePrebuilds
     ? `${basePackageName}-${buildConfiguration.toLowerCase()}`

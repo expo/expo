@@ -37,7 +37,6 @@ program
     .option('-a, --artifacts <artifacts>', 'path to the artifacts directory')
     .option('--dry-run', 'only print the commands without executing them')
     .option('-p, --package [package]', 'package artifacts as a Swift Package (with an optionally specified name)')
-    .option('--use-prebuilds', 'bundle prebuilt Expo module xcframeworks (EXPO_USE_PRECOMPILED_MODULES) into the Swift Package output (single flavor per package)')
     .action(async function () {
     await (0, commands_1.buildIos)(this);
 });
