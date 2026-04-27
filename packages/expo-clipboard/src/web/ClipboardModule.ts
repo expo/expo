@@ -2,6 +2,7 @@ import type {
   ClipboardImage,
   GetImageOptions,
   GetStringOptions,
+  SetImageOptions,
   SetStringOptions,
 } from '../Clipboard.types';
 import { StringFormat } from '../Clipboard.types';
@@ -138,7 +139,7 @@ export default {
       throw new PasteFailureException(error.message);
     }
   },
-  async setImageAsync(base64image: string): Promise<void> {
+  async setImageAsync(base64image: string, _options?: SetImageOptions): Promise<void> {
     if (!navigator.clipboard) {
       throw new ClipboardUnavailableException();
     }
