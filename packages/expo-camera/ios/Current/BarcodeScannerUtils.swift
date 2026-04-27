@@ -18,12 +18,9 @@ class BarcodeScannerUtils {
       "aztec": AVMetadataObject.ObjectType.aztec,
       "interleaved2of5": AVMetadataObject.ObjectType.interleaved2of5,
       "itf14": AVMetadataObject.ObjectType.itf14,
-      "datamatrix": AVMetadataObject.ObjectType.dataMatrix
+      "datamatrix": AVMetadataObject.ObjectType.dataMatrix,
+      "codabar": AVMetadataObject.ObjectType.codabar
     ]
-
-    if #available(iOS 15.4, *) {
-      validTypes["codabar"] = AVMetadataObject.ObjectType.codabar
-    }
 
     return [BARCODE_TYPES_KEY: Array(validTypes.values)]
   }
