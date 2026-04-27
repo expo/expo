@@ -45,7 +45,10 @@ class ObserveModule : Module() {
       AsyncFunction("dispatchEvents") Coroutine { -> observabilityManager.dispatchUnsentMetrics() }
 
       Function("configure") { config: Config ->
-        config.dispatchingEnabled?.let { ObservePreferences.setDispatchingEnabled(context, it) }
+        ObservePreferences.setConfig(
+          context,
+          PersistedConfig(dispatchingEnabled = config.dispatchingEnabled)
+        )
         config.environment?.let { appMetricsModule.setEnvironment(it) }
       }
     }
