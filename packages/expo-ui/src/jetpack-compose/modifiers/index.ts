@@ -498,5 +498,5 @@ export const verticalScroll = () => createModifier('verticalScroll');
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
 
-export * from './createModifier';
+export { createModifier, createModifierWithEventListener } from './createModifier';
 export { createViewModifierEventListener } from './utils';

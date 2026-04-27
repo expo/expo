@@ -36,7 +36,11 @@ android {
 
 // Added by extending Expo UI: depend on `expo-ui` plus the Compose libraries we use.
 dependencies {
-  implementation project(':expo-ui')
+  if (findProject(':expo-ui') != null) {
+    implementation project(':expo-ui')
+  } else {
+    implementation 'expo.modules.ui:expo.modules.ui:+'
+  }
   implementation 'androidx.compose.foundation:foundation-android:1.10.6'
   implementation 'androidx.compose.ui:ui-android:1.10.6'
   implementation 'androidx.compose.material3:material3:1.5.0-alpha17'
