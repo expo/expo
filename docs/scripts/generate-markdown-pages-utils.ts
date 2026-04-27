@@ -120,9 +120,7 @@ export function findHtmlPages(dir: string): string[] {
 }
 
 /**
- * Recursively find all markdown files in a directory, skipping internal directories.
- * Matches both `<dir>/index.md` and sibling-path `<slug>.md` files so the per-run
- * cleanup in generate-markdown-pages.ts sweeps both layouts.
+ * Recursively find all index.md files in a directory, skipping internal directories.
  */
 export function findMarkdownPages(dir: string): string[] {
   const results: string[] = [];
@@ -133,7 +131,7 @@ export function findMarkdownPages(dir: string): string[] {
         continue;
       }
       results.push(...findMarkdownPages(fullPath));
-    } else if (entry.name.endsWith('.md')) {
+    } else if (entry.name === 'index.md') {
       results.push(fullPath);
     }
   }

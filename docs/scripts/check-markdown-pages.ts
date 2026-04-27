@@ -39,7 +39,7 @@ let failCount = 0;
 
 if (fs.existsSync(OUT_DIR)) {
   const htmlFiles = findHtmlPages(OUT_DIR);
-  const mdFiles = findMarkdownPages(OUT_DIR).filter(p => path.basename(p) === 'index.md');
+  const mdFiles = findMarkdownPages(OUT_DIR);
 
   if (mdFiles.length === 0) {
     console.error('No markdown files found in out/. Did generate-markdown-pages run?');

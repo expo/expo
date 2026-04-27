@@ -206,13 +206,8 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     parts.push(markdown);
     markdown = parts.join('\n');
 
-    const htmlDir = path.dirname(htmlPath);
-    fs.writeFileSync(path.join(htmlDir, 'index.md'), markdown);
-
-    const relDir = path.relative(outDir, htmlDir);
-    if (relDir !== '') {
-      fs.writeFileSync(htmlDir + '.md', markdown);
-    }
+    const mdPath = path.join(path.dirname(htmlPath), 'index.md');
+    fs.writeFileSync(mdPath, markdown);
 
     parentPort!.postMessage({
       type: 'result',

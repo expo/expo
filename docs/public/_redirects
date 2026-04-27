@@ -367,3 +367,10 @@
 /versions/latest/sdk/ui/jetpack-compose/textinput /versions/latest/sdk/ui/jetpack-compose/textfield 301
 /versions/unversioned/sdk/ui/jetpack-compose/textinput /versions/unversioned/sdk/ui/jetpack-compose/textfield 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
+
+# Serve markdown at the sibling /<slug>.md path that AI agents typically request,
+# rewriting to the canonical /<slug>/index.md the build script writes.
+# The first rule is a self-rewrite that preserves the canonical URL. Without it,
+# the wildcard would also catch /<slug>/index.md and rewrite it to /<slug>/index/index.md (404).
+/*/index.md /:splat/index.md 200
+/*.md /:splat/index.md 200
