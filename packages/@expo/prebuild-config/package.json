@@ -30,9 +30,6 @@
   "files": [
     "build"
   ],
-  "peerDependencies": {
-    "expo": "workspace:*"
-  },
   "devDependencies": {
     "@babel/cli": "^7.23.4",
     "@expo/plist": "workspace:*",
