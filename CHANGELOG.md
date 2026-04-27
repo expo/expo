@@ -127,8 +127,6 @@ Package-specific changes not released in any SDK will be added here just before 
   - [Android] Introduce `dimezisBlurViewSdk31Plus` blur method. ([#39998](https://github.com/expo/expo/pull/39998) by [@behenate](https://github.com/behenate))
 - **`expo-auth-session`**
   - Added `extraHeaders` option to `TokenRequest` and `RevokeTokenRequest`. ([#31381](https://github.com/expo/expo/pull/31381)) by [@levizimmerman](https://github.com/levizimmerman) and [@lsarni](https://github.com/lsarni) ([#31381](https://github.com/expo/expo/pull/31381) by [@levizimmerman](https://github.com/levizimmerman), [@lsarni](https://github.com/lsarni))
-- **`expo-cli`**
-  - Add `--address` option to `expo serve`. ([#45114](https://github.com/expo/expo/pull/45114)) by [@clement-antoine-xavier](https://github.com/clement-antoine-xavier)
 
 ### 🐛 Bug fixes
 
