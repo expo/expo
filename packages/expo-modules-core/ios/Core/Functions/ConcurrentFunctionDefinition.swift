@@ -30,6 +30,10 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
     self.name = name
     self.body = body
     self.dynamicArgumentTypes = dynamicArgumentTypes
+    self.trailingOptionalArgumentsCount = dynamicArgumentTypes
+      .reversed()
+      .prefix(while: { $0 is DynamicOptionalType })
+      .count
   }
 
   // MARK: - AnyFunction
@@ -38,8 +42,14 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
 
   let dynamicArgumentTypes: [AnyDynamicType]
 
+  private let trailingOptionalArgumentsCount: Int
+
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+  }
+
+  var requiredArgumentsCount: Int {
+    return argumentsCount - trailingOptionalArgumentsCount
   }
 
   var takesOwner: Bool = false
@@ -47,21 +57,23 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
 
   @JavaScriptActor
   func call(_ appContext: AppContext, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) async throws -> JavaScriptValue {
-    let nativeArguments = NonisolatedUnsafeVar<[Any]>([])
-
     do {
       try validateArgumentsNumber(function: self, received: arguments.count)
 
       // Arguments must be converted on the JS thread, before we jump to another thread.
-      nativeArguments.value = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
+      let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
 
-      guard let argumentsTuple = try Conversions.toTuple(nativeArguments.value) as? Args else {
+      guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
         throw ArgumentConversionException()
       }
-      let returnValue = if requiresMainActor {
-        try await callBodyOnMainActor(consume argumentsTuple)
+      // Safe to mark as nonisolated(unsafe) — the tuple contains fully converted native values
+      // with no references back to JS objects, so it can safely cross the actor boundary.
+      nonisolated(unsafe) let nonisolatedArgumentsTuple = argumentsTuple
+
+      let returnValue: ReturnType = if requiresMainActor {
+        try await callBodyOnMainActor(nonisolatedArgumentsTuple)
       } else {
-        try await body(consume argumentsTuple)
+        try await body(nonisolatedArgumentsTuple)
       }
 
       return try await appContext.runtime.execute {
