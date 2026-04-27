@@ -4,7 +4,7 @@
  Main session starts from launching the app to its termination. Some metrics like the app startup can only be tracked once and globally.
  In the future this class will also hold subsessions such as for time spent on a specific screen/route or user-initiated sessions.
  */
-internal final class MainSession: Session, @unchecked Sendable {
+public final class MainSession: Session, @unchecked Sendable {
   let appStartupMonitor = AppStartupMonitoring()
   let updatesMonitor = UpdatesMonitoring()
   let frameMetricsRecorder = FrameMetricsRecorder()
