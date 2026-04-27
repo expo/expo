@@ -343,6 +343,9 @@ class EnabledUpdatesController(
   override val updateUrl: Uri?
     get() = updatesConfiguration.updateUrl
 
+  override val channel: String?
+    get() = updatesConfiguration.requestHeaders["expo-channel-name"]
+
   override val launchedUpdateId: UUID?
     get() = startupProcedure.launchedUpdate?.id
 
