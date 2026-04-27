@@ -98,13 +98,13 @@
     "test-suite": "workspace:*"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0",
+    "@babel/core": "catalog:",
     "@expo/cli": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
-    "@types/react": "~19.2.0",
+    "@types/react": "catalog:",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "jest": "^29.3.1"
+    "jest": "catalog:"
   },
   "codegenConfig": {
     "name": "LocalModules",

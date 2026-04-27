@@ -32,8 +32,8 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

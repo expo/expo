@@ -39,7 +39,7 @@
     "@expo/spawn-async": "^1.7.2"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {

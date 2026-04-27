@@ -72,8 +72,8 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
-    "@types/react": "~19.2.0",
+    "@testing-library/react-native": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*",
     "react-native-reanimated": "4.3.0",
     "react-native-worklets": "0.8.1"

@@ -38,9 +38,9 @@
     "expo-image-loader": "workspace:~55.0.0"
   },
   "devDependencies": {
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "catalog:",
     "@testing-library/user-event": "^14.6.1",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

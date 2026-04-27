@@ -36,12 +36,12 @@
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/node": "^22.14.0",
+    "@testing-library/react-native": "catalog:",
+    "@types/node": "catalog:",
     "babel-preset-expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react": "19.2.3",
-    "react-native": "0.85.2"
+    "react": "catalog:",
+    "react-native": "catalog:"
   },
   "peerDependencies": {
     "expo": "workspace:*",

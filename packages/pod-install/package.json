@@ -35,10 +35,10 @@
   },
   "devDependencies": {
     "@expo/package-manager": "workspace:*",
-    "chalk": "^4.0.0",
-    "commander": "^12.1.0",
+    "chalk": "catalog:",
+    "commander": "catalog:",
     "expo-module-scripts": "workspace:*",
-    "terminal-link": "^2.1.1",
+    "terminal-link": "catalog:",
     "update-check": "^1.5.4"
   }
 }

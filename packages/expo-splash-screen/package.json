@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@expo/plist": "workspace:*",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "@types/xml2js": "~0.4.11",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"

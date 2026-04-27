@@ -39,15 +39,15 @@
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",
     "@expo/json-file": "workspace:*",
-    "@expo/metro": "56.0.0-rc.0",
+    "@expo/metro": "catalog:",
     "@expo/schemer": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
-    "@types/debug": "^4.1.8",
+    "@types/debug": "catalog:",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
     "@vercel/ncc": "0.38.3",
-    "chalk": "^4.0.0",
-    "debug": "^4.3.4",
+    "chalk": "catalog:",
+    "debug": "catalog:",
     "expo-modules-autolinking": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo": "workspace:*",
@@ -55,9 +55,9 @@
     "glob": "^13.0.0",
     "ignore": "^5.3.2",
     "ora": "3.4.0",
-    "resolve-from": "^5.0.0",
+    "resolve-from": "catalog:",
     "resolve-workspace-root": "^2.0.0",
-    "semver": "7.5.4",
-    "terminal-link": "^2.1.1"
+    "semver": "catalog:",
+    "terminal-link": "catalog:"
   }
 }

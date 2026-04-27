@@ -46,12 +46,12 @@
     "globals": "^16.0.0"
   },
   "devDependencies": {
-    "eslint": "^9.18.0",
-    "eslint8": "npm:eslint@^8.57.1",
+    "eslint": "catalog:",
+    "eslint8": "catalog:",
     "eslint-plugin-prettier": "^5.2.1",
     "prettier": "^3.4.2",
-    "react": "19.2.3",
-    "react-native": "0.85.2"
+    "react": "catalog:",
+    "react-native": "catalog:"
   },
   "peerDependencies": {
     "eslint": ">=8.10"

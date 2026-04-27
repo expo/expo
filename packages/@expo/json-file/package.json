@@ -33,9 +33,9 @@
     "json5": "^2.2.3"
   },
   "devDependencies": {
-    "@types/babel__code-frame": "^7.27.0",
+    "@types/babel__code-frame": "catalog:",
     "@types/json5": "^2.2.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },

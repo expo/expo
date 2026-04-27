@@ -36,11 +36,11 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/glass-effect/",
   "dependencies": {},
   "devDependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
-    "@types/react": "~19.2.0",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/jest-dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/react-native": "catalog:",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

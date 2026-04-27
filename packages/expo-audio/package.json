@@ -32,8 +32,8 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
-    "@types/react": "~19.2.0",
-    "@types/node": "^22.14.0",
+    "@types/react": "catalog:",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

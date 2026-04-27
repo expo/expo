@@ -28,6 +28,6 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0"
+    "@types/node": "catalog:"
   }
 }

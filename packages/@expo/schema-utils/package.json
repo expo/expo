@@ -27,8 +27,8 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "devDependencies": {
-    "@babel/cli": "^7.23.4",
-    "@types/node": "^22.14.0",
+    "@babel/cli": "catalog:",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*",
     "json-schema-to-typescript": "^15.0.0"
   },

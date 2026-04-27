@@ -72,7 +72,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
+    "@babel/core": "catalog:",
     "@swc/core": "^1.11.11",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
@@ -82,16 +82,16 @@
     "@types/fs-extra": "^11.0.4",
     "@types/getenv": "^1.0.3",
     "@types/inquirer": "^8.2.10",
-    "@types/node": "~22.13.17",
+    "@types/node": "catalog:",
     "@types/npm-registry-fetch": "^8.0.7",
     "@types/semver": "^7.5.8",
     "@types/uuid": "^9.0.2",
-    "eslint": "^9.39.4",
+    "eslint": "catalog:",
     "eslint-config-universe": "^14.0.0",
     "eslint-plugin-lodash": "^7.4.0",
     "prettier": "^3.3.3",
     "taskr": "1.1.0",
-    "typescript": "^5.9.2"
+    "typescript": "catalog:"
   },
   "volta": {
     "node": "22.13.1"

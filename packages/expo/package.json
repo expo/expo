@@ -101,14 +101,14 @@
   "devDependencies": {
     "@expo/dom-webview": "workspace:*",
     "@expo/metro-runtime": "workspace:*",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
     "expo-updates": "workspace:*",
-    "npm-run-all2": "^8.0.4",
-    "react": "19.2.3",
+    "npm-run-all2": "catalog:",
+    "react": "catalog:",
     "react-dom": "19.2.3",
-    "react-native": "0.85.2",
-    "rimraf": "^6.1.2",
+    "react-native": "catalog:",
+    "rimraf": "catalog:",
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {

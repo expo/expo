@@ -41,7 +41,7 @@
     "@expo/image-utils": "workspace:^0.8.12"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
+    "@types/node": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

@@ -26,8 +26,8 @@
     "expo-module": "expo-module"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.7",
-    "@types/node": "^22.14.0",
+    "@babel/core": "catalog:",
+    "@types/node": "catalog:",
     "@types/node-fetch": "^2.5.12",
     "eslint-config-universe": "workspace:*",
     "expo-module-scripts": "workspace:*"

@@ -123,16 +123,16 @@
     }
   },
   "devDependencies": {
-    "@testing-library/dom": "^10.4.0",
-    "@testing-library/react": "^16.3.0",
-    "@testing-library/react-native": "^13.3.0",
+    "@testing-library/dom": "catalog:",
+    "@testing-library/react": "catalog:",
+    "@testing-library/react-native": "catalog:",
     "@tsd/typescript": "^5.9.3",
     "@types/color": "^4.2.0",
-    "@types/debug": "^4.1.7",
-    "@types/jest": "^29.2.1",
-    "@types/node": "^22.14.0",
-    "@types/react": "~19.2.0",
-    "@types/react-dom": "^19.1.7",
+    "@types/debug": "catalog:",
+    "@types/jest": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "@types/react-is": "^19.0.0",
     "@types/react-test-renderer": "^19.1.0",
     "immer": "^10.1.1",
@@ -141,7 +141,7 @@
     "react-native-safe-area-context": "~5.6.2",
     "react-native-screens": "~4.24.0",
     "react-native-web": "~0.21.0",
-    "react-server-dom-webpack": "~19.0.4",
+    "react-server-dom-webpack": "catalog:",
     "tsd": "^0.33.0"
   },
   "dependencies": {

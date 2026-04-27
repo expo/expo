@@ -81,17 +81,17 @@
     "debug": "^4.3.4"
   },
   "devDependencies": {
-    "@babel/core": "^7.26.0",
-    "@expo/metro": "56.0.0-rc.0",
+    "@babel/core": "catalog:",
+    "@expo/metro": "catalog:",
     "@expo/metro-config": "workspace:*",
-    "@types/babel__core": "^7.20.5",
-    "@types/babel__generator": "^7.27.0",
-    "@types/node": "^22.14.0",
+    "@types/babel__core": "catalog:",
+    "@types/babel__generator": "catalog:",
+    "@types/node": "catalog:",
     "babel-plugin-module-resolver": "^5.0.2",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
-    "jest": "^29.2.1",
+    "jest": "catalog:",
     "react-refresh": "^0.14.2",
-    "resolve-from": "^5.0.0"
+    "resolve-from": "catalog:"
   }
 }

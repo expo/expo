@@ -41,7 +41,7 @@
     "react-native-screens": "4.24.0"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/react": "~19.2.0"
+    "@types/jest": "catalog:",
+    "@types/react": "catalog:"
   }
 }

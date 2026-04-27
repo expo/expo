@@ -39,10 +39,10 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@types/invariant": "^2.2.33",
+    "@types/invariant": "catalog:",
     "@types/offscreencanvas": "2019.6.4",
     "@types/react-test-renderer": "^19.1.0",
-    "@types/react": "~19.2.0",
+    "@types/react": "catalog:",
     "@types/webgl2": "^0.0.6",
     "expo-module-scripts": "workspace:*",
     "react-test-renderer": "19.2.0"

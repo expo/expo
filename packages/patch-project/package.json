@@ -42,7 +42,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/patch-project#readme",
   "devDependencies": {
     "@expo/cli": "workspace:*",
-    "@types/debug": "^4.1.5",
+    "@types/debug": "catalog:",
     "@types/getenv": "^1.0.0",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"

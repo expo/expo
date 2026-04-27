@@ -167,15 +167,15 @@
     "victory-native": "^37.0.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.23.7",
+    "@babel/core": "catalog:",
     "@types/fbemitter": "^2.0.32",
     "@types/i18n-js": "^3.0.1",
     "@types/pixi.js": "^4.8.6",
-    "@types/react": "~19.2.0",
+    "@types/react": "catalog:",
     "@types/three": "^0.137.0",
     "babel-jest": "^29.2.1",
     "expo-module-scripts": "workspace:*",
-    "jest": "^29.2.1",
+    "jest": "catalog:",
     "react-test-renderer": "19.2.3"
   }
 }

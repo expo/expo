@@ -26,16 +26,16 @@
   },
   "devDependencies": {
     "@expo/spawn-async": "^1.7.2",
-    "@types/react": "~19.2.0",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
-    "npm-run-all2": "^8.0.4",
-    "react": "19.2.3",
+    "npm-run-all2": "catalog:",
+    "react": "catalog:",
     "react-dom": "19.2.3",
-    "react-native": "0.85.2",
+    "react-native": "catalog:",
     "react-native-web": "^0.21.0",
-    "rimraf": "^6.1.2",
+    "rimraf": "catalog:",
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "peerDependencies": {

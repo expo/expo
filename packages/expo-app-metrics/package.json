@@ -33,7 +33,7 @@
     "expo-updates-interface": "workspace:~55.1.3"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
+    "@types/react": "catalog:",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
