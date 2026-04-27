@@ -9,7 +9,7 @@ typealias ContentPositionValue = Either<Double, String>
  Specifies the alignment of the image within the container's box.
  - Note: Its intention is to behave like the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
  */
-struct ContentPosition: Record {
+struct ContentPosition: Record, @unchecked Sendable {
   static let center = Self()
 
   @Field

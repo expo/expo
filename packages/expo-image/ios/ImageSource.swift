@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-struct ImageSource: Record {
+struct ImageSource: Record, @unchecked Sendable {
   @Field
   var width: Double = 0.0
 

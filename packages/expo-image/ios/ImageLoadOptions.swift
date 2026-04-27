@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-internal struct ImageLoadOptions: Record {
+internal struct ImageLoadOptions: Record, @unchecked Sendable {
   @Field var maxWidth: Int?
   @Field var maxHeight: Int?
   @Field var tintColor: UIColor? = nil
