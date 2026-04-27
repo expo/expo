@@ -209,9 +209,9 @@ export const validatePodNamesAsync = async (
       searchPath = pkg.path;
       podspecPattern = `${podName}.podspec`;
     } else {
-      // Expo packages: podspec could be in root or ios/ subdirectory
+      // Expo packages: podspec could be in root, ios/, or apple/ subdirectory
       searchPath = pkg.path;
-      podspecPattern = `{${podName}.podspec,ios/${podName}.podspec}`;
+      podspecPattern = `{${podName}.podspec,ios/${podName}.podspec,apple/${podName}.podspec}`;
     }
 
     // Look for matching podspec
@@ -223,7 +223,7 @@ export const validatePodNamesAsync = async (
     if (foundPodspecs.length === 0) {
       // Find all podspecs in the package to help debug
       const allPodspecs = await glob(
-        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec}',
+        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}',
         {
           cwd: searchPath,
           absolute: false,

@@ -110,10 +110,12 @@ Pod::Spec.new do |s|
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
 
+  # ExpoModulesJSI is re-exported by ExpoModulesCore's swiftinterface, so it must be a CocoaPods dep in both source and prebuilt modes.
+  s.dependency 'ExpoModulesJSI'
+
   install_modules_dependencies(s)
 
   if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
-    s.dependency 'ExpoModulesJSI'
     s.static_framework = true
     s.header_dir     = 'ExpoModulesCore'
     s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'

@@ -10,7 +10,8 @@
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
-        "Hermes"
+        "Hermes",
+        "expo-modules-jsi/ExpoModulesJSI"
       ],
       "swiftLanguageVersions": [
         "6.0"
@@ -30,7 +31,8 @@
           "dependencies": [
             "Hermes",
             "React",
-            "ReactNativeDependencies"
+            "ReactNativeDependencies",
+            "expo-modules-jsi/ExpoModulesJSI"
           ],
           "includeDirectories": [
             "."
@@ -57,6 +59,7 @@
             "Hermes",
             "React",
             "ReactNativeDependencies",
+            "expo-modules-jsi/ExpoModulesJSI",
             "ExpoModulesCore_common_cpp"
           ],
           "linkedFrameworks": [
@@ -91,6 +94,7 @@
             "Hermes",
             "React",
             "ReactNativeDependencies",
+            "expo-modules-jsi/ExpoModulesJSI",
             "ExpoModulesCore_common_cpp",
             "ExpoModulesCore_ios_objc"
           ],

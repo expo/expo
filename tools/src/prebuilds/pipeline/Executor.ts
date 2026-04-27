@@ -220,6 +220,7 @@ async function executePackageStepsInner(
     artifactsPath: rootCtx.artifactsPath,
     dependsOn: rootCtx.dependsOn,
     artifactsByFlavor: rootCtx.artifactsByFlavor,
+    customBuiltProducts: rootCtx.customBuiltProducts,
     currentPackage: null,
     currentProduct: null,
     currentFlavor: null,
