@@ -105,8 +105,8 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    the thrown type to `JavaScriptThrowable` to control the resulting `message` and `code`.
 
    Pass `nil` for `set` to make the host object read-only — assignment from JavaScript
-   then throws a `TypeError`-style error matching the engine's behavior for a property
-   with no setter. `getPropertyNames` and `dealloc` default to no-ops.
+   then throws an `Error` whose message names the property and explains how to make it
+   writable. `getPropertyNames` and `dealloc` default to no-ops.
    */
   public func createHostObject(
     get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
@@ -130,17 +130,20 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
 
     func setter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>, valuePointer: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
-      let value = JavaScriptValue(context.runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
-      let propertyName = String(cString: propertyName)
 
       guard let runtime = context.runtime else {
         FatalError.runtimeLost()
       }
-      // The C++ side never dispatches here when the Swift setter is nil — it
-      // throws a `jsi::JSError` before reaching this trampoline.
       guard let set = context.set else {
+        // Unreachable in practice: when the user passed `nil` for `set`, the call site
+        // below at `expo.HostObjectCallbacks(...)` also passes `nil` to C++, and
+        // `HostObjectCallbacks::set` throws a `jsi::JSError` directly instead of
+        // calling back into Swift.
         return
       }
+      let value = JavaScriptValue(runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
+      let propertyName = String(cString: propertyName)
+
       JavaScriptActor.assumeIsolated {
         forwardingSwiftErrorsToJS(runtime: runtime) {
           try set(propertyName, value)

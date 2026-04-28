@@ -40,6 +40,10 @@ internal func forwardingSwiftErrorsToJS(
     return try body()
   } catch let throwable as JavaScriptThrowable {
     expo.CppError.setCurrent(JavaScriptError(runtime, from: throwable).toJSError())
+  } catch let cppError as expo.CppError {
+    // Re-thrown by `capturingCppErrors` when nested JSI work raised a JS error; relay
+    // the original so its `jsi::JSError` (with stack, code, custom properties) survives.
+    expo.CppError.setCurrent(cppError)
   } catch let error {
     expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
   }
@@ -59,6 +63,8 @@ internal func forwardingSwiftErrorsToJS(
     try body()
   } catch let throwable as JavaScriptThrowable {
     expo.CppError.setCurrent(JavaScriptError(runtime, from: throwable).toJSError())
+  } catch let cppError as expo.CppError {
+    expo.CppError.setCurrent(cppError)
   } catch let error {
     expo.CppError.setCurrent(runtime.pointee, std.string(String(describing: error)))
   }

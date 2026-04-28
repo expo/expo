@@ -33,6 +33,10 @@ public:
   }
 
   inline void set(jsi::Runtime &runtime, const jsi::PropNameID &name, const jsi::Value &value) override {
+    // For read-only host objects (no Swift setter), `_callbacks.set` throws a
+    // `jsi::JSError` directly and the `CppError` check below is never reached.
+    // For writable host objects, a throwing Swift setter routes its error through
+    // `CppError`'s thread-local slot, which we drain and rethrow here.
     _callbacks.set(runtime, name.utf8(runtime).c_str(), value);
     if (auto *error = CppError::getCurrent()) {
       throw error->release();

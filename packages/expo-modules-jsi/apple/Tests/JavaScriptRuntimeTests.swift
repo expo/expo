@@ -408,6 +408,62 @@ struct JavaScriptRuntimeTests {
     #expect(result.getInt() == 7)
   }
 
+  @Test
+  func `host getter that calls failing JS preserves the original error`() throws {
+    try runtime.eval("""
+      globalThis.throwTagged = function () {
+        const e = new Error('inner failure');
+        e.code = 'ERR_INNER';
+        throw e;
+      };
+    """)
+    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in
+        // Calling JS that throws surfaces an `expo.CppError` wrapping the original
+        // `jsi::JSError`. Letting it propagate exercises the CppError relay path.
+        _ = try throwTagged.call()
+        return .undefined
+      }
+    )
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+    """).getArray()
+
+    #expect(result[0].getString() == "inner failure")
+    #expect(result[1].getString() == "ERR_INNER")
+  }
+
+  @Test
+  func `host setter that calls failing JS preserves the original error`() throws {
+    try runtime.eval("""
+      globalThis.throwTagged = function () {
+        const e = new Error('inner setter failure');
+        e.code = 'ERR_SETTER';
+        throw e;
+      };
+    """)
+    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined },
+      set: { _, _ in
+        _ = try throwTagged.call()
+      }
+    )
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+    """).getArray()
+
+    #expect(result[0].getString() == "inner setter failure")
+    #expect(result[1].getString() == "ERR_SETTER")
+  }
+
   // MARK: - Host function error propagation
 
   @Test

@@ -66,4 +66,9 @@ internal final class ReadOnlyExpoModulesPropertyException: GenericException<Stri
       + "the `expo.modules` namespace is owned by the native runtime and its bindings cannot be replaced from JavaScript. "
       + "Define or override behavior inside the native module instead."
   }
+
+  // The default `JavaScriptThrowable.message` is `String(reflecting: self)`, which on
+  // `Exception` resolves to `debugDescription` (name + reason + Swift file:line). For a
+  // JS-facing error we want just `reason`, without leaking native source coordinates.
+  var message: String { reason }
 }
