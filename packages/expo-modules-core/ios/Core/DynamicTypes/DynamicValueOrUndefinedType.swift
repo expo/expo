@@ -2,12 +2,9 @@
 
 import ExpoModulesJSI
 
-internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicType, NullAcceptingDynamicType {
+internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicType {
   let innerType: InnerType.Type = InnerType.self
   let dynamicInnerType: AnyDynamicType = InnerType.getDynamicType()
-  var acceptsNull: Bool {
-    return (dynamicInnerType as? NullAcceptingDynamicType)?.acceptsNull ?? false
-  }
 
   func wraps<AnyInnerType>(_ type: AnyInnerType.Type) -> Bool {
     return innerType == type

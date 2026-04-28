@@ -6,9 +6,8 @@ import ExpoModulesJSI
  A dynamic type that represents an optional type, which allows `nil` to be passed when casting.
  Requires the optional's wrapped type as it delegates casting to that type for non-nil values.
  */
-internal struct DynamicOptionalType: AnyDynamicType, NullAcceptingDynamicType {
+internal struct DynamicOptionalType: AnyDynamicType {
   let wrappedType: AnyDynamicType
-  let acceptsNull = true
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     if let OptionalType = InnerType.self as? AnyOptional.Type {
