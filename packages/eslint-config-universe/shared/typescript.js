@@ -55,6 +55,9 @@ module.exports = {
         // The typescript-eslint FAQ recommends turning off "no-undef" in favor of letting tsc check for
         // undefined variables, including types
         'no-undef': 'off',
+
+        // NOTE(@hassankhan): This is disabled in `core`, but `eslint-plugin-import`'s recommended rules re-enable it
+        'import/no-named-as-default': 'off',
       },
       settings: {
         'import/extensions': allExtensions,
