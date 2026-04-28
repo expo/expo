@@ -4,7 +4,7 @@ import path from 'node:path';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
 import { generateCrossLinksSection, toBlockquote } from './shared.js';
-import { EXPO_DESCRIPTION } from './transforms/descriptions.js';
+import { EXPO_DESCRIPTION, PAGE_DESCRIPTION_OVERRIDES } from './transforms/descriptions.js';
 import { buildTalksSections } from './transforms/talks-section.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
@@ -100,12 +100,13 @@ function processPageData(pageHref, pageName) {
   }
 
   const { title, description } = readFrontmatterAttributes(filePath);
+  const finalDescription = PAGE_DESCRIPTION_OVERRIDES[pageHref] ?? description;
 
   return title || pageName
     ? {
         title: title ?? pageName,
         url: `https://docs.expo.dev${pageHref}`,
-        description,
+        description: finalDescription,
       }
     : null;
 }
