@@ -16,6 +16,11 @@ public protocol Enumerable: AnyArgument, CaseIterable {
   static var allRawValues: [Any] { get }
 
   /**
+   Returns the dynamic type of the enum's raw value, used to convert it to a JS value.
+   */
+  static func getRawValueDynamicType() -> AnyDynamicType
+
+  /**
    Type-erased enum's raw value.
    */
   var anyRawValue: Any { get }
@@ -51,6 +56,10 @@ public extension Enumerable where Self: RawRepresentable, Self: Hashable {
 
   static var allRawValues: [Any] {
     return allCases.map { $0.rawValue }
+  }
+
+  static func getRawValueDynamicType() -> AnyDynamicType {
+    return ~RawValue.self
   }
 }
 
