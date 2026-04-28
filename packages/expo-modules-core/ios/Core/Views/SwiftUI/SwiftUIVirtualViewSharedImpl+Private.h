@@ -11,6 +11,8 @@
 //        react::SharedViewEventEmitter _eventEmitter;
 //        expo::ExpoViewShadowNode<>::ConcreteState::Shared _state;
 
+namespace react = facebook::react;
+
 #pragma mark - RCTComponentViewProtocol implementations
 
 + (react::ComponentDescriptorProvider)componentDescriptorProvider
@@ -25,10 +27,10 @@
     flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
   }
 
-  ComponentName componentName = ComponentName { flavor->c_str() };
-  ComponentHandle componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+  react::ComponentName componentName = react::ComponentName { flavor->c_str() };
+  react::ComponentHandle componentHandle = reinterpret_cast<react::ComponentHandle>(componentName);
 
-  return ComponentDescriptorProvider {
+  return react::ComponentDescriptorProvider {
     componentHandle,
     componentName,
     flavor,
@@ -53,16 +55,16 @@
 
 - (void)updateProps:(const react::Props::Shared &)props oldProps:(const react::Props::Shared &)oldProps
 {
-  _props = std::static_pointer_cast<const ViewProps>(props);
+  _props = std::static_pointer_cast<const react::ViewProps>(props);
 }
 
 - (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
 {
-  assert(std::dynamic_pointer_cast<const ViewEventEmitter>(eventEmitter));
-  _eventEmitter = std::static_pointer_cast<const ViewEventEmitter>(eventEmitter);
+  assert(std::dynamic_pointer_cast<const react::ViewEventEmitter>(eventEmitter));
+  _eventEmitter = std::static_pointer_cast<const react::ViewEventEmitter>(eventEmitter);
 }
 
-- (void)handleCommand:(NSString *)commandName args:(NSArray *)args
+- (void)handleCommand:(NSString *_Nonnull)commandName args:(NSArray *_Nonnull)args
 {
   // Default implementation does nothing.
 }
@@ -126,7 +128,7 @@
   return nil;
 }
 
-- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *)clipView
+- (void)updateClippedSubviewsWithClipRect:(CGRect)clipRect relativeToView:(UIView *_Nonnull)clipView
 {
   // Clipped subviews are not supported in SwiftUI integration.
 }
@@ -161,7 +163,7 @@
 {
   if (_state) {
 #if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(expo::ExpoViewState(width, height), EventQueue::UpdateMode::unstable_Immediate);
+    _state->updateState(expo::ExpoViewState(width, height), react::EventQueue::UpdateMode::unstable_Immediate);
 #else
     _state->updateState(expo::ExpoViewState(width, height));
 #endif
@@ -174,7 +176,7 @@
     float widthValue = width ? [width floatValue] : std::numeric_limits<float>::quiet_NaN();
     float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
 #if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), EventQueue::UpdateMode::unstable_Immediate);
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), react::EventQueue::UpdateMode::unstable_Immediate);
 #else
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
 #endif

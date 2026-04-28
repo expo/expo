@@ -31,3 +31,5 @@ export function BottomSheet({
     </SwiftUIBottomSheet>
   );
 }
+
+export * from './types';

@@ -7,6 +7,7 @@ hasVideoLink: true
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -24,12 +25,18 @@ Development builds for iOS devices are generated in the **.ipa** format, which i
 
 ---
 
-## Prerequisites
-
-Before we begin, ensure you have:
-
-- **Apple Developer Account:** This is required to access [necessary credentials](/app-signing/app-credentials/#ios) for signing our app, as each build needs to be signed to verify that the app comes from a trusted source. EAS Build helps manage these credentials.
-- **Developer Mode activated on iOS 16 and higher:** Installing development builds on your device requires Developer Mode to be enabled. If this is your first time or if it's currently disabled, see these instructions to [activate Developer Mode](/guides/ios-developer-mode/).
+<Prerequisites>
+  <Requirement title="Apple Developer account">
+    Required to access [necessary credentials](/app-signing/app-credentials/#ios) for signing our
+    app, as each build needs to be signed to verify that the app comes from a trusted source. EAS
+    Build helps manage these credentials.
+  </Requirement>
+  <Requirement title="Developer Mode activated on iOS 16 and higher">
+    Installing development builds on your device requires Developer Mode to be enabled. If this is
+    your first time or if it's currently disabled, see [activate Developer
+    Mode](/guides/ios-developer-mode/).
+  </Requirement>
+</Prerequisites>
 
 ## Provisioning profile
 

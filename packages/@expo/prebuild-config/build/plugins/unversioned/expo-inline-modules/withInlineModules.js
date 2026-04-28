@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.withInlineModules = exports.default = void 0;
 function _configPlugins() {
-  const data = require("expo/config-plugins");
+  const data = require("@expo/config-plugins");
   _configPlugins = function () {
     return data;
   };

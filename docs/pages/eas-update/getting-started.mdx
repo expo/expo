@@ -8,6 +8,7 @@ import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon'
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { CODE } from '~/ui/components/Text';
@@ -16,66 +17,49 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 > **info** If you plan to use EAS Update with EAS Build, we recommend following the [EAS Build setup guide](/build/setup/) before proceeding here. That said, [you can use EAS Update without any other EAS services](/eas-update/standalone-service/).
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="An Expo account">
+    EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
 
-<Collapsible summary="An Expo user account">
+    Paid subscribers can publish updates to more users and use more bandwidth and storage. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
 
-EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
+  </Requirement>
+  <Requirement title="A React Native project">
+    Don't have a project yet? It's quick and easy to create a "Hello world" app you can use with this guide. Run the following command to create a new project:
 
-Paid subscribers can publish updates to more users and use more bandwidth and storage. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
+    <Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
 
-</Collapsible>
+    EAS Update also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
-<Collapsible summary="A React Native project">
+  </Requirement>
+  <Requirement title="Expo CLI and the Expo Metro Config">
+    If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), you're all set.
 
-Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
+    If you don't have the `expo` package in your project yet, install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
 
-Run the following command to create a new project:
+    <Terminal cmd={['$ npx install-expo-modules@latest']} />
 
-<Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
+    If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
 
-EAS Update also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
+  </Requirement>
+  <Requirement
+    title={
+      <>
+        Use <CODE>registerRootComponent</CODE> instead of <CODE>registerComponent</CODE>
+      </>
+    }>
+    If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (for example, it's handled by Expo Router), you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
 
-</Collapsible>
+    We recommend apps using EAS Update use Expo's [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of React Native's `registerApplication`. This ensures Expo can configure React Native to load assets, such as images, that are included in updates. If you do not use `registerRootComponent`, your assets may not be available in release builds.
 
-<Collapsible summary="Your project must use Expo CLI and extend the Expo Metro Config">
+    In a simple app created with React Native Community CLI, the diff would look like this:
 
-If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`) then you're all set.
+    <DiffBlock source="/static/diffs/expo-updates-register-root-component.diff" />
 
-If you don't have the `expo` package in your project yet, then install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
+    After making that change, update your [`MainActivity`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) and [`AppDelegate`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) to use the module name `"main"` instead of your app name.
 
-<Terminal cmd={['$ npx install-expo-modules@latest']} />
-
-If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
-
-</Collapsible>
-
-<Collapsible summary={<>Your project must use the <CODE>registerRootComponent</CODE> function instead of <CODE>registerComponent</CODE></>}>
-
-If you created your project with `npx create-expo-app`, or you don't call `registerRootComponent` in your app at all (for example, it's handled by Expo Router), then you are all set. The following applies to projects created with other tools, such as React Native Community CLI.
-
-We recommend that apps using EAS Update use Expo's [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of React Native's `registerApplication`. This will ensure that Expo is able to configure React Native to load assets, such as images, that are included in updates. If you do not use `registerRootComponent`, you may find that your assets will not be available in release builds.
-
-In a simple app created with React Native Community CLI, the diff would look like this:
-
-<DiffBlock
-  raw={`diff --git a/index.js b/index.js
-index 0000000..1111111 100644
---- a/index.js
-+++ b/index.js
-@@ -1,5 +1,4 @@
--import {AppRegistry} from 'react-native';
--import {name as appName} from './app.json';
-+import {registerRootComponent} from 'expo';
- import App from './App';
--
--AppRegistry.registerComponent(appName, () => App);
-+export default registerRootComponent(App);`}
-/>
-
-After making that change, update your [`MainActivity`](/versions/latest/sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) and [`AppDelegate`](/versions/latest//sdk/expo/#rootregistercomponent-setup-for-existing-react-native-projects) to use the module name `"main"` instead of your app name.
-
-</Collapsible>
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 ## Install the latest EAS CLI

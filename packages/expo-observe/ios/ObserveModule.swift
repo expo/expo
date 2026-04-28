@@ -8,6 +8,8 @@ internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: L
 internal struct Config: Record {
   @Field var environment: String?
   @Field var dispatchingEnabled: Bool?
+  @Field var dispatchInDebug: Bool?
+  @Field var sampleRate: Double?
 }
 
 public final class ObserveModule: Module {
@@ -19,9 +21,7 @@ public final class ObserveModule: Module {
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
         let baseUrl = getBaseUrl(manifest)
-        let enableInDebug = getEnableInDebug(manifest)
         let useOpenTelemetry = getUseOpenTelemetry(manifest)
-        ObservabilityManager.setEnableInDebug(enableInDebug)
         ObservabilityManager.setUseOpenTelemetry(useOpenTelemetry)
         // Set the endpoint URL after enabling Open Telemetry
         ObservabilityManager.setEndpointUrl(baseUrl, projectId: projectId)
@@ -34,9 +34,14 @@ public final class ObserveModule: Module {
 
     Function("configure") { (config: Config) in
       AppMetricsActor.isolated {
-        if let enabled = config.dispatchingEnabled {
-          ObserveUserDefaults.dispatchingEnabled = enabled
-        }
+        // Each call to `configure(...)` is a full replacement: absent fields reset prior values.
+        ObserveUserDefaults.setConfig(
+          PersistedConfig(
+            dispatchingEnabled: config.dispatchingEnabled,
+            dispatchInDebug: config.dispatchInDebug,
+            sampleRate: config.sampleRate
+          )
+        )
         if let environment = config.environment {
           AppMetrics.setEnvironment(environment)
         }
@@ -64,10 +69,6 @@ private func getProjectId(manifest: [String: Any]) -> String? {
 
 private func getBaseUrl(_ manifest: [String: Any]) -> String? {
   return getManifestProperty("extra.eas.observe.endpointUrl", manifest) as? String
-}
-
-private func getEnableInDebug(_ manifest: [String: Any]) -> Bool? {
-  return getManifestProperty("extra.eas.observe.enableInDebug", manifest) as? Bool
 }
 
 private func getUseOpenTelemetry(_ manifest: [String: Any]) -> Bool? {

@@ -9,6 +9,7 @@ import { Download03Icon } from '@expo/styleguide-icons/outline/Download03Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -25,16 +26,22 @@ In this chapter, let's learn how to create a new Expo project and how to get it 
 
 ---
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="Expo Go on a physical device">
+    Install [Expo Go](https://expo.dev/go) on a physical Android or iOS device.
+  </Requirement>
+  <Requirement title="Node.js (LTS)">
+    Install [Node.js (LTS version)](https://nodejs.org/en) on your machine.
+  </Requirement>
+  <Requirement title="A code editor">
+    Install [VS Code](https://code.visualstudio.com/) or any other preferred code editor or IDE.
+  </Requirement>
+  <Requirement title="A developer machine with a terminal">
+    A macOS, Linux, or Windows (PowerShell and WSL2) with a terminal window open.
+  </Requirement>
+</Prerequisites>
 
-We'll need the following to get started:
-
-- [Expo Go](https://expo.dev/go) installed on a physical device
-- [Node.js (LTS version)](https://nodejs.org/en) installed
-- [VS Code](https://code.visualstudio.com/) or any other preferred code editor or IDE installed
-- A macOS, Linux, or Windows (PowerShell and [WSL2](https://expo.fyi/wsl)) with a terminal window open
-
-The tutorial assumes that you are familiar with TypeScript and React. If you are not familiar with them, check out the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html) and [React's official tutorial](https://react.dev/learn).
+This tutorial assumes you are familiar with TypeScript and React. If you are not, check out the [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html) and [React's official tutorial](https://react.dev/learn).
 
 <Step label="1">
 

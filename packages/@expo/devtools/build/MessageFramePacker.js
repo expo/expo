@@ -44,7 +44,7 @@ var PayloadTypeIndicator;
 export class MessageFramePacker {
     textEncoder = new TextEncoder();
     textDecoder = new TextDecoder();
-    pack({ messageKey, payload }) {
+    pack({ messageKey, payload, }) {
         // Fast path to pack as string given `JSON.stringify` is fast.
         if (this.isFastPathPayload(payload)) {
             return JSON.stringify({ messageKey, payload });

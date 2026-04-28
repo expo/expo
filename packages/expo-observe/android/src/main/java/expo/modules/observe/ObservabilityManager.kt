@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.easclient.EASClientID
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -12,7 +13,6 @@ class ObservabilityManager(
   val sessionManager: SessionManager
 ) {
   private val baseManager: BaseObservabilityManager
-  private val enableInDebug: Boolean
   private val useOpenTelemetry: Boolean
 
   // TODO: Can this information change during expo module lifecycle?
@@ -27,7 +27,6 @@ class ObservabilityManager(
       "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
     }
     val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
-    enableInDebug = manifest.enableInDebug
     useOpenTelemetry = manifest.useOpenTelemetry
 
     val pendingMetricsManager = PendingMetricsManager(context)
@@ -38,7 +37,7 @@ class ObservabilityManager(
       pendingMetricsManager = pendingMetricsManager,
       projectId = projectId,
       baseUrl = baseUrl,
-      enableInDebug = enableInDebug,
+      isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
     )
 
@@ -56,7 +55,6 @@ class ObservabilityManager(
       context = context,
       projectId = baseManager.projectId,
       baseUrl = baseManager.baseUrl,
-      enableInDebug = enableInDebug,
       useOpenTelemetry = useOpenTelemetry
     )
   }
@@ -68,8 +66,11 @@ class BaseObservabilityManager(
   private val pendingMetricsManager: PendingMetricsManager,
   val projectId: String,
   val baseUrl: String,
-  private val enableInDebug: Boolean = false,
-  private val useOpenTelemetry: Boolean = false
+  private val isDebugBuild: Boolean = false,
+  private val useOpenTelemetry: Boolean = false,
+  private val deterministicUniformValueProvider: () -> Double = {
+    EASClientID.deterministicUniformValue(EASClientID(context).uuid)
+  }
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,
@@ -84,8 +85,10 @@ class BaseObservabilityManager(
       return
     }
 
-    // When disabled, mark pending metrics as sent without dispatching
-    if (!ObservePreferences.getDispatchingEnabled(context)) {
+    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: true
+    val dispatchInDebug = ObservePreferences.getConfig(context)?.dispatchInDebug ?: false
+    val shouldDispatch = dispatchingEnabled && isInSample() && (!isDebugBuild || dispatchInDebug)
+    if (!shouldDispatch) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return
     }
@@ -103,22 +106,7 @@ class BaseObservabilityManager(
       return
     }
 
-    val (toDispatch, toSkip) = if (enableInDebug) {
-      Pair(sessionsWithPendingMetrics, emptyList())
-    } else {
-      sessionsWithPendingMetrics.partition { it.session.environment != "development" }
-    }
-
-    // Remove skipped (dev) metrics from pending table without dispatching
-    toSkip
-      .flatMap { it.metrics }
-      .map { it.metricId }
-      .takeIf { it.isNotEmpty() }
-      ?.let { pendingMetricsManager.removePendingMetrics(it) }
-
-    if (toDispatch.isEmpty()) return
-
-    val events = toDispatch.map { sessionWithMetrics ->
+    val events = sessionsWithPendingMetrics.map { sessionWithMetrics ->
       Event(
         metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
         metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
@@ -126,9 +114,15 @@ class BaseObservabilityManager(
     }
 
     if (eventDispatcher.dispatch(events)) {
-      val dispatchedMetricIds = toDispatch.flatMap { it.metrics }.map { it.metricId }
+      val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
     }
+  }
+
+  private fun isInSample(): Boolean {
+    val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
+    val clamped = rate.coerceIn(0.0, 1.0)
+    return deterministicUniformValueProvider() < clamped
   }
 
   suspend fun cleanup() {

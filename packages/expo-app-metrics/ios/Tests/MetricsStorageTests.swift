@@ -212,4 +212,157 @@ struct MetricsStorageTests {
       #expect(entry.sessions.count == 0)
     }
   }
+
+  @AppMetricsActor
+  @Suite("Polymorphic session decoding")
+  struct PolymorphicSessionDecodingTests {
+    @Test
+    func `restores a MainSession as a MainSession`() throws {
+      let storage = MetricsStorage(fileName: "test_polymorphic_main")
+      let session = MainSession()
+      storage.currentEntry.add(session: session)
+      session.receiveMetric(Metric(category: .appStartup, name: "test", value: 1.0))
+      try storage.commit()
+
+      let restoredStorage = MetricsStorage(fileName: "test_polymorphic_main")
+      let restoredSession = try #require(restoredStorage.historicalEntries.first?.sessions.first)
+      #expect(restoredSession is MainSession)
+      #expect(restoredSession.type == .main)
+    }
+
+    @Test
+    func `restores a ForegroundSession as a ForegroundSession`() throws {
+      let storage = MetricsStorage(fileName: "test_polymorphic_foreground")
+      let session = ForegroundSession()
+      storage.currentEntry.add(session: session)
+      session.receiveMetric(Metric(category: .session, name: "test", value: 1.0))
+      try storage.commit()
+
+      let restoredStorage = MetricsStorage(fileName: "test_polymorphic_foreground")
+      let restoredSession = try #require(restoredStorage.historicalEntries.first?.sessions.first)
+      #expect(restoredSession is ForegroundSession)
+      #expect(restoredSession.type == .foreground)
+    }
+
+    @Test
+    func `restores mixed session types in their original order`() throws {
+      let storage = MetricsStorage(fileName: "test_polymorphic_mixed")
+      let mainSession = MainSession()
+      let foregroundSession = ForegroundSession()
+      // `add(session:)` inserts at index 0, so the foreground session ends up first.
+      storage.currentEntry.add(session: mainSession)
+      storage.currentEntry.add(session: foregroundSession)
+      mainSession.receiveMetric(Metric(category: .appStartup, name: "test", value: 1.0))
+      foregroundSession.receiveMetric(Metric(category: .session, name: "test", value: 1.0))
+      try storage.commit()
+
+      let restoredStorage = MetricsStorage(fileName: "test_polymorphic_mixed")
+      let restoredSessions = try #require(restoredStorage.historicalEntries.first?.sessions)
+      #expect(restoredSessions.count == 2)
+      #expect(restoredSessions[0] is ForegroundSession)
+      #expect(restoredSessions[1] is MainSession)
+    }
+
+    @Test
+    func `falls back to base Session for unknown type`() throws {
+      let json: [String: Any] = [
+        "id": "00000000-0000-0000-0000-000000000000",
+        "startDate": "2025-11-16T20:37:00Z",
+        "metrics": [],
+      ]
+      let data = try JSONSerialization.data(withJSONObject: json, options: [])
+      let decoder = JSONDecoder()
+      decoder.dateDecodingStrategy = .iso8601
+      let coder = try decoder.decode(SessionCoder.self, from: data)
+      #expect(coder.session is MainSession == false)
+      #expect(coder.session is ForegroundSession == false)
+      #expect(coder.session.type == .unknown)
+    }
+
+    @Test
+    func `decodes legacy JSON written before polymorphic decoding`() throws {
+      // Sessions encoded by versions up to and including 0.1.9 used synthesized Codable.
+      // `SessionCoder` reads the same field names from the same shape, so existing
+      // on-disk files written by those versions must keep decoding.
+      let json: [String: Any] = [
+        "id": 0,
+        "app": [
+          "appVersion": "16.0",
+          "appId": "com.apple.dt.xctest.tool",
+          "buildNumber": "24419",
+          "appName": "xctest",
+          "clientVersion": "0.1.9",
+          "reactNativeVersion": "0.85.2",
+          "expoSdkVersion": "55.0.11",
+          "easBuildId": "xxxx-xxxxxxxxxxxxxxx-xxxx-xxxx-xxxxxxxxxxxxxx",
+        ],
+        "device": [
+          "modelIdentifier": "iPhone 17 Pro Max",
+          "modelName": "iPhone",
+          "systemVersion": "26.1",
+          "systemName": "iOS",
+        ],
+        "date": "2025-11-16T20:37:00Z",
+        "sessions": [
+          [
+            "id": "11111111-1111-1111-1111-111111111111",
+            "type": "main",
+            "startDate": "2025-11-16T20:37:00Z",
+            "endDate": "2025-11-16T20:38:00Z",
+            "metrics": [
+              ["category": "appStartup", "name": "test", "value": 1.5, "timestamp": "2025-11-16T20:37:30Z"],
+            ],
+          ],
+          [
+            "id": "22222222-2222-2222-2222-222222222222",
+            "type": "foreground",
+            "startDate": "2025-11-16T20:37:05Z",
+            "endDate": "2025-11-16T20:37:50Z",
+            "metrics": [],
+          ],
+        ],
+      ]
+      let data = try JSONSerialization.data(withJSONObject: json, options: [])
+      let decoder = JSONDecoder()
+      decoder.dateDecodingStrategy = .iso8601
+      let entry = try decoder.decode(MetricsStorage.Entry.self, from: data)
+
+      #expect(entry.sessions.count == 2)
+      let mainSession = try #require(entry.sessions.first)
+      #expect(mainSession is MainSession)
+      #expect(mainSession.id == "11111111-1111-1111-1111-111111111111")
+      #expect(mainSession.metrics.count == 1)
+      #expect(mainSession.metrics.first?.value == 1.5)
+
+      let foregroundSession = try #require(entry.sessions.last)
+      #expect(foregroundSession is ForegroundSession)
+      #expect(foregroundSession.id == "22222222-2222-2222-2222-222222222222")
+      #expect(foregroundSession.metrics.isEmpty)
+    }
+
+    @Test
+    func `getAllMainSessions returns only MainSession instances across entries`() throws {
+      let storage = MetricsStorage(fileName: "test_polymorphic_accessor")
+      // Current entry: one main + one foreground.
+      let currentMain = MainSession()
+      let currentForeground = ForegroundSession()
+      storage.currentEntry.add(session: currentMain)
+      storage.currentEntry.add(session: currentForeground)
+      currentMain.receiveMetric(Metric(category: .appStartup, name: "test", value: 1.0))
+      // Historical entry: one main + one foreground, persisted via commit + reload.
+      let historicalMain = MainSession()
+      let historicalForeground = ForegroundSession()
+      storage.currentEntry.add(session: historicalMain)
+      storage.currentEntry.add(session: historicalForeground)
+      historicalMain.receiveMetric(Metric(category: .appStartup, name: "test", value: 2.0))
+      try storage.commit()
+
+      let restoredStorage = MetricsStorage(fileName: "test_polymorphic_accessor")
+      // The new launch creates a fresh current entry with no sessions, so all main sessions
+      // come from the restored historical entry.
+      let mainSessions = restoredStorage.getAllMainSessions()
+      #expect(mainSessions.count == 2)
+      #expect(mainSessions.allSatisfy({ $0.type == .main }))
+    }
+  }
 }

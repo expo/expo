@@ -46,7 +46,7 @@ export default {
     return getCrypto().getRandomValues(array);
   },
   getRandomValues(typedArray: TypedArray) {
-    return getCrypto().getRandomValues(typedArray);
+    return getCrypto().getRandomValues(typedArray as ArrayBufferView<ArrayBuffer>);
   },
   randomUUID() {
     return getCrypto().randomUUID();

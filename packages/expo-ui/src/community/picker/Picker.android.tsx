@@ -7,6 +7,7 @@ import {
   type PickerItemValue,
   type PickerProps,
 } from './types';
+import { useNativeState } from '../../State/useNativeState';
 import { DropdownMenuItem } from '../../jetpack-compose/DropdownMenu/DropdownMenuItem';
 import {
   ExposedDropdownMenuBox,
@@ -33,19 +34,14 @@ function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
 
   const selectedItem = items.find((item) => item.value === selectedValue);
   const selectedLabel = selectedItem?.label ?? '';
+  const labelState = useNativeState(selectedLabel);
 
   return (
     <Host style={style} matchContents={{ vertical: true }}>
       <ExposedDropdownMenuBox
         expanded={expanded}
         onExpandedChange={enabled === false ? undefined : setExpanded}>
-        <TextField
-          defaultValue={selectedLabel}
-          key={selectedLabel}
-          readOnly
-          enabled={enabled}
-          modifiers={[menuAnchor()]}
-        />
+        <TextField value={labelState} readOnly enabled={enabled} modifiers={[menuAnchor()]} />
         <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
           {items.map((item, index) => (
             <DropdownMenuItem

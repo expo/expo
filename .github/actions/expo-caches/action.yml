@@ -178,7 +178,7 @@ runs:
       uses: actions/cache@v4
       with:
         path: ${{ runner.temp }}/.ccache
-        key: ${{ runner.os }}-ccache-${{ hashFiles('pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h') }}
+        key: ${{ runner.os }}-ccache-${{ hashFiles('pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
         restore-keys: ${{ runner.os }}-ccache-
 
     - name: 🔍️ Get cache key of Git LFS files

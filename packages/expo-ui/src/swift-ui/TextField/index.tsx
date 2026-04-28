@@ -1,12 +1,17 @@
 import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
+import { worklets } from '../../State/optionalWorklets';
+import type { ObservableState } from '../../State/useNativeState';
+import { useNativeState } from '../../State/useNativeState';
+import { useWorkletProp } from '../../State/useWorkletProp';
+import { getStateId } from '../../State/utils';
 import type { ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and selecting text on the `TextField` component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
@@ -21,8 +26,12 @@ export type TextFieldRef = {
 
 export type TextFieldProps = {
   ref?: Ref<TextFieldRef>;
-  /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
-  defaultValue?: string;
+  /**
+   * An observable state that holds the current text.
+   * Create one with `useNativeState('')` or `useNativeState('initial value')`.
+   * If omitted, the field manages its own internal state.
+   */
+  text?: ObservableState<string>;
   /** If true, the text field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;
   /**
@@ -31,8 +40,11 @@ export type TextFieldProps = {
   placeholder?: string;
   /**
    * A callback triggered when the text value changes.
+   *
+   * If the callback is marked with the `'worklet'` directive, it runs synchronously
+   * on the UI thread; otherwise it is delivered asynchronously as a regular JS event.
    */
-  onValueChange?: (value: string) => void;
+  onTextChange?: (text: string) => void;
   /**
    * A callback triggered when the field gains or loses focus.
    */
@@ -53,39 +65,49 @@ export type TextFieldProps = {
 
 export type NativeTextFieldProps = Omit<
   TextFieldProps,
-  'onValueChange' | 'onFocusChange' | 'onSelectionChange'
+  'text' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'
 > &
-  ViewEvent<'onValueChange', { value: string }> &
+  ViewEvent<'onTextChange', { value: string }> &
   ViewEvent<'onFocusChange', { value: boolean }> &
-  ViewEvent<'onSelectionChange', { start: number; end: number }>;
+  ViewEvent<'onSelectionChange', { start: number; end: number }> & {
+    text?: number | null;
+    onTextChangeSync?: number | null;
+  };
 
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
   'ExpoUI',
   'TextFieldView'
 );
 
-function transformTextFieldProps(props: TextFieldProps): NativeTextFieldProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-    onValueChange: props.onValueChange
-      ? (event) => props.onValueChange?.(event.nativeEvent.value)
-      : undefined,
-    onFocusChange: props.onFocusChange
-      ? (event) => props.onFocusChange?.(event.nativeEvent.value)
-      : undefined,
-    onSelectionChange: props.onSelectionChange
-      ? (event) =>
-          props.onSelectionChange?.({ start: event.nativeEvent.start, end: event.nativeEvent.end })
-      : undefined,
-  };
-}
-
 /**
  * Renders a SwiftUI `TextField`.
  */
 export function TextField(props: TextFieldProps) {
-  return <TextFieldNativeView {...transformTextFieldProps(props)} />;
+  const { text, onTextChange, onFocusChange, onSelectionChange, modifiers, ...restProps } = props;
+
+  const fallbackText = useNativeState('');
+  const textState = text ?? fallbackText;
+
+  const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
+  const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
+
+  return (
+    <TextFieldNativeView
+      {...restProps}
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      text={getStateId(textState)}
+      onTextChangeSync={getStateId(workletCallback)}
+      onTextChange={
+        !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined
+      }
+      onFocusChange={onFocusChange ? (event) => onFocusChange(event.nativeEvent.value) : undefined}
+      onSelectionChange={
+        onSelectionChange
+          ? (event) =>
+              onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+          : undefined
+      }
+    />
+  );
 }

@@ -7,6 +7,7 @@ description: An introduction to the tutorial for building apps for Android and i
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 ## About this tutorial
 
@@ -24,17 +25,22 @@ This tutorial covers the following topics:
 
 These topics will give us the foundation needed to use EAS effectively and to approach more advanced topics when needed.
 
-## Prerequisites
+This tutorial is hands-on and designed to be completed in about two hours.
 
-This tutorial is hands-on and designed to be completed in about two hours. You will need an existing Expo project to follow along and set it up locally on your machine. Options include:
+<Prerequisites>
+  <Requirement title="An existing Expo project set up locally">
+    Pick one of the following options to follow along:
 
-- Continuing with the Sticker Smash app from our previous tutorial. If new, download it from [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
-- Starting a new project with [`npx create-expo-app`](/get-started/create-a-project/).
-- Using a bare React Native project. Ensure the `expo` package is installed, which you can do [automatically](/bare/installing-expo-modules/) or [manually](/bare/installing-expo-modules/#manual-installation).
+    - Continue with the Sticker Smash app from the previous tutorial. If new, download it from [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
+    - Start a new project with [`npx create-expo-app`](/get-started/create-a-project/).
+    - Use a bare React Native project. Ensure the `expo` package is installed, which you can do [automatically](/bare/installing-expo-modules/) or [manually](/bare/installing-expo-modules/#manual-installation).
+
+  </Requirement>
+</Prerequisites>
 
 ## Tools
 
-[Expo Orbit](https://expo.dev/orbit) to manage and launch builds with one click on macOS and Windows.
+[Expo Orbit](https://expo.dev/orbit) to manage and launch builds with one click on macOS, Windows, and Linux.
 
 If you want to install and run the build locally on your machine simultaneously, you can use Android Emulator or iOS Simulator. To set them up, see the following:
 

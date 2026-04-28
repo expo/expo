@@ -1,9 +1,29 @@
 import ExpoModulesCore
 import Photos
+import PhotosUI
 
 public final class MediaLibraryNextModule: Module {
+  private static let libraryDidChangeEvent = "mediaLibraryDidChange"
+  private lazy var observerManager = PhotoLibraryObserverManager(onChange: { [weak self] body in
+    guard let self = self else {
+      return
+    }
+    self.sendEvent(MediaLibraryNextModule.libraryDidChangeEvent, body)
+  })
+
   public func definition() -> ModuleDefinition {
     Name("ExpoMediaLibraryNext")
+
+    Events(MediaLibraryNextModule.libraryDidChangeEvent)
+
+    OnStartObserving(MediaLibraryNextModule.libraryDidChangeEvent) {
+      observerManager.startObserving()
+    }
+
+    OnStopObserving(MediaLibraryNextModule.libraryDidChangeEvent) {
+      observerManager.stopObserving()
+    }
+
     // swiftlint:disable:next closure_body_length
     Class(Asset.self) {
       Constructor { (id: String) -> Asset in
@@ -187,8 +207,8 @@ public final class MediaLibraryNextModule: Module {
         try await album.getAssets()
       }
 
-      AsyncFunction("add") { (album: Album, asset: Asset) async throws in
-        try await album.add(asset)
+      AsyncFunction("add") { (album: Album, assets: [Asset]) async throws in
+        try await album.add(assets)
       }
 
       AsyncFunction("removeAssets") { (album: Album, assets: [Asset]) async throws in
@@ -247,6 +267,15 @@ public final class MediaLibraryNextModule: Module {
           reject: promise.legacyRejecter
         )
     }
+
+    AsyncFunction("presentPermissionsPicker") { (_ mediaTypes: [String]?) in
+      #if os(iOS)
+      guard let vc = appContext?.utilities?.currentViewController() else {
+        return
+      }
+      PHPhotoLibrary.shared().presentLimitedLibraryPicker(from: vc)
+      #endif
+    }.runOnQueue(.main)
   }
 
   private func getAssetIdsFromAssetRefs(from assetRefs: Either<[Asset], [URL]>) async throws -> [String] {

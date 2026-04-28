@@ -42,20 +42,26 @@ export default function BasicLazyColumn() {
 Use the `verticalArrangement` prop to control how items are spaced within the list. Pass a string value like `'spaceBetween'` or an object like `{ spacedBy: 8 }` for fixed spacing in dp.
 
 ```tsx LazyColumnArrangement.tsx
-import { Host, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
+import { Host, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
 
 export default function LazyColumnArrangement() {
   return (
     <Host style={{ height: 400 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 8 }} horizontalAlignment="center">
         <ListItem>
-          <ListItem.HeadlineContent>Spaced item 1</ListItem.HeadlineContent>
+          <ListItem.HeadlineContent>
+            <Text>Spaced Item 1</Text>
+          </ListItem.HeadlineContent>
         </ListItem>
         <ListItem>
-          <ListItem.HeadlineContent>Spaced item 2</ListItem.HeadlineContent>
+          <ListItem.HeadlineContent>
+            <Text>Spaced Item 2</Text>
+          </ListItem.HeadlineContent>
         </ListItem>
         <ListItem>
-          <ListItem.HeadlineContent>Spaced item 3</ListItem.HeadlineContent>
+          <ListItem.HeadlineContent>
+            <Text>Spaced Item 3</Text>
+          </ListItem.HeadlineContent>
         </ListItem>
       </LazyColumn>
     </Host>

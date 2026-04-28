@@ -26,8 +26,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       AppMetrics.mainSession.appStartupMonitor.markFirstRender()
     }
 
-    Function("markInteractive") { (routeName: String?) in
-      AppMetrics.mainSession.appStartupMonitor.markInteractive(routeName: routeName)
+    Function("markInteractive") { (attributes: MetricAttributes?) in
+      AppMetrics.mainSession.appStartupMonitor.markInteractive(
+        routeName: attributes?.routeName,
+        params: attributes?.params ?? [:]
+      )
     }
 
     AsyncFunction("getAppStartupTimesAsync") {
@@ -44,8 +47,12 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       return await AppMetrics.mainSession.frameMetricsRecorder.metrics
     }
 
-    AsyncFunction("getStoredEntries") {
-      return await AppMetrics.storage.getAllEntries()
+    AsyncFunction("getStoredEntries") { () -> [Any] in
+      let entries = await AppMetrics.storage.getAllEntries()
+      let encoder = JSONEncoder()
+      encoder.dateEncodingStrategy = .iso8601
+      let data = try encoder.encode(entries)
+      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
     }
 
     AsyncFunction("clearStoredEntries") {
@@ -62,4 +69,9 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
   }
+}
+
+struct MetricAttributes: Record {
+  @Field var routeName: String?
+  @Field var params: [String: Any]?
 }

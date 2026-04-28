@@ -7,11 +7,12 @@ enum TextFieldAxis: String, Enumerable {
 }
 
 final class TextFieldProps: UIBaseViewProps {
-  @Field var defaultValue: String = ""
+  @Field var text: ObservableState?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
   @Field var axis: TextFieldAxis = .horizontal
-  var onValueChange = EventDispatcher()
+  @Field var onTextChangeSync: WorkletCallback?
+  var onTextChange = EventDispatcher()
   var onFocusChange = EventDispatcher()
   var onSelectionChange = EventDispatcher()
 }
@@ -45,7 +46,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setText(_ text: String) {
-    textManager.text = text
+    props.text?.value = text
   }
 
   func focus() {
@@ -68,14 +69,33 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   func setSelection(start: Int, end: Int) {
 #if !os(tvOS)
     if #available(iOS 18.0, macOS 15.0, *) {
+      let currentText = (props.text?.value as? String) ?? ""
       let lowerBound = min(start, end)
       let upperBound = max(start, end)
-      let startIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(lowerBound, textManager.text.count))
-      let endIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(upperBound, textManager.text.count))
+      let startIndex = currentText.index(currentText.startIndex, offsetBy: min(lowerBound, currentText.count))
+      let endIndex = currentText.index(currentText.startIndex, offsetBy: min(upperBound, currentText.count))
       textManager.selection = SwiftUI.TextSelection(range: startIndex..<endIndex)
     }
 #endif
   }
+
+  var body: some View {
+    if let state = props.text {
+      StatefulTextField(
+        state: state,
+        props: props,
+        textManager: textManager,
+        isFocused: $isFocused
+      )
+    }
+  }
+}
+
+private struct StatefulTextField: View {
+  @ObservedObject var state: ObservableState
+  @ObservedObject var props: TextFieldProps
+  @ObservedObject var textManager: TextFieldManager
+  @FocusState.Binding var isFocused: Bool
 
   private var swiftUIAxis: Axis {
     props.axis == .vertical ? .vertical : .horizontal
@@ -83,11 +103,12 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
   @ViewBuilder
   var textField: some View {
+    let textBinding = state.binding("")
     if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
 #if !os(tvOS)
       TextField(
         props.placeholder,
-        text: $textManager.text,
+        text: textBinding,
         selection: $textManager.selection,
         axis: swiftUIAxis
       )
@@ -95,7 +116,7 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 #else
       TextField(
         props.placeholder,
-        text: $textManager.text,
+        text: textBinding,
         axis: swiftUIAxis
       )
       .focused($isFocused)
@@ -103,14 +124,14 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     } else if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
         props.placeholder,
-        text: $textManager.text,
+        text: textBinding,
         axis: swiftUIAxis
       )
       .focused($isFocused)
     } else {
       TextField(
         props.placeholder,
-        text: $textManager.text
+        text: textBinding
       )
       .focused($isFocused)
     }
@@ -119,13 +140,13 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   var body: some View {
     let baseView = textField
       .onAppear {
-        textManager.text = props.defaultValue
         if props.autoFocus {
           isFocused = true
         }
       }
-      .onChange(of: textManager.text) { newValue in
-        props.onValueChange(["value": newValue])
+      .onChange(of: state.value as? String) { newValue in
+        props.onTextChange(["value": newValue])
+        props.onTextChangeSync?.invoke(arguments: [newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
@@ -140,11 +161,12 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
       return baseView.onChange(of: textManager.selection) {
         if let selection = textManager.selection {
           if case let .selection(range) = selection.indices {
-            let clampedLower = range.lowerBound < textManager.text.endIndex ? range.lowerBound : textManager.text.endIndex
-            let clampedUpper = range.upperBound < textManager.text.endIndex ? range.upperBound : textManager.text.endIndex
+            let currentText = (state.value as? String) ?? ""
+            let clampedLower = range.lowerBound < currentText.endIndex ? range.lowerBound : currentText.endIndex
+            let clampedUpper = range.upperBound < currentText.endIndex ? range.upperBound : currentText.endIndex
 
-            let start = textManager.text.distance(from: textManager.text.startIndex, to: clampedLower)
-            let end = textManager.text.distance(from: textManager.text.startIndex, to: clampedUpper)
+            let start = currentText.distance(from: currentText.startIndex, to: clampedLower)
+            let end = currentText.distance(from: currentText.startIndex, to: clampedUpper)
             props.onSelectionChange(["start": start, "end": end])
           }
         }

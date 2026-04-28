@@ -1,5 +1,5 @@
 import { CodedError, UnavailabilityError } from 'expo-modules-core';
-import ExpoFontLoader, {} from './ExpoFontLoader';
+import ExpoFontLoader from './ExpoFontLoader';
 import { getAssetForSource, loadSingleFontAsync } from './FontLoader';
 /**
  * @returns the server resources that should be statically extracted.

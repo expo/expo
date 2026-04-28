@@ -28,6 +28,8 @@
 
 require 'fileutils'
 require 'json'
+require 'net/http'
+require 'set'
 require 'uri'
 
 module Expo
@@ -40,6 +42,9 @@ module Expo
 
     # Environment variable for custom precompiled modules base path
     MODULES_PATH_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_PATH'.freeze
+
+    # Environment variable for a shared remote base URL used by external prebuilt packages.
+    EXTERNAL_MODULES_BASE_URL_ENV_VAR = 'EXPO_PRECOMPILED_MODULES_BASE_URL'.freeze
 
     # Subdirectory within each pod dir for tarballs and build state
     ARTIFACTS_DIR_NAME = 'artifacts'.freeze
@@ -55,6 +60,10 @@ module Expo
 
     # Regex to strip `framework module React { ... }` from modulemaps
     FRAMEWORK_MODULE_REACT_REGEX = /framework module React \{.*?\n\}\s*/m
+
+    # ExpoModulesJSI is always provided as an xcframework by its own podspec/npm package,
+    # so it is not resolved through the Expo precompiled tarball pipeline.
+    CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
@@ -81,6 +90,11 @@ module Expo
         ENV[MODULES_PATH_ENV_VAR]
       end
 
+      # Returns the shared base URL for remote external prebuilt artifacts, if set.
+      def external_modules_base_url
+        ENV[EXTERNAL_MODULES_BASE_URL_ENV_VAR]
+      end
+
       # Returns true if precompiled modules are enabled via environment variable
       def enabled?
         ENV[ENV_VAR] == '1'
@@ -102,6 +116,19 @@ module Expo
         @build_from_source_patterns.any? { |re|
           re.match?(pod_name) || (npm_package && re.match?(npm_package))
         }
+      end
+
+      # @react-native-community/cli autolinking output (same shape as RN CLI's `config`).
+      # Used to locate 3rd-party packages via real node resolution so non-flat node_modules
+      # layouts (pnpm non-hoisted, yarn PnP, aliased specifiers) resolve correctly.
+      def react_native_config
+        @react_native_config ||= invoke_autolinking('react-native-config', platform: 'ios')
+      end
+
+      # The resolved Expo modules list. Used by scan_node_modules_configs to locate
+      # each internal package's spm.config.json via its resolved podspec dir.
+      def resolved_modules
+        @resolved_modules ||= invoke_autolinking('resolve', platform: 'apple').fetch('modules', [])
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -213,7 +240,7 @@ module Expo
       def has_prebuilt_xcframework?(pod_name)
         return false unless enabled?
 
-        !resolve_prebuilt_info(pod_name).nil?
+        resolve_prebuilt_status(pod_name)[:available]
       end
 
       # Returns whether test specs should be included for a pod.
@@ -456,13 +483,13 @@ module Expo
       def try_link_with_prebuilt_xcframework(spec)
         return false unless enabled?
 
-        resolved = resolve_prebuilt_info(spec.name)
-        unless resolved
-          log_linking_status(spec.name, false, "no prebuilt xcframework available")
+        resolution = resolve_prebuilt_status(spec.name)
+        unless resolution[:available]
+          log_linking_status(spec.name, false, resolution)
           return false
         end
 
-        pod_info, product_name, default_tarball = resolved
+        pod_info, product_name, default_tarball = resolution[:resolved]
 
         log_linking_status(spec.name, true, default_tarball)
 
@@ -491,10 +518,13 @@ module Expo
       # @param spec [Pod::Specification] The podspec to patch
       # @return [Pod::Specification] A new patched specification (or original on failure)
       def patch_spec_for_prebuilt(spec)
-        resolved = resolve_prebuilt_info(spec.name)
-        return spec unless resolved
+        resolution = resolve_prebuilt_status(spec.name)
+        unless resolution[:available]
+          log_linking_status(spec.name, false, resolution) if resolution[:reason] == :dependency_unavailable
+          return spec
+        end
 
-        pod_info, product_name, default_tarball = resolved
+        pod_info, product_name, default_tarball = resolution[:resolved]
 
         log_linking_status(spec.name, true, default_tarball)
 
@@ -563,19 +593,38 @@ module Expo
         prefix = "[Expo-precompiled] ".blue
         Pod::UI.info "#{prefix}Precompiled modules:"
         @linked_pods.sort_by { |name, _| name.downcase }.each do |pod_name, info|
+          version = installed_version_for(pod_name)
+          version_suffix = version ? " #{"(#{version})".dark}" : ""
           if info[:found]
-            Pod::UI.info "#{prefix}  📦 #{pod_name.green}"
+            Pod::UI.info "#{prefix}  📦 #{pod_name.green}#{version_suffix}"
           else
-            Pod::UI.info "#{prefix}  ⚠️  #{pod_name} #{"(Build from source: framework not found #{info[:path]})".yellow}"
+            reason = format_prebuilt_unavailable_reason(info)
+            Pod::UI.info "#{prefix}  ⚠️  #{pod_name}#{version_suffix} #{"(#{reason})".dark}"
           end
+          spm_versions = pod_lookup_map.dig(pod_name, :spm_dependency_versions) || {}
           info[:spm_deps].each do |dep_name|
-            Pod::UI.info "#{prefix}      ∟ #{dep_name}.xcframework".green
+            dep_version = spm_versions[dep_name]
+            dep_suffix = dep_version ? " #{"(#{dep_version})".dark}" : ""
+            Pod::UI.info "#{prefix}      ∟ #{"#{dep_name}.xcframework".green}#{dep_suffix}"
           end
         end
 
         if @linked_pods.none? { |_, info| info[:found] }
           Pod::UI.warn "#{prefix}⚠️  Precompiled modules enabled but no xcframeworks found. All modules will build from source."
         end
+      end
+
+      # Returns the installed version for a pod by reading its package.json, or nil.
+      def installed_version_for(pod_name)
+        package_root = pod_lookup_map.dig(pod_name, :package_root)
+        return nil unless package_root
+
+        pkg_json = File.join(package_root, 'package.json')
+        return nil unless File.exist?(pkg_json)
+
+        JSON.parse(File.read(pkg_json))['version']
+      rescue JSON::ParserError, Errno::ENOENT
+        nil
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -606,7 +655,7 @@ module Expo
 
           # Copy both flavor tarballs
           ['debug', 'release'].each do |flavor|
-            src = File.join(build_output_dir, flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            src = resolve_prebuilt_tarball(info, product_name, flavor, pod_name)
             dst = File.join(artifacts_dir, "#{product_name}-#{flavor}.tar.gz")
             FileUtils.cp(src, dst) if File.exist?(src) && !File.exist?(dst)
           end
@@ -618,7 +667,7 @@ module Expo
           # Self-healing: extract xcframework if missing (CocoaPods cache issue)
           xcframework_dir = File.join(pod_dir, "#{product_name}.xcframework")
           unless File.directory?(xcframework_dir)
-            tarball = File.join(build_output_dir, build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            tarball = resolve_prebuilt_tarball(info, product_name, build_flavor, pod_name)
             if File.exist?(tarball)
               Pod::UI.info "#{'[Expo-precompiled] '.blue}Extracting #{product_name}.xcframework (cache miss)"
               system("tar", "xzf", tarball, "-C", pod_dir)
@@ -1229,23 +1278,18 @@ module Expo
         scan_external_configs(repo_root)
       end
 
-      # Scans node_modules for spm.config.json files in standalone projects.
-      # Used when EXPO_PRECOMPILED_MODULES_PATH is set but no monorepo root is found.
+      # Locates spm.config.json for internal Expo modules in standalone projects
+      # (no monorepo root). Uses resolved podspec dirs so non-flat layouts work.
       def scan_node_modules_configs(project_root)
-        node_modules = File.join(project_root, 'node_modules')
-        return unless File.directory?(node_modules)
-
-        # Internal Expo packages: node_modules/*/spm.config.json
-        Dir.glob(File.join(node_modules, '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :internal, project_root)
+        resolved_modules.each do |mod|
+          (mod['pods'] || []).each do |pod|
+            next unless pod['podspecDir']
+            # Convention: podspecDir is `<package>/ios`; spm.config.json lives at `<package>/`.
+            config_path = File.join(File.dirname(pod['podspecDir']), 'spm.config.json')
+            process_spm_config(config_path, :internal, project_root) if File.exist?(config_path)
+          end
         end
 
-        # Internal Expo scoped packages: node_modules/@scope/*/spm.config.json
-        Dir.glob(File.join(node_modules, '@*', '*', 'spm.config.json')).each do |config_path|
-          process_spm_config(config_path, :internal, project_root)
-        end
-
-        # External 3rd-party packages: bundled in external-configs/ios/
         scan_external_configs(project_root)
       end
 
@@ -1253,44 +1297,45 @@ module Expo
       # (e.g. react-native-screens, react-native-svg) that don't ship their own spm.config.json.
       # Shared by both monorepo and standalone project paths.
       #
-      # @param effective_root [String] The project or repo root used to locate node_modules
+      # @param effective_root [String] The project or repo root (used to compute the default build output dir)
       def scan_external_configs(effective_root)
         external_configs_dir = File.join(__dir__, '..', '..', 'external-configs', 'ios')
         return unless File.directory?(external_configs_dir)
 
-        node_modules = File.join(effective_root, 'node_modules')
-
         # Non-scoped: external-configs/ios/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '*', 'spm.config.json')).each do |config_path|
           npm_package = File.basename(File.dirname(config_path))
-          process_external_config(config_path, npm_package, node_modules, effective_root)
+          process_external_config(config_path, npm_package, effective_root)
         end
 
         # Scoped: external-configs/ios/@scope/*/spm.config.json
         Dir.glob(File.join(external_configs_dir, '@*', '*', 'spm.config.json')).each do |config_path|
           rel = config_path.sub("#{external_configs_dir}/", '')
           npm_package = File.dirname(rel) # e.g. "@shopify/react-native-skia"
-          process_external_config(config_path, npm_package, node_modules, effective_root)
+          process_external_config(config_path, npm_package, effective_root)
         end
       end
 
       # Processes a single external spm.config.json for a 3rd-party package.
-      def process_external_config(config_path, npm_package, node_modules, effective_root)
+      def process_external_config(config_path, npm_package, effective_root)
         config = JSON.parse(File.read(config_path))
         products = config['products'] || []
-        package_root = File.join(node_modules, npm_package)
 
-        # Only process if the package is actually installed
-        return unless File.directory?(package_root)
+        # Resolve via rncli autolinking so we use real node resolution (handles pnpm,
+        # yarn resolutions/PnP, aliased specifiers). Skip if the package isn't installed.
+        dep = react_native_config.dig('dependencies', npm_package)
+        return unless dep
 
-        # Prefer codegenConfig.name from the installed package.json
+        package_root = dep['root']
+        pkg_version = dep.dig('platforms', 'ios', 'version')
+
+        # codegenConfig.name isn't surfaced by rncli; read it from package.json.
         installed_codegen_name = nil
-        pkg_version = nil
         pkg_json_path = File.join(package_root, 'package.json')
         if File.exist?(pkg_json_path)
           pkg_json = JSON.parse(File.read(pkg_json_path))
           installed_codegen_name = pkg_json.dig('codegenConfig', 'name')
-          pkg_version = pkg_json['version']
+          pkg_version ||= pkg_json['version']
         end
 
         base_dir = custom_modules_path || File.join(effective_root, 'packages', 'precompile', PRECOMPILE_BUILD_DIR)
@@ -1331,6 +1376,7 @@ module Expo
             .map { |t| { name: t['name'], path: t['path'] } }
 
           spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+          spm_dependency_versions = spm_package_versions(product['spmPackages'])
 
           @pod_lookup_map[pod_name] = {
             type: :external,
@@ -1342,11 +1388,21 @@ module Expo
             product_name: product_name,
             targets: targets,
             spm_dependency_frameworks: spm_dependency_frameworks,
+            spm_dependency_versions: spm_dependency_versions,
+            prebuilt_dependency_pods: prebuilt_dependency_pods(product['externalDependencies']),
             autolink_when: product['autolinkWhen']
           }
         end
       rescue JSON::ParserError, StandardError => e
         Pod::UI.warn "[Expo-precompiled] Failed to read external config at #{config_path}: #{e.message}"
+      end
+
+      # Returns { productName => versionString } from a spm.config.json spmPackages array.
+      def spm_package_versions(spm_packages)
+        (spm_packages || []).each_with_object({}) do |pkg, h|
+          version = pkg['version'].is_a?(Hash) ? pkg['version']['exact'] : pkg['version']
+          h[pkg['productName']] = version if pkg['productName'] && version
+        end
       end
 
       # Processes a single spm.config.json file and adds entries to @pod_lookup_map.
@@ -1402,6 +1458,7 @@ module Expo
           .map { |t| { name: t['name'], path: t['path'] } }
 
         spm_dependency_frameworks = (product['spmPackages'] || []).map { |pkg| pkg['productName'] }.compact
+        spm_dependency_versions = spm_package_versions(product['spmPackages'])
 
         {
           type: type,
@@ -1413,8 +1470,29 @@ module Expo
           product_name: product_name,
           targets: targets,
           spm_dependency_frameworks: spm_dependency_frameworks,
+          spm_dependency_versions: spm_dependency_versions,
+          prebuilt_dependency_pods: prebuilt_dependency_pods(product['externalDependencies']),
           autolink_when: product['autolinkWhen']
         }
+      end
+
+      # Returns local Expo product dependencies whose prebuilt availability must
+      # match this product's availability. Runtime deps like React/Hermes are not
+      # encoded as package/product strings and are ignored here.
+      def prebuilt_dependency_pods(external_dependencies)
+        (external_dependencies || []).filter_map do |dep|
+          next unless dep.is_a?(String) && dep.include?('/')
+
+          parts = dep.split('/')
+          is_scoped = parts[0].start_with?('@')
+          package_name = is_scoped ? "#{parts[0]}/#{parts[1]}" : parts[0]
+          product_name = is_scoped ? parts[2] : parts[1]
+
+          next unless package_name&.start_with?('expo-', '@expo/')
+          next if CUSTOM_XCFRAMEWORK_DEPENDENCIES.include?(product_name)
+
+          product_name
+        end.uniq
       end
 
       # Resolves the codegen module name. For external packages, prefers codegenConfig.name
@@ -1495,6 +1573,16 @@ module Expo
         nil
       end
 
+      # Invokes `expo-modules-autolinking <subcommand> --json` and parses the output.
+      # Used by `react_native_config` and `resolved_modules` above.
+      def invoke_autolinking(subcommand, platform:)
+        args = ['node', '--no-warnings', '--eval', "require('expo/bin/autolinking')",
+                'expo-modules-autolinking', subcommand, '--platform', platform, '--json']
+        JSON.parse(IO.popen(args, &:read))
+      rescue => error
+        raise "Failed to invoke `expo-modules-autolinking #{subcommand}`: #{error}"
+      end
+
       # ──────────────────────────────────────────────────────────────────────
       # Helpers: bundled frameworks
       # ──────────────────────────────────────────────────────────────────────
@@ -1530,7 +1618,13 @@ module Expo
         results = []
         pod_lookup_map.each do |pod_name, info|
           next unless info[:type] == :external
-          next unless has_prebuilt_xcframework?(pod_name)
+
+          unless has_prebuilt_xcframework?(pod_name)
+            product_name = info[:product_name] || pod_name
+            expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
+            Pod::UI.warn "[Expo-precompiled] #{pod_name}: prebuilt xcframework not found. Expected tarball at #{expected}"
+            next
+          end
 
           podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
           next unless File.exist?(podspec_file)
@@ -1570,11 +1664,15 @@ module Expo
       # Helpers: version resolution for 3rd-party prebuild versioning
       # ──────────────────────────────────────────────────────────────────────
 
-      # Returns the installed React Native version from node_modules.
+      # RN package path, as resolved by rncli (handles pnpm workspaces correctly).
+      def react_native_path
+        react_native_config['reactNativePath']
+      end
+
       def react_native_version
         @react_native_version ||= begin
-          rn_pkg = File.join(find_node_modules_dir, 'react-native', 'package.json')
-          File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
+          rn_pkg = react_native_path && File.join(react_native_path, 'package.json')
+          rn_pkg && File.exist?(rn_pkg) ? JSON.parse(File.read(rn_pkg))['version'] : nil
         end
       end
 
@@ -1582,37 +1680,21 @@ module Expo
       # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
       def hermes_version
         @hermes_version ||= begin
-          rn_path = File.join(find_node_modules_dir, 'react-native')
-          is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
-          version = nil
+          rn_path = react_native_path
+          if rn_path
+            is_v1 = ENV['RCT_HERMES_V1_ENABLED'] == '1'
+            props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
+            version = File.exist?(props_path) ?
+              parse_version_properties(props_path)[is_v1 ? 'HERMES_V1_VERSION_NAME' : 'HERMES_VERSION_NAME'] : nil
 
-          # Read from version.properties (primary source)
-          props_path = File.join(rn_path, 'sdks', 'hermes-engine', 'version.properties')
-          if File.exist?(props_path)
-            props = parse_version_properties(props_path)
-            version = is_v1 ? props['HERMES_V1_VERSION_NAME'] : props['HERMES_VERSION_NAME']
-          end
+            # Fallback to tag files
+            unless version
+              tag_path = File.join(rn_path, 'sdks', is_v1 ? '.hermesv1version' : '.hermesversion')
+              version = File.read(tag_path).strip if File.exist?(tag_path)
+            end
 
-          # Fallback to tag files
-          unless version
-            tag_file = is_v1 ? '.hermesv1version' : '.hermesversion'
-            tag_path = File.join(rn_path, 'sdks', tag_file)
-            version = File.read(tag_path).strip if File.exist?(tag_path)
-          end
-
-          # Normalize: strip "hermes-" prefix and "v" prefix
-          version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
-        end
-      end
-
-      # Returns the node_modules directory for the project.
-      def find_node_modules_dir
-        @node_modules_dir ||= begin
-          repo_root = find_repo_root
-          if repo_root
-            File.join(repo_root, 'node_modules')
-          else
-            File.join(File.dirname(Dir.pwd), 'node_modules')
+            # Normalize: strip "hermes-" prefix and "v" prefix
+            version&.gsub(/^hermes-?/i, '')&.gsub(/^v/i, '')&.strip
           end
         end
       end
@@ -1646,16 +1728,108 @@ module Expo
       # Resolves prebuilt xcframework info for a pod.
       # @return [Array, nil] [pod_info, product_name, tarball_path] or nil
       def resolve_prebuilt_info(pod_name)
-        return nil if build_from_source?(pod_name)
+        resolution = resolve_prebuilt_status(pod_name)
+        resolution[:available] ? resolution[:resolved] : nil
+      end
 
+      # Resolves only this pod's own prebuilt artifact without checking parent dependencies.
+      # @return [Hash] Availability information with :available, :resolved, :reason, and :path.
+      def resolve_own_prebuilt_info(pod_name)
         pod_info = pod_lookup_map[pod_name]
-        return nil unless pod_info
+        return { available: false, reason: :missing_config } unless pod_info
 
         product_name = pod_info[:product_name] || pod_name
-        tarball = File.join(pod_info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
-        return nil unless File.exist?(tarball)
+        tarball = resolve_prebuilt_tarball(pod_info, product_name, build_flavor, pod_name)
+        return { available: false, reason: :missing_tarball, path: tarball } unless File.exist?(tarball)
 
-        [pod_info, product_name, tarball]
+        { available: true, resolved: [pod_info, product_name, tarball] }
+      end
+
+      # A pod may use a prebuilt xcframework only when its own prebuilt artifact
+      # exists and every local Expo dependency also uses prebuilt.
+      def resolve_prebuilt_status(pod_name, visiting = Set.new)
+        return { available: false, reason: :build_from_source } if build_from_source?(pod_name)
+        return { available: true } if visiting.include?(pod_name)
+
+        own_resolution = resolve_own_prebuilt_info(pod_name)
+        return own_resolution unless own_resolution[:available]
+
+        pod_info = own_resolution[:resolved][0]
+        next_visiting = visiting.dup.add(pod_name)
+
+        (pod_info[:prebuilt_dependency_pods] || []).each do |dep_name|
+          dep_resolution = resolve_prebuilt_status(dep_name, next_visiting)
+          next if dep_resolution[:available]
+
+          return {
+            available: false,
+            reason: :dependency_unavailable,
+            dependency: dep_name,
+            dependency_reason: dep_resolution[:reason],
+            dependency_path: dep_resolution[:path]
+          }
+        end
+
+        own_resolution
+      end
+
+      def resolve_prebuilt_tarball(pod_info, product_name, flavor, pod_name = nil)
+        tarball = File.join(pod_info[:build_output_dir], flavor, 'xcframeworks', "#{product_name}.tar.gz")
+        return tarball if File.exist?(tarball)
+
+        base_url = external_modules_base_url
+        return tarball unless pod_info[:type] == :external && base_url
+
+        output_prefix = File.join(pod_info[:npm_package], 'output')
+        idx = pod_info[:build_output_dir].rindex(output_prefix)
+        relative_path = [
+          (idx ? pod_info[:build_output_dir][idx..] : output_prefix),
+          flavor,
+          'xcframeworks',
+          "#{product_name}.tar.gz"
+        ].join('/')
+        remote_url = "#{base_url.chomp('/')}/#{relative_path}"
+
+        download_remote_tarball(remote_url, tarball, pod_name || product_name, flavor)
+      end
+
+      def download_remote_tarball(remote_url, destination_path, pod_name, flavor)
+        FileUtils.mkdir_p(File.dirname(destination_path))
+        tmp_path = "#{destination_path}.download-#{Process.pid}"
+
+        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloading #{flavor} artifact from #{remote_url}"
+
+        download_to_file(remote_url, tmp_path)
+        FileUtils.mv(tmp_path, destination_path)
+        destination_path
+      rescue => e
+        FileUtils.rm_f(tmp_path) if tmp_path && File.exist?(tmp_path)
+        Pod::UI.warn "[Expo-precompiled] #{pod_name}: failed to download #{flavor} artifact from #{remote_url}: #{e.message}"
+        nil
+      end
+
+      def download_to_file(url, destination_path, limit = 5)
+        raise 'Too many HTTP redirects' if limit <= 0
+
+        uri = URI.parse(url)
+
+        Net::HTTP.start(uri.host, uri.port, use_ssl: uri.is_a?(URI::HTTPS), open_timeout: 10, read_timeout: 120) do |http|
+          request = Net::HTTP::Get.new(uri.request_uri)
+
+          http.request(request) do |response|
+            case response
+            when Net::HTTPSuccess
+              File.open(destination_path, 'wb') do |file|
+                response.read_body { |chunk| file.write(chunk) }
+              end
+            when Net::HTTPRedirection
+              redirect_url = URI.join(uri.to_s, response['location']).to_s
+              return download_to_file(redirect_url, destination_path, limit - 1)
+            else
+              raise "HTTP #{response.code}"
+            end
+          end
+        end
       end
 
       # ──────────────────────────────────────────────────────────────────────
@@ -1868,10 +2042,27 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Records the linking status for a pod (only once per pod to avoid duplicates).
-      def log_linking_status(pod_name, found, path)
+      def log_linking_status(pod_name, found, info = nil)
         @linked_pods ||= {}
         return if @linked_pods[pod_name]
-        @linked_pods[pod_name] = { found: found, path: path, spm_deps: [] }
+        status = info.is_a?(Hash) ? info.dup : { path: info }
+        @linked_pods[pod_name] = status.merge(found: found, spm_deps: [])
+      end
+
+      def format_prebuilt_unavailable_reason(info)
+        case info[:reason]
+        when :build_from_source
+          'configured by buildFromSource'
+        when :missing_config
+          'prebuilt config not found'
+        when :missing_tarball
+          'prebuilt tarball not found'
+        when :dependency_unavailable
+          reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
+          "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
+        else
+          info[:path] || 'prebuilt unavailable'
+        end
       end
 
       # Records an SPM dependency xcframework bundled inside a precompiled pod.

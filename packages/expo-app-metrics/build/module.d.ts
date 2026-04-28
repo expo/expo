@@ -1,5 +1,6 @@
+import type { MetricAttributes } from './types';
 declare const _default: {
-    markInteractive(): void;
+    markInteractive(attributes?: MetricAttributes): void;
     markFirstRender(): void;
     getStoredEntries(): Promise<import("./types").Metric[]>;
     clearStoredEntries(): Promise<void>;

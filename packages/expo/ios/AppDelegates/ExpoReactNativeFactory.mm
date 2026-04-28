@@ -12,7 +12,7 @@
 #import "ExpoModulesCore-Swift.h"
 #endif
 
-#import <ExpoModulesCore/EXRuntime.h>
+
 #if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore/ExpoModulesCore-Swift.h>
 #else
@@ -27,12 +27,12 @@
 #pragma mark - RCTHostDelegate
 
 // [JS thread]
-- (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime
+- (void)host:(nonnull RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   _appContext = [[EXAppContext alloc] init];
 
   // Inject and decorate the `global.expo` object
-  _appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
+  [_appContext setRuntime:&runtime];
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   

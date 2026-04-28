@@ -1,4 +1,4 @@
-import { Text as RNText, type TextStyle } from 'react-native';
+import { Text as RNText, useColorScheme, type TextStyle } from 'react-native';
 
 import type { TextProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
@@ -20,8 +20,9 @@ export function Text({
 }: TextProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
-  const mergedStyle: TextStyle = {
-    ...style,
+  const isDarkScheme = useColorScheme() === 'dark';
+
+  const textStyleOverrides: TextStyle = {
     ...(textStyle?.fontSize != null ? { fontSize: textStyle.fontSize } : undefined),
     ...(textStyle?.fontWeight != null ? { fontWeight: textStyle.fontWeight } : undefined),
     ...(textStyle?.fontFamily != null ? { fontFamily: textStyle.fontFamily } : undefined),
@@ -29,13 +30,17 @@ export function Text({
     ...(textStyle?.lineHeight != null ? { lineHeight: textStyle.lineHeight } : undefined),
     ...(textStyle?.letterSpacing != null ? { letterSpacing: textStyle.letterSpacing } : undefined),
     ...(textStyle?.textAlign != null ? { textAlign: textStyle.textAlign } : undefined),
-    ...(hidden ? { display: 'none' } : undefined),
-    ...(disabled ? { opacity: 0.5 } : undefined),
   };
 
   return (
     <RNText
-      style={mergedStyle}
+      style={[
+        isDarkScheme ? textDarkStyle : textLightStyle,
+        style,
+        textStyleOverrides,
+        hidden ? hiddenStyle : null,
+        disabled ? disabledStyle : null,
+      ]}
       numberOfLines={numberOfLines}
       onPress={onPress}
       disabled={disabled}
@@ -44,3 +49,21 @@ export function Text({
     </RNText>
   );
 }
+
+const textLightStyle: TextStyle = {
+  color: '#000000',
+};
+
+const textDarkStyle: TextStyle = {
+  color: '#FFFFFF',
+};
+
+const hiddenStyle: TextStyle = {
+  display: 'none',
+};
+
+const disabledStyle: TextStyle = {
+  opacity: 0.5,
+};
+
+export * from './types';

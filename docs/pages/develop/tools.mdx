@@ -65,7 +65,7 @@ You can also use `npx expo-doctor --help` to display usage information.
 
 ## Orbit
 
-Orbit is a macOS and Windows app that enables:
+Orbit is a macOS, Windows, and Linux app that enables:
 
 - Install and launch builds from EAS on physical devices and emulators.
 - Install and launch updates from EAS on Android Emulators or iOS Simulators.
@@ -91,15 +91,19 @@ If you want Orbit to start when you log in automatically, click on the Orbit ico
 
 <Tab label="Windows">
 
-> **important** Orbit for Windows is in [beta](/more/release-statuses/#beta) and is only compatible with x64 and x86 machines. Compatibility for other architectures will be added in the future.
-
 You can download Orbit for Windows directly from the [GitHub releases](https://github.com/expo/orbit/releases).
+
+</Tab>
+
+<Tab label="Linux">
+
+You can download Orbit for Linux directly from the [GitHub releases](https://github.com/expo/orbit/releases). Both `.deb` (Debian and Ubuntu) and `.rpm` (Fedora and RHEL) packages are available.
 
 </Tab>
 
 </Tabs>
 
-> **info** Orbit relies on the Android SDK on both macOS and Windows and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).
+> **info** Orbit relies on the Android SDK on macOS, Windows, and Linux, and `xcrun` for device management only on macOS, which requires setting up both [Android Studio](/workflow/android-studio-emulator/) and [Xcode](/workflow/ios-simulator/).
 
 {/* TODO: (@aman) to add update https://docs.expo.dev/build/orbit/ with instructions on how to actually use Expo Orbit with EAS Build, add link to https://docs.expo.dev/review/with-orbit/ to add the following section */}
 {/* ### Usage */}

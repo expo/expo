@@ -99,9 +99,22 @@ export interface Metric {
   params?: Record<string, unknown>;
 }
 
+export type MetricAttributes = {
+  /**
+   * Name of the route associated with the metric. Some metrics populate this
+   * with a sensible default when omitted — for example, the TTI metric falls
+   * back to the initial route name detected from the router.
+   */
+  routeName?: string;
+  /**
+   * Custom parameters to attach to the metric.
+   */
+  params?: Record<string, unknown>;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
-  markInteractive(routeName?: string): void;
+  markInteractive(attributes?: MetricAttributes): void;
   getStoredEntries(): Promise<Metric[]>;
   clearStoredEntries(): Promise<void>;
 

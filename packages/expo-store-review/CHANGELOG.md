@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [iOS] Migrated `requestReview` to the new `@MainActor` async-function API. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+
 ## 55.0.8 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

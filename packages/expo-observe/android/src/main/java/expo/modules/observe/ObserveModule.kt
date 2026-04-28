@@ -12,7 +12,9 @@ import expo.modules.kotlin.records.Record
 
 class Config(
   @Field val environment: String? = null,
-  @Field val dispatchingEnabled: Boolean? = null
+  @Field val dispatchingEnabled: Boolean? = null,
+  @Field val dispatchInDebug: Boolean? = null,
+  @Field val sampleRate: Double? = null
 ) : Record
 
 class ObserveModule : Module() {
@@ -45,7 +47,14 @@ class ObserveModule : Module() {
       AsyncFunction("dispatchEvents") Coroutine { -> observabilityManager.dispatchUnsentMetrics() }
 
       Function("configure") { config: Config ->
-        config.dispatchingEnabled?.let { ObservePreferences.setDispatchingEnabled(context, it) }
+        ObservePreferences.setConfig(
+          context,
+          PersistedConfig(
+            dispatchingEnabled = config.dispatchingEnabled,
+            dispatchInDebug = config.dispatchInDebug,
+            sampleRate = config.sampleRate
+          )
+        )
         config.environment?.let { appMetricsModule.setEnvironment(it) }
       }
     }

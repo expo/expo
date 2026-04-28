@@ -6,14 +6,19 @@ description: Learn how to install multiple variants of an app on the same device
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), installing these build variants simultaneously on the same device is common. This allows working in development, previewing the next version of the app, and running the production version on a device without needing to uninstall and reinstall the app.
 
 This guide provides the steps required to configure multiple (development and production) variants to install and use them on the same device.
 
-## Prerequisites
-
-To have multiple variants of an app installed on your device, each variant must have a unique [Application ID (Android)](/versions/latest/config/app/#package) or [Bundle Identifier (iOS)](/versions/latest/config/app/#bundleidentifier).
+<Prerequisites>
+  <Requirement title="Unique Application ID or Bundle Identifier per variant">
+    To have multiple variants of an app installed on your device, each variant must have a unique
+    [Application ID (Android)](/versions/latest/config/app/#package) or [Bundle Identifier
+    (iOS)](/versions/latest/config/app/#bundleidentifier).
+  </Requirement>
+</Prerequisites>
 
 ## Configure development and production variants
 

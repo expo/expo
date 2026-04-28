@@ -4,6 +4,7 @@ description: Learn how to enable iOS Developer Mode setting on iOS 16 and above 
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 
 > This does not apply to builds signed using enterprise provisioning or to any builds installed on an iOS Simulator.
@@ -15,9 +16,13 @@ There are two ways you can enable Developer Mode on your device:
 - Directly on an iOS device
 - By connecting an iOS device with a Mac that has Xcode installed
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="A device running iOS 16 or later">
+    Developer Mode is only required on devices running iOS 16 and later.
+  </Requirement>
+</Prerequisites>
 
-The instructions specified below need to be followed once per device.
+The instructions below need to be followed only once per device.
 
 ## Enable Developer Mode
 

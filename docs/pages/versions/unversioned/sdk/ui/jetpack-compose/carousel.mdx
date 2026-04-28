@@ -11,6 +11,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 Expo UI provides three carousel components matching the official Jetpack Compose [Carousel](https://developer.android.com/develop/ui/compose/components/carousel) API: `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel`.
 
+> **Note:** Carousel is a horizontally scrollable component, so the parent `Host` must provide a finite width on the scroll axis. Use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width). See [Match contents in Host reference](host/#match-contents) for details.
+
 ## Installation
 
 <APIInstallSection />
@@ -29,7 +31,7 @@ export default function CenteredHeroExample() {
   const colors = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
 
   return (
-    <Host matchContents>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <HorizontalCenteredHeroCarousel itemSpacing={8}>
         {colors.map((color, index) => (
           <Box
@@ -57,7 +59,7 @@ export default function MultiBrowseExample() {
   const colors = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
 
   return (
-    <Host matchContents>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <HorizontalMultiBrowseCarousel
         preferredItemWidth={200}
         itemSpacing={8}
@@ -88,7 +90,7 @@ export default function UncontainedExample() {
   const items = ['Photo 1', 'Photo 2', 'Photo 3', 'Photo 4', 'Photo 5'];
 
   return (
-    <Host matchContents>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <HorizontalUncontainedCarousel
         itemWidth={160}
         itemSpacing={12}

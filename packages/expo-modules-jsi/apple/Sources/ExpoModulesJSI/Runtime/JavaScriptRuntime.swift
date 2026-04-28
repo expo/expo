@@ -37,11 +37,6 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    */
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
-  public init(provider: JavaScriptRuntimeProvider) {
-    self.pointee = provider.consume()
-    self.scheduler = expo.RuntimeScheduler(pointee)
-  }
-
   /**
    Creates a runtime from the JSI runtime.
    */
@@ -154,7 +149,10 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     }
 
     func deallocate(context: UnsafeMutableRawPointer) {
-      Unmanaged<HostObjectContext>.fromOpaque(context).release()
+      let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
+      JavaScriptActor.assumeIsolated {
+        context.dealloc()
+      }
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc)).toOpaque()
@@ -288,16 +286,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     return createFunction(name) { this, arguments in
       let promise = JavaScriptPromise(self)
 
-      // Need to switch to reference semantics as Task escapes the closure (consumes on capture).
       // Arguments buffer needs to be copied to ensure safe async access.
-      let thisRef = this.ref()
       let argumentsRef = arguments.copy().ref()
 
       // Switch to asynchronous context.
       self.schedule(taskName: "[JS] Async function \(name)") {
         // Invoke the asynchronous function and resolve/reject the promise.
         do {
-          let result = try await function(thisRef.take(), argumentsRef.take())
+          let result = try await function(this, argumentsRef.take())
           promise.resolve(result)
         } catch {
           promise.reject(error)
@@ -310,6 +306,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   // MARK: - Runtime execution
+
+  /**
+   Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
+   Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
+   */
+  public var supportsAsyncScheduling: Bool {
+    return scheduler.supportsAsyncScheduling()
+  }
 
   /**
    Schedules a closure to be executed with granted synchronized access to the runtime.
@@ -387,7 +391,24 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Asynchronously executes a closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   */
+  public func execute<R: Sendable>(
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
+  ) async throws -> sending R {
+    return try await withUnsafeThrowingContinuation { continuation in
+      scheduler.scheduleTask(.ImmediatePriority) {
+        do {
+          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
+        } catch {
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  /**
+   Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
    */
   public func execute<R: Sendable>(
     taskName: String? = "[JS] runtime.execute (async \(#function))",

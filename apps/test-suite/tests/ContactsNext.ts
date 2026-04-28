@@ -6,9 +6,19 @@ import {
   Group,
   Container,
   ContactsSortOrder,
+  addContactsChangeListener,
 } from 'expo-contacts/next';
 import { Paths, File } from 'expo-file-system';
 import { Platform } from 'react-native';
+
+function timeoutWrapper(fn: () => void, time: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      fn();
+      resolve();
+    }, time);
+  });
+}
 
 export const name = 'Contacts@Next';
 
@@ -2221,4 +2231,50 @@ export async function test(t) {
       });
     });
   }
+
+  t.describe('Listeners', () => {
+    t.it('addContactsChangeListener fires when contact is created', async () => {
+      const spy = t.jasmine.createSpy('create spy');
+      const subscription = addContactsChangeListener(() => {
+        spy();
+      });
+
+      const newContact = await Contact.create({
+        givenName: `Listener`,
+        familyName: `Test`,
+      });
+      contacts.push(newContact);
+
+      await timeoutWrapper(() => {
+        t.expect(spy).toHaveBeenCalled();
+      }, 1000);
+      subscription.remove();
+    });
+
+    // On Android, contact deletion also triggers the listener, but with a significant delay.
+    if (Platform.OS === 'ios') {
+      t.it('addContactsChangeListener fires when contact is deleted', async () => {
+        const newContact = await Contact.create({ givenName: 'Listener', familyName: 'Delete' });
+
+        const spy = t.jasmine.createSpy('delete spy');
+        const subscription = addContactsChangeListener(spy);
+
+        await newContact.delete();
+
+        await timeoutWrapper(() => t.expect(spy).toHaveBeenCalled(), 1000);
+        subscription.remove();
+      });
+    }
+
+    t.it('removing subscription prevents listener from firing', async () => {
+      const spy = t.jasmine.createSpy('removed spy');
+      const subscription = addContactsChangeListener(spy);
+      subscription.remove();
+
+      const newContact = await Contact.create({ givenName: 'Listener', familyName: 'Removed' });
+      contacts.push(newContact);
+
+      await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), 1000);
+    });
+  });
 }

@@ -3,6 +3,7 @@ import { AppMetricsRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
 import * as DevMenu from 'expo-dev-menu';
+import ExpoObserve from 'expo-observe';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -64,6 +65,11 @@ function useLoaded() {
   }, []);
   return isLoaded;
 }
+
+ExpoObserve.configure({
+  dispatchingEnabled: true,
+  sampleRate: 0.9,
+});
 
 export default function Main() {
   React.useEffect(() => {

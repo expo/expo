@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Replaced the Objective-C++ JSI layer (`EXJavaScriptRuntime`, `EXJavaScriptObject`, `ExpoModulesHostObject`, `EXSharedObjectUtils`, etc.) with the new `ExpoModulesJSI` Swift package. Third-party native modules depending on these types must migrate to the new Swift-first API. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -21,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed prebuild dependencies for `ExpoModulesJSI` ([#45124](https://github.com/expo/expo/pull/45124) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fixed looking up the `EXConstants.bundle` from the main bundle to allow running with precompiled XCFrameworks. ([#44551](https://github.com/expo/expo/pull/44551) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fixed Constants.expoConfig returning null due to optional value wrapping in ConstantsProvider. ([#44550](https://github.com/expo/expo/pull/44550) by [@chrfalch](https://github.com/chrfalch))
@@ -38,11 +40,14 @@
 - [iOS] Fix finding EXConstants.bundle inside framework bundle for brownfield ([#44810](https://github.com/expo/expo/pull/44810) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Fix missing jsi headers when building static frameworks ([#44865](https://github.com/expo/expo/pull/44865) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Fixed runtime crash when missing `Host` component for SwiftUI or Jetpack Compose components. ([#44118](https://github.com/expo/expo/pull/44118) by [@kudo](https://github.com/kudo))
+- [iOS] Restore pre-ExpoModulesJSI `Record` conversion behavior by hydrating only declared fields, preserving `undefined` handling for object properties, and emitting typed records directly to JS. ([#45085](https://github.com/expo/expo/pull/45085) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
+- [iOS] Reduced per-call overhead of invoking native functions from JavaScript. ([#45093](https://github.com/expo/expo/pull/45093) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed precompile build failing on `SwiftUIVirtualViewSharedImpl+Private.h` leaking into the public module umbrella. ([#44993](https://github.com/expo/expo/pull/44993) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added explicit c++ linkage specifier to `ExpoModulesCore.podspec` to propagate to swift-only targets like Expo Widgets ([#44984](https://github.com/expo/expo/pull/44984) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Rewrote the core type system, definitions, `AppContext`, and worklets integration on top of the new `ExpoModulesJSI` package. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Extracted ObjC protocols (`EXAppContextProtocol`, `EXReactDelegateProtocol`, `EXAppContextFactoryRegistry`) for cross-xcframework module boundaries. Refactored legacy module registry, Fabric view headers, JSI layer, and podspecs for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add `ViewWrapper` protocol and `AnyContentViewProvider` for type-erased access to wrapped SwiftUI views. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Decoupled Worklets integration into separate podspec. ([#42971](https://github.com/expo/expo/pull/42971) by [@chrfalch](https://github.com/chrfalch))
@@ -58,6 +63,7 @@
 - Throwing error when converting invalid color array. ([#44734](https://github.com/expo/expo/pull/44734) by [@kudo](https://github.com/kudo))
 - [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
+- [Android] Improve performance of `PersistentFileLog`. ([#45058](https://github.com/expo/expo/pull/45058) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.12 — 2026-02-25
 

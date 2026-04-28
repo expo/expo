@@ -1,13 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { Command, Option } from 'commander';
-import ejs from 'ejs';
 import fs from 'node:fs';
-import os from 'node:os';
 import path from 'node:path';
 import prompts from 'prompts';
 import validateNpmPackage from 'validate-npm-package-name';
 
+import { addPlatformSupport } from './addPlatformSupport';
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
 import { ALL_FEATURES, resolveFeatures } from './features';
@@ -29,21 +28,21 @@ import {
   getSubstitutionDataPrompts,
   type Platform,
 } from './prompts';
-import {
-  buildAppSnippets,
-  buildModuleSnippets,
-  buildViewSnippets,
-  buildWebModuleSnippets,
-  copyFileSnippets,
-} from './snippets';
+import { copyFileSnippets } from './snippets';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
+import {
+  buildAugmentedData,
+  copyTemplateFiles,
+  downloadPackageAsync,
+  handleSuffix,
+  slugToAndroidPackage,
+} from './templateUtils';
 import type { CommandOptions, Feature, LocalSubstitutionData, SubstitutionData } from './types';
 import { buildDefaultsWarning } from './utils/defaults';
-import { env } from './utils/env';
+import { isInteractive } from './utils/env';
 import { findGitHubEmail, findMyName } from './utils/git';
 import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 import { newStep } from './utils/ora';
-import { extractLocalTarball } from './utils/tar';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -51,59 +50,10 @@ const packageJson = require('../package.json');
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
 
-// Ignore some paths. Especially `package.json` as it is rendered
-// from `$package.json` file instead of the original one.
-const IGNORES_PATHS = [
-  '.DS_Store',
-  'build',
-  'node_modules',
-  'package.json',
-  '.npmignore',
-  '.gitignore',
-  'snippets',
-];
-
-// Files and top-level directories that only belong in standalone npm modules.
-// When generating a local module, these are skipped so the host project's tooling is used instead.
-const LOCAL_EXCLUDED_FILES = new Set([
-  '$package.json',
-  '$CHANGELOG.md',
-  '$.gitignore',
-  '$.npmignore',
-  '$.prettierrc',
-  'babel.config.js',
-  'eslint.config.cjs',
-  'tsconfig.json',
-  'README.md',
-  path.join('src', 'index.ts'),
-]);
-const LOCAL_EXCLUDED_DIRS = new Set(['example', 'internal']);
-
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
 const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
-
-/**
- * Determines if we're in an interactive environment.
- * Non-interactive when: CI=1/true or non-TTY stdin.
- */
-function isInteractive(): boolean {
-  const ci = process.env.CI;
-  if (ci === '1' || ci?.toLowerCase() === 'true') {
-    return false;
-  }
-  // Check for Expo's own non-interactive flag, used across expo-module-scripts and @expo/cli
-  // to force non-interactive mode in sub-processes (e.g. during `prepare` or `prepublishOnly`)
-  if (process.env.EXPO_NONINTERACTIVE) {
-    return false;
-  }
-  // Check for TTY
-  if (!process.stdin.isTTY) {
-    return false;
-  }
-  return true;
-}
 
 /**
  * Converts a slug to a native module name (PascalCase).
@@ -113,17 +63,6 @@ function slugToModuleName(slug: string): string {
     .replace(/^@/, '')
     .replace(/^./, (match) => match.toUpperCase())
     .replace(/\W+(\w)/g, (_, p1) => p1.toUpperCase());
-}
-
-/**
- * Converts a slug to an Android package name.
- */
-function slugToAndroidPackage(slug: string): string {
-  const namespace = slug
-    .replace(/\W/g, '')
-    .replace(/^(expo|reactnative)/, '')
-    .toLowerCase();
-  return `expo.modules.${namespace}`;
 }
 
 /**
@@ -486,158 +425,6 @@ async function resolvePackageManagerAsync(
 }
 
 /**
- * Recursively scans for the files within the directory. Returned paths are relative to the `root` path.
- */
-async function getFilesAsync(root: string, dir: string | null = null): Promise<string[]> {
-  const files: string[] = [];
-  const baseDir = dir ? path.join(root, dir) : root;
-
-  for (const file of await fs.promises.readdir(baseDir)) {
-    const relativePath = dir ? path.join(dir, file) : file;
-
-    if (IGNORES_PATHS.includes(relativePath) || IGNORES_PATHS.includes(file)) {
-      continue;
-    }
-
-    const fullPath = path.join(baseDir, file);
-    const stat = await fs.promises.lstat(fullPath);
-    if (stat.isDirectory()) {
-      files.push(...(await getFilesAsync(root, relativePath)));
-    } else {
-      files.push(relativePath);
-    }
-  }
-  return files;
-}
-
-/**
- * Downloads a package tarball using `npm pack` and returns the filename.
- */
-async function npmPackAsync(packageName: string, cwd: string): Promise<string> {
-  const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm';
-  const cmd = ['pack', packageName, '--json'];
-  const cmdString = `${npm} ${cmd.join(' ')}`;
-  debug('Run:', cmdString, `(cwd: ${cwd})`);
-
-  let results: string;
-  try {
-    results = (await spawnAsync(npm, cmd, { cwd })).stdout?.trim();
-  } catch (error: any) {
-    if (error?.stderr?.match(/npm ERR! code E404/)) {
-      const pkg =
-        error.stderr.match(/npm ERR! 404\s+'(.*)' is not in this registry\./)?.[1] ?? error.stderr;
-      throw new Error(`NPM package not found: ` + pkg);
-    }
-    throw error;
-  }
-
-  if (!results) {
-    throw new Error(`No output from "${cmdString}"`);
-  }
-
-  try {
-    const json = JSON.parse(results);
-    if (!Array.isArray(json) || !json[0]?.filename) {
-      throw new Error(`Invalid response from npm: ${results}`);
-    }
-    return json[0].filename;
-  } catch (error: any) {
-    throw new Error(
-      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
-    );
-  }
-}
-
-/**
- * Gets expo SDK version major from the local package.json.
- */
-async function getLocalSdkMajorVersion(): Promise<string | null> {
-  const path = require.resolve('expo/package.json', { paths: [process.cwd()] });
-  if (!path) {
-    return null;
-  }
-  const { version } = require(path) ?? {};
-  return version?.split('.')[0] ?? null;
-}
-
-/**
- * Selects correct version of the template based on the SDK version for local modules and EXPO_BETA flag.
- */
-async function getTemplateVersion(isLocal: boolean) {
-  if (env.EXPO_BETA) {
-    return 'next';
-  }
-  if (!isLocal) {
-    return 'latest';
-  }
-  try {
-    const sdkVersionMajor = await getLocalSdkMajorVersion();
-    return sdkVersionMajor ? `sdk-${sdkVersionMajor}` : 'latest';
-  } catch {
-    console.log();
-    console.warn(
-      chalk.yellow(
-        "Couldn't determine the SDK version from the local project, using `latest` as the template version."
-      )
-    );
-    return 'latest';
-  }
-}
-
-/**
- * Downloads the template from NPM registry.
- */
-async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
-  return await newStep('Downloading module template from npm', async (step) => {
-    const templateVersion = await getTemplateVersion(isLocal);
-    const packageName = 'expo-module-template';
-    const tmpDir = path.join(os.tmpdir(), '.create-expo-module');
-
-    await fs.promises.mkdir(tmpDir, { recursive: true });
-
-    let filename: string;
-    try {
-      filename = await npmPackAsync(`${packageName}@${templateVersion}`, tmpDir);
-    } catch {
-      console.log();
-      console.warn(
-        chalk.yellow(
-          "Couldn't download the versioned template from npm, falling back to the latest version."
-        )
-      );
-      filename = await npmPackAsync(`${packageName}@latest`, tmpDir);
-    }
-
-    await extractLocalTarball({
-      filePath: path.join(tmpDir, filename),
-      dir: targetDir,
-    });
-
-    await fs.promises.rm(tmpDir, { recursive: true, force: true });
-
-    step.succeed('Downloaded module template from npm registry.');
-
-    return path.join(targetDir, 'package');
-  });
-}
-
-function handleSuffix(name: string, suffix: string): string {
-  if (name.endsWith(suffix)) {
-    return name;
-  }
-  return `${name}${suffix}`;
-}
-
-/**
- * Maps template top-level directory names to the platform name in `expo-module.config.json`.
- * Files under these directories are only copied when the corresponding platform is selected.
- */
-const TEMPLATE_DIR_TO_PLATFORM: Record<string, Platform> = {
-  ios: 'apple',
-  android: 'android',
-};
-
-/**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
 async function createModuleFromTemplate(
@@ -646,107 +433,13 @@ async function createModuleFromTemplate(
   data: SubstitutionData | LocalSubstitutionData
 ) {
   const snippetsDir = path.join(templatePath, 'snippets');
-  const features = data.project.features;
-
-  // Build view-level snippets first (used inside the View() block)
-  const [viewSnippetsSwift, viewSnippetsKt] = await Promise.all([
-    buildViewSnippets(snippetsDir, features, data, 'swift'),
-    buildViewSnippets(snippetsDir, features, data, 'kt'),
-  ]);
-
-  // Build module-level snippets, passing the view snippets for injection
-  const [moduleSnippetsSwift, moduleSnippetsKt] = await Promise.all([
-    buildModuleSnippets(snippetsDir, features, data, 'swift', viewSnippetsSwift),
-    buildModuleSnippets(snippetsDir, features, data, 'kt', viewSnippetsKt),
-  ]);
-
-  // Build web module snippets and helpers
-  const webEventImport = features.includes('Event')
-    ? `\nimport { ${data.project.moduleName}Events } from './${data.project.name}.types';\n`
-    : '';
-  const webEventType = features.includes('Event') ? `${data.project.moduleName}Events` : '{}';
-  const webModuleSnippets = await buildWebModuleSnippets(snippetsDir, features, data);
-
-  // Build combined module import line for App.tsx
-  const needsDefaultImport = features.some((f) =>
-    (['Constant', 'Function', 'AsyncFunction', 'Event'] as string[]).includes(f)
-  );
-  const moduleNamedImports: string[] = [];
-  if (features.includes('View')) moduleNamedImports.push(data.project.viewName);
-  if (features.includes('SharedObject'))
-    moduleNamedImports.push(`use${data.project.sharedObjectName}`);
-
-  let appModuleCombinedImport = '';
-  if (needsDefaultImport || moduleNamedImports.length > 0) {
-    const parts: string[] = [];
-    if (needsDefaultImport) parts.push(data.project.name);
-    if (moduleNamedImports.length > 0) parts.push(`{ ${moduleNamedImports.join(', ')} }`);
-    appModuleCombinedImport = `import ${parts.join(', ')} from '${data.project.slug}';\n`;
-  }
-
-  const [appReactImportSnippets, appExternalImportSnippets, appHookSnippets, appJSXSnippets] =
-    await Promise.all([
-      buildAppSnippets(snippetsDir, features, data, 'react-imports'),
-      buildAppSnippets(snippetsDir, features, data, 'external-imports'),
-      buildAppSnippets(snippetsDir, features, data, 'hooks'),
-      buildAppSnippets(snippetsDir, features, data, 'jsx'),
-    ]);
-
-  const augmentedData = {
-    ...data,
-    moduleSnippetsSwift,
-    moduleSnippetsKt,
-    viewSnippetsSwift,
-    viewSnippetsKt,
-    webEventImport,
-    webEventType,
-    webModuleSnippets,
-    appModuleCombinedImport,
-    appExternalImportSnippets,
-    appReactImportSnippets,
-    appHookSnippets,
-    appJSXSnippets,
-  };
-
-  const files = await getFilesAsync(templatePath);
-
-  for (const file of files) {
-    // Skip platform-specific directories when the platform was not selected.
-    const topLevelDir = file.split(path.sep)[0] ?? '';
-    const requiredPlatform = TEMPLATE_DIR_TO_PLATFORM[topLevelDir];
-    if (requiredPlatform && !data.project.platforms.includes(requiredPlatform)) {
-      continue;
-    }
-
-    // Skip standalone-only files and directories for local modules.
-    if (data.type === 'local') {
-      if (LOCAL_EXCLUDED_FILES.has(file) || LOCAL_EXCLUDED_DIRS.has(topLevelDir)) {
-        continue;
-      }
-    }
-
-    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), augmentedData, {
-      openDelimiter: '{',
-      closeDelimiter: '}',
-      escape: (value: string) => value.replace(/\./g, path.sep),
-    });
-    const fromPath = path.join(templatePath, file);
-    const toPath = path.join(targetPath, renderedRelativePath);
-    const template = await fs.promises.readFile(fromPath, 'utf8');
-    const renderedContent = ejs.render(template, augmentedData);
-
-    if (!fs.existsSync(path.dirname(toPath))) {
-      await fs.promises.mkdir(path.dirname(toPath), { recursive: true });
-    }
-    await fs.promises.writeFile(toPath, renderedContent, 'utf8');
-  }
-
-  await copyFileSnippets(
-    snippetsDir,
-    features,
-    augmentedData as SubstitutionData | LocalSubstitutionData,
-    targetPath
-  );
+  const augmentedData = await buildAugmentedData(snippetsDir, data);
+  await copyTemplateFiles(templatePath, targetPath, augmentedData, {
+    platforms: data.project.platforms,
+    platformsOnly: false,
+    moduleType: data.type,
+  });
+  await copyFileSnippets(snippetsDir, data.project.features, data, targetPath);
 }
 
 async function createGitRepositoryAsync(targetDir: string) {
@@ -1140,6 +833,8 @@ function printFurtherLocalInstructions(
 
 const program = new Command();
 
+program.enablePositionalOptions();
+
 program
   .name(packageJson.name)
   .version(packageJson.version)
@@ -1188,6 +883,27 @@ program
     ).choices([...PACKAGE_MANAGERS])
   )
   .action(main);
+
+program
+  .command('add-platform-support [path]')
+  .description(
+    'Add platform support to an existing Expo module. ' +
+      'For example, add Android to an iOS-only module. ' +
+      'Run from the module root, or pass the path as the first argument.'
+  )
+  .option(
+    '-p, --platform <platforms...>',
+    `Platforms to add. Available values: ${ALL_PLATFORMS.join(', ')}.`
+  )
+  .option(
+    '--features <features...>',
+    `Override best-effort feature detection. Values: ${ALL_FEATURES.join(', ')}.`
+  )
+  .option(
+    '-s, --source <source_dir>',
+    'Local path to the template. By default it downloads `expo-module-template` from NPM.'
+  )
+  .action(addPlatformSupport);
 
 program.hook('postAction', async () => {
   await getTelemetryClient().flush?.();

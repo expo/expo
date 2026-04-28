@@ -17,6 +17,7 @@
 - Make splash screen `backgroundColor` optional, defaulting to `#ffffff`. ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Removed unused `withAndroidSplashLegacyMainActivity` file. ([#43516](https://github.com/expo/expo/pull/43516) by [@zoontek](https://github.com/zoontek))
 - Removed deprecated plugins. ([#43918](https://github.com/expo/expo/pull/43918) by [@kudo](https://github.com/kudo))
+- [Internal] Drop peer dependency looping back to `expo` ([#45125](https://github.com/expo/expo/pull/45125) by [@kitten](https://github.com/kitten))
 
 ## 55.0.7 — 2026-02-25
 

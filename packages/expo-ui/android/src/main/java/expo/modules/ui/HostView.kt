@@ -1,8 +1,9 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
+
 package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -12,7 +13,8 @@ import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -22,6 +24,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.ComposeView
@@ -44,6 +47,8 @@ import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
+import expo.modules.ui.colors.isDynamicColorSupported
+import expo.modules.ui.colors.seedColorScheme
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -60,6 +65,7 @@ internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
 @OptimizedComposeProps
 internal data class HostProps(
   val colorScheme: MutableState<ExpoColorScheme?> = mutableStateOf(null),
+  val seedColor: MutableState<android.graphics.Color?> = mutableStateOf(null),
   val layoutDirection: MutableState<ExpoLayoutDirection> = mutableStateOf(ExpoLayoutDirection.LeftToRight),
   val useViewportSizeMeasurement: MutableState<Boolean> = mutableStateOf(false),
   val ignoreSafeAreaKeyboardInsets: MutableState<Boolean> = mutableStateOf(false),
@@ -72,7 +78,6 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
   DARK("dark");
 
   fun toColorScheme(context: Context): ColorScheme {
-    val isDynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     return when (this) {
       LIGHT -> if (isDynamicColorSupported) dynamicLightColorScheme(context) else lightColorScheme()
       DARK -> if (isDynamicColorSupported) dynamicDarkColorScheme(context) else darkColorScheme()
@@ -81,7 +86,6 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 
   companion object {
     fun defaultColorScheme(context: Context, isSystemInDarkTheme: Boolean): ColorScheme {
-      val isDynamicColorSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
       return if (isDynamicColorSupported) {
         if (isSystemInDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
       } else {
@@ -101,12 +105,21 @@ internal class HostView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     val context = LocalContext.current
-    val colorScheme = props.colorScheme.value?.toColorScheme(context)
-      ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    val isDark = when (props.colorScheme.value) {
+      ExpoColorScheme.DARK -> true
+      ExpoColorScheme.LIGHT -> false
+      null -> isSystemInDarkTheme()
+    }
+    val seedArgb = props.seedColor.value?.composeOrNull?.toArgb()
+    val colorScheme = when {
+      seedArgb != null -> seedColorScheme(seedArgb, isDark)
+      else -> props.colorScheme.value?.toColorScheme(context)
+        ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    }
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
-      MaterialTheme(colorScheme = colorScheme) {
+      MaterialExpressiveTheme(colorScheme = colorScheme) {
         MaybeMatchContentsLayout {
           Children(this@Content)
         }
@@ -144,21 +157,26 @@ internal class HostView(context: Context, appContext: AppContext) :
     ) { measurables, constraints ->
       val useViewportSizeMeasurement = props.useViewportSizeMeasurement.value
 
-      // When matchContents is used, constraints may have infinite maxWidth/maxHeight.
-      // Some components (like DatePicker, segmented buttons) use horizontal scrolling
-      // internally and crash with infinite constraints. Bound infinite values to screen size.
+      // useViewportSizeMeasurement: clamp Infinity/0 maxConstraints to the safe area so the                                                               
+      // content has a concrete size to fill. 
+      // matchContents: pass through, so children measure 
+      // at intrinsic size (the unbounded constraint comes from onMeasure's UNSPECIFIED). 
       val boundedConstraints = Constraints(
         minWidth = constraints.minWidth,
-        maxWidth = when {
-          constraints.maxWidth == Constraints.Infinity -> safeWidthPx
-          useViewportSizeMeasurement && constraints.maxWidth == 0 -> safeWidthPx
-          else -> constraints.maxWidth
+        maxWidth = if (useViewportSizeMeasurement &&
+          (constraints.maxWidth == Constraints.Infinity || constraints.maxWidth == 0)
+        ) {
+          safeWidthPx
+        } else {
+          constraints.maxWidth
         },
         minHeight = constraints.minHeight,
-        maxHeight = when {
-          constraints.maxHeight == Constraints.Infinity -> safeHeightPx
-          useViewportSizeMeasurement && constraints.maxHeight == 0 -> safeHeightPx
-          else -> constraints.maxHeight
+        maxHeight = if (useViewportSizeMeasurement &&
+          (constraints.maxHeight == Constraints.Infinity || constraints.maxHeight == 0)
+        ) {
+          safeHeightPx
+        } else {
+          constraints.maxHeight
         }
       )
       val placeables = measurables.map { it.measure(boundedConstraints) }

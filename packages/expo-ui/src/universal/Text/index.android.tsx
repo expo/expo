@@ -52,3 +52,5 @@ export function Text({
     </ComposeText>
   );
 }
+
+export * from './types';

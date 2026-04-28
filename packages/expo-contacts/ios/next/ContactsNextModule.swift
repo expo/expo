@@ -3,6 +3,7 @@ import ContactsUI
 import Contacts
 
 public class ContactsNextModule: Module {
+  private static let contactsDidChangeEvent = "contactsDidChange"
   private let contactStore = CNContactStore()
   private lazy var contactRepository = ContactRepository(store: contactStore)
   private lazy var groupRepository = GroupRepository(store: contactStore)
@@ -19,12 +20,33 @@ public class ContactsNextModule: Module {
     groupRepository: groupRepository,
     contactFactory: contactFactory
   )
+  private lazy var contactsObserver = ContactsObserver(onChange: { [weak self] body in
+    guard let self = self else {
+      return
+    }
+    self.sendEvent(ContactsNextModule.contactsDidChangeEvent, body)
+    }
+  )
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
 
   // swiftlint:disable:next function_body_length
   public func definition() -> ModuleDefinition {
     Name("ExpoContactsNext")
+
+    Events(ContactsNextModule.contactsDidChangeEvent)
+
+    OnDestroy {
+      contactsObserver.stopObserving()
+    }
+
+    OnStartObserving(ContactsNextModule.contactsDidChangeEvent) {
+      contactsObserver.startObserving()
+    }
+
+    OnStopObserving(ContactsNextModule.contactsDidChangeEvent) {
+      contactsObserver.stopObserving()
+    }
 
     // swiftlint:disable:next closure_body_length
     Class(ContactNext.self) {

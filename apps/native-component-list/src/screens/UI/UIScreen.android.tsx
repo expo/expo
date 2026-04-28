@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
     name: 'Community Picker replacement',
     route: 'ui/community-picker',
     options: {},
@@ -184,6 +192,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ColorPickerScreen'));
+    },
+  },
+  {
+    name: 'Material Colors',
+    route: 'ui/material-colors',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaterialColorsScreen'));
     },
   },
   {

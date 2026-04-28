@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("CoreModule")
+@JavaScriptActor
 struct CoreModuleTests {
   let appContext = AppContext.create()
   var runtime: ExpoRuntime {

@@ -6,6 +6,7 @@ hasVideoLink: true
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -22,12 +23,15 @@ In this chapter, we'll create our example app's production version and submit it
 
 ---
 
-## Prerequisites
-
-To publish and distribute an app on the Apple Play Store, we need:
-
-- **Apple Developer account:** To create one, see [Apple Developer Portal](https://developer.apple.com/account/).
-- **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
+<Prerequisites>
+  <Requirement title="Apple Developer account">
+    To create one, see the [Apple Developer Portal](https://developer.apple.com/account/).
+  </Requirement>
+  <Requirement title="A production build profile in eas.json">
+    Ensure that a `production` build profile is present in your **eas.json**, which is added by
+    default.
+  </Requirement>
+</Prerequisites>
 
 ## Production build for iOS
 

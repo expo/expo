@@ -4,26 +4,26 @@ description: Learn how to trigger builds on EAS for your app from a CI environme
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="A successful build from your local machine">
+    To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. Run `eas build -p [all|android|ios]` from your local terminal for each platform you want to support on CI, so the `eas build` command can prompt for any additional configuration it needs. That configuration will then be available for future non-interactive runs.
 
-### Run a successful build from your local machine
+    Running a build locally accomplishes the following critical configuration steps:
 
-To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. To do this, go through the EAS Build initialization steps and run a successful build from your local terminal for each platform you would like to support on CI. This way, the `eas build` command can prompt for any additional configuration it needs, and then that configuration will be available for future non-interactive runs on CI.
+    - Initialize the project on EAS by generating a `projectId`.
+    - Add an **eas.json** file defining your build profiles.
+    - Populate critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
+    - Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
 
-Running a build locally will accomplish the following critical configuration steps:
+    If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
 
-- Initialize the project on EAS by generating a `projectId`.
-- Add an **eas.json** file defining your build profiles.
-- Populates critical app config properties for native builds, such as `android.packageName` and `ios.bundleIdentifier`.
-- Ensure build credentials are created, including Android keystores and iOS distribution certs and provisioning profiles.
-
-Run `eas build -p [all|android|ios]` and verify that your builds for each platform complete successfully. Then, continue with the below steps for implementing EAS Build on CI.
-
-If you haven't done this yet, see the [Create your first build](/build/setup/) guide and return here when you're ready.
+  </Requirement>
+</Prerequisites>
 
 ## Using EAS Workflows
 

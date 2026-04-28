@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [next] Improve contact observer implementation ([#44773](https://github.com/expo/expo/pull/44773) by [@Wenszel](https://github.com/Wenszel))
+
 ## 55.0.8 — 2026-02-25
 
 ### 🐛 Bug fixes

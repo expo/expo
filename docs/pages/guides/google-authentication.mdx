@@ -4,14 +4,19 @@ description: A guide on using @react-native-google-signin/google-signin library 
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 The [`@react-native-google-signin/google-signin`](https://github.com/react-native-google-signin/google-signin) library provides a way to integrate Google authentication in your Expo app. It also provides native sign-in buttons and supports authenticating the user as well as obtaining their authorization to use Google APIs. You can use the library in your project by adding the [config plugin](/config-plugins/introduction/) in the [app config](/versions/latest/config/app/).
 
 This guide provides information on how to configure the library for your project.
 
-## Prerequisites
-
-The `@react-native-google-signin/google-signin` library can't be used in the Expo Go app because it requires custom native code. Learn more about [adding custom native code to your app](/workflow/customizing/).
+<Prerequisites>
+  <Requirement title="A development build">
+    The `@react-native-google-signin/google-signin` library can't be used in Expo Go because it
+    requires custom native code. Learn more about [adding custom native code to your
+    app](/workflow/customizing/).
+  </Requirement>
+</Prerequisites>
 
 ## Installation
 

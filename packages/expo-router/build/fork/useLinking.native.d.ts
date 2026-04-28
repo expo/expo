@@ -7,24 +7,24 @@ export declare function useLinking(ref: RefObject<NavigationContainerRef<ParamLi
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
+        routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
         stale?: true;
-        routes: import("../react-navigation/native").PartialRoute<import("../react-navigation/native").Route<string, object | undefined>>[];
+        routes: import("../react-navigation/core").PartialRoute<import("../react-navigation/core").Route<string, object | undefined>>[];
     }> & {
         state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../react-navigation/native").NavigationRoute<ParamListBase, string>[];
+            routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
             stale?: true;
-            routes: import("../react-navigation/native").PartialRoute<import("../react-navigation/native").Route<string, object | undefined>>[];
+            routes: import("../react-navigation/core").PartialRoute<import("../react-navigation/core").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
     }) | undefined>;
 };

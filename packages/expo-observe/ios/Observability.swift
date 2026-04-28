@@ -5,9 +5,15 @@ import ExpoAppMetrics
 internal struct ObservabilityManager {
   private static let easClientId = EASClientID.uuid().uuidString
   private static var endpointUrl: URL? = nil
-  private static var enableInDebug: Bool = false
   private static var projectId: String? = nil
   private static var useOpenTelemetry = false
+
+  // Determined at compile time of the host app's binary.
+  #if DEBUG
+  private static let isDebugBuild: Bool = true
+  #else
+  private static let isDebugBuild: Bool = false
+  #endif
 
   /**
    Returns entries from AppMetrics storage that have not been dispatched yet.
@@ -38,20 +44,22 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      // Filter entries based on environment if enableInDebug is false
-      let entriesToDispatch =
-        enableInDebug
-        ? entries
-        : entries.filter { $0.environment != "development" }
+      let config = ObserveUserDefaults.config
+      let dispatchingEnabled = config?.dispatchingEnabled ?? true
+      let dispatchInDebug = config?.dispatchInDebug ?? false
+      let shouldDispatch = dispatchingEnabled && isInSample() && (!isDebugBuild || dispatchInDebug)
+      if !shouldDispatch {
+        ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
+        return
+      }
 
-      let events = entriesToDispatch.map { entry in
+      let events = entries.map { entry in
         return Event.create(
           app: entry.app, device: entry.device, sessions: entry.sessions,
           environment: entry.environment)
       }
 
-      if events.isEmpty || !ObserveUserDefaults.dispatchingEnabled {
-        // All entries were filtered out or dispatching is disabled — mark as dispatched
+      if events.isEmpty {
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
       }
@@ -102,17 +110,18 @@ internal struct ObservabilityManager {
     }
   }
 
-  internal nonisolated static func setEnableInDebug(_ enabled: Bool?) {
-    let enabled = enabled ?? false
-    AppMetricsActor.isolated {
-      self.enableInDebug = enabled
-    }
-  }
-
   internal nonisolated static func setUseOpenTelemetry(_ enabled: Bool?) {
     let enabled = enabled ?? true
     AppMetricsActor.isolated {
       self.useOpenTelemetry = enabled
     }
+  }
+
+  private static func isInSample() -> Bool {
+    guard let rate = ObserveUserDefaults.config?.sampleRate else {
+      return true
+    }
+    let clamped = min(max(rate, 0.0), 1.0)
+    return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }
