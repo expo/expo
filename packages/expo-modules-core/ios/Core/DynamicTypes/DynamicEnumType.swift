@@ -18,23 +18,19 @@ internal struct DynamicEnumType: AnyDynamicType {
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
-    // TODO: Remove if. The result should not be an enumerable, but it's converted in `MainValueConverter:21` to an enum.
-    if let value = value as? any Enumerable {
-      return value
-    }
     return try innerType.create(fromRawValue: value)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
-    if let result = result as? any Enumerable {
-      return result.anyRawValue
-    }
+    // Pass-through: the enum is unwrapped to its raw value in `castToJS` instead.
+    // `convertResult` is on its way out — once all dynamic types convert directly to JS,
+    // this hook can be removed entirely.
     return result
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if let value = value as? any Enumerable {
-      return try Conversions.anyToJavaScriptValue(value.anyRawValue, appContext: appContext)
+      return try innerType.getRawValueDynamicType().castToJS(value.anyRawValue, appContext: appContext)
     }
     throw Conversions.ConversionToJSFailedException((kind: .undefined, nativeType: ValueType.self))
   }
