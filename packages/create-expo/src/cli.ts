@@ -7,6 +7,7 @@ import { ExitError } from './error';
 import { Log } from './log';
 import { formatSelfCommand } from './resolvePackageManager';
 import { assertWithOptionsArgs, printHelp, resolveStringOrBooleanArgsAsync } from './utils/args';
+import shouldUpdate from './utils/update-check';
 
 const debug = require('debug')('expo:init:cli') as typeof console.log;
 
@@ -118,7 +119,6 @@ async function run() {
       process.exit(error.code || 1);
     });
   } finally {
-    const shouldUpdate = await (await import('./utils/update-check')).default;
     await shouldUpdate();
   }
 }
