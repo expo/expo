@@ -1,4 +1,6 @@
-import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+import { ConfigPlugin } from 'expo/config-plugins';
+
+import withInfoPlistValues from './withInfoPlistValues';
 
 type withAppInfoPlistProps = {
   frequentUpdates: boolean;
@@ -8,13 +10,12 @@ type withAppInfoPlistProps = {
 const withAppInfoPlist: ConfigPlugin<withAppInfoPlistProps> = (
   config,
   { frequentUpdates, groupIdentifier }
-) =>
-  withInfoPlist(config, (config) => {
-    const infoPlist = config.modResults;
-    infoPlist.NSSupportsLiveActivities = true;
-    infoPlist.NSSupportsLiveActivitiesFrequentUpdates = frequentUpdates;
-    infoPlist.ExpoWidgetsAppGroupIdentifier = groupIdentifier;
-    return config;
+) => {
+  return withInfoPlistValues(config, {
+    NSSupportsLiveActivities: true,
+    NSSupportsLiveActivitiesFrequentUpdates: frequentUpdates,
+    ExpoWidgetsAppGroupIdentifier: groupIdentifier,
   });
+};
 
 export default withAppInfoPlist;

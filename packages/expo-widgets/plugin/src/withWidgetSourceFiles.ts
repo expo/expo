@@ -21,6 +21,10 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
     async (config) => {
       const projectRoot = config.modRequest.platformProjectRoot;
       const targetDirectory = path.join(projectRoot, targetName);
+      const existingInfoPlistPath = path.join(targetDirectory, 'Info.plist');
+      const existingInfoPlist = fs.existsSync(existingInfoPlistPath)
+        ? fs.readFileSync(existingInfoPlistPath, 'utf8')
+        : null;
       if (fs.existsSync(targetDirectory)) {
         fs.rmSync(targetDirectory, { recursive: true, force: true });
       }
@@ -35,7 +39,8 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
         groupIdentifier,
         targetDirectory,
         config.ios?.version ?? config.version ?? '1.0',
-        config.ios?.buildNumber ?? '1'
+        config.ios?.buildNumber ?? '1',
+        existingInfoPlist
       );
       const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
       const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
@@ -81,9 +86,24 @@ const createInfoPlist = (
   groupIdentifier: string,
   targetPath: string,
   marketingVersion: string,
-  bundleVersion: string
+  bundleVersion: string,
+  existingInfoPlist: string | null
 ): string => {
   const infoPlistPath = `${targetPath}/Info.plist`;
+
+  if (existingInfoPlist) {
+    const parsedInfoPlist = plist.parse(existingInfoPlist);
+    if (
+      parsedInfoPlist.NSExtension?.NSExtensionPointIdentifier === 'com.apple.widgetkit-extension' &&
+      parsedInfoPlist.ExpoWidgetsAppGroupIdentifier === groupIdentifier &&
+      parsedInfoPlist.CFBundleShortVersionString === marketingVersion &&
+      parsedInfoPlist.CFBundleVersion === bundleVersion
+    ) {
+      fs.writeFileSync(infoPlistPath, existingInfoPlist);
+      return infoPlistPath;
+    }
+  }
+
   fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier, marketingVersion, bundleVersion));
   return infoPlistPath;
 };

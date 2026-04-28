@@ -1,11 +1,14 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("expo/config-plugins");
-const withAppInfoPlist = (config, { frequentUpdates, groupIdentifier }) => (0, config_plugins_1.withInfoPlist)(config, (config) => {
-    const infoPlist = config.modResults;
-    infoPlist.NSSupportsLiveActivities = true;
-    infoPlist.NSSupportsLiveActivitiesFrequentUpdates = frequentUpdates;
-    infoPlist.ExpoWidgetsAppGroupIdentifier = groupIdentifier;
-    return config;
-});
+const withInfoPlistValues_1 = __importDefault(require("./withInfoPlistValues"));
+const withAppInfoPlist = (config, { frequentUpdates, groupIdentifier }) => {
+    return (0, withInfoPlistValues_1.default)(config, {
+        NSSupportsLiveActivities: true,
+        NSSupportsLiveActivitiesFrequentUpdates: frequentUpdates,
+        ExpoWidgetsAppGroupIdentifier: groupIdentifier,
+    });
+};
 exports.default = withAppInfoPlist;

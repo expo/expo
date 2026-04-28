@@ -1,18 +1,19 @@
-import { ConfigPlugin, withEntitlementsPlist, withInfoPlist } from 'expo/config-plugins';
+import { ConfigPlugin, withEntitlementsPlist } from 'expo/config-plugins';
+
+import withInfoPlistValues from './withInfoPlistValues';
 
 type PushNotificationProps = {
   enablePushNotifications: boolean;
 };
 
 const withPushNotifications: ConfigPlugin<PushNotificationProps> = (config, props) =>
-  withInfoPlist(
+  withInfoPlistValues(
     withEntitlementsPlist(config, (mod) => {
       mod.modResults['aps-environment'] = 'development';
       return mod;
     }),
-    (mod) => {
-      mod.modResults['ExpoWidgets_EnablePushNotifications'] = props.enablePushNotifications;
-      return mod;
+    {
+      ExpoWidgets_EnablePushNotifications: props.enablePushNotifications,
     }
   );
 
