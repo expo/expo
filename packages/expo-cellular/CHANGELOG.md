@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Deprecate `allowsVoipAsync` method.
+- Deprecate `allowsVoipAsync` method. ([#45177](https://github.com/expo/expo/pull/45177) by [@lukmccall](https://github.com/lukmccall))
 
 ## 55.0.8 — 2026-02-25
 
