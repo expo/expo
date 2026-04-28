@@ -33,4 +33,11 @@ export interface TextInputProps {
    * @default true
    */
   editable?: boolean;
+
+  /**
+   * If true, the field accepts multiple lines of input and grows vertically
+   * as the user types.
+   * @default false
+   */
+  multiline?: boolean;
 }

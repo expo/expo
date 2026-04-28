@@ -8,6 +8,7 @@ export function TextInput({
   placeholder,
   autoFocus,
   editable,
+  multiline,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -17,6 +18,7 @@ export function TextInput({
       value={state}
       autoFocus={autoFocus}
       readOnly={editable === false}
+      singleLine={!multiline}
       onValueChange={onChangeText}>
       {placeholder ? (
         <ComposeTextField.Placeholder>

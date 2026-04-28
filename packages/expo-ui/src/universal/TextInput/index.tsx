@@ -9,6 +9,7 @@ export function TextInput({
   placeholder,
   autoFocus,
   editable,
+  multiline,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -19,6 +20,7 @@ export function TextInput({
       placeholder={placeholder}
       autoFocus={autoFocus}
       editable={editable}
+      multiline={multiline}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);
