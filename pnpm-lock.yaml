@@ -1209,6 +1209,9 @@ importers:
       expo-notifications:
         specifier: workspace:*
         version: link:../../packages/expo-notifications
+      expo-observe:
+        specifier: workspace:*
+        version: link:../../packages/expo-observe
       expo-router:
         specifier: workspace:*
         version: link:../../packages/expo-router
@@ -2378,9 +2381,9 @@ importers:
 
   packages/@expo/inline-modules:
     dependencies:
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
+      '@expo/config-plugins':
+        specifier: workspace:~55.0.6
+        version: link:../config-plugins
     devDependencies:
       '@types/jest':
         specifier: ^29.2.1
@@ -2724,9 +2727,9 @@ importers:
       debug:
         specifier: ^4.3.1
         version: 4.4.3
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
+      expo-modules-autolinking:
+        specifier: workspace:~55.0.8
+        version: link:../../expo-modules-autolinking
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0

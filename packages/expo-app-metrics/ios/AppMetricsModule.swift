@@ -26,8 +26,11 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       AppMetrics.mainSession.appStartupMonitor.markFirstRender()
     }
 
-    Function("markInteractive") { (routeName: String?) in
-      AppMetrics.mainSession.appStartupMonitor.markInteractive(routeName: routeName)
+    Function("markInteractive") { (attributes: MetricAttributes?) in
+      AppMetrics.mainSession.appStartupMonitor.markInteractive(
+        routeName: attributes?.routeName,
+        params: attributes?.params ?? [:]
+      )
     }
 
     AsyncFunction("getAppStartupTimesAsync") {
@@ -66,4 +69,9 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
   }
+}
+
+struct MetricAttributes: Record {
+  @Field var routeName: String?
+  @Field var params: [String: Any]?
 }

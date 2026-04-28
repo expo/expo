@@ -35,6 +35,11 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
     return argsCount
   }
 
+  public var requiredArgumentsCount: Int {
+    // Optimized functions don't support optional arguments, so all args are required.
+    return argsCount
+  }
+
   public var takesOwner: Bool = false
 
   public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {

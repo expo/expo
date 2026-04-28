@@ -6,7 +6,10 @@ internal import jsi
  Used mainly to pass function arguments from C++ to Swift.
  */
 public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  // Safe to use unowned — the buffer's lifetime is scoped to a host function call,
+  // so the runtime is always alive while the buffer exists.
+  internal unowned let runtime: JavaScriptRuntime
+
   internal nonisolated(unsafe) let bufferPointer: UnsafeMutableBufferPointer<facebook.jsi.Value>
   private let ownsMemory: Bool
 
@@ -46,21 +49,15 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   public subscript(index: Int) -> JavaScriptValue {
-    guard let runtime else {
-      FatalError.runtimeLost()
-    }
     return JavaScriptValue(runtime, bufferPointer[index])
   }
 
   @discardableResult
   internal consuming func set<T: JSIRepresentable>(value: borrowing T, atIndex index: Int) -> JavaScriptValuesBuffer where T: ~Copyable {
-    guard let jsiRuntime = runtime?.pointee else {
-      FatalError.runtimeLost()
-    }
     guard (0..<count).contains(index) else {
       FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
     }
-    bufferPointer.initializeElement(at: index, to: value.toJSIValue(in: jsiRuntime))
+    bufferPointer.initializeElement(at: index, to: value.toJSIValue(in: runtime.pointee))
     return self
   }
 
@@ -81,9 +78,6 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
    */
   @JavaScriptActor
   public func copy() -> JavaScriptValuesBuffer {
-    guard let runtime else {
-      FatalError.runtimeLost()
-    }
     let bufferCopy = JavaScriptValuesBuffer.copying(in: runtime, buffer: bufferPointer)
     return JavaScriptValuesBuffer(runtime, buffer: bufferCopy, ownsMemory: true)
   }

@@ -1,6 +1,6 @@
 import { NativeModule, registerWebModule } from 'expo';
 
-import type { ExpoAppMetricsModuleType } from './types';
+import type { ExpoAppMetricsModuleType, MetricAttributes } from './types';
 
 export * from './types';
 
@@ -12,7 +12,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
     throw new Error('Method not implemented.');
   }
   async markFirstRender() {}
-  async markInteractive() {}
+  async markInteractive(_attributes?: MetricAttributes) {}
   async getStoredEntries() {
     return [];
   }

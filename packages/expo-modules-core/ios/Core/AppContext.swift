@@ -148,7 +148,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
 
-  internal private(set) lazy var converter = MainValueConverter(appContext: self)
+  internal var converter: MainValueConverter {
+    // MainValueConverter is ~Copyable so it can't be stored in a lazy var (which uses Optional internally).
+    // This is zero-cost at runtime — the struct contains only an unowned pointer to self, so constructing
+    // it is a single pointer store with no allocations, reference counting, or weak-ref side table work.
+    return MainValueConverter(appContext: self)
+  }
 
   /**
    Designated initializer without modules provider.

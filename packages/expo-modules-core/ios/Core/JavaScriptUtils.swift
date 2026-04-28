@@ -8,7 +8,8 @@ import ExpoModulesJSI
  Validates whether the number of received arguments is enough to call the given function.
  Throws `InvalidArgsNumberException` otherwise.
  */
-internal func validateArgumentsNumber(function: AnyFunctionDefinition, received: Int) throws {
+@_transparent
+internal func validateArgumentsNumber<F: AnyFunctionDefinition>(function: borrowing F, received: Int) throws {
   let argumentsCount = function.argumentsCount
   let requiredArgumentsCount = function.requiredArgumentsCount
 

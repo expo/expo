@@ -268,20 +268,6 @@ export const Artifacts = {
     ),
     getValidationPath: (outputPath: string) =>
       path.join(outputPath, ...HERMES_XCFRAMEWORK_RELATIVE_PATH),
-
-    postExtract: async (tarballPath: string, outputPath: string) => {
-      const execAsync = promisify(exec);
-
-      // Extract tarball normally
-      await execAsync(`tar -xzf "${tarballPath}" -C "${outputPath}"`);
-
-      // Remove JSI headers from Hermes — they are always provided by the React
-      // VFS overlay. Keeping them under destroot/include/ causes "redefinition"
-      // errors because #pragma once cannot de-duplicate two different physical
-      // files that contain the same declarations.
-      const jsiHeadersPath = path.join(outputPath, 'destroot', 'include', 'jsi');
-      fs.removeSync(jsiHeadersPath);
-    },
   } as ArtifactConfig,
 
   /**

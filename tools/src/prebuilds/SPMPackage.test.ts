@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import type { SPMProduct } from './SPMConfig.types';
-import { findSiblingProductDependencies } from './SPMPackage';
+import {
+  expandTransitiveExternalDeps,
+  findSiblingProductDependencies,
+  type ExternalDepResolver,
+} from './SPMPackage';
 
 function makeProduct(name: string, targetDeps: string[] = []): SPMProduct {
   return {
@@ -71,5 +75,40 @@ describe('findSiblingProductDependencies', () => {
     };
     const all = [makeProduct('Core'), product];
     assert.deepEqual(findSiblingProductDependencies(product, all), ['Core']);
+  });
+});
+
+// Synthetic resolver for tests. Keys map a `package/Product` to its further
+// externalDeps; anything not in the map resolves to null (matching production).
+const makeResolver =
+  (graph: Record<string, string[]>): ExternalDepResolver =>
+  (dep) =>
+    dep in graph ? graph[dep] : null;
+
+describe('expandTransitiveExternalDeps', () => {
+  it('passes through and deduplicates leaf-only seeds', () => {
+    assert.deepEqual(
+      expandTransitiveExternalDeps(['A', 'B', 'A', 'C', 'B'], () => null),
+      ['A', 'B', 'C']
+    );
+  });
+
+  it('walks transitive deps across multiple levels', () => {
+    const resolver = makeResolver({
+      'pkg-a/A': ['pkg-b/B', 'Hermes'],
+      'pkg-b/B': ['pkg-c/C'],
+      'pkg-c/C': ['Hermes'], // dup with seed-derived Hermes — must dedup
+    });
+    assert.deepEqual(expandTransitiveExternalDeps(['pkg-a/A'], resolver), [
+      'pkg-a/A',
+      'pkg-b/B',
+      'Hermes',
+      'pkg-c/C',
+    ]);
+  });
+
+  it('terminates on cycles', () => {
+    const resolver = makeResolver({ 'pkg-a/A': ['pkg-b/B'], 'pkg-b/B': ['pkg-a/A'] });
+    assert.deepEqual(expandTransitiveExternalDeps(['pkg-a/A'], resolver), ['pkg-a/A', 'pkg-b/B']);
   });
 });

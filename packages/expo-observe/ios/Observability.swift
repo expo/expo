@@ -5,9 +5,15 @@ import ExpoAppMetrics
 internal struct ObservabilityManager {
   private static let easClientId = EASClientID.uuid().uuidString
   private static var endpointUrl: URL? = nil
-  private static var enableInDebug: Bool = false
   private static var projectId: String? = nil
   private static var useOpenTelemetry = false
+
+  // Determined at compile time of the host app's binary.
+  #if DEBUG
+  private static let isDebugBuild: Bool = true
+  #else
+  private static let isDebugBuild: Bool = false
+  #endif
 
   /**
    Returns entries from AppMetrics storage that have not been dispatched yet.
@@ -38,21 +44,22 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      // Filter entries based on environment if enableInDebug is false
-      let entriesToDispatch =
-        enableInDebug
-        ? entries
-        : entries.filter { $0.environment != "development" }
+      // Single dispatch gate. When unset, defaults to off in debug builds and on otherwise so
+      // dev metrics aren't shipped without explicit opt-in.
+      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? !isDebugBuild
+      if !dispatchingEnabled {
+        // Mark all pending entries as dispatched without sending them
+        ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
+        return
+      }
 
-      let events = entriesToDispatch.map { entry in
+      let events = entries.map { entry in
         return Event.create(
           app: entry.app, device: entry.device, sessions: entry.sessions,
           environment: entry.environment)
       }
 
-      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? true
-      if events.isEmpty || !dispatchingEnabled {
-        // All entries were filtered out or dispatching is disabled — mark as dispatched
+      if events.isEmpty {
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
       }
@@ -100,13 +107,6 @@ internal struct ObservabilityManager {
     }
     AppMetricsActor.isolated {
       self.endpointUrl = url.appendingPathComponent(useOpenTelemetry ?  "\(projectId)/v1/metrics" : projectId)
-    }
-  }
-
-  internal nonisolated static func setEnableInDebug(_ enabled: Bool?) {
-    let enabled = enabled ?? false
-    AppMetricsActor.isolated {
-      self.enableInDebug = enabled
     }
   }
 

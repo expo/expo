@@ -13,7 +13,11 @@
 
 ### 🐛 Bug fixes
 
+- Align `ServerFontResourceDescriptor.crossOrigin` type with React ([#45115](https://github.com/expo/expo/pull/45115) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Export `ServerFontResourceDescriptor` type for external usage ([#45116](https://github.com/expo/expo/pull/45116) by [@hassankhan](https://github.com/hassankhan))
 
 ## 55.0.4 — 2026-02-16
 
