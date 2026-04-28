@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt.
 - [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
