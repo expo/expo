@@ -116,6 +116,18 @@ struct DynamicEnumTypeTests {
   }
 
   @Test
+  func `casts untyped dictionary holding enum values to JS object`() throws {
+    // Mirrors the shape produced by `Record.toDictionary` after enums stopped being
+    // unwrapped to their raw values in `convertResult`. The dictionary value type is
+    // erased to `Any`, so the generic `castToJS` path must still reach the enum.
+    let dict: [String: Any] = ["status": StringTestEnum.expo]
+    let result = try (~[String: Any].self).castToJS(dict, appContext: appContext)
+    let object = try result.asObject()
+
+    #expect(try object.getProperty("status").asString() == "expo")
+  }
+
+  @Test
   func `getRawValueDynamicType returns the raw value's dynamic type`() {
     #expect(StringTestEnum.getRawValueDynamicType() is DynamicStringType)
     #expect(IntTestEnum.getRawValueDynamicType() is DynamicNumberType<Int>)
