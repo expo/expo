@@ -391,8 +391,7 @@ export class CardStack extends React.Component<Props, State> {
         return oldScene;
       }
 
-      // TODO(@kitten): Should this be typed as Scene despite the mismatch?
-      return scene;
+      return scene as unknown as Scene;
     });
 
     let activeStates = state.activeStates;

@@ -44,7 +44,7 @@ describe('Stack composition component unmount resets options', () => {
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // [0] is initial layout render, [1] is composition registration
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.title).toBe('Custom');
 
     jest.clearAllMocks();
@@ -55,7 +55,7 @@ describe('Stack composition component unmount resets options', () => {
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
-    const finalProps = ScreenStackItem.mock.calls[0][0];
+    const finalProps = ScreenStackItem.mock.calls[0]![0];
     expect(finalProps.headerConfig?.title).toBe('index');
   });
 
@@ -75,7 +75,7 @@ describe('Stack composition component unmount resets options', () => {
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // [0] is initial layout render, [1] is composition registration
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.backTitle).toBe('Go Back');
 
     jest.clearAllMocks();
@@ -86,7 +86,7 @@ describe('Stack composition component unmount resets options', () => {
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
-    const finalProps = ScreenStackItem.mock.calls[0][0];
+    const finalProps = ScreenStackItem.mock.calls[0]![0];
     expect(finalProps.headerConfig?.backTitle).toBeUndefined();
   });
 
@@ -107,7 +107,7 @@ describe('Stack composition component unmount resets options', () => {
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
     // [0] is initial layout render, [1] is composition registration
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.backgroundColor).toBe('red');
     expect(initialProps.headerConfig?.hidden).toBe(false);
 
@@ -119,7 +119,7 @@ describe('Stack composition component unmount resets options', () => {
 
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
-    const finalProps = ScreenStackItem.mock.calls[0][0];
+    const finalProps = ScreenStackItem.mock.calls[0]![0];
     // backgroundColor reverts to React Navigation's default theme card color
     expect(finalProps.headerConfig?.backgroundColor).toBe('rgb(255, 255, 255)');
     expect(finalProps.headerConfig?.hidden).toBe(true);
@@ -144,7 +144,7 @@ describe('Stack composition component unmount resets options', () => {
     // headerSearchBarOptions is rendered as a SearchBar child inside ScreenStackHeaderSearchBarView
     expect(ScreenStackHeaderSearchBarView).toHaveBeenCalled();
     // [0] is initial layout render, [1] is composition registration
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.hidden).toBe(false);
 
     jest.clearAllMocks();
@@ -156,7 +156,7 @@ describe('Stack composition component unmount resets options', () => {
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
     // SearchBar view is no longer rendered after composition option is cleared
     expect(ScreenStackHeaderSearchBarView).not.toHaveBeenCalled();
-    const finalProps = ScreenStackItem.mock.calls[0][0];
+    const finalProps = ScreenStackItem.mock.calls[0]![0];
     expect(finalProps.headerConfig?.hidden).toBe(true);
   });
 });

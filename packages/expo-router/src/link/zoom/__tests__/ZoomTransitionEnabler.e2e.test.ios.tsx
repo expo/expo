@@ -55,7 +55,7 @@ function navigateViaZoomLink() {
 function getLastDismissalBoundsRect() {
   const callCount = MockedLinkZoomTransitionEnabler.mock.calls.length;
   if (callCount === 0) return undefined;
-  return MockedLinkZoomTransitionEnabler.mock.calls[callCount - 1][0].dismissalBoundsRect;
+  return MockedLinkZoomTransitionEnabler.mock.calls[callCount - 1]![0].dismissalBoundsRect;
 }
 
 function IndexWithZoomLink() {

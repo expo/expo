@@ -193,7 +193,7 @@ describe('StackView.getDerivedStateFromProps', () => {
           openingRouteKeys: ['B'],
           descriptors: {
             ...oldDescriptors,
-            [routeA.key]: oldDescriptors[routeA.key],
+            [routeA.key]: oldDescriptors[routeA.key]!,
           },
         },
         [routeA, routeB]

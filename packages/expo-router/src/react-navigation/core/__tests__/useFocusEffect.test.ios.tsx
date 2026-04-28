@@ -17,7 +17,7 @@ test('runs focus effect on focus change', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -75,7 +75,7 @@ test('runs focus effect on deps change', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -120,7 +120,7 @@ test('runs focus effect when initial state is given', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -175,7 +175,7 @@ test('runs focus effect when only focused route is rendered', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -220,7 +220,7 @@ test('runs cleanup when component is unmounted', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -264,7 +264,7 @@ test('prints error when a dependency array is passed', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -287,7 +287,7 @@ test('prints error when a dependency array is passed', () => {
 
   render(<App />);
 
-  expect(spy.mock.calls[0][0]).toMatch(
+  expect(spy.mock.calls[0]![0]).toMatch(
     "You passed a second argument to 'useFocusEffect', but it only accepts one argument."
   );
 
@@ -299,7 +299,7 @@ test('prints error when the effect returns a value', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -322,7 +322,7 @@ test('prints error when the effect returns a value', () => {
 
   render(<App />);
 
-  expect(spy.mock.calls[0][0]).toMatch(
+  expect(spy.mock.calls[0]![0]).toMatch(
     "An effect function must not return anything besides a function, which is used for clean-up. You returned '42'."
   );
 
@@ -334,7 +334,7 @@ test('prints error when the effect returns null', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -357,7 +357,7 @@ test('prints error when the effect returns null', () => {
 
   render(<App />);
 
-  expect(spy.mock.calls[0][0]).toMatch(
+  expect(spy.mock.calls[0]![0]).toMatch(
     "An effect function must not return anything besides a function, which is used for clean-up. You returned 'null'. If your effect does not require clean-up, return 'undefined' (or nothing)."
   );
 
@@ -369,7 +369,7 @@ test('prints error when the effect is an async function', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -392,7 +392,7 @@ test('prints error when the effect is an async function', () => {
 
   render(<App />);
 
-  expect(spy.mock.calls[0][0]).toMatch(
+  expect(spy.mock.calls[0]![0]).toMatch(
     "An effect function must not return anything besides a function, which is used for clean-up.\n\nIt looks like you wrote 'useFocusEffect(async () => ...)' or returned a Promise."
   );
 

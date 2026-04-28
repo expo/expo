@@ -1144,7 +1144,7 @@ describe('children rendering', () => {
     );
     const { getByTestId } = render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
-    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0][0].source).toEqual({
+    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'back.png',
     });
   });
@@ -1155,7 +1155,7 @@ describe('children rendering', () => {
     );
     const { getByTestId } = render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
-    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0][0].source).toEqual({
+    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'back2.png',
     });
   });
@@ -1171,7 +1171,7 @@ describe('children rendering', () => {
     );
     const { getByTestId } = render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
-    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0][0].source).toEqual({
+    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'icon.png',
     });
   });

@@ -29,7 +29,7 @@ describe(stripBaseUrl, () => {
     ['/a/b', '/one', '/a/b'],
   ].forEach(([path, baseUrl, result]) => {
     it(`strips baseUrl "${path}"`, () => {
-      expect(stripBaseUrl(path, baseUrl)).toBe(result);
+      expect(stripBaseUrl(path!, baseUrl!)).toBe(result);
     });
   });
 });
@@ -107,7 +107,7 @@ describe(getUrlWithReactNavigationConcessions, () => {
     ['https://acme.com/hello/world/?foo=bar#123', 'hello/world/'],
   ].forEach(([url, expected]) => {
     it(`returns the pathname for ${url}`, () => {
-      expect(getUrlWithReactNavigationConcessions(url).nonstandardPathname).toBe(expected);
+      expect(getUrlWithReactNavigationConcessions(url!).nonstandardPathname).toBe(expected);
     });
   });
 
@@ -117,7 +117,7 @@ describe(getUrlWithReactNavigationConcessions, () => {
     ['https://acme.com/gh-pages/hello/world/?foo=bar#123', 'hello/world/'],
   ].forEach(([url, expected]) => {
     it(`returns the pathname for ${url}`, () => {
-      expect(getUrlWithReactNavigationConcessions(url, 'gh-pages').nonstandardPathname).toBe(
+      expect(getUrlWithReactNavigationConcessions(url!, 'gh-pages').nonstandardPathname).toBe(
         expected
       );
     });
