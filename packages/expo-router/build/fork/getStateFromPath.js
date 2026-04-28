@@ -300,8 +300,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                 const decodedParamSegment = expo.safelyDecodeURIComponent(
                 // const decodedParamSegment = decodeURIComponent(
                 // The param segments appear every second item starting from 2 in the regex match result
-                match[(acc.pos + 1) * 2]
-                    // Remove trailing slash
+                match[(acc.pos + 1) * 2] // Remove trailing slash
                     .replace(/\/$/, ''));
                 // END FORK
                 Object.assign(acc.matchedParams, {

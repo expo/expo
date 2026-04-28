@@ -17,8 +17,8 @@ export declare function inMemoryContext(context: MemoryContext): ((id: string) =
     unstable_settings?: Record<string, any>;
     loader?: LoaderFunction;
 }) | {
-    default: NativeIntent | FileStub;
-}) & {
+    default: NativeIntent | FileStub | undefined;
+} | undefined) & {
     resolve: (key: string) => string;
     id: string;
     keys: () => string[];

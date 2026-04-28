@@ -17,6 +17,7 @@ exports.defaultRouteInfo = {
 function getRouteInfoFromState(state) {
     if (!state)
         return exports.defaultRouteInfo;
+    // TODO(@kitten): Review edge-case type safety
     const index = 'index' in state ? (state.index ?? 0) : 0;
     let route = state.routes[index];
     if (route.name === constants_1.NOT_FOUND_ROUTE_NAME || route.name === constants_1.SITEMAP_ROUTE_NAME) {

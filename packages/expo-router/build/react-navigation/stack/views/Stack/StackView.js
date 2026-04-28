@@ -81,7 +81,7 @@ class StackView extends React.Component {
             let previousDescriptors = state.previousDescriptors;
             if (props.descriptors !== state.previousDescriptors) {
                 descriptors = routes.reduce((acc, route) => {
-                    acc[route.key] = props.descriptors[route.key] || state.descriptors[route.key];
+                    acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key]);
                     return acc;
                 }, {});
                 previousDescriptors = props.descriptors;
@@ -199,7 +199,7 @@ class StackView extends React.Component {
             throw new Error('There should always be at least one route in the navigation state.');
         }
         const descriptors = allRoutes.reduce((acc, route) => {
-            acc[route.key] = props.descriptors[route.key] || state.descriptors[route.key];
+            acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key]);
             return acc;
         }, {});
         return {
