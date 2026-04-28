@@ -114,9 +114,7 @@ public extension Record {
       guard let key = field.key else {
         continue
       }
-      guard let value = try recordFieldValueToJSValue(field.get(), dynamicType: field.fieldType, appContext: appContext) else {
-        continue
-      }
+      let value = try recordFieldValueToJSValue(field.get(), dynamicType: field.fieldType, appContext: appContext)
       object.setProperty(key, value: value)
     }
     return object.asValue()
@@ -162,7 +160,7 @@ internal func recordFieldValueToJSValue(
   _ value: Any,
   dynamicType: AnyDynamicType? = nil,
   appContext: AppContext
-) throws -> JavaScriptValue? {
+) throws -> JavaScriptValue {
   let convertedValue: Any
 
   if let dynamicType {
@@ -180,9 +178,5 @@ internal func recordFieldValueToJSValue(
   if let jsValue = convertedValue as? JavaScriptValue {
     return jsValue
   }
-  if let argument = value as? AnyArgument {
-    let inferredDynamicType = type(of: argument).getDynamicType()
-    return try inferredDynamicType.castToJS(convertedValue, appContext: appContext)
-  }
-  return try Conversions.anyToJavaScriptValue(convertedValue, runtime: appContext.runtime)
+  return try Conversions.unknownToJavaScriptValue(convertedValue, appContext: appContext)
 }

@@ -55,9 +55,7 @@ public struct FormattedRecord<RecordType: Record>: Convertible, RecordJavaScript
       if value is Skip {
         continue
       }
-      guard let jsValue = try recordFieldValueToJSValue(value, appContext: appContext) else {
-        continue
-      }
+      let jsValue = try recordFieldValueToJSValue(value, appContext: appContext)
       object.setProperty(key, value: jsValue)
     }
     return object.asValue()

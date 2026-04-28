@@ -48,6 +48,10 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any
 }
 
+internal protocol NullAcceptingDynamicType {
+  var acceptsNull: Bool { get }
+}
+
 extension AnyDynamicType {
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     return jsValue.getAny()

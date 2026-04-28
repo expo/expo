@@ -1,8 +1,8 @@
+import ExpoModulesJSI
+
 /**
  Protocol for type-erased record fields.
  */
-import ExpoModulesJSI
-
 public protocol AnyField {
   func get() -> Any
 }

@@ -35,6 +35,10 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
     options.contains(.required)
   }
 
+  internal var acceptsNull: Bool {
+    return (fieldType as? NullAcceptingDynamicType)?.acceptsNull ?? false
+  }
+
   /**
    Initializes the field with given value and customized key.
    */
@@ -76,7 +80,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    Sets the wrapped value with a value of `Any` type.
    */
   internal func set(_ newValue: Any?, appContext: AppContext) throws {
-    if newValue == nil && (!isOptional || isRequired) {
+    if newValue == nil && (!acceptsNull || isRequired) {
       throw FieldRequiredException(key!)
     }
     do {
@@ -90,6 +94,9 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
 
   @JavaScriptActor
   internal func set(jsValue: JavaScriptValue, appContext: AppContext) throws {
+    if jsValue.isNull() && (!acceptsNull || isRequired) {
+      throw FieldRequiredException(key!)
+    }
     do {
       let rawValue = try fieldType.cast(jsValue: jsValue, appContext: appContext)
       let convertedValue = try fieldType.cast(rawValue, appContext: appContext)

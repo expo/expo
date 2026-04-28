@@ -256,6 +256,22 @@ struct FunctionTests {
     }
 
     @Test
+    func `throws FieldRequiredException when a non-optional record field is null`() throws {
+      #expect {
+        try runtime.eval("""
+          expo.modules.TestModule.withRecord({
+            property: null
+          })
+        """)
+      } throws: { error in
+        guard let evalError = error as? ScriptEvaluationError else {
+          return false
+        }
+        return evalError.message.contains("FieldRequiredException: Value for field 'property' is required, got nil")
+      }
+    }
+
+    @Test
     func `accepts record while dropping undefined values from nested dictionaries`() throws {
       #expect(
         try runtime.eval("""
