@@ -1,6 +1,8 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "dangerouslyDisablePackageManagerCheck": true,
+  "noUpdateNotifier": true,
+  "concurrency": "90%",
   "tasks": {
     "build": {
       "outputs": [

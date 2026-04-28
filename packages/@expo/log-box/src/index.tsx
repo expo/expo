@@ -1,7 +1,6 @@
 import 'expo/types';
 
 import { createElement } from 'react';
-
 import { renderInShadowRoot } from './utils/renderInShadowRoot';
 
 if (process.env.NODE_ENV === 'development' && process.env.EXPO_OS === 'web') {

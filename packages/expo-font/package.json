@@ -5,6 +5,35 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "react-server": {
+        "types": {
+          "source": "./src/index.server.ts",
+          "default": "./build/index.d.ts"
+        },
+        "source": "./src/index.server.ts",
+        "default": "./build/index.server.js"
+      },
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./build/server": {
+      "types": {
+        "source": "./src/server.ts",
+        "default": "./build/server.d.ts"
+      },
+      "source": "./src/server.ts",
+      "default": "./build/server.js"
+    },
+    "./app.plugin": "./app.plugin.js",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
@@ -15,17 +44,6 @@
     "test:plugin": "expo-module test plugin",
     "test:rsc": "jest --config jest-rsc.config.js",
     "prepublishOnly": "expo-module prepublishOnly"
-  },
-  "exports": {
-    "./app.plugin": "./app.plugin.js",
-    "./app.plugin.js": "./app.plugin.js",
-    "./package.json": "./package.json",
-    "./plugin": "./plugin/build/index.js",
-    ".": {
-      "react-server": "./build/index.server.js",
-      "default": "./build/index.js"
-    },
-    "./build/server": "./build/server.js"
   },
   "keywords": [
     "react-native",

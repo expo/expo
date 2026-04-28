@@ -3,7 +3,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS"]
+    "customConditions": ["react-native-strict-api-UNSAFE-ALLOW-SUBPATHS", "source"]
   },
   "include": ["src/**/*"],
   "exclude": ["app/**/*", "dist/**/*", "build/**/*", "**/__mocks__/*", "**/__tests__/*"]
