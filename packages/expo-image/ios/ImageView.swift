@@ -67,6 +67,7 @@ public final class ImageView: ExpoView {
     didSet {
       if oldValue != nil && recyclingKey != oldValue {
         sdImageView.image = nil
+        placeholderImage = nil
       }
     }
   }
@@ -150,7 +151,11 @@ public final class ImageView: ExpoView {
       return
     }
     if isViewEmpty {
-      displayPlaceholderIfNecessary()
+      if placeholderImage != nil {
+        displayPlaceholderIfNecessary()
+      } else {
+        loadPlaceholderIfNecessary()
+      }
     }
     guard let source = bestSource else {
       displayPlaceholderIfNecessary()
