@@ -1,9 +1,6 @@
 /**
  * Shared blockquote intros and per-page description overrides for the
- * generated llms.txt files. Centralized so positioning updates (for example,
- * the "official framework recommended by the React Native team" rewrite)
- * land in one place instead of being duplicated across each generator
- * script.
+ * generated llms.txt and llms-full.txt files.
  */
 
 export const EXPO_DESCRIPTION =
