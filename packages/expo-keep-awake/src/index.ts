@@ -30,11 +30,13 @@ export function useKeepAwake(tag?: string, options?: KeepAwakeOptions): void {
 
   useEffect(() => {
     let isMounted = true;
-    activateKeepAwakeAsync(tagOrDefault).then(() => {
-      if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
-        addListener(tagOrDefault, options.listener);
-      }
-    });
+    activateKeepAwakeAsync(tagOrDefault)
+      .then(() => {
+        if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
+          addListener(tagOrDefault, options.listener);
+        }
+      })
+      .catch(() => {});
     return () => {
       isMounted = false;
       if (options?.suppressDeactivateWarnings) {
