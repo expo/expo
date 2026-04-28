@@ -13,6 +13,7 @@
 - [android] Add support for playsInSilentMode ([#43117](https://github.com/expo/expo/pull/43117) by [@blazejkustra](https://github.com/blazejkustra))
 - Added `isLive`, `currentOffsetFromLive`, and `error` fields to `AudioStatus` for live stream detection and error handling. ([#44441](https://github.com/expo/expo/pull/44441) by [@alanjhughes](https://github.com/alanjhughes))
 - Add support for real-time audio stream buffer access via the new `useAudioStream` hook. ([#44902](https://github.com/expo/expo/pull/44902) by [@alanjhughes](https://github.com/alanjhughes))
+- Added `allowScrubbing` option to `AudioLockScreenOptions` to control whether the user can drag the progress bar on the lock screen. ([#45038](https://github.com/expo/expo/pull/45038) by [@JstUsername](https://github.com/JstUsername))
 
 ### 🐛 Bug fixes
 

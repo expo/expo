@@ -16,4 +16,10 @@ export type AudioLockScreenOptions = {
    * and scrub bar, and disable seek controls.
    */
   isLiveStream?: boolean;
+  /**
+   * Whether the user can scrub (drag the progress bar) on the lock screen.
+   * When `false`, the progress bar is visible but not interactive.
+   * @default true
+   */
+  allowScrubbing?: boolean;
 };

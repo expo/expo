@@ -14,6 +14,7 @@ class MediaController {
   private var artworkLoadToken: UUID?
   private var currentArtworkItemIdentifier: ObjectIdentifier?
   private var isLiveStream = false
+  private var allowScrubbing = true
 
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
     performOnMain {
@@ -37,6 +38,7 @@ class MediaController {
     activePlayer = player
     player?.isActiveForLockScreen = true
     isLiveStream = options?.isLiveStream ?? player?.isLive ?? false
+    allowScrubbing = options?.allowScrubbing ?? true
 
     if let player {
       enableRemoteCommands(options: options)
@@ -189,6 +191,7 @@ class MediaController {
     nowPlayingInfoCenter.nowPlayingInfo = nil
     activePlayer = nil
     isLiveStream = false
+    allowScrubbing = true
     resetArtworkState()
     currentArtworkItemIdentifier = nil
   }
@@ -306,7 +309,7 @@ class MediaController {
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
-    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !isLiveStream
+    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !isLiveStream && allowScrubbing
     remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
     remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
   }

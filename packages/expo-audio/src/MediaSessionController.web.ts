@@ -149,12 +149,16 @@ class MediaSessionController {
       player.pause();
     });
 
-    this._setHandler('seekto', (details) => {
-      if (details.seekTime != null) {
-        player.seekTo(details.seekTime);
-        this.updatePositionState(player);
-      }
-    });
+    if (this.options?.allowScrubbing === false) {
+      this._setHandler('seekto', null);
+    } else {
+      this._setHandler('seekto', (details) => {
+        if (details.seekTime != null) {
+          player.seekTo(details.seekTime);
+          this.updatePositionState(player);
+        }
+      });
+    }
 
     const seekForward = (details: MediaSessionActionDetails) => {
       const skipTime = details.seekOffset ?? SKIP_SECONDS;
