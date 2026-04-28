@@ -36,6 +36,7 @@ export declare function getCellularGenerationAsync(): Promise<CellularGeneration
  * ```ts
  * await Cellular.allowsVoipAsync(); // true or false
  * ```
+ * @deprecated Voip technology is not widely used and Google is removing it from the Android platform. This method will be removed in a future release.
  */
 export declare function allowsVoipAsync(): Promise<boolean | null>;
 /**
