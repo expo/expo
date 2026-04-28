@@ -9,8 +9,8 @@ import { Terminal } from '~/ui/components/Snippet';
 
 This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="A successful build from your local machine">
+<Prerequisites>
+  <Requirement title="A successful build from your local machine">
     To trigger EAS builds from a CI environment, your app needs to be set up to use EAS Build in non-interactive mode. Run `eas build -p [all|android|ios]` from your local terminal for each platform you want to support on CI, so the `eas build` command can prompt for any additional configuration it needs. That configuration will then be available for future non-interactive runs.
 
     Running a build locally accomplishes the following critical configuration steps:
