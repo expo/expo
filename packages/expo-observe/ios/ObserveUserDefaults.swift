@@ -7,6 +7,7 @@ import ExpoAppMetrics
  */
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
+  var sampleRate: Double?
 }
 
 /**
@@ -62,6 +63,7 @@ internal final class ObserveUserDefaults: UserDefaults {
       defaults.set(newValue, forKey: Keys.lastDispatchedEntryId.rawValue)
     }
   }
+
   static var config: PersistedConfig? {
     guard let data = defaults.data(forKey: Keys.config.rawValue) else { return nil }
     return try? JSONDecoder().decode(PersistedConfig.self, from: data)

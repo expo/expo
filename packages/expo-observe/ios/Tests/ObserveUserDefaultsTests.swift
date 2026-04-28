@@ -38,4 +38,29 @@ struct ObserveUserDefaultsTests {
     #expect(ObserveUserDefaults.config != nil)
     #expect(ObserveUserDefaults.config?.dispatchingEnabled == nil)
   }
+
+  @Test
+  func `sampleRate defaults to nil`() {
+    #expect(ObserveUserDefaults.config?.sampleRate == nil)
+  }
+
+  @Test
+  func `setConfig with sampleRate persists Double value`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(sampleRate: 0.25))
+    #expect(ObserveUserDefaults.config?.sampleRate == 0.25)
+  }
+
+  @Test
+  func `setConfig sampleRate 0_0 is distinct from nil`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(sampleRate: 0.0))
+    #expect(ObserveUserDefaults.config?.sampleRate == 0.0)
+  }
+
+  @Test
+  func `setConfig sampleRate nil clears previously set value`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(sampleRate: 0.5))
+    #expect(ObserveUserDefaults.config?.sampleRate == 0.5)
+    ObserveUserDefaults.setConfig(PersistedConfig(sampleRate: nil))
+    #expect(ObserveUserDefaults.config?.sampleRate == nil)
+  }
 }
