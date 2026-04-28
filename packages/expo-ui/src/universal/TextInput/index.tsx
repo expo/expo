@@ -13,6 +13,7 @@ export function TextInput({
   keyboardType,
   autoCapitalize,
   autoCorrect,
+  returnKeyType,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -27,6 +28,7 @@ export function TextInput({
       keyboardType={keyboardType}
       autoCapitalize={autoCapitalize}
       autoCorrect={autoCorrect}
+      returnKeyType={returnKeyType}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);

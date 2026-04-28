@@ -3,14 +3,24 @@ import {
   autocorrectionDisabled,
   disabled as disabledMod,
   keyboardType as keyboardTypeMod,
+  submitLabel,
   textInputAutocapitalization,
   type ModifierConfig,
 } from '@expo/ui/swift-ui/modifiers';
-import type { KeyboardTypeOptions } from 'react-native';
+import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import type { TextInputProps } from './types';
 
 type SwiftUIKeyboardType = Parameters<typeof keyboardTypeMod>[0];
+type SwiftUISubmitLabel = Parameters<typeof submitLabel>[0];
+
+function mapReturnKeyType(rn: ReturnKeyTypeOptions): SwiftUISubmitLabel {
+  if (rn === 'google' || rn === 'yahoo') return 'search';
+  if (rn === 'default' || rn === 'none' || rn === 'previous' || rn === 'emergency-call') {
+    return 'return';
+  }
+  return rn as SwiftUISubmitLabel;
+}
 
 function mapKeyboardType(rn: KeyboardTypeOptions): SwiftUIKeyboardType {
   switch (rn) {
@@ -55,6 +65,7 @@ export function TextInput({
   keyboardType,
   autoCapitalize,
   autoCorrect,
+  returnKeyType,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -68,6 +79,7 @@ export function TextInput({
     );
   }
   if (autoCorrect === false) modifiers.push(autocorrectionDisabled(true));
+  if (returnKeyType) modifiers.push(submitLabel(mapReturnKeyType(returnKeyType)));
 
   return (
     <TextField

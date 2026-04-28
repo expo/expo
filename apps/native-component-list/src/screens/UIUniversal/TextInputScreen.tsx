@@ -9,7 +9,7 @@ import {
   useNativeState,
 } from '@expo/ui';
 import { useState } from 'react';
-import type { KeyboardTypeOptions } from 'react-native';
+import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
   'default',
@@ -24,6 +24,8 @@ const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
 type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
 const AUTO_CAPITALIZE: AutoCapitalize[] = ['none', 'sentences', 'words', 'characters'];
 
+const RETURN_KEY_TYPES: ReturnKeyTypeOptions[] = ['done', 'go', 'next', 'search', 'send'];
+
 export default function TextInputScreen() {
   const text = useNativeState('');
   const [editable, setEditable] = useState(true);
@@ -31,6 +33,7 @@ export default function TextInputScreen() {
   const [keyboardType, setKeyboardType] = useState<KeyboardTypeOptions>('default');
   const [autoCapitalize, setAutoCapitalize] = useState<AutoCapitalize>('sentences');
   const [autoCorrect, setAutoCorrect] = useState(true);
+  const [returnKeyType, setReturnKeyType] = useState<ReturnKeyTypeOptions>('done');
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -40,6 +43,11 @@ export default function TextInputScreen() {
   const cycleAutoCapitalize = () => {
     const i = AUTO_CAPITALIZE.indexOf(autoCapitalize);
     setAutoCapitalize(AUTO_CAPITALIZE[(i + 1) % AUTO_CAPITALIZE.length]);
+  };
+
+  const cycleReturnKeyType = () => {
+    const i = RETURN_KEY_TYPES.indexOf(returnKeyType);
+    setReturnKeyType(RETURN_KEY_TYPES[(i + 1) % RETURN_KEY_TYPES.length]);
   };
 
   return (
@@ -56,6 +64,7 @@ export default function TextInputScreen() {
               keyboardType={keyboardType}
               autoCapitalize={autoCapitalize}
               autoCorrect={autoCorrect}
+              returnKeyType={returnKeyType}
             />
           </Column>
 
@@ -73,6 +82,11 @@ export default function TextInputScreen() {
               label={`autoCapitalize: ${autoCapitalize}`}
               variant="outlined"
               onPress={cycleAutoCapitalize}
+            />
+            <Button
+              label={`returnKeyType: ${returnKeyType}`}
+              variant="outlined"
+              onPress={cycleReturnKeyType}
             />
           </Column>
         </Column>

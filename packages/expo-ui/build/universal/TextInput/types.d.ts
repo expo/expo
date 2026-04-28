@@ -1,4 +1,4 @@
-import type { KeyboardTypeOptions } from 'react-native';
+import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 import type { ObservableState } from '../State';
 /**
  * Props for the `TextInput` component.
@@ -57,5 +57,14 @@ export interface TextInputProps {
      * @default true
      */
     autoCorrect?: boolean;
+    /**
+     * Determines the label of the keyboard return key.
+     *
+     * Lacking native support:
+     * - iOS: `'emergency-call'` falls back to the default Return key.
+     * - Android: `'join'`, `'route'`, `'emergency-call'` fall back to the
+     *   default action.
+     */
+    returnKeyType?: ReturnKeyTypeOptions;
 }
 //# sourceMappingURL=types.d.ts.map
