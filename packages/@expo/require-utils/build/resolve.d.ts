@@ -5,6 +5,7 @@ declare module 'node:module' {
 }
 export interface ResolveFromParams {
     followSymlinks?: boolean;
+    skipNodePath?: boolean;
     extensions?: readonly string[];
 }
 export declare function resolveFrom(fromDirectory: string, moduleId: string, params?: ResolveFromParams): string | null;
