@@ -17,5 +17,10 @@ export interface TextInputProps {
      * Placeholder text shown when the field is empty.
      */
     placeholder?: string;
+    /**
+     * If true, focuses the input on mount.
+     * @default false
+     */
+    autoFocus?: boolean;
 }
 //# sourceMappingURL=types.d.ts.map

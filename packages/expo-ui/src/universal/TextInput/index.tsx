@@ -3,7 +3,7 @@ import { TextInput as RNTextInput } from 'react-native';
 import { useNativeState } from '../State';
 import type { TextInputProps } from './types';
 
-export function TextInput({ value, onChangeText, placeholder }: TextInputProps) {
+export function TextInput({ value, onChangeText, placeholder, autoFocus }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
 
@@ -11,6 +11,7 @@ export function TextInput({ value, onChangeText, placeholder }: TextInputProps) 
     <RNTextInput
       value={state.value}
       placeholder={placeholder}
+      autoFocus={autoFocus}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);

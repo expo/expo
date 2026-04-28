@@ -2,12 +2,12 @@ import { TextField as ComposeTextField, Text, useNativeState } from '@expo/ui/je
 
 import type { TextInputProps } from './types';
 
-export function TextInput({ value, onChangeText, placeholder }: TextInputProps) {
+export function TextInput({ value, onChangeText, placeholder, autoFocus }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
 
   return (
-    <ComposeTextField value={state} onValueChange={onChangeText}>
+    <ComposeTextField value={state} autoFocus={autoFocus} onValueChange={onChangeText}>
       {placeholder ? (
         <ComposeTextField.Placeholder>
           <Text>{placeholder}</Text>
