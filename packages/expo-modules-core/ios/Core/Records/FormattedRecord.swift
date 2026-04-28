@@ -2,7 +2,7 @@
  Class that binds a formatter with a record.
  It can be converted to JS, but it can't be converted from a JS value.
  */
-public struct FormattedRecord<RecordType: Record>: Convertible {
+public struct FormattedRecord<RecordType: Record>: Convertible, RecordJavaScriptValueConvertible {
   internal final class FormattedRecordCannotBeUsedAsParameterException: Exception, @unchecked Sendable {
     override var reason: String {
       "FormattedRecord cannot be used as a parameter"
@@ -36,5 +36,28 @@ public struct FormattedRecord<RecordType: Record>: Convertible {
 
   public static func convert(from value: Any?, appContext: AppContext) throws -> FormattedRecord<RecordType> {
     throw FormattedRecordCannotBeUsedAsParameterException()
+  }
+
+  @JavaScriptActor
+  func toJSValue(appContext: AppContext) throws -> JavaScriptValue {
+    let object = try appContext.runtime.createObject()
+
+    for field in fieldsOf(record) {
+      guard let key = field.key else {
+        continue
+      }
+      let value = if let action = formatter.selectors.first(where: { $0.name == key })?.action {
+        action(record, field.get())
+      } else {
+        field.get()
+      }
+
+      if value is Skip {
+        continue
+      }
+      let jsValue = try recordFieldValueToJSValue(value, appContext: appContext)
+      object.setProperty(key, value: jsValue)
+    }
+    return object.asValue()
   }
 }

@@ -26,6 +26,11 @@ public protocol Record: Convertible {
   func toDictionary(appContext: AppContext?) -> Dict
 }
 
+internal protocol RecordJavaScriptValueConvertible {
+  @JavaScriptActor
+  func toJSValue(appContext: AppContext) throws -> JavaScriptValue
+}
+
 /**
  Provides the default implementation of `Record` protocol.
  */
@@ -61,6 +66,31 @@ public extension Record {
     }
   }
 
+  @JavaScriptActor
+  func update(withObject object: borrowing JavaScriptObject, appContext: AppContext) throws {
+    // Using a set keeps declared-field lookups O(1) when selectively hydrating the record.
+    let propertyNames = Set(object.getPropertyNames())
+
+    try fieldsOf(self).forEach { field in
+      guard let key = field.key else {
+        return
+      }
+      if propertyNames.contains(key) {
+        let property = object.getProperty(key)
+
+        if property.isUndefined() {
+          if field.isRequired {
+            try field.set(nil, appContext: appContext)
+          }
+          return
+        }
+        try field.set(jsValue: property, appContext: appContext)
+      } else if field.isRequired {
+        try field.set(nil, appContext: appContext)
+      }
+    }
+  }
+
   func toDictionary(appContext: AppContext? = nil) -> Dict {
     return fieldsOf(self).reduce(into: Dict()) { result, field in
       if let key = field.key {
@@ -74,6 +104,20 @@ public extension Record {
       return value.toDictionary(appContext: appContext)
     }
     return result
+  }
+
+  @JavaScriptActor
+  func toJSValue(appContext: AppContext) throws -> JavaScriptValue {
+    let object = try appContext.runtime.createObject()
+
+    for field in fieldsOf(self) {
+      guard let key = field.key else {
+        continue
+      }
+      let value = try recordFieldValueToJSValue(field.get(), dynamicType: field.fieldType, appContext: appContext)
+      object.setProperty(key, value: value)
+    }
+    return object.asValue()
   }
 }
 
@@ -109,4 +153,26 @@ internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
  */
 internal func convertLabelToKey(_ label: String?) -> String? {
   return (label != nil && label!.starts(with: "_")) ? String(label!.dropFirst()) : label
+}
+
+@JavaScriptActor
+internal func recordFieldValueToJSValue(
+  _ value: Any,
+  dynamicType: AnyDynamicType? = nil,
+  appContext: AppContext
+) throws -> JavaScriptValue {
+  let convertedValue: Any
+
+  if let dynamicType {
+    return try dynamicType.convertToJS(value, appContext: appContext)
+  }
+
+  convertedValue = Conversions.convertFunctionResult(value, appContext: appContext)
+  if Optional.isNil(convertedValue) {
+    return .null
+  }
+  if let jsValue = convertedValue as? JavaScriptValue {
+    return jsValue
+  }
+  return try Conversions.unknownToJavaScriptValue(convertedValue, appContext: appContext)
 }

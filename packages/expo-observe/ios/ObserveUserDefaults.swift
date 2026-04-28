@@ -7,6 +7,7 @@ import ExpoAppMetrics
  */
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
+  var dispatchInDebug: Bool?
   var sampleRate: Double?
 }
 

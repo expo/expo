@@ -11,10 +11,23 @@ export type Config = {
      * When `false`, any pending metrics are marked as sent without being dispatched
      * and no further metrics are dispatched until this is set back to `true`.
      *
-     * When unset, defaults to `false` for debug builds and `true` for release builds
-     * so dev metrics aren't shipped without explicit opt-in.
+     * @default true
      */
     dispatchingEnabled?: boolean;
+    /**
+     * Whether to dispatch metrics that were collected in a debug build of the host app.
+     *
+     * When `false`, metrics produced by debug builds are marked as sent without being dispatched.
+     * When `true`, debug-build metrics are dispatched alongside release-build metrics.
+     *
+     * Has no effect on release builds.
+     *
+     * If `dispatchingEnabled` is `false` or this device is out-of-sample for `sampleRate`, nothing
+     * is dispatched regardless of `dispatchInDebug`.
+     *
+     * @default false
+     */
+    dispatchInDebug?: boolean;
     /**
      * Fraction of installations that should dispatch metrics, in `[0, 1]`. Values outside that range
      * are clamped.
