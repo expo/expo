@@ -247,6 +247,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     inlines['process.env.NODE_ENV'] = 'production';
     inlines['__DEV__'] = false;
     inlines['Platform.OS'] = platform;
+  } else if (isServerEnv && isDev) {
+    inlines['process.env.NODE_ENV'] = 'development';
   }
 
   if (process.env.NODE_ENV !== 'test') {

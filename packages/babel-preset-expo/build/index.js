@@ -150,6 +150,9 @@ function babelPresetExpo(api, options = {}) {
         inlines['__DEV__'] = false;
         inlines['Platform.OS'] = platform;
     }
+    else if (isServerEnv && isDev) {
+        inlines['process.env.NODE_ENV'] = 'development';
+    }
     if (process.env.NODE_ENV !== 'test') {
         inlines['process.env.EXPO_BASE_URL'] = baseUrl;
     }
