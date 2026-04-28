@@ -15,6 +15,7 @@
 - [Android] Add NDS service discovery.
 - [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
 - Support loading embedded bundles. ([#44396](https://github.com/expo/expo/pull/44396) by [@alanjhughes](https://github.com/alanjhughes))
+- [plugin] Add `skipOnboarding` and `showMenuAtLaunch` options to set menu's onboarding and auto-launch defaults, useful for E2E and CI builds.
 
 ### 🐛 Bug fixes
 
