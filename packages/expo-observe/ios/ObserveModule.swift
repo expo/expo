@@ -8,6 +8,7 @@ internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: L
 internal struct Config: Record {
   @Field var environment: String?
   @Field var dispatchingEnabled: Bool?
+  @Field var sampleRate: Double?
 }
 
 public final class ObserveModule: Module {
@@ -33,7 +34,12 @@ public final class ObserveModule: Module {
     Function("configure") { (config: Config) in
       AppMetricsActor.isolated {
         // Each call to `configure(...)` is a full replacement: absent fields reset prior values.
-        ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: config.dispatchingEnabled))
+        ObserveUserDefaults.setConfig(
+          PersistedConfig(
+            dispatchingEnabled: config.dispatchingEnabled,
+            sampleRate: config.sampleRate
+          )
+        )
         if let environment = config.environment {
           AppMetrics.setEnvironment(environment)
         }

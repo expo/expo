@@ -13,7 +13,8 @@ private const val KEY_CONFIG = "config"
  */
 @Serializable
 data class PersistedConfig(
-  val dispatchingEnabled: Boolean? = null
+  val dispatchingEnabled: Boolean? = null,
+  val sampleRate: Double? = null
 )
 
 object ObservePreferences {
