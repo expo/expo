@@ -8,6 +8,8 @@ import type {
   PickSingleFileOptions,
   PickMultipleFilesOptions,
   PathInfo,
+  ZipOptions,
+  UnzipOptions,
 } from './ExpoFileSystem.types';
 
 type FileSystemEvents = {
@@ -28,6 +30,14 @@ declare class ExpoFileSystemModule extends NativeModule<FileSystemEvents> {
   pickFileAsync(options: PickSingleFileOptions): Promise<File>;
   pickFileAsync(options: PickMultipleFilesOptions): Promise<File[]>;
   info(uri: string): PathInfo;
+  zip(
+    sources: (File | Directory)[],
+    destination: File | Directory,
+    options?: ZipOptions
+  ): Promise<File>;
+  zipSync(sources: (File | Directory)[], destination: File | Directory, options?: ZipOptions): File;
+  unzip(source: File, destination: Directory, options?: UnzipOptions): Promise<Directory>;
+  unzipSync(source: File, destination: Directory, options?: UnzipOptions): Directory;
   totalDiskSpace: number;
   availableDiskSpace: number;
   documentDirectory: string;

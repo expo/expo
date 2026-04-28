@@ -8,6 +8,8 @@ import {
   type PickFileOptions,
   type PickMultipleFilesResult,
   type PickSingleFileResult,
+  type ZipOptions,
+  type UnzipOptions,
 } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
@@ -142,6 +144,26 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
 
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
+  }
+
+  async zip(destination: File | Directory, options?: ZipOptions): Promise<File> {
+    const result = await ExpoFileSystem.zip([this], destination, options);
+    return new File(result.uri);
+  }
+
+  zipSync(destination: File | Directory, options?: ZipOptions): File {
+    const result = ExpoFileSystem.zipSync([this], destination, options);
+    return new File(result.uri);
+  }
+
+  async unzip(destination: Directory, options?: UnzipOptions): Promise<Directory> {
+    const result = await ExpoFileSystem.unzip(this, destination, options);
+    return new Directory(result.uri);
+  }
+
+  unzipSync(destination: Directory, options?: UnzipOptions): Directory {
+    const result = ExpoFileSystem.unzipSync(this, destination, options);
+    return new Directory(result.uri);
   }
 }
 
@@ -318,6 +340,16 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
 
   createDirectory(name: string): Directory {
     return new Directory(super.createDirectory(name).uri);
+  }
+
+  async zip(destination: File | Directory, options?: ZipOptions): Promise<File> {
+    const result = await ExpoFileSystem.zip([this], destination, options);
+    return new File(result.uri);
+  }
+
+  zipSync(destination: File | Directory, options?: ZipOptions): File {
+    const result = ExpoFileSystem.zipSync([this], destination, options);
+    return new File(result.uri);
   }
 }
 

@@ -20,6 +20,11 @@ export {
   type PickMultipleFilesResult,
   type PickMultipleFilesSuccessResult,
   type PickFileCanceledResult,
+  type ZipOptions,
+  type UnzipOptions,
+  CompressionLevel,
 } from './ExpoFileSystem.types';
+
+export { zip, zipSync, unzip, unzipSync } from './ZipOperations';
 
 export * from './legacyWarnings';

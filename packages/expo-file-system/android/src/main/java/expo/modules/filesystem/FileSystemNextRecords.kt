@@ -74,3 +74,26 @@ data class DirectoryInfo(
   @Field var modificationTime: Long? = null,
   @Field var creationTime: Long? = null
 ) : Record
+
+enum class CompressionLevelEnum(val value: Int) : Enumerable {
+  NONE(0),
+  BEST_SPEED(1),
+  DEFAULT(-1),
+  BEST_COMPRESSION(9)
+}
+
+data class ZipOptions(
+  @Field
+  val includeRootDirectory: Boolean = true,
+  @Field
+  val compressionLevel: CompressionLevelEnum = CompressionLevelEnum.DEFAULT,
+  @Field
+  val overwrite: Boolean = true
+) : Record
+
+data class UnzipOptions(
+  @Field
+  val createContainingDirectory: Boolean = false,
+  @Field
+  val overwrite: Boolean = true
+) : Record

@@ -66,3 +66,18 @@ internal class UnableToMoveException(reason: String) :
   CodedException(
     "Unable to move file or directory: $reason"
   )
+
+internal class UnableToZipException(reason: String) :
+  CodedException(
+    "Unable to create zip archive: $reason"
+  )
+
+internal class UnableToUnzipException(reason: String) :
+  CodedException(
+    "Unable to extract zip archive: $reason"
+  )
+
+internal class ZipSourceNotFoundException(path: String) :
+  CodedException(
+    "Zip source not found: $path"
+  )

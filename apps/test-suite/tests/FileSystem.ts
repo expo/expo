@@ -2,7 +2,17 @@
 import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { File, Directory, Paths, FileMode } from 'expo-file-system';
+import {
+  File,
+  Directory,
+  Paths,
+  FileMode,
+  zip,
+  zipSync,
+  unzip,
+  unzipSync,
+  CompressionLevel,
+} from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
@@ -2151,6 +2161,272 @@ export async function test({ describe, expect, it, ...t }) {
 
       // this is invalid
       expect(body.data.match(/filename="([^"]+)"/)[1]).toEqual('file.txt');
+    });
+  });
+
+  describe('Zip operations', () => {
+    const zipTestDir = testDirectory + 'zip_test/';
+
+    t.beforeEach(async () => {
+      try {
+        await FS.makeDirectoryAsync(zipTestDir, { intermediates: true });
+      } catch {}
+    });
+
+    t.afterEach(async () => {
+      try {
+        await FS.deleteAsync(zipTestDir);
+      } catch {}
+    });
+
+    async function expectAsyncToThrow(action: () => Promise<unknown>) {
+      let thrownError;
+
+      try {
+        await action();
+      } catch (error) {
+        thrownError = error;
+      }
+
+      expect(thrownError).toBeDefined();
+    }
+
+    it('Zips a single file (async)', async () => {
+      const src = new File(zipTestDir, 'hello.txt');
+      src.write('Hello zip!');
+      const archive = await src.zip(new File(zipTestDir, 'output.zip'));
+      expect(archive.exists).toBe(true);
+      expect(archive.size).toBeGreaterThan(0);
+    });
+
+    it('Zips a single file (sync)', () => {
+      const src = new File(zipTestDir, 'hello.txt');
+      src.write('Hello zip sync!');
+      const archive = src.zipSync(new File(zipTestDir, 'output_sync.zip'));
+      expect(archive.exists).toBe(true);
+      expect(archive.size).toBeGreaterThan(0);
+    });
+
+    it('Zips a directory', async () => {
+      const dir = new Directory(zipTestDir, 'source');
+      dir.create();
+      new File(dir, 'a.txt').write('aaa');
+      new File(dir, 'b.txt').write('bbb');
+      const archive = await dir.zip(new File(zipTestDir, 'dir_archive.zip'));
+      expect(archive.exists).toBe(true);
+      expect(archive.size).toBeGreaterThan(0);
+    });
+
+    it('Zips a directory (sync)', () => {
+      const dir = new Directory(zipTestDir, 'source');
+      dir.create();
+      new File(dir, 'a.txt').write('aaa');
+      const archive = dir.zipSync(new File(zipTestDir, 'dir_sync.zip'));
+      expect(archive.exists).toBe(true);
+    });
+
+    it('Unzips an archive (async)', async () => {
+      const src = new File(zipTestDir, 'file.txt');
+      src.write('unzip test');
+      const archive = await src.zip(new File(zipTestDir, 'to_unzip.zip'));
+
+      const dest = new Directory(zipTestDir, 'unzipped');
+      const result = await archive.unzip(dest);
+      expect(result.exists).toBe(true);
+      const unzippedFile = new File(result, 'file.txt');
+      expect(unzippedFile.exists).toBe(true);
+      expect(unzippedFile.textSync()).toBe('unzip test');
+    });
+
+    it('Unzips an archive (sync)', () => {
+      const src = new File(zipTestDir, 'file.txt');
+      src.write('unzip sync test');
+      const archive = src.zipSync(new File(zipTestDir, 'to_unzip_sync.zip'));
+
+      const dest = new Directory(zipTestDir, 'unzipped_sync');
+      const result = archive.unzipSync(dest);
+      expect(result.exists).toBe(true);
+      const unzippedFile = new File(result, 'file.txt');
+      expect(unzippedFile.exists).toBe(true);
+      expect(unzippedFile.textSync()).toBe('unzip sync test');
+    });
+
+    it('Uses module-level zip function', async () => {
+      const file1 = new File(zipTestDir, 'one.txt');
+      file1.write('one');
+      const file2 = new File(zipTestDir, 'two.txt');
+      file2.write('two');
+
+      const archive = await zip([file1, file2], new File(zipTestDir, 'module_zip.zip'));
+      expect(archive.exists).toBe(true);
+      expect(archive.size).toBeGreaterThan(0);
+    });
+
+    it('Uses module-level zipSync function', () => {
+      const file1 = new File(zipTestDir, 'one.txt');
+      file1.write('one');
+
+      const archive = zipSync([file1], new File(zipTestDir, 'module_zip_sync.zip'));
+      expect(archive.exists).toBe(true);
+    });
+
+    it('Uses module-level unzip function', async () => {
+      const src = new File(zipTestDir, 'content.txt');
+      src.write('module unzip test');
+      const archive = await src.zip(new File(zipTestDir, 'module_unzip.zip'));
+
+      const dest = new Directory(zipTestDir, 'module_unzipped');
+      const result = await unzip(archive, dest);
+      expect(result.exists).toBe(true);
+      expect(new File(result.uri, 'content.txt').textSync()).toBe('module unzip test');
+    });
+
+    it('Uses module-level unzipSync function', () => {
+      const src = new File(zipTestDir, 'content.txt');
+      src.write('module unzipSync test');
+      const archive = src.zipSync(new File(zipTestDir, 'module_unzip_sync.zip'));
+
+      const dest = new Directory(zipTestDir, 'module_unzipped_sync');
+      const result = unzipSync(archive, dest);
+      expect(result.exists).toBe(true);
+      expect(new File(result.uri, 'content.txt').textSync()).toBe('module unzipSync test');
+    });
+
+    it('Round-trips directory contents correctly', async () => {
+      const dir = new Directory(zipTestDir, 'roundtrip_src');
+      dir.create();
+      new File(dir, 'a.txt').write('alpha');
+      new File(dir, 'b.txt').write('bravo');
+      const sub = new Directory(dir, 'sub');
+      sub.create();
+      new File(sub, 'c.txt').write('charlie');
+
+      const archive = await dir.zip(new File(zipTestDir, 'roundtrip.zip'), {
+        includeRootDirectory: false,
+      });
+      const dest = new Directory(zipTestDir, 'roundtrip_out');
+      await archive.unzip(dest);
+
+      expect(new File(dest, 'a.txt').textSync()).toBe('alpha');
+      expect(new File(dest, 'b.txt').textSync()).toBe('bravo');
+      expect(new File(dest, 'sub', 'c.txt').textSync()).toBe('charlie');
+    });
+
+    it('Zipping a non-existent source throws', async () => {
+      const nonExistent = new File(zipTestDir, 'does_not_exist.txt');
+      await expectAsyncToThrow(() => nonExistent.zip(new File(zipTestDir, 'fail.zip')));
+    });
+
+    it('Unzipping a non-zip / corrupt file throws', async () => {
+      const notAZip = new File(zipTestDir, 'not_a_zip.zip');
+      notAZip.write('this is not a zip file');
+      const dest = new Directory(zipTestDir, 'corrupt_out');
+      await expectAsyncToThrow(() => notAZip.unzip(dest));
+    });
+
+    it('includeRootDirectory: true wraps contents in root folder', async () => {
+      const dir = new Directory(zipTestDir, 'root_dir_test');
+      dir.create();
+      new File(dir, 'file.txt').write('hello');
+
+      const archiveWithRoot = await dir.zip(new File(zipTestDir, 'with_root.zip'), {
+        includeRootDirectory: true,
+      });
+      const destWithRoot = new Directory(zipTestDir, 'with_root_out');
+      await archiveWithRoot.unzip(destWithRoot);
+      // The file should be nested under the directory name
+      expect(new File(destWithRoot, 'root_dir_test', 'file.txt').exists).toBe(true);
+
+      const archiveWithoutRoot = await dir.zip(new File(zipTestDir, 'without_root.zip'), {
+        includeRootDirectory: false,
+      });
+      const destWithoutRoot = new Directory(zipTestDir, 'without_root_out');
+      await archiveWithoutRoot.unzip(destWithoutRoot);
+      // The file should be directly in the output directory
+      expect(new File(destWithoutRoot, 'file.txt').exists).toBe(true);
+      expect(new File(destWithoutRoot, 'root_dir_test', 'file.txt').exists).toBe(false);
+    });
+
+    it('Unzip with overwrite: false throws when file exists', async () => {
+      const src = new File(zipTestDir, 'ow_test.txt');
+      src.write('original');
+      const archive = await src.zip(new File(zipTestDir, 'ow.zip'));
+
+      const dest = new Directory(zipTestDir, 'ow_out');
+      dest.create();
+      // Pre-create the conflicting file
+      new File(dest, 'ow_test.txt').write('existing');
+
+      await expectAsyncToThrow(() => archive.unzip(dest, { overwrite: false }));
+    });
+
+    it('Zips and unzips an empty directory', async () => {
+      const emptyDir = new Directory(zipTestDir, 'empty_dir');
+      emptyDir.create();
+
+      const archive = await emptyDir.zip(new File(zipTestDir, 'empty.zip'), {
+        includeRootDirectory: false,
+      });
+      expect(archive.exists).toBe(true);
+      expect(archive.size).toBeGreaterThan(0);
+
+      const dest = new Directory(zipTestDir, 'empty_out');
+      await archive.unzip(dest);
+      expect(dest.exists).toBe(true);
+      // The output directory should have no files
+      const contents = dest.list();
+      expect(contents.length).toBe(0);
+    });
+
+    it('Zips with BestCompression level', async () => {
+      const src = new File(zipTestDir, 'big.txt');
+      src.write('a'.repeat(10000));
+
+      const defaultArchive = await src.zip(new File(zipTestDir, 'default.zip'));
+      const bestArchive = await src.zip(new File(zipTestDir, 'best.zip'), {
+        compressionLevel: CompressionLevel.BestCompression,
+      });
+
+      expect(defaultArchive.exists).toBe(true);
+      expect(bestArchive.exists).toBe(true);
+      // Both should compress highly-repetitive data well
+      expect(bestArchive.size).toBeLessThan(10000);
+    });
+
+    it('Zips with None compression level', async () => {
+      const src = new File(zipTestDir, 'data.txt');
+      src.write('stored content');
+      const archive = await src.zip(new File(zipTestDir, 'stored.zip'), {
+        compressionLevel: CompressionLevel.None,
+      });
+      expect(archive.exists).toBe(true);
+      // Stored archive should be at least as large as the content
+      expect(archive.size).toBeGreaterThanOrEqual(14);
+    });
+
+    it('Overwrites existing archive when overwrite is true', async () => {
+      const src = new File(zipTestDir, 'file.txt');
+      src.write('first');
+      const archivePath = new File(zipTestDir, 'overwrite.zip');
+      await src.zip(archivePath);
+      const firstSize = archivePath.size;
+
+      src.write('second content that is longer');
+      await src.zip(archivePath, { overwrite: true });
+      expect(archivePath.exists).toBe(true);
+      // Different content should produce different archive
+      expect(archivePath.size).not.toBe(firstSize);
+    });
+
+    it('Zips to a directory destination (auto-name)', async () => {
+      const src = new File(zipTestDir, 'auto.txt');
+      src.write('auto name test');
+      const destDir = new Directory(zipTestDir, 'auto_dest');
+      destDir.create();
+      const archive = await src.zip(destDir);
+      expect(archive.exists).toBe(true);
+      // The archive should be inside the destination directory
+      expect(archive.uri.startsWith(destDir.uri)).toBe(true);
     });
   });
 

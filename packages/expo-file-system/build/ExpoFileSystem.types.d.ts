@@ -17,6 +17,47 @@ export type RelocationOptions = {
      */
     overwrite?: boolean;
 };
+export type ZipOptions = {
+    /**
+     * Whether to include the root directory in the archive when zipping a directory.
+     * When `true`, the archive will contain a top-level folder with the directory's name.
+     * When `false`, only the directory's contents are archived.
+     * @default true
+     */
+    includeRootDirectory?: boolean;
+    /**
+     * The compression level to use.
+     * On iOS, `CompressionLevel.None` disables compression and all other values use standard deflate,
+     * because ZIPFoundation does not expose granular compression levels.
+     * @default CompressionLevel.Default
+     */
+    compressionLevel?: CompressionLevel;
+    /**
+     * Whether to overwrite the destination if it already exists.
+     * @default true
+     */
+    overwrite?: boolean;
+};
+export type UnzipOptions = {
+    /**
+     * Whether to create a containing directory named after the archive.
+     * When `true`, contents are extracted into a new subdirectory.
+     * When `false`, contents are extracted directly into the destination.
+     * @default false
+     */
+    createContainingDirectory?: boolean;
+    /**
+     * Whether to overwrite existing files in the destination.
+     * @default true
+     */
+    overwrite?: boolean;
+};
+export declare enum CompressionLevel {
+    None = 0,
+    BestSpeed = 1,
+    Default = -1,
+    BestCompression = 9
+}
 export declare enum EncodingType {
     /**
      * Standard encoding format.
@@ -152,6 +193,17 @@ export declare class Directory {
      * Renames a directory.
      */
     rename(newName: string): void;
+    /**
+     * Compresses this directory into a zip archive.
+     * @param destination The destination `File` (used as the archive path) or `Directory` (archive created inside with auto-generated name).
+     * @param options Zip options.
+     * @returns The created archive `File`.
+     */
+    zip(destination: File | Directory, options?: ZipOptions): Promise<File>;
+    /**
+     * Synchronous version of `zip()`.
+     */
+    zipSync(destination: File | Directory, options?: ZipOptions): File;
     /**
      * @hidden
      * Lists the contents of a directory. Should not be used directly, as it returns a list of paths.
@@ -324,6 +376,28 @@ export declare class File {
      * Renames a file.
      */
     rename(newName: string): void;
+    /**
+     * Compresses this file into a zip archive.
+     * @param destination The destination `File` (used as the archive path) or `Directory` (archive created inside with auto-generated name).
+     * @param options Zip options.
+     * @returns The created archive `File`.
+     */
+    zip(destination: File | Directory, options?: ZipOptions): Promise<File>;
+    /**
+     * Synchronous version of `zip()`.
+     */
+    zipSync(destination: File | Directory, options?: ZipOptions): File;
+    /**
+     * Extracts this zip archive to the destination directory.
+     * @param destination The directory to extract into.
+     * @param options Unzip options.
+     * @returns The destination `Directory`.
+     */
+    unzip(destination: Directory, options?: UnzipOptions): Promise<Directory>;
+    /**
+     * Synchronous version of `unzip()`.
+     */
+    unzipSync(destination: Directory, options?: UnzipOptions): Directory;
     /**
      * Returns A `FileHandle` object that can be used to read and write data to the file.
      *

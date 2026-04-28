@@ -120,3 +120,21 @@ internal final class DownloadCancelledException: Exception {
     "Download was cancelled"
   }
 }
+
+internal final class UnableToZipException: GenericException<String> {
+  override var reason: String {
+    "Unable to create zip archive: \(param)"
+  }
+}
+
+internal final class UnableToUnzipException: GenericException<String> {
+  override var reason: String {
+    "Unable to extract zip archive: \(param)"
+  }
+}
+
+internal final class ZipSourceNotFoundException: GenericException<String> {
+  override var reason: String {
+    "Zip source not found: \(param)"
+  }
+}

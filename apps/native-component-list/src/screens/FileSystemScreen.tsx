@@ -1,6 +1,6 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import { File, Directory, Paths, FileMode } from 'expo-file-system';
+import { File, Directory, Paths, FileMode, zip, unzip, CompressionLevel } from 'expo-file-system';
 import type { DownloadProgress, FileHandle } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
@@ -80,6 +80,11 @@ export default function FileSystemScreen() {
         )}
         <FileLifecycleSection setCurrentFile={setCurrentFile} withCurrentFile={withCurrentFile} />
         <FilePickerSection setCurrentFile={setCurrentFile} />
+        <ZipSection
+          currentFile={currentFile}
+          safDirectory={safDirectory}
+          withCurrentFile={withCurrentFile}
+        />
         <DownloadSection />
       </View>
     </ScrollView>
@@ -920,6 +925,208 @@ function DownloadSection() {
           <ListButton title="Clean up & reset" onPress={cleanup} />
         </>
       )}
+    </>
+  );
+}
+
+// ===== Section: Zip / Unzip =====
+
+function listContents(dir: Directory | { uri: string }) {
+  // Wrap in JS Directory to get .list() – native return types may not be the JS class
+  const jsDir = dir instanceof Directory ? dir : new Directory(dir.uri);
+  return jsDir.list().map((item) => ({
+    name: item.uri.split('/').filter(Boolean).pop(),
+    isDir: item instanceof Directory,
+  }));
+}
+
+function ZipSection({
+  currentFile,
+  safDirectory,
+  withCurrentFile,
+}: {
+  currentFile: File | null;
+  safDirectory: Directory | null;
+  withCurrentFile: WithCurrentFile;
+}) {
+  const [zipResult, setZipResult] = useState<string | null>(null);
+
+  return (
+    <>
+      <HeadingText>Zip / Unzip</HeadingText>
+      <Text style={styles.note}>
+        Uses current file / picked SAF directory when available, or creates test data.
+      </Text>
+
+      {/* — Zip current file — */}
+      <SimpleActionDemo
+        title="Zip current file"
+        action={withCurrentFile(async (file) => {
+          const archive = await file.zip(new File(Paths.cache, 'current_file.zip'), {
+            overwrite: true,
+          });
+          setZipResult(archive.uri);
+          return { source: file.uri, archive: archive.uri, size: archive.size };
+        })}
+      />
+
+      <SimpleActionDemo
+        title="Zip current file (sync)"
+        action={withCurrentFile(async (file) => {
+          const archive = file.zipSync(new File(Paths.cache, 'current_file_sync.zip'), {
+            overwrite: true,
+          });
+          setZipResult(archive.uri);
+          return { source: file.uri, archive: archive.uri, size: archive.size };
+        })}
+      />
+
+      {/* — Zip picked SAF directory — */}
+      <SimpleActionDemo
+        title="Zip picked SAF directory"
+        action={async () => {
+          if (!safDirectory) throw new Error('Pick a directory first (in Directory Operations).');
+          const archive = await safDirectory.zip(new File(Paths.cache, 'saf_dir.zip'), {
+            overwrite: true,
+          });
+          setZipResult(archive.uri);
+          return { source: safDirectory.uri, archive: archive.uri, size: archive.size };
+        }}
+      />
+
+      {/* — Zip a generated test directory — */}
+      <SimpleActionDemo
+        title="Zip test directory (with nested content)"
+        action={async () => {
+          const dir = new Directory(Paths.cache, 'zip_test');
+          if (dir.exists) dir.delete();
+          dir.create();
+          new File(dir, 'hello.txt').write('Hello from zip test!');
+          new File(dir, 'data.json').write(
+            JSON.stringify({ message: 'test data', timestamp: Date.now() })
+          );
+          const subdir = dir.createDirectory('subdir');
+          new File(subdir, 'nested.txt').write('Nested file content');
+
+          const archive = await dir.zip(new File(Paths.cache, 'test_dir.zip'), { overwrite: true });
+          setZipResult(archive.uri);
+          return { source: dir.uri, archive: archive.uri, size: archive.size };
+        }}
+      />
+
+      {/* — Compression options — */}
+      <SimpleActionDemo
+        title="Zip current file (BestCompression)"
+        action={withCurrentFile(async (file) => {
+          const archive = await file.zip(new File(Paths.cache, 'best_compression.zip'), {
+            overwrite: true,
+            compressionLevel: CompressionLevel.BestCompression,
+          });
+          setZipResult(archive.uri);
+          return { source: file.uri, size: archive.size };
+        })}
+      />
+
+      <SimpleActionDemo
+        title="Zip current file (no compression / store)"
+        action={withCurrentFile(async (file) => {
+          const archive = await file.zip(new File(Paths.cache, 'stored.zip'), {
+            overwrite: true,
+            compressionLevel: CompressionLevel.None,
+          });
+          setZipResult(archive.uri);
+          return { source: file.uri, size: archive.size, originalSize: file.size };
+        })}
+      />
+
+      {/* — Multi-source zip — */}
+      <SimpleActionDemo
+        title="Zip multiple sources (current file + extra)"
+        action={withCurrentFile(async (file) => {
+          const extra = new File(Paths.cache, 'zip_extra.txt');
+          extra.write('Extra file content: ' + Date.now());
+          const archive = await zip([file, extra], new File(Paths.cache, 'multi_source.zip'), {
+            overwrite: true,
+          });
+          setZipResult(archive.uri);
+          return { sources: [file.uri, extra.uri], archive: archive.uri, size: archive.size };
+        })}
+      />
+
+      {/* — Zip to directory (auto-name) — */}
+      <SimpleActionDemo
+        title="Zip current file to cache dir (auto-name)"
+        action={withCurrentFile(async (file) => {
+          const archive = await file.zip(Paths.cache);
+          setZipResult(archive.uri);
+          return { archive: archive.uri, size: archive.size };
+        })}
+      />
+
+      {/* — Unzip — */}
+      {zipResult && (
+        <View style={{ paddingHorizontal: 10, paddingVertical: 4 }}>
+          <Text style={styles.note}>Last archive: {truncate(zipResult, 60)}</Text>
+        </View>
+      )}
+
+      <SimpleActionDemo
+        title="Unzip last archive (async)"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const dest = new Directory(Paths.cache, 'unzipped');
+          if (dest.exists) dest.delete();
+          const result = await new File(zipResult).unzip(dest);
+          return { destination: result.uri, contents: listContents(result) };
+        }}
+      />
+
+      <SimpleActionDemo
+        title="Unzip last archive (sync)"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const dest = new Directory(Paths.cache, 'unzipped_sync');
+          if (dest.exists) dest.delete();
+          const result = new File(zipResult).unzipSync(dest);
+          return { destination: result.uri, contents: listContents(result) };
+        }}
+      />
+
+      <SimpleActionDemo
+        title="Unzip with module-level unzip()"
+        action={async () => {
+          if (!zipResult) throw new Error('No archive created yet. Zip something first.');
+          const dest = new Directory(Paths.cache, 'unzipped_module');
+          if (dest.exists) dest.delete();
+          const result = await unzip(new File(zipResult), dest);
+          return { destination: result.uri, contents: listContents(result) };
+        }}
+      />
+
+      {/* — Round-trip — */}
+      <SimpleActionDemo
+        title="Round-trip: zip current file → unzip → verify"
+        action={withCurrentFile(async (file) => {
+          const archive = await file.zip(new File(Paths.cache, 'roundtrip.zip'), {
+            overwrite: true,
+          });
+          const dest = new Directory(Paths.cache, 'roundtrip_out');
+          if (dest.exists) dest.delete();
+          await archive.unzip(dest);
+
+          const baseName = file.uri.split('/').filter(Boolean).pop()!;
+          const unzippedFile = new File(dest, baseName);
+          const originalContent = truncate(file.textSync(), 100);
+          const unzippedContent = truncate(unzippedFile.textSync(), 100);
+
+          return {
+            archiveSize: archive.size,
+            originalContent,
+            unzippedContent,
+            match: file.textSync() === unzippedFile.textSync(),
+          };
+        })}
+      />
     </>
   );
 }

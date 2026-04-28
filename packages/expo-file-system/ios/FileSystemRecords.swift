@@ -55,3 +55,21 @@ struct WriteOptions: Record {
   @Field var encoding: WriteEncoding?
   @Field var append: Bool = false
 }
+
+enum CompressionLevelEnum: Int, Enumerable {
+  case none = 0
+  case bestSpeed = 1
+  case `default` = -1
+  case bestCompression = 9
+}
+
+struct ZipOptions: Record {
+  @Field var includeRootDirectory: Bool = true
+  @Field var compressionLevel: CompressionLevelEnum = .default
+  @Field var overwrite: Bool = true
+}
+
+struct UnzipOptions: Record {
+  @Field var createContainingDirectory: Bool = false
+  @Field var overwrite: Bool = true
+}
