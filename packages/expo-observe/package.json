@@ -3,16 +3,15 @@
   "title": "Expo Observe",
   "version": "0.1.7",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "homepage": "https://docs.expo.dev/",
   "repository": {
@@ -41,5 +40,16 @@
   "peerDependencies": {
     "expo": "workspace:*",
     "react-native": "*"
+  },
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
   }
 }

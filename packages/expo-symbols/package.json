@@ -4,17 +4,31 @@
   "description": "Provides access to the SF Symbols library on iOS, and Material Symbols on Android and web, for Expo and React Native apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./androidWeights/*": {
+      "types": {
+        "source": "./src/android/weights/*/index.ts",
+        "default": "./build/android/weights/*/index.d.ts"
+      },
+      "source": "./src/android/weights/*/index.ts",
+      "default": "./build/android/weights/*/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "exports": {
-    ".": "./build/index.js",
-    "./androidWeights/*": "./build/android/weights/*/index.js"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",

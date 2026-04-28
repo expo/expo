@@ -2,15 +2,128 @@
   "name": "expo",
   "version": "55.0.2",
   "description": "The Expo SDK",
-  "main": "src/Expo.ts",
-  "module": "src/Expo.ts",
+  "main": "build/Expo.js",
+  "module": "build/Expo.js",
   "types": "build/Expo.d.ts",
   "sideEffects": [
     "*.fx.tsx",
     "*.fx.web.tsx",
+    "*.fx.js",
+    "*.fx.web.js",
     "./src/winter/*.ts",
-    "./src/async-require/*.ts"
+    "./build/winter/*.js",
+    "./src/async-require/*.ts",
+    "./build/async-require/*.js"
   ],
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/Expo.ts",
+        "default": "./build/Expo.d.ts"
+      },
+      "source": "./src/Expo.ts",
+      "default": "./build/Expo.js"
+    },
+    "./types": {
+      "types": "./types/index.d.ts",
+      "default": "./types/index.js"
+    },
+    "./internal/async-require-module": {
+      "types": {
+        "source": "./src/async-require/asyncRequireModule.ts",
+        "default": "./build/async-require/asyncRequireModule.d.ts"
+      },
+      "source": "./src/async-require/asyncRequireModule.ts",
+      "default": "./build/async-require/asyncRequireModule.js"
+    },
+    "./internal/install-global": {
+      "types": {
+        "source": "./src/winter/installGlobal.ts",
+        "default": "./build/winter/installGlobal.d.ts"
+      },
+      "source": "./src/winter/installGlobal.ts",
+      "default": "./build/winter/installGlobal.js"
+    },
+    "./internal/*": {
+      "types": "./internal/*.d.ts",
+      "default": "./internal/*.js"
+    },
+    "./dom": {
+      "types": {
+        "source": "./src/dom/dom.ts",
+        "default": "./build/dom/dom.d.ts"
+      },
+      "source": "./src/dom/dom.ts",
+      "default": "./build/dom/dom.js"
+    },
+    "./dom/global": {
+      "types": {
+        "source": "./src/dom/global-events.ts",
+        "default": "./build/dom/global-events.d.ts"
+      },
+      "source": "./src/dom/global-events.ts",
+      "default": "./build/dom/global-events.js"
+    },
+    "./dom/*": {
+      "types": {
+        "source": "./src/dom/*.ts",
+        "default": "./build/dom/*.d.ts"
+      },
+      "source": "./src/dom/*.ts",
+      "default": "./build/dom/*.js"
+    },
+    "./fetch": {
+      "types": {
+        "source": "./src/winter/fetch/index.ts",
+        "default": "./build/winter/fetch/index.d.ts"
+      },
+      "source": "./src/winter/fetch/index.ts",
+      "default": "./build/winter/fetch/index.js"
+    },
+    "./config": {
+      "types": "./config/index.d.ts",
+      "default": "./config/index.js"
+    },
+    "./config/paths": {
+      "types": "./config/paths.d.ts",
+      "default": "./config/paths.js"
+    },
+    "./src/winter": {
+      "types": {
+        "source": "./src/winter/index.ts",
+        "default": "./build/winter/index.d.ts"
+      },
+      "source": "./src/winter/index.ts",
+      "default": "./build/winter/index.js"
+    },
+    "./src/*.ts": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./src/*": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./AppEntry.js": "./AppEntry.js",
+    "./virtual/*": "./virtual/*.js",
+    "./scripts/*.js": "./scripts/*.js",
+    "./scripts/*": "./scripts/*",
+    "./bin/*": "./bin/*",
+    "./package.json": "./package.json",
+    "./*.json": "./*.json",
+    "./*": {
+      "types": "./*.d.ts",
+      "default": "./*.js"
+    }
+  },
   "bin": {
     "expo": "bin/cli",
     "expo-modules-autolinking": "bin/autolinking",
@@ -50,7 +163,7 @@
     "template.tgz"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "../expo-module-scripts/bin/expo-build src",
     "clean": "rimraf build",
     "lint": "eslint src",
     "test": "jest",

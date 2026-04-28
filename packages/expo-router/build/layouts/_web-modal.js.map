@@ -1,1 +1,0 @@
-{"version":3,"file":"_web-modal.js","sourceRoot":"","sources":["../../src/layouts/_web-modal.tsx"],"names":[],"mappings":";;;;;AAAA,4DAAoC;AACpC,kBAAe,mBAAS,CAAC","sourcesContent":["import BaseStack from './BaseStack';\nexport default BaseStack;\n"]}

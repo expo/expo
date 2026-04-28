@@ -18,3 +18,5 @@ export const Head: React.FC<{ children?: React.ReactNode }> & {
 };
 
 Head.Provider = HelmetProvider;
+
+export default Head;

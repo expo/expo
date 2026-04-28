@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
@@ -60,7 +60,8 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
+    "@expo/config": "workspace:~55.0.8",
+    "@expo/require-utils": "workspace:~55.0.2",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "require-from-string": "^2.0.2",

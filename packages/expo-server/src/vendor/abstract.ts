@@ -264,8 +264,9 @@ export function createRequestHandler({
       headers: new Headers(response.headers),
       status: response.status,
       statusText: response.statusText,
-      cf: response.cf,
-      webSocket: response.webSocket,
+      // NOTE(@kitten): Depending on if workerd types are used this may not be defined
+      cf: (response as Response & { cf?: unknown }).cf,
+      webSocket: (response as Response & { webSocket?: unknown }).webSocket,
     };
     return createResponse(routeType, route, response.body, modifiedResponseInit);
   }

@@ -8,6 +8,8 @@ import {
   isAsyncDebugging,
 } from './environment/browser';
 
+declare const window: typeof globalThis | undefined;
+
 export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
 
 export type PlatformSelect = <T>(specifics: { [platform in PlatformSelectOSType]?: T }) => T;

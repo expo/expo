@@ -2,6 +2,24 @@
   "name": "@expo/log-box",
   "version": "55.0.7",
   "main": "app/index.ts",
+  "exports": {
+    ".": "./app/index.ts",
+    "./utils": {
+      "types": {
+        "source": "./src/utils.ts",
+        "default": "./build/utils.d.ts"
+      },
+      "source": "./src/utils.ts",
+      "default": "./build/utils.js"
+    },
+    "./package.json": "./package.json",
+    "./lib": "./lib.ts",
+    "./lib.ts": "./lib.ts",
+    "./src/*": "./src/*.ts",
+    "./src/*.ts": "./src/*.ts",
+    "./*.js": "./*.js",
+    "./*": "./*.js"
+  },
   "scripts": {
     "start": "expo start",
     "lint": "expo-module lint",
@@ -9,13 +27,11 @@
     "clean": "run-p clean:lib clean:bundle",
     "clean:lib": "rimraf build",
     "clean:bundle": "rimraf dist",
-    "watch": "run-p watch:lib watch:bundle",
-    "watch:lib": "tsc -p tsconfig.lib.json --watch",
+    "watch": "run-p watch:bundle",
     "watch:bundle": "node ./scripts/watch-bundle.mjs",
-    "prepare": "run-s build:bundle",
     "prepublishOnly": "run-s clean build",
     "build": "run-s build:lib build:bundle",
-    "build:lib": "tsc -p tsconfig.lib.json",
+    "build:lib": "expo-build src",
     "build:bundle": "node ./scripts/build-bundle.mjs",
     "export:web": "expo export -p web --no-minify"
   },

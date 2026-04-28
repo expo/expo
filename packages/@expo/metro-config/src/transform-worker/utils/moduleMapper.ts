@@ -2,17 +2,15 @@ import BuiltinModule from 'module';
 import path from 'path';
 
 declare module 'module' {
-  namespace Module {
-    // Internal Function of Node.js:
-    // This is called when resolving a module,
-    // e.g. `require('./my-module')` -> `_resolveFilename('./my-module', ...)` is called
-    export function _resolveFilename(
-      request: string,
-      parent: { id: string; filename: string; paths: string[] } | string | null,
-      isMain?: boolean,
-      options?: { paths?: string[] }
-    ): string;
-  }
+  // Internal Function of Node.js:
+  // This is called when resolving a module,
+  // e.g. `require('./my-module')` -> `_resolveFilename('./my-module', ...)` is called
+  export function _resolveFilename(
+    request: string,
+    parent: { id: string; filename: string; paths: string[] } | string | null,
+    isMain?: boolean,
+    options?: { paths?: string[] }
+  ): string;
 }
 
 const debug = require('debug')(

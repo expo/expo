@@ -13,6 +13,7 @@ export const createFramework = (
     targetName,
     Constants.Target.Framework,
     targetName,
+    // @ts-expect-error: TODO(@kitten): This was untyped before, now this errors as an excessive argument
     bundleIdentifier
   ) as unknown as Target;
 };
@@ -114,11 +115,12 @@ export const configureBuildSettings = (
   const destTargetKey = Object.keys(nativeTargetSection).find(
     (key) =>
       !key.endsWith('_comment') &&
-      nativeTargetSection[key].productType !== Constants.Target.ApplicationProductType
+      nativeTargetSection[key]!.productType !== Constants.Target.ApplicationProductType
   );
-  const destTarget = nativeTargetSection[destTargetKey];
-
-  destTarget.buildConfigurationList = configurationList.uuid;
+  // TODO(@kitten): This was untyped before, so didn't catch `destTargetKey === undefined`, fix the non-null here
+  const destTarget = nativeTargetSection[destTargetKey!]!;
+  // TODO(@kitten): The uuid is typed as unknown in the typings
+  destTarget.buildConfigurationList = configurationList.uuid as string;
 };
 
 const getCommonBuildSettings = (

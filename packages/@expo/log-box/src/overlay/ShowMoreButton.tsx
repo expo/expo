@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { SHOW_MORE_MESSAGE_LENGTH } from './Constants';
 import type { Message } from '../Data/Types';
 

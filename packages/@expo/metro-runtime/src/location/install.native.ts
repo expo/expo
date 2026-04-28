@@ -71,6 +71,9 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
   return _fetch;
 }
 
+// TODO(@kitten): Investigate if global can be swapped to globalThis
+declare const global: typeof globalThis;
+
 const extra = manifest?.extra as ExpoExtraRouterConfig | null;
 if (extra?.router?.origin !== false) {
   // Polyfill window.location in native runtimes.

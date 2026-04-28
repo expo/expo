@@ -8,12 +8,11 @@
     "lazy-imports-blacklist.js"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "repository": {
     "type": "git",
@@ -93,5 +92,6 @@
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2",
     "resolve-from": "^5.0.0"
-  }
+  },
+  "types": "build/index.d.ts"
 }

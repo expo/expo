@@ -3,8 +3,20 @@
   "version": "0.5.2",
   "description": "Mac OS X Plist parser/builder for Node.js and browsers",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "typecheck": "expo-module typecheck",

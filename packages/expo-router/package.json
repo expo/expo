@@ -4,8 +4,198 @@
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
-  "main": "build/index",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.tsx",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.tsx",
+      "default": "./build/index.js"
+    },
+    "./internal/*": {
+      "types": {
+        "source": "./src/internal/*.ts",
+        "default": "./build/internal/*.d.ts"
+      },
+      "source": "./src/internal/*.ts",
+      "default": "./build/internal/*.js"
+    },
+    "./build/Route": {
+      "types": {
+        "source": "./src/Route.tsx",
+        "default": "./build/Route.d.ts"
+      },
+      "source": "./src/Route.ts",
+      "default": "./build/Route.js"
+    },
+    "./build/matchers": {
+      "types": {
+        "source": "./src/matchers.tsx",
+        "default": "./build/matchers.d.ts"
+      },
+      "source": "./src/matchers.ts",
+      "default": "./build/matchers.js"
+    },
+    "./build/*.js": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./build/*": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./drawer": {
+      "types": {
+        "source": "./src/layouts/Drawer.tsx",
+        "default": "./build/layouts/Drawer.d.ts"
+      },
+      "source": "./src/layouts/Drawer.tsx",
+      "default": "./build/layouts/Drawer.js"
+    },
+    "./head": {
+      "types": {
+        "source": "./src/head/ExpoHead.tsx",
+        "default": "./build/head/ExpoHead.d.ts"
+      },
+      "source": "./src/head/ExpoHead.tsx",
+      "default": "./build/head/ExpoHead.js"
+    },
+    "./html": {
+      "types": {
+        "source": "./src/static/html.tsx",
+        "default": "./build/static/html.d.ts"
+      },
+      "source": "./src/static/html.tsx",
+      "default": "./build/static/html.js"
+    },
+    "./js-stack": {
+      "types": {
+        "source": "./src/layouts/JSStack.tsx",
+        "default": "./build/layouts/JSStack.d.ts"
+      },
+      "source": "./src/layouts/JSStack.tsx",
+      "default": "./build/layouts/JSStack.js"
+    },
+    "./js-tabs": {
+      "types": {
+        "source": "./src/layouts/Tabs.tsx",
+        "default": "./build/layouts/Tabs.d.ts"
+      },
+      "source": "./src/layouts/Tabs.tsx",
+      "default": "./build/layouts/Tabs.js"
+    },
+    "./js-top-tabs": {
+      "types": {
+        "source": "./src/layouts/TopTabs.tsx",
+        "default": "./build/layouts/TopTabs.d.ts"
+      },
+      "source": "./src/layouts/TopTabs.tsx",
+      "default": "./build/layouts/TopTabs.js"
+    },
+    "./stack": {
+      "types": {
+        "source": "./src/layouts/Stack.tsx",
+        "default": "./build/layouts/Stack.d.ts"
+      },
+      "source": "./src/layouts/Stack.tsx",
+      "default": "./build/layouts/Stack.js"
+    },
+    "./tabs": {
+      "types": {
+        "source": "./src/layouts/Tabs.tsx",
+        "default": "./build/layouts/Tabs.d.ts"
+      },
+      "source": "./src/layouts/Tabs.tsx",
+      "default": "./build/layouts/Tabs.js"
+    },
+    "./testing-library": {
+      "types": {
+        "source": "./src/testing-library/index.tsx",
+        "default": "./build/testing-library/index.d.ts"
+      },
+      "source": "./src/testing-library/index.tsx",
+      "default": "./build/testing-library/index.js"
+    },
+    "./ui": {
+      "types": {
+        "source": "./src/ui/index.ts",
+        "default": "./build/ui/index.d.ts"
+      },
+      "source": "./src/ui/index.ts",
+      "default": "./build/ui/index.js"
+    },
+    "./unstable-native-tabs": {
+      "types": {
+        "source": "./src/native-tabs/index.ts",
+        "default": "./build/native-tabs/index.d.ts"
+      },
+      "source": "./src/native-tabs/index.ts",
+      "default": "./build/native-tabs/index.js"
+    },
+    "./split-view": {
+      "types": {
+        "source": "./src/split-view/index.ts",
+        "default": "./build/split-view/index.d.ts"
+      },
+      "source": "./src/split-view/index.ts",
+      "default": "./build/split-view/index.js"
+    },
+    "./rsc": {
+      "types": {
+        "source": "./src/rsc/exports.ts",
+        "default": "./build/rsc/exports.d.ts"
+      },
+      "source": "./src/rsc/exports.ts",
+      "default": "./build/rsc/exports.js"
+    },
+    "./rsc/internal": {
+      "types": {
+        "source": "./src/rsc/router/host.tsx",
+        "default": "./build/rsc/router/host.d.ts"
+      },
+      "source": "./src/rsc/router/host.tsx",
+      "default": "./build/rsc/router/host.js"
+    },
+    "./link": {
+      "types": "./link/index.d.ts",
+      "default": "./link/index.js"
+    },
+    "./rsc/headers": {
+      "types": "./rsc/headers.d.ts",
+      "default": "./rsc/headers.js"
+    },
+    "./rsc/headers.js": {
+      "types": "./rsc/headers.d.ts",
+      "default": "./rsc/headers.js"
+    },
+    "./_ctx-html": "./_ctx-html.js",
+    "./_ctx-shared": "./_ctx-shared.js",
+    "./_ctx": {
+      "types": "./_ctx.d.ts",
+      "default": "./_ctx.js"
+    },
+    "./_error.js": "./_error.js",
+    "./entry-classic.js": "./entry-classic.js",
+    "./entry-classic": "./entry-classic.js",
+    "./entry.js": "./entry.js",
+    "./entry": "./entry.js",
+    "./rsc/entry": "./rsc/entry.js",
+    "./rsc/entry.js": "./rsc/entry.js",
+    "./assets/*": "./assets/*",
+    "./app.plugin.js": "./app.plugin.js",
+    "./package.json": "./package.json"
+  },
   "sideEffects": [
     "rsc/entry.js",
     "entry-classic.js",
@@ -72,7 +262,9 @@
   },
   "homepage": "https://docs.expo.dev/routing/introduction/",
   "scripts": {
-    "build": "node ./scripts/build.js",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build cjs:src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

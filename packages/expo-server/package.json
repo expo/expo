@@ -7,35 +7,63 @@
   "sideEffects": false,
   "exports": {
     ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/cjs/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "import": "./build/mjs/index.js",
       "require": "./build/cjs/index.js"
     },
     "./private": {
+      "types": {
+        "source": "./src/private.ts",
+        "default": "./build/cjs/private.d.ts"
+      },
+      "source": "./src/private.ts",
       "import": "./build/mjs/private.js",
       "require": "./build/cjs/private.js"
     },
     "./adapter/*": {
+      "types": {
+        "source": "./src/vendor/*.ts",
+        "default": "./build/cjs/vendor/*.d.ts"
+      },
+      "source": "./src/vendor/*.ts",
       "import": "./build/mjs/vendor/*.js",
       "require": "./build/cjs/vendor/*.js"
     },
     "./vendor/*": {
+      "types": {
+        "source": "./src/vendor/*.ts",
+        "default": "./build/cjs/vendor/*.d.ts"
+      },
+      "source": "./src/vendor/*.ts",
       "import": "./build/mjs/vendor/*.js",
       "require": "./build/cjs/vendor/*.js"
     },
     "./runtime/*": {
+      "types": {
+        "source": "./src/runtime/*.ts",
+        "default": "./build/cjs/runtime/*.d.ts"
+      },
+      "source": "./src/runtime/*.ts",
       "import": "./build/mjs/runtime/index.js",
       "require": "./build/cjs/runtime/index.js"
     },
     "./build/*": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/cjs/*.d.ts"
+      },
+      "source": "./src/*.ts",
       "import": "./build/mjs/*.js",
       "require": "./build/cjs/*.js"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "run-p build:cjs build:mjs",
-    "build:cjs": "tsc -p tsconfig.json",
-    "build:mjs": "tsc -p tsconfig.mjs.json",
+    "build": "expo-build cjs:src=build/cjs src=build/mjs",
     "clean": "rimraf build",
     "prepublishOnly": "run-s clean build",
     "lint": "eslint .",

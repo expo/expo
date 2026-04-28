@@ -4,9 +4,8 @@ export function addTargetDependency(xcodeProject: XcodeProject, target: { uuid: 
   if (!xcodeProject.hash.project.objects['PBXTargetDependency']) {
     xcodeProject.hash.project.objects['PBXTargetDependency'] = {};
   }
-  if (!xcodeProject.hash.project.objects['PBXContainerItemProxy']) {
-    xcodeProject.hash.project.objects['PBXContainerItemProxy'] = {};
-  }
+  // @ts-expect-error: TODO(@kitten): This was untyped before and is now failing
+  xcodeProject.hash.project.objects['PBXContainerItemProxy'] ??= {};
 
   xcodeProject.addTargetDependency(xcodeProject.getFirstTarget().uuid, [target.uuid]);
 }

@@ -1,9 +1,11 @@
 {
   "extends": "expo-module-scripts/tsconfig.node",
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./build"
-  },
   "include": ["./src"],
-  "exclude": ["**/__mocks__/*", "**/__tests__/*"]
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "compilerOptions": {
+    "customConditions": [],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "rootDir": "./src"
+  }
 }

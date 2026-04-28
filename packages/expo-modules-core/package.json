@@ -2,30 +2,51 @@
   "name": "expo-modules-core",
   "version": "55.0.12",
   "description": "The core of Expo Modules architecture",
-  "main": "src/index.ts",
+  "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": [
     "*.fx.ts",
-    "./src/polyfill/*.ts"
+    "*.fx.js",
+    "./src/polyfill/*.ts",
+    "./build/polyfill/*.js"
   ],
   "exports": {
-    "./package.json": "./package.json",
     ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
     },
-    "./types": "./types.d.ts",
+    "./types": {
+      "types": {
+        "source": "./src/types.ts",
+        "default": "./build/types.d.ts"
+      },
+      "source": "./src/types.ts",
+      "default": "./build/types.js"
+    },
     "./src/polyfill/dangerous-internal": {
-      "types": "./build/polyfill/dangerous-internal.d.ts",
-      "default": "./src/polyfill/dangerous-internal.ts"
+      "types": {
+        "source": "./src/polyfill/dangerous-internal.ts",
+        "default": "./build/polyfill/dangerous-internal.d.ts"
+      },
+      "source": "./src/polyfill/dangerous-internal.ts",
+      "default": "./build/polyfill/dangerous-internal.js"
     },
     "./src/uuid": {
-      "types": "./build/uuid/index.d.ts",
-      "default": "./src/uuid/index.ts"
-    }
+      "types": {
+        "source": "./src/uuid/index.d.ts",
+        "default": "./build/uuid/index.d.ts"
+      },
+      "source": "./src/uuid/index.ts",
+      "build": "./build/uuid/index.js"
+    },
+    "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

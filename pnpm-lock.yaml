@@ -76,6 +76,9 @@ importers:
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.2)
+      turbo:
+        specifier: 2.8.10
+        version: 2.8.10
       typescript:
         specifier: ^6.0.2
         version: 6.0.2
@@ -1954,18 +1957,6 @@ importers:
       '@playwright/test':
         specifier: ^1.59.0
         version: 1.59.0
-      '@swc/core':
-        specifier: ^1.11.11
-        version: 1.15.18
-      '@taskr/clear':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@taskr/esnext':
-        specifier: ^1.1.0
-        version: 1.1.0
-      '@taskr/watch':
-        specifier: ^1.1.0
-        version: 1.1.0
       '@types/accepts':
         specifier: ^1.3.5
         version: 1.3.7
@@ -2068,9 +2059,6 @@ importers:
       playwright:
         specifier: ^1.59.0
         version: 1.59.0
-      taskr:
-        specifier: ^1.1.0
-        version: 1.1.0
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
@@ -2308,6 +2296,12 @@ importers:
         specifier: ^7.6.0
         version: 7.7.4
     devDependencies:
+      '@expo/config':
+        specifier: workspace:~55.0.8
+        version: link:../config
+      '@expo/require-utils':
+        specifier: workspace:~55.0.2
+        version: link:../require-utils
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
@@ -2320,9 +2314,6 @@ importers:
       '@types/semver':
         specifier: ^7.5.8
         version: 7.7.1
-      expo:
-        specifier: workspace:*
-        version: link:../../expo
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
@@ -4074,8 +4065,8 @@ importers:
         specifier: ^7.5.8
         version: 7.7.1
       '@vercel/ncc':
-        specifier: 0.38.3
-        version: 0.38.3
+        specifier: ^0.38.3
+        version: 0.38.4
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
@@ -4645,6 +4636,9 @@ importers:
       '@react-native/jest-preset':
         specifier: 0.85.2
         version: 0.85.2(@babel/core@7.29.0)(react@19.2.3)
+      '@swc/core':
+        specifier: ^1.15.18
+        version: 1.15.18
       '@testing-library/react-native':
         specifier: ^13.3.0
         version: 13.3.3(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.2)))(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
@@ -9478,10 +9472,6 @@ packages:
     resolution: {integrity: sha512-lrW200hZdbfRtztbygyaq/6jP6AKE8qQN2KvPcJ+x7wiD038YtnYtZ82IMNJ69GJibV7bwL3y9FgK+5w/pYt6g==}
     cpu: [x64]
     os: [win32]
-
-  '@vercel/ncc@0.38.3':
-    resolution: {integrity: sha512-rnK6hJBS6mwc+Bkab+PGPs9OiS0i/3kdTO+CkI8V0/VrW3vmz7O2Pxjw/owOlmo6PKEIxRSeZKv/kuL9itnpYA==}
-    hasBin: true
 
   '@vercel/ncc@0.38.4':
     resolution: {integrity: sha512-8LwjnlP39s08C08J5NstzriPvW1SP8Zfpp1BvC2sI35kPeZnHfxVkCwu4/+Wodgnd60UtT1n8K8zw+Mp7J9JmQ==}
@@ -15163,6 +15153,40 @@ packages:
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
+  turbo-darwin-64@2.8.10:
+    resolution: {integrity: sha512-A03fXh+B7S8mL3PbdhTd+0UsaGrhfyPkODvzBDpKRY7bbeac4MDFpJ7I+Slf2oSkCEeSvHKR7Z4U71uKRUfX7g==}
+    cpu: [x64]
+    os: [darwin]
+
+  turbo-darwin-arm64@2.8.10:
+    resolution: {integrity: sha512-sidzowgWL3s5xCHLeqwC9M3s9M0i16W1nuQF3Mc7fPHpZ+YPohvcbVFBB2uoRRHYZg6yBnwD4gyUHKTeXfwtXA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  turbo-linux-64@2.8.10:
+    resolution: {integrity: sha512-YK9vcpL3TVtqonB021XwgaQhY9hJJbKKUhLv16osxV0HkcQASQWUqR56yMge7puh6nxU67rQlTq1b7ksR1T3KA==}
+    cpu: [x64]
+    os: [linux]
+
+  turbo-linux-arm64@2.8.10:
+    resolution: {integrity: sha512-3+j2tL0sG95iBJTm+6J8/45JsETQABPqtFyYjVjBbi6eVGdtNTiBmHNKrbvXRlQ3ZbUG75bKLaSSDHSEEN+btQ==}
+    cpu: [arm64]
+    os: [linux]
+
+  turbo-windows-64@2.8.10:
+    resolution: {integrity: sha512-hdeF5qmVY/NFgiucf8FW0CWJWtyT2QPm5mIsX0W1DXAVzqKVXGq+Zf+dg4EUngAFKjDzoBeN6ec2Fhajwfztkw==}
+    cpu: [x64]
+    os: [win32]
+
+  turbo-windows-arm64@2.8.10:
+    resolution: {integrity: sha512-QGdr/Q8LWmj+ITMkSvfiz2glf0d7JG0oXVzGL3jxkGqiBI1zXFj20oqVY0qWi+112LO9SVrYdpHS0E/oGFrMbQ==}
+    cpu: [arm64]
+    os: [win32]
+
+  turbo@2.8.10:
+    resolution: {integrity: sha512-OxbzDES66+x7nnKGg2MwBA1ypVsZoDTLHpeaP4giyiHSixbsiTaMyeJqbEyvBdp5Cm28fc+8GG6RdQtic0ijwQ==}
+    hasBin: true
+
   type-check@0.4.0:
     resolution: {integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==}
     engines: {node: '>= 0.8.0'}
@@ -19796,8 +19820,6 @@ snapshots:
 
   '@unrs/resolver-binding-win32-x64-msvc@1.11.1':
     optional: true
-
-  '@vercel/ncc@0.38.3': {}
 
   '@vercel/ncc@0.38.4': {}
 
@@ -26769,6 +26791,33 @@ snapshots:
   tunnel-agent@0.6.0:
     dependencies:
       safe-buffer: 5.2.1
+
+  turbo-darwin-64@2.8.10:
+    optional: true
+
+  turbo-darwin-arm64@2.8.10:
+    optional: true
+
+  turbo-linux-64@2.8.10:
+    optional: true
+
+  turbo-linux-arm64@2.8.10:
+    optional: true
+
+  turbo-windows-64@2.8.10:
+    optional: true
+
+  turbo-windows-arm64@2.8.10:
+    optional: true
+
+  turbo@2.8.10:
+    optionalDependencies:
+      turbo-darwin-64: 2.8.10
+      turbo-darwin-arm64: 2.8.10
+      turbo-linux-64: 2.8.10
+      turbo-linux-arm64: 2.8.10
+      turbo-windows-64: 2.8.10
+      turbo-windows-arm64: 2.8.10
 
   type-check@0.4.0:
     dependencies:

@@ -452,7 +452,7 @@ declare module 'react-native-web/dist/modules/useElementLayout' {
 
   export default function useElementLayout(
     ref: ElementRef<any>,
-    onLayout?: ?((e: LayoutEvent) => void)
+    onLayout?: ((e: LayoutEvent) => void) | undefined | null
   ): void;
 }
 
@@ -1010,7 +1010,7 @@ declare module 'react-native-web/dist/types/styles' {
           | { translateZ: NumberOrString }
           | { translate3d: string }
         )[];
-    transformOrigin?: ?(string | NumberOrString[]);
-    transformStyle?: ?('flat' | 'preserve-3d');
+    transformOrigin?: string | NumberOrString[] | undefined | null;
+    transformStyle?: 'flat' | 'preserve-3d' | undefined | null;
   };
 }

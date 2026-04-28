@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "The Expo inline modules",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

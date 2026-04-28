@@ -81,7 +81,7 @@ if [ "$CONFIGURATION" != "Debug" ]; then
   fi
 fi
 `,
-    });
+    }, undefined);
 
     return config;
   });

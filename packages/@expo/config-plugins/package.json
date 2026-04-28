@@ -6,27 +6,57 @@
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./build/android": {
-      "types": "./build/android/index.d.ts",
+      "types": {
+        "source": "./src/android/index.ts",
+        "default": "./build/android/index.d.ts"
+      },
+      "source": "./src/android/index.ts",
       "default": "./build/android/index.js"
     },
     "./build/ios": {
-      "types": "./build/ios/index.d.ts",
+      "types": {
+        "source": "./src/ios/index.ts",
+        "default": "./build/ios/index.d.ts"
+      },
+      "source": "./src/ios/index.ts",
       "default": "./build/ios/index.js"
     },
     "./build": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "default": "./build/index.js"
     },
-    "./build/*.js": "./build/*.js",
-    "./build/*": "./build/*.js",
+    "./build/*.js": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
+    "./build/*": {
+      "types": {
+        "source": "./src/*.ts",
+        "default": "./build/*.d.ts"
+      },
+      "source": "./src/*.ts",
+      "default": "./build/*.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\",\"src/**/__integration_tests__/*\"",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "prepublishOnly": "pnpm run clean && pnpm run build",

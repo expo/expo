@@ -5,13 +5,23 @@
   "main": "build/Manifests.js",
   "types": "build/Manifests.d.ts",
   "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/Manifests.ts",
+        "default": "./build/Manifests.d.ts"
+      },
+      "source": "./src/Manifests.ts",
+      "default": "./build/Manifests.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",

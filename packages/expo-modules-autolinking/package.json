@@ -5,7 +5,6 @@
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
-    "./package.json": "./package.json",
     ".": {
       "types": "./build/index.d.ts",
       "require": "./build/index.js",
@@ -16,11 +15,12 @@
       "require": "./build/exports.js",
       "default": "./build/exports.js"
     },
+    "./package.json": "./package.json",
     "./*": "./*.js",
     "./*.js": "./*.js"
   },
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",

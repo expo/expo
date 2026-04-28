@@ -9,13 +9,14 @@
     "*.fx.web.js"
   ],
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "prepublishOnly": "expo-module prepublishOnly"
   },
   "keywords": [
     "react-native",
@@ -29,7 +30,19 @@
     "./package.json": "./package.json",
     "./plugin": "./plugin/build/index.js",
     ".": {
-      "react-server": "./build/index.server.js",
+      "react-server": {
+        "types": {
+          "source": "./src/index.server.ts",
+          "default": "./build/index.server.d.ts"
+        },
+        "source": "./src/index.server.ts",
+        "default": "./build/index.server.js"
+      },
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
       "default": "./build/index.js"
     }
   },

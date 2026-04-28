@@ -219,7 +219,7 @@ function metroRequire(
         .map((id) => modules.get(id)?.verboseName ?? '[unknown]');
 
       if (shouldPrintRequireCycle(cycle)) {
-        cycle.push(cycle[0]); // We want to print A -> B -> A:
+        cycle.push(cycle[0]!); // We want to print A -> B -> A:
 
         console.warn(
           `Require cycle: ${cycle.join(' -> ')}\n\n` +
@@ -243,7 +243,7 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   // const regExps = eval(`${__METRO_GLOBAL_PREFIX__}__requireCycleIgnorePatterns`);
   const rcip = __METRO_GLOBAL_PREFIX__ + '__requireCycleIgnorePatterns';
   // Try using the globalThis version to reach outside the bundle in SSR bundles.
-  const regExps = globalThis[rcip] ?? global[rcip] ?? [/(^|\/|\\)node_modules($|\/|\\)/];
+  const regExps = (globalThis as any)[rcip] ?? global[rcip] ?? [/(^|\/|\\)node_modules($|\/|\\)/];
   if (!Array.isArray(regExps)) {
     return true;
   }
@@ -299,7 +299,7 @@ function metroImportAll(
 }
 
 // NOTE(EvanBacon): Tag for e2e testing.
-metroRequire[Symbol.for('expo.require')] = true;
+(metroRequire as any)[Symbol.for('expo.require')] = true;
 
 metroRequire.importAll = metroImportAll;
 
@@ -340,7 +340,7 @@ metroRequire.unguarded = function requireUnguarded(
         .map((id) => modules.get(id)?.verboseName ?? '[unknown]');
 
       if (shouldPrintRequireCycle(cycle)) {
-        cycle.push(cycle[0]); // We want to print A -> B -> A:
+        cycle.push(cycle[0]!); // We want to print A -> B -> A:
 
         console.warn(
           `Require cycle: ${cycle.join(' -> ')}\n\n` +
@@ -657,7 +657,7 @@ if (__DEV__) {
           }
           // If we bubble through the roof, there is no way to do a hot update.
           // Bail out altogether. This is the failure case.
-          const parentIDs = inverseDependencies[pendingID];
+          const parentIDs = inverseDependencies[pendingID]!;
           if (parentIDs.length === 0) {
             // Reload the app because the hot reload can't succeed.
             // This should work both on web and React Native.
@@ -692,7 +692,7 @@ if (__DEV__) {
     // Run the actual factories.
     const seenModuleIDs = new Set<ModuleID>();
     for (let i = 0; i < updatedModuleIDs.length; i++) {
-      const updatedID = updatedModuleIDs[i];
+      const updatedID = updatedModuleIDs[i]!;
       if (seenModuleIDs.has(updatedID)) {
         continue;
       }
@@ -735,7 +735,7 @@ if (__DEV__) {
           // We'll be conservative. The only case in which we won't do a full
           // reload is if all parent modules are also refresh boundaries.
           // In that case we'll add them to the current queue.
-          const parentIDs = inverseDependencies[updatedID];
+          const parentIDs = inverseDependencies[updatedID]!;
           if (parentIDs.length === 0) {
             // Looks like we bubbled to the root. Can't recover from that.
             performFullRefresh(
@@ -749,7 +749,7 @@ if (__DEV__) {
           }
           // Schedule all parent refresh boundaries to re-run in this loop.
           for (let j = 0; j < parentIDs.length; j++) {
-            const parentID = parentIDs[j];
+            const parentID = parentIDs[j]!;
             const parentMod = modules.get(parentID);
             if (parentMod == null) {
               throw new Error('[Refresh] Expected to find parent module.');

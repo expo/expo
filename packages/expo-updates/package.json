@@ -8,13 +8,29 @@
   "bin": {
     "expo-updates": "bin/cli.js"
   },
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:utils && pnpm run build:cli",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "build:utils": "expo-build --base utils cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
     "pretest:e2e-cli": "expo-module prepublishOnly",
     "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js"
   },

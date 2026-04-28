@@ -3,7 +3,7 @@ import * as LogBoxData from './Data/LogBoxData';
 import type { ExtendedExceptionData } from './Data/parseLogBoxLog';
 import { parseLogBoxLog } from './Data/parseLogBoxLog';
 
-export { ExtendedExceptionData, IgnorePattern, LogData };
+export type { ExtendedExceptionData, IgnorePattern, LogData };
 
 /**
  * LogBox displays logs in the app.

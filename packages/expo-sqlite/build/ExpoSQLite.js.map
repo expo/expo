@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoSQLite.js","sourceRoot":"","sources":["../src/ExpoSQLite.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,MAAM,CAAC;AAC3C,eAAe,mBAAmB,CAAC,YAAY,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo';\nexport default requireNativeModule('ExpoSQLite');\n"]}
