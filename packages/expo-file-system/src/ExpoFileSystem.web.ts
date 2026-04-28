@@ -10,9 +10,39 @@ class FileSystemDirectory {
   }
 }
 
+class FileSystemUploadTask {
+  start() {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve({ body: '', status: 0, headers: {} });
+  }
+  cancel() {
+    console.warn('expo-file-system is not supported on web');
+  }
+}
+
+class FileSystemDownloadTask {
+  start() {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve(null);
+  }
+  pause() {
+    console.warn('expo-file-system is not supported on web');
+    return { resumeData: '' };
+  }
+  resume() {
+    console.warn('expo-file-system is not supported on web');
+    return Promise.resolve(null);
+  }
+  cancel() {
+    console.warn('expo-file-system is not supported on web');
+  }
+}
+
 export default {
   FileSystemDirectory,
   FileSystemFile,
+  FileSystemUploadTask,
+  FileSystemDownloadTask,
   downloadFileAsync: () => {
     console.warn('expo-file-system is not supported on web');
     return Promise.resolve();

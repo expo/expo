@@ -49,7 +49,7 @@ struct UploadOptions: Record {
   @Field var headers: [String: String]?
   @Field var httpMethod: HttpMethod = .post
   @Field var sessionType: SessionType = .background
-  @Field var uploadType: UploadType = .binaryContent
+  @Field var uploadType: LegacyUploadType = .binaryContent
 
   // Multipart
   @Field var fieldName: String?
@@ -68,7 +68,7 @@ enum HttpMethod: String, Enumerable {
   case patch = "PATCH"
 }
 
-enum UploadType: Int, Enumerable {
+enum LegacyUploadType: Int, Enumerable {
   case binaryContent = 0
   case multipart = 1
 }

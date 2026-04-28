@@ -26,6 +26,7 @@ dependencies {
   api 'com.squareup.okio:okio:2.9.0'
   api "androidx.legacy:legacy-support-v4:1.0.0"
   api "androidx.documentfile:documentfile:1.1.0"
+  implementation 'com.facebook.react:react-android'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.16'

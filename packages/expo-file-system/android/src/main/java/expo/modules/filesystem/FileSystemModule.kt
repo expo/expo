@@ -344,5 +344,47 @@ class FileSystemModule : Module() {
         directory.listAsRecords()
       }
     }
+
+    Class(FileSystemUploadTask::class) {
+      Constructor {
+        FileSystemUploadTask()
+      }
+
+      Events("progress")
+
+      AsyncFunction("start") Coroutine { task: FileSystemUploadTask, url: String, file: FileSystemFile, options: UploadTaskOptions ->
+        task.start(url, file, options)
+      }
+
+      Function("cancel") { task: FileSystemUploadTask ->
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemDownloadTask::class) {
+      Constructor {
+        FileSystemDownloadTask()
+      }
+
+      Events("progress")
+
+      AsyncFunction("start") Coroutine { task: FileSystemDownloadTask, url: URI, to: FileSystemPath, options: DownloadTaskOptions? ->
+        to.validatePermission(FilePermissionService.Permission.WRITE)
+        task.start(url, to, options)
+      }
+
+      Function("pause") { task: FileSystemDownloadTask ->
+        task.pause()
+      }
+
+      AsyncFunction("resume") Coroutine { task: FileSystemDownloadTask, url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions? ->
+        to.validatePermission(FilePermissionService.Permission.WRITE)
+        task.resume(url, to, resumeData, options)
+      }
+
+      Function("cancel") { task: FileSystemDownloadTask ->
+        task.cancel()
+      }
+    }
   }
 }
