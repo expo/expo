@@ -206,8 +206,8 @@ export function handleUrlParams(route: ParsedRoute, params?: queryString.ParsedQ
 
 export function spreadParamsAcrossAllStates(state: InitialState, params?: Record<string, any>) {
   while (state) {
-    const route = state.routes[0];
-    (route as any).params = Object.assign({}, route.params, params);
+    const route: any = state.routes[0]!;
+    route.params = Object.assign({}, route.params, params);
   }
 }
 
@@ -357,12 +357,12 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
         return -1;
       }
 
-      const aWildCard = a.parts[i].startsWith('*');
-      const bWildCard = b.parts[i].startsWith('*');
+      const aWildCard = a.parts[i]!.startsWith('*');
+      const bWildCard = b.parts[i]!.startsWith('*');
       // if both are wildcard we compare next component
       if (aWildCard && bWildCard) {
-        const aNotFound = a.parts[i].match(/^[*]not-found$/);
-        const bNotFound = b.parts[i].match(/^[*]not-found$/);
+        const aNotFound = a.parts[i]!.match(/^[*]not-found$/);
+        const bNotFound = b.parts[i]!.match(/^[*]not-found$/);
 
         if (aNotFound && bNotFound) {
           continue;
@@ -382,12 +382,12 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
         return -1;
       }
 
-      const aSlug = a.parts[i].startsWith(':');
-      const bSlug = b.parts[i].startsWith(':');
+      const aSlug = a.parts[i]!.startsWith(':');
+      const bSlug = b.parts[i]!.startsWith(':');
       // if both are wildcard we compare next component
       if (aSlug && bSlug) {
-        const aNotFound = a.parts[i].match(/^[*]not-found$/);
-        const bNotFound = b.parts[i].match(/^[*]not-found$/);
+        const aNotFound = a.parts[i]!.match(/^[*]not-found$/);
+        const bNotFound = b.parts[i]!.match(/^[*]not-found$/);
 
         if (aNotFound && bNotFound) {
           continue;
@@ -456,7 +456,7 @@ export function parseQueryParams(
       }
     } else {
       const values = parseConfig?.hasOwnProperty(name)
-        ? searchParams.getAll(name).map((value) => parseConfig[name](value))
+        ? searchParams.getAll(name).map((value) => parseConfig[name]!(value))
         : searchParams.getAll(name);
 
       // searchParams.getAll returns an array.

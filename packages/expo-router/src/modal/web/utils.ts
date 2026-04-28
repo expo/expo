@@ -82,7 +82,7 @@ export function convertStackStateToNonModalState(
 
   // Remove every modal-type route from the stack on web.
   const routes = state.routes.filter((route) => {
-    return !isModalPresentation(descriptors[route.key].options);
+    return !isModalPresentation(descriptors[route.key]!.options);
   });
 
   // Recalculate the active index so it still points at the same non-modal route, or –
@@ -110,7 +110,7 @@ export function findLastNonModalIndex(
 ) {
   // Iterate backwards through the stack to find the last non-modal route.
   for (let i = state.routes.length - 1; i >= 0; i--) {
-    if (!isModalPresentation(descriptors[state.routes[i].key].options)) {
+    if (!isModalPresentation(descriptors[state.routes[i]!.key]!.options)) {
       return i;
     }
   }

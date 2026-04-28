@@ -59,7 +59,7 @@ export function useTabSlot({
   renderFn = defaultTabsSlotRender,
 }: TabSlotProps = {}) {
   const { state, descriptors } = useNavigatorContext();
-  const focusedRouteKey = state.routes[state.index].key;
+  const focusedRouteKey = state.routes[state.index]!.key;
   const [loaded, setLoaded] = useState({ [focusedRouteKey]: true });
 
   if (!loaded[focusedRouteKey]) {
@@ -79,7 +79,7 @@ export function useTabSlot({
             {renderFn(descriptor, {
               index,
               isFocused: state.index === index,
-              loaded: loaded[route.key],
+              loaded: loaded[route.key]!,
               detachInactiveScreens,
             })}
           </TabContext.Provider>

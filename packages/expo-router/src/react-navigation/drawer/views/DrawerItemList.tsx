@@ -23,8 +23,8 @@ type Props = {
 export function DrawerItemList({ state, navigation, descriptors }: Props) {
   const { buildHref } = useLinkBuilder();
 
-  const focusedRoute = state.routes[state.index];
-  const focusedDescriptor = descriptors[focusedRoute.key];
+  const focusedRoute = state.routes[state.index]!;
+  const focusedDescriptor = descriptors[focusedRoute!.key]!;
   const focusedOptions = focusedDescriptor.options;
 
   const {
@@ -59,7 +59,7 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
       drawerLabelStyle,
       drawerItemStyle,
       drawerAllowFontScaling,
-    } = descriptors[route.key].options;
+    } = descriptors[route.key]!.options;
 
     return (
       <DrawerItem

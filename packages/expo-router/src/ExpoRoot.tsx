@@ -179,7 +179,7 @@ function Content() {
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
   );
 }
 

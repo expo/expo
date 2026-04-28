@@ -86,7 +86,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       let shouldReset = !state.history?.some((item) => item.key === route?.key) && !route.state;
 
       if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
-        shouldReset = state.routes[state.index ?? 0].key !== route.key;
+        shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
       }
 
       if (shouldReset) {

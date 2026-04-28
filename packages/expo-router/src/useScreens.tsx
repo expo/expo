@@ -325,7 +325,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     if (isFocused) {
       const state = navigation.getState();
-      const isLeaf = !(state && 'state' in state.routes[state.index]);
+      const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
 
@@ -333,7 +333,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       () =>
         navigation.addListener('focus', () => {
           const state = navigation.getState();
-          const isLeaf = !(state && 'state' in state.routes[state.index]);
+          const isLeaf = !(state && 'state' in state.routes[state.index]!);
           // Because setFocusedState caches the route info, this call will only trigger rerenders
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,

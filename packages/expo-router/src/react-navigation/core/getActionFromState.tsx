@@ -1,11 +1,4 @@
-import type {
-  CommonActions,
-  NavigationState,
-  ParamListBase,
-  PartialRoute,
-  PartialState,
-  Route,
-} from '../routers';
+import type { CommonActions, NavigationState, ParamListBase, PartialState } from '../routers';
 import type { NavigatorScreenParams, PathConfig, PathConfigMap } from './types';
 
 type ConfigItem = {
@@ -44,11 +37,11 @@ export function getActionFromState(
 
   if (
     !(
-      (routes.length === 1 && routes[0].key === undefined) ||
+      (routes.length === 1 && routes[0]!.key === undefined) ||
       (routes.length === 2 &&
-        routes[0].key === undefined &&
-        routes[0].name === normalizedConfig?.initialRouteName &&
-        routes[1].key === undefined)
+        routes[0]!.key === undefined &&
+        routes[0]!.name === normalizedConfig?.initialRouteName &&
+        routes[1]!.key === undefined)
     )
   ) {
     return {
@@ -59,9 +52,11 @@ export function getActionFromState(
 
   const route = state.routes[state.index ?? state.routes.length - 1];
 
+  // TODO(@kitten): The `route` here was treated as optional, but `config` is treated as non-optional. Looks fishy
   let current: PartialState<NavigationState> | undefined = route?.state;
-  let config: ConfigItem | undefined = normalizedConfig?.screens?.[route?.name];
-  let params = { ...route.params } as NavigatorScreenParams<ParamListBase>;
+  let config: ConfigItem | undefined =
+    route != null ? normalizedConfig?.screens?.[route.name] : undefined;
+  let params = { ...route?.params } as NavigatorScreenParams<ParamListBase>;
 
   const payload:
     | {
@@ -98,7 +93,7 @@ export function getActionFromState(
     const routes =
       current.index != null ? current.routes.slice(0, current.index + 1) : current.routes;
 
-    const route: Route<string> | PartialRoute<Route<string>> = routes[routes.length - 1];
+    const route = routes[routes.length - 1]!;
 
     // Explicitly set to override existing value when merging params
     Object.assign(params, {
@@ -108,14 +103,14 @@ export function getActionFromState(
       state: undefined,
     });
 
-    if (routes.length === 1 && routes[0].key === undefined) {
+    if (routes.length === 1 && routes[0]!.key === undefined) {
       params.initial = true;
       params.screen = route.name;
     } else if (
       routes.length === 2 &&
-      routes[0].key === undefined &&
-      routes[0].name === config?.initialRouteName &&
-      routes[1].key === undefined
+      routes[0]!.key === undefined &&
+      routes[0]!.name === config?.initialRouteName &&
+      routes[1]!.key === undefined
     ) {
       params.initial = false;
       params.screen = route.name;
@@ -124,7 +119,7 @@ export function getActionFromState(
       break;
     }
 
-    if (route.state) {
+    if (route.state!) {
       params.params = { ...route.params };
       params.pop = true;
       params = params.params as NavigatorScreenParams<ParamListBase>;
@@ -133,7 +128,7 @@ export function getActionFromState(
       params.params = route.params;
     }
 
-    current = route.state;
+    current = route.state!;
     config = config?.screens?.[route.name];
 
     if (config?.screens && Object.keys(config.screens).length) {
