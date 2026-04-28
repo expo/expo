@@ -113,6 +113,7 @@
       "default": "./build/*.js"
     },
     "./AppEntry.js": "./AppEntry.js",
+    "./virtual/*.js": "./virtual/*.js",
     "./virtual/*": "./virtual/*.js",
     "./scripts/*.js": "./scripts/*.js",
     "./scripts/*": "./scripts/*",
