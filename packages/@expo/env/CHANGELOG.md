@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Fix inability to override env vars defined in `.env` files ([#41999](https://github.com/expo/expo/pull/41999) by [@jeppester](https://github.com/jeppester))
 
 ### 💡 Others
 

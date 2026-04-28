@@ -12,6 +12,7 @@
 
 - Respect `enableBabelRCLookup` in `loadBabelConfig` to skip Babel config file discovery ([#44841](https://github.com/expo/expo/pull/44841) by [@zoontek](https://github.com/zoontek))
 - Fix mangled async chunk filenames for catch-all routes ([#43547](https://github.com/expo/expo/pull/43547) by [@hassankhan](https://github.com/hassankhan))
+- Fix inability to override env vars defined in `.env` files ([#41999](https://github.com/expo/expo/pull/41999) by [@jeppester](https://github.com/jeppester))
 
 ### 💡 Others
 

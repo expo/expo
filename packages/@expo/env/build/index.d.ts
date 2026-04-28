@@ -1,4 +1,11 @@
 import { type EnvOutput } from './parse';
+/**
+ * Snapshot of the original process.env.
+ * Makes HMR of dotenv files possible without making dotenv files override process env vars.
+ */
+export declare const initialEnv: {
+    [key: string]: string | undefined;
+};
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
 export declare function isEnabled(): boolean;
 /** All conventional modes that should not cause warnings */
