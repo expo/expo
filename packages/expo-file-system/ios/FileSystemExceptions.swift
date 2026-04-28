@@ -115,8 +115,44 @@ internal final class FeatureNotAvailableOnPlatformException: Exception {
   }
 }
 
+internal final class UnableToUploadException: GenericException<String> {
+  override var reason: String {
+    "Unable to upload a file: \(param)"
+  }
+}
+
+internal final class InvalidUrlException: GenericException<String> {
+  override var reason: String {
+    "Invalid URL: \(param)"
+  }
+}
+
+internal final class InvalidResumeDataException: Exception {
+  override var reason: String {
+    "Invalid resume data provided"
+  }
+}
+
 internal final class DownloadCancelledException: Exception {
   override var reason: String {
     "Download was cancelled"
+  }
+}
+
+internal final class UploadCancelledException: Exception {
+  override var reason: String {
+    "Upload was cancelled"
+  }
+}
+
+internal final class UploadFailedToCreateBodyException: Exception {
+  override var reason: String {
+    "Failed to create multipart body"
+  }
+}
+
+internal final class UploadFailedToAccessCacheException: Exception {
+  override var reason: String {
+    "Failed to access cache directory for upload temp file"
   }
 }
