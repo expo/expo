@@ -420,6 +420,14 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<HorizontalPagerProps>("HorizontalPagerView") {
+      val onPageSelected by Event<HorizontalPagerPageSelectedEvent>()
+
+      Content { props ->
+        HorizontalPagerContent(props) { onPageSelected(it) }
+      }
+    }
+
     ExpoUIView<HorizontalCenteredHeroCarouselProps>("HorizontalCenteredHeroCarouselView") {
       Content { props ->
         HorizontalCenteredHeroCarouselContent(props)
