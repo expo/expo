@@ -41,7 +41,6 @@ public struct MainValueConverter: ~Copyable {
    */
   @JavaScriptActor
   public func toJS(_ value: Any, _ type: AnyDynamicType) throws -> JavaScriptValue {
-    let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: type)
-    return try type.castToJS(result, appContext: appContext)
+    return try type.convertToJS(value, appContext: appContext)
   }
 }

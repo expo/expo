@@ -34,6 +34,13 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
 
   /**
+   Converts the given native value directly to `JavaScriptValue`.
+   The default implementation uses `convertResult` and then `castToJS`, but dynamic types
+   can override it to avoid unnecessary intermediate representations.
+   */
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
+
+  /**
    Converts function's result to the type that can later be converted to a JS value.
    For instance, types such as records, enumerables and shared objects need special handling
    and conversion to simpler types (dictionary, primitive value or specific JS value).
@@ -52,6 +59,11 @@ extension AnyDynamicType {
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
+  }
+
+  public func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: self)
+    return try castToJS(result, appContext: appContext)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
