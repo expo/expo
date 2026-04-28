@@ -7,6 +7,7 @@ import ExpoModulesCore
  */
 internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @unchecked Sendable {
   internal let sink: ResponseSink
+  private var coalescer: ChunkCoalescer?
 
   private let dispatchQueue: DispatchQueue
 
@@ -37,17 +38,22 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     self.dispatchQueue = dispatchQueue
   }
 
-  func startStreaming() -> Data? {
+  func startStreaming() -> ArrayBuffer? {
     if isInvalidState(.responseReceived, .bodyCompleted) {
       return nil
     }
     if state == .responseReceived {
       state = .bodyStreamingStarted
+      coalescer = ChunkCoalescer(dispatchQueue: dispatchQueue) { [weak self] chunk in
+        self?.emit(event: "didReceiveResponseData", arguments: chunk)
+      }
       let queuedData = self.sink.finalize()
-      emit(event: "didReceiveResponseData", arguments: queuedData)
+      if !queuedData.isEmpty {
+        emit(event: "didReceiveResponseData", arguments: ArrayBuffer.wrap(dataWithoutCopy: queuedData))
+      }
     } else if state == .bodyCompleted {
       let queuedData = self.sink.finalize()
-      return queuedData
+      return ArrayBuffer.wrap(dataWithoutCopy: queuedData)
     }
     return nil
   }
@@ -56,6 +62,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     if isInvalidState(.bodyStreamingStarted) {
       return
     }
+    coalescer?.cancel()
     state = .bodyStreamingCanceled
   }
 
@@ -63,6 +70,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     let error = FetchRequestCanceledException()
     self.error = error
     if state == .bodyStreamingStarted {
+      coalescer?.cancel()
       emit(event: "didFailWithError", arguments: error.localizedDescription)
     }
     state = .errorReceived
@@ -152,7 +160,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     if state == .responseReceived {
       self.sink.appendBufferBody(data: data)
     } else if state == .bodyStreamingStarted {
-      emit(event: "didReceiveResponseData", arguments: data)
+      coalescer?.append(data: data)
     }
     // no-op in .bodyStreamingCanceled state
   }
@@ -206,6 +214,8 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
       }
       return
     }
+
+    coalescer?.flush()
 
     if state == .bodyStreamingStarted {
       if let error {

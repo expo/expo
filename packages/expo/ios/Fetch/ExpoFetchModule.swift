@@ -30,7 +30,7 @@ public final class ExpoFetchModule: Module {
         return NativeResponse(dispatchQueue: fetchRequestQueue)
       }
 
-      AsyncFunction("startStreaming") { (response: NativeResponse) -> Data? in
+      AsyncFunction("startStreaming") { (response: NativeResponse) -> ArrayBuffer? in
         return response.startStreaming()
       }.runOnQueue(fetchRequestQueue)
 
