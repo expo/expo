@@ -41,10 +41,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
         return appContext?.getNativeModuleObject(moduleName) ?? .undefined
       },
       set: { propertyName, _ in
-        // The modules host object is read-only, but the JSI Swift wrapper's `set`
-        // callback can't currently throw into JavaScript, so we log and ignore.
-        // TODO: switch to a throwing `set` once ExpoModulesJSI supports it.
-        log.warn("Ignoring write to expo.modules.\(propertyName); the modules host object is read-only")
+        throw ReadOnlyExpoModulesPropertyException(propertyName)
       },
       getPropertyNames: { [weak appContext] in
         return appContext?.getModuleNames() ?? []
@@ -57,4 +54,21 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
     // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.
     coreObject.defineProperty("modules", value: modulesHostObject, options: [.enumerable])
   }
+}
+
+/**
+ Raised when JavaScript code attempts to assign to `expo.modules.*`. Module bindings
+ are owned by the native side and cannot be replaced from JS.
+ */
+internal final class ReadOnlyExpoModulesPropertyException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot assign to 'expo.modules.\(param)': "
+      + "the `expo.modules` namespace is owned by the native runtime and its bindings cannot be replaced from JavaScript. "
+      + "Define or override behavior inside the native module instead."
+  }
+
+  // The default `JavaScriptThrowable.message` is `String(reflecting: self)`, which on
+  // `Exception` resolves to `debugDescription` (name + reason + Swift file:line). For a
+  // JS-facing error we want just `reason`, without leaking native source coordinates.
+  var message: String { reason }
 }
