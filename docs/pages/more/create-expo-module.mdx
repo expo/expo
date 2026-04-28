@@ -6,6 +6,7 @@ description: A command-line tool to create and update Expo modules.
 
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 `create-expo-module` is a command-line tool to create a new Expo module or add platform support to an existing one. It can create a local module inside an Expo app, or a standalone module with an example app for developing and testing native code.
 
@@ -333,6 +334,20 @@ Runs the command in non-interactive mode and skips prompts.
 
 ## Learn more
 
-- [Expo Modules API: Get started](/modules/get-started/) explains how to create and use local and standalone modules.
-- [expo-module.config.json](/modules/module-config/) describes the configuration file used by Expo Autolinking.
-- [How to use a standalone Expo module](/modules/use-standalone-expo-module-in-your-project/) covers monorepos and publishing modules to npm.
+<BoxLink
+  title="Expo Modules API: Get started"
+  description="Learn how to create and use local and standalone Expo modules."
+  href="/modules/get-started/"
+/>
+
+<BoxLink
+  title="expo-module.config.json"
+  description="Understand the module configuration file used by Expo Autolinking."
+  href="/modules/module-config/"
+/>
+
+<BoxLink
+  title="How to use a standalone Expo module"
+  description="See how to use standalone modules in monorepos and publish them to npm."
+  href="/modules/use-standalone-expo-module-in-your-project/"
+/>
