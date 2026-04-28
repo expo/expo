@@ -2,26 +2,17 @@ package expo.modules.contacts.next.observers
 
 import android.database.ContentObserver
 import android.net.Uri
-import android.os.Handler
-import expo.modules.contacts.next.ContactsNextModule
-import expo.modules.contacts.onContactsChangeEventName
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.weak
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-class ContactsObserver(module: ContactsNextModule, handler: Handler) : ContentObserver(handler) {
-  val moduleRef = module.weak()
-
+// Passing null to ContentObserver dispatches onChange on a binder thread
+class ContactsObserver(
+  private val observerScope: CoroutineScope,
+  private val contactsChange: OnContactsChange
+) : ContentObserver(null) {
   override fun onChange(selfChange: Boolean, uri: Uri?) {
-    super.onChange(selfChange, uri)
-    moduleRef.get()?.handleContactChange()
-  }
-
-  fun Module.handleContactChange() {
-    sendEvent(
-      onContactsChangeEventName,
-      mapOf(
-        "body" to null
-      )
-    )
+    observerScope.launch {
+      contactsChange.invoke()
+    }
   }
 }

@@ -33,6 +33,7 @@ class ContactsNextModule : Module() {
   private val imageByteArrayConverter by lazy {
     ImageByteArrayConverter(context.contentResolver)
   }
+
   private val photoPropertyMapper by lazy {
     PhotoPropertyMapper(imageByteArrayConverter)
   }
@@ -54,8 +55,17 @@ class ContactsNextModule : Module() {
   private val permissionsDelegate by lazy {
     ContactsPermissionsDelegate(appContext)
   }
+
   private val observerDelegate by lazy {
-    ContactsObserverDelegate(appContext, this@ContactsNextModule)
+    ContactsObserverDelegate(
+      context.contentResolver,
+      appContext.backgroundCoroutineScope
+    ) {
+      sendEvent(
+        CONTACTS_DID_CHANGE_EVENT,
+        mapOf("body" to null)
+      )
+    }
   }
 
   override fun definition() = ModuleDefinition {
@@ -372,18 +382,18 @@ class ContactsNextModule : Module() {
       }
     }
 
-    Events(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME)
+    Events(CONTACTS_DID_CHANGE_EVENT)
 
     OnDestroy {
-      observerDelegate.stopObservingContactChanges()
+      observerDelegate.stopObserving()
     }
 
-    OnStartObserving(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME) {
-      observerDelegate.startObservingContactChanges()
+    OnStartObserving(CONTACTS_DID_CHANGE_EVENT) {
+      observerDelegate.startObserving()
     }
 
-    OnStopObserving(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME) {
-      observerDelegate.stopObservingContactChanges()
+    OnStopObserving(CONTACTS_DID_CHANGE_EVENT) {
+      observerDelegate.stopObserving()
     }
 
     RegisterActivityContracts {
@@ -391,5 +401,8 @@ class ContactsNextModule : Module() {
         registerContactContracts()
       }
     }
+  }
+  companion object {
+    const val CONTACTS_DID_CHANGE_EVENT = "contactsDidChange"
   }
 }
