@@ -72,6 +72,14 @@
       "source": "./src/dom/*.ts",
       "default": "./build/dom/*.js"
     },
+    "./fetch": {
+      "types": {
+        "source": "./src/winter/fetch/index.ts",
+        "default": "./build/winter/fetch/index.d.ts"
+      },
+      "source": "./src/winter/fetch/index.ts",
+      "default": "./build/winter/fetch/index.js"
+    },
     "./config": {
       "types": "./config/index.d.ts",
       "default": "./config/index.js"

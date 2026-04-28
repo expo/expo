@@ -42,12 +42,15 @@ export function addBuildPhases(
     buildPath
   );
 
+  // NOTE(@kitten): It's unclear why this was passing before. It's possible this wasn't typed at all
+  // @ts-expect-error: TODO(@kitten): Fix this type
   xcodeProject
     .buildPhaseObject('PBXCopyFilesBuildPhase', groupName, productFile.target)
     .files.push({
       value: productFile.uuid,
       comment: `${productFile.basename} in ${productFile.group}`,
     });
+  // @ts-expect-error: TODO(@kitten): Fix this type
   xcodeProject.addToPbxBuildFileSection(productFile);
 
   // Frameworks build phase

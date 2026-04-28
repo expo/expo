@@ -49,7 +49,7 @@
     "expotools": "workspace:*",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
-    "turbo": "^2.9.6",
+    "turbo": "2.8.10",
     "typescript": "^6.0.2"
   }
 }

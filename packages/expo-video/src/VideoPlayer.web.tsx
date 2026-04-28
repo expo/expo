@@ -71,7 +71,7 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
-  _timeUpdateLoop: number | null = null;
+  _timeUpdateLoop: ReturnType<typeof setTimeout> | null = null;
   _timeUpdateEventInterval: number = 0;
   audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.

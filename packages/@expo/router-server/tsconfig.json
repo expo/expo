@@ -2,16 +2,8 @@
   "extends": "expo-module-scripts/tsconfig.base",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./build",
-    "module": "node16",
-    "moduleResolution": "node16",
-    "verbatimModuleSyntax": false,
-    "noEmit": false,
     "resolveJsonModule": true,
-    "types": [
-      "jest",
-      "node"
-    ]
+    "types": ["jest", "node"]
   },
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*", "**/__rsc_tests__/*"]

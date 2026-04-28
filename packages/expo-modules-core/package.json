@@ -19,7 +19,14 @@
       "source": "./src/index.ts",
       "default": "./build/index.js"
     },
-    "./types": "./types.d.ts",
+    "./types": {
+      "types": {
+        "source": "./src/types.ts",
+        "default": "./build/types.d.ts"
+      },
+      "source": "./src/types.ts",
+      "default": "./build/types.js"
+    },
     "./src/polyfill/dangerous-internal": {
       "types": {
         "source": "./src/polyfill/dangerous-internal.ts",

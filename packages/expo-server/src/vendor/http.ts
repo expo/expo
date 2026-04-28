@@ -104,7 +104,8 @@ export function convertRequest(req: http.IncomingMessage, res: http.ServerRespon
 
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     init.body = Readable.toWeb(req) as ReadableStream;
-    init.duplex = 'half';
+    // NOTE(@kitten): Depending on if `@types/node` is used this may not be defined
+    (init as RequestInit & { duplex?: 'half' | undefined }).duplex = 'half';
   }
 
   return new Request(url.href, init);

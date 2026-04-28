@@ -3,11 +3,7 @@
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./build",
-    "module": "preserve",
-    "moduleResolution": "bundler",
-    "declaration": false,
-    "types": ["jest"]
+    "customConditions": [],
+    "rootDir": "./src"
   }
 }

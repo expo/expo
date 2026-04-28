@@ -3,6 +3,26 @@
   "version": "55.0.8",
   "description": "A library for interacting with the app.json",
   "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./paths": {
+      "types": {
+        "source": "./src/paths/index.ts",
+        "default": "./build/paths/index.d.ts"
+      },
+      "source": "./src/paths/index.ts",
+      "default": "./build/paths/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "expo-build cjs:src",
     "clean": "expo-module clean",

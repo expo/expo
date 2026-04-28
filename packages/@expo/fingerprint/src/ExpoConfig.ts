@@ -1,4 +1,4 @@
-import type { ProjectConfig } from 'expo/config';
+import type { ProjectConfig } from '@expo/config';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';

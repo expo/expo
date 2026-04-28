@@ -1,3 +1,5 @@
+/// <reference path="../ts-declarations/expo-global.d.ts" />
+
 import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
 export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';

@@ -1,3 +1,5 @@
+/// <reference path="../ts-declarations/assets.d.ts" />
+
 export {
   ThemeProvider,
   DarkTheme,

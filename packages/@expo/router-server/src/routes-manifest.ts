@@ -6,7 +6,7 @@ import type { RoutesManifest } from 'expo-server/private';
 import { type Options, getRoutes } from './getRoutesSSR';
 import { getServerManifest } from './getServerManifest';
 
-export { Options };
+export type { Options } from './getRoutesSSR';
 
 function createMockContextModule(map: string[] = []) {
   const contextModule = (_key: string) => ({ default() {} });
