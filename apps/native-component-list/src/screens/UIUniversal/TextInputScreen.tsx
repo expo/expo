@@ -1,10 +1,36 @@
-import { Column, Host, ScrollView, Switch, Text, TextInput, useNativeState } from '@expo/ui';
+import {
+  Button,
+  Column,
+  Host,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  useNativeState,
+} from '@expo/ui';
 import { useState } from 'react';
+import type { KeyboardTypeOptions } from 'react-native';
+
+const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
+  'default',
+  'email-address',
+  'numeric',
+  'number-pad',
+  'decimal-pad',
+  'phone-pad',
+  'url',
+];
 
 export default function TextInputScreen() {
   const text = useNativeState('');
   const [editable, setEditable] = useState(true);
   const [multiline, setMultiline] = useState(false);
+  const [keyboardType, setKeyboardType] = useState<KeyboardTypeOptions>('default');
+
+  const cycleKeyboardType = () => {
+    const i = KEYBOARD_TYPES.indexOf(keyboardType);
+    setKeyboardType(KEYBOARD_TYPES[(i + 1) % KEYBOARD_TYPES.length]);
+  };
 
   return (
     <Host style={{ flex: 1 }}>
@@ -17,6 +43,7 @@ export default function TextInputScreen() {
               placeholder="Type here..."
               editable={editable}
               multiline={multiline}
+              keyboardType={keyboardType}
             />
           </Column>
 
@@ -24,6 +51,11 @@ export default function TextInputScreen() {
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Props</Text>
             <Switch value={editable} onValueChange={setEditable} label="editable" />
             <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
+            <Button
+              label={`keyboardType: ${keyboardType}`}
+              variant="outlined"
+              onPress={cycleKeyboardType}
+            />
           </Column>
         </Column>
       </ScrollView>

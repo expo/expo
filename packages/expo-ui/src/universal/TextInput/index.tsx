@@ -10,6 +10,7 @@ export function TextInput({
   autoFocus,
   editable,
   multiline,
+  keyboardType,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -21,6 +22,7 @@ export function TextInput({
       autoFocus={autoFocus}
       editable={editable}
       multiline={multiline}
+      keyboardType={keyboardType}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);

@@ -1,3 +1,4 @@
+import type { KeyboardTypeOptions } from 'react-native';
 import type { ObservableState } from '../State';
 /**
  * Props for the `TextInput` component.
@@ -34,5 +35,17 @@ export interface TextInputProps {
      * @default false
      */
     multiline?: boolean;
+    /**
+     * Determines which keyboard variant is shown.
+     *
+     * Lacking native support:
+     * - iOS: `'visible-password'` falls back to the default keyboard.
+     * - Android: iOS-specific values (`'ascii-capable'`,
+     *   `'numbers-and-punctuation'`, `'name-phone-pad'`, `'twitter'`,
+     *   `'web-search'`) fall back to the text keyboard.
+     *
+     * @default 'default'
+     */
+    keyboardType?: KeyboardTypeOptions;
 }
 //# sourceMappingURL=types.d.ts.map
