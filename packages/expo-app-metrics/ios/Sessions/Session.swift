@@ -1,7 +1,7 @@
 /**
  Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
  */
-public class Session: Codable, MetricsReceiver {
+public class Session: Codable, MetricsReceiver, @unchecked Sendable {
   /**
    Unique ID of the session in UUID v4 format.
    */

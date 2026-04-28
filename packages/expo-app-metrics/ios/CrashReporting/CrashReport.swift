@@ -22,8 +22,8 @@ public struct CrashReport: Codable, Sendable {
   /** Objective-C exception details, available when the crash was caused by an unhandled NSException. */
   public let exceptionReason: ExceptionReason?
 
-  /** Call stack tree as a JSON string, suitable for off-device symbolication. */
-  public let callStackTree: String?
+  /** Call stack tree, suitable for off-device symbolication. */
+  public let callStackTree: CallStackTree?
 
   /** App version at the time of the crash. */
   public let appVersion: String
@@ -33,6 +33,14 @@ public struct CrashReport: Codable, Sendable {
 
   /** Timestamp range end of the diagnostic payload. */
   public let timestampEnd: Date
+
+  /**
+   Timestamp at which this device received the diagnostic and constructed the report.
+   Distinct from `timestampEnd` because MetricKit can deliver historical or backlogged
+   diagnostics — `ingestedAt` reflects when *we* learned about the crash, not when it
+   happened.
+   */
+  public let ingestedAt: Date
 
   /**
    Picks the most likely `MainSession` that this crash report belongs to.
@@ -58,6 +66,28 @@ public struct CrashReport: Codable, Sendable {
       return session
     }
     return candidates.max(by: { $0.startDate < $1.startDate })
+  }
+
+  /**
+   Mirrors the shape of `MXCallStackTree.JSONRepresentation()`. Every field is optional so that
+   silently-renamed or removed Apple fields don't break decoding for the rest of the report.
+   */
+  public struct CallStackTree: Codable, Sendable {
+    public let callStacks: [CallStack]?
+
+    public struct CallStack: Codable, Sendable {
+      public let threadAttributed: Bool?
+      public let callStackRootFrames: [Frame]?
+    }
+
+    public struct Frame: Codable, Sendable {
+      public let binaryName: String?
+      public let binaryUUID: String?
+      public let address: UInt64?
+      public let offsetIntoBinaryTextSegment: UInt64?
+      public let sampleCount: Int?
+      public let subFrames: [Frame]?
+    }
   }
 
   /**
@@ -96,10 +126,11 @@ extension CrashReport {
     self.signal = diagnostic.signal?.intValue
     self.terminationReason = diagnostic.terminationReason as String?
     self.virtualMemoryRegionInfo = diagnostic.virtualMemoryRegionInfo as String?
-    self.callStackTree = String(data: diagnostic.callStackTree.jsonRepresentation(), encoding: .utf8)
+    self.callStackTree = try? JSONDecoder().decode(CallStackTree.self, from: diagnostic.callStackTree.jsonRepresentation())
     self.appVersion = diagnostic.applicationVersion
     self.timestampBegin = payload.timeStampBegin
     self.timestampEnd = payload.timeStampEnd
+    self.ingestedAt = Date.now
 
     if #available(iOS 17.0, *), let reason = diagnostic.exceptionReason {
       self.exceptionReason = ExceptionReason(

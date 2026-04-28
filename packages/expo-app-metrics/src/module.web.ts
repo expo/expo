@@ -17,6 +17,11 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
     return [];
   }
   async clearStoredEntries() {}
+  async getAllSessions() {
+    return [];
+  }
+  simulateCrashReport() {}
+  triggerCrash() {}
   startSession(metadata?: string) {
     return '';
   }
