@@ -18,6 +18,15 @@ export type ModalBottomSheetRef = {
    * The returned promise resolves after the dismiss animation completes.
    */
   hide: () => Promise<void>;
+  /**
+   * Programmatically expands the bottom sheet to full height with an animation.
+   */
+  expand: () => Promise<void>;
+  /**
+   * Programmatically collapses the bottom sheet to partially expanded (~50%) state.
+   * Only works when `skipPartiallyExpanded` is `false`.
+   */
+  partialExpand: () => Promise<void>;
 };
 
 export type ModalBottomSheetProperties = {
