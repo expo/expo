@@ -27,7 +27,11 @@ function _nodePath() {
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
 function resolveFrom(fromDirectory, moduleId, params) {
-  const exts = params?.extensions ?? Object.keys(_nodeModule().default._extensions);
+  // We exclude extension resolution, if we're resolving a plain JSON file
+  const isJSON = moduleId.endsWith('.json');
+  const exts = !isJSON ? params?.extensions ?? Object.keys(_nodeModule().default._extensions) : [];
+  const skipNodePath = !!params?.skipNodePath;
+  const followSymlinks = params?.followSymlinks ?? skipNodePath;
   const resolved = _nodePath().default.resolve(fromDirectory, moduleId);
   // (1) check direct path / exact match
   if (_nodeFs().default.existsSync(resolved)) {
@@ -44,7 +48,7 @@ function resolveFrom(fromDirectory, moduleId, params) {
   }
 
   // (3) if we're not following symlinks, we try to resolve against `node_modules` folders unresolved
-  if (!params?.followSymlinks) {
+  if (!followSymlinks || skipNodePath) {
     const resolvedDir = _nodePath().default.resolve(fromDirectory);
     const moduleDirs = _nodeModule().default._nodeModulePaths(resolvedDir);
     for (const modulesDir of moduleDirs) {
@@ -58,14 +62,14 @@ function resolveFrom(fromDirectory, moduleId, params) {
         ext = ext[0] !== '.' ? `.${ext}` : ext;
         const candidateWithExt = candidate + ext;
         if (_nodeFs().default.existsSync(candidateWithExt)) {
-          return candidateWithExt;
+          return followSymlinks ? maybeResolve(candidateWithExt) : candidateWithExt;
         }
       }
     }
   }
 
-  // (4): Fallback to native Node resolution
-  return nativeResolveFrom(fromDirectory, moduleId);
+  // (4): Fallback to native Node resolution, if `skipNodePath` is disabled
+  return !skipNodePath ? nativeResolveFrom(fromDirectory, moduleId) : null;
 }
 function nativeResolveFrom(fromDirectory, moduleId) {
   try {
