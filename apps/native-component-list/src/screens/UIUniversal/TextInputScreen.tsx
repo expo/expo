@@ -30,6 +30,7 @@ export default function TextInputScreen() {
   const [multiline, setMultiline] = useState(false);
   const [keyboardType, setKeyboardType] = useState<KeyboardTypeOptions>('default');
   const [autoCapitalize, setAutoCapitalize] = useState<AutoCapitalize>('sentences');
+  const [autoCorrect, setAutoCorrect] = useState(true);
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -54,6 +55,7 @@ export default function TextInputScreen() {
               multiline={multiline}
               keyboardType={keyboardType}
               autoCapitalize={autoCapitalize}
+              autoCorrect={autoCorrect}
             />
           </Column>
 
@@ -61,6 +63,7 @@ export default function TextInputScreen() {
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>Props</Text>
             <Switch value={editable} onValueChange={setEditable} label="editable" />
             <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
+            <Switch value={autoCorrect} onValueChange={setAutoCorrect} label="autoCorrect" />
             <Button
               label={`keyboardType: ${keyboardType}`}
               variant="outlined"

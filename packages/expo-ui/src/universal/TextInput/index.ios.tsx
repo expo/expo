@@ -1,5 +1,6 @@
 import { TextField, useNativeState } from '@expo/ui/swift-ui';
 import {
+  autocorrectionDisabled,
   disabled as disabledMod,
   keyboardType as keyboardTypeMod,
   textInputAutocapitalization,
@@ -53,6 +54,7 @@ export function TextInput({
   multiline,
   keyboardType,
   autoCapitalize,
+  autoCorrect,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -65,6 +67,7 @@ export function TextInput({
       textInputAutocapitalization(autoCapitalize === 'none' ? 'never' : autoCapitalize)
     );
   }
+  if (autoCorrect === false) modifiers.push(autocorrectionDisabled(true));
 
   return (
     <TextField

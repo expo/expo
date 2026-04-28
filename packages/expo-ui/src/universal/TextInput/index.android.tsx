@@ -45,15 +45,17 @@ export function TextInput({
   multiline,
   keyboardType,
   autoCapitalize,
+  autoCorrect,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
 
   const keyboardOptions =
-    keyboardType || autoCapitalize
+    keyboardType || autoCapitalize || autoCorrect !== undefined
       ? {
           ...(keyboardType ? { keyboardType: mapKeyboardType(keyboardType) } : null),
           ...(autoCapitalize ? { capitalization: autoCapitalize } : null),
+          ...(autoCorrect !== undefined ? { autoCorrectEnabled: autoCorrect } : null),
         }
       : undefined;
 
