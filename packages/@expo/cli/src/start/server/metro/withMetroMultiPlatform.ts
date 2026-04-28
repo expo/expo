@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { ExpoConfig, Platform } from '@expo/config';
+import { type ExpoConfig, type Platform, getPackageJson } from '@expo/config';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type {
@@ -198,7 +198,10 @@ export function withExtendedResolver(
     },
   };
 
-  const isExpoRouterResolvable = !!resolveFrom.silent(config.projectRoot, 'expo-router');
+  const pkg = getPackageJson(config.projectRoot);
+  const isExpoRouterProject =
+    (pkg.dependencies && 'expo-router' in pkg.dependencies) ||
+    (pkg.main && pkg.main === 'expo-router/entry');
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -684,7 +687,7 @@ export function withExtendedResolver(
       }
 
       // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
-      if (moduleName.startsWith('@react-navigation/') && isExpoRouterResolvable) {
+      if (moduleName.startsWith('@react-navigation/') && isExpoRouterProject) {
         const filePath = context.originModulePath;
         if (!filePath.includes('node_modules')) {
           // TODO(@ubax): Add link to migration guide, once it is published
