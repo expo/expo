@@ -730,6 +730,7 @@ const versionsReference = VERSIONS.reduce(
         [
           makePage('more/expo-cli.mdx'),
           makePage('more/create-expo.mdx'),
+          makePage('more/create-expo-module.mdx'),
           makePage('more/qr-codes.mdx'),
           makePage('more/release-statuses.mdx'),
           makePage('more/glossary-of-terms.mdx'),
