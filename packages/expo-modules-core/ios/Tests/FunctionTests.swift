@@ -117,6 +117,17 @@ struct FunctionTests {
           // Expectations captured via side effects are not ideal, but works for migration
         }
 
+        Function("returnArrayOfUndefinedValues") {
+          return [ValueOrUndefined<Double>.value(unwrapped: 1.0), .undefined]
+        }
+
+        Function("returnDictionaryOfUndefinedValues") {
+          return [
+            "present": ValueOrUndefined<Double>.value(unwrapped: 1.0),
+            "missing": .undefined
+          ]
+        }
+
         Function("returnEncodable") {
           return TestEncodable(name: "Expo SDK", version: 55)
         }
@@ -302,6 +313,28 @@ struct FunctionTests {
     @Test
     func `accepts nullable ValueOrUndefinded in array`() throws {
       try runtime.eval("expo.modules.TestModule.withNullableValueOrUndefindedInArray([null, undefined])")
+    }
+
+    @Test
+    func `returns array with ValueOrUndefined without double-converting`() throws {
+      try runtime.eval("""
+        globalThis.result = expo.modules.TestModule.returnArrayOfUndefinedValues()
+      """)
+
+      #expect(try runtime.eval("result.length").asInt() == 2)
+      #expect(try runtime.eval("result[0]").asDouble() == 1.0)
+      #expect(try runtime.eval("result[1]").isUndefined() == true)
+    }
+
+    @Test
+    func `returns dictionary with ValueOrUndefined without double-converting`() throws {
+      try runtime.eval("""
+        globalThis.result = expo.modules.TestModule.returnDictionaryOfUndefinedValues()
+      """)
+
+      #expect(try runtime.eval("result.present").asDouble() == 1.0)
+      #expect(try runtime.eval("result.missing").isUndefined() == true)
+      #expect(try runtime.eval("Object.prototype.hasOwnProperty.call(result, 'missing')").asBool() == true)
     }
 
     @Test
