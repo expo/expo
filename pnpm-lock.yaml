@@ -181,9 +181,6 @@ importers:
       expo-observe:
         specifier: workspace:*
         version: link:../../packages/expo-observe
-      expo-router:
-        specifier: workspace:*
-        version: link:../../packages/expo-router
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
