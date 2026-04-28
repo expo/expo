@@ -35,6 +35,7 @@
     "@expo-google-fonts/inter": "^0.2.3",
     "@expo/app-integrity": "workspace:*",
     "@expo/html-elements": "workspace:*",
+    "@expo/material-symbols": "~0.1.1",
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/ui": "workspace:*",

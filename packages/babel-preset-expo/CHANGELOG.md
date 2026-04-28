@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Auto-include `@expo/ui/babel-plugin` when `@expo/ui` is installed. The plugin rewrites `Icon.select({ ios, android })` into a `Platform.OS` ternary and converts `import('*.xml')` to `require('*.xml')` so Metro DCE strips the unused branch per platform. Disable via the `expoUi: false` option.
+
 ### 🐛 Bug fixes
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
