@@ -54,7 +54,7 @@ export function triggersToScreens(
 
   for (const trigger of triggers) {
     if (trigger.name in parentTriggerMap) {
-      const parentTrigger = parentTriggerMap[trigger.name];
+      const parentTrigger = parentTriggerMap[trigger.name]!;
       throw new Error(
         `Trigger ${JSON.stringify({
           name: trigger.name,
@@ -117,9 +117,10 @@ export function triggersToScreens(
     // We need to work out the state for just this trigger
     while (state?.state) {
       if (state.name === targetStateName) break;
-      state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
+      state = state.state.routes[state.state.index ?? state.state.routes.length - 1]!;
     }
-    routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
+    routeState =
+      state!.state?.routes[state!.state.index ?? state!.state.routes.length - 1] || state;
 
     const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
 

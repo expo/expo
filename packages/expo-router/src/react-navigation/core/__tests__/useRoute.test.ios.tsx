@@ -19,7 +19,7 @@ test('gets route prop from context', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };

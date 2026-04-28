@@ -439,7 +439,7 @@ class CardStack extends React.Component {
                         const safeAreaInsetRight = insets.right;
                         const safeAreaInsetBottom = insets.bottom;
                         const safeAreaInsetLeft = insets.left;
-                        const headerHeight = headerShown !== false ? headerHeights[route.key] : 0;
+                        const headerHeight = headerShown !== false ? (headerHeights[route.key] ?? 0) : 0;
                         // Start from current card and count backwards the number of cards with same interpolation
                         const interpolationIndex = getInterpolationIndex(scenes, index);
                         const isModal = getIsModal(scene, interpolationIndex, isParentModal);

@@ -40,10 +40,10 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].icon?.android?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].icon?.android?.type !== 'drawableResource')
+    expect(TabsScreen.mock.calls[0]![0].icon?.android?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0]![0].icon?.android?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    expect(TabsScreen.mock.calls[0]![0].icon.android.name).toBe('stairs');
   });
 
   it('uses last Icon drawable value when multiple are provided', () => {
@@ -62,10 +62,10 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].icon?.android?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].icon?.android?.type !== 'drawableResource')
+    expect(TabsScreen.mock.calls[0]![0].icon?.android?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0]![0].icon?.android?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('last');
+    expect(TabsScreen.mock.calls[0]![0].icon.android.name).toBe('last');
   });
 
   it('does not pass icon when Icon is not used', () => {
@@ -80,7 +80,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].icon).toBeUndefined();
   });
 
   // Currently not needed. Screens does not forbid this, as Icon does not work on Android yet.
@@ -114,11 +114,11 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].icon?.android?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].icon?.android?.type !== 'drawableResource')
+    expect(TabsScreen.mock.calls[0]![0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].icon?.android?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0]![0].icon?.android?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    expect(TabsScreen.mock.calls[0]![0].icon.android.name).toBe('stairs');
   });
 
   it('does not set selectedIcon when using sf with object on Android', () => {
@@ -138,11 +138,11 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].icon?.android?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].icon?.android?.type !== 'drawableResource')
+    expect(TabsScreen.mock.calls[0]![0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].icon?.android?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0]![0].icon?.android?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].icon.android.name).toBe('stairs');
+    expect(TabsScreen.mock.calls[0]![0].icon.android.name).toBe('stairs');
   });
 });
 

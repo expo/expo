@@ -6,7 +6,7 @@ import nativeTabsStyles from '../../assets/native-tabs.module.css';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { tabs, focusedIndex } = props;
-  const currentTab = tabs[focusedIndex];
+  const currentTab = tabs[focusedIndex]!;
   const defaultTab = useMemo(
     () => currentTab,
     // We don't specify currentTab here, as we don't want to change the default tab when focusedIndex changes

@@ -67,8 +67,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         name={tab.name}
         options={tab.options}
         isFocused={isFocused}
-        standardAppearance={appearances[index].standardAppearance}
-        scrollEdgeAppearance={appearances[index].scrollEdgeAppearance}
+        standardAppearance={appearances[index]!.standardAppearance}
+        scrollEdgeAppearance={appearances[index]!.scrollEdgeAppearance}
         badgeTextColor={tab.options.badgeTextColor}
         contentRenderer={tab.contentRenderer}
       />

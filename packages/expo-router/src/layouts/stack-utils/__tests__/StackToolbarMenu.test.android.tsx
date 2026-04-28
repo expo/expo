@@ -284,7 +284,7 @@ describe('NativeToolbarMenu', () => {
     it('renders nested DropdownMenu with DropdownMenuItem trigger', () => {
       renderNested();
 
-      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0];
+      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedMenu = within(rootItems).getByTestId('DropdownMenu');
       const nestedTrigger = within(nestedMenu).getByTestId('DropdownMenu.Trigger');
       expect(within(nestedTrigger).getByTestId('DropdownMenuItem')).toBeDefined();
@@ -313,7 +313,7 @@ describe('NativeToolbarMenu', () => {
     it('forwards disabled prop', () => {
       renderNested({ disabled: true });
 
-      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0];
+      const rootItems = screen.getAllByTestId('DropdownMenu.Items')[0]!;
       const nestedTrigger = within(rootItems).getByTestId('DropdownMenu.Trigger');
       const nestedMenuItem = within(nestedTrigger).getByTestId('DropdownMenuItem');
       expect(nestedMenuItem.props.enabled).toBe(false);

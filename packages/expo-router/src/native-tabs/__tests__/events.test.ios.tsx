@@ -95,11 +95,11 @@ it('emits tabPress event onNativeFocusChange', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/second-[-\w]+/);
+  expect(TabsScreen.mock.calls[0]![0].tabKey).toMatch(/index-[-\w]+/);
+  expect(TabsScreen.mock.calls[1]![0].tabKey).toMatch(/second-[-\w]+/);
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].tabKey;
-  const secondTabKey = TabsScreen.mock.calls[1][0].tabKey;
+  const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
+  const secondTabKey = TabsScreen.mock.calls[1]![0].tabKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(secondTabPressHandler).toHaveBeenCalledTimes(0);
@@ -193,11 +193,11 @@ it('does not pop stack on repeated tab press', async () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('a-index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(2);
-  expect(TabsScreen.mock.calls[0][0].tabKey).toMatch(/index-[-\w]+/);
-  expect(TabsScreen.mock.calls[1][0].tabKey).toMatch(/a-[-\w]+/);
+  expect(TabsScreen.mock.calls[0]![0].tabKey).toMatch(/index-[-\w]+/);
+  expect(TabsScreen.mock.calls[1]![0].tabKey).toMatch(/a-[-\w]+/);
 
-  const indexTabKey = TabsScreen.mock.calls[0][0].tabKey;
-  const aTabKey = TabsScreen.mock.calls[1][0].tabKey;
+  const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
+  const aTabKey = TabsScreen.mock.calls[1]![0].tabKey;
 
   expect(indexTabPressHandler).toHaveBeenCalledTimes(0);
   expect(aIndexTabPressHandler).toHaveBeenCalledTimes(0);

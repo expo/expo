@@ -22,7 +22,7 @@ test('fires focus and blur events in root navigator', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -107,7 +107,7 @@ test('fires focus event after blur', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -173,7 +173,7 @@ test('fires focus and blur events in nested navigator', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -378,7 +378,7 @@ test('fires blur event when a route is removed with a delay', async () => {
 
     return (
       <NavigationContent>
-        {previous.routes.map((route: any) => previous.descriptors[route.key].render())}
+        {previous.routes.map((route: any) => previous.descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -433,7 +433,7 @@ test('fires custom events added with addListener', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -513,7 +513,7 @@ test("doesn't call same listener multiple times with addListener", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -768,7 +768,7 @@ test('has option to prevent default', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });
@@ -824,7 +824,7 @@ test('removes only one listener when unsubscribe is called multiple times', () =
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   });

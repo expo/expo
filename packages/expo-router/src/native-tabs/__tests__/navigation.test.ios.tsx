@@ -39,17 +39,17 @@ describe('Native Bottom Tabs Navigation', () => {
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].isFocused).toBe(false);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].isFocused).toBe(true);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].isFocused).toBe(false);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].isFocused).toBe(true);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].tabKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].isFocused).toBe(false);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].tabKey).toMatch(/^second-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].isFocused).toBe(true);
   }
 
   beforeEach(() => {
