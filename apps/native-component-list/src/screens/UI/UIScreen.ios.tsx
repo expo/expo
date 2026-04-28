@@ -291,6 +291,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Mask component',
+    route: 'ui/mask',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaskScreen'));
+    },
+  },
+  {
     name: 'Overlay component',
     route: 'ui/overlay',
     options: {},
