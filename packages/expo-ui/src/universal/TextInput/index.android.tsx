@@ -54,6 +54,7 @@ export function TextInput({
   autoCapitalize,
   autoCorrect,
   returnKeyType,
+  onSubmitEditing,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -68,6 +69,17 @@ export function TextInput({
         }
       : undefined;
 
+  const keyboardActions = onSubmitEditing
+    ? {
+        onDone: onSubmitEditing,
+        onGo: onSubmitEditing,
+        onNext: onSubmitEditing,
+        onSearch: onSubmitEditing,
+        onSend: onSubmitEditing,
+        onPrevious: onSubmitEditing,
+      }
+    : undefined;
+
   return (
     <ComposeTextField
       value={state}
@@ -75,6 +87,7 @@ export function TextInput({
       readOnly={editable === false}
       singleLine={!multiline}
       keyboardOptions={keyboardOptions}
+      keyboardActions={keyboardActions}
       onValueChange={onChangeText}>
       {placeholder ? (
         <ComposeTextField.Placeholder>

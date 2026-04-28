@@ -34,6 +34,7 @@ export default function TextInputScreen() {
   const [autoCapitalize, setAutoCapitalize] = useState<AutoCapitalize>('sentences');
   const [autoCorrect, setAutoCorrect] = useState(true);
   const [returnKeyType, setReturnKeyType] = useState<ReturnKeyTypeOptions>('done');
+  const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -65,7 +66,9 @@ export default function TextInputScreen() {
               autoCapitalize={autoCapitalize}
               autoCorrect={autoCorrect}
               returnKeyType={returnKeyType}
+              onSubmitEditing={setLastSubmitted}
             />
+            <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
           </Column>
 
           <Column spacing={8}>

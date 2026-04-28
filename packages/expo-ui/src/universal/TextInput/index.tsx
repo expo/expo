@@ -14,6 +14,7 @@ export function TextInput({
   autoCapitalize,
   autoCorrect,
   returnKeyType,
+  onSubmitEditing,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -29,6 +30,9 @@ export function TextInput({
       autoCapitalize={autoCapitalize}
       autoCorrect={autoCorrect}
       returnKeyType={returnKeyType}
+      onSubmitEditing={
+        onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined
+      }
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);

@@ -3,6 +3,7 @@ import {
   autocorrectionDisabled,
   disabled as disabledMod,
   keyboardType as keyboardTypeMod,
+  onSubmit,
   submitLabel,
   textInputAutocapitalization,
   type ModifierConfig,
@@ -66,6 +67,7 @@ export function TextInput({
   autoCapitalize,
   autoCorrect,
   returnKeyType,
+  onSubmitEditing,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -80,6 +82,9 @@ export function TextInput({
   }
   if (autoCorrect === false) modifiers.push(autocorrectionDisabled(true));
   if (returnKeyType) modifiers.push(submitLabel(mapReturnKeyType(returnKeyType)));
+  if (onSubmitEditing) {
+    modifiers.push(onSubmit(() => onSubmitEditing(state.value)));
+  }
 
   return (
     <TextField

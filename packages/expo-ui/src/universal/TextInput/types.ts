@@ -77,4 +77,10 @@ export interface TextInputProps {
    *   default action.
    */
   returnKeyType?: ReturnKeyTypeOptions;
+
+  /**
+   * Called when the user taps the keyboard return key. Receives the current
+   * text in the input.
+   */
+  onSubmitEditing?: (text: string) => void;
 }
