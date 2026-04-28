@@ -44,12 +44,11 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      // All entries were filtered out, dispatching is disabled, or this device is out-of-sample —
-      // mark as dispatched so they don't accumulate.
-      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? true
-      let shouldDispatch = dispatchingEnabled && isInSample()
+      let config = ObserveUserDefaults.config
+      let dispatchingEnabled = config?.dispatchingEnabled ?? true
+      let dispatchInDebug = config?.dispatchInDebug ?? false
+      let shouldDispatch = dispatchingEnabled && isInSample() && (!isDebugBuild || dispatchInDebug)
       if !shouldDispatch {
-        // Mark all pending entries as dispatched without sending them
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
       }

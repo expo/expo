@@ -85,8 +85,9 @@ class BaseObservabilityManager(
       return
     }
 
-    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: !isDebugBuild
-    val shouldDispatch = dispatchingEnabled && isInSample()
+    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: true
+    val dispatchInDebug = ObservePreferences.getConfig(context)?.dispatchInDebug ?: false
+    val shouldDispatch = dispatchingEnabled && isInSample() && (!isDebugBuild || dispatchInDebug)
     if (!shouldDispatch) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return

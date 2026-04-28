@@ -63,4 +63,29 @@ struct ObserveUserDefaultsTests {
     ObserveUserDefaults.setConfig(PersistedConfig(sampleRate: nil))
     #expect(ObserveUserDefaults.config?.sampleRate == nil)
   }
+
+  @Test
+  func `dispatchInDebug defaults to nil`() {
+    #expect(ObserveUserDefaults.config?.dispatchInDebug == nil)
+  }
+
+  @Test
+  func `setConfig with dispatchInDebug true persists true`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchInDebug: true))
+    #expect(ObserveUserDefaults.config?.dispatchInDebug == true)
+  }
+
+  @Test
+  func `setConfig with dispatchInDebug false persists false`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchInDebug: false))
+    #expect(ObserveUserDefaults.config?.dispatchInDebug == false)
+  }
+
+  @Test
+  func `setConfig dispatchInDebug nil clears previously set value`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchInDebug: true))
+    #expect(ObserveUserDefaults.config?.dispatchInDebug == true)
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchInDebug: nil))
+    #expect(ObserveUserDefaults.config?.dispatchInDebug == nil)
+  }
 }

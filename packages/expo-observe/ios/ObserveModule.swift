@@ -8,6 +8,7 @@ internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: L
 internal struct Config: Record {
   @Field var environment: String?
   @Field var dispatchingEnabled: Bool?
+  @Field var dispatchInDebug: Bool?
   @Field var sampleRate: Double?
 }
 
@@ -37,6 +38,7 @@ public final class ObserveModule: Module {
         ObserveUserDefaults.setConfig(
           PersistedConfig(
             dispatchingEnabled: config.dispatchingEnabled,
+            dispatchInDebug: config.dispatchInDebug,
             sampleRate: config.sampleRate
           )
         )
