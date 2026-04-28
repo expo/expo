@@ -17,6 +17,7 @@
 - [iOS] Fix orientation issue caused by upstream changes. ([#44171](https://github.com/expo/expo/pull/44171) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix inconsistent barcode `type` value returned by ZXing fallback scanner (code39, pdf417, codabar) — it now returns the same format as the AVFoundation scanner (e.g. `"code39"` instead of `"org.iso.Code39"`). ([#44726](https://github.com/expo/expo/pull/44726) by [@jensdev](https://github.com/jensdev))
 - [iOS] Fix camera activity indicator remaining active after `CameraView.launchScanner` is interactively dismissed and the app is backgrounded/foregrounded. ([#45063](https://github.com/expo/expo/pull/45063) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45132](https://github.com/expo/expo/pull/45132) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
