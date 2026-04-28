@@ -26,4 +26,11 @@ export interface TextInputProps {
    * @default false
    */
   autoFocus?: boolean;
+
+  /**
+   * If false, the input cannot be edited. Selection is still allowed so the
+   * user can copy text out of the field.
+   * @default true
+   */
+  editable?: boolean;
 }
