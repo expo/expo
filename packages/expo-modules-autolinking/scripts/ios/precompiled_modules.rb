@@ -1281,17 +1281,14 @@ module Expo
       # Locates spm.config.json for internal Expo modules in standalone projects
       # (no monorepo root). Uses resolved podspec dirs so non-flat layouts work.
       def scan_node_modules_configs(project_root)
-        processed_configs = {}
         resolved_modules.each do |mod|
-          (mod['pods'] || []).each do |pod|
-            next unless pod['podspecDir']
+          podspec_dir = (mod['pods'] || []).map { |pod| pod['podspecDir'] }.compact.first
+          next unless podspec_dir
 
-            config_path = spm_config_path_for_podspec_dir(pod['podspecDir'])
-            next unless config_path && !processed_configs[config_path]
+          config_path = spm_config_path_for_podspec_dir(podspec_dir)
+          next unless config_path
 
-            processed_configs[config_path] = true
-            process_spm_config(config_path, :internal, project_root)
-          end
+          process_spm_config(config_path, :internal, project_root)
         end
 
         scan_external_configs(project_root)
