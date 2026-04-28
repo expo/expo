@@ -198,7 +198,7 @@ export function withExtendedResolver(
     },
   };
 
-  const isExpoRouterResolvable = !!resolveFrom.silent(config.projectRoot, 'expo-router');
+  const isExpoRouterResolvable = !!hasModule(config.projectRoot, 'expo-router');
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -1027,4 +1027,14 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+}
+
+function hasModule(projectRoot: string, moduleName: string) {
+  try {
+    return !!require.resolve(`${moduleName}/package.json`, {
+      paths: [projectRoot],
+    });
+  } catch {
+    return false;
+  }
 }
