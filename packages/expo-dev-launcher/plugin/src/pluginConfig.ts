@@ -59,6 +59,21 @@ export type PluginConfigOptions = {
    * @default false
    */
   embeddedBundle?: boolean;
+  /**
+   * Skip the dev menu onboarding popup on first launch. Useful for E2E tests and CI
+   * builds where the onboarding overlay would block automated input.
+   *
+   * @default false
+   */
+  skipOnboarding?: boolean;
+  /**
+   * Automatically open the dev menu when the app launches. Set to `false` to suppress
+   * the auto-launch in development builds where the dev menu would interfere (E2E tests,
+   * automated UI runs).
+   *
+   * @default true
+   */
+  showMenuAtLaunch?: boolean;
 };
 
 const schema: JSONSchema<PluginConfigType> = {
@@ -87,6 +102,14 @@ const schema: JSONSchema<PluginConfigType> = {
       type: 'boolean',
       nullable: true,
     },
+    skipOnboarding: {
+      type: 'boolean',
+      nullable: true,
+    },
+    showMenuAtLaunch: {
+      type: 'boolean',
+      nullable: true,
+    },
     android: {
       type: 'object',
       properties: {
@@ -110,6 +133,14 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         defaultLaunchURL: {
           type: 'string',
+          nullable: true,
+        },
+        skipOnboarding: {
+          type: 'boolean',
+          nullable: true,
+        },
+        showMenuAtLaunch: {
+          type: 'boolean',
           nullable: true,
         },
       },
@@ -138,6 +169,14 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         defaultLaunchURL: {
           type: 'string',
+          nullable: true,
+        },
+        skipOnboarding: {
+          type: 'boolean',
+          nullable: true,
+        },
+        showMenuAtLaunch: {
+          type: 'boolean',
           nullable: true,
         },
       },

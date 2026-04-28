@@ -73,6 +73,7 @@ class DevMenuFragment(
 
   private fun showMenuAtLaunch() {
     val reactHost = reactHostHolder.get() ?: return
+    preferences.showsAtLaunch = false
 
     // If the React Context is already initialized, we can open the menu right away.
     if (reactHost.currentReactContext != null) {
