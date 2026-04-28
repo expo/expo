@@ -346,6 +346,18 @@ function babelPresetExpo(api, options = {}) {
                 }
                 return null;
             })(),
+            // Automatically add the `@expo/ui` plugin when the package is installed.
+            // Independent of reanimated/worklets — must live in its own IIFE so the
+            // earlier fallback chain doesn't short-circuit before reaching it.
+            (() => {
+                if (platformOptions.expoUi === false)
+                    return null;
+                const plugin = (0, resolveModule_1.resolveModule)(api, '@expo/ui/babel-plugin');
+                if (plugin) {
+                    return [require(plugin)];
+                }
+                return null;
+            })(),
         ].filter((x) => !!x),
     };
 }

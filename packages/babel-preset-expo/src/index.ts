@@ -40,6 +40,12 @@ type BabelPresetExpoPlatformOptions = {
    * using `react-native-worklets` or Reanimated 4. @default `true`
    */
   worklets?: boolean;
+  /** Enable or disable adding the `@expo/ui` Babel plugin when `@expo/ui` is
+   * installed. The plugin rewrites `Icon.select({ ios, android })` to the
+   * active platform's value (read from the babel caller) so per-platform
+   * bundles only carry their own branch. @default `true`
+   */
+  expoUi?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -474,14 +480,24 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
             return [require(workletsPlugin)];
           }
         }
-
         if (platformOptions.reanimated !== false) {
           const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
           if (reanimatedPlugin) {
             return [require(reanimatedPlugin)];
           }
         }
+        return null;
+      })(),
 
+      // Automatically add the `@expo/ui` plugin when the package is installed.
+      // Independent of reanimated/worklets — must live in its own IIFE so the
+      // earlier fallback chain doesn't short-circuit before reaching it.
+      ((): PluginItem | null => {
+        if (platformOptions.expoUi === false) return null;
+        const plugin = resolveModule(api, '@expo/ui/babel-plugin');
+        if (plugin) {
+          return [require(plugin)];
+        }
         return null;
       })(),
     ].filter((x): x is PluginItem => !!x),

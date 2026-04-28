@@ -90,6 +90,7 @@
 - [jetpack-compose] Added Material 3 dynamic colors support. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
 - Added universal `FieldGroup` and `Spacer`. ([#44814](https://github.com/expo/expo/pull/44814) by [@kudo](https://github.com/kudo))
 - Added `@expo/ui/community/bottom-sheet` as drop-in replacement for `@gorhom/bottom-sheet`. ([#44683](https://github.com/expo/expo/pull/44683) by [@kudo](https://github.com/kudo))
+- Added universal `Icon` components for Android and iOS. ([#45217](https://github.com/expo/expo/pull/45217) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 

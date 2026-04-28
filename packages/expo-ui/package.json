@@ -42,6 +42,10 @@
     "./community/picker": {
       "types": "./build/community/picker/index.d.ts",
       "default": "./src/community/picker/index.tsx"
+    },
+    "./babel-plugin": {
+      "types": "./plugin/babel-plugin.d.ts",
+      "default": "./plugin/babel-plugin.js"
     }
   },
   "scripts": {
@@ -76,7 +80,10 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
     "@testing-library/react-native": "^13.3.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*",
     "react-native-reanimated": "4.3.0",
@@ -86,6 +93,7 @@
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
+    "@babel/core": "*",
     "expo": "workspace:*",
     "react": "*",
     "react-dom": "*",
@@ -94,6 +102,9 @@
     "react-native-worklets": "*"
   },
   "peerDependenciesMeta": {
+    "@babel/core": {
+      "optional": true
+    },
     "react-dom": {
       "optional": true
     },
