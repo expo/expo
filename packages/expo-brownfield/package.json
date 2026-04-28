@@ -19,7 +19,7 @@
   "scripts": {
     "build": "pnpm run build:lib && pnpm run build:shared && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
-    "build:shared": "expo-build shared",
+    "build:shared": "expo-build --base shared src",
     "build:plugin": "expo-build --base plugin cjs:src",
     "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
