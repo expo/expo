@@ -56,18 +56,14 @@ export function resolveFrom(
         ext = ext[0] !== '.' ? `.${ext}` : ext;
         const candidateWithExt = candidate + ext;
         if (fs.existsSync(candidateWithExt)) {
-          return followSymlinks
-            ? maybeResolve(candidateWithExt)
-            : candidateWithExt;
+          return followSymlinks ? maybeResolve(candidateWithExt) : candidateWithExt;
         }
       }
     }
   }
 
   // (4): Fallback to native Node resolution, if `skipNodePath` is disabled
-  return !skipNodePath 
-    ? nativeResolveFrom(fromDirectory, moduleId)
-    : null;
+  return !skipNodePath ? nativeResolveFrom(fromDirectory, moduleId) : null;
 }
 
 function nativeResolveFrom(fromDirectory: string, moduleId: string): string | null {
