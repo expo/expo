@@ -34,7 +34,7 @@ export declare class ExpoCalendar {
     /**
      * Color used to display this calendar's events.
      */
-    color: string;
+    color?: string;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
      * @platform ios
