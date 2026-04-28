@@ -427,6 +427,7 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
             const offset = numInitialSegments ? numInitialSegments - 1 : 0;
             // START FORK
             // const value = matchedParams[p]?.[index + offset];
+            // TODO(@kitten): Assess which is intended, non-optional or getParamValue accepting undefined
             const value = expo.getParamValue(p, matchedParams[p]?.[index + offset]!);
             // END FORK
 

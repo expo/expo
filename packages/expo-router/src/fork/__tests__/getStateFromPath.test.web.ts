@@ -12,24 +12,26 @@ afterAll(() => {
 });
 
 describe(stripBaseUrl, () => {
-  [
+  (
     [
-      // Input
-      '/',
-      // Base Path
-      '',
-      // Result
-      '/',
-    ],
-    ['/one/two', '/one', '/two'],
-    ['/one/two', '/one/two', ''],
-    ['/one/two/', '/one/two', '/'],
-    ['///one/', '/one', '/'],
-    ['one/', '/one', 'one/'],
-    ['/a/b', '/one', '/a/b'],
-  ].forEach(([path, baseUrl, result]) => {
+      [
+        // Input
+        '/',
+        // Base Path
+        '',
+        // Result
+        '/',
+      ],
+      ['/one/two', '/one', '/two'],
+      ['/one/two', '/one/two', ''],
+      ['/one/two/', '/one/two', '/'],
+      ['///one/', '/one', '/'],
+      ['one/', '/one', 'one/'],
+      ['/a/b', '/one', '/a/b'],
+    ] as const
+  ).forEach(([path, baseUrl, result]) => {
     it(`strips baseUrl "${path}"`, () => {
-      expect(stripBaseUrl(path!, baseUrl!)).toBe(result);
+      expect(stripBaseUrl(path, baseUrl)).toBe(result);
     });
   });
 });
@@ -101,13 +103,15 @@ describe(getUrlWithReactNavigationConcessions, () => {
     });
   });
 
-  [
-    ['', '/'],
-    ['https://acme.com/hello/world?foo=bar#123', 'hello/world/'],
-    ['https://acme.com/hello/world/?foo=bar#123', 'hello/world/'],
-  ].forEach(([url, expected]) => {
+  (
+    [
+      ['', '/'],
+      ['https://acme.com/hello/world?foo=bar#123', 'hello/world/'],
+      ['https://acme.com/hello/world/?foo=bar#123', 'hello/world/'],
+    ] as const
+  ).forEach(([url, expected]) => {
     it(`returns the pathname for ${url}`, () => {
-      expect(getUrlWithReactNavigationConcessions(url!).nonstandardPathname).toBe(expected);
+      expect(getUrlWithReactNavigationConcessions(url).nonstandardPathname).toBe(expected);
     });
   });
 

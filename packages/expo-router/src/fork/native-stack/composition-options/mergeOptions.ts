@@ -20,7 +20,7 @@ export function mergeOptions(
 
   for (const key in descriptors) {
     const descriptor = descriptors[key]!;
-    const routeOptions = registry[key]!;
+    const routeOptions = registry[key];
 
     // No composition options or empty array → pass through
     if (!routeOptions || routeOptions.length === 0) {
