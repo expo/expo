@@ -35,6 +35,27 @@ struct DynamicEnumTypeTests {
   }
 
   @Test
+  func `casts already-hydrated enum value`() throws {
+    let result = try (~StringTestEnum.self).cast(StringTestEnum.expo, appContext: appContext)
+
+    #expect(result as? StringTestEnum == .expo)
+  }
+
+  @Test
+  func `casts already-hydrated optional enum value`() throws {
+    let result = try (~StringTestEnum?.self).cast(StringTestEnum.expo as Any, appContext: appContext)
+
+    #expect(result as? StringTestEnum == .expo)
+  }
+
+  @Test
+  func `does not accept already-hydrated enum of different type`() {
+    #expect(throws: EnumCastingException.self) {
+      try (~StringTestEnum.self).cast(IntTestEnum.positive, appContext: appContext)
+    }
+  }
+
+  @Test
   func `throws EnumNoSuchValueException`() {
     #expect(throws: EnumNoSuchValueException.self) {
       try (~StringTestEnum.self).cast("react native", appContext: appContext)
@@ -98,6 +119,23 @@ struct DynamicEnumTypeTests {
   func `getRawValueDynamicType returns the raw value's dynamic type`() {
     #expect(StringTestEnum.getRawValueDynamicType() is DynamicStringType)
     #expect(IntTestEnum.getRawValueDynamicType() is DynamicNumberType<Int>)
+  }
+
+  @Test
+  func `casts hydrated optional enum to JS string`() throws {
+    let value: StringTestEnum? = .expo
+    let result = try (~StringTestEnum?.self).castToJS(value, appContext: appContext)
+
+    #expect(result.kind == .string)
+    #expect(try result.asString() == "expo")
+  }
+
+  @Test
+  func `casts nil optional enum to JS null`() throws {
+    let value: StringTestEnum? = nil
+    let result = try (~StringTestEnum?.self).castToJS(value, appContext: appContext)
+
+    #expect(result.isNull() == true)
   }
 
   @Test

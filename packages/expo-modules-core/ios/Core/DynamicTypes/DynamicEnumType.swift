@@ -1,5 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type representing an enum that conforms to `Enumerable`.
  */
@@ -17,7 +19,17 @@ internal struct DynamicEnumType: AnyDynamicType {
     return false
   }
 
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    let rawValue = try innerType.getRawValueDynamicType().cast(jsValue: jsValue, appContext: appContext)
+    return try innerType.create(fromRawValue: rawValue)
+  }
+
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    // Idempotent: `MainValueConverter.toNative` calls this after `cast(jsValue:)`,
+    // which already hydrates the enum. Pass it through unchanged in that case.
+    if let value = value as? any Enumerable, type(of: value) == innerType {
+      return value
+    }
     return try innerType.create(fromRawValue: value)
   }
 
