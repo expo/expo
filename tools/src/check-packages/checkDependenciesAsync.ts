@@ -8,13 +8,12 @@ import {
   type SourceFileImportRef,
 } from './scanDependenciesAsync';
 import type { ActionOptions } from './types';
-// eslint-disable-next-line import/no-named-as-default
 import Logger from '../Logger';
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
 
 type PackageCheckType = ActionOptions['checkPackageType'];
 
-/** The three levels of of which dangerous dependencies are allowed.
+/** The three levels of which dangerous dependencies are allowed.
  * @remarks
  * We can configure selectively invalid dependencies to be allowed in `SPECIAL_DEPENDENCIES` below.
  * - `types-only` means we allow any type-only import
