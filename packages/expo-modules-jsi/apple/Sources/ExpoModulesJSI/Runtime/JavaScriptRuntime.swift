@@ -138,8 +138,9 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
         // Unreachable in practice: when the user passed `nil` for `set`, the call site
         // below at `expo.HostObjectCallbacks(...)` also passes `nil` to C++, and
         // `HostObjectCallbacks::set` throws a `jsi::JSError` directly instead of
-        // calling back into Swift.
-        return
+        // calling back into Swift. Trap loudly so a future C++ refactor can't silently
+        // swallow assignments.
+        FatalError.readOnlyHostObjectSetterInvoked()
       }
       let value = JavaScriptValue(runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
       let propertyName = String(cString: propertyName)
