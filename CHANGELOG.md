@@ -1881,7 +1881,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fix incorrect event emitting tests. ([#28953](https://github.com/expo/expo/pull/28953) by [@aleqsio](https://github.com/aleqsio))
   - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
   - [Android] Remove usage of deprecated internal modules API. ([#28715](https://github.com/expo/expo/pull/28715) by [@lukmccall](https://github.com/lukmccall))
-  - [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]https://github.com/expo/expo/pull/29957) by [@rlods](https://github.com/rlods))
+  - [iOS] Fix pedometer sensor when app goes to background then foreground. ([#29957]<https://github.com/expo/expo/pull/29957>) by [@rlods](https://github.com/rlods))
 - **`expo-screen-capture`**
   - Removed redundant usage of `EventEmitter` instance. ([#28946](https://github.com/expo/expo/pull/28946) by [@tsapeta](https://github.com/tsapeta))
   - Updated hook from `useScreenCapturePermissions` to `usePermissions` in the example. ([#30076](https://github.com/expo/expo/pull/30076) by [@mrakesh0608](https://github.com/mrakesh0608))
@@ -3269,7 +3269,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-blur`**
   - Enable blurring by default when static rendering. ([#23000](https://github.com/expo/expo/pull/23000) by [@EvanBacon](https://github.com/EvanBacon))
 - **`expo-face-detector`**
-  - Removed face detector from Expo Go on iOS. (https://expo.fyi/face-detector-removed). ([#22619](https://github.com/expo/expo/pull/22619) by [@aleqsio](https://github.com/aleqsio))
+  - Removed face detector from Expo Go on iOS. (<https://expo.fyi/face-detector-removed>). ([#22619](https://github.com/expo/expo/pull/22619) by [@aleqsio](https://github.com/aleqsio))
 - **`expo-gl`**
   - Require explicit prop `enableExperimentalWorkletSupport` to use GLView from Reanimated worklet. ([#22613](https://github.com/expo/expo/pull/22613) by [@wkozyra95](https://github.com/wkozyra95))
 - **`expo-file-system`**
@@ -3883,4 +3883,4 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## 47.0.0 — 2022-10-28
 
-For changelog entries prior to SDK 47, refer to: https://github.com/expo/expo/blob/ff35557463c0db1cf8683939d752c59baf127f21/CHANGELOG.md#L323
+For changelog entries prior to SDK 47, refer to: <https://github.com/expo/expo/blob/ff35557463c0db1cf8683939d752c59baf127f21/CHANGELOG.md#L323>
