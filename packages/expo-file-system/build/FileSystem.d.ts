@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo, UploadOptions, UploadResult, DownloadTaskOptions, DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, type UploadOptions, type UploadResult, type DownloadTaskOptions, type DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
