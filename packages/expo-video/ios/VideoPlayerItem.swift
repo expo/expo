@@ -26,6 +26,7 @@ class VideoPlayerItem: AVPlayerItem {
     self.isHls = asset.effectivePlaybackURL.isHLS || asset.effectiveContentType == .hls
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
+    self.loadHlsDefaultAudioTrack()
   }
 
   init?(videoSource: VideoSource, urlOverride: URL? = nil) async throws {
@@ -48,6 +49,7 @@ class VideoPlayerItem: AVPlayerItem {
 
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
     self.createTracksLoadingTask()
+    self.loadHlsDefaultAudioTrack()
   }
 
   deinit {
@@ -106,6 +108,16 @@ class VideoPlayerItem: AVPlayerItem {
       log.warn("[expo-video] Failed to fetch HLS video tracks: \(error.localizedDescription)")
       return []
     }
+  }
+
+  private func loadHlsDefaultAudioTrack() {
+    guard self.isHls else {
+      return
+    }
+    if let audioGroup = self.asset.mediaSelectionGroup(forMediaCharacteristic: .audible),
+      let audioOption = audioGroup.defaultOption ?? audioGroup.options.first {
+        self.select(audioOption, in: audioGroup)
+      }
   }
 
   // AVKit API doesn't provide us with a list of available tracks for a HLS source. We can download the playlist file and parse it ourselves
