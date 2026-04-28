@@ -1,6 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
-import { Platform } from 'react-native';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
