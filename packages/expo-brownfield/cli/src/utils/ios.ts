@@ -5,14 +5,7 @@ import path from 'node:path';
 import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
-import {
-  buildPodToNpmPackageMap,
-  collectDeclaredSpmDeps,
-  ensureCorrectFlavor,
-  enumerateBundledSpmDepsXcframeworks,
-  enumeratePrecompiledModules,
-  enumerateSpmDepsXcframeworks,
-} from './precompiled';
+import { ensureCorrectFlavor, enumerateAllPrebuildModules } from './precompiled';
 import { withSpinner } from './spinner';
 import type { IosConfig } from './types';
 
@@ -100,45 +93,10 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
   }
 
   if (config.usePrebuilds) {
-    const podModules = enumeratePrecompiledModules(path.join(process.cwd(), 'ios'));
-    const podToNpm = buildPodToNpmPackageMap(process.cwd());
-    const seenNames = new Set(podModules.map((m) => m.name));
-
-    // Layer 2: SPM-dep xcframeworks bundled inside each enumerated module's npm package
-    // (e.g. `node_modules/expo-image/prebuilds/output/.../release/xcframeworks/SDWebImage.xcframework`).
-    // This is the path npm-published Expo modules use when published with `bundleSharedDeps: true`.
-    const bundledModules = enumerateBundledSpmDepsXcframeworks(
-      podModules,
-      podToNpm,
-      config.buildConfiguration,
-      seenNames
-    );
-    bundledModules.forEach((m) => seenNames.add(m.name));
-
-    // Layer 3: Shared SPM-deps from the Expo monorepo's `.spm-deps/` cache (or the path pointed
-    // at by `EXPO_PRECOMPILED_MODULES_PATH`). Used when bundled deps weren't shipped with the
-    // npm package, e.g. when running inside the monorepo against locally-built modules.
-    const spmDepModules = enumerateSpmDepsXcframeworks(
-      process.cwd(),
-      config.buildConfiguration,
-      seenNames
-    );
-
-    const modules = [...podModules, ...bundledModules, ...spmDepModules];
-
-    // Strict completeness check: every SPM dep declared by an enumerated module must end up
-    // covered by SOME xcframework above. Otherwise the host app crashes at runtime with
-    // `Library not loaded: @rpath/<dep>.framework/<dep>` — failing here surfaces the problem
-    // at packaging time when it's still actionable.
-    const declaredDeps = collectDeclaredSpmDeps(podModules, podToNpm);
-    const coveredNames = new Set(modules.map((m) => m.name));
-    const missing = declaredDeps.filter(({ name }) => !coveredNames.has(name));
-    if (missing.length > 0) {
-      const detail = missing
-        .map(({ name, declaringPod }) => `${name} (required by ${declaringPod})`)
-        .join(', ');
-      CLIError.handle('ios-prebuilds-spm-dep-missing', detail);
-    }
+    // Single source of truth: enumerates all three layers (pod → bundled-npm → shared
+    // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
+    // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
+    const modules = enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration);
 
     // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
     // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
@@ -296,23 +254,15 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
     ...(prebuiltFrameworks ? [XCFramework.React, XCFramework.ReactDependencies] : []),
   ];
 
-  let precompiledModules: { name: string; targets: string[] }[] = [];
-  if (config.usePrebuilds) {
-    const podModules = enumeratePrecompiledModules(path.join(process.cwd(), 'ios'));
-    const seenNames = new Set([
-      ...baseFrameworks.map((f) => f.name),
-      ...podModules.map((m) => m.name),
-    ]);
-    const spmDepModules = enumerateSpmDepsXcframeworks(
-      process.cwd(),
-      config.buildConfiguration,
-      seenNames
-    );
-    precompiledModules = [...podModules, ...spmDepModules].map(({ name }) => ({
-      name,
-      targets: [name],
-    }));
-  }
+  // Use the same enumeration + completeness check that `copyXCFrameworks` runs, so every
+  // xcframework that lands on disk is also declared as a `.binaryTarget` here (and vice-versa).
+  // The check fails fast — Package.swift never gets written if a declared SPM dep is missing.
+  const precompiledModules = config.usePrebuilds
+    ? enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration).map(({ name }) => ({
+        name,
+        targets: [name],
+      }))
+    : [];
 
   const xcframeworks = [...baseFrameworks, ...precompiledModules];
 
