@@ -4,13 +4,12 @@ import path from 'node:path';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
 import { generateCrossLinksSection, toBlockquote } from './shared.js';
+import { EXPO_DESCRIPTION } from './transforms/descriptions.js';
 import { buildTalksSections } from './transforms/talks-section.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
 const TITLE = 'Expo Documentation';
-const DESCRIPTION =
-  'Expo is an open-source React Native framework for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The company behind Expo also offers Expo Application Services (EAS), which are deeply integrated cloud services for Expo and React Native apps.';
 
 function generateItemMarkdown(item) {
   return `- [${item.title}](${item.url})${item.description ? `: ${item.description}` : ''}\n`;
@@ -182,7 +181,7 @@ export async function generateLlmsTxt() {
       path.join(process.cwd(), OUTPUT_DIRECTORY_NAME, OUTPUT_FILENAME_LLMS_TXT),
       generateFullMarkdown({
         title: TITLE,
-        description: DESCRIPTION,
+        description: EXPO_DESCRIPTION,
         sections: allSections,
       })
     );
