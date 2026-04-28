@@ -2911,11 +2911,20 @@ importers:
       '@babel/plugin-transform-flow-strip-types':
         specifier: ^7.25.2
         version: 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-logical-assignment-operators':
+        specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-modules-commonjs':
         specifier: ^7.24.8
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-nullish-coalescing-operator':
+        specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-object-rest-spread':
         specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-optional-chaining':
+        specifier: ^7.24.8
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-parameters':
         specifier: ^7.24.7
