@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = void 0;
+exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = void 0;
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const commands_1 = require("./commands");
 const constants_1 = require("./constants");
+const error_1 = __importDefault(require("./error"));
 const SPM_DEPS_RELATIVE = node_path_1.default.join('packages', 'precompile', '.build', '.spm-deps');
 /**
  * Pod directories that host xcframeworks already covered by the fixed `XCFramework` constants
@@ -215,19 +216,29 @@ const readSpmConfig = (filePath) => {
  * an `spm.config.json` declaring a `podName`. Used to walk an enumerated pod (e.g. `ExpoImage`)
  * back to its npm package so we can read its declared `spmPackages`.
  *
- * The scan looks at:
- *  - `<cwd>/node_modules/*\/spm.config.json`
- *  - `<cwd>/node_modules/@scope/*\/spm.config.json`
- * Each candidate is `realpath`'d so pnpm's symlinked store layout (`node_modules/.pnpm/...`)
- * resolves to the actual package root.
+ * Two scan passes:
+ *  1. `<cwd>/node_modules/{*,@scope/*}/spm.config.json` — packages that ship their own config.
+ *  2. `<expo-modules-autolinking>/external-configs/ios/{*,@scope/*}/spm.config.json` — third-party
+ *     packages (RNReanimated, RNScreens, RNSkia, …) whose configs live in the autolinking
+ *     package rather than alongside their own source.
+ *
+ * The node_modules pass runs first so a workspace-installed `spm.config.json` always wins over
+ * the bundled external default. Each candidate is `realpath`'d for pnpm's `.pnpm/` store layout.
  */
 const buildPodToNpmPackageMap = (cwd) => {
     const map = new Map();
     const nodeModules = node_path_1.default.join(cwd, 'node_modules');
-    if (!node_fs_1.default.existsSync(nodeModules)) {
-        return map;
-    }
-    const indexCandidate = (candidate) => {
+    const recordProducts = (spmConfig, npmPackage, packageRoot) => {
+        for (const product of spmConfig.products ?? []) {
+            if (!product.podName) {
+                continue;
+            }
+            if (!map.has(product.podName)) {
+                map.set(product.podName, { npmPackage, packageRoot, spmConfig });
+            }
+        }
+    };
+    const indexNodeModulesCandidate = (candidate) => {
         const configPath = node_path_1.default.join(candidate, SPM_CONFIG_FILENAME);
         if (!node_fs_1.default.existsSync(configPath)) {
             return;
@@ -254,40 +265,99 @@ const buildPodToNpmPackageMap = (cwd) => {
         if (!npmPackage) {
             npmPackage = node_path_1.default.basename(packageRoot);
         }
-        for (const product of spmConfig.products) {
-            if (!product.podName) {
-                continue;
-            }
-            if (!map.has(product.podName)) {
-                map.set(product.podName, { npmPackage, packageRoot, spmConfig });
-            }
-        }
+        recordProducts(spmConfig, npmPackage, packageRoot);
     };
-    for (const entry of node_fs_1.default.readdirSync(nodeModules, { withFileTypes: true })) {
-        if (!entry.isDirectory() && !entry.isSymbolicLink()) {
-            continue;
-        }
-        if (entry.name.startsWith('.')) {
-            continue;
-        }
-        if (entry.name.startsWith('@')) {
-            const scopeDir = node_path_1.default.join(nodeModules, entry.name);
-            let scopedEntries;
-            try {
-                scopedEntries = node_fs_1.default.readdirSync(scopeDir, { withFileTypes: true });
-            }
-            catch {
+    if (node_fs_1.default.existsSync(nodeModules)) {
+        for (const entry of node_fs_1.default.readdirSync(nodeModules, { withFileTypes: true })) {
+            if (!entry.isDirectory() && !entry.isSymbolicLink()) {
                 continue;
             }
-            for (const scoped of scopedEntries) {
-                if (!scoped.isDirectory() && !scoped.isSymbolicLink()) {
+            if (entry.name.startsWith('.')) {
+                continue;
+            }
+            if (entry.name.startsWith('@')) {
+                const scopeDir = node_path_1.default.join(nodeModules, entry.name);
+                let scopedEntries;
+                try {
+                    scopedEntries = node_fs_1.default.readdirSync(scopeDir, { withFileTypes: true });
+                }
+                catch {
                     continue;
                 }
-                indexCandidate(node_path_1.default.join(scopeDir, scoped.name));
+                for (const scoped of scopedEntries) {
+                    if (!scoped.isDirectory() && !scoped.isSymbolicLink()) {
+                        continue;
+                    }
+                    indexNodeModulesCandidate(node_path_1.default.join(scopeDir, scoped.name));
+                }
+            }
+            else {
+                indexNodeModulesCandidate(node_path_1.default.join(nodeModules, entry.name));
             }
         }
-        else {
-            indexCandidate(node_path_1.default.join(nodeModules, entry.name));
+    }
+    // Pass 2: expo-modules-autolinking/external-configs/ios — configs for 3rd-party packages that
+    // don't ship their own spm.config.json (e.g. react-native-reanimated, @shopify/react-native-skia).
+    // Resolve directly inside `<cwd>/node_modules/` (following symlinks for pnpm) instead of using
+    // `require.resolve`, which would walk up parent dirs and pick up an unrelated install.
+    let externalConfigsRoot = null;
+    const autolinkingPath = node_path_1.default.join(nodeModules, 'expo-modules-autolinking');
+    if (node_fs_1.default.existsSync(node_path_1.default.join(autolinkingPath, 'package.json'))) {
+        let autolinkingRoot = autolinkingPath;
+        try {
+            autolinkingRoot = node_fs_1.default.realpathSync(autolinkingPath);
+        }
+        catch {
+            // realpath failed — keep the unresolved path; existsSync below handles the rest.
+        }
+        externalConfigsRoot = node_path_1.default.join(autolinkingRoot, 'external-configs', 'ios');
+    }
+    const indexExternalConfig = (configDir, npmPackage) => {
+        const configPath = node_path_1.default.join(configDir, SPM_CONFIG_FILENAME);
+        if (!node_fs_1.default.existsSync(configPath)) {
+            return;
+        }
+        const spmConfig = readSpmConfig(configPath);
+        if (!spmConfig?.products?.length) {
+            return;
+        }
+        // The actual package install root (where `prebuilds/output/` would live, if anything) is
+        // resolved via `require.resolve`. Fall back to the external-config dir so the entry still
+        // exists in the map for declared-deps aggregation even when the package isn't installed.
+        let packageRoot = configDir;
+        try {
+            const pkgJsonPath = require.resolve(`${npmPackage}/package.json`, { paths: [cwd] });
+            packageRoot = node_path_1.default.dirname(pkgJsonPath);
+        }
+        catch {
+            // Package not installed; the external-config dir is fine for spmConfig-only consumers.
+        }
+        recordProducts(spmConfig, npmPackage, packageRoot);
+    };
+    if (externalConfigsRoot && node_fs_1.default.existsSync(externalConfigsRoot)) {
+        for (const entry of node_fs_1.default.readdirSync(externalConfigsRoot, { withFileTypes: true })) {
+            if (!entry.isDirectory() && !entry.isSymbolicLink()) {
+                continue;
+            }
+            if (entry.name.startsWith('@')) {
+                const scopeDir = node_path_1.default.join(externalConfigsRoot, entry.name);
+                let scopedEntries;
+                try {
+                    scopedEntries = node_fs_1.default.readdirSync(scopeDir, { withFileTypes: true });
+                }
+                catch {
+                    continue;
+                }
+                for (const scoped of scopedEntries) {
+                    if (!scoped.isDirectory() && !scoped.isSymbolicLink()) {
+                        continue;
+                    }
+                    indexExternalConfig(node_path_1.default.join(scopeDir, scoped.name), `${entry.name}/${scoped.name}`);
+                }
+            }
+            else {
+                indexExternalConfig(node_path_1.default.join(externalConfigsRoot, entry.name), entry.name);
+            }
         }
     }
     return map;
@@ -304,7 +374,7 @@ exports.buildPodToNpmPackageMap = buildPodToNpmPackageMap;
  *
  * Bounded depth to avoid pathological scans.
  */
-const findBundledXcframework = (packageRoot, name, flavor, maxDepth = 6) => {
+const findBundledXcframework = (packageRoot, name, flavor, maxDepth = 10) => {
     const root = node_path_1.default.join(packageRoot, 'prebuilds', 'output');
     if (!node_fs_1.default.existsSync(root)) {
         return null;
@@ -326,7 +396,20 @@ const findBundledXcframework = (packageRoot, name, flavor, maxDepth = 6) => {
             return null;
         }
         for (const entry of entries) {
-            if (!entry.isDirectory()) {
+            let isDir = entry.isDirectory();
+            // pnpm and similar package managers symlink workspace packages — readdir's Dirent
+            // reports `isDirectory() === false` for them, so resolve the link with `statSync`
+            // (which follows symlinks) to avoid skipping legitimate prebuild output trees.
+            if (!isDir && entry.isSymbolicLink()) {
+                try {
+                    isDir = node_fs_1.default.statSync(node_path_1.default.join(dir, entry.name)).isDirectory();
+                }
+                catch {
+                    // Broken symlink, skip it.
+                    continue;
+                }
+            }
+            if (!isDir) {
                 continue;
             }
             const found = walk(node_path_1.default.join(dir, entry.name), depth + 1);
@@ -410,4 +493,35 @@ const enumerateBundledSpmDepsXcframeworks = (modules, podToNpm, buildConfigurati
     return results;
 };
 exports.enumerateBundledSpmDepsXcframeworks = enumerateBundledSpmDepsXcframeworks;
+/**
+ * Single source of truth for the full prebuild module set. Walks all three layers in priority
+ * order (pod → bundled-npm → shared `.spm-deps/`), deduping by xcframework name across layers,
+ * and runs the strict completeness check before returning.
+ *
+ * Both `copyXCFrameworks` (bundles xcframeworks into the package) and `generatePackageMetadataFile`
+ * (declares them in `Package.swift`) need to see the exact same module set, otherwise an
+ * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
+ * helper from both sites guarantees they agree, and gates both behind the completeness check
+ * so we never produce a half-baked package on missing deps.
+ */
+const enumerateAllPrebuildModules = (cwd, buildConfiguration) => {
+    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
+    const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
+    const seenNames = new Set(podModules.map((m) => m.name));
+    const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
+    bundledModules.forEach((m) => seenNames.add(m.name));
+    const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
+    const modules = [...podModules, ...bundledModules, ...spmDepModules];
+    const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm);
+    const coveredNames = new Set(modules.map((m) => m.name));
+    const missing = declaredDeps.filter(({ name }) => !coveredNames.has(name));
+    if (missing.length > 0) {
+        const detail = missing
+            .map(({ name, declaringPod }) => `${name} (required by ${declaringPod})`)
+            .join(', ');
+        error_1.default.handle('ios-prebuilds-spm-dep-missing', detail);
+    }
+    return modules;
+};
+exports.enumerateAllPrebuildModules = enumerateAllPrebuildModules;
 //# sourceMappingURL=precompiled.js.map

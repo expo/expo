@@ -78,11 +78,14 @@ export interface NpmPackageInfo {
  * an `spm.config.json` declaring a `podName`. Used to walk an enumerated pod (e.g. `ExpoImage`)
  * back to its npm package so we can read its declared `spmPackages`.
  *
- * The scan looks at:
- *  - `<cwd>/node_modules/*\/spm.config.json`
- *  - `<cwd>/node_modules/@scope/*\/spm.config.json`
- * Each candidate is `realpath`'d so pnpm's symlinked store layout (`node_modules/.pnpm/...`)
- * resolves to the actual package root.
+ * Two scan passes:
+ *  1. `<cwd>/node_modules/{*,@scope/*}/spm.config.json` — packages that ship their own config.
+ *  2. `<expo-modules-autolinking>/external-configs/ios/{*,@scope/*}/spm.config.json` — third-party
+ *     packages (RNReanimated, RNScreens, RNSkia, …) whose configs live in the autolinking
+ *     package rather than alongside their own source.
+ *
+ * The node_modules pass runs first so a workspace-installed `spm.config.json` always wins over
+ * the bundled external default. Each candidate is `realpath`'d for pnpm's `.pnpm/` store layout.
  */
 export declare const buildPodToNpmPackageMap: (cwd: string) => Map<string, NpmPackageInfo>;
 /**
@@ -106,3 +109,15 @@ export declare const collectDeclaredSpmDeps: (modules: ModuleXCFramework[], podT
  * (in copyXCFrameworks) is the source of truth for surfacing unresolvable deps.
  */
 export declare const enumerateBundledSpmDepsXcframeworks: (modules: ModuleXCFramework[], podToNpm: Map<string, NpmPackageInfo>, buildConfiguration: BuildConfiguration, existingNames: Set<string>) => ModuleXCFramework[];
+/**
+ * Single source of truth for the full prebuild module set. Walks all three layers in priority
+ * order (pod → bundled-npm → shared `.spm-deps/`), deduping by xcframework name across layers,
+ * and runs the strict completeness check before returning.
+ *
+ * Both `copyXCFrameworks` (bundles xcframeworks into the package) and `generatePackageMetadataFile`
+ * (declares them in `Package.swift`) need to see the exact same module set, otherwise an
+ * xcframework can land on disk without a matching `.binaryTarget` (or vice-versa). Calling this
+ * helper from both sites guarantees they agree, and gates both behind the completeness check
+ * so we never produce a half-baked package on missing deps.
+ */
+export declare const enumerateAllPrebuildModules: (cwd: string, buildConfiguration: BuildConfiguration) => ModuleXCFramework[];
