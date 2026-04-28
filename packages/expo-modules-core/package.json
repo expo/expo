@@ -19,7 +19,14 @@
       "source": "./src/index.ts",
       "default": "./src/index.js"
     },
-    "./types": "./types.d.ts",
+    "./types": {
+      "types": {
+        "source": "./src/types.ts",
+        "default": "./build/types.d.ts"
+      },
+      "source": "./src/types.ts",
+      "default": "./build/types.js"
+    },
     "./src/polyfill/dangerous-internal": {
       "types": {
         "source": "./src/polyfill/dangerous-internal.ts",
@@ -34,7 +41,7 @@
         "default": "./build/uuid/index.d.ts"
       },
       "source": "./src/uuid/index.ts",
-      "build": "./build/uuid/index.js"
+      "default": "./build/uuid/index.js"
     },
     "./package.json": "./package.json"
   },

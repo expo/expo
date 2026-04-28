@@ -31,7 +31,7 @@ export class AudioRecorderWeb
   private mediaRecorder: MediaRecorder | null = null;
   private mediaRecorderUptimeOfLastStartResume = 0;
   private mediaRecorderIsRecording = false;
-  private timeoutIds: number[] = [];
+  private timeoutIds: (ReturnType<typeof setTimeout>)[] = [];
   private cachedInputs: RecordingInput[] = [];
   private selectedDeviceId: string | null = null;
   private stream: MediaStream | null = null;

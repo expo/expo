@@ -30,7 +30,7 @@ export async function updateXcodeProject(
       if (key.endsWith('_comment')) {
         continue;
       }
-      fsSynchronizedRootGroups.add(objects.PBXFileSystemSynchronizedRootGroup[key].path);
+      fsSynchronizedRootGroups.add(objects.PBXFileSystemSynchronizedRootGroup[key]!.path);
     }
   } else {
     objects.PBXFileSystemSynchronizedRootGroup = {};
@@ -46,7 +46,7 @@ export async function updateXcodeProject(
     projectHasChanged = true;
 
     const newUUID = pbxProject.generateUuid();
-    objects.PBXGroup[mainGroupUUID].children.push({
+    objects.PBXGroup[mainGroupUUID]!.children.push({
       value: newUUID,
       comment: dir,
     });
@@ -61,7 +61,7 @@ export async function updateXcodeProject(
     };
 
     for (const target of pbxProject.getFirstProject().firstProject.targets) {
-      const nativeTargetGroup = objects.PBXNativeTarget[target.value];
+      const nativeTargetGroup = objects.PBXNativeTarget[target.value]!;
       if (!nativeTargetGroup.fileSystemSynchronizedGroups) {
         nativeTargetGroup.fileSystemSynchronizedGroups = [];
       }
