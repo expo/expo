@@ -1,6 +1,7 @@
 import Foundation
 internal import React
 import ExpoModulesCore
+import os
 
 public protocol ScreenOrientationController: AnyObject {
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation)
@@ -19,6 +20,11 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   var orientationControllers: [ScreenOrientationController] = []
   var controllerInterfaceMasks: [ObjectIdentifier: UIInterfaceOrientationMask] = [:]
   private let queue = DispatchQueue(label: "expo.screenorientationregistry", attributes: .concurrent)
+  // Cached orientation mask protected by os_unfair_lock instead of GCD queue.sync.
+  // Reading via queue.sync in requiredOrientationMask() deadlocks the main thread
+  // when a barrier write is pending on the same concurrent queue.
+  private var _cachedMask: UIInterfaceOrientationMask = []
+  private var maskLock = os_unfair_lock()
   @objc
   public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
@@ -111,6 +117,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     queue.async(flags: .barrier) {
       self.controllerInterfaceMasks[controllerIdentifier] = mask
+      self.updateCachedMask()
     }
     enforceDesiredDeviceOrientation(withOrientationMask: mask)
   }
@@ -122,20 +129,30 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    */
   @objc
   public func requiredOrientationMask() -> UIInterfaceOrientationMask {
-    return queue.sync {
-      if controllerInterfaceMasks.isEmpty {
-        return []
-      }
+    // Read the cached mask via os_unfair_lock — never touches the GCD queue,
+    // so it cannot deadlock when called from the main thread via UIKit's
+    // supportedInterfaceOrientations getter chain.
+    os_unfair_lock_lock(&maskLock)
+    defer { os_unfair_lock_unlock(&maskLock) }
+    return _cachedMask
+  }
 
-      // We want to apply an orientation mask which is an intersection of locks applied by the modules.
+  /// Recompute and cache the orientation mask. Must be called from within
+  /// a queue barrier/sync block so that `controllerInterfaceMasks` is stable.
+  private func updateCachedMask() {
+    let newMask: UIInterfaceOrientationMask
+    if controllerInterfaceMasks.isEmpty {
+      newMask = []
+    } else {
       var mask = doesDeviceHaveNotch ? UIInterfaceOrientationMask.allButUpsideDown : UIInterfaceOrientationMask.all
-
       for moduleMask in controllerInterfaceMasks {
         mask = mask.intersection(moduleMask.value)
       }
-
-      return mask
+      newMask = mask
     }
+    os_unfair_lock_lock(&maskLock)
+    _cachedMask = newMask
+    os_unfair_lock_unlock(&maskLock)
   }
 
   // MARK: - Events
@@ -218,7 +235,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   public func registerController(_ controller: ScreenOrientationController) {
-    queue.sync {
+    queue.async(flags: .barrier) {
       self.orientationControllers.append(controller)
     }
   }
@@ -226,9 +243,10 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public func unregisterController(_ controller: ScreenOrientationController) {
     let controllerIdentifier = ObjectIdentifier(controller)
 
-    queue.sync {
+    queue.async(flags: .barrier) {
       self.controllerInterfaceMasks.removeValue(forKey: controllerIdentifier)
       self.orientationControllers.removeAll(where: { $0 === controller })
+      self.updateCachedMask()
     }
   }
 }
