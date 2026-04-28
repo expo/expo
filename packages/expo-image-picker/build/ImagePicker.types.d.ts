@@ -279,6 +279,7 @@ export type ImagePickerAsset = {
      *
      * @platform android
      * @platform ios
+     * @platform web
      */
     exif?: Record<string, any> | null;
     /**
@@ -420,10 +421,12 @@ export type ImagePickerOptions = {
     mediaTypes?: MediaType | MediaType[] | MediaTypeOptions;
     /**
      * Whether to also include the EXIF data for the image. On iOS the EXIF data does not include GPS
-     * tags in the camera case.
+     * tags in the camera case. On web, EXIF data is returned when the selected image format embeds a
+     * readable EXIF payload.
      *
      * @platform android
      * @platform ios
+     * @platform web
      */
     exif?: boolean;
     /**
@@ -551,6 +554,10 @@ export type OpenFileBrowserOptions = {
      * Whether to also include the image data in Base64 format.
      */
     base64: boolean;
+    /**
+     * Whether to also include the EXIF data for the selected image.
+     */
+    exif: boolean;
 };
 /**
  * @hidden
