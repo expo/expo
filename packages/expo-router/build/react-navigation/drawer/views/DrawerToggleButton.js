@@ -7,7 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DrawerToggleButton = DrawerToggleButton;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
-const toggle_drawer_icon_png_1 = __importDefault(require("../../../../../assets/react-navigation/drawer/toggle-drawer-icon.png"));
+const toggle_drawer_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/drawer/toggle-drawer-icon.png"));
 const elements_1 = require("../../elements");
 const native_1 = require("../../native");
 function DrawerToggleButton({ tintColor, accessibilityLabel = 'Show navigation menu', imageSource = toggle_drawer_icon_png_1.default, ...rest }) {

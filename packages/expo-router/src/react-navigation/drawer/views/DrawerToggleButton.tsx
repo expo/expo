@@ -1,7 +1,7 @@
 'use client';
 import { type ColorValue, Image, type ImageSourcePropType, StyleSheet } from 'react-native';
 
-import toggleDrawerIcon from '../../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';
+import toggleDrawerIcon from '../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';
 import { HeaderButton } from '../../elements';
 import { DrawerActions, type ParamListBase, useNavigation } from '../../native';
 import type { DrawerNavigationProp } from '../types';
