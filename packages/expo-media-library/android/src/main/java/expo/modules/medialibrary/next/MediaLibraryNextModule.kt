@@ -19,6 +19,8 @@ import expo.modules.medialibrary.next.objects.asset.deleters.AssetLegacyDeleter
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetModernDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetModernFactory
 import expo.modules.medialibrary.next.objects.asset.factories.AssetLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.movers.AssetLegacyMover
+import expo.modules.medialibrary.next.objects.asset.movers.AssetModernMover
 import expo.modules.medialibrary.next.objects.query.MediaStoreQueryFormatter
 import expo.modules.medialibrary.next.objects.query.Query
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
@@ -57,19 +59,27 @@ class MediaLibraryNextModule : Module() {
     AlbumQuery(albumFactory, context)
   }
 
+  private val assetMover by lazy {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      AssetModernMover(mediaStorePermissionsDelegate)
+    } else {
+      AssetLegacyMover()
+    }
+  }
+
   private val albumFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AlbumModernFactory(assetFactory, assetDeleter, mediaStorePermissionsDelegate, context)
+      AlbumModernFactory(assetFactory, assetDeleter, assetMover, context)
     } else {
-      AlbumLegacyFactory(assetFactory, assetDeleter, context)
+      AlbumLegacyFactory(assetFactory, assetDeleter, assetMover, context)
     }
   }
 
   private val assetFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AssetModernFactory(assetDeleter, mediaStorePermissionsDelegate, context)
+      AssetModernFactory(assetDeleter, assetMover, mediaStorePermissionsDelegate, context)
     } else {
-      AssetLegacyFactory(assetDeleter, systemPermissionsDelegate, context)
+      AssetLegacyFactory(assetDeleter, assetMover, systemPermissionsDelegate, context)
     }
   }
 
@@ -170,7 +180,7 @@ class MediaLibraryNextModule : Module() {
 
     Class(Album::class) {
       Constructor { id: String ->
-        Album(id, assetDeleter, assetFactory, context)
+        Album(id, assetDeleter, assetFactory, assetMover, context)
       }
 
       Property("id") { self: Album ->
@@ -185,8 +195,8 @@ class MediaLibraryNextModule : Module() {
         self.getAssets()
       }
 
-      AsyncFunction("add") Coroutine { self: Album, asset: Asset ->
-        self.add(asset)
+      AsyncFunction("add") Coroutine { self: Album, assets: List<Asset> ->
+        self.add(assets)
       }
 
       AsyncFunction("delete") Coroutine { self: Album ->
