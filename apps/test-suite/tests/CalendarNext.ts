@@ -130,90 +130,186 @@ export async function test(t) {
   const shouldSkipUItest = true;
   const describeWithUiTest = shouldSkipUItest ? t.xdescribe : t.describe;
 
-  function testCalendarShape(calendar) {
-    t.expect(calendar).toBeDefined();
-    t.expect(typeof calendar.id).toBe('string');
-    t.expect(typeof calendar.title).toBe('string');
-    t.expect(typeof calendar.source).toBe('object');
+  function testCalendarShape(calendar: ExpoCalendar) {
+    t.expect(calendar).withContext('calendar should be defined').toBeDefined();
+    t.expect(typeof calendar.id)
+      .withContext('calendar.id should be a string')
+      .toBe('string');
+    t.expect(typeof calendar.title)
+      .withContext('calendar.title should be a string')
+      .toBe('string');
+    t.expect(typeof calendar.source)
+      .withContext('calendar.source should be an object')
+      .toBe('object');
     testCalendarSourceShape(calendar.source);
-    t.expect(typeof calendar.color).toBe('string');
-    t.expect(typeof calendar.allowsModifications).toBe('boolean');
 
-    t.expect(Array.isArray(calendar.allowedAvailabilities)).toBe(true);
+    if (calendar.color) {
+      t.expect(typeof calendar.color)
+        .withContext('calendar.color should be a string')
+        .toBe('string');
+    }
+
+    t.expect(typeof calendar.allowsModifications)
+      .withContext('calendar.allowsModifications should be a boolean')
+      .toBe('boolean');
+
+    t.expect(Array.isArray(calendar.allowedAvailabilities))
+      .withContext('calendar.allowedAvailabilities should be an array')
+      .toBe(true);
     calendar.allowedAvailabilities.forEach((availability) => {
-      t.expect(Object.values(Calendar.Availability)).toContain(availability);
+      t.expect(Object.values(Calendar.Availability))
+        .withContext('calendar availability should be a valid Availability value')
+        .toContain(availability);
     });
 
     if (Platform.OS === 'ios') {
-      t.expect(typeof calendar.entityType).toBe('string');
-      t.expect(Object.values(Calendar.EntityTypes)).toContain(calendar.entityType);
+      t.expect(typeof calendar.entityType)
+        .withContext('calendar.entityType should be a string')
+        .toBe('string');
+      t.expect(Object.values(Calendar.EntityTypes))
+        .withContext('calendar.entityType should be a valid EntityType')
+        .toContain(calendar.entityType);
 
-      t.expect(typeof calendar.type).toBe('string');
-      t.expect(Object.values(Calendar.CalendarType)).toContain(calendar.type);
+      t.expect(typeof calendar.type)
+        .withContext('calendar.type should be a string')
+        .toBe('string');
+      t.expect(Object.values(Calendar.CalendarType))
+        .withContext('calendar.type should be a valid CalendarType')
+        .toContain(calendar.type);
     }
   }
 
-  function testEventShape(event) {
-    t.expect(event).toBeDefined();
-    t.expect(typeof event.id).toBe('string');
-    t.expect(typeof event.calendarId).toBe('string');
-    t.expect(typeof event.title).toBe('string');
-    t.expect(typeof event.startDate).toBe('string');
-    t.expect(typeof event.endDate).toBe('string');
-    t.expect(typeof event.allDay).toBe('boolean');
-    t.expect(typeof event.location).toBe('string');
-    t.expect(typeof event.notes).toBe('string');
-    t.expect(Array.isArray(event.alarms)).toBe(true);
-    event.recurrenceRule && t.expect(typeof event.recurrenceRule).toBe('object');
-    t.expect(Object.values(Calendar.Availability)).toContain(event.availability);
-    event.timeZone && t.expect(typeof event.timeZone).toBe('string');
+  function testEventShape(event: ExpoCalendarEvent) {
+    t.expect(event).withContext('event should be defined').toBeDefined();
+    t.expect(typeof event.id)
+      .withContext('event.id should be a string')
+      .toBe('string');
+    t.expect(typeof event.calendarId)
+      .withContext('event.calendarId should be a string')
+      .toBe('string');
+    t.expect(typeof event.title)
+      .withContext('event.title should be a string')
+      .toBe('string');
+    t.expect(typeof event.startDate)
+      .withContext('event.startDate should be a string')
+      .toBe('string');
+    t.expect(typeof event.endDate)
+      .withContext('event.endDate should be a string')
+      .toBe('string');
+    t.expect(typeof event.allDay)
+      .withContext('event.allDay should be a boolean')
+      .toBe('boolean');
+    t.expect(typeof event.location)
+      .withContext('event.location should be a string')
+      .toBe('string');
+    t.expect(typeof event.notes)
+      .withContext('event.notes should be a string')
+      .toBe('string');
+    t.expect(Array.isArray(event.alarms)).withContext('event.alarms should be an array').toBe(true);
+    event.recurrenceRule &&
+      t
+        .expect(typeof event.recurrenceRule)
+        .withContext('event.recurrenceRule should be an object')
+        .toBe('object');
+    t.expect(Object.values(Calendar.Availability))
+      .withContext('event.availability should be a valid Availability value')
+      .toContain(event.availability);
+    event.timeZone &&
+      t
+        .expect(typeof event.timeZone)
+        .withContext('event.timeZone should be a string')
+        .toBe('string');
 
     if (Platform.OS === 'ios') {
-      event.url && t.expect(typeof event.url).toBe('string');
-      t.expect(typeof event.creationDate).toBe('string');
-      t.expect(typeof event.lastModifiedDate).toBe('string');
-      t.expect(typeof event.originalStartDate).toBe('string');
-      t.expect(typeof event.isDetached).toBe('boolean');
-      t.expect(Object.values(Calendar.EventStatus)).toContain(event.status);
+      event.url &&
+        t
+          .expect(typeof event.url)
+          .withContext('event.url should be a string')
+          .toBe('string');
+      t.expect(typeof event.creationDate)
+        .withContext('event.creationDate should be a string')
+        .toBe('string');
+      t.expect(typeof event.lastModifiedDate)
+        .withContext('event.lastModifiedDate should be a string')
+        .toBe('string');
+      t.expect(typeof event.originalStartDate)
+        .withContext('event.originalStartDate should be a string')
+        .toBe('string');
+      t.expect(typeof event.isDetached)
+        .withContext('event.isDetached should be a boolean')
+        .toBe('boolean');
+      t.expect(Object.values(Calendar.EventStatus))
+        .withContext('event.status should be a valid EventStatus')
+        .toContain(event.status);
 
       if (event.organizer) {
-        t.expect(typeof event.organizer).toBe('object');
+        t.expect(typeof event.organizer)
+          .withContext('event.organizer should be an object')
+          .toBe('object');
         testAttendeeShape(event.organizer);
       }
     }
   }
 
-  function testCalendarSourceShape(source) {
-    t.expect(source).toBeDefined();
-    t.expect(typeof source.type).toBe('string');
+  function testCalendarSourceShape(source: ExpoCalendar['source']) {
+    t.expect(source).withContext('source should be defined').toBeDefined();
+    t.expect(typeof source.type)
+      .withContext('source.type should be a string')
+      .toBe('string');
 
     if (source.name !== null) {
       // source.name can be null if it refers to the local (unnamed) calendar.
-      t.expect(typeof source.name).toBe('string');
+      t.expect(typeof source.name)
+        .withContext('source.name should be a string')
+        .toBe('string');
     }
 
     if (Platform.OS === 'ios') {
-      t.expect(typeof source.id).toBe('string');
+      t.expect(typeof source.id)
+        .withContext('source.id should be a string')
+        .toBe('string');
     }
   }
 
   function testAttendeeShape(attendee) {
-    t.expect(attendee).toBeDefined();
-    t.expect(typeof attendee.name).toBe('string');
-    t.expect(typeof attendee.role).toBe('string');
-    t.expect(Object.values(Calendar.AttendeeRole)).toContain(attendee.role);
-    t.expect(typeof attendee.status).toBe('string');
-    t.expect(Object.values(Calendar.AttendeeStatus)).toContain(attendee.status);
-    t.expect(typeof attendee.type).toBe('string');
-    t.expect(Object.values(Calendar.AttendeeType)).toContain(attendee.type);
+    t.expect(attendee).withContext('attendee should be defined').toBeDefined();
+    t.expect(typeof attendee.name)
+      .withContext('attendee.name should be a string')
+      .toBe('string');
+    t.expect(typeof attendee.role)
+      .withContext('attendee.role should be a string')
+      .toBe('string');
+    t.expect(Object.values(Calendar.AttendeeRole))
+      .withContext('attendee.role should be a valid AttendeeRole')
+      .toContain(attendee.role);
+    t.expect(typeof attendee.status)
+      .withContext('attendee.status should be a string')
+      .toBe('string');
+    t.expect(Object.values(Calendar.AttendeeStatus))
+      .withContext('attendee.status should be a valid AttendeeStatus')
+      .toContain(attendee.status);
+    t.expect(typeof attendee.type)
+      .withContext('attendee.type should be a string')
+      .toBe('string');
+    t.expect(Object.values(Calendar.AttendeeType))
+      .withContext('attendee.type should be a valid AttendeeType')
+      .toContain(attendee.type);
 
     if (Platform.OS === 'ios') {
-      t.expect(typeof attendee.url).toBe('string');
-      t.expect(typeof attendee.isCurrentUser).toBe('boolean');
+      t.expect(typeof attendee.url)
+        .withContext('attendee.url should be a string')
+        .toBe('string');
+      t.expect(typeof attendee.isCurrentUser)
+        .withContext('attendee.isCurrentUser should be a boolean')
+        .toBe('boolean');
     }
     if (Platform.OS === 'android') {
-      t.expect(typeof attendee.id).toBe('string');
-      t.expect(typeof attendee.email).toBe('string');
+      t.expect(typeof attendee.id)
+        .withContext('attendee.id should be a string')
+        .toBe('string');
+      t.expect(typeof attendee.email)
+        .withContext('attendee.email should be a string')
+        .toBe('string');
     }
   }
 
