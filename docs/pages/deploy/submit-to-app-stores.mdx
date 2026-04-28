@@ -23,11 +23,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## Apple App Store
 
-<Prerequisites numberOfRequirements={4}>
-  <Requirement number={1} title="Sign up for an Apple Developer account">
+<Prerequisites>
+  <Requirement title="Sign up for an Apple Developer account">
     An Apple Developer account is required to submit your app to the Apple App Store. You can sign up for an Apple Developer account on the [Apple Developer Portal](https://developer.apple.com/account/).
   </Requirement>
-  <Requirement number={2} title="Include a bundle identifier in app.json">
+  <Requirement title="Include a bundle identifier in app.json">
     Include your app's bundle identifier in **app.json**:
 
     ```json app.json
@@ -39,13 +39,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
     ```
 
   </Requirement>
-  <Requirement number={3} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
 
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
   </Requirement>
-  <Requirement number={4} title="Build a production app">
+  <Requirement title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
 
     <Terminal cmd={['$ eas build --platform ios --profile production']} />
@@ -65,23 +65,23 @@ The command will lead you step by step through the process of submitting the app
 
 ## Google Play Store
 
-<Prerequisites numberOfRequirements={7}>
-  <Requirement number={1} title="Sign up for a Google Play Developer account">
+<Prerequisites>
+  <Requirement title="Sign up for a Google Play Developer account">
     A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
-  <Requirement number={2} title="Create a Google Service Account">
+  <Requirement title="Create a Google Service Account">
     EAS requires you to upload and configure a Google Service Account Key to submit your Android app to the Google Play Store. You can create one with the [uploading a Google Service Account Key for Play Store submissions with EAS](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
   </Requirement>
-  <Requirement number={3} title="Create an app on Google Play Console">
+  <Requirement title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
 
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
   </Requirement>
-  <Requirement number={5} title="Include a package name in app.json">
+  <Requirement title="Include a package name in app.json">
     Include your app's package name in **app.json**:
 
     ```json app.json
@@ -93,7 +93,7 @@ The command will lead you step by step through the process of submitting the app
     ```
 
   </Requirement>
-  <Requirement number={6} title="Build a production app">
+  <Requirement title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
 
     <Terminal cmd={['$ eas build --platform android --profile production']} />
@@ -101,7 +101,7 @@ The command will lead you step by step through the process of submitting the app
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
 
   </Requirement>
-  <Requirement number={7} title="Upload your app manually at least once">
+  <Requirement title="Upload your app manually at least once">
     You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
 
     Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.

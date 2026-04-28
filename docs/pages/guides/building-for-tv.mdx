@@ -39,19 +39,19 @@ The necessary changes to the native Android and iOS files are minimal and can be
 
 ### Android TV
 
-<Prerequisites numberOfRequirements={4}>
-  <Requirement number={1} title="Node.js (LTS)">
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
     Install [Node.js (LTS)](https://nodejs.org/en/) on macOS or Linux.
   </Requirement>
-  <Requirement number={2} title="Android Studio (Iguana or later)">
+  <Requirement title="Android Studio (Iguana or later)">
     Install Android Studio Iguana or later.
   </Requirement>
-  <Requirement number={3} title="Android TV system image">
+  <Requirement title="Android TV system image">
     In the Android Studio SDK manager, select the dropdown for the Android SDK you are using (API
     version 31 or later), and make sure an Android TV system image is selected for installation. For
     Apple silicon, choose the ARM 64 image. Otherwise, choose the Intel x86_64 image.
   </Requirement>
-  <Requirement number={4} title="Android TV emulator">
+  <Requirement title="Android TV emulator">
     After installing the Android TV system image, create an Android TV emulator using that image
     (the process is the same as creating an Android phone emulator).
   </Requirement>
@@ -59,14 +59,12 @@ The necessary changes to the native Android and iOS files are minimal and can be
 
 ### Apple TV
 
-<Prerequisites numberOfRequirements={3}>
-  <Requirement number={1} title="Node.js (LTS)">
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
     Install [Node.js (LTS)](https://nodejs.org/en/) on macOS.
   </Requirement>
-  <Requirement number={2} title="Xcode 16 or later">
-    Install Xcode 16 or later.
-  </Requirement>
-  <Requirement number={3} title="tvOS SDK 17 or later">
+  <Requirement title="Xcode 16 or later">Install Xcode 16 or later.</Requirement>
+  <Requirement title="tvOS SDK 17 or later">
     tvOS SDK 17 or later is not installed automatically with Xcode. You can install it later with
     `xcodebuild -downloadAllPlatforms`.
   </Requirement>
