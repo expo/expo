@@ -37,6 +37,10 @@ struct FunctionTests {
       @Field var a: ValueOrUndefined<Double?> = .value(unwrapped: 1.0)
     }
 
+    struct TestRecordWithHeaders: Record {
+      @Field var headers: [String: String] = [:]
+    }
+
     struct TestEncodable: Encodable {
       let name: String
       let version: Int
@@ -85,6 +89,10 @@ struct FunctionTests {
           return "\(f.property)"
         }
 
+        Function("withRecordWithHeaders") { (f: TestRecordWithHeaders) in
+          return "\(f.headers.count)"
+        }
+
         Function("withURL") {
           return TestURLRecord.defaultURL
         }
@@ -107,6 +115,17 @@ struct FunctionTests {
 
         Function("withNullableValueOrUndefindedInArray") { (items: [ValueOrUndefined<Double?>]) in
           // Expectations captured via side effects are not ideal, but works for migration
+        }
+
+        Function("returnArrayOfUndefinedValues") {
+          return [ValueOrUndefined<Double>.value(unwrapped: 1.0), .undefined]
+        }
+
+        Function("returnDictionaryOfUndefinedValues") {
+          return [
+            "present": ValueOrUndefined<Double>.value(unwrapped: 1.0),
+            "missing": .undefined
+          ]
         }
 
         Function("returnEncodable") {
@@ -223,6 +242,60 @@ struct FunctionTests {
     }
 
     @Test
+    func `accepts record while ignoring extra function-valued properties`() throws {
+      #expect(
+        try runtime.eval("""
+          expo.modules.TestModule.withRecord({
+            property: "123",
+            signal: {
+              addEventListener() {}
+            }
+          })
+        """).asString() == "123"
+      )
+    }
+
+    @Test
+    func `accepts record while treating undefined field values as missing`() throws {
+      #expect(
+        try runtime.eval("""
+          expo.modules.TestModule.withRecord({
+            property: undefined
+          })
+        """).asString() == "expo"
+      )
+    }
+
+    @Test
+    func `throws FieldRequiredException when a non-optional record field is null`() throws {
+      #expect {
+        try runtime.eval("""
+          expo.modules.TestModule.withRecord({
+            property: null
+          })
+        """)
+      } throws: { error in
+        guard let evalError = error as? ScriptEvaluationError else {
+          return false
+        }
+        return evalError.message.contains("FieldRequiredException: Value for field 'property' is required, got nil")
+      }
+    }
+
+    @Test
+    func `accepts record while dropping undefined values from nested dictionaries`() throws {
+      #expect(
+        try runtime.eval("""
+          expo.modules.TestModule.withRecordWithHeaders({
+            headers: {
+              authorization: undefined
+            }
+          })
+        """).asString() == "0"
+      )
+    }
+
+    @Test
     func `accepts no optional record`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord()").asString() == "no value")
     }
@@ -240,6 +313,28 @@ struct FunctionTests {
     @Test
     func `accepts nullable ValueOrUndefinded in array`() throws {
       try runtime.eval("expo.modules.TestModule.withNullableValueOrUndefindedInArray([null, undefined])")
+    }
+
+    @Test
+    func `returns array with ValueOrUndefined without double-converting`() throws {
+      try runtime.eval("""
+        globalThis.result = expo.modules.TestModule.returnArrayOfUndefinedValues()
+      """)
+
+      #expect(try runtime.eval("result.length").asInt() == 2)
+      #expect(try runtime.eval("result[0]").asDouble() == 1.0)
+      #expect(try runtime.eval("result[1]").isUndefined() == true)
+    }
+
+    @Test
+    func `returns dictionary with ValueOrUndefined without double-converting`() throws {
+      try runtime.eval("""
+        globalThis.result = expo.modules.TestModule.returnDictionaryOfUndefinedValues()
+      """)
+
+      #expect(try runtime.eval("result.present").asDouble() == 1.0)
+      #expect(try runtime.eval("result.missing").isUndefined() == true)
+      #expect(try runtime.eval("Object.prototype.hasOwnProperty.call(result, 'missing')").asBool() == true)
     }
 
     @Test
