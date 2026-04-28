@@ -12,7 +12,8 @@ import expo.modules.kotlin.records.Record
 
 class Config(
   @Field val environment: String? = null,
-  @Field val dispatchingEnabled: Boolean? = null
+  @Field val dispatchingEnabled: Boolean? = null,
+  @Field val sampleRate: Double? = null
 ) : Record
 
 class ObserveModule : Module() {
@@ -47,7 +48,10 @@ class ObserveModule : Module() {
       Function("configure") { config: Config ->
         ObservePreferences.setConfig(
           context,
-          PersistedConfig(dispatchingEnabled = config.dispatchingEnabled)
+          PersistedConfig(
+            dispatchingEnabled = config.dispatchingEnabled,
+            sampleRate = config.sampleRate
+          )
         )
         config.environment?.let { appMetricsModule.setEnvironment(it) }
       }
