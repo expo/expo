@@ -1282,15 +1282,27 @@ module Expo
       # (no monorepo root). Uses resolved podspec dirs so non-flat layouts work.
       def scan_node_modules_configs(project_root)
         resolved_modules.each do |mod|
-          (mod['pods'] || []).each do |pod|
-            next unless pod['podspecDir']
-            # Convention: podspecDir is `<package>/ios`; spm.config.json lives at `<package>/`.
-            config_path = File.join(File.dirname(pod['podspecDir']), 'spm.config.json')
-            process_spm_config(config_path, :internal, project_root) if File.exist?(config_path)
-          end
+          podspec_dir = (mod['pods'] || []).map { |pod| pod['podspecDir'] }.compact.first
+          next unless podspec_dir
+
+          config_path = spm_config_path_for_podspec_dir(podspec_dir)
+          next unless config_path
+
+          process_spm_config(config_path, :internal, project_root)
         end
 
         scan_external_configs(project_root)
+      end
+
+      # Resolves spm.config.json from an Expo autolinking podspecDir. Most modules
+      # report `<package>/ios`, while packages with root podspecs report `<package>`.
+      def spm_config_path_for_podspec_dir(podspec_dir)
+        [podspec_dir, File.dirname(podspec_dir)].uniq.each do |package_dir|
+          config_path = File.join(package_dir, 'spm.config.json')
+          return config_path if File.exist?(config_path)
+        end
+
+        nil
       end
 
       # Scans spm.config.json files from external-configs/ios/ for 3rd-party packages
