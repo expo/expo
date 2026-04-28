@@ -2,8 +2,6 @@ package expo.modules.filesystem
 
 import android.net.Uri
 import android.os.FileObserver
-import android.os.Handler
-import android.os.Looper
 import androidx.core.net.toUri
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -11,6 +9,9 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -55,17 +56,17 @@ internal class FileSystemWatcher(
   uri: Uri,
   options: WatchOptions?
 ) : SharedObject(appContext) {
-  private val handler = Handler(Looper.getMainLooper())
+  private val backgroundCoroutineScope = appContext.backgroundCoroutineScope
   private val watchedFile: File
   private val watchedUri: Uri
-  private val debounceDuration: Duration = (options?.debounce ?: DEFAULT_DEBOUNCE.inWholeMilliseconds).milliseconds
+  private val debounceDuration: Duration = options?.debounce?.milliseconds ?: DEFAULT_DEBOUNCE
   private val isWatchingDirectory: Boolean
 
   private val lock = Any()
   private var observer: FileObserver? = null
-  private var debounceRunnable: Runnable? = null
+  private var debounceJob: Job? = null
   private val pendingEvents = linkedMapOf<String?, MutableList<PendingEvent>>()
-  private val pendingMoveFrom = mutableListOf<Pair<String, Boolean>>()
+  private val pendingMoveFrom = mutableListOf<PendingMove>()
 
   init {
     if (uri.scheme != "file") {
@@ -92,7 +93,7 @@ internal class FileSystemWatcher(
 
     observer = object : FileObserver(watchedFile.path, WATCH_MASK) {
       override fun onEvent(event: Int, path: String?) {
-        handleEvent(event, path)
+        handleEvent(RawWatchEvent(WatchEventFlags(event), path))
       }
     }.also {
       it.startWatching()
@@ -104,112 +105,119 @@ internal class FileSystemWatcher(
     observer = null
 
     synchronized(lock) {
-      debounceRunnable?.let(handler::removeCallbacks)
-      debounceRunnable = null
+      debounceJob?.cancel()
+      debounceJob = null
       pendingEvents.clear()
       pendingMoveFrom.clear()
     }
   }
 
-  private fun handleEvent(event: Int, changedPath: String?) {
-    if (event == 0) {
+  private fun handleEvent(event: RawWatchEvent) {
+    if (event.isEmpty) {
       return
     }
 
-    if (event and (FileObserver.DELETE_SELF or FileObserver.MOVE_SELF) != 0) {
-      val eventType = if (event and FileObserver.DELETE_SELF != 0) WatchEventType.DELETED else WatchEventType.RENAMED
+    if (event.isSelfEvent) {
       emitEvent(
-        type = eventType,
+        type = event.selfEventType,
         path = watchedUri.toString(),
         isDirectory = isWatchingDirectory,
-        flags = event
+        flags = event.flags
       )
       stop()
       return
     }
 
-    val isDirectory = when {
-      event and IN_ISDIR != 0 -> true
-      changedPath != null -> File(watchedFile, changedPath).isDirectory
-      else -> isWatchingDirectory
-    }
+    val isDirectory = event.resolveIsDirectory(watchedFile, isWatchingDirectory)
 
     synchronized(lock) {
-      if (event and FileObserver.MOVED_FROM != 0 && changedPath != null) {
-        pendingMoveFrom.add(changedPath to isDirectory)
+      if (event.flags.isMoveFrom && event.changedPath != null) {
+        pendingMoveFrom.add(PendingMove(event.changedPath, isDirectory))
       }
 
-      pendingEvents.getOrPut(changedPath) { mutableListOf() }.add(PendingEvent(event, isDirectory))
+      pendingEvents.getOrPut(event.changedPath) { mutableListOf() }.add(PendingEvent(event, isDirectory))
 
-      debounceRunnable?.let(handler::removeCallbacks)
-      debounceRunnable = Runnable { flushPendingEvents() }
-      handler.postDelayed(debounceRunnable!!, debounceDuration.inWholeMilliseconds)
+      debounceJob?.cancel()
+      debounceJob = backgroundCoroutineScope.launch {
+        delay(debounceDuration.inWholeMilliseconds)
+        flushPendingEvents()
+      }
     }
   }
 
   private fun flushPendingEvents() {
     val eventsSnapshot: Map<String?, List<PendingEvent>>
-    val moveFromEvents: List<Pair<String, Boolean>>
+    val moveFromEvents: List<PendingMove>
 
     synchronized(lock) {
       eventsSnapshot = pendingEvents.mapValues { it.value.toList() }
       moveFromEvents = pendingMoveFrom.toList()
       pendingEvents.clear()
       pendingMoveFrom.clear()
-      debounceRunnable = null
+      debounceJob = null
     }
 
-    val mergedEvents = eventsSnapshot.mapValues { (_, events) ->
-      events.fold(0) { acc, pendingEvent -> acc or pendingEvent.flags }
-    }
-    val movedToEvents = mutableListOf<Pair<String, Boolean>>()
+    val mergedEvents = mergeEvents(eventsSnapshot)
+    val pairedMoves = emitPairedMoveEvents(moveFromEvents, mergedEvents)
+    emitUnpairedEvents(mergedEvents, pairedMoves)
+  }
 
-    for ((changedPath, flags) in mergedEvents) {
-      if (changedPath != null && flags and FileObserver.MOVED_TO != 0) {
-        movedToEvents.add(changedPath to eventsSnapshot[changedPath]!!.any { it.isDirectory })
+  private fun mergeEvents(eventsSnapshot: Map<String?, List<PendingEvent>>): List<MergedEvent> {
+    return eventsSnapshot.map { (changedPath, events) ->
+      MergedEvent(
+        changedPath = changedPath,
+        flags = events.fold(WatchEventFlags.NONE) { flags, pendingEvent -> flags or pendingEvent.flags },
+        isDirectory = events.any { it.isDirectory }
+      )
+    }
+  }
+
+  private fun emitPairedMoveEvents(
+    moveFromEvents: List<PendingMove>,
+    mergedEvents: List<MergedEvent>
+  ): PairedMoves {
+    val movedToEvents = mergedEvents
+      .mapNotNull { event ->
+        event.changedPath
+          ?.takeIf { event.flags.isMoveTo }
+          ?.let { PendingMove(it, event.isDirectory) }
       }
-    }
-
-    val pairedMoveSources = mutableSetOf<String>()
-    val pairedMoveDestinations = mutableSetOf<String>()
+    val pairedMoves = PairedMoves()
     val pairedMoveCount = minOf(moveFromEvents.size, movedToEvents.size)
 
     for (index in 0 until pairedMoveCount) {
       val moveFrom = moveFromEvents[index]
-      val movedToInfo = movedToEvents[index]
-      val moveFlags = (mergedEvents[moveFrom.first] ?: 0) or (mergedEvents[movedToInfo.first] ?: 0)
-      val oldPath = childUri(moveFrom.first)
-      val newPath = childUri(movedToInfo.first)
+      val moveTo = movedToEvents[index]
+      val moveFlags = mergedEvents.flagsFor(moveFrom.path) or mergedEvents.flagsFor(moveTo.path)
+
       emitEvent(
         type = WatchEventType.RENAMED,
-        path = oldPath,
-        isDirectory = moveFrom.second,
+        path = childUri(moveFrom.path),
+        isDirectory = moveFrom.isDirectory,
         flags = moveFlags,
-        newPath = newPath,
-        newPathIsDirectory = movedToInfo.second
+        newPath = childUri(moveTo.path),
+        newPathIsDirectory = moveTo.isDirectory
       )
 
-      pairedMoveSources.add(moveFrom.first)
-      pairedMoveDestinations.add(movedToInfo.first)
+      pairedMoves.sources.add(moveFrom.path)
+      pairedMoves.destinations.add(moveTo.path)
     }
 
-    for ((changedPath, flags) in mergedEvents) {
-      val isDirectory = changedPath?.let { path ->
-        eventsSnapshot[path]?.any { it.isDirectory }
-      } ?: isWatchingDirectory
+    return pairedMoves
+  }
 
-      if ((changedPath != null && pairedMoveSources.contains(changedPath)) ||
-        (changedPath != null && pairedMoveDestinations.contains(changedPath))
-      ) {
+  private fun emitUnpairedEvents(mergedEvents: List<MergedEvent>, pairedMoves: PairedMoves) {
+    for (event in mergedEvents) {
+      if (event.isPairedMove(pairedMoves)) {
         continue
       }
 
-      for (eventType in mapToUnifiedTypes(flags)) {
+      for (eventType in event.flags.toUnifiedTypes()) {
         emitEvent(
           type = eventType,
-          path = childUri(changedPath),
-          isDirectory = isDirectory,
-          flags = flags
+          path = childUri(event.changedPath),
+          isDirectory = event.isDirectory,
+          flags = event.flags
         )
       }
     }
@@ -219,7 +227,7 @@ internal class FileSystemWatcher(
     type: WatchEventType,
     path: String,
     isDirectory: Boolean,
-    flags: Int,
+    flags: WatchEventFlags,
     newPath: String? = null,
     newPathIsDirectory: Boolean? = null
   ) {
@@ -229,7 +237,7 @@ internal class FileSystemWatcher(
         type = type,
         path = path,
         isDirectory = isDirectory,
-        nativeEventFlags = flags,
+        nativeEventFlags = flags.rawValue,
         newPath = newPath,
         newPathIsDirectory = if (newPath != null) newPathIsDirectory ?: isDirectory else null
       )
@@ -243,24 +251,104 @@ internal class FileSystemWatcher(
     return File(watchedFile, changedPath).toUri().toString()
   }
 
-  private fun mapToUnifiedTypes(event: Int): List<WatchEventType> {
-    val types = mutableListOf<WatchEventType>()
-
-    if (event and FileObserver.CREATE != 0) {
-      types.add(WatchEventType.CREATED)
-    }
-    if (event and FileObserver.MODIFY != 0) {
-      types.add(WatchEventType.MODIFIED)
-    }
-    if (event and FileObserver.DELETE != 0) {
-      types.add(WatchEventType.DELETED)
-    }
-    if (event and (FileObserver.MOVED_FROM or FileObserver.MOVED_TO) != 0) {
-      types.add(WatchEventType.RENAMED)
-    }
-
-    return types.ifEmpty { listOf(WatchEventType.MODIFIED) }
+  private data class PendingEvent(val event: RawWatchEvent, val isDirectory: Boolean) {
+    val flags: WatchEventFlags
+      get() = event.flags
   }
 
-  private data class PendingEvent(val flags: Int, val isDirectory: Boolean)
+  private data class PendingMove(val path: String, val isDirectory: Boolean)
+
+  private data class MergedEvent(
+    val changedPath: String?,
+    val flags: WatchEventFlags,
+    val isDirectory: Boolean
+  ) {
+    fun isPairedMove(pairedMoves: PairedMoves): Boolean {
+      return changedPath != null &&
+        (pairedMoves.sources.contains(changedPath) || pairedMoves.destinations.contains(changedPath))
+    }
+  }
+
+  private data class PairedMoves(
+    val sources: MutableSet<String> = mutableSetOf(),
+    val destinations: MutableSet<String> = mutableSetOf()
+  )
+
+  private data class RawWatchEvent(val flags: WatchEventFlags, val changedPath: String?) {
+    val isEmpty: Boolean
+      get() = flags.isEmpty
+
+    val isSelfEvent: Boolean
+      get() = flags.isSelfEvent
+
+    val selfEventType: WatchEventType
+      get() = if (flags.isSelfDelete) WatchEventType.DELETED else WatchEventType.RENAMED
+
+    fun resolveIsDirectory(watchedFile: File, defaultValue: Boolean): Boolean {
+      return when {
+        flags.isDirectory -> true
+        changedPath != null -> File(watchedFile, changedPath).isDirectory
+        else -> defaultValue
+      }
+    }
+  }
+
+  @JvmInline
+  private value class WatchEventFlags(val rawValue: Int) {
+    val isEmpty: Boolean
+      get() = rawValue == 0
+
+    val isDirectory: Boolean
+      get() = contains(IN_ISDIR)
+
+    val isMoveFrom: Boolean
+      get() = contains(FileObserver.MOVED_FROM)
+
+    val isMoveTo: Boolean
+      get() = contains(FileObserver.MOVED_TO)
+
+    val isSelfDelete: Boolean
+      get() = contains(FileObserver.DELETE_SELF)
+
+    val isSelfMove: Boolean
+      get() = contains(FileObserver.MOVE_SELF)
+
+    val isSelfEvent: Boolean
+      get() = isSelfDelete || isSelfMove
+
+    operator fun contains(flag: Int): Boolean {
+      return rawValue and flag != 0
+    }
+
+    infix fun or(other: WatchEventFlags): WatchEventFlags {
+      return WatchEventFlags(rawValue or other.rawValue)
+    }
+
+    fun toUnifiedTypes(): List<WatchEventType> {
+      val types = mutableListOf<WatchEventType>()
+
+      if (contains(FileObserver.CREATE)) {
+        types.add(WatchEventType.CREATED)
+      }
+      if (contains(FileObserver.MODIFY)) {
+        types.add(WatchEventType.MODIFIED)
+      }
+      if (contains(FileObserver.DELETE)) {
+        types.add(WatchEventType.DELETED)
+      }
+      if (isMoveFrom || isMoveTo) {
+        types.add(WatchEventType.RENAMED)
+      }
+
+      return types.ifEmpty { listOf(WatchEventType.MODIFIED) }
+    }
+
+    companion object {
+      val NONE = WatchEventFlags(0)
+    }
+  }
+
+  private fun List<MergedEvent>.flagsFor(path: String): WatchEventFlags {
+    return firstOrNull { it.changedPath == path }?.flags ?: WatchEventFlags.NONE
+  }
 }
