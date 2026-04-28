@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- [web] Add EXIF support to `launchImageLibraryAsync` and `launchCameraAsync`.
 
 ### 🐛 Bug fixes
 

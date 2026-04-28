@@ -1,6 +1,7 @@
 import type { PermissionResponse } from 'expo-modules-core';
 import { PermissionStatus, Platform } from 'expo-modules-core';
 
+import { readExifFromFileAsync } from './ExponentImagePicker.web.exif';
 import type {
   ImagePickerAsset,
   ImagePickerOptions,
@@ -22,6 +23,7 @@ export default {
     mediaTypes = ['images'] as MediaType[],
     allowsMultipleSelection = false,
     base64 = false,
+    exif = false,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
@@ -31,6 +33,7 @@ export default {
       mediaTypes,
       allowsMultipleSelection,
       base64,
+      exif,
     });
   },
 
@@ -38,6 +41,7 @@ export default {
     mediaTypes = ['images'] as MediaType[],
     allowsMultipleSelection = false,
     base64 = false,
+    exif = false,
     cameraType,
   }: ImagePickerOptions): Promise<ImagePickerResult> {
     // SSR guard
@@ -49,6 +53,7 @@ export default {
       allowsMultipleSelection,
       capture: cameraType ?? true,
       base64,
+      exif,
     });
   },
 
@@ -92,6 +97,7 @@ function openFileBrowserAsync({
   capture = false,
   allowsMultipleSelection = false,
   base64,
+  exif,
 }: OpenFileBrowserOptions): Promise<ImagePickerResult> {
   const parsedMediaTypes = parseMediaTypes(mediaTypes);
   const mediaTypeFormat = createMediaTypeFormat(parsedMediaTypes);
@@ -128,7 +134,7 @@ function openFileBrowserAsync({
           const assets: ImagePickerAsset[] = await Promise.all(
             Array.from(files)
               .filter((file) => file != null)
-              .map((file) => readFile(file, { base64 }))
+              .map((file) => readFile(file, { base64, exif }))
           );
           resolve({ canceled: false, assets });
         } catch (error) {
@@ -149,8 +155,7 @@ function openFileBrowserAsync({
 }
 
 /**
- * Gets metadata for an image file using a blob URL
- * TODO (Hirbod): add exif support for feature parity with native
+ * Gets metadata for an image file using a blob URL.
  */
 async function getImageMetadata(blobUrl: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve) => {
@@ -213,25 +218,33 @@ async function readFileAsBase64(file: File): Promise<string> {
  * Reads a file and returns its data as an ImagePickerAsset.
  * Handles both base64 and blob URL modes, and extracts metadata for images and videos.
  */
-async function readFile(targetFile: File, options: { base64: boolean }): Promise<ImagePickerAsset> {
+async function readFile(
+  targetFile: File,
+  options: { base64: boolean; exif: boolean }
+): Promise<ImagePickerAsset> {
   const mimeType = targetFile.type;
   const baseUri = URL.createObjectURL(targetFile);
 
   try {
-    let metadata: { width: number; height: number; duration?: number };
-    let base64: string | undefined;
-
-    if (mimeType.startsWith('image/')) {
-      metadata = await getImageMetadata(baseUri);
-    } else if (mimeType.startsWith('video/')) {
-      metadata = await getVideoMetadata(baseUri);
-    } else {
+    if (!mimeType.startsWith('image/') && !mimeType.startsWith('video/')) {
       throw new Error(`Unsupported file type: ${mimeType}. Only images and videos are supported.`);
     }
 
-    if (options.base64) {
-      base64 = await readFileAsBase64(targetFile);
-    }
+    const metadataPromise: Promise<{ width: number; height: number; duration?: number }> =
+      mimeType.startsWith('image/') ? getImageMetadata(baseUri) : getVideoMetadata(baseUri);
+    const base64Promise = options.base64
+      ? readFileAsBase64(targetFile)
+      : Promise.resolve(undefined);
+    const exifPromise =
+      options.exif && mimeType.startsWith('image/')
+        ? readExifFromFileAsync(targetFile)
+        : Promise.resolve(undefined);
+
+    const [metadata, base64, exif] = await Promise.all([
+      metadataPromise,
+      base64Promise,
+      exifPromise,
+    ]);
 
     return {
       uri: baseUri,
@@ -243,6 +256,7 @@ async function readFile(targetFile: File, options: { base64: boolean }): Promise
       fileSize: targetFile.size,
       file: targetFile,
       ...(metadata.duration !== undefined && { duration: metadata.duration }),
+      ...(options.exif && { exif: exif ?? null }),
       ...(base64 && { base64 }),
     };
   } catch (error) {
