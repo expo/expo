@@ -55,4 +55,16 @@ export interface TextInputProps {
    * @default 'default'
    */
   keyboardType?: KeyboardTypeOptions;
+
+  /**
+   * Controls automatic capitalization of input.
+   * @default 'sentences'
+   */
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+
+  /**
+   * If false, disables autocorrect / spellcheck suggestions.
+   * @default true
+   */
+  autoCorrect?: boolean;
 }

@@ -351,8 +351,15 @@ fun FunctionalComposableScope.TextFieldContent(
   val raw = state.value
   val text = raw.extractText()
   val selection = getSelection(raw, isStringMode, text.length, localSelection.value)
-  val value = TextFieldValue(text, selection)
+
+  val localValue = remember { mutableStateOf(TextFieldValue(text, selection)) }
+  if (localValue.value.text != text || localValue.value.selection != selection) {
+    localValue.value = TextFieldValue(text, selection)
+  }
+  val value = localValue.value
+
   val onValueChange: (TextFieldValue) -> Unit = { new ->
+    localValue.value = new
     if (new.text != value.text || new.selection != value.selection) {
       val payload = TextFieldValuePayload(
         text = new.text,

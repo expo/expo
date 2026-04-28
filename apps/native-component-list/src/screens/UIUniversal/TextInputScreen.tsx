@@ -21,15 +21,24 @@ const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
   'url',
 ];
 
+type AutoCapitalize = 'none' | 'sentences' | 'words' | 'characters';
+const AUTO_CAPITALIZE: AutoCapitalize[] = ['none', 'sentences', 'words', 'characters'];
+
 export default function TextInputScreen() {
   const text = useNativeState('');
   const [editable, setEditable] = useState(true);
   const [multiline, setMultiline] = useState(false);
   const [keyboardType, setKeyboardType] = useState<KeyboardTypeOptions>('default');
+  const [autoCapitalize, setAutoCapitalize] = useState<AutoCapitalize>('sentences');
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
     setKeyboardType(KEYBOARD_TYPES[(i + 1) % KEYBOARD_TYPES.length]);
+  };
+
+  const cycleAutoCapitalize = () => {
+    const i = AUTO_CAPITALIZE.indexOf(autoCapitalize);
+    setAutoCapitalize(AUTO_CAPITALIZE[(i + 1) % AUTO_CAPITALIZE.length]);
   };
 
   return (
@@ -44,6 +53,7 @@ export default function TextInputScreen() {
               editable={editable}
               multiline={multiline}
               keyboardType={keyboardType}
+              autoCapitalize={autoCapitalize}
             />
           </Column>
 
@@ -55,6 +65,11 @@ export default function TextInputScreen() {
               label={`keyboardType: ${keyboardType}`}
               variant="outlined"
               onPress={cycleKeyboardType}
+            />
+            <Button
+              label={`autoCapitalize: ${autoCapitalize}`}
+              variant="outlined"
+              onPress={cycleAutoCapitalize}
             />
           </Column>
         </Column>

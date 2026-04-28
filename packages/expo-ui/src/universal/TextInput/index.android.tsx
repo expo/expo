@@ -44,9 +44,18 @@ export function TextInput({
   editable,
   multiline,
   keyboardType,
+  autoCapitalize,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
+
+  const keyboardOptions =
+    keyboardType || autoCapitalize
+      ? {
+          ...(keyboardType ? { keyboardType: mapKeyboardType(keyboardType) } : null),
+          ...(autoCapitalize ? { capitalization: autoCapitalize } : null),
+        }
+      : undefined;
 
   return (
     <ComposeTextField
@@ -54,7 +63,7 @@ export function TextInput({
       autoFocus={autoFocus}
       readOnly={editable === false}
       singleLine={!multiline}
-      keyboardOptions={keyboardType ? { keyboardType: mapKeyboardType(keyboardType) } : undefined}
+      keyboardOptions={keyboardOptions}
       onValueChange={onChangeText}>
       {placeholder ? (
         <ComposeTextField.Placeholder>

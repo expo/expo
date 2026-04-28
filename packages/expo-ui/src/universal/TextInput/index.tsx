@@ -11,6 +11,7 @@ export function TextInput({
   editable,
   multiline,
   keyboardType,
+  autoCapitalize,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -23,6 +24,7 @@ export function TextInput({
       editable={editable}
       multiline={multiline}
       keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);

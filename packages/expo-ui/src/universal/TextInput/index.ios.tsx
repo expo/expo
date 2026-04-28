@@ -2,6 +2,7 @@ import { TextField, useNativeState } from '@expo/ui/swift-ui';
 import {
   disabled as disabledMod,
   keyboardType as keyboardTypeMod,
+  textInputAutocapitalization,
   type ModifierConfig,
 } from '@expo/ui/swift-ui/modifiers';
 import type { KeyboardTypeOptions } from 'react-native';
@@ -51,6 +52,7 @@ export function TextInput({
   editable,
   multiline,
   keyboardType,
+  autoCapitalize,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -58,6 +60,11 @@ export function TextInput({
   const modifiers: ModifierConfig[] = [];
   if (editable === false) modifiers.push(disabledMod(true));
   if (keyboardType) modifiers.push(keyboardTypeMod(mapKeyboardType(keyboardType)));
+  if (autoCapitalize) {
+    modifiers.push(
+      textInputAutocapitalization(autoCapitalize === 'none' ? 'never' : autoCapitalize)
+    );
+  }
 
   return (
     <TextField
