@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `promptAsync` returning `{ type: 'cancel' }` instead of `{ type: 'error' }` when iOS `ASWebAuthenticationSession` fails with a native error (e.g. missing Associated Domains entitlement for HTTPS callbacks). The `errorCode` field now contains the native error message.
+- Fixed `promptAsync` returning `{ type: 'cancel' }` instead of `{ type: 'error' }` when iOS `ASWebAuthenticationSession` fails with a native error (e.g. missing Associated Domains entitlement for HTTPS callbacks). The `errorCode` field now contains the native error message. ([#45152](https://github.com/expo/expo/pull/45152) by [@danielma](https://github.com/danielma))
 
 ### 💡 Others
 

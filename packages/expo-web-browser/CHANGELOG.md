@@ -9,7 +9,7 @@
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Added optional `error` field to `WebBrowserResult` to expose the native error message returned by iOS `ASWebAuthenticationSession` when an auth session fails (e.g. missing Associated Domains entitlement for HTTPS callbacks).
+- Added optional `error` field to `WebBrowserResult` to expose the native error message returned by iOS `ASWebAuthenticationSession` when an auth session fails (e.g. missing Associated Domains entitlement for HTTPS callbacks). ([#45152](https://github.com/expo/expo/pull/45152) by [@danielma](https://github.com/danielma))
 
 ### 🐛 Bug fixes
 
