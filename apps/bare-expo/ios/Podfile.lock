@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.17):
+  - Expo (55.0.18):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.17):
+  - Expo/Tests (55.0.18):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -529,9 +529,9 @@ PODS:
     - React-hermes
   - ExpoNetwork (55.0.13):
     - ExpoModulesCore
-  - ExpoNotifications (55.0.20):
+  - ExpoNotifications (55.0.21):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (55.0.20):
+  - ExpoNotifications/Tests (55.0.21):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoPrint (55.0.13):
@@ -3833,7 +3833,7 @@ SPEC CHECKSUMS:
   EXConstants: b2ff8818e17593c8e0a4dc19fa256c804473fed4
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 45bb6adf798ea7b79e18de8904a87a872edd9894
-  Expo: c79996d5f6184eb844af559e2647fac4b4f74091
+  Expo: 5ec106d9e4f4e6a85e811c173643d5796e29e7a6
   expo-dev-client: 7a4f72d613a51f66c9e257b75282700311f96a42
   expo-dev-launcher: b44ddd034335e4bf66c17831f7ed666d1e0ff67a
   expo-dev-menu: 631ed33c3bda53e0b3541abe24e0ee8881977a2a
@@ -3885,7 +3885,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: 8589717ca75637de3b00f8dbf8cc734ee227f9bd
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 2b9fa25a6cbb1cce2e31863c88cc8c5ab883898b
-  ExpoNotifications: 62874a70930f0e5cab6ab75c4cd867b8f2b9578b
+  ExpoNotifications: 8f7d570f885f369a4a53dc722f92fbde1f69251a
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
   ExpoRouter: 73e97e4468c4435576be4c4b72ff4b5276854a1a
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
@@ -3910,7 +3910,7 @@ SPEC CHECKSUMS:
   EXUpdates: 4fc497a793e6d02a8bd0b3e966d04f6be60229db
   EXUpdatesInterface: 33cfb4116f9ddd0ee1732484248495d4fece9744
   FBLazyVector: 427fa1856a481856091061293ce865a75aa4f20f
-  hermes-engine: 88dea29f634dc083ebed7b0a69aa6f0d04727b2a
+  hermes-engine: 1566042511e927d64254f2efe08ae744a5eb9a00
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3928,7 +3928,7 @@ SPEC CHECKSUMS:
   React: 9b033c7a99e1c8eec40960b6b2e6844e011e8bd1
   React-callinvoker: f64c8d57f45173835b6b9891cda27f1625551972
   React-Core: 7e1136eecefd040dc95b06301778dbfd8a61c32a
-  React-Core-prebuilt: 32ebab9e182f81eae3fcc015c43cc61aa23160d1
+  React-Core-prebuilt: e84588f6ad38823c1b45036d2ea017c3f472b73a
   React-CoreModules: 5ce99b935ea174a7fedb6c1066dd6b66feae2c04
   React-cxxreact: d45093410e3cd016ea47d4a73a2295a46d6c72bb
   React-debug: eb0f19ff879ad3870dc760b6c21ad56cbb3e4b98
@@ -3998,7 +3998,7 @@ SPEC CHECKSUMS:
   ReactAppDependencyProvider: 8c8beef1d44fe57dfd1fb42a20ba57efba1dcaee
   ReactCodegen: e4ffb94d8803344db1e96f3969a643401fa0ef93
   ReactCommon: 5887143a2b315f8cfc06648302600330a59a4fc4
-  ReactNativeDependencies: 0bab84353851412d505da7ca6fd8b38061e6ea47
+  ReactNativeDependencies: de7c623b2a35294c71af4d455983a71bee5efae9
   RNCAsyncStorage: e85a99325df9eb0191a6ee2b2a842644c7eb29f4
   RNCMaskedView: 3c9d7586e2b9bbab573591dcb823918bc4668005
   RNCPicker: e0149590451d5eae242cf686014a6f6d808f93c7

@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.17):
+  - Expo (55.0.18):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.17):
+  - Expo/Tests (55.0.18):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -333,9 +333,9 @@ PODS:
     - React-hermes
   - ExpoNetwork (55.0.13):
     - ExpoModulesCore
-  - ExpoNotifications (55.0.20):
+  - ExpoNotifications (55.0.21):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (55.0.20):
+  - ExpoNotifications/Tests (55.0.21):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoPrint (55.0.13):
@@ -4701,7 +4701,7 @@ SPEC CHECKSUMS:
   EXConstants: b2ff8818e17593c8e0a4dc19fa256c804473fed4
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 45bb6adf798ea7b79e18de8904a87a872edd9894
-  Expo: 313cfeabd334f75d8366e7554886250794666abf
+  Expo: f5bf9c80d597540c70bd947348915b359ebc2149
   expo-dev-menu: a688ab13399701d928d62d665df17b70e5de4068
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
@@ -4747,7 +4747,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: 8589717ca75637de3b00f8dbf8cc734ee227f9bd
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 2b9fa25a6cbb1cce2e31863c88cc8c5ab883898b
-  ExpoNotifications: 62874a70930f0e5cab6ab75c4cd867b8f2b9578b
+  ExpoNotifications: 8f7d570f885f369a4a53dc722f92fbde1f69251a
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
   ExpoRouter: 73e97e4468c4435576be4c4b72ff4b5276854a1a
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
@@ -4784,7 +4784,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: ca6495d9d859ae100566305c4d0afe7a0c777a46
+  hermes-engine: d59202edb9173c808259b0945bb161d1e24963f0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

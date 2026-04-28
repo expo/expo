@@ -62,7 +62,7 @@
   "dependencies": {
     "@expo/dom-webview": "55.0.5",
     "@expo/vector-icons": "^15.0.2",
-    "expo": "~55.0.17",
+    "expo": "~55.0.18",
     "expo-haptics": "~55.0.14",
     "expo-linking": "~55.0.14",
     "expo-router": "^55.0.13",

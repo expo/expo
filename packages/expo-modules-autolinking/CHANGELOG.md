@@ -8,12 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 55.0.19 — 2026-04-28
+
+### 🐛 Bug fixes
+
 - [iOS] Resolve npm-bundled precompiled XCFrameworks for nested Expo packages like `expo-modules-core` during `pod install`. ([#45166](https://github.com/expo/expo/pull/45166) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt. ([#45160](https://github.com/expo/expo/pull/45160) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
-
-### 💡 Others
 
 ## 55.0.18 — 2026-04-21
 

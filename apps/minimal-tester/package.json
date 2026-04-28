@@ -9,7 +9,7 @@
     "eject": "expo eject"
   },
   "dependencies": {
-    "expo": "~55.0.17",
+    "expo": "~55.0.18",
     "expo-apple-authentication": "~55.0.13",
     "expo-blur": "~55.0.14",
     "expo-brownfield": "~55.0.21",
