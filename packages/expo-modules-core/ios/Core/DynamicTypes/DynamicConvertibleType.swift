@@ -37,22 +37,20 @@ internal struct DynamicConvertibleType: AnyDynamicType {
     if let directJSValue = try directJSValueIfPossible(value, appContext: appContext) {
       return directJSValue
     }
-    let result = try innerType.convertResult(value, appContext: appContext)
-    if let result = result as? JavaScriptValue {
-      return result
+    if let jsValue = value as? JavaScriptValue {
+      return jsValue
     }
-    if let result = result as? AnyArgument {
-      return try type(of: result).getDynamicType().castToJS(result, appContext: appContext)
+    if value is AnyArgument {
+      return try convertOriginalValueToJS(value, appContext: appContext)
     }
-    return try Conversions.unknownToJavaScriptValue(result, appContext: appContext)
+    return try serializeConvertedValue(value, appContext: appContext)
   }
 
   func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if let directJSValue = try directJSValueIfPossible(value, appContext: appContext) {
       return directJSValue
     }
-    let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: self)
-    return try castToJS(result, appContext: appContext)
+    return try convertOriginalValueToJS(value, appContext: appContext)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
@@ -76,5 +74,20 @@ internal struct DynamicConvertibleType: AnyDynamicType {
       }
     }
     return nil
+  }
+
+  private func convertOriginalValueToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    let result = try innerType.convertResult(value, appContext: appContext)
+    return try serializeConvertedValue(result, appContext: appContext)
+  }
+
+  private func serializeConvertedValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
+    if let result = value as? JavaScriptValue {
+      return result
+    }
+    if let result = value as? AnyArgument {
+      return try type(of: result).getDynamicType().castToJS(result, appContext: appContext)
+    }
+    return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
   }
 }

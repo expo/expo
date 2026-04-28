@@ -480,6 +480,14 @@ struct DynamicTypeTests {
     }
 
     @Test
+    func `returns convertible directly to JS without double-converting convertResult`() throws {
+      let result = try (~CGColor.self).convertToJS(UIColor.red.cgColor, appContext: appContext)
+
+      #expect(result.kind == .string)
+      #expect(result.getString() == "#ff0000ff")
+    }
+
+    @Test
     func `returns formatted record directly to JS while preserving formatter behavior`() throws {
       struct TestRecord: Record {
         @Field var a: String = "a"
