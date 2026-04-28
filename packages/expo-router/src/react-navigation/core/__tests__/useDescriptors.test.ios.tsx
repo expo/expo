@@ -23,7 +23,7 @@ test('sets options with options prop as an object', () => {
       { title?: string },
       any
     >(MockRouter, props);
-    const { render, options } = descriptors[state.routes[state.index].key];
+    const { render, options } = descriptors[state.routes[state.index]!.key]!;
 
     return (
       <NavigationContent>
@@ -67,7 +67,7 @@ test('sets options with options prop as a fuction', () => {
       { title?: string },
       any
     >(MockRouter, props);
-    const { render, options } = descriptors[state.routes[state.index].key];
+    const { render, options } = descriptors[state.routes[state.index]!.key]!;
 
     return (
       <NavigationContent>
@@ -120,7 +120,7 @@ test('sets options with screenOptions prop as an object', () => {
     return (
       <NavigationContent>
         {state.routes.map((route) => {
-          const { render, options } = descriptors[route.key];
+          const { render, options } = descriptors[route.key]!;
 
           return (
             <main key={route.key}>
@@ -181,7 +181,7 @@ test('sets options with screenOptions prop as a fuction', () => {
     return (
       <NavigationContent>
         {state.routes.map((route) => {
-          const { render, options } = descriptors[route.key];
+          const { render, options } = descriptors[route.key]!;
 
           return (
             <main key={route.key}>
@@ -244,7 +244,7 @@ test('sets initial options with setOptions', () => {
       },
       any
     >(MockRouter, props);
-    const { render, options } = descriptors[state.routes[state.index].key];
+    const { render, options } = descriptors[state.routes[state.index]!.key]!;
 
     return (
       <NavigationContent>
@@ -300,7 +300,7 @@ test('updates options with setOptions', () => {
       any,
       any
     >(MockRouter, props);
-    const { render, options } = descriptors[state.routes[state.index].key];
+    const { render, options } = descriptors[state.routes[state.index]!.key]!;
 
     return (
       <NavigationContent>
@@ -380,7 +380,7 @@ test('renders layout defined for the screen', () => {
       any,
       any
     >(MockRouter, props);
-    const { render } = descriptors[state.routes[state.index].key];
+    const { render } = descriptors[state.routes[state.index]!.key]!;
 
     return <NavigationContent>{render()}</NavigationContent>;
   };
@@ -422,7 +422,7 @@ test('renders layout defined for the group', () => {
       any,
       any
     >(MockRouter, props);
-    const { render } = descriptors[state.routes[state.index].key];
+    const { render } = descriptors[state.routes[state.index]!.key]!;
 
     return <NavigationContent>{render()}</NavigationContent>;
   };
@@ -460,7 +460,7 @@ test('renders layout defined for the navigator', () => {
       any,
       any
     >(MockRouter, props);
-    const { render } = descriptors[state.routes[state.index].key];
+    const { render } = descriptors[state.routes[state.index]!.key]!;
 
     return <NavigationContent>{render()}</NavigationContent>;
   };
@@ -496,7 +496,7 @@ test("returns correct value for canGoBack when it's not overridden", () => {
       { title?: string },
       any
     >(MockRouter, props);
-    const { render, options } = descriptors[state.routes[state.index].key];
+    const { render, options } = descriptors[state.routes[state.index]!.key]!;
 
     return (
       <NavigationContent>
@@ -559,7 +559,7 @@ test(`returns false for canGoBack when current router doesn't handle GO_BACK`, (
     >(TestRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -612,7 +612,7 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
       any
     >(ParentRouter, props);
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -626,7 +626,7 @@ test('returns true for canGoBack when current router handles GO_BACK', () => {
     >(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -685,7 +685,7 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
       any
     >(OverrodeRouter, props);
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -699,7 +699,7 @@ test('returns true for canGoBack when parent router handles GO_BACK', () => {
     >(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 

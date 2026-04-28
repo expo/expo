@@ -120,7 +120,9 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
       />
       {isWeb &&
         overlayRoutes.map((route) => {
-          const isTransparentModal = isTransparentModalPresentation(descriptors[route.key].options);
+          const isTransparentModal = isTransparentModalPresentation(
+            descriptors[route.key]!.options
+          );
 
           const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
 
@@ -132,8 +134,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
             <ModalComponent
               key={route.key}
               routeKey={route.key}
-              options={descriptors[route.key].options as ExtendedStackNavigationOptions}
-              renderScreen={descriptors[route.key].render}
+              options={descriptors[route.key]!.options as ExtendedStackNavigationOptions}
+              renderScreen={descriptors[route.key]!.render}
               onDismiss={dismiss}
               dismissible={isRemovePrevented ? false : undefined}
               themeColors={colors}

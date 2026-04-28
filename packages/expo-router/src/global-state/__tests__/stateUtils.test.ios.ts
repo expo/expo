@@ -184,7 +184,7 @@ describe('findDivergentState', () => {
     expect(result.actionStateRoute?.name).toBe('settings');
     expect(result.navigationState).toBeDefined();
     expect(result.navigationRoutes).toHaveLength(1);
-    expect(result.navigationRoutes[0].name).toBe('root');
+    expect(result.navigationRoutes[0]!.name).toBe('root');
   });
 
   it('returns the full path when routes are the same (no child state divergence)', () => {
@@ -229,7 +229,7 @@ describe('findDivergentState', () => {
     expect(result.actionStateRoute?.name).toBe('home');
     // navigationRoutes should include 'root' since that matched
     expect(result.navigationRoutes).toHaveLength(1);
-    expect(result.navigationRoutes[0].name).toBe('root');
+    expect(result.navigationRoutes[0]!.name).toBe('root');
   });
 
   it('detects divergence on dynamic segments with different param values', () => {
@@ -317,7 +317,7 @@ describe('findDivergentState', () => {
     // Should NOT diverge at [id] since params match, should proceed to details
     expect(result.actionStateRoute?.name).toBe('details');
     expect(result.navigationRoutes).toHaveLength(1);
-    expect(result.navigationRoutes[0].name).toBe('[id]');
+    expect(result.navigationRoutes[0]!.name).toBe('[id]');
   });
 
   it('diverges at intermediate route when names differ mid-tree', () => {
@@ -380,7 +380,7 @@ describe('findDivergentState', () => {
     expect(result.actionStateRoute?.name).toBe('branch-a');
     // Only root matched before divergence
     expect(result.navigationRoutes).toHaveLength(1);
-    expect(result.navigationRoutes[0].name).toBe('root');
+    expect(result.navigationRoutes[0]!.name).toBe('root');
   });
 
   describe('lookThroughAllTabs', () => {
@@ -427,7 +427,7 @@ describe('findDivergentState', () => {
       // Should find 'settings' tab even though current index points to 'home'
       expect(result.actionStateRoute?.name).toBe('page');
       expect(result.navigationRoutes).toHaveLength(1);
-      expect(result.navigationRoutes[0].name).toBe('settings');
+      expect(result.navigationRoutes[0]!.name).toBe('settings');
     });
 
     it('falls back to current index when tab name not found and lookThroughAllTabs is true', () => {
@@ -512,7 +512,7 @@ describe('findDivergentState', () => {
       // The tab route should be added to navigationRoutes.
       expect(result.actionStateRoute?.name).toBe('settings');
       expect(result.navigationRoutes).toHaveLength(1);
-      expect(result.navigationRoutes[0].name).toBe('settings');
+      expect(result.navigationRoutes[0]!.name).toBe('settings');
     });
   });
 });

@@ -55,8 +55,7 @@ export function createMemoryHistory() {
     backIndex({ path }: { path: string }) {
       // We need to find the index from the element before current to get closest path to go back to
       for (let i = index - 1; i >= 0; i--) {
-        const item = items[i];
-
+        const item = items[i]!;
         if (item.path === path) {
           return i;
         }
@@ -106,7 +105,7 @@ export function createMemoryHistory() {
         items = [{ path: pathWithHash, state, id }];
         index = 0;
       } else {
-        if (items[index].path === path) {
+        if (items[index]!.path === path) {
           pathWithHash = pathWithHash + hash;
         }
         items[index] = { path, state, id };
@@ -184,7 +183,7 @@ export function createMemoryHistory() {
           const index = pending.findIndex((it) => it.ref === done);
 
           if (index > -1) {
-            pending[index].cb();
+            pending[index]!.cb();
             pending.splice(index, 1);
           }
         }, 100);

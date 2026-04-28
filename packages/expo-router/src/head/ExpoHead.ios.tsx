@@ -14,7 +14,7 @@ function urlToId(url: string) {
 function getLastSegment(path: string) {
   // Remove the extension
   const lastSegment = path.split('/').pop() ?? '';
-  return lastSegment.replace(/\.[^/.]+$/, '').split('?')[0];
+  return lastSegment.replace(/\.[^/.]+$/, '').split('?')[0]!;
 }
 
 // TODO: Use Head Provider to collect all props so only one Head is rendered for a given route.

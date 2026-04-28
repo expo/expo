@@ -79,7 +79,7 @@ export function convertRedirect(path: string, config: RedirectConfig) {
     if (!dynamicName) {
       continue;
     } else if (!dynamicName.deep) {
-      params[dynamicName.name] = parts[index];
+      params[dynamicName.name] = parts[index]!;
       continue;
     } else {
       params[dynamicName.name] = parts.slice(index);

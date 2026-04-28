@@ -9,14 +9,17 @@ function getRouteInfoFromState(getPathFromState, state, baseUrl) {
     return {
         // TODO: This may have a predefined origin attached in the future.
         unstable_globalHref: path,
-        pathname: (0, getStateFromPath_forks_1.stripBaseUrl)(path, baseUrl).split('?')['0'],
+        pathname: (0, getStateFromPath_forks_1.stripBaseUrl)(path, baseUrl).split('?')[0],
         isIndex: isIndexPath(state),
         ...getNormalizedStatePath(qualified, baseUrl),
     };
 }
 function isIndexPath(state) {
     const route = state.routes[state.index ?? state.routes.length - 1];
-    if (route.state) {
+    if (!route) {
+        return false;
+    }
+    else if (route.state) {
         return isIndexPath(route.state);
     }
     // Index routes on the same level as a layout do not have `index` in their name
@@ -38,7 +41,10 @@ function getNormalizedStatePath({ path: statePath, params, }, baseUrl) {
     const [pathname] = statePath.split('?');
     return {
         // Strip empty path at the start
-        segments: (0, getStateFromPath_forks_1.stripBaseUrl)(pathname, baseUrl).split('/').filter(Boolean).map(decodeURIComponent),
+        segments: (0, getStateFromPath_forks_1.stripBaseUrl)(pathname, baseUrl)
+            .split('/')
+            .filter((x) => !!x)
+            .map(decodeURIComponent),
         // TODO: This is not efficient, we should generate based on the state instead
         // of converting to string then back to object
         params: decodeParams(params),

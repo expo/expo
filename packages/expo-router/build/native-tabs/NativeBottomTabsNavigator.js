@@ -103,8 +103,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
     }
     const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
     const onTabChange = (0, react_2.useCallback)((tabKey) => {
-        const descriptor = descriptors[tabKey];
-        const route = descriptor.route;
+        const { route } = descriptors[tabKey];
         navigation.emit({
             type: 'tabPress',
             target: tabKey,

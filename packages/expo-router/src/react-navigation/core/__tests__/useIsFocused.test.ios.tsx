@@ -20,7 +20,7 @@ test('renders correct focus state', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -63,7 +63,7 @@ test('returns correct focus state after conditional rendering', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 

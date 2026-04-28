@@ -248,7 +248,7 @@ function NativeStackView({ state, navigation, descriptors, describe }) {
         return acc;
     }, {});
     return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { style: styles.container, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
-                const descriptor = descriptors[route.key] ?? preloadedDescriptors[route.key];
+                const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key]);
                 const isFocused = state.index === index;
                 const isBelowFocused = state.index - 1 === index;
                 const previousKey = state.routes[index - 1]?.key;

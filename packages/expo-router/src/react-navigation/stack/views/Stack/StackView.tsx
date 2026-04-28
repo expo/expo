@@ -108,7 +108,7 @@ export class StackView extends React.Component<Props, State> {
 
       if (props.descriptors !== state.previousDescriptors) {
         descriptors = routes.reduce<StackDescriptorMap>((acc, route) => {
-          acc[route.key] = props.descriptors[route.key] || state.descriptors[route.key];
+          acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
           return acc;
         }, {});
@@ -155,10 +155,10 @@ export class StackView extends React.Component<Props, State> {
     // Get previous focused route from previousState (actual focused route, not last in previousRoutes
     // which can be a preloaded route that was never focused)
     const previousFocusedRoute = state.previousState
-      ? state.previousState.routes[state.previousState.index]
+      ? state.previousState.routes[state.previousState.index]!
       : undefined;
 
-    const nextFocusedRoute = routes[routes.length - 1];
+    const nextFocusedRoute = routes[routes.length - 1]!;
 
     const isAnimationEnabled = (key: string) => {
       const descriptor = props.descriptors[key] || state.descriptors[key];
@@ -167,8 +167,7 @@ export class StackView extends React.Component<Props, State> {
     };
 
     const getAnimationTypeForReplace = (key: string) => {
-      const descriptor = props.descriptors[key] || state.descriptors[key];
-
+      const descriptor = props.descriptors[key] || state.descriptors[key]!;
       return descriptor.options.animationTypeForReplace ?? 'push';
     };
 
@@ -273,7 +272,7 @@ export class StackView extends React.Component<Props, State> {
     }
 
     const descriptors = allRoutes.reduce<StackDescriptorMap>((acc, route) => {
-      acc[route.key] = props.descriptors[route.key] || state.descriptors[route.key];
+      acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
       return acc;
     }, {});

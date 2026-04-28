@@ -187,7 +187,7 @@ describe('Stack.Toolbar integration tests', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
 
-      const items = MockedScreenStackItem.mock.calls[0][0].headerConfig?.headerLeftBarButtonItems;
+      const items = MockedScreenStackItem.mock.calls[0]![0].headerConfig?.headerLeftBarButtonItems;
       expect(items).toHaveLength(1);
       expect(items?.[0]).toMatchObject({
         type: 'button',
@@ -211,7 +211,7 @@ describe('Stack.Toolbar integration tests', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
 
-      const items = MockedScreenStackItem.mock.calls[0][0].headerConfig?.headerRightBarButtonItems;
+      const items = MockedScreenStackItem.mock.calls[0]![0].headerConfig?.headerRightBarButtonItems;
       expect(items).toHaveLength(1);
       expect(items?.[0]).toMatchObject({
         type: 'button',
@@ -238,7 +238,7 @@ describe('Stack.Toolbar integration tests', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
 
-      const headerConfig = MockedScreenStackItem.mock.calls[0][0].headerConfig;
+      const headerConfig = MockedScreenStackItem.mock.calls[0]![0].headerConfig;
       const leftItems = headerConfig?.headerLeftBarButtonItems;
       const rightItems = headerConfig?.headerRightBarButtonItems;
 
@@ -371,7 +371,7 @@ describe('Stack.Toolbar integration tests', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
 
-      const headerConfig = MockedScreenStackItem.mock.calls[0][0].headerConfig;
+      const headerConfig = MockedScreenStackItem.mock.calls[0]![0].headerConfig;
       expect(headerConfig?.title).toBe('Page Title 1');
 
       const rightItems = headerConfig?.headerRightBarButtonItems;
@@ -399,7 +399,7 @@ describe('Stack.Toolbar integration tests', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
 
-      const headerConfig = MockedScreenStackItem.mock.calls[0][0].headerConfig;
+      const headerConfig = MockedScreenStackItem.mock.calls[0]![0].headerConfig;
       expect(headerConfig?.backTitleFontSize).toBe(18);
 
       const rightItems = headerConfig?.headerRightBarButtonItems;

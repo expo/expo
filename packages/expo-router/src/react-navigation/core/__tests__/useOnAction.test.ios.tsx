@@ -50,7 +50,7 @@ test("lets parent handle the action if child didn't", () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(CurrentRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -58,7 +58,7 @@ test("lets parent handle the action if child didn't", () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -137,7 +137,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
     );
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -149,7 +149,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -242,7 +242,7 @@ test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED"
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -329,7 +329,7 @@ test('action goes to correct parent navigator if target is specified', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -451,7 +451,7 @@ test('action goes to correct child navigator if target is specified', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -572,7 +572,7 @@ test("action doesn't bubble if target is specified", () => {
     );
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 
@@ -584,7 +584,7 @@ test("action doesn't bubble if target is specified", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -631,7 +631,7 @@ test('logs error if no navigator handled the action', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -701,7 +701,7 @@ test("prevents removing a screen with 'beforeRemove' event", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -841,7 +841,7 @@ test("prevents removing a child screen with 'beforeRemove' event", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -1009,7 +1009,7 @@ test("prevents removing a grand child screen with 'beforeRemove' event", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -1210,7 +1210,7 @@ test("prevents removing by multiple screens with 'beforeRemove' event", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -1372,7 +1372,7 @@ test("prevents removing a child screen with 'beforeRemove' event with 'resetRoot
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };

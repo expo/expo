@@ -33,9 +33,8 @@ function MaterialTopTabView({ tabBar = renderTabBarDefault, state, navigation, d
     };
     const focusedOptions = descriptors[state.routes[state.index].key].options;
     return ((0, jsx_runtime_1.jsx)(TabView, { ...rest, onIndexChange: (index) => {
-            const route = state.routes[index];
             navigation.dispatch({
-                ...native_1.CommonActions.navigate(route),
+                ...native_1.CommonActions.navigate(state.routes[index]),
                 target: state.key,
             });
         }, renderScene: ({ route, position }) => ((0, jsx_runtime_1.jsx)(TabAnimationContext_1.TabAnimationContext.Provider, { value: { position }, children: descriptors[route.key].render() })), navigationState: state, renderTabBar: renderTabBar, renderLazyPlaceholder: ({ route }) => descriptors[route.key].options.lazyPlaceholder?.() ?? null, lazy: ({ route }) => descriptors[route.key].options.lazy === true &&

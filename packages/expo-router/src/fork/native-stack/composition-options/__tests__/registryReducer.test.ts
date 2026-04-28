@@ -15,7 +15,7 @@ describe('registryReducer', () => {
 
       expect(result).not.toBe(state);
       expect(result['route-1']).toEqual([{ title: 'Hello' }]);
-      expect(result['route-1'][0]).toBe(options);
+      expect(result['route-1']![0]).toBe(options);
     });
 
     it('appends options to existing route entry', () => {
@@ -34,8 +34,8 @@ describe('registryReducer', () => {
       expect(result).not.toBe(state);
       expect(result['route-1']).toHaveLength(2);
       expect(result['route-1']).not.toBe(state['route-1']); // New array
-      expect(result['route-1'][0]).toBe(first);
-      expect(result['route-1'][1]).toBe(second);
+      expect(result['route-1']![0]).toBe(first);
+      expect(result['route-1']![1]).toBe(second);
     });
 
     it('returns same state reference when options reference is already in array', () => {
@@ -79,7 +79,7 @@ describe('registryReducer', () => {
 
       expect(Object.keys(result)).toHaveLength(1);
       expect(result['route-new']).toHaveLength(1);
-      expect(result['route-new'][0]).toEqual({ title: 'Brand New' });
+      expect(result['route-new']![0]).toEqual({ title: 'Brand New' });
     });
   });
 
@@ -100,7 +100,7 @@ describe('registryReducer', () => {
       expect(result).not.toBe(state);
       expect(result['route-1']).toHaveLength(1);
       expect(result['route-1']).not.toBe(state['route-1']); // New array
-      expect(result['route-1'][0]).toBe(second);
+      expect(result['route-1']![0]).toBe(second);
     });
 
     it('deletes entire route entry when last options is removed', () => {

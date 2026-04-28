@@ -263,7 +263,7 @@ it('does works with shared groups', () => {
         </Tabs>
       ),
       '(one,two)/[fruit]': function Fruit() {
-        const fruit = useLocalSearchParams().fruit.toString();
+        const fruit = useLocalSearchParams().fruit!.toString();
         return <Text testID={fruit}>Fruit: {fruit}</Text>;
       },
     },

@@ -131,8 +131,7 @@ export function useOnAction<State extends NavigationState>({
         // If the action wasn't handled by current navigator or a parent navigator, let children handle it
         // Handling this when target isn't specified is deprecated and will be removed in the future
         for (let i = actionListeners.length - 1; i >= 0; i--) {
-          const listener = actionListeners[i];
-
+          const listener = actionListeners[i]!;
           if (listener(action, visitedNavigators)) {
             return true;
           }
