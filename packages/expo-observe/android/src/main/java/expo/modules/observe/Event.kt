@@ -1,6 +1,5 @@
 package expo.modules.observe
 
-import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
 import kotlinx.serialization.Serializable
@@ -27,6 +26,13 @@ data class Metadata(
   val clientVersion: String?,
   val environment: String? = null
 ) {
+  @Serializable
+  data class AppUpdatesInfo(
+    val updateId: String?,
+    val runtimeVersion: String?,
+    val requestHeaders: Map<String, String>?
+  )
+
   companion object {
     fun fromSessionMetadata(session: Session): Metadata {
       val appUpdatesInfo = if (

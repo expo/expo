@@ -1,7 +1,5 @@
 package expo.modules.appmetrics
 
-import kotlinx.serialization.Serializable
-
 data class AppMetadata(
   val appName: String?,
   val appIdentifier: String,
@@ -19,7 +17,6 @@ data class AppMetadata(
   val clientVersion: String?,
 )
 
-@Serializable
 data class AppUpdatesInfo(
   val updateId: String?,
   val runtimeVersion: String?,

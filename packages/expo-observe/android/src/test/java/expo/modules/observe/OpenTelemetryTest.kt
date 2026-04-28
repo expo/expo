@@ -1,6 +1,5 @@
 package expo.modules.observe
 
-import expo.modules.appmetrics.AppUpdatesInfo
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -26,7 +25,7 @@ class OpenTelemetryTest {
     appVersion = "1.0.0",
     appBuildNumber = "1",
     appEasBuildId = null,
-    appUpdatesInfo = AppUpdatesInfo(
+    appUpdatesInfo = Metadata.AppUpdatesInfo(
       updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
       runtimeVersion = null,
       requestHeaders = null
@@ -248,7 +247,7 @@ class OpenTelemetryTest {
   @Test
   fun `toOTMetadata emits update runtime version and request headers when present`() {
     val metadata = testMetadata.copy(
-      appUpdatesInfo = AppUpdatesInfo(
+      appUpdatesInfo = Metadata.AppUpdatesInfo(
         updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
         runtimeVersion = "1.0.0",
         requestHeaders = mapOf(
