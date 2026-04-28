@@ -198,6 +198,8 @@ export function withExtendedResolver(
     },
   };
 
+  const isExpoRouterResolvable = !!resolveFrom.silent(config.projectRoot, 'expo-router');
+
   let _universalAliases: [RegExp, string][] | null;
 
   function getUniversalAliases() {
@@ -678,6 +680,21 @@ export function withExtendedResolver(
         if (webModalModule) {
           debug('Using `_unstable-web-modal` implementation.');
           return webModalModule;
+        }
+      }
+
+      // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
+      if (moduleName.startsWith('@react-navigation/') && isExpoRouterResolvable) {
+        const filePath = context.originModulePath;
+        if (!filePath.includes('node_modules')) {
+          // TODO(@ubax): Add link to migration guide, once it is published
+          throw new Error(
+            'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see [MIGRATION_GUIDE_URL].'
+          );
+        }
+        if (moduleName === '@react-navigation/core') {
+          // We already checked if expo-router resolves
+          return doResolve('expo-router');
         }
       }
 
