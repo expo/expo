@@ -1,13 +1,125 @@
 import chalk from 'chalk';
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
-import { ensureCorrectFlavor, enumerateAllPrebuildModules } from './precompiled';
+import {
+  ensureCorrectFlavor,
+  enumerateAllPrebuildModules,
+  resolvedFixedXCFrameworks,
+} from './precompiled';
 import { withSpinner } from './spinner';
 import type { IosConfig } from './types';
+
+/**
+ * Inspect the built brownfield framework binary and return the names of `@rpath`-linked
+ * dynamic frameworks that are NOT already covered by the fixed XCFramework set, the
+ * brownfield target itself, or precompiled-module enumeration.
+ *
+ * Source-built pods (e.g. `ExpoModulesJSI` from a local podspec) are produced as dynamic
+ * `.framework`s alongside the brownfield framework, and the brownfield binary holds an
+ * `@rpath/<X>.framework/<X>` reference to each. Without shipping these as standalone
+ * xcframeworks the host app crashes at runtime with `dyld: Library not loaded: @rpath/…`.
+ *
+ * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
+ */
+export const enumerateSourceBuiltDeps = (
+  config: IosConfig,
+  alreadyCovered: Set<string>
+): string[] => {
+  const frameworkBinary = path.join(
+    config.simulator,
+    `${config.scheme}.framework`,
+    config.scheme
+  );
+  if (!fs.existsSync(frameworkBinary)) {
+    return [];
+  }
+
+  let stdout: string;
+  try {
+    stdout = execSync(`otool -L "${frameworkBinary}"`, { encoding: 'utf8' });
+  } catch {
+    // otool failure is non-fatal — degrade gracefully and let the user catch the missing dep
+    // at runtime rather than blocking the whole build.
+    return [];
+  }
+
+  const names = new Set<string>();
+  for (const line of stdout.split('\n')) {
+    const match = line.trim().match(/^@rpath\/([^/]+)\.framework\//);
+    if (match?.[1]) {
+      names.add(match[1]);
+    }
+  }
+  return Array.from(names).filter(
+    (name) => name !== config.scheme && !alreadyCovered.has(name)
+  );
+};
+
+/**
+ * Locate a source-built `.framework` for `name` inside one of the brownfield build product
+ * slices. Pods that set `FRAMEWORK_SEARCH_PATHS` to `${PODS_CONFIGURATION_BUILD_DIR}/XCFrameworkIntermediates/<name>`
+ * (e.g. `ExpoModulesJSI`) land in `XCFrameworkIntermediates/<name>/<name>.framework` rather
+ * than at the slice root, so we check both locations.
+ */
+const findSourceBuiltFramework = (slicePath: string, name: string): string | null => {
+  const candidates = [
+    path.join(slicePath, `${name}.framework`),
+    path.join(slicePath, 'XCFrameworkIntermediates', name, `${name}.framework`),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate)) ?? null;
+};
+
+/**
+ * Build an xcframework from the device + simulator slices of a source-built `.framework`
+ * sitting in the brownfield build products dir, and copy it into `dest`. Returns whether
+ * the xcframework was produced (false when one or both slices are missing — typically a
+ * harmless skip for a system framework or a transitive dep that isn't actually built).
+ */
+const bundleSourceBuiltFramework = async (
+  config: IosConfig,
+  name: string,
+  dest: string
+): Promise<boolean> => {
+  const deviceFramework = findSourceBuiltFramework(config.device, name);
+  const simulatorFramework = findSourceBuiltFramework(config.simulator, name);
+
+  if (!deviceFramework || !simulatorFramework) {
+    console.warn(
+      `expo-brownfield: source-built dependency '${name}' is linked by ${config.scheme}.framework ` +
+        `but its device/simulator slices were not found under the brownfield build products dir. ` +
+        `Skipping. The host app may fail at runtime with 'Library not loaded: @rpath/${name}.framework/${name}'.`
+    );
+    return false;
+  }
+
+  const outputPath = path.join(dest, `${name}.xcframework`);
+  if (fs.existsSync(outputPath)) {
+    fs.rmSync(outputPath, { recursive: true, force: true });
+  }
+
+  const args = [
+    '-create-xcframework',
+    '-framework',
+    deviceFramework,
+    '-framework',
+    simulatorFramework,
+    '-output',
+    outputPath,
+  ];
+
+  if (config.dryRun) {
+    console.log(`xcodebuild ${args.join(' ')}`);
+    return true;
+  }
+
+  await runCommand('xcodebuild', args, { verbose: config.verbose });
+  return true;
+};
 
 export const cleanUpArtifacts = async (config: IosConfig) => {
   if (config.dryRun) {
@@ -121,6 +233,36 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
       });
     }
   }
+
+  // Bundle any source-built dynamic frameworks the brownfield binary links against
+  // (e.g. `ExpoModulesJSI` from a local podspec). Without this the host app crashes at
+  // runtime with `dyld: Library not loaded: @rpath/<X>.framework/<X>`.
+  const alreadyCovered = collectCoveredFrameworkNames(config);
+  const sourceBuiltDeps = enumerateSourceBuiltDeps(config, alreadyCovered);
+  for (const depName of sourceBuiltDeps) {
+    await withSpinner({
+      operation: () => bundleSourceBuiltFramework(config, depName, dest),
+      loaderMessage: `Bundling source-built ${depName} as xcframework...`,
+      successMessage: `Bundling source-built ${depName} as xcframework succeeded`,
+      errorMessage: `Bundling source-built ${depName} as xcframework failed`,
+      verbose: config.verbose,
+    });
+  }
+};
+
+/**
+ * Set of xcframework names the brownfield CLI already plans to ship (fixed XCFrameworks +
+ * prebuilt modules when enabled). Used to dedupe against `enumerateSourceBuiltDeps` so a
+ * dep that's already covered by a prebuilt artifact isn't re-built from source.
+ */
+const collectCoveredFrameworkNames = (config: IosConfig): Set<string> => {
+  const covered = new Set<string>([config.scheme, ...resolvedFixedXCFrameworks()]);
+  if (config.usePrebuilds) {
+    for (const module of enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration)) {
+      covered.add(module.name);
+    }
+  }
+  return covered;
 };
 
 export const createSwiftPackage = async (config: IosConfig): Promise<string> => {
@@ -264,7 +406,20 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
       }))
     : [];
 
-  const xcframeworks = [...baseFrameworks, ...precompiledModules];
+  // Source-built dynamic deps the brownfield framework links against (e.g. ExpoModulesJSI).
+  // `copyXCFrameworks` writes their xcframeworks to disk; we need to declare matching
+  // `.binaryTarget`s here so SPM consumers actually link them.
+  const sourceBuiltDepNames = enumerateSourceBuiltDeps(
+    config,
+    new Set([
+      config.scheme,
+      ...baseFrameworks.map(({ name }) => name),
+      ...precompiledModules.map(({ name }) => name),
+    ])
+  );
+  const sourceBuiltDeps = sourceBuiltDepNames.map((name) => ({ name, targets: [name] }));
+
+  const xcframeworks = [...baseFrameworks, ...precompiledModules, ...sourceBuiltDeps];
 
   // With prebuilds the module graph is large; expose a single aggregate library so consumers
   // `import <PackageName>` once and Xcode links every underlying binary target automatically.

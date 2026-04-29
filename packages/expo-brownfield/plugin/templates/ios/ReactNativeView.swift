@@ -1,12 +1,12 @@
 import SwiftUI
 
-struct ${{prefix}}ReactNativeViewRepresentable: UIViewControllerRepresentable {
+struct ReactNativeViewRepresentable: UIViewControllerRepresentable {
   var moduleName: String
   var initialProps: [AnyHashable: Any]?
   var launchOptions: [AnyHashable: Any]?
 
   func makeUIViewController(context: Context) -> UIViewController {
-    return ${{prefix}}ReactNativeViewController(
+    return ReactNativeViewController(
       moduleName: moduleName,
       initialProps: initialProps,
       launchOptions: launchOptions,
@@ -16,7 +16,7 @@ struct ${{prefix}}ReactNativeViewRepresentable: UIViewControllerRepresentable {
   func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 }
 
-public struct ${{prefix}}ReactNativeView: View {
+public struct ReactNativeView: View {
   @Environment(\.dismiss) var dismiss
 
   var moduleName: String
@@ -34,7 +34,7 @@ public struct ${{prefix}}ReactNativeView: View {
   }
 
   public var body: some View {
-    ${{prefix}}ReactNativeViewRepresentable(
+    ReactNativeViewRepresentable(
       moduleName: moduleName, initialProps: initialProps, launchOptions: launchOptions
     )
     .onReceive(NotificationCenter.default.publisher(for: NSNotification.Name("popToNative"))) { _ in

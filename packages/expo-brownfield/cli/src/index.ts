@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 
-import { buildAndroid, buildIos, tasksAndroid } from './commands';
+import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 import packageJson from '../../package.json';
 
 const program = new Command();
@@ -45,6 +45,17 @@ program
   )
   .action(async function (this: Command) {
     await buildIos(this);
+  });
+
+// mangle (internal: invoked by scripts/ios/mangle.rb during pod install)
+program
+  .command('mangle', { hidden: true })
+  .description('Internal: regenerate brownfield mangling xcconfig')
+  .option('--context-json <json>', 'inline JSON describing the mangling context')
+  .option('--context-file <path>', 'path to a JSON file describing the mangling context')
+  .option('--verbose', 'forward all output to the terminal')
+  .action(async function (this: Command) {
+    await mangle(this);
   });
 
 // tasks:android

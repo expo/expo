@@ -19,57 +19,68 @@ const getPrebuiltSettingsLines = () => {
       end
     end`.split('\n');
 };
-const MANGLE_REQUIRE_LINE = `require File.join(File.dirname(\`node --print "require.resolve('expo-brownfield/package.json')"\`.strip), "ios/scripts/mangle")`;
-const getMangleCallLine = (targetName) => {
-    return `    mangle_pods(installer, targets: ['${targetName}'], mangle_prefix: '${targetName}_')`;
+const MANGLE_REQUIRE_MARKER = "require File.join(File.dirname(`node --print \"require.resolve('expo-brownfield/package.json')\"`), 'scripts/ios/mangle')";
+const MANGLE_RUN_MARKER = 'ExpoBrownfield::Mangle.run!';
+const getMangleRunLines = (targetName) => {
+    return [
+        `    ExpoBrownfield::Mangle.run!(installer, targets: ['${targetName}'], mangle_prefix: '${targetName}_')`,
+    ];
 };
 /**
- * Add cocoapods-mangle to the Podfile.
- * This adds a post_install script so that all ObjC symbols in pod dependencies
- * are prefixed, allowing multiple brownfield frameworks to coexist in
- * the same host app without duplicate symbol errors.
+ * Wire up expo-brownfield's bundled mangling logic in the Podfile.
+ * Replaces the third-party `cocoapods-mangle` gem so users don't need a
+ * Gemfile entry. Two insertions:
+ *   1. A `require` line near the top of the Podfile that loads
+ *      `scripts/ios/mangle.rb` from the expo-brownfield npm package.
+ *   2. A `ExpoBrownfield::Mangle.run!(installer, ...)` call inside the
+ *      `post_install` block (created if absent) that invokes the
+ *      bundled Node worker to generate the mangling xcconfig.
+ *
+ * Both insertions are idempotent — re-running prebuild against an already
+ * patched Podfile is a no-op.
  */
 const addManglePlugin = (podfile, targetName) => {
-    let podFileLines = podfile.split('\n');
-    // Insert after existing require/plugin/source lines at the top
-    const lastRequireIndex = podFileLines.reduce((acc, line, index) => {
-        const trimmed = line.trimStart();
-        if (trimmed.startsWith('require ') ||
-            trimmed.startsWith('plugin ') ||
-            trimmed.startsWith('source ')) {
+    let result = addMangleRequire(podfile);
+    result = addMangleRunCall(result, targetName);
+    return result;
+};
+exports.addManglePlugin = addManglePlugin;
+const addMangleRequire = (podfile) => {
+    if (podfile.includes(MANGLE_REQUIRE_MARKER)) {
+        return podfile;
+    }
+    const lines = podfile.split('\n');
+    // Insert after the last existing `require ` line (typically the
+    // react_native_pods/autolinking requires) so we sit alongside them.
+    const lastRequireIndex = lines.reduce((acc, line, index) => {
+        if (line.trimStart().startsWith('require ')) {
             return index;
         }
         return acc;
     }, -1);
-    podFileLines.splice(lastRequireIndex + 1, 0, MANGLE_REQUIRE_LINE);
-    // Add mangle_pods call at the end of post_install block if not already present
-    if (!podFileLines.some((line) => line.includes('mangle_pods'))) {
-        const postInstallIndex = podFileLines.findIndex((line) => line.includes('post_install do |installer|'));
-        if (postInstallIndex !== -1) {
-            // Find the closing `end` of the post_install block
-            let depth = 0;
-            let postInstallEndIndex = -1;
-            for (let i = postInstallIndex; i < podFileLines.length; i++) {
-                const trimmed = podFileLines[i].trimStart();
-                if (trimmed.match(/\bdo\b/) || trimmed.match(/^if\b/) || trimmed.match(/^unless\b/)) {
-                    depth++;
-                }
-                if (trimmed === 'end' || trimmed.startsWith('end ')) {
-                    depth--;
-                    if (depth === 0) {
-                        postInstallEndIndex = i;
-                        break;
-                    }
-                }
-            }
-            if (postInstallEndIndex !== -1) {
-                podFileLines.splice(postInstallEndIndex, 0, getMangleCallLine(targetName));
-            }
-        }
-    }
-    return podFileLines.join('\n');
+    const insertAt = lastRequireIndex >= 0 ? lastRequireIndex + 1 : 0;
+    lines.splice(insertAt, 0, MANGLE_REQUIRE_MARKER);
+    return lines.join('\n');
 };
-exports.addManglePlugin = addManglePlugin;
+const addMangleRunCall = (podfile, targetName) => {
+    if (podfile.includes(MANGLE_RUN_MARKER)) {
+        return podfile;
+    }
+    const runLines = getMangleRunLines(targetName);
+    const lines = podfile.split('\n');
+    const postInstallIndex = lines.findIndex((line) => line.includes('post_install do |installer|'));
+    if (postInstallIndex === -1) {
+        // No post_install block exists yet — append one at the bottom.
+        lines.push('', 'post_install do |installer|', ...runLines, 'end');
+        return lines.join('\n');
+    }
+    const blockEnd = lines.findIndex((line, index) => index > postInstallIndex && /^\s*end\s*$/.test(line));
+    if (blockEnd === -1) {
+        return podfile;
+    }
+    lines.splice(blockEnd, 0, ...runLines);
+    return lines.join('\n');
+};
 const addNewPodsTarget = (podfile, targetName) => {
     const targetLines = getTargetNameLines(targetName);
     let podFileLines = podfile.split('\n');

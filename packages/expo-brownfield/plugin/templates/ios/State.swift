@@ -1,7 +1,7 @@
 import Combine
 internal import ExpoBrownfield
 
-public struct ${{prefix}}BrownfieldState {
+public struct BrownfieldState {
   public static func get(_ key: String) -> Any? {
     return BrownfieldStateInternal.shared.get(key)
   }

@@ -1,7 +1,7 @@
 import UIKit
 
 @objc(${{prefix}}ReactNativeViewController)
-public class ${{prefix}}ReactNativeViewController: UIViewController {
+public class ReactNativeViewController: UIViewController {
   private let moduleName: String
   private let initialProps: [AnyHashable: Any]?
   private let launchOptions: [AnyHashable: Any]?
@@ -27,7 +27,7 @@ public class ${{prefix}}ReactNativeViewController: UIViewController {
     super.viewDidLoad()
 
     do {
-      self.view = try ${{prefix}}ReactNativeHostManager.shared.loadView(
+      self.view = try ReactNativeHostManager.shared.loadView(
         moduleName: moduleName,
         initialProps: initialProps,
         launchOptions: launchOptions
@@ -35,7 +35,7 @@ public class ${{prefix}}ReactNativeViewController: UIViewController {
     } catch {
       print("Error loading React Native view: \(error)")
       print(
-        "Please make sure ${{prefix}}ReactNativeHostManager.shared.initialize() has been called prior to using the view controller"
+        "Please make sure ReactNativeHostManager.shared.initialize() has been called prior to using the view controller"
       )
     }
 

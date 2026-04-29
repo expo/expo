@@ -80,6 +80,30 @@ Several Expo modules link against shared Swift Package dependencies (e.g. `expo-
 
 If a declared SPM dependency can't be found in any of these locations, `build:ios` fails with an actionable error rather than shipping a Swift Package that would crash at runtime.
 
+## Embedding multiple brownfield frameworks in one host app (iOS)
+
+When two or more Expo brownfield frameworks need to coexist inside the same host iOS app, set `multipleFrameworks: true` on the iOS plugin config:
+
+```json
+{
+  "plugins": [
+    [
+      "expo-brownfield",
+      {
+        "ios": {
+          "targetName": "MyBrownfield",
+          "multipleFrameworks": true
+        }
+      }
+    ]
+  ]
+}
+```
+
+Each brownfield framework gets a unique Swift module name (the framework target name), so its public Swift types are already isolated per-app. Every ObjC class registered by the framework gets a `<TargetName>_` prefix via `@objc(...)`, and every ObjC symbol in the pod dependency graph is rewritten with the same prefix at compile time — so two frameworks can ship overlapping pods without duplicate-symbol errors at link time.
+
+The mangling runs as part of `pod install` via a small Ruby shim and a Node worker bundled with `expo-brownfield` — **you do not need to install the `cocoapods-mangle` gem** or modify your `Gemfile`. The first run after a dependency change rebuilds the symbol set; subsequent `pod install` invocations are skipped via a dependency-graph checksum.
+
 ## Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

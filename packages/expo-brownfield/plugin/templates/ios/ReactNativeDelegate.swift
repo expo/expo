@@ -1,7 +1,7 @@
 internal import Expo
 internal import React
 
-class ${{prefix}}ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   private let turboModuleClasses: [String: AnyClass]
   init(
     turboModuleClasses: [String: AnyClass] = [:]
@@ -30,7 +30,7 @@ class ${{prefix}}ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
       // `main.jsbundle` isn't part of the main app bundle
       // so we need to load it from the framework bundle
       // and ensure that it's present in the framework
-      let frameworkBundle = Bundle(for: ${{prefix}}ReactNativeHostManager.self)
+      let frameworkBundle = Bundle(for: ReactNativeHostManager.self)
       if let bundleURL = frameworkBundle.url(forResource: "main", withExtension: "jsbundle") {
         return bundleURL
       }
