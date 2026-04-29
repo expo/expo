@@ -36,6 +36,7 @@ export default function TextInputScreen() {
   const [returnKeyType, setReturnKeyType] = useState<ReturnKeyTypeOptions>('done');
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
+  const [redCursor, setRedCursor] = useState(false);
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -70,6 +71,7 @@ export default function TextInputScreen() {
               onSubmitEditing={setLastSubmitted}
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
+              cursorColor={redCursor ? 'red' : undefined}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -80,6 +82,7 @@ export default function TextInputScreen() {
             <Switch value={editable} onValueChange={setEditable} label="editable" />
             <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
             <Switch value={autoCorrect} onValueChange={setAutoCorrect} label="autoCorrect" />
+            <Switch value={redCursor} onValueChange={setRedCursor} label="cursorColor (red)" />
             <Button
               label={`keyboardType: ${keyboardType}`}
               variant="outlined"

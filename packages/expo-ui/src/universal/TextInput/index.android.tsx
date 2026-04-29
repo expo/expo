@@ -57,6 +57,7 @@ export function TextInput({
   onSubmitEditing,
   onFocus,
   onBlur,
+  cursorColor,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -93,6 +94,7 @@ export function TextInput({
       autoFocus={autoFocus}
       readOnly={editable === false}
       singleLine={!multiline}
+      colors={cursorColor ? { cursorColor } : undefined}
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
       onValueChange={onChangeText}

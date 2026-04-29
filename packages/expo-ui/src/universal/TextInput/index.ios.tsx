@@ -6,6 +6,7 @@ import {
   onSubmit,
   submitLabel,
   textInputAutocapitalization,
+  tint,
   type ModifierConfig,
 } from '@expo/ui/swift-ui/modifiers';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
@@ -70,6 +71,7 @@ export function TextInput({
   onSubmitEditing,
   onFocus,
   onBlur,
+  cursorColor,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -90,6 +92,7 @@ export function TextInput({
   if (onSubmitEditing) {
     modifiers.push(onSubmit(() => onSubmitEditing(state.value)));
   }
+  if (cursorColor) modifiers.push(tint(cursorColor));
 
   return (
     <TextField

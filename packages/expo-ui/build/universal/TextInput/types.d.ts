@@ -1,4 +1,4 @@
-import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
+import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 import type { ObservableState } from '../State';
 /**
  * Props for the `TextInput` component.
@@ -79,5 +79,9 @@ export interface TextInputProps {
      * Called when the field loses focus.
      */
     onBlur?: () => void;
+    /**
+     * Color of the text cursor.
+     */
+    cursorColor?: ColorValue;
 }
 //# sourceMappingURL=types.d.ts.map
