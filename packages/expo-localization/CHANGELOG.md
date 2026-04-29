@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Prevent duplicate `resourceConfigurations` entries on repeated prebuild runs ([#42209](https://github.com/expo/expo/issues/42209)) ([#43839](https://github.com/expo/expo/pull/43839) by [@leeseonghyun21](https://github.com/leeseonghyun21))
+
 ### 💡 Others
 
 ## 55.0.8 — 2026-02-25
