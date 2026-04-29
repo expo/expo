@@ -1,25 +1,25 @@
 import { requireNativeView } from 'expo';
 
+import {
+  COMMAND_STATE_SYMBOL,
+  type PagerNativeState,
+  usePagerNativeState,
+} from './usePagerNativeState';
+import { getStateId } from '../../State/utils';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import type { PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
+export { usePagerNativeState, type PagerNativeState };
+
 export type HorizontalPagerProps = {
   /**
-   * The index of the currently displayed page. When set, the pager is controlled
-   * and page changes are driven by this prop.
+   * Pager state created with `usePagerNativeState`. Pass it to drive the pager from
+   * JS (`state.animateScrollToPage(...)`) or read its current page reactively
+   * (`state.currentPage.value`). If omitted, the pager mounts at page 0 and is
+   * driven only by user swipes — use `onPageSelected` to observe.
    */
-  currentPage?: number;
-  /**
-   * The initial page index for uncontrolled mode. Ignored when `currentPage` is set.
-   * @default 0
-   */
-  defaultPage?: number;
-  /**
-   * Whether programmatic page changes (via `currentPage`) are animated.
-   * @default true
-   */
-  animatePageChanges?: boolean;
+  state?: PagerNativeState;
   /**
    * Called when the settled page changes after a user swipe.
    */
@@ -58,8 +58,11 @@ export type HorizontalPagerProps = {
   children: React.ReactNode;
 };
 
-type NativeHorizontalPagerProps = Omit<HorizontalPagerProps, 'onPageSelected'> &
-  ViewEvent<'onPageSelected', { position: number }>;
+type NativeHorizontalPagerProps = Omit<HorizontalPagerProps, 'onPageSelected' | 'state'> &
+  ViewEvent<'onPageSelected', { position: number }> & {
+    currentPageState: number | null;
+    commandState: number | null;
+  };
 
 const NativeView: React.ComponentType<NativeHorizontalPagerProps> = requireNativeView(
   'ExpoUI',
@@ -67,11 +70,13 @@ const NativeView: React.ComponentType<NativeHorizontalPagerProps> = requireNativ
 );
 
 function transformProps(props: HorizontalPagerProps): NativeHorizontalPagerProps {
-  const { modifiers, onPageSelected, ...restProps } = props;
+  const { modifiers, onPageSelected, state, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    currentPageState: getStateId(state?.currentPage),
+    commandState: getStateId(state?.[COMMAND_STATE_SYMBOL]),
     onPageSelected: onPageSelected
       ? ({ nativeEvent: { position } }) => onPageSelected(position)
       : undefined,

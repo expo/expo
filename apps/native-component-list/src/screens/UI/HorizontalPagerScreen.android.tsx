@@ -9,6 +9,7 @@ import {
   Row,
   TextField,
   Text as ComposeText,
+  usePagerNativeState,
 } from '@expo/ui/jetpack-compose';
 import {
   background,
@@ -69,6 +70,7 @@ function DynamicPagesSection() {
     { index: 2 },
     { index: 3 },
   ]);
+  const pagerState = usePagerNativeState();
   const [currentPage, setCurrentPage] = useState(0);
 
   return (
@@ -87,7 +89,7 @@ function DynamicPagesSection() {
           Notes: {notes.map((n) => n.index).join(', ')} — viewing index {currentPage}
         </ComposeText>
         <HorizontalPager
-          currentPage={currentPage}
+          state={pagerState}
           onPageSelected={setCurrentPage}
           modifiers={[fillMaxWidth(), height(250)]}>
           {notes.map((note) => (
@@ -98,7 +100,9 @@ function DynamicPagesSection() {
           onClick={() => {
             const index = nextPrependedIndex.current--;
             setNotes((prev) => [{ index }, ...prev]);
-            setCurrentPage((prev) => prev + 1);
+            const next = currentPage + 1;
+            setCurrentPage(next);
+            pagerState.scrollToPage(next);
           }}>
           <ComposeText>Insert at beginning</ComposeText>
         </Button>
@@ -107,11 +111,9 @@ function DynamicPagesSection() {
             if (notes.length <= 1) return;
             const removedIndex = 0;
             setNotes((prev) => prev.slice(1));
-            if (currentPage === removedIndex) {
-              setCurrentPage(0);
-            } else {
-              setCurrentPage((prev) => Math.max(0, prev - 1));
-            }
+            const next = currentPage === removedIndex ? 0 : Math.max(0, currentPage - 1);
+            setCurrentPage(next);
+            pagerState.scrollToPage(next);
           }}>
           <ComposeText>Remove first</ComposeText>
         </Button>
@@ -121,6 +123,7 @@ function DynamicPagesSection() {
 }
 
 function UncontrolledSection() {
+  const pagerState = usePagerNativeState({ initialPage: 1 });
   const [lastReported, setLastReported] = useState(1);
 
   return (
@@ -128,11 +131,11 @@ function UncontrolledSection() {
       <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
         <ComposeText style={{ typography: 'titleMedium' }}>Uncontrolled</ComposeText>
         <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
-          No currentPage — native owns the state. Starts at the second page via defaultPage. Last
-          reported page: {lastReported}
+          Native owns the state via the pager state object. Starts at the second page via
+          initialPage. Last reported page: {lastReported}
         </ComposeText>
         <HorizontalPager
-          defaultPage={1}
+          state={pagerState}
           onPageSelected={setLastReported}
           modifiers={[fillMaxWidth(), height(200)]}>
           <ColorPage index={0} />
@@ -145,6 +148,7 @@ function UncontrolledSection() {
 }
 
 export default function HorizontalPagerScreen() {
+  const pagerState = usePagerNativeState();
   const [page, setPage] = useState(0);
 
   return (
@@ -159,7 +163,7 @@ export default function HorizontalPagerScreen() {
               Page {page + 1} / {PAGE_COUNT}
             </ComposeText>
             <HorizontalPager
-              currentPage={page}
+              state={pagerState}
               onPageSelected={setPage}
               modifiers={[fillMaxWidth(), height(200)]}>
               {Array.from({ length: PAGE_COUNT }).map((_, i) => (
@@ -167,25 +171,28 @@ export default function HorizontalPagerScreen() {
               ))}
             </HorizontalPager>
             <Row horizontalArrangement={{ spacedBy: 8 }}>
-              <Button onClick={() => setPage(0)}>
+              <Button onClick={() => pagerState.animateScrollToPage(0)}>
                 <ComposeText>First</ComposeText>
               </Button>
-              <Button onClick={() => setPage(Math.max(0, page - 1))}>
+              <Button onClick={() => pagerState.animateScrollToPage(Math.max(0, page - 1))}>
                 <ComposeText>Prev</ComposeText>
               </Button>
-              <Button onClick={() => setPage(Math.min(PAGE_COUNT - 1, page + 1))}>
+              <Button onClick={() => pagerState.animateScrollToPage(Math.min(PAGE_COUNT - 1, page + 1))}>
                 <ComposeText>Next</ComposeText>
               </Button>
-              <Button onClick={() => setPage(PAGE_COUNT - 1)}>
+              <Button onClick={() => pagerState.animateScrollToPage(PAGE_COUNT - 1)}>
                 <ComposeText>Last</ComposeText>
               </Button>
             </Row>
             <Row horizontalArrangement={{ spacedBy: 8 }}>
-              <Button onClick={() => setPage(-1)}>
+              <Button onClick={() => pagerState.animateScrollToPage(-1)}>
                 <ComposeText>-1</ComposeText>
               </Button>
-              <Button onClick={() => setPage(PAGE_COUNT)}>
+              <Button onClick={() => pagerState.animateScrollToPage(PAGE_COUNT)}>
                 <ComposeText>{PAGE_COUNT}</ComposeText>
+              </Button>
+              <Button onClick={() => pagerState.scrollToPage(0)}>
+                <ComposeText>Jump to 1 (no anim)</ComposeText>
               </Button>
             </Row>
           </Column>

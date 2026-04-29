@@ -1,21 +1,15 @@
+import { type PagerNativeState, usePagerNativeState } from './usePagerNativeState';
 import { type ModifierConfig } from '../../types';
 import type { PaddingValuesRecord } from '../Carousel';
+export { usePagerNativeState, type PagerNativeState };
 export type HorizontalPagerProps = {
     /**
-     * The index of the currently displayed page. When set, the pager is controlled
-     * and page changes are driven by this prop.
+     * Pager state created with `usePagerNativeState`. Pass it to drive the pager from
+     * JS (`state.animateScrollToPage(...)`) or read its current page reactively
+     * (`state.currentPage.value`). If omitted, the pager mounts at page 0 and is
+     * driven only by user swipes — use `onPageSelected` to observe.
      */
-    currentPage?: number;
-    /**
-     * The initial page index for uncontrolled mode. Ignored when `currentPage` is set.
-     * @default 0
-     */
-    defaultPage?: number;
-    /**
-     * Whether programmatic page changes (via `currentPage`) are animated.
-     * @default true
-     */
-    animatePageChanges?: boolean;
+    state?: PagerNativeState;
     /**
      * Called when the settled page changes after a user swipe.
      */
