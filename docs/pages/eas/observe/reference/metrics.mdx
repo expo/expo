@@ -44,7 +44,7 @@ This metric is collected automatically.
 
 ### Warm launch time
 
-**What it measures:** Unlike a cold launch, the app process already exists. The OS just brings it to the foreground and recreates the view hierarchy. Most native resources and services are already in memory, so this type of launch is significantly faster.
+**What it measures:** A warm launch happens when the OS already has the app process in memory and only needs to bring it back to the foreground and recreate the view hierarchy. Unlike a cold launch, most native resources and services are already in memory, so this type of launch is significantly faster.
 
 Warm launch is largely out of the developer's hands: it is the OS restoring state for a process that is already in memory.
 
