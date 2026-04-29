@@ -12,6 +12,8 @@ export type TextInputRef = {
     blur: () => Promise<void>;
     /** Clear the current text. */
     clear: () => void;
+    /** Returns whether the input currently has focus. */
+    isFocused: () => boolean;
 };
 /**
  * Props for the `TextInput` component.
@@ -138,5 +140,14 @@ export interface TextInputProps {
      * - iOS: requires iOS 16+; below that, the field grows naturally.
      */
     numberOfLines?: number;
+    /**
+     * Color of the underline indicator on Android. iOS / web ignore this.
+     * @platform android
+     */
+    underlineColorAndroid?: ColorValue;
+    /**
+     * Identifier used to locate the component in end-to-end tests.
+     */
+    testID?: string;
 }
 //# sourceMappingURL=types.d.ts.map

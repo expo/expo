@@ -88,6 +88,7 @@ export function TextInput({
   enterKeyHint,
   defaultValue,
   numberOfLines,
+  testID,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -98,6 +99,7 @@ export function TextInput({
   const state = (value ?? fallback) as typeof fallback;
 
   const innerRef = useRef<TextFieldRef>(null);
+  const isFocusedRef = useRef(false);
   useImperativeHandle(
     ref,
     () => ({
@@ -107,12 +109,16 @@ export function TextInput({
         // TODO: schedule this on UI thread via worklet
         state.value = '';
       },
+      isFocused: () => isFocusedRef.current,
     }),
     [state]
   );
 
-  const handleFocusChange =
-    onFocus || onBlur ? (focused: boolean) => (focused ? onFocus?.() : onBlur?.()) : undefined;
+  const handleFocusChange = (focused: boolean) => {
+    isFocusedRef.current = focused;
+    if (focused) onFocus?.();
+    else onBlur?.();
+  };
 
   const modifiers: ModifierConfig[] = [];
   if (editable === false) modifiers.push(disabledMod(true));
@@ -145,6 +151,7 @@ export function TextInput({
       onTextChange={onChangeText}
       onFocusChange={handleFocusChange}
       modifiers={modifiers.length > 0 ? modifiers : undefined}
+      testID={testID}
     />
   );
 }

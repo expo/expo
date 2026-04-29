@@ -6,6 +6,7 @@ import {
   type TextFieldRef,
   useNativeState,
 } from '@expo/ui/jetpack-compose';
+import { testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
@@ -72,6 +73,8 @@ export function TextInput({
   enterKeyHint,
   defaultValue,
   numberOfLines,
+  underlineColorAndroid,
+  testID,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -82,6 +85,7 @@ export function TextInput({
   const state = (value ?? fallback) as typeof fallback;
 
   const innerRef = useRef<TextFieldRef>(null);
+  const isFocusedRef = useRef(false);
   useImperativeHandle(
     ref,
     () => ({
@@ -91,14 +95,16 @@ export function TextInput({
         // TODO: schedule this on UI thread via worklet
         state.value = '';
       },
+      isFocused: () => isFocusedRef.current,
     }),
     [state]
   );
 
-  const handleFocusChanged =
-    onFocus || onBlur
-      ? (focused: boolean) => (focused ? onFocus?.() : onBlur?.())
-      : undefined;
+  const handleFocusChanged = (focused: boolean) => {
+    isFocusedRef.current = focused;
+    if (focused) onFocus?.();
+    else onBlur?.();
+  };
 
   const keyboardOptions =
     keyboardType || autoCapitalize || autoCorrect !== undefined || returnKeyType
@@ -124,13 +130,26 @@ export function TextInput({
   return (
     <ComposeTextField
       ref={innerRef}
+      modifiers={testID ? [testIDModifier(testID)] : undefined}
       value={state}
       autoFocus={autoFocus}
       readOnly={editable === false}
       singleLine={!multiline}
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      colors={cursorColor ? { cursorColor } : undefined}
+      colors={
+        cursorColor || underlineColorAndroid
+          ? {
+              ...(cursorColor ? { cursorColor } : null),
+              ...(underlineColorAndroid
+                ? {
+                    unfocusedIndicatorColor: underlineColorAndroid,
+                    focusedIndicatorColor: underlineColorAndroid,
+                  }
+                : null),
+            }
+          : undefined
+      }
       textStyle={
         textAlign && textAlign !== 'auto' ? { textAlign } : undefined
       }

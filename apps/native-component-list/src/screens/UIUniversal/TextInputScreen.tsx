@@ -121,6 +121,11 @@ export default function TextInputScreen() {
               onPress={() => inputRef.current?.clear()}
             />
             <Button
+              label="ref.isFocused()"
+              variant="outlined"
+              onPress={() => alert(`isFocused: ${inputRef.current?.isFocused()}`)}
+            />
+            <Button
               label={`keyboardType: ${keyboardType}`}
               variant="outlined"
               onPress={cycleKeyboardType}
