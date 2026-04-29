@@ -24,7 +24,7 @@ const MINIFY_JSON = true;
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
-  'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
+  'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
 
   // Swift UI
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
