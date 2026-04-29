@@ -5,8 +5,66 @@ import {
   Paths,
   UploadTask,
   DownloadTask,
+  UploadType,
   type DownloadPauseState,
 } from '../index';
+
+describe('File.upload()', () => {
+  const url = 'https://example.com/upload';
+  const mockUploadResult = { body: '{"ok":true}', status: 200, headers: { 'x-req-id': '1' } };
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('starts an upload task and resolves with its result', async () => {
+    const file = new File(Paths.cache, 'photo.jpg');
+    const uploadAsyncSpy = jest
+      .spyOn(UploadTask.prototype, 'uploadAsync')
+      .mockResolvedValue(mockUploadResult);
+
+    const result = await file.upload(url);
+
+    expect(uploadAsyncSpy).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(mockUploadResult);
+  });
+
+  it('forwards upload options through the underlying task', async () => {
+    const file = new File(Paths.cache, 'photo.jpg');
+    jest
+      .spyOn(ExpoFileSystem.FileSystemUploadTask.prototype, 'start')
+      .mockResolvedValue({ body: 'validation failed', status: 422, headers: { 'x-error': '1' } });
+
+    const result = await file.upload(url, {
+      httpMethod: 'PATCH',
+      uploadType: UploadType.MULTIPART,
+      headers: { Authorization: 'Bearer token' },
+      fieldName: 'asset',
+      mimeType: 'image/jpeg',
+      parameters: { albumId: '42' },
+      sessionType: 'foreground',
+    });
+
+    expect(ExpoFileSystem.FileSystemUploadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      file,
+      expect.objectContaining({
+        httpMethod: 'PATCH',
+        uploadType: UploadType.MULTIPART,
+        headers: { Authorization: 'Bearer token' },
+        fieldName: 'asset',
+        mimeType: 'image/jpeg',
+        parameters: { albumId: '42' },
+        sessionType: 'foreground',
+      })
+    );
+    expect(result).toEqual({
+      body: 'validation failed',
+      status: 422,
+      headers: { 'x-error': '1' },
+    });
+  });
+});
 
 describe('UploadTask', () => {
   let file: File;
