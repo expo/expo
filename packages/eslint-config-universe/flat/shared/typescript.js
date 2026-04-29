@@ -101,6 +101,9 @@ module.exports = defineConfig([
 
       // TODO (Kadi): Enable this. Disabling for now because import/recommended adds it, but we didn't use to have it enabled
       'import/no-unresolved': 'off',
+
+      // NOTE(@hassankhan): This is disabled in `core`, but `eslint-plugin-import`'s recommended rules re-enable it
+      'import/no-named-as-default': 'off',
     },
   },
 ]);

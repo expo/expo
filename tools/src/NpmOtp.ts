@@ -30,7 +30,6 @@ export async function promptOtp(): Promise<string> {
  * succeeds or a non-OTP error is thrown.
  */
 export async function withOtpRetry(fn: () => Promise<void>): Promise<void> {
-  // eslint-disable-next-line no-constant-condition
   while (true) {
     try {
       await fn();

@@ -147,7 +147,7 @@ function formatPublishInfo(info: PublishInfo): string {
 }
 
 // Matches SGR codes (\x1b[...m) and OSC 8 hyperlinks (\x1b]8;;...\x07)
-// eslint-disable-next-line no-control-regex
+
 const ANSI_RE = /\x1b\[[0-9;]*m|\x1b\]8;;[^\x07]*\x07/g;
 
 function pad(str: string, width: number): string {

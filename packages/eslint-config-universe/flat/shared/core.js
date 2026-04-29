@@ -260,6 +260,7 @@ module.exports = defineConfig([
       ],
 
       'import/default': 'off',
+      'import/no-named-as-default': 'off',
       'import/export': 'error',
       'import/first': 'warn',
 
