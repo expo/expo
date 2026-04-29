@@ -1,0 +1,154 @@
+---
+title: Slider
+description: A Jetpack Compose Slider component for selecting values from a range.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Slider matches the official Jetpack Compose [Slider API](https://developer.android.com/develop/ui/compose/components/slider) and allows selecting values from a bounded range.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic slider
+
+```tsx BasicSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function BasicSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Slider with custom range
+
+Use the `min` and `max` props to define the slider's value range.
+
+```tsx CustomRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function CustomRangeSliderExample() {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} min={0} max={100} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Slider with steps
+
+Use the `steps` prop to define discrete increments. Set `steps` to `0` for continuous values.
+
+```tsx SteppedSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function SteppedSliderExample() {
+  const [value, setValue] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} min={0} max={100} steps={10} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Custom colors
+
+Use the `colors` prop to override the default Material3 colors for the slider's thumb, track, and tick marks.
+
+```tsx CustomColorsSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorsSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <Slider
+        value={value}
+        colors={{
+          thumbColor: '#6200EE',
+          activeTrackColor: '#6200EE',
+          inactiveTrackColor: '#E0E0E0',
+        }}
+        onValueChange={setValue}
+      />
+    </Host>
+  );
+}
+```
+
+### Custom thumb and track
+
+Use both `Slider.Thumb` and `Slider.Track` slots for a fully custom slider appearance.
+
+```tsx FullyCustomSliderExample.tsx
+import { useState } from 'react';
+import { Host, Slider, Shape, Row, Box } from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  height,
+  weight,
+  size,
+  clip,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function FullyCustomSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Host matchContents>
+      <Slider value={value} onValueChange={setValue}>
+        <Slider.Thumb>
+          <Box modifiers={[size(24, 24), clip(Shapes.Circle), background('#6200EE')]} />
+        </Slider.Thumb>
+        <Slider.Track>
+          <Row modifiers={[fillMaxWidth(), height(8)]}>
+            <Shape.RoundedCorner
+              color="#6200EE"
+              cornerRadii={{ topStart: 4, bottomStart: 4 }}
+              modifiers={[weight(Math.max(value, 0.01)), height(8)]}
+            />
+            <Shape.RoundedCorner
+              color="#BDBDBD"
+              cornerRadii={{ topEnd: 4, bottomEnd: 4 }}
+              modifiers={[weight(Math.max(1 - value, 0.01)), height(8)]}
+            />
+          </Row>
+        </Slider.Track>
+      </Slider>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Slider } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/slider" apiName="Slider" />

@@ -1,0 +1,91 @@
+---
+title: RadioButton
+description: A Jetpack Compose RadioButton component for single-selection controls.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A radio button component for selecting a single option from a set. Maps to the official Jetpack Compose [RadioButton](https://developer.android.com/develop/ui/compose/components/radio-button) API.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic radio button
+
+A standalone radio button with an `onClick` handler.
+
+```tsx BasicRadioButton.tsx
+import { useState } from 'react';
+import { Host, RadioButton } from '@expo/ui/jetpack-compose';
+
+export default function BasicRadioButton() {
+  const [selected, setSelected] = useState(false);
+
+  return (
+    <Host matchContents>
+      <RadioButton selected={selected} onClick={() => setSelected(!selected)} />
+    </Host>
+  );
+}
+```
+
+### Radio group (recommended)
+
+The recommended pattern for a radio group follows the [Compose accessibility guidelines](https://developer.android.com/develop/ui/compose/components/radio-button):
+
+- Wrap the group in a `Column` with the `selectableGroup()` modifier so screen readers treat the options as a group.
+- Apply the `selectable` modifier with `role: 'radioButton'` on each `Row`, making the entire row (including the label) tappable.
+- Pass no `onClick` to the `RadioButton` itself, the row handles the interaction. This provides a larger touch target.
+
+```tsx RadioGroup.tsx
+import { useState } from 'react';
+import { Host, Column, Row, RadioButton, Text } from '@expo/ui/jetpack-compose';
+import {
+  selectable,
+  selectableGroup,
+  fillMaxWidth,
+  height,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function RadioGroup() {
+  const [selectedOption, setSelectedOption] = useState('Calls');
+  const options = ['Calls', 'Missed', 'Friends'];
+
+  return (
+    <Host matchContents>
+      <Column modifiers={[selectableGroup()]}>
+        {options.map(label => (
+          <Row
+            key={label}
+            verticalAlignment="center"
+            modifiers={[
+              fillMaxWidth(),
+              height(56),
+              selectable(label === selectedOption, () => setSelectedOption(label), 'radioButton'),
+              padding(16, 0, 16, 0),
+            ]}>
+            <RadioButton selected={label === selectedOption} />
+            <Text modifiers={[padding(16, 0, 0, 0)]}>{label}</Text>
+          </Row>
+        ))}
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { RadioButton } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/radiobutton" apiName="RadioButton" />

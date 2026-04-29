@@ -1,0 +1,81 @@
+---
+title: BasicAlertDialog
+description: A Jetpack Compose BasicAlertDialog component for displaying dialogs with custom content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic dialog with custom content
+
+```tsx BasicAlertDialogExample.tsx
+import { useState } from 'react';
+import {
+  Host,
+  BasicAlertDialog,
+  Button,
+  TextButton,
+  Text,
+  Surface,
+  Column,
+  Spacer,
+} from '@expo/ui/jetpack-compose';
+import {
+  padding,
+  wrapContentWidth,
+  wrapContentHeight,
+  clip,
+  height,
+  align,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicAlertDialogExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open dialog</Text>
+      </Button>
+      {visible && (
+        <BasicAlertDialog onDismissRequest={() => setVisible(false)}>
+          <Surface
+            tonalElevation={6}
+            modifiers={[wrapContentWidth(), wrapContentHeight(), clip(Shapes.RoundedCorner(28))]}>
+            <Column modifiers={[padding(16, 16, 16, 16)]}>
+              <Text>
+                This area typically contains the supportive text which presents the details
+                regarding the Dialog's purpose.
+              </Text>
+              <Spacer modifiers={[height(24)]} />
+              <TextButton onClick={() => setVisible(false)} modifiers={[align('centerEnd')]}>
+                <Text>Confirm</Text>
+              </TextButton>
+            </Column>
+          </Surface>
+        </BasicAlertDialog>
+      )}
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { BasicAlertDialog } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/basicalertdialog" apiName="BasicAlertDialog" />

@@ -1,0 +1,244 @@
+---
+title: TextField
+description: Jetpack Compose TextField components for native Material3 text input.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI provides two text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled) and `OutlinedTextField` (outlined border). Both variants share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text.
+
+| Type     | Appearance                                     | Purpose                                                                                                       |
+| -------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Filled   | Solid background with a bottom indicator line. | Default text input style following Material3 design. Use for most forms and input fields.                     |
+| Outlined | Transparent background with a border outline.  | Alternative style that provides a distinct visual boundary. Use when filled fields blend into the background. |
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text field
+
+A filled text field is the default Material3 text input style.
+
+```tsx BasicTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+
+export default function BasicTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField onValueChange={setValue}>
+        <TextField.Label>
+          <Text>Username</Text>
+        </TextField.Label>
+      </TextField>
+    </Host>
+  );
+}
+```
+
+### Outlined text field
+
+Use `OutlinedTextField` for a text field with a border outline instead of a filled background.
+
+```tsx OutlinedTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, OutlinedTextField, Text } from '@expo/ui/jetpack-compose';
+
+export default function OutlinedTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <OutlinedTextField onValueChange={setValue}>
+        <OutlinedTextField.Label>
+          <Text>Email</Text>
+        </OutlinedTextField.Label>
+        <OutlinedTextField.Placeholder>
+          <Text>you@example.com</Text>
+        </OutlinedTextField.Placeholder>
+      </OutlinedTextField>
+    </Host>
+  );
+}
+```
+
+### Slots
+
+Both `TextField` and `OutlinedTextField` support 7 composable slots that match the Compose API: `Label`, `Placeholder`, `LeadingIcon`, `TrailingIcon`, `Prefix`, `Suffix`, and `SupportingText`.
+
+```tsx TextFieldSlotsExample.tsx
+import { useState } from 'react';
+import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+
+export default function TextFieldSlotsExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField onValueChange={setValue}>
+        <TextField.Label>
+          <Text>Price</Text>
+        </TextField.Label>
+        <TextField.Placeholder>
+          <Text>0.00</Text>
+        </TextField.Placeholder>
+        <TextField.LeadingIcon>
+          <Text>💰</Text>
+        </TextField.LeadingIcon>
+        <TextField.Prefix>
+          <Text>$</Text>
+        </TextField.Prefix>
+        <TextField.Suffix>
+          <Text>USD</Text>
+        </TextField.Suffix>
+        <TextField.SupportingText>
+          <Text>Enter the amount</Text>
+        </TextField.SupportingText>
+      </TextField>
+    </Host>
+  );
+}
+```
+
+### Keyboard options
+
+Use the `keyboardOptions` prop to configure the keyboard type, capitalization, auto-correct, and IME action.
+
+```tsx KeyboardOptionsExample.tsx
+import { useState } from 'react';
+import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+
+export default function KeyboardOptionsExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        onValueChange={setValue}
+        singleLine
+        keyboardOptions={{
+          keyboardType: 'email',
+          capitalization: 'none',
+          autoCorrectEnabled: false,
+          imeAction: 'done',
+        }}>
+        <TextField.Label>
+          <Text>Email</Text>
+        </TextField.Label>
+      </TextField>
+    </Host>
+  );
+}
+```
+
+### Keyboard actions
+
+Use the `keyboardActions` prop to handle IME action button presses. The triggered callback depends on the `imeAction` set in `keyboardOptions`. Each callback receives the current text value.
+
+```tsx KeyboardActionsExample.tsx
+import { useState } from 'react';
+import { Host, TextField, Text } from '@expo/ui/jetpack-compose';
+
+export default function KeyboardActionsExample() {
+  const [value, setValue] = useState('');
+  const [submitted, setSubmitted] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        onValueChange={setValue}
+        singleLine
+        keyboardOptions={{ imeAction: 'search' }}
+        keyboardActions={{
+          onSearch: text => setSubmitted(text),
+        }}>
+        <TextField.Label>
+          <Text>Search</Text>
+        </TextField.Label>
+      </TextField>
+    </Host>
+  );
+}
+```
+
+### Error state
+
+Set `isError` to display the text field in an error state. Combine with `SupportingText` to show an error message.
+
+```tsx ErrorStateExample.tsx
+import { useState } from 'react';
+import { Host, OutlinedTextField, Text } from '@expo/ui/jetpack-compose';
+
+export default function ErrorStateExample() {
+  const [value, setValue] = useState('');
+  const hasError = value.length > 0 && !value.includes('@');
+
+  return (
+    <Host matchContents>
+      <OutlinedTextField onValueChange={setValue} isError={hasError} singleLine>
+        <OutlinedTextField.Label>
+          <Text>Email</Text>
+        </OutlinedTextField.Label>
+        <OutlinedTextField.SupportingText>
+          <Text>{hasError ? 'Please enter a valid email' : 'Required'}</Text>
+        </OutlinedTextField.SupportingText>
+      </OutlinedTextField>
+    </Host>
+  );
+}
+```
+
+### Imperative ref
+
+Use a ref to imperatively set text, focus, or blur the text field.
+
+```tsx ImperativeRefExample.tsx
+import { useRef, useState } from 'react';
+import { Host, TextField, TextFieldRef, Button, Row, Text, Column } from '@expo/ui/jetpack-compose';
+import { padding } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function ImperativeRefExample() {
+  const ref = useRef<TextFieldRef>(null);
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <Column>
+        <TextField ref={ref} onValueChange={setValue} singleLine>
+          <TextField.Label>
+            <Text>Name</Text>
+          </TextField.Label>
+        </TextField>
+        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
+          <Button onClick={() => ref.current?.setText('Hello!')}>
+            <Text>Set text</Text>
+          </Button>
+          <Button onClick={() => ref.current?.focus()}>
+            <Text>Focus</Text>
+          </Button>
+          <Button onClick={() => ref.current?.blur()}>
+            <Text>Blur</Text>
+          </Button>
+        </Row>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { TextField, OutlinedTextField } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/textfield" apiName="TextField" />

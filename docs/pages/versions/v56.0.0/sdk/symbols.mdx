@@ -1,0 +1,111 @@
+---
+title: Symbols
+description: A library that allows access to native symbols.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-symbols'
+packageName: 'expo-symbols'
+iconUrl: '/static/images/packages/expo-symbols.png'
+platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
+isBeta: true
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+> **important** This library is currently in [beta](/more/release-statuses/#beta) and subject to breaking changes.
+
+`expo-symbols` provides access to native symbol libraries across platforms. On iOS and tvOS, it uses [SF Symbols](https://developer.apple.com/sf-symbols/). On Android and web, it uses [Material Symbols](https://fonts.google.com/icons).
+
+<ContentSpotlight
+  className="max-w-[200px]"
+  src="/static/images/symbols.png"
+  alt="A collection of the Symbols from the Expo Symbols shown on an iOS device."
+/>
+
+## Installation
+
+<APIInstallSection packageName="expo-symbols" />
+
+## Usage
+
+### Cross-platform symbols
+
+Pass an object with per-platform symbol names to render symbols on all platforms. Browse available iOS symbols in the [Apple SF Symbols app](https://developer.apple.com/sf-symbols/) and Android/web symbols at [Google Material Symbols](https://fonts.google.com/icons).
+
+```jsx App.js
+import { SymbolView } from 'expo-symbols';
+import { StyleSheet, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <SymbolView
+        name={{ ios: 'info.circle', android: 'info', web: 'info' }}
+        tintColor="#007AFF"
+        size={35}
+      />
+      <SymbolView
+        name={{
+          ios: 'pencil.tip.crop.circle.badge.plus',
+          android: 'home_and_garden',
+          web: 'home_and_garden',
+        }}
+        style={styles.symbol}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  symbol: {
+    width: 35,
+    height: 35,
+    margin: 5,
+  },
+});
+```
+
+If you only pass a string, it is treated as an SF Symbol name and renders only on iOS. On Android and web, nothing will be rendered unless you provide a `fallback`:
+
+```jsx
+{
+  /* iOS-only: pass an SF Symbol name directly */
+}
+<SymbolView name="airpods.chargingcase" style={styles.symbol} type="hierarchical" />;
+
+{
+  /* Use fallback for platforms where the symbol is not defined */
+}
+<SymbolView name={{}} fallback={<Text>?</Text>} />;
+```
+
+### Weights
+
+On iOS, pass a weight string directly. On Android, import a weight object from `expo-symbols/androidWeights`:
+
+```jsx
+import bold from 'expo-symbols/androidWeights/bold';
+
+<SymbolView
+  name={{ ios: 'star.fill', android: 'star', web: 'star' }}
+  weight={{ ios: 'bold', android: bold }}
+  tintColor="gold"
+  size={35}
+/>;
+```
+
+Available weight imports: `bold`, `semiBold`, `medium`, `regular`, `light`, `extraLight`, `thin`.
+
+## API
+
+```js
+import { SymbolView } from 'expo-symbols';
+```
+
+<APISection packageName="expo-symbols" apiName="Symbol" />
