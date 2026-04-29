@@ -5,7 +5,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
-import android.net.NetworkRequest
 import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -33,6 +32,8 @@ class NetworkModule : Module() {
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
   private val mainHandler = Handler(Looper.getMainLooper())
   private val DELAY_MS = 250
+
+  private val emitRunnable = Runnable { emitNetworkState() }
 
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
     override fun onAvailable(network: android.net.Network) {
@@ -93,6 +94,10 @@ class NetworkModule : Module() {
         }
       }
     }
+
+    override fun onCapabilitiesChanged(network: android.net.Network, networkCapabilities: NetworkCapabilities) {
+      asyncEmitNetworkState(DELAY_MS)
+    }
   }
 
   override fun definition() = ModuleDefinition {
@@ -101,11 +106,11 @@ class NetworkModule : Module() {
     Events(NETWORK_STATE_EVENT_NAME)
 
     OnCreate {
-      val networkRequest = NetworkRequest.Builder().build()
-      connectivityManager.registerNetworkCallback(
-        networkRequest,
-        networkCallback
-      )
+      try {
+        connectivityManager.registerDefaultNetworkCallback(networkCallback)
+      } catch (e: RuntimeException) {
+        Log.e(TAG, "Too many callbacks registered, cannot observe internet reachability!", e)
+      }
     }
 
     OnDestroy {
@@ -141,25 +146,26 @@ class NetworkModule : Module() {
   }
 
   private fun emitNetworkState() {
-    val networkState = fetchNetworkState()
-    sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+    try {
+      val networkState = fetchNetworkState()
+      sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+    } catch (e: SecurityException) {
+      Log.w(TAG, "expo-network could not read network state: missing ACCESS_NETWORK_STATE permission", e)
+    } catch (e: Exception) {
+      // The runnable may outlive the module if the React context is torn down between the
+      // ConnectivityManager callback firing and this runnable executing.
+      Log.w(TAG, "expo-network dropped a delayed network state update during teardown (the module or React context is no longer available)", e)
+    }
   }
 
   /**
    * Emits the network state with a delay to prevent a race condition.
    * This delay ensures we read the actual current network state rather than stale information.
+   * Debounced: rapid successive calls collapse into a single emission.
    */
   private fun asyncEmitNetworkState(delay: Int) {
-    mainHandler.postDelayed({
-      try {
-        emitNetworkState()
-      } catch (e: SecurityException) {
-        Log.w(TAG, "expo-network could not read network state: missing ACCESS_NETWORK_STATE permission", e)
-      } catch (e: Exception) {
-        // See the matching catch in onLost for the lifecycle race this guards.
-        Log.w(TAG, "expo-network dropped a delayed network state update during teardown (the module or React context is no longer available)", e)
-      }
-    }, delay.toLong())
+    mainHandler.removeCallbacks(emitRunnable)
+    mainHandler.postDelayed(emitRunnable, delay.toLong())
   }
 
   private fun fetchNetworkState(): Bundle {
@@ -169,7 +175,7 @@ class NetworkModule : Module() {
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) { // use getActiveNetworkInfo before api level 29
         val netInfo = connectivityManager.activeNetworkInfo
         val connectionType = getConnectionType(netInfo)
-        val isInternetReachable = netInfo?.isConnected ?: false
+        val isInternetReachable = isInternetReachable(connectivityManager)
 
         result.apply {
           putBoolean("isInternetReachable", isInternetReachable)
@@ -180,9 +186,9 @@ class NetworkModule : Module() {
         return result
       } else {
         val network = connectivityManager.activeNetwork
-        val isInternetReachable = network != null
+        val isInternetReachable = isInternetReachable(connectivityManager)
 
-        val connectionType = if (isInternetReachable) {
+        val connectionType = if (network != null) {
           val netCapabilities = connectivityManager.getNetworkCapabilities(network)
           getConnectionType(netCapabilities)
         } else {
