@@ -98,6 +98,7 @@ export const cleanWorkingTree = new Task<TaskArgs>(
             'packages/expo/bundledNativeModules.json',
             'packages/**/expo-module.config.json',
             'packages/**/build.gradle',
+            'pnpm-lock.yaml',
             'templates/*/package.json',
           ],
         });
