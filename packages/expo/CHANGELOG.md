@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))
+- Add TypeScript declarations for image imports ([#43845](https://github.com/expo/expo/pull/43845) by [@karlhorky](https://github.com/karlhorky))
 
 ### 🐛 Bug fixes
 
