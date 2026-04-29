@@ -1,4 +1,3 @@
-import React from 'react';
 import { SymbolView } from 'expo-symbols';
 import { Link, Tabs } from 'expo-router';
 import { Platform, Pressable } from 'react-native';
