@@ -40,12 +40,7 @@ import { CommandError } from '../../../utils/errors';
 import { resolveWatchFolders } from '../../../utils/resolveWatchFolders';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
-import {
-  createTypescriptResolver,
-  createTypescriptResolverInput,
-  TypescriptResolverInput,
-  watchTypescriptResolverInput,
-} from './createTypescriptResolver';
+import { createTypescriptResolver } from './createTypescriptResolver';
 
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (
@@ -176,13 +171,13 @@ export function withExtendedResolver(
   config: ConfigT,
   {
     autolinkingModuleResolverInput,
-    typescriptResolverInput,
+    isTsconfigPathsEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
-    typescriptResolverInput?: TypescriptResolverInput;
+    isTsconfigPathsEnabled?: boolean;
     isExporting?: boolean;
     isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
@@ -239,13 +234,6 @@ export function withExtendedResolver(
     // https://github.com/expo/router/issues/37
     web: ['browser', 'module', 'main'],
   };
-
-  // TODO: Move this to be a transform key for invalidation.
-  if (typescriptResolverInput != null && !isExporting && !env.CI) {
-    watchTypescriptResolverInput(typescriptResolverInput, {
-      projectRoot: config.projectRoot,
-    });
-  }
 
   let nodejsSourceExtensions: string[] | null = null;
 
@@ -413,9 +401,14 @@ export function withExtendedResolver(
       return null;
     },
 
-    createTypescriptResolver(typescriptResolverInput, {
-      getStrictResolver,
-    }),
+    isTsconfigPathsEnabled
+      ? createTypescriptResolver({
+          getStrictResolver,
+          projectRoot: config.projectRoot,
+          getMetroBundler,
+          watch: !isExporting && !env.CI,
+        })
+      : undefined,
 
     // Node.js externals support
     function requestNodeExternals(
@@ -964,14 +957,9 @@ export async function withMetroMultiPlatformAsync(
     });
   }
 
-  let typescriptResolverInput: TypescriptResolverInput | undefined;
-  if (isTsconfigPathsEnabled) {
-    typescriptResolverInput = await createTypescriptResolverInput({ projectRoot });
-  }
-
   return withExtendedResolver(config, {
     autolinkingModuleResolverInput,
-    typescriptResolverInput,
+    isTsconfigPathsEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
