@@ -89,6 +89,7 @@ export function TextInput({
   autoComplete,
   onContentSizeChange,
   maxLength,
+  caretHidden,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -170,9 +171,13 @@ export function TextInput({
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       colors={
-        cursorColor || underlineColorAndroid || placeholderTextColor
+        caretHidden || cursorColor || underlineColorAndroid || placeholderTextColor
           ? {
-              ...(cursorColor ? { cursorColor } : null),
+              ...(caretHidden
+                ? { cursorColor: 'transparent' }
+                : cursorColor
+                  ? { cursorColor }
+                  : null),
               ...(underlineColorAndroid
                 ? {
                     unfocusedIndicatorColor: underlineColorAndroid,

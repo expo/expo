@@ -175,6 +175,10 @@ export interface TextInputProps {
      */
     maxLength?: number;
     /**
+     * If true, the cursor is hidden.
+     */
+    caretHidden?: boolean;
+    /**
      * Identifier used to locate the component in end-to-end tests.
      */
     testID?: string;

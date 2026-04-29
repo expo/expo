@@ -61,6 +61,7 @@ export default function TextInputScreen() {
     useState<(typeof AUTO_COMPLETES)[number]>(undefined);
   const [contentSize, setContentSize] = useState<{ width: number; height: number } | null>(null);
   const [maxLengthOn, setMaxLengthOn] = useState(false);
+  const [caretHidden, setCaretHidden] = useState(false);
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -139,6 +140,7 @@ export default function TextInputScreen() {
               autoComplete={autoComplete}
               onContentSizeChange={setContentSize}
               maxLength={maxLengthOn ? 10 : undefined}
+              caretHidden={caretHidden}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -179,6 +181,11 @@ export default function TextInputScreen() {
               value={maxLengthOn}
               onValueChange={setMaxLengthOn}
               label="maxLength (10)"
+            />
+            <Switch
+              value={caretHidden}
+              onValueChange={setCaretHidden}
+              label="caretHidden"
             />
             <Button
               label="ref.focus()"
