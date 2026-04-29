@@ -12,6 +12,12 @@ type BabelPresetExpoPlatformOptions = {
      * using `react-native-worklets` or Reanimated 4. @default `true`
      */
     worklets?: boolean;
+    /** Enable or disable adding the `@expo/ui` Babel plugin when `@expo/ui` is
+     * installed. The plugin rewrites `Icon.select({ ios, android })` to the
+     * active platform's value (read from the babel caller) so per-platform
+     * bundles only carry their own branch. @default `true`
+     */
+    expoUi?: boolean;
     /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
     useTransformReactJSXExperimental?: boolean;
     /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */

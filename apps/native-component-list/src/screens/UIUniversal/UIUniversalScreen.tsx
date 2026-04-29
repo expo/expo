@@ -95,6 +95,14 @@ export const UIUniversalScreens = [
       return optionalRequire(() => require('./SpacerScreen'));
     },
   },
+  {
+    name: `${SCREEN_NAME_PREFIX}Icon`,
+    route: 'ui-universal/icon',
+    options: { title: 'Icon' },
+    getComponent() {
+      return optionalRequire(() => require('./IconScreen'));
+    },
+  },
 ];
 
 function stripPrefix(elements: ListElement[]): ListElement[] {
