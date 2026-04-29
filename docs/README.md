@@ -190,12 +190,12 @@ Every page renders a discovery link in `<head>`:
 
 A single page (for example, `/get-started/set-up-your-environment/`) is reachable as markdown four ways:
 
-| Request                                                          | Served by                       |
-| ---------------------------------------------------------------- | ------------------------------- |
-| `Accept: text/markdown` on the canonical URL                     | `_worker.js`                    |
-| `/get-started/set-up-your-environment.md`                        | `_redirects` sibling rule       |
-| `/get-started/set-up-your-environment/index.md`                  | static asset (canonical path)   |
-| Following `<link rel="alternate">` from the HTML                 | discovery hint                  |
+| Request                                          | Served by                     |
+| ------------------------------------------------ | ----------------------------- |
+| `Accept: text/markdown` on the canonical URL     | `_worker.js`                  |
+| `/get-started/set-up-your-environment.md`        | `_redirects` sibling rule     |
+| `/get-started/set-up-your-environment/index.md`  | static asset (canonical path) |
+| Following `<link rel="alternate">` from the HTML | discovery hint                |
 
 ## Search
 
