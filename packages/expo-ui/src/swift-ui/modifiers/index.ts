@@ -187,6 +187,19 @@ export const onDisappear = (handler: () => void) =>
   createModifierWithEventListener('onDisappear', handler);
 
 /**
+ * Calls the handler whenever the view's geometry changes. Sizes are in points.
+ * @param handler - Function called with the new size.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
+ */
+export const onGeometryChange = (
+  handler: (size: { width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onGeometryChange',
+    (size: { width: number; height: number }) => handler(size)
+  );
+
+/**
  * Marks a view as refreshable. Adds pull-to-refresh functionality.
  * @param handler - Async function to call when refresh is triggered.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/refreshable(action:)).
@@ -1245,6 +1258,7 @@ export type BuiltInModifier =
   | ReturnType<typeof onAppear>
   | ReturnType<typeof luminanceToAlpha>
   | ReturnType<typeof onDisappear>
+  | ReturnType<typeof onGeometryChange>
   | ReturnType<typeof opacity>
   | ReturnType<typeof clipShape>
   | ReturnType<typeof border>

@@ -3,17 +3,20 @@ import type { ObservableState } from '../../State/useNativeState';
 import type { ViewEvent } from '../../types';
 import type { CommonViewModifierProps } from '../types';
 /**
- * Can be used for imperatively focusing and selecting text on the `TextField` component.
+ * Can be used for imperatively focusing and setting text on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
-    /**
-     * Programmatically select text using start and end indices.
-     * @platform ios 18.0+ tvos 18.0+
-     */
-    setSelection: (start: number, end: number) => Promise<void>;
+};
+/**
+ * Selection range observable. Read `value` for the current selection,
+ * write to `value` to programmatically move/select.
+ */
+export type TextFieldSelection = {
+    start: number;
+    end: number;
 };
 export type TextFieldProps = {
     ref?: Ref<TextFieldRef>;
@@ -23,6 +26,12 @@ export type TextFieldProps = {
      * If omitted, the field manages its own internal state.
      */
     text?: ObservableState<string>;
+    /**
+     * An observable state holding the current selection. Create with
+     * `useNativeState<TextFieldSelection>({ start: 0, end: 0 })`.
+     * @platform ios 18.0+ tvos 18.0+
+     */
+    selection?: ObservableState<TextFieldSelection>;
     /** If true, the text field will be focused automatically when mounted. @default false */
     autoFocus?: boolean;
     /**
@@ -41,10 +50,10 @@ export type TextFieldProps = {
      */
     onFocusChange?: (focused: boolean) => void;
     /**
-     * A callback triggered when user selects text in the TextField.
+     * A callback triggered when the text selection range changes.
      * @platform ios 18.0+ tvos 18.0+
      */
-    onSelectionChange?: ({ start, end }: {
+    onSelectionChange?: (selection: {
         start: number;
         end: number;
     }) => void;
@@ -55,8 +64,14 @@ export type TextFieldProps = {
      * @default 'horizontal'
      */
     axis?: 'horizontal' | 'vertical';
+    /**
+     * Slot children — supports `<TextField.Placeholder>` with a `<Text>` child
+     * (any text-styling modifiers on that `Text` are preserved as the
+     * placeholder's styling).
+     */
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
-export type NativeTextFieldProps = Omit<TextFieldProps, 'text' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'> & ViewEvent<'onTextChange', {
+export type NativeTextFieldProps = Omit<TextFieldProps, 'text' | 'selection' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'> & ViewEvent<'onTextChange', {
     value: string;
 }> & ViewEvent<'onFocusChange', {
     value: boolean;
@@ -65,10 +80,16 @@ export type NativeTextFieldProps = Omit<TextFieldProps, 'text' | 'onTextChange' 
     end: number;
 }> & {
     text?: number | null;
+    selection?: number | null;
     onTextChangeSync?: number | null;
 };
 /**
  * Renders a SwiftUI `TextField`.
  */
 export declare function TextField(props: TextFieldProps): import("react/jsx-runtime").JSX.Element;
+export declare namespace TextField {
+    var Placeholder: ({ children }: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+}
 //# sourceMappingURL=index.d.ts.map

@@ -47,9 +47,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
@@ -567,6 +570,13 @@ object ModifierRegistry {
       } ?: Modifier
     }
 
+    register("semantics") { map, _, _, _ ->
+      val params = recordFromMap<SemanticsParams>(map)
+      params.contentType.toContentType()?.let { ct ->
+        Modifier.semantics { contentType = ct }
+      } ?: Modifier
+    }
+
     register("clip") { map, _, _, _ ->
       val params = recordFromMap<ClipParams>(map)
       params.shape?.let { shape ->
@@ -581,6 +591,18 @@ object ModifierRegistry {
         minFractionVisible = params.minFractionVisible,
       ) { isVisible ->
         eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
+      }
+    }
+
+    register("onSizeChanged") { _, _, _, eventDispatcher ->
+      val density = LocalDensity.current
+      Modifier.onSizeChanged { size ->
+        with(density) {
+          eventDispatcher("onSizeChanged", mapOf(
+            "width" to size.width.toDp().value,
+            "height" to size.height.toDp().value
+          ))
+        }
       }
     }
 

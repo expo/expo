@@ -2,10 +2,11 @@ import SwiftUI
 import ExpoModulesCore
 
 final class SecureFieldProps: UIBaseViewProps {
-  @Field var defaultValue: String = ""
+  @Field var text: ObservableState?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
-  var onValueChange = EventDispatcher()
+  @Field var onTextChangeSync: WorkletCallback?
+  var onTextChange = EventDispatcher()
   var onFocusChange = EventDispatcher()
 }
 
@@ -19,7 +20,7 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setText(_ text: String) {
-    textManager.text = text
+    props.text?.value = text
   }
 
   func focus() {
@@ -40,19 +41,38 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   var body: some View {
+    if let state = props.text {
+      StatefulSecureField(
+        state: state,
+        props: props,
+        textManager: textManager,
+        isFocused: $isFocused
+      )
+    }
+  }
+}
+
+private struct StatefulSecureField: View {
+  @ObservedObject var state: ObservableState
+  @ObservedObject var props: SecureFieldProps
+  @ObservedObject var textManager: TextFieldManager
+  @FocusState.Binding var isFocused: Bool
+
+  var body: some View {
+    let textBinding = state.binding("")
     SecureField(
       props.placeholder,
-      text: $textManager.text
+      text: textBinding
     )
       .focused($isFocused)
       .onAppear {
-        textManager.text = props.defaultValue
         if props.autoFocus {
           isFocused = true
         }
       }
-      .onChange(of: textManager.text) { newValue in
-        props.onValueChange(["value": newValue])
+      .onChange(of: state.value as? String) { newValue in
+        props.onTextChange(["value": newValue])
+        props.onTextChangeSync?.invoke(arguments: [newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue

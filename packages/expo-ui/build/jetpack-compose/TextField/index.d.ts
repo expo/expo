@@ -116,6 +116,52 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
     singleLine?: boolean;
     maxLines?: number;
     minLines?: number;
+    /**
+     * Display-time text transformation. `'password'` masks every character;
+     * `'none'` (default) leaves the buffer as-is.
+     */
+    visualTransformation?: 'password' | 'none';
+    /**
+     * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+     * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+     * `backgroundColor` is the highlighted-text background (typically the same
+     * tint at lower alpha so the underlying text stays readable).
+     */
+    textSelectionColors?: {
+        handleColor?: ColorValue;
+        backgroundColor?: ColorValue;
+    };
+    /**
+     * Observable state holding the current selection range, bidirectionally
+     * synced with the field's selection. Prefer using TFV-mode `value` for
+     * tightly coupled text/selection logic; this prop exists primarily so the
+     * universal `TextInput` layer can keep selection split from text.
+     * @internal
+     */
+    selection?: ObservableState<{
+        start: number;
+        end: number;
+    }>;
+    /**
+     * Called when the selection range changes.
+     * @internal
+     */
+    onSelectionChange?: (selection: {
+        start: number;
+        end: number;
+    }) => void;
+    /**
+     * Text styling for the field's content. Maps to Compose's `TextStyle`.
+     */
+    textStyle?: {
+        textAlign?: 'left' | 'right' | 'center' | 'justify';
+        color?: ColorValue;
+        fontSize?: number;
+        fontFamily?: string;
+        fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
+        lineHeight?: number;
+        letterSpacing?: number;
+    };
     keyboardOptions?: TextFieldKeyboardOptions;
     keyboardActions?: TextFieldKeyboardActions;
     /**

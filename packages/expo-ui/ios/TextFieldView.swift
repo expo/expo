@@ -8,6 +8,7 @@ enum TextFieldAxis: String, Enumerable {
 
 final class TextFieldProps: UIBaseViewProps {
   @Field var text: ObservableState?
+  @Field var selection: ObservableState?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
   @Field var axis: TextFieldAxis = .horizontal
@@ -20,15 +21,6 @@ final class TextFieldProps: UIBaseViewProps {
 class TextFieldManager: ObservableObject {
   @Published var text: String
   @Published var isFocused: Bool
-
-#if !os(tvOS)
-  @Published var _selection: Any?
-  @available(iOS 18.0, macOS 15.0, *)
-  var selection: SwiftUI.TextSelection? {
-    get { _selection as? SwiftUI.TextSelection }
-    set { _selection = newValue }
-  }
-#endif
 
   init(initialText: String = "") {
     self.text = initialText
@@ -66,29 +58,50 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     isFocused = false
   }
 
-  func setSelection(start: Int, end: Int) {
-#if !os(tvOS)
-    if #available(iOS 18.0, macOS 15.0, *) {
-      let currentText = (props.text?.value as? String) ?? ""
-      let lowerBound = min(start, end)
-      let upperBound = max(start, end)
-      let startIndex = currentText.index(currentText.startIndex, offsetBy: min(lowerBound, currentText.count))
-      let endIndex = currentText.index(currentText.startIndex, offsetBy: min(upperBound, currentText.count))
-      textManager.selection = SwiftUI.TextSelection(range: startIndex..<endIndex)
-    }
-#endif
+  private var promptText: Text? {
+    guard let slot = props.children?.slot("placeholder") else { return nil }
+    return slot.props.children?
+      .compactMap { ($0.childView as? TextView)?.buildText() }
+      .first
   }
 
   var body: some View {
     if let state = props.text {
+#if !os(tvOS)
+      if #available(iOS 18.0, macOS 15.0, *), let selection = props.selection {
+        StatefulSelectableTextField(
+          state: state,
+          selection: selection,
+          props: props,
+          textManager: textManager,
+          isFocused: $isFocused,
+          promptText: promptText
+        )
+      } else {
+        StatefulTextField(
+          state: state,
+          props: props,
+          textManager: textManager,
+          isFocused: $isFocused,
+          promptText: promptText
+        )
+      }
+#else
       StatefulTextField(
         state: state,
         props: props,
         textManager: textManager,
-        isFocused: $isFocused
+        isFocused: $isFocused,
+        promptText: promptText
       )
+#endif
     }
   }
+}
+
+private func extractInt(_ raw: Any?, _ key: String) -> Int? {
+  guard let dict = raw as? NSDictionary, let n = dict[key] as? NSNumber else { return nil }
+  return n.intValue
 }
 
 private struct StatefulTextField: View {
@@ -96,6 +109,7 @@ private struct StatefulTextField: View {
   @ObservedObject var props: TextFieldProps
   @ObservedObject var textManager: TextFieldManager
   @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
 
   private var swiftUIAxis: Axis {
     props.axis == .vertical ? .vertical : .horizontal
@@ -104,41 +118,26 @@ private struct StatefulTextField: View {
   @ViewBuilder
   var textField: some View {
     let textBinding = state.binding("")
-    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
-#if !os(tvOS)
+    if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
-        props.placeholder,
+        promptText == nil ? props.placeholder : "",
         text: textBinding,
-        selection: $textManager.selection,
-        axis: swiftUIAxis
-      )
-      .focused($isFocused)
-#else
-      TextField(
-        props.placeholder,
-        text: textBinding,
-        axis: swiftUIAxis
-      )
-      .focused($isFocused)
-#endif
-    } else if #available(iOS 16.0, tvOS 16.0, *) {
-      TextField(
-        props.placeholder,
-        text: textBinding,
+        prompt: promptText,
         axis: swiftUIAxis
       )
       .focused($isFocused)
     } else {
       TextField(
-        props.placeholder,
-        text: textBinding
+        promptText == nil ? props.placeholder : "",
+        text: textBinding,
+        prompt: promptText
       )
       .focused($isFocused)
     }
   }
 
   var body: some View {
-    let baseView = textField
+    textField
       .onAppear {
         if props.autoFocus {
           isFocused = true
@@ -155,27 +154,81 @@ private struct StatefulTextField: View {
         textManager.isFocused = newValue
         props.onFocusChange(["value": newValue])
       }
-
-#if !os(tvOS)
-    if #available(iOS 18.0, macOS 15.0, *) {
-      return baseView.onChange(of: textManager.selection) {
-        if let selection = textManager.selection {
-          if case let .selection(range) = selection.indices {
-            let currentText = (state.value as? String) ?? ""
-            let clampedLower = range.lowerBound < currentText.endIndex ? range.lowerBound : currentText.endIndex
-            let clampedUpper = range.upperBound < currentText.endIndex ? range.upperBound : currentText.endIndex
-
-            let start = currentText.distance(from: currentText.startIndex, to: clampedLower)
-            let end = currentText.distance(from: currentText.startIndex, to: clampedUpper)
-            props.onSelectionChange(["start": start, "end": end])
-          }
-        }
-      }
-    } else {
-      return baseView
-    }
-#else
-    return baseView
-#endif
   }
 }
+
+#if !os(tvOS)
+@available(iOS 18.0, macOS 15.0, *)
+private struct StatefulSelectableTextField: View {
+  @ObservedObject var state: ObservableState
+  @ObservedObject var selection: ObservableState
+  @ObservedObject var props: TextFieldProps
+  @ObservedObject var textManager: TextFieldManager
+  @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
+
+  @State private var localSelection: SwiftUI.TextSelection?
+
+  private var swiftUIAxis: Axis {
+    props.axis == .vertical ? .vertical : .horizontal
+  }
+
+  var body: some View {
+    let textBinding = state.binding("")
+    TextField(
+      promptText == nil ? props.placeholder : "",
+      text: textBinding,
+      selection: $localSelection,
+      prompt: promptText,
+      axis: swiftUIAxis
+    )
+    .focused($isFocused)
+    .onAppear {
+      if props.autoFocus {
+        isFocused = true
+      }
+    }
+    .onChange(of: state.value as? String) { newValue in
+      props.onTextChange(["value": newValue])
+      props.onTextChangeSync?.invoke(arguments: [newValue])
+    }
+    .onChange(of: textManager.isFocused) { newValue in
+      isFocused = newValue
+    }
+    .onChange(of: isFocused) { newValue in
+      textManager.isFocused = newValue
+      props.onFocusChange(["value": newValue])
+    }
+    .onChange(of: localSelection) { newSel in
+      let text = (state.value as? String) ?? ""
+      var start = text.count
+      var end = text.count
+      if let sel = newSel, case let .selection(range) = sel.indices {
+        let clampedLower = range.lowerBound < text.endIndex ? range.lowerBound : text.endIndex
+        let clampedUpper = range.upperBound < text.endIndex ? range.upperBound : text.endIndex
+        start = text.distance(from: text.startIndex, to: clampedLower)
+        end = text.distance(from: text.startIndex, to: clampedUpper)
+      }
+      let prevStart = extractInt(selection.value, "start")
+      let prevEnd = extractInt(selection.value, "end")
+      if prevStart == start && prevEnd == end { return }
+      selection.value = ["start": start, "end": end]
+      props.onSelectionChange(["start": start, "end": end])
+    }
+    .onChange(of: selection.value as? NSDictionary) { _ in
+      guard let start = extractInt(selection.value, "start"),
+            let end = extractInt(selection.value, "end") else { return }
+      let text = (state.value as? String) ?? ""
+      let lower = min(min(start, end), text.count)
+      let upper = min(max(start, end), text.count)
+      let startIdx = text.index(text.startIndex, offsetBy: lower)
+      let endIdx = text.index(text.startIndex, offsetBy: upper)
+      let newSel = SwiftUI.TextSelection(range: startIdx..<endIdx)
+      if localSelection != newSel {
+        localSelection = newSel
+      }
+    }
+  }
+}
+
+#endif
