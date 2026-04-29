@@ -1,4 +1,4 @@
-import { Link, Stack, useIsPreview, useLocalSearchParams } from 'expo-router';
+import { Link, Stack, useIsFocused, useIsPreview, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
 
@@ -8,12 +8,15 @@ export default function Index() {
   const [shouldPerformHeavyComputation, setShouldPerformHeavyComputation] = useState(false);
   const { face } = useLocalSearchParams();
   const isPreview = useIsPreview();
+  useIsFocused();
 
   const colors = useFaceColors();
   const { color, name } = colors[Number(face) % colors.length];
 
   if (shouldPerformHeavyComputation) {
+    console.log('>> Starting heavy computation');
     heavyComputation();
+    console.log('>> Finished heavy computation');
   }
   return (
     <>
