@@ -20,6 +20,8 @@
 
 ### 🐛 Bug fixes
 
+- Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
+
 - [Android] Fix copy/move support for SAF and content provider URIs. ([#42887](https://github.com/expo/expo/pull/42887) by [@barthap](https://github.com/barthap))
 - Fix out-of-memory errors when calculating file `md5` hash. ([#44064](https://github.com/expo/expo/pull/44064) by [@barthap](https://github.com/barthap))
 - [iOS] Fix `totalDiskSpace` returning free disk space instead of total disk capacity. ([#44849](https://github.com/expo/expo/pull/44849) by [@shanebdavis](https://github.com/shanebdavis))
