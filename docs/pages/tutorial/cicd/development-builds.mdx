@@ -1,0 +1,375 @@
+---
+title: 'EAS Workflows for development builds'
+sidebar_title: Development builds
+description: Learn how to automate development builds with EAS Workflows using fingerprint.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { FingerprintFlow } from '~/ui/components/FlowDiagram/Diagrams/FingerprintFlow';
+import { UnitTestGate } from '~/ui/components/FlowDiagram/Diagrams/UnitTestGate';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Manually rebuilding a development client on every push to a GitHub repository can be slow. By the end of this chapter, we automate [development builds](/develop/development-builds/introduction/) for Android and iOS, use fingerprints to skip creating unnecessary builds, and run unit tests before any build starts.
+
+## The `build` job type for development builds
+
+The `build` job type is one of the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) from EAS Workflows. We don't have to define each step of the build process and instead, using the `build` job type, we can run an EAS Build for both Android and iOS and define only the necessary parameters for the build jobs to execute.
+
+For this chapter, we are going to use the `development` build profile from our **eas.json**. This profile is used during Expo app development.
+
+<Step label="1">
+
+### Add a build.yml
+
+Inside **.eas/workflows/**, add a new file called **build.yml**. It uses the `build` job type with `profile` and `platform` parameters to create development builds for Android and iOS.
+
+Add the following code to the **build.yml** file:
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: development
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: development
+```
+
+We add two jobs: `build_android` and `build_ios`. Both are of type `build` with different parameters for platform and build profile.
+
+The `params` key for each job includes:
+
+- [`platform`](/eas/workflows/syntax/#params) sets the target OS for the build (`android` or `ios`)
+- [`profile`](/build/eas-json/#build-profiles) specifies the build profile from our **eas.json**
+
+</Step>
+
+<Step label="2">
+
+### Run the workflow manually
+
+Let's run the workflow manually using the command:
+
+<Terminal cmd={['$ eas workflow:run .eas/workflows/build.yml']} />
+
+</Step>
+
+<Step label="3">
+
+### Verify on the EAS dashboard
+
+On the EAS dashboard, notice that it says "Triggered manually" under the **Workflow graph** tab. Anytime the **Trigger** is set to **Manual**, it means the workflow was created using the `eas workflow:run` command.
+
+<ContentSpotlight
+  alt="Workflow running manually on EAS dashboard to create development builds for Android and iOS."
+  src="/static/images/tutorial/cicd/development-builds-01.png"
+  className="max-w-160"
+/>
+
+Although the logs for each build are shown within the workflows interface, we can click the build ID (for example, `ef90d1f` is the Android build ID shown above) to view the EAS Build page.
+
+> **important** Jobs without dependencies run in parallel by default in EAS Workflows. In the above workflow, since both `build_android` and `build_ios` jobs don't have any dependencies, they start at the same time.
+
+Wait for both builds to complete before moving to the next step. After the builds are completed, we can use the **Install** or **Open with [Orbit](/build/orbit/)** buttons, or download from **Artifacts** to install on our device/emulator/simulator.
+
+</Step>
+
+## Skip unnecessary builds with fingerprints
+
+When our project has only TypeScript/JavaScript changes, we do not need a new development build. The existing build is still compatible. Our team pulls the latest from the `main` branch, runs `npx expo start`, and the development server delivers the JS changes to the build on their device or emulator/simulator.
+
+[**Expo Fingerprint**](/versions/latest/sdk/fingerprint/) automates this decision. It hashes the project's native characteristics (dependencies, native project files, configuration). If the hash matches an existing build, native code has not changed and EAS skips the rebuild. If the hash is different, native code changed and EAS creates a new build.
+
+<FingerprintFlow />
+
+Let's update **build.yml** step by step to detect native changes and build only when needed.
+
+<Step label="1">
+
+### Add a fingerprint job
+
+The [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) pre-packaged job hashes the project's native characteristics and outputs a fingerprint hash for each platform. The `environment` field tells EAS which [environment variable configuration](/eas/environment-variables/) to use. Note that `environment` and `profile` can share the same name but refer to different things. `profile` points to a build profile in **eas.json** (how to build). `environment` points to environment variables configured on EAS (which values to inject at build time).
+
+Update **build.yml** to add the `fingerprint` job before the build jobs:
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  # @info #
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: development
+  # @end #
+  build_android:
+    # ...
+  build_ios:
+    # ...
+```
+
+The `fingerprint` job produces two outputs: `android_fingerprint_hash` and `ios_fingerprint_hash`. We will use these hashes in the next step to check if a compatible build already exists.
+
+</Step>
+
+<Step label="2">
+
+### Add get-build jobs
+
+The [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) pre-packaged job checks if a build already exists for a given fingerprint hash and profile. If a matching build exists, it outputs a `build_id`. If not, `build_id` is empty.
+
+In our workflow file, let's add `get_android_build` and `get_ios_build` jobs between `fingerprint` and the build jobs. Each one uses `needs: [fingerprint]` to wait for the fingerprint job to complete and access its output:
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  fingerprint:
+    # ...
+  # @info #
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: development
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: development
+  # @end #
+  build_android:
+    # ...
+  build_ios:
+    # ...
+```
+
+In the above workflow, `get-build` jobs receive the fingerprint hash from the previous job using the `${{ needs.fingerprint.outputs.* }}` expression syntax.
+
+</Step>
+
+<Step label="3">
+
+### Add conditional builds
+
+The [`if`](/eas/workflows/syntax/#if) field controls whether a job runs. The expression `${{ !needs.get_android_build.outputs.build_id }}` means: _run a job only if `get-build` did not find a matching build_. The `!` is a negation operator. If a compatible build already exists for this fingerprint, the build job is skipped.
+
+Let's update each build job to depend on its `get-build` job and add the `if` condition:
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+jobs:
+  fingerprint:
+    # ...
+  get_android_build:
+    # ...
+  get_ios_build:
+    # ...
+  build_android:
+    name: Build Android
+    # @info #
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: android
+      profile: development
+  build_ios:
+    name: Build iOS
+    # @info #
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: ios
+      profile: development
+```
+
+</Step>
+
+<Step label="4">
+
+### Add a trigger and run the workflow
+
+Let's add the `on.push` trigger to the workflow so it runs automatically on every push to `main`:
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+# @info #
+on:
+  push:
+    branches: ['main']
+# @end #
+
+jobs:
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: development
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: development
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: development
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: development
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: development
+```
+
+Let's assume we made some TypeScript/JavaScript changes to our Expo project. After doing so, we can push a commit to the `main` branch to trigger the workflow from our GitHub repository:
+
+<Terminal
+  cmd={['$ git add .', '$ git commit -m "JS changes only"', '$ git push origin main']}
+  cmdCopy="git add . && git commit -m 'JS changes only' && git push origin main"
+/>
+
+This triggers a new workflow that completes in seconds. On the EAS dashboard, both Android and iOS builds are skipped because a matching build already exists from the previous section.
+
+<ContentSpotlight
+  alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
+  src="/static/images/tutorial/cicd/development-builds-03.png"
+  className="max-w-160"
+  caption="In the above image, notice that the workflow checked the hash changes via fingerprint from the previous runs, found it unchanged, and skipped creating both builds."
+/>
+
+Our team pulls the latest from the `main` branch and runs `npx expo start`. The existing development build picks up the JS changes.
+
+</Step>
+
+## Custom jobs for unit testing
+
+> **info** This section assumes Jest is set up in the project. For setup instructions, see [Unit testing with Jest](/develop/unit-testing/).
+
+When working in a team, we want every change pushed to the `main` branch to pass tests before triggering a new build.
+
+Without automation, our team will have to remember to run tests locally before pushing to `main`. If they forget and the code has a failing test, the next workflow can create a build from broken code.
+
+With **EAS Workflows**, we can automate this process by mixing a custom job with our existing pre-packaged jobs. This custom job runs before fingerprint and build jobs. If a test fails, EAS stops the workflow and creates no build.
+
+<UnitTestGate />
+
+<Step label="1">
+
+### Add a custom job for unit tests
+
+Let's add a custom job that runs unit tests before the builds start in our **build.yml** workflow file:
+
+```yaml .eas/workflows/build.yml
+name: Development builds
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  # @info #
+  run_tests:
+    name: Run unit tests
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - run: npx jest --ci
+  # @end #
+  fingerprint:
+    name: Fingerprint
+    # @info Add this to the fingerprint job. #
+    needs: [run_tests]
+    # @end #
+    type: fingerprint
+    environment: development
+  get_android_build:
+    # ...
+  get_ios_build:
+    # ...
+  build_android:
+    # ...
+  build_ios:
+    # ...
+```
+
+The custom `run_tests` job does the following:
+
+- `uses: eas/checkout` checks out the project source files from the GitHub repository. Custom jobs run on a new virtual machine, so the code is not available by default. This step is required before accessing any project files.
+- `uses: eas/install_node_modules` installs dependencies using the package manager detected in the project (bun, npm, pnpm, or Yarn). This is needed before running any commands that depend on packages from **node_modules**, like Jest.
+- `run: npx jest --ci` executes the test suite. The `run` key runs any shell command, similar to the `echo` command. The `--ci` flag tells Jest to run in CI mode, which skips watching for file changes and exits after running all tests.
+
+Now, the `fingerprint` job has `needs: [run_tests]`, so it only runs after the tests pass. If tests fail, the rest of the workflow gets skipped.
+
+</Step>
+
+<Step label="2">
+
+### Trigger the workflow
+
+Commit and push the updated workflow along with the test file to `main`:
+
+<Terminal
+  cmd={[
+    '$ git add .',
+    '$ git commit -m "Add unit tests to development builds workflow"',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add . && git commit -m 'Add unit tests to development builds workflow' && git push origin main"
+/>
+
+After triggering the workflow, open the EAS dashboard and notice the flow of the jobs inside our workflow.
+
+<ContentSpotlight
+  alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
+  src="/static/images/tutorial/cicd/development-builds-03.png"
+  className="max-w-160"
+  caption='In the above image, we can see that the "run_tests" job runs first. Once it passes, the "fingerprint" and "get-build" jobs run, followed by the build jobs (if needed).'
+/>
+
+</Step>
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={1}
+  name="CICD_TUTORIAL"
+  summary="We automated development builds using pre-packaged jobs, added fingerprints to skip unnecessary rebuilds, and integrated unit tests as a custom job before the build pipeline."
+  nextChapterDescription="In the next chapter, learn how to create preview builds with Slack notifications and PR preview updates."
+  nextChapterTitle="Preview builds"
+  nextChapterLink="/tutorial/cicd/preview-builds/"
+/>

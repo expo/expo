@@ -35,8 +35,14 @@ import { SidebarTitle } from './SidebarTitle';
 import { SidebarNodeProps } from './types';
 
 export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
-  const { chapters, setChapters, getStartedChapters, setGetStartedChapters } =
-    useTutorialChapterCompletion();
+  const {
+    chapters,
+    setChapters,
+    getStartedChapters,
+    setGetStartedChapters,
+    cicdChapters,
+    setCicdChapters,
+  } = useTutorialChapterCompletion();
   const router = useRouter();
 
   const title = route.sidebarTitle ?? route.name;
@@ -105,6 +111,63 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
             theme="secondary"
             className="flex w-full items-center justify-center"
             href="/tutorial/eas/introduction/">
+            Reset tutorial
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (route.children?.[0]?.section === 'CI/CD tutorial') {
+    const allCicdChaptersCompleted = cicdChapters.every(chapter => chapter.completed);
+    const completedCicdChaptersCount = cicdChapters.filter(chapter => chapter.completed).length;
+    const totalCicdChapters = cicdChapters.length;
+    const progressPercentageForCicd = (completedCicdChaptersCount / totalCicdChapters) * 100;
+
+    const isCicdChapterCompleted = (childSlug: string) => {
+      return cicdChapters.some(chapter => chapter.slug === childSlug && chapter.completed);
+    };
+
+    const resetCicdTutorial = () => {
+      if (allCicdChaptersCompleted) {
+        const resetChapters = cicdChapters.map(chapter => ({ ...chapter, completed: false }));
+        setCicdChapters(resetChapters);
+      }
+    };
+
+    return (
+      <div className="mb-5">
+        {!shouldSkipTitle(route, parentRoute) && title && (
+          <div className="flex flex-row items-center justify-between py-0">
+            <SidebarTitle Icon={Icon} sectionName={title}>
+              {title}
+            </SidebarTitle>
+            <div className="flex flex-row items-center pb-1">
+              <CircularProgressBar progress={progressPercentageForCicd} />{' '}
+              <p className="text-tertiary ml-2 text-sm">{`${completedCicdChaptersCount} of ${totalCicdChapters}`}</p>
+            </div>
+          </div>
+        )}
+        {route.children.map(child => {
+          const childSlug = child.href;
+          const completed = isCicdChapterCompleted(childSlug);
+
+          return (
+            <SidebarLink
+              info={{ ...child, hasVideoLink: false }}
+              className="flex flex-1"
+              key={`${route.name}-${child.name}`}>
+              <span className="inline">{child.sidebarTitle ?? child.name}</span>
+              {completed && <CheckIcon className="icon-sm ml-auto" />}
+            </SidebarLink>
+          );
+        })}
+        {allCicdChaptersCompleted && (
+          <Button
+            onClick={resetCicdTutorial}
+            theme="secondary"
+            className="flex w-full items-center justify-center"
+            href="/tutorial/cicd/introduction/">
             Reset tutorial
           </Button>
         )}
@@ -274,6 +337,8 @@ function getIconElement(iconName?: string) {
       return HandWaveIcon;
     case 'EAS tutorial':
       return PlanEnterpriseIcon;
+    case 'CI/CD tutorial':
+      return Dataflow03Icon;
     default:
       return undefined;
   }

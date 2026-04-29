@@ -1,0 +1,258 @@
+---
+title: 'EAS Workflows for production deployments'
+sidebar_title: Production deployments
+description: Learn how to automate production deployments with EAS Workflows using fingerprint and release branches.
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Rebuilding the app for every production change is resourceful when most changes are TypeScript/JavaScript only. By the end of this chapter, pushing to a release branch either creates a native build if native code changed, or publishes an over-the-air (OTA) update if only TypeScript/JavaScript code changed.
+
+## Using a release branch
+
+Previously, with development builds, we have seen that using the `on.push.branches` trigger runs our workflow on every push to the specified `main` branch. For production deployments, triggering a workflow on every push to the `main` branch means every change merged is a new release. Teams usually want a deliberate release process, so they use a release branch or tag instead.
+
+In a release branch strategy, a branch is usually specified with a pattern such as `release/*`, where `*` is the name of the feature or version. This is also what separates Continuous Integration (CI) from Continuous Delivery (CD). CI runs on every push to the `main` branch, while CD runs on a release branch when the team is ready to deploy to production.
+
+The table below shows how each workflow's trigger defines its purpose:
+
+| Workflow file                     | Trigger                           | Build profile | Purpose                                                                                                                                           |
+| --------------------------------- | --------------------------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **.eas/workflows/build.yml**      | `on.push.branches: ['main']`      | `development` | CI workflow that runs on every push to the `main` branch. It can run unit tests and generate development builds.                                  |
+| **.eas/workflows/preview.yml**    | `on.push.branches: ['main']`      | `preview`     | Preview workflow that runs on every push to the `main` branch. It can generate preview builds for internal testing and sharing with stakeholders. |
+| **.eas/workflows/production.yml** | `on.push.branches: ['release/*']` | `production`  | CD workflow that runs on every push to a release branch.                                                                                          |
+
+The above files coexist inside a project's GitHub repository without any conflict. Each uses a different build profile and a trigger.
+
+## The `build` job type for production builds
+
+Let's start by creating a production workflow that uses the [pre-packaged jobs](/tutorial/cicd/first-workflow/#types-of-jobs-in-eas-workflows) `build` job type from EAS Workflows that runs for Android and iOS platforms.
+
+<Step label="1">
+
+### Add a production.yml
+
+Inside **.eas/workflows/**, create a new file called **production.yml** that uses the `production` build profile from **eas.json**:
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  build_android:
+    name: Build Android
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+This will create a **.aab** artifact for Android and an **.ipa** artifact for iOS on a push to any branch that matches the pattern `release/*`.
+
+</Step>
+
+<Step label="2">
+
+### Add fingerprints to the workflow
+
+Let's add a [`fingerprint`](/eas/workflows/pre-packaged-jobs/#fingerprint) job to the workflow to check if there are changes to native code and update existing `build_android` and `build_ios` jobs based on that. We are also adding [`get-build`](/eas/workflows/pre-packaged-jobs/#get-build) jobs to look up existing builds for Android and iOS.
+
+Update the **production.yml** file with the following code:
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  # @info #
+  fingerprint:
+    name: Fingerprint
+    type: fingerprint
+    environment: production
+  # @end #
+  # @info #
+  get_android_build:
+    name: Check for existing Android build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      profile: production
+  get_ios_build:
+    name: Check for existing iOS build
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      profile: production
+  # @end #
+  build_android:
+    name: Build Android
+    needs: [get_android_build]
+    # @info #
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: android
+      profile: production
+  build_ios:
+    name: Build iOS
+    needs: [get_ios_build]
+    # @info #
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    # @end #
+    type: build
+    params:
+      platform: ios
+      profile: production
+```
+
+In the above workflow, the `fingerprint` job runs first and generates a hash based on the changes in the codebase. The `get-build` jobs then check if there are existing builds for Android and iOS with the same fingerprint hash. If there are no existing builds, the `build` jobs will run to create new builds for production.
+
+The [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment) field on the `fingerprint` job tells EAS which environment variables to load when computing the fingerprint. Your production environment may have different values for things like `API_URL` or feature flags, and those values can affect the native layer when they're baked into the build. Using `environment: production` makes sure the fingerprint reflects what will ship.
+
+The [`if`](/eas/workflows/syntax/#jobsjob_idif) field used on the `build_android` and `build_ios` jobs is a boolean expression. When it evaluates to `false`, the build jobs are skipped. The `!` operator means the build job runs only when `get-build` did not find a matching build.
+
+</Step>
+
+<Step label="3">
+
+### Add a job for updates
+
+Currently, our workflow only creates production builds when there are changes to native code. If there are only changes to TypeScript/JavaScript files, we want to trigger an OTA update instead of a native build.
+
+Let's add two jobs `update_android` and `update_ios` that run when there are no changes to native code and use `update` job type to trigger an OTA update:
+
+```yaml .eas/workflows/production.yml
+name: Deploy to production
+
+on:
+  push:
+    branches: ['release/*']
+
+jobs:
+  fingerprint:
+    # ...
+  get_android_build:
+    # ...
+  get_ios_build:
+    # ...
+  build_android:
+    # ...
+  build_ios:
+    # ...
+  update_android:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
+  update_ios:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: ios
+```
+
+Our workflow only builds production-ready app binaries or publishes OTA updates.Automating store submission is a common next step discussed below in the [Automate app store submissions](#automate-app-store-submissions) section.
+
+</Step>
+
+<Step label="4">
+
+### Create a release branch and push changes
+
+> **Note:** Ensure that the workflow file is already part of your GitHub repository and available on the `main` branch at this point.
+
+To test our workflow, let's create a release branch and push it to our GitHub repository from a terminal window:
+
+<Terminal
+  cmd={['$ git checkout -b release/1.0.0', '', '$ git push origin release/1.0.0']}
+  cmdCopy="git checkout -b release/1.0.0 && git push origin release/1.0.0"
+/>
+
+Open the EAS dashboard and find the workflow run. Since no build exists yet for this fingerprint, the `build` jobs should run, and the `update` jobs should be grayed out.
+
+<ContentSpotlight
+  alt="EAS Workflows run with production workflow jobs."
+  src="/static/images/tutorial/cicd/production-01.png"
+  className="max-w-160"
+/>
+
+Both Android and iOS builds are running in parallel. Once each job completes, we receive a new artifact for Android and iOS.
+
+Now, let's make a TypeScript/JavaScript only change in our example project on the same release branch and push again using the commands below:
+
+<Terminal
+  cmd={['$ git add .', '$ git commit -m "Update welcome text"', '$ git push origin release/1.0.0']}
+  cmdCopy="git add . && git commit -m 'Update welcome text' && git push origin release/1.0.0"
+/>
+
+After the workflow runs, notice in the EAS dashboard that the fingerprint matches the build from the last push. The `build` jobs are skipped entirely, and the `update` jobs publish an OTA update.
+
+<ContentSpotlight
+  alt="EAS Workflows run with production workflow jobs."
+  src="/static/images/tutorial/cicd/production-02.png"
+  className="max-w-160"
+/>
+
+</Step>
+
+## Automate app store submissions
+
+The workflow we have built in this chapter only builds production-ready app binaries or publishes OTA updates to an existing production app. Automating store submission is a common next step in a production release workflow.
+
+EAS Workflows provides a `submit` pre-packaged job for automating app store submissions. It requires us to manage our app store credentials with EAS CLI. It also requires us to fulfill app store requirements, such as manually uploading the first Android release (**.aab**) to the Google Play Store. iOS has its own Apple Developer Program enrollment and signing credentials to set up.
+
+Once the app store requirements are in place, we can add two new jobs `submit_android` and `submit_ios` to our workflow that run after the `build` jobs:
+
+```yaml .eas/workflows/production.yml
+# rest of the workflow file
+
+submit_android:
+  name: Submit Android
+  needs: [build_android]
+  type: submit
+  params:
+    build_id: ${{ needs.build_android.outputs.build_id }}
+submit_ios:
+  name: Submit iOS
+  needs: [build_ios]
+  type: submit
+  params:
+    build_id: ${{ needs.build_ios.outputs.build_id }}
+```
+
+The above `submit_android` and `submit_ios` jobs require a `build_id` parameter to know which build to submit to the app stores. They are going to run only when the `build_android` and `build_ios` jobs run, which means a new production build is created. If there are only changes to TypeScript/JavaScript files, the `submit` jobs are skipped as well since no new build is created.
+
+## Summary
+
+<ProgressTracker
+  currentChapterIndex={4}
+  name="CICD_TUTORIAL"
+  summary="We created a production workflow for Android and iOS triggered by pushes to a release branch, used fingerprinting to choose between a native build and an OTA update, and saw how EAS Submit extends the workflow to automate app store submissions."
+  nextChapterDescription="In the next chapter, learn how to switch production deployments from release branches to version tags."
+  nextChapterTitle="Tag-based releases"
+  nextChapterLink="/tutorial/cicd/tag-based-releases/"
+/>

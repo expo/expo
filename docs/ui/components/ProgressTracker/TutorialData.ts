@@ -63,6 +63,35 @@ export const EAS_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
   },
 ];
 
+// The following data is for the CI/CD Tutorial (/tutorial/cicd/).
+export const CICD_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
+  {
+    title: 'Chapter 1: Hello, EAS Workflows',
+    completed: false,
+    slug: '/tutorial/cicd/first-workflow',
+  },
+  {
+    title: 'Chapter 2: Development builds',
+    completed: false,
+    slug: '/tutorial/cicd/development-builds',
+  },
+  {
+    title: 'Chapter 3: Preview builds',
+    completed: false,
+    slug: '/tutorial/cicd/preview-builds',
+  },
+  {
+    title: 'Chapter 4: E2E tests',
+    completed: false,
+    slug: '/tutorial/cicd/e2e-tests',
+  },
+  {
+    title: 'Chapter 5: Production deployments',
+    completed: false,
+    slug: '/tutorial/cicd/production',
+  },
+];
+
 // The following data is for the Get started Tutorial (/tutorial/).
 export const GET_STARTED_TUTORIAL_CHAPTERS: Chapter[] = [
   {
