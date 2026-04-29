@@ -38,6 +38,9 @@ import {
 `SafeAreaView` is a regular `View` component with the safe area edges applied as padding.
 
 If you set your own padding on the view, it will be added to the padding from the safe area.
+> **info** SafeAreaView requires style={{ flex: 1 }} to render 
+correctly. Without it the screen may render as a white blank 
+screen on Android. 
 
 > **info** If you are targeting web, you must set up `SafeAreaProvider` as described in the [Context](#context) section.
 
