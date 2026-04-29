@@ -526,6 +526,10 @@ export type NotificationContentAndroid = {
    * The pattern with which to vibrate.
    */
   vibrationPattern?: number[];
+  /**
+   * An identifier used to group related notifications together.
+   */
+  threadIdentifier: string | null;
 };
 
 /**
@@ -610,6 +614,12 @@ export type NotificationContentInput = {
    * @platform ios
    */
   categoryIdentifier?: string;
+  /**
+   * An identifier used to group related notifications together. On iOS, this maps to `threadIdentifier`
+   * which groups notifications in the notification center. On Android, this maps to the notification group key
+   * which enables notification stacking.
+   */
+  threadIdentifier?: string;
   /**
    * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
    * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.

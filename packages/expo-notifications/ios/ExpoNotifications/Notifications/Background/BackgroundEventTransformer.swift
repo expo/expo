@@ -40,6 +40,10 @@ public class BackgroundEventTransformer {
         data["categoryId"] = category
         result["data"] = data
       }
+      if let threadId = aps["thread-id"] as? String, var data = result["data"] as? [String: Any] {
+        data["threadIdentifier"] = threadId
+        result["data"] = data
+      }
     }
 
     return result
