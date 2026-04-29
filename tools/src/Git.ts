@@ -161,14 +161,14 @@ export class GitDirectory {
   }
 
   /**
-   * Returns name of remote branch that the current local branch is tracking.
+   * Returns name of remote branch that the local branch is tracking (defaults to the current branch).
    */
-  async getTrackingBranchNameAsync(): Promise<string> {
+  async getTrackingBranchNameAsync(localBranch = ''): Promise<string> {
     const { stdout } = await this.runAsync([
       'rev-parse',
       '--abbrev-ref',
       '--symbolic-full-name',
-      '@{u}',
+      `${localBranch}@{u}`,
     ]);
     return stdout.trim();
   }
