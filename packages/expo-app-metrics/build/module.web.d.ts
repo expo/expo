@@ -12,7 +12,6 @@ declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetric
     getStoredEntries(): Promise<never[]>;
     clearStoredEntries(): Promise<void>;
     getAllSessions(): Promise<never[]>;
-    getPastDiagnosticPayloads(): never[];
     simulateCrashReport(): void;
     triggerCrash(): void;
     startSession(metadata?: string): string;

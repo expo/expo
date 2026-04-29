@@ -1,8 +1,5 @@
 import ExpoModulesCore
 import EXUpdatesInterface
-#if !os(tvOS)
-import MetricKit
-#endif
 
 internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
@@ -68,16 +65,6 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       encoder.dateEncodingStrategy = .iso8601
       let data = try encoder.encode(sessions.map(SessionCoder.init))
       return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
-    }
-
-    Function("getPastDiagnosticPayloads") { () -> [Any] in
-      #if !os(tvOS)
-      return MXMetricManager.shared.pastDiagnosticPayloads.compactMap { payload in
-        try? JSONSerialization.jsonObject(with: payload.jsonRepresentation())
-      }
-      #else
-      return []
-      #endif
     }
 
     Function("simulateCrashReport") {
