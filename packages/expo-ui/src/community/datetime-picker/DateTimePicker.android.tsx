@@ -4,8 +4,8 @@ import {
   DatePickerDialog as AndroidDatePickerDialog,
   TimePickerDialog as AndroidTimePickerDialog,
   type DateTimePickerProps as AndroidDateTimePickerProps,
-} from '../jetpack-compose/DatePicker';
-import { Host } from '../jetpack-compose/Host';
+} from '../../jetpack-compose/DatePicker';
+import { Host } from '../../jetpack-compose/Host';
 
 function modeToDisplayedComponents(
   mode: DateTimePickerProps['mode']
