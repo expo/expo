@@ -1,9 +1,11 @@
+import { useImperativeHandle, useRef } from 'react';
 import { TextInput as RNTextInput } from 'react-native';
 
 import { useNativeState } from '../State';
 import type { TextInputProps } from './types';
 
 export function TextInput({
+  ref,
   value,
   onChangeText,
   placeholder,
@@ -22,8 +24,28 @@ export function TextInput({
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
 
+  const innerRef = useRef<RNTextInput>(null);
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: () => {
+        innerRef.current?.focus();
+        return Promise.resolve();
+      },
+      blur: () => {
+        innerRef.current?.blur();
+        return Promise.resolve();
+      },
+      clear: () => {
+        state.value = '';
+      },
+    }),
+    [state]
+  );
+
   return (
     <RNTextInput
+      ref={innerRef}
       value={state.value}
       placeholder={placeholder}
       autoFocus={autoFocus}

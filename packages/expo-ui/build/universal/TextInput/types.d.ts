@@ -1,9 +1,25 @@
+import type { Ref } from 'react';
 import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 import type { ObservableState } from '../State';
+/**
+ * Imperative methods exposed via the `TextInput` ref.
+ */
+export type TextInputRef = {
+    /** Programmatically focus the input. */
+    focus: () => Promise<void>;
+    /** Programmatically blur the input. */
+    blur: () => Promise<void>;
+    /** Clear the current text. */
+    clear: () => void;
+};
 /**
  * Props for the `TextInput` component.
  */
 export interface TextInputProps {
+    /**
+     * Ref exposing imperative methods (`focus`, `blur`, `clear`).
+     */
+    ref?: Ref<TextInputRef>;
     /**
      * An observable state holding the current text. Create one with
      * `useNativeState('initial value')` from `@expo/ui`.

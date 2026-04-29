@@ -6,9 +6,10 @@ import {
   Switch,
   Text,
   TextInput,
+  type TextInputRef,
   useNativeState,
 } from '@expo/ui';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
@@ -37,6 +38,7 @@ export default function TextInputScreen() {
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
   const [redCursor, setRedCursor] = useState(false);
+  const inputRef = useRef<TextInputRef>(null);
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -60,6 +62,7 @@ export default function TextInputScreen() {
           <Column spacing={8}>
             <Text textStyle={{ fontSize: 18, fontWeight: 'bold' }}>TextInput</Text>
             <TextInput
+              ref={inputRef}
               value={text}
               placeholder="Type here..."
               editable={editable}
@@ -83,6 +86,21 @@ export default function TextInputScreen() {
             <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
             <Switch value={autoCorrect} onValueChange={setAutoCorrect} label="autoCorrect" />
             <Switch value={redCursor} onValueChange={setRedCursor} label="cursorColor (red)" />
+            <Button
+              label="ref.focus()"
+              variant="outlined"
+              onPress={() => inputRef.current?.focus()}
+            />
+            <Button
+              label="ref.blur()"
+              variant="outlined"
+              onPress={() => inputRef.current?.blur()}
+            />
+            <Button
+              label="ref.clear()"
+              variant="outlined"
+              onPress={() => inputRef.current?.clear()}
+            />
             <Button
               label={`keyboardType: ${keyboardType}`}
               variant="outlined"

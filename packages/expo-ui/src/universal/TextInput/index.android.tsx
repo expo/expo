@@ -3,8 +3,10 @@ import {
   Text,
   type TextFieldImeAction,
   type TextFieldKeyboardType,
+  type TextFieldRef,
   useNativeState,
 } from '@expo/ui/jetpack-compose';
+import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import type { TextInputProps } from './types';
@@ -44,6 +46,7 @@ function mapKeyboardType(rn: KeyboardTypeOptions): TextFieldKeyboardType {
 }
 
 export function TextInput({
+  ref,
   value,
   onChangeText,
   placeholder,
@@ -61,6 +64,20 @@ export function TextInput({
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
+
+  const innerRef = useRef<TextFieldRef>(null);
+  useImperativeHandle(
+    ref,
+    () => ({
+      focus: () => innerRef.current?.focus() ?? Promise.resolve(),
+      blur: () => innerRef.current?.blur() ?? Promise.resolve(),
+      clear: () => {
+        // TODO: schedule this on UI thread via worklet
+        state.value = '';
+      },
+    }),
+    [state]
+  );
 
   const handleFocusChanged =
     onFocus || onBlur
@@ -90,6 +107,7 @@ export function TextInput({
 
   return (
     <ComposeTextField
+      ref={innerRef}
       value={state}
       autoFocus={autoFocus}
       readOnly={editable === false}
