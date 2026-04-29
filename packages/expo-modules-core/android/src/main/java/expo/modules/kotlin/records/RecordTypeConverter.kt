@@ -181,9 +181,11 @@ class IntrospectableRecordConversionStrategy<T : Record>(
           .firstOrNull { annotation -> annotation.jClass == Field::class.java }
           ?: return@mapNotNull null
 
-        val propertyName = (fieldAnnotation
-          .arguments
-          .getOrDefault("key", property.name) as String)
+        val propertyName = (
+          fieldAnnotation
+            .arguments
+            .getOrDefault("key", property.name) as String
+          )
           .ifEmpty { property.name }
 
         val isRequired = property
