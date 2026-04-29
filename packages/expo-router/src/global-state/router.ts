@@ -174,7 +174,7 @@ export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
  *}
  * ```
  */
-export type Router = {
+export type ImperativeRouter = {
   /**
    * Goes back in the navigation history.
    */
@@ -238,7 +238,7 @@ export type Router = {
 /**
  * @hidden
  */
-export const router: Router = {
+export const router: ImperativeRouter = {
   navigate,
   push,
   dismiss,
@@ -250,5 +250,5 @@ export const router: Router = {
   canGoBack,
   reload,
   prefetch,
-  setParams: setParams as Router['setParams'],
+  setParams: setParams as ImperativeRouter['setParams'],
 };
