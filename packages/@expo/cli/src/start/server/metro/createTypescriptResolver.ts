@@ -16,8 +16,6 @@ import { loadTsConfigPathsAsync } from '../../../utils/tsconfig/loadTsConfigPath
 
 const debug = require('debug')('expo:start:server:metro:typescript-resolver') as typeof console.log;
 
-const isAbsolute = process.platform === 'win32' ? path.win32.isAbsolute : path.posix.isAbsolute;
-
 const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 interface SuffixEntry {
@@ -89,16 +87,8 @@ const toResolveConfig = (
 function resolveWithTsConfigPaths(
   config: TsConfigResolveConfig,
   moduleName: string,
-  originModulePath: string,
   resolve: (moduleName: string) => Resolution | null
 ): Resolution | null {
-  if (
-    // Library authors cannot utilize this feature in userspace.
-    /node_modules/.test(originModulePath)
-  ) {
-    return null;
-  }
-
   const exactPaths = config.exactMatches[moduleName];
   if (exactPaths) {
     for (const alias of exactPaths) {
@@ -199,18 +189,20 @@ export function createTypescriptResolver(
   }
 
   const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
+  const nodeModulesPart = `${path.sep}node_modules${path.sep}`;
 
   return function requestTsconfigPaths(immutableContext, moduleName, platform) {
     if (!input.current) {
       return null;
     } else if (fileSpecifierRe.test(moduleName)) {
       return null;
+    } else if (immutableContext.originModulePath.includes(nodeModulesPart)) {
+      return null;
     }
 
     return resolveWithTsConfigPaths(
       input.current,
       moduleName,
-      immutableContext.originModulePath,
       getOptionalResolve(immutableContext, platform, getStrictResolver)
     );
   };
