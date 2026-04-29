@@ -105,9 +105,21 @@ export async function configurePackageManager(
 ) {
   const manager = createPackageManager(packageManager, { cwd: projectRoot, ...flags });
   switch (manager.name) {
-    case 'pnpm':
+    case 'pnpm': {
       await manager.runAsync(['config', '--location', 'project', 'set', 'node-linker', 'hoisted']);
+
+      // Avoid build warnings / errors from pnpm v10+
+      await manager.runAsync([
+        'config',
+        '--location',
+        'project',
+        '--json',
+        'set',
+        'ignoredBuiltDependencies',
+        '["unrs-resolver"]'
+      ]);
       break;
+    }
 
     case 'yarn': {
       const yarnVersion = await manager.versionAsync();

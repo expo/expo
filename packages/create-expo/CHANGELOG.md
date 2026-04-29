@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Ignore unrs-resolver build with pnpm ([#43827](https://github.com/expo/expo/pull/43827) by [@karlhorky](https://github.com/karlhorky))
+
 ### 💡 Others
 
 - Replace tar dependency logic with `multitars` package ([#44764](https://github.com/expo/expo/pull/44764) by [@kitten](https://github.com/kitten))
