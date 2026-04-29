@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `NumberFormatException` crash on Android when calendar/event IDs exceed `Integer.MAX_VALUE`. ([#43344](https://github.com/expo/expo/pull/43344) by [@olivier-bouillet](https://github.com/olivier-bouillet))
+- [iOS] Fix `deleteEventAsync` deleting wrong recurring event instance when `instanceStartDate` is provided. ([#40172](https://github.com/expo/expo/pull/40172) by [@marcelogdeandrade](https://github.com/marcelogdeandrade))
 
 ### 💡 Others
 
