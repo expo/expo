@@ -39,7 +39,7 @@
     "@expo/config": "~55.0.15",
     "@expo/env": "~2.1.1",
     "@expo/json-file": "~10.0.13",
-    "@expo/metro": "~55.1.0",
+    "@expo/metro": "~55.1.1",
     "@expo/schemer": "2.1.4",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",
