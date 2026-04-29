@@ -1,4 +1,10 @@
-import { Text, TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
+import {
+  SecureField,
+  Text,
+  TextField,
+  type TextFieldRef,
+  useNativeState,
+} from '@expo/ui/swift-ui';
 import { useImperativeHandle, useRef } from 'react';
 
 import {
@@ -68,6 +74,7 @@ export function TextInput({
   placeholderTextColor,
   style,
   textStyle,
+  secureTextEntry,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -120,6 +127,20 @@ export function TextInput({
   else if (textAlign === 'center') modifiers.push(multilineTextAlignment('center'));
   if (multiline && numberOfLines && numberOfLines > 0) {
     modifiers.push(lineLimit(numberOfLines, { reservesSpace: true }));
+  }
+
+  if (secureTextEntry) {
+    return (
+      <SecureField
+        text={state}
+        placeholder={placeholder}
+        autoFocus={autoFocus}
+        onTextChange={onChangeText}
+        onFocusChange={handleFocusChange}
+        modifiers={modifiers.length > 0 ? modifiers : undefined}
+        testID={testID}
+      />
+    );
   }
 
   return (

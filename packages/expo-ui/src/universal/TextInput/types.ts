@@ -67,6 +67,14 @@ export interface TextInputProps {
   multiline?: boolean;
 
   /**
+   * If true, the input obscures its text — used for password fields.
+   * - iOS: backed by SwiftUI's `SecureField`
+   * - Android: backed by Compose's `PasswordVisualTransformation`.
+   * @default false
+   */
+  secureTextEntry?: boolean;
+
+  /**
    * Determines which keyboard variant is shown.
    *
    * Lacking native support:

@@ -79,6 +79,7 @@ export function TextInput({
   placeholderTextColor,
   textStyle,
   style,
+  secureTextEntry,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -172,6 +173,7 @@ export function TextInput({
             }
           : undefined
       }
+      visualTransformation={secureTextEntry ? 'password' : undefined}
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
       onValueChange={onChangeText}

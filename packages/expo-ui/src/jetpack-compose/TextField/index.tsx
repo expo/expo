@@ -150,6 +150,12 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
   maxLines?: number;
   minLines?: number;
   /**
+   * Display-time text transformation. `'password'` masks every character;
+   * `'none'` (default) leaves the buffer as-is.
+   */
+  visualTransformation?: 'password' | 'none';
+
+  /**
    * Text styling for the field's content. Maps to Compose's `TextStyle`.
    */
   textStyle?: {

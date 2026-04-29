@@ -46,6 +46,7 @@ export default function TextInputScreen() {
   const [bluePlaceholder, setBluePlaceholder] = useState(false);
   const [customStyle, setCustomStyle] = useState(false);
   const [customTextStyle, setCustomTextStyle] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(false);
   const [textAlign, setTextAlign] = useState<TextAlign>('auto');
   const [numberOfLines, setNumberOfLines] = useState<number | undefined>(undefined);
   const inputRef = useRef<TextInputRef>(null);
@@ -115,6 +116,7 @@ export default function TextInputScreen() {
                   ? { fontSize: 20, color: 'darkblue', fontWeight: '600', letterSpacing: 0.5 }
                   : undefined
               }
+              secureTextEntry={secureTextEntry}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -140,6 +142,11 @@ export default function TextInputScreen() {
               value={customTextStyle}
               onValueChange={setCustomTextStyle}
               label="textStyle (20pt, darkblue, 600)"
+            />
+            <Switch
+              value={secureTextEntry}
+              onValueChange={setSecureTextEntry}
+              label="secureTextEntry"
             />
             <Button
               label="ref.focus()"

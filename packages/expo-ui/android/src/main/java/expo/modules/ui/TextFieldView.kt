@@ -21,7 +21,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
@@ -204,6 +206,7 @@ data class TextFieldProps(
   val maxLines: Int? = null,
   val minLines: Int? = null,
   val textStyle: TextFieldTextStyleRecord? = null,
+  val visualTransformation: String? = null,
   val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
   val shape: ShapeRecord? = null,
   val colors: TextFieldColorsRecord? = null,
@@ -413,6 +416,11 @@ fun FunctionalComposableScope.TextFieldContent(
     )
   }
 
+  val visualTransformation = when (props.visualTransformation) {
+    "password" -> PasswordVisualTransformation()
+    else -> VisualTransformation.None
+  }
+
   if (isOutlined) {
     OutlinedTextField(
       value = value, onValueChange = onValueChange, modifier = modifier,
@@ -420,7 +428,7 @@ fun FunctionalComposableScope.TextFieldContent(
       label = label, placeholder = placeholder,
       leadingIcon = leadingIcon, trailingIcon = trailingIcon,
       prefix = prefix, suffix = suffix, supportingText = supportingText,
-      isError = props.isError,
+      isError = props.isError, visualTransformation = visualTransformation,
       keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
       singleLine = singleLine, maxLines = maxLines, minLines = minLines,
       shape = shape, colors = colors,
@@ -432,7 +440,7 @@ fun FunctionalComposableScope.TextFieldContent(
       label = label, placeholder = placeholder,
       leadingIcon = leadingIcon, trailingIcon = trailingIcon,
       prefix = prefix, suffix = suffix, supportingText = supportingText,
-      isError = props.isError,
+      isError = props.isError, visualTransformation = visualTransformation,
       keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
       singleLine = singleLine, maxLines = maxLines, minLines = minLines,
       shape = shape, colors = colors,
