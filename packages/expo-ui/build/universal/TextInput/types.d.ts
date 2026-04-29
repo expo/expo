@@ -99,5 +99,15 @@ export interface TextInputProps {
      * Color of the text cursor.
      */
     cursorColor?: ColorValue;
+    /**
+     * Horizontal alignment of the text content.
+     *
+     * Lacking native support:
+     * - iOS: `'justify'` is not supported by SwiftUI's `TextField` and falls
+     *   back to the default alignment.
+     *
+     * @default 'auto'
+     */
+    textAlign?: 'auto' | 'left' | 'right' | 'center' | 'justify';
 }
 //# sourceMappingURL=types.d.ts.map

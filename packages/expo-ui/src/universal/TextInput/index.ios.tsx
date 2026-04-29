@@ -4,6 +4,7 @@ import {
   autocorrectionDisabled,
   disabled as disabledMod,
   keyboardType as keyboardTypeMod,
+  multilineTextAlignment,
   onSubmit,
   submitLabel,
   textInputAutocapitalization,
@@ -74,6 +75,7 @@ export function TextInput({
   onFocus,
   onBlur,
   cursorColor,
+  textAlign,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
@@ -109,6 +111,9 @@ export function TextInput({
     modifiers.push(onSubmit(() => onSubmitEditing(state.value)));
   }
   if (cursorColor) modifiers.push(tint(cursorColor));
+  if (textAlign === 'left') modifiers.push(multilineTextAlignment('leading'));
+  else if (textAlign === 'right') modifiers.push(multilineTextAlignment('trailing'));
+  else if (textAlign === 'center') modifiers.push(multilineTextAlignment('center'));
 
   return (
     <TextField

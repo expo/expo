@@ -20,6 +20,7 @@ export function TextInput({
   onFocus,
   onBlur,
   cursorColor,
+  textAlign,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -56,6 +57,7 @@ export function TextInput({
       autoCorrect={autoCorrect}
       returnKeyType={returnKeyType}
       cursorColor={typeof cursorColor === 'string' ? cursorColor : undefined}
+      style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}
       onSubmitEditing={
         onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined
       }

@@ -27,6 +27,9 @@ const AUTO_CAPITALIZE: AutoCapitalize[] = ['none', 'sentences', 'words', 'charac
 
 const RETURN_KEY_TYPES: ReturnKeyTypeOptions[] = ['done', 'go', 'next', 'search', 'send'];
 
+type TextAlign = 'auto' | 'left' | 'right' | 'center' | 'justify';
+const TEXT_ALIGNS: TextAlign[] = ['auto', 'left', 'center', 'right', 'justify'];
+
 export default function TextInputScreen() {
   const text = useNativeState('');
   const [editable, setEditable] = useState(true);
@@ -38,7 +41,13 @@ export default function TextInputScreen() {
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
   const [redCursor, setRedCursor] = useState(false);
+  const [textAlign, setTextAlign] = useState<TextAlign>('auto');
   const inputRef = useRef<TextInputRef>(null);
+
+  const cycleTextAlign = () => {
+    const i = TEXT_ALIGNS.indexOf(textAlign);
+    setTextAlign(TEXT_ALIGNS[(i + 1) % TEXT_ALIGNS.length]);
+  };
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -75,6 +84,7 @@ export default function TextInputScreen() {
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               cursorColor={redCursor ? 'red' : undefined}
+              textAlign={textAlign}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -115,6 +125,11 @@ export default function TextInputScreen() {
               label={`returnKeyType: ${returnKeyType}`}
               variant="outlined"
               onPress={cycleReturnKeyType}
+            />
+            <Button
+              label={`textAlign: ${textAlign}`}
+              variant="outlined"
+              onPress={cycleTextAlign}
             />
           </Column>
         </Column>

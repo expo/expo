@@ -149,6 +149,13 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
   singleLine?: boolean;
   maxLines?: number;
   minLines?: number;
+  /**
+   * Text styling for the field's content. Maps to Compose's
+   * `TextStyle`.
+   */
+  textStyle?: {
+    textAlign?: 'left' | 'right' | 'center' | 'justify';
+  };
   keyboardOptions?: TextFieldKeyboardOptions;
   keyboardActions?: TextFieldKeyboardActions;
   /**

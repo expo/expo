@@ -17,10 +17,12 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextAlign
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -45,6 +47,11 @@ data class TextFieldKeyboardOptionsRecord(
   @Field val autoCorrectEnabled: Boolean? = null,
   @Field val keyboardType: String? = null,
   @Field val imeAction: String? = null,
+) : Record
+
+@OptimizedRecord
+data class TextFieldTextStyleRecord(
+  @Field val textAlign: String? = null,
 ) : Record
 
 @OptimizedRecord
@@ -188,6 +195,7 @@ data class TextFieldProps(
   val singleLine: Boolean = false,
   val maxLines: Int? = null,
   val minLines: Int? = null,
+  val textStyle: TextFieldTextStyleRecord? = null,
   val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
   val shape: ShapeRecord? = null,
   val colors: TextFieldColorsRecord? = null,
@@ -218,6 +226,14 @@ private fun String?.toCapitalization(): KeyboardCapitalization = when (this) {
   "sentences" -> KeyboardCapitalization.Sentences
   "words" -> KeyboardCapitalization.Words
   else -> KeyboardCapitalization.None
+}
+
+private fun String?.toTextAlign(): TextAlign? = when (this) {
+  "left" -> TextAlign.Left
+  "right" -> TextAlign.Right
+  "center" -> TextAlign.Center
+  "justify" -> TextAlign.Justify
+  else -> null
 }
 
 private fun String?.toImeAction(): ImeAction = when (this) {
@@ -381,10 +397,13 @@ fun FunctionalComposableScope.TextFieldContent(
     }
   }
 
+  val textAlign = props.textStyle?.textAlign.toTextAlign()
+  val textStyle = if (textAlign != null) TextStyle(textAlign = textAlign) else TextStyle.Default
+
   if (isOutlined) {
     OutlinedTextField(
       value = value, onValueChange = onValueChange, modifier = modifier,
-      enabled = props.enabled, readOnly = props.readOnly,
+      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
       label = label, placeholder = placeholder,
       leadingIcon = leadingIcon, trailingIcon = trailingIcon,
       prefix = prefix, suffix = suffix, supportingText = supportingText,
@@ -396,7 +415,7 @@ fun FunctionalComposableScope.TextFieldContent(
   } else {
     TextField(
       value = value, onValueChange = onValueChange, modifier = modifier,
-      enabled = props.enabled, readOnly = props.readOnly,
+      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
       label = label, placeholder = placeholder,
       leadingIcon = leadingIcon, trailingIcon = trailingIcon,
       prefix = prefix, suffix = suffix, supportingText = supportingText,
