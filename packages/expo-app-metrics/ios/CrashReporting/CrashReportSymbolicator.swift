@@ -29,20 +29,26 @@ enum CrashReportSymbolicator {
    Annotates each frame in the tree with its resolved symbol, when one is available.
    */
   static func symbolicate(_ tree: CrashReport.CallStackTree) -> CrashReport.CallStackTree {
+    // Threads in a crash tree share many leaf frames (RunLoop guts, pthread entry points,
+    // Hermes interpreter trampolines). Memoizing the mangled→demangled mapping for the
+    // duration of one tree avoids redundant `__cxa_demangle` / `swift_demangle` calls,
+    // which dominate the per-frame cost on heavily-templated C++ symbols.
+    var demangleCache: [String: String] = [:]
     let callStacks = tree.callStacks?.map { stack in
       CrashReport.CallStackTree.CallStack(
         threadAttributed: stack.threadAttributed,
-        callStackRootFrames: stack.callStackRootFrames?.map(symbolicateFrame)
+        callStackRootFrames: stack.callStackRootFrames?.map { symbolicateFrame($0, cache: &demangleCache) }
       )
     }
     return CrashReport.CallStackTree(callStacks: callStacks)
   }
 
   private static func symbolicateFrame(
-    _ frame: CrashReport.CallStackTree.Frame
+    _ frame: CrashReport.CallStackTree.Frame,
+    cache: inout [String: String]
   ) -> CrashReport.CallStackTree.Frame {
-    let symbol = resolveSymbol(for: frame)
-    let subFrames = frame.subFrames?.map(symbolicateFrame)
+    let symbol = resolveSymbol(for: frame, cache: &cache)
+    let subFrames = frame.subFrames?.map { symbolicateFrame($0, cache: &cache) }
     return CrashReport.CallStackTree.Frame(
       binaryName: frame.binaryName,
       binaryUUID: frame.binaryUUID,
@@ -55,7 +61,8 @@ enum CrashReportSymbolicator {
   }
 
   private static func resolveSymbol(
-    for frame: CrashReport.CallStackTree.Frame
+    for frame: CrashReport.CallStackTree.Frame,
+    cache: inout [String: String]
   ) -> String? {
     guard let binaryName = frame.binaryName,
           let offset = frame.offsetIntoBinaryTextSegment,
@@ -68,7 +75,13 @@ enum CrashReportSymbolicator {
           let symbolPtr = info.dli_sname else {
       return nil
     }
-    return demangle(String(cString: symbolPtr))
+    let mangled = String(cString: symbolPtr)
+    if let cached = cache[mangled] {
+      return cached
+    }
+    let resolved = demangle(mangled)
+    cache[mangled] = resolved
+    return resolved
   }
 
   /**
