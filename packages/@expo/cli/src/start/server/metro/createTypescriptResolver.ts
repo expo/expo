@@ -167,9 +167,24 @@ function resolveWithTsConfigPaths(
           }
         }
         // First matching suffix wins; don't try other suffix entries
-        return null;
+        break;
       }
-      // Prefix matched but no suffix matched; don't fall through to baseUrl
+
+      // NOTE: Special case for `"*"` paths pattern (replacement for `baseUrl`)
+      // If a non-catch-all prefix matched but failed, try the "*" catch-all
+      if (prefix !== '' && config.prefixMap[''] != null) {
+        for (const entry of config.prefixMap['']) {
+          for (const alias of entry.mapping) {
+            const possibleResult = alias.replace('*', moduleName);
+            const result = resolve(possibleResult);
+            if (result != null) {
+              debug(`${moduleName} -> ${possibleResult}`);
+              return result;
+            }
+          }
+        }
+      }
+
       return null;
     }
   }
