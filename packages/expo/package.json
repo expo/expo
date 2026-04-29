@@ -79,6 +79,7 @@
     "@expo/config": "workspace:~55.0.8",
     "@expo/config-plugins": "workspace:~55.0.6",
     "@expo/devtools": "workspace:55.0.2",
+    "@expo/dom-webview": "workspace:~55.0.3",
     "@expo/fingerprint": "workspace:0.16.5",
     "@expo/local-build-cache-provider": "workspace:55.0.6",
     "@expo/log-box": "workspace:55.0.7",

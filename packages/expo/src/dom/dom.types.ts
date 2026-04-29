@@ -33,7 +33,7 @@ export interface DOMProps extends Omit<RNWebViewProps, 'source'> {
 
   /**
    * Whether to use the `@expo/dom-webview` as the underlying WebView implementation.
-   * @default false
+   * @default true
    */
   useExpoDOMWebView?: boolean;
 

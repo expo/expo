@@ -69,7 +69,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
     );
   }
 
-  const useExpoDOMWebView = dom?.useExpoDOMWebView ?? false;
+  const useExpoDOMWebView = dom?.useExpoDOMWebView ?? true;
   const webView = resolveWebView(useExpoDOMWebView);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
