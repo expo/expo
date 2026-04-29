@@ -45,7 +45,11 @@ const cleanWorkingTree = new Task<TaskArgs>(
         // JSON files are automatically added to the index after previous tasks.
         await Git.checkoutAsync({
           ref: 'HEAD',
-          paths: ['packages/**/expo-module.config.json'],
+          paths: [
+            'apps/bare-expo/package.json',
+            'packages/**/expo-module.config.json',
+            'pnpm-lock.yaml',
+          ],
         });
         // Remove local repositories.
         await Git.cleanAsync({
