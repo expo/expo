@@ -34,6 +34,7 @@ import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.devmenu.fab.MovableFloatingActionButton
 import expo.modules.devmenu.helpers.isAcceptingText
+import expo.modules.devmenu.helpers.isFocusInEditText
 import expo.modules.kotlin.weak
 import java.lang.ref.WeakReference
 
@@ -200,6 +201,12 @@ class DevMenuFragment(
     // However, this event is also triggered when input is edited. A better way to handle that case
     // is use onKeyDown event. However, it doesn't work well with key commands and we can't override RN implementation in that approach.
     if (activity.isAcceptingText()) {
+      return false
+    }
+
+    // When using a hardware keyboard (Bluetooth, emulator, USB), isAcceptingText is false even when
+    // focus is in a TextInput. Check if focus is in an EditText to avoid intercepting "r" while typing.
+    if (activity.isFocusInEditText()) {
       return false
     }
 
