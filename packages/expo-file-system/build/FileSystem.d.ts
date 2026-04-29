@@ -67,6 +67,9 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     arrayBuffer(): Promise<ArrayBuffer>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
+    upload(url: string, options?: UploadOptions): Promise<UploadResult>;
+    createUploadTask(url: string, options?: UploadOptions): UploadTask;
+    static createDownloadTask(url: string, destination: File | Directory, options?: DownloadTaskOptions): DownloadTask;
 }
 /**
  * Represents a directory on the filesystem.

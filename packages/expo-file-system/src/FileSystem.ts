@@ -149,6 +149,22 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   slice(start?: number, end?: number, contentType?: string): Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
   }
+
+  upload(url: string, options?: UploadOptions): Promise<UploadResult> {
+    return new UploadTask(this, url, options).uploadAsync();
+  }
+
+  createUploadTask(url: string, options?: UploadOptions): UploadTask {
+    return new UploadTask(this, url, options);
+  }
+
+  static createDownloadTask(
+    url: string,
+    destination: File | Directory,
+    options?: DownloadTaskOptions
+  ): DownloadTask {
+    return new DownloadTask(url, destination, options);
+  }
 }
 
 function createAbortError(reason?: string): Error {
@@ -624,16 +640,3 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     }
   }
 }
-
-// Add factory methods to File
-File.prototype.createUploadTask = function (url: string, options?: UploadOptions): UploadTask {
-  return new UploadTask(this, url, options);
-};
-
-File.createDownloadTask = function (
-  url: string,
-  destination: File | Directory,
-  options?: DownloadTaskOptions
-): DownloadTask {
-  return new DownloadTask(url, destination, options);
-};
