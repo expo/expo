@@ -124,12 +124,12 @@ export default AppMetricsRoot.wrap(RootLayout);
 ```tsx App.tsx
 import { useEffect, useState } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
-import { AppMetrics } from 'expo-observe';
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
 
 // Keep the splash screen visible while we fetch resources
 SplashScreen.preventAutoHideAsync();
 
-export default function App() {
+function App() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -160,6 +160,8 @@ export default function App() {
 
   // your app
 }
+
+export default AppMetricsRoot.wrap(App);
 ```
 
 </Tab>

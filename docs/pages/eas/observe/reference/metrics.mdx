@@ -10,7 +10,7 @@ Reference for the performance metrics Expo Observe collects, the core concepts u
 
 ### Session
 
-A **session** starts when the app process is launched and ends when the app process is terminated. Each session has a unique identifier and contains all events that occurred during that app launch.
+A **session** starts when the app process is launched and ends when the app process is terminated. Each session has a unique identifier and contains all metrics collected during that app launch.
 
 ### User
 
@@ -25,7 +25,7 @@ This allows you to see metrics across multiple sessions for the same user withou
 
 ## Metrics
 
-All duration metrics are reported in seconds.
+> **info** All duration metrics are reported in seconds.
 
 ### Cold launch time
 
@@ -45,8 +45,6 @@ This metric is collected automatically.
 ### Warm launch time
 
 **What it measures:** A warm launch happens when the OS already has the app process in memory and only needs to bring it back to the foreground and recreate the view hierarchy. Unlike a cold launch, most native resources and services are already in memory, so this type of launch is significantly faster.
-
-Warm launch is largely out of the developer's hands: it is the OS restoring state for a process that is already in memory.
 
 This metric is collected automatically.
 
