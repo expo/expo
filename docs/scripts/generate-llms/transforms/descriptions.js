@@ -16,5 +16,5 @@ export const EXPO_DESCRIPTION =
 
 export const PAGE_DESCRIPTION_OVERRIDES = {
   '/router/introduction':
-    'Expo Router is the default and recommended routing solution for all Expo projects. It provides file-based routing for native apps, built on React Navigation. It also provides automatic deep linking, static and server web rendering, API routes, native tabs, and more.',
+    'Expo Router is the default and recommended routing solution for all Expo projects. It provides file-based routing for native apps. It also provides automatic deep linking, static and server web rendering, API routes, native tabs, and more.',
 };
