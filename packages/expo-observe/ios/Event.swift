@@ -7,6 +7,7 @@ import ExpoAppMetrics
 struct Event: Codable, Sendable {
   let metadata: Metadata
   let metrics: [Metric]
+  let logs: [Log]
 
   struct Metadata: Codable, Sendable {
     // AppInfo
@@ -50,6 +51,17 @@ struct Event: Codable, Sendable {
     let customParams: AnyCodable?
   }
 
+  struct Log: Codable, Sendable {
+    let name: String
+    let body: String?
+    let timestamp: String
+    let severity: Severity
+    let attributes: AnyCodable?
+
+    // Session
+    let sessionId: String
+  }
+
   /**
    Creates a new event for EAS, based on the objects from `expo-app-metrics` package.
    */
@@ -87,6 +99,18 @@ struct Event: Codable, Sendable {
             routeName: metric.routeName,
             updateId: metric.updateId,
             customParams: metric.params
+          )
+        }
+      },
+      logs: sessions.flatMap { session in
+        return session.logs.map { log in
+          return Log(
+            name: log.name,
+            body: log.body,
+            timestamp: log.timestamp,
+            severity: log.severity,
+            attributes: log.attributes,
+            sessionId: session.id
           )
         }
       }

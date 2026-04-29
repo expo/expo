@@ -33,6 +33,26 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       )
     }
 
+    Function("logEvent") { (name: String, options: LogEventOptions?) in
+      let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+      if trimmedName.isEmpty {
+        logger.warn("[AppMetrics] logEvent dropped: `name` is required and must be non-empty.")
+        return
+      }
+      let sanitizedAttributes = sanitizeLogEventAttributes(options?.attributes)
+
+      AppMetricsActor.isolated {
+        AppMetrics.mainSession.receiveLog(
+          LogRecord(
+            name: trimmedName,
+            body: options?.body,
+            attributes: sanitizedAttributes,
+            severity: options?.severity ?? .info
+          )
+        )
+      }
+    }
+
     AsyncFunction("getAppStartupTimesAsync") {
       return await AppMetrics.mainSession.appStartupMonitor.metrics
     }

@@ -112,6 +112,68 @@ export type MetricAttributes = {
   params?: Record<string, unknown>;
 };
 
+/**
+ * Severity of a log event. Maps to the corresponding OpenTelemetry severity
+ * number on the wire (TRACE = 1, DEBUG = 5, INFO = 9, WARN = 13, ERROR = 17,
+ * FATAL = 21).
+ *
+ * See https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber.
+ */
+export type LogSeverity = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+
+/**
+ * A single log record collected during a session, modeled after the OpenTelemetry
+ * Logs Data Model. Each record represents either a free-form log line or a named
+ * event (when `name` is set, treated as an OTel "event" — a `LogRecord` whose
+ * `event.name` attribute is populated).
+ */
+export type LogRecord = {
+  /**
+   * ISO 8601 timestamp of when the record was created.
+   */
+  timestamp: string;
+  /**
+   * Event name. Maps to the OpenTelemetry `event.name` attribute on the wire.
+   */
+  name: string;
+  /**
+   * Optional free-form log body.
+   */
+  body?: string | null;
+  /**
+   * Custom attributes attached to the record. Serialized as a JSON string in the
+   * outbound OTel payload.
+   */
+  attributes?: Record<string, unknown> | null;
+  /**
+   * Severity of the record. Defaults to `"info"` when not provided. Maps to the
+   * matching OpenTelemetry severity number on the wire.
+   */
+  severity: LogSeverity;
+};
+
+/**
+ * Optional configuration accepted by `logEvent`. The event name is passed as
+ * the first positional argument since it's required and the only field most
+ * callers set.
+ */
+export type LogEventOptions = {
+  /**
+   * Optional free-form log body.
+   */
+  body?: string | null;
+  /**
+   * Custom attributes attached to the event.
+   */
+  attributes?: Record<string, unknown> | null;
+  /**
+   * Severity of the event.
+   *
+   * @default "info"
+   */
+  severity?: LogSeverity | null;
+};
+
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 
 export type CrashKind =
@@ -128,6 +190,7 @@ type SessionBase = {
   startDate: string;
   endDate?: string | null;
   metrics: Metric[];
+  logs: LogRecord[];
 };
 
 export type MainSession = SessionBase & {
@@ -190,6 +253,17 @@ export type CrashReport = {
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
+  /**
+   * Records a log event against the current main session. The event is
+   * persisted locally and dispatched on the next `dispatchEvents()` flush as an
+   * OpenTelemetry log record sent to the `/v1/logs` endpoint.
+   *
+   * Severity defaults to `"info"` when not provided.
+   *
+   * @param name Event name. Maps to the OpenTelemetry `event.name` attribute.
+   * @param options Optional body, attributes, and severity overrides.
+   */
+  logEvent(name: string, options?: LogEventOptions): void;
   getStoredEntries(): Promise<Metric[]>;
   clearStoredEntries(): Promise<void>;
   /**

@@ -26,6 +26,7 @@ internal final class ObserveUserDefaults: UserDefaults {
    */
   private enum Keys: String {
     case lastDispatchedEntryId
+    case lastDispatchedLogEntryId
     case lastDispatchDate
     case config
   }
@@ -62,6 +63,20 @@ internal final class ObserveUserDefaults: UserDefaults {
     }
     set {
       defaults.set(newValue, forKey: Keys.lastDispatchedEntryId.rawValue)
+    }
+  }
+
+  /**
+   Id of the last entry whose logs were dispatched. Tracked separately from `lastDispatchedEntryId`
+   so that a logs request failure does not block metrics dispatch (and vice versa) — both signals
+   move forward independently.
+   */
+  static var lastDispatchedLogEntryId: Int {
+    get {
+      return defaults.object(forKey: Keys.lastDispatchedLogEntryId.rawValue) as? Int ?? -1
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.lastDispatchedLogEntryId.rawValue)
     }
   }
 

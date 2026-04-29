@@ -2,6 +2,7 @@ import type { MetricAttributes } from './types';
 declare const _default: {
     markInteractive(attributes?: MetricAttributes): void;
     markFirstRender(): void;
+    logEvent(name: string, options?: import("./types").LogEventOptions): void;
     getStoredEntries(): Promise<import("./types").Metric[]>;
     clearStoredEntries(): Promise<void>;
     getAllSessions(): Promise<import("./types").Session[]>;

@@ -52,6 +52,25 @@ struct OTEvent: Codable, Sendable {
   let scopeMetrics: [OTScopeMetrics]
 }
 
+struct OTLogRecord: Codable, Sendable {
+  let timeUnixNano: UInt64
+  let observedTimeUnixNano: UInt64
+  let severityNumber: Int
+  let severityText: String
+  let body: OTStringValue
+  let attributes: [OTAttribute]
+}
+
+struct OTScopeLogs: Codable, Sendable {
+  let scope: OTScope
+  let logRecords: [OTLogRecord]
+}
+
+struct OTResourceLogs: Codable, Sendable {
+  let resource: OTMetadata
+  let scopeLogs: [OTScopeLogs]
+}
+
 // MARK: -- Event extensions for Open Telemetry
 
 // This must be kept in sync with the INTERNAL_TO_OTEL map in universe
@@ -73,13 +92,17 @@ let metricNameMap = [
 
 nonisolated(unsafe) let formatter = ISO8601DateFormatter()
 
+private func nsFromISOString(_ dateString: String?) -> UInt64 {
+  if let dateString,
+     let date = formatter.date(from: dateString) {
+    return UInt64(date.timeIntervalSince1970 * 1_000_000_000)
+  }
+  return UInt64(Date().timeIntervalSince1970 * 1_000_000_000)
+}
+
 extension Event.Metric {
   private func nsFromISODateString() -> UInt64 {
-    if let dateString = self.timestamp,
-       let date = formatter.date(from: dateString) {
-      return UInt64(date.timeIntervalSince1970 * 1_000_000_000)
-    }
-    return UInt64(Date().timeIntervalSince1970 * 1_000_000_000)
+    return nsFromISOString(self.timestamp)
   }
 
   func toOTMetric() -> OTMetric {
@@ -106,6 +129,28 @@ extension Event.Metric {
           attributes: attributes
         )
       ])
+    )
+  }
+}
+
+extension Event.Log {
+  func toOTLogRecord() -> OTLogRecord {
+    var attributes: [OTAttribute] = [
+      OTAttribute(key: "session.id", rawValue: sessionId),
+      OTAttribute(key: "event.name", rawValue: name)
+    ]
+    if let attributesString = try? self.attributes?.toJSONString() {
+      attributes.append(OTAttribute(key: "expo.event.attributes", rawValue: attributesString))
+    }
+
+    let timeNs = nsFromISOString(timestamp)
+    return OTLogRecord(
+      timeUnixNano: timeNs,
+      observedTimeUnixNano: timeNs,
+      severityNumber: severity.severityNumber,
+      severityText: severity.severityText,
+      body: OTStringValue(stringValue: body ?? ""),
+      attributes: attributes
     )
   }
 }
@@ -164,10 +209,26 @@ extension Event {
       ]
     )
   }
+
+  func toOTResourceLogs(_ easClientId: String) -> OTResourceLogs {
+    OTResourceLogs(
+      resource: toOTMetadata(easClientId),
+      scopeLogs: [
+        OTScopeLogs(
+          scope: OTScope(name: "expo-observe", version: ObserveVersions.clientVersion),
+          logRecords: self.logs.map { $0.toOTLogRecord() }
+        )
+      ]
+    )
+  }
 }
 
 // MARK: -- Request body for Open Telemetry events
 
 internal struct OTRequestBody: Codable, Sendable {
   let resourceMetrics: [OTEvent]
+}
+
+internal struct OTLogsRequestBody: Codable, Sendable {
+  let resourceLogs: [OTResourceLogs]
 }
