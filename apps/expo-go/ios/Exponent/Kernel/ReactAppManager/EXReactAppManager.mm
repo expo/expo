@@ -11,6 +11,7 @@
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
+#import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
@@ -76,6 +77,10 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (id)reactHost {
   return _expoAppInstance.reactNativeFactory.rootViewFactory.reactHost;
+}
+
+- (RCTModuleRegistry *)reactModuleRegistry {
+  return ((RCTHost *)self.reactHost).moduleRegistry;
 }
 
 - (void)setAppRecord:(EXKernelAppRecord *)appRecord
@@ -510,7 +515,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (RCTDevSettings *)_devSettings
 {
-  return (RCTDevSettings *)[[self.reactHost moduleRegistry] moduleForName:"DevSettings"];
+  return (RCTDevSettings *)[self.reactModuleRegistry moduleForName:"DevSettings"];
 }
 
 - (BOOL)isHotLoadingEnabled
@@ -525,7 +530,7 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (BOOL)isPerfMonitorAvailable
 {
-  id perfMonitor = [[self.reactHost moduleRegistry] moduleForName:"PerfMonitor"];
+  id perfMonitor = [self.reactModuleRegistry moduleForName:"PerfMonitor"];
   return perfMonitor != nil && [self enablesDeveloperTools];
 }
 
