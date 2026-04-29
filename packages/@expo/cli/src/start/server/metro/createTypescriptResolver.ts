@@ -14,9 +14,7 @@ import { installExitHooks } from '../../../utils/exit';
 import type { TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { loadTsConfigPathsAsync } from '../../../utils/tsconfig/loadTsConfigPaths';
 
-const debug = require('debug')(
-  'expo:start:server:metro:typescript-resolver'
-) as typeof console.log;
+const debug = require('debug')('expo:start:server:metro:typescript-resolver') as typeof console.log;
 
 const isAbsolute = process.platform === 'win32' ? path.win32.isAbsolute : path.posix.isAbsolute;
 
@@ -24,7 +22,7 @@ const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 interface SuffixEntry {
   suffix: string;
-  paths: string[];
+  mapping: string[];
 }
 
 interface TsConfigResolveConfig {
@@ -56,17 +54,20 @@ const toResolveConfig = (
     if (!Array.isArray(paths[key])) {
       continue;
     }
-    const starIndex = key.indexOf('*');
-    if (starIndex === -1) {
-      exactMatches[key] = paths[key];
-    } else {
-      const prefix = key.slice(0, starIndex);
-      const suffix = key.slice(starIndex + 1);
-      if (!prefixMap[prefix]) {
-        prefixMap[prefix] = [];
-        seenPrefixes.push(prefix);
+    const mapping = paths[key].filter((p) => typeof p === 'string' && !p.endsWith('.d.ts'));
+    if (mapping.length > 0) {
+      const starIndex = key.indexOf('*');
+      if (starIndex === -1) {
+        exactMatches[key] = mapping;
+      } else {
+        const prefix = key.slice(0, starIndex);
+        const suffix = key.slice(starIndex + 1);
+        if (!prefixMap[prefix]) {
+          prefixMap[prefix] = [];
+          seenPrefixes.push(prefix);
+        }
+        prefixMap[prefix].push({ suffix, mapping });
       }
-      prefixMap[prefix].push({ suffix, paths: paths[key] });
     }
   }
 
@@ -105,7 +106,6 @@ function resolveWithTsConfigPaths(
   const exactPaths = config.exactMatches[moduleName];
   if (exactPaths) {
     for (const alias of exactPaths) {
-      if (/\.d\.ts$/.test(alias)) continue;
       const possibleResult = path.join(config.baseUrl, alias);
       const result = resolve(possibleResult);
       if (result) {
@@ -125,9 +125,8 @@ function resolveWithTsConfigPaths(
       for (const entry of config.prefixMap[prefix]!) {
         if (entry.suffix && !rest.endsWith(entry.suffix)) continue;
         const star = entry.suffix ? rest.slice(0, -entry.suffix.length) : rest;
-        for (const alias of entry.paths) {
+        for (const alias of entry.mapping) {
           const nextModuleName = alias.replace('*', star);
-          if (/\.d\.ts$/.test(nextModuleName)) continue;
           const possibleResult = path.join(config.baseUrl, nextModuleName);
           const result = resolve(possibleResult);
           if (result) {
