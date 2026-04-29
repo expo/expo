@@ -46,6 +46,8 @@ This metric is collected automatically.
 
 **What it measures:** A warm launch happens when the OS already has the app process in memory and only needs to bring it back to the foreground and recreate the view hierarchy. Unlike a cold launch, most native resources and services are already in memory, so this type of launch is significantly faster.
 
+Apps can't pre-warm themselves: the OS decides which processes stay in memory based on system pressure and recent use. You can influence the duration of a warm launch, but not whether one happens.
+
 This metric is collected automatically.
 
 **How to improve:**
