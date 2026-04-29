@@ -1,5 +1,5 @@
 import type { LinkToOptions, NavigationOptions } from './types';
-import type { Href, Route, RouteInputParams } from '../types';
+import type { Href, RoutePath, RouteInputParams } from '../types';
 export declare function navigate(url: Href, options?: NavigationOptions): void;
 export declare function reload(): void;
 export declare function prefetch(href: Href, options?: NavigationOptions): void;
@@ -78,7 +78,7 @@ export type Router = {
     /**
      * Updates the current route's query params.
      */
-    setParams: <T extends Route>(params: Partial<RouteInputParams<T>>) => void;
+    setParams: <T extends RoutePath>(params: Partial<RouteInputParams<T>>) => void;
     /**
      * Reloads the currently mounted route in experimental server mode. This can be used to re-fetch data.
      * @hidden
