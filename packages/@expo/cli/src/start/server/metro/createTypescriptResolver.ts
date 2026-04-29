@@ -94,11 +94,7 @@ function resolveWithTsConfigPaths(
 ): Resolution | null {
   if (
     // Library authors cannot utilize this feature in userspace.
-    /node_modules/.test(originModulePath) ||
-    // Absolute paths are not supported
-    isAbsolute(moduleName) ||
-    // Relative paths are not supported
-    /^\.\.?($|[\\/])/.test(moduleName)
+    /node_modules/.test(originModulePath)
   ) {
     return null;
   }
@@ -202,10 +198,15 @@ export function createTypescriptResolver(
     return undefined;
   }
 
+  const fileSpecifierRe = /^[\\/]|^\.\.?(?:$|[\\/])/i;
+
   return function requestTsconfigPaths(immutableContext, moduleName, platform) {
     if (!input.current) {
       return null;
+    } else if (fileSpecifierRe.test(moduleName)) {
+      return null;
     }
+
     return resolveWithTsConfigPaths(
       input.current,
       moduleName,
