@@ -23,6 +23,7 @@ import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
+import { patchMetroGetAsset } from './dev-server/patchMetroAssets';
 import { runServer, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { events, shouldReduceLogs } from '../../../events';
@@ -297,6 +298,10 @@ export async function instantiateMetroAsync(
   middleware: any;
   messageSocket: MessageSocket;
 }> {
+  // Patch Metro's getAsset to fix scaled asset resolution (e.g. icon@2x.png)
+  // TODO(@kitten): Remove once metro hotfixes are published with the upstream fix
+  patchMetroGetAsset();
+
   const projectRoot = metroBundler.projectRoot;
   const getMetroBundler = () => metro.getBundler().getBundler();
 
