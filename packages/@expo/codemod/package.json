@@ -1,0 +1,52 @@
+{
+  "name": "@expo/codemod",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Codemods for migrating Expo apps between SDK versions",
+  "license": "MIT",
+  "keywords": [
+    "codemod",
+    "expo",
+    "expo-router",
+    "react-navigation"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/codemod",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/codemod"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "bin": {
+    "expo-codemod": "./bin/expo-codemod.js"
+  },
+  "main": "build",
+  "files": [
+    "bin",
+    "build"
+  ],
+  "scripts": {
+    "build": "expo-module tsc",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "typecheck": "expo-module typecheck",
+    "test": "expo-module test",
+    "watch": "pnpm run build --watch --preserveWatchOutput",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "jscodeshift": "^17.1.2",
+    "tinyglobby": "^0.2.15"
+  },
+  "devDependencies": {
+    "@types/jscodeshift": "^17.0.0",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
+  }
+}
