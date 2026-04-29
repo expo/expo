@@ -93,8 +93,11 @@ public struct CrashReport: Codable, Sendable {
       public let offsetIntoBinaryTextSegment: UInt64?
       public let sampleCount: Int?
       public let subFrames: [Frame]?
-      /// Resolved symbol from on-device `dladdr` symbolication. Mangled for Swift symbols.
-      /// `nil` when the binary is not loaded in this process or `dladdr` could not resolve it.
+      /**
+       Resolved symbol from on-device `dladdr` symbolication. Swift and Itanium-ABI C++
+       names are demangled; Objective-C selectors and plain C symbols are returned as-is.
+       `nil` when the binary is not loaded in this process or `dladdr` could not resolve it.
+       */
       public let symbol: String?
     }
   }

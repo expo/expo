@@ -9,7 +9,9 @@ import MachO
  Limitations:
  - Only resolves frames from binaries currently loaded in this process. System frames
    from a previous launch may not be loaded here, in which case we leave them as-is.
- - Swift symbols are demangled on-device via `swift_demangle` from `libswiftCore.dylib`.
+ - Swift symbols are demangled via `swift_demangle` (libswiftCore); Itanium-ABI C++
+   symbols are demangled via `__cxa_demangle` (libc++abi). Other forms (Obj-C
+   selectors, plain C) are returned unchanged.
  - No source file / line number resolution — those require the dSYM and are not on device.
  - Inlined call chains are not recovered for the same reason.
 

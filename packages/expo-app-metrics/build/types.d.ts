@@ -131,8 +131,9 @@ export type CallStackFrame = {
     sampleCount?: number | null;
     subFrames?: CallStackFrame[] | null;
     /**
-     * Resolved symbol from on-device `dladdr` symbolication. Mangled for Swift symbols.
-     * `null` when the binary is not loaded in this process or could not be resolved.
+     * Resolved symbol from on-device `dladdr` symbolication. Swift and Itanium-ABI C++
+     * names are demangled; Objective-C selectors and plain C symbols are returned as-is.
+     * `null` when the binary is not loaded in this process or `dladdr` could not resolve it.
      *
      * @platform ios
      */
