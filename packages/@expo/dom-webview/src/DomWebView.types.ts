@@ -38,6 +38,44 @@ export interface DomWebViewProps
   webviewDebuggingEnabled?: boolean;
 
   /**
+   * Whether HTML5 videos may play inline. When `false`, video elements are
+   * forced into fullscreen playback. The default is `true`. Note: this differs
+   * from `react-native-webview`, which defaults to `false`.
+   *
+   * Setting this prop after the webview is constructed has no effect.
+   * @platform ios
+   */
+  allowsInlineMediaPlayback?: boolean;
+
+  /**
+   * Whether HTML5 video and audio require a user gesture before they can play.
+   * When `true`, media will not autoplay; when `false`, media may play
+   * automatically. The default is `true`, matching browser best practice.
+   *
+   * Setting this prop after the webview is constructed has no effect on iOS.
+   */
+  mediaPlaybackRequiresUserAction?: boolean;
+
+  /**
+   * Whether HTML5 videos can play in Picture-in-Picture mode. The default is
+   * `true`. Note: this differs from `react-native-webview`, which defaults to
+   * `false`.
+   *
+   * Setting this prop after the webview is constructed has no effect.
+   * @platform ios
+   */
+  allowsPictureInPictureMediaPlayback?: boolean;
+
+  /**
+   * Whether HTML5 videos may stream over AirPlay. The default is `true`. Note:
+   * this differs from `react-native-webview`, which defaults to `false`.
+   *
+   * Setting this prop after the webview is constructed has no effect.
+   * @platform ios
+   */
+  allowsAirPlayForMediaPlayback?: boolean;
+
+  /**
    * Function that is invoked when the webview calls `window.ReactNativeWebView.postMessage`.
    * Setting this property will inject this global into your webview.
    *
@@ -45,6 +83,24 @@ export interface DomWebViewProps
    * available on the event object, `event.nativeEvent.data`. `data` must be a string.
    */
   onMessage?: (event: { nativeEvent: MessageEventData }) => void;
+
+  /**
+   * Function that is invoked when the `WebView` content process is terminated.
+   * This can happen when the OS kills the WebView process to reclaim memory.
+   * Use this to reload the WebView or show an error state.
+   * @platform ios
+   */
+  onContentProcessDidTerminate?: (event: { nativeEvent: { url: string; title: string } }) => void;
+
+  /**
+   * Function that is invoked when the `WebView` render process is gone.
+   * This can happen when the OS kills the WebView process to reclaim memory, or the process crashes.
+   * Use this to reload the WebView or show an error state.
+   * @platform android
+   */
+  onRenderProcessGone?: (event: {
+    nativeEvent: { url: string; title: string; didCrash: boolean };
+  }) => void;
 
   /**
    * Boolean value that determines whether a horizontal scroll indicator is
@@ -96,9 +152,23 @@ interface IosScrollViewProps {
   pagingEnabled?: boolean;
 
   /**
+   * Controls whether to adjust the content inset for web views that are placed
+   * behind a navigation bar, tab bar, or toolbar. The default value is `true`.
+   *
+   * When `true`, the safe-area insets of the nearest enclosing view controller
+   * are added on top of `contentInset` before being applied to the web view's
+   * scroll view.
+   * @platform ios
+   */
+  automaticallyAdjustContentInsets?: boolean;
+
+  /**
    * Controls whether to adjust the scroll indicator inset for web views that are
-   * placed behind a navigation bar, tab bar, or toolbar. The default value
-   * is `false`. (iOS 13+)
+   * placed behind a navigation bar, tab bar, or toolbar. The default value is `true`,
+   * matching the UIKit default. Set this to `false` to make the scroll indicator
+   * span the full webview frame (e.g. for full-bleed layouts that draw their own
+   * overlays). Note: this differs from `react-native-webview`, which defaults to
+   * `false`.
    * @platform ios
    */
   automaticallyAdjustsScrollIndicatorInsets?: boolean;
@@ -106,14 +176,22 @@ interface IosScrollViewProps {
   /**
    * The amount by which the web view content is inset from the edges of
    * the scroll view. Defaults to {top: 0, left: 0, bottom: 0, right: 0}.
+   *
+   * When `automaticallyAdjustContentInsets` is `true` (the default), the
+   * enclosing view controller's safe-area insets are added on top of this
+   * value. Set `automaticallyAdjustContentInsets={false}` to apply this value
+   * verbatim.
    * @platform ios
    */
   contentInset?: ContentInsetProp;
 
   /**
-   * This property specifies how the safe area insets are used to modify the
-   * content area of the scroll view. The default value of this property is
-   * "never". Available on iOS 11 and later.
+   * Specifies how the safe area insets are used to modify the content area of
+   * the scroll view. The default value is `"automatic"`, matching the UIKit
+   * default — content is automatically inset by the enclosing view controller's
+   * safe-area insets. Set this to `"never"` to render content edge-to-edge
+   * regardless of safe areas. Note: this differs from `react-native-webview`,
+   * which defaults to `"never"`.
    */
   contentInsetAdjustmentBehavior?: 'automatic' | 'scrollableAxes' | 'never' | 'always';
 
@@ -138,14 +216,18 @@ interface AndroidProps {
 
 /**
  * Unsupported RNC WebView props that to suppress TypeScript errors.
+ *
+ * `allowFileAccess` and `allowFileAccessFromFileURLs` are intentionally listed
+ * here even though file access is wired up natively — they're enabled
+ * implicitly so DOM bundles served from `file://` work without configuration.
+ * Listing them here lets the shared wrapper pass the props through without TS
+ * errors.
  */
 interface UnsupportedWebViewProps {
   originWhitelist?: string[];
   allowFileAccess?: boolean;
   allowFileAccessFromFileURLs?: boolean;
-  allowsAirPlayForMediaPlayback?: boolean;
   allowsFullscreenVideo?: boolean;
-  automaticallyAdjustContentInsets?: boolean;
 }
 
 export type DomWebViewRef = {
@@ -169,6 +251,11 @@ export type DomWebViewRef = {
    * Injects a JavaScript string into the `WebView` and executes it.
    */
   injectJavaScript: (script: string) => void;
+
+  /**
+   * Reloads the current page in the `WebView`.
+   */
+  reload: () => void;
 };
 
 export interface DomWebViewSource {

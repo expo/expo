@@ -18,7 +18,7 @@ public final class DomWebViewModule: Module {
 
     // swiftlint:disable closure_body_length
     View(DomWebView.self) {
-      Events("onMessage")
+      Events("onMessage", "onContentProcessDidTerminate")
 
       Prop("source") { (view: DomWebView, source: DomWebViewSource) in
         view.setSource(source)
@@ -40,10 +40,28 @@ public final class DomWebViewModule: Module {
         view.webviewDebuggingEnabled = enabled
       }
 
+      // MARK: - WKWebViewConfiguration props (init-only)
+
+      Prop("allowsInlineMediaPlayback") { (view: DomWebView, enabled: Bool) in
+        view.allowsInlineMediaPlayback = enabled
+      }
+
+      Prop("mediaPlaybackRequiresUserAction") { (view: DomWebView, enabled: Bool) in
+        view.mediaPlaybackRequiresUserAction = enabled
+      }
+
+      Prop("allowsPictureInPictureMediaPlayback") { (view: DomWebView, enabled: Bool) in
+        view.allowsPictureInPictureMediaPlayback = enabled
+      }
+
+      Prop("allowsAirPlayForMediaPlayback") { (view: DomWebView, enabled: Bool) in
+        view.allowsAirPlayForMediaPlayback = enabled
+      }
+
       // MARK: - IosScrollViewProps
 
       Prop("bounces") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.bounces = enabled
+        view.bounces = enabled
       }
 
       Prop("decelerationRate") { (view: DomWebView, decelerationRate: Either<String, Double>) in
@@ -63,35 +81,39 @@ public final class DomWebViewModule: Module {
       }
 
       Prop("scrollEnabled") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.isScrollEnabled = enabled
+        view.scrollEnabled = enabled
       }
 
       Prop("pagingEnabled") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.isPagingEnabled = enabled
+        view.pagingEnabled = enabled
+      }
+
+      Prop("automaticallyAdjustContentInsets") { (view: DomWebView, enabled: Bool) in
+        view.automaticallyAdjustContentInsets = enabled
       }
 
       Prop("automaticallyAdjustsScrollIndicatorInsets") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = enabled
+        view.automaticallyAdjustsScrollIndicatorInsets = enabled
       }
 
       Prop("contentInset") { (view: DomWebView, inset: ContentInset) in
-        view.webView.scrollView.contentInset = inset.toEdgeInsets()
+        view.contentInset = inset.toEdgeInsets()
       }
 
       Prop("contentInsetAdjustmentBehavior") { (view: DomWebView, value: ContentInsetAdjustmentBehavior) in
-        view.webView.scrollView.contentInsetAdjustmentBehavior = value.toContentInsetAdjustmentBehavior()
+        view.contentInsetAdjustmentBehavior = value.toContentInsetAdjustmentBehavior()
       }
 
       Prop("directionalLockEnabled") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.isDirectionalLockEnabled = enabled
+        view.directionalLockEnabled = enabled
       }
 
       Prop("showsHorizontalScrollIndicator") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.showsHorizontalScrollIndicator = enabled
+        view.showsHorizontalScrollIndicator = enabled
       }
 
       Prop("showsVerticalScrollIndicator") { (view: DomWebView, enabled: Bool) in
-        view.webView.scrollView.showsVerticalScrollIndicator = enabled
+        view.showsVerticalScrollIndicator = enabled
       }
 
       // MARK: - Imperative methods
@@ -102,6 +124,10 @@ public final class DomWebViewModule: Module {
 
       AsyncFunction("injectJavaScript") { (view: DomWebView, script: String) in
         view.injectJavaScript(script)
+      }
+
+      AsyncFunction("reload") { (view: DomWebView) in
+        view.forceReload()
       }
 
       OnViewDidUpdateProps { view in

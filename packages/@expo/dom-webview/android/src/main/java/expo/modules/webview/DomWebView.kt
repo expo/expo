@@ -7,12 +7,16 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.os.Build
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnTouchListener
 import android.view.ViewGroup
+import android.webkit.RenderProcessGoneDetail
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import expo.modules.core.logging.LogHandlers
+import expo.modules.core.logging.Logger
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
@@ -31,12 +35,23 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   private var injectedJS: String? = null
   private var injectedJSBeforeContentLoaded: String? = null
   private val rncWebViewBridge = RNCWebViewBridge(this@DomWebView)
-  var webviewDebuggingEnabled = false
+  var webviewDebuggingEnabled: Boolean = false
+    set(value) {
+      field = value
+      WebView.setWebContentsDebuggingEnabled(value)
+    }
   var nestedScrollEnabled = true
+
+  var mediaPlaybackRequiresUserAction: Boolean
+    get() = webView.settings.mediaPlaybackRequiresUserGesture
+    set(value) {
+      webView.settings.mediaPlaybackRequiresUserGesture = value
+    }
 
   private var needsResetupScripts = false
 
   private val onMessage by EventDispatcher<OnMessageEvent>()
+  private val onRenderProcessGone by EventDispatcher<OnRenderProcessGoneEvent>()
 
   init {
     this.webView = createWebView()
@@ -49,19 +64,36 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   // region Public methods
 
   fun reload() {
-    WebView.setWebContentsDebuggingEnabled(webviewDebuggingEnabled)
-
-    source?.uri?.let {
-      if (it != webView.url) {
-        webView.loadUrl(it)
-      }
+    val sourceUri = source?.uri
+    if (sourceUri != null && sourceUri != webView.url) {
+      needsResetupScripts = false
+      webView.loadUrl(sourceUri)
       return
     }
 
     if (needsResetupScripts) {
+      // onPageStarted re-injects scripts, so a reload is required when only the scripts changed.
       needsResetupScripts = false
       webView.reload()
     }
+  }
+
+  fun forceReload() {
+    webView.post {
+      if (webView.url != null) {
+        webView.reload()
+      } else {
+        source?.uri?.let { webView.loadUrl(it) }
+      }
+    }
+  }
+
+  internal fun onViewDestroys() {
+    webView.removeJavascriptInterface("ReactNativeWebView")
+    webView.removeJavascriptInterface("ExpoDomWebViewBridge")
+    removeAllViews()
+    webView.destroy()
+    DomWebViewRegistry.remove(webViewId)
   }
 
   fun setSource(source: DomWebViewSource) {
@@ -153,6 +185,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
     return WebView(context).apply {
       setBackgroundColor(Color.TRANSPARENT)
       settings.javaScriptEnabled = true
+      // API 30+ default disables file access; DOM bundles need it for sibling assets.
+      settings.allowFileAccess = true
+      settings.allowFileAccessFromFileURLs = true
       webViewClient = createWebViewClient()
       addJavascriptInterface(rncWebViewBridge, "ReactNativeWebView")
       addJavascriptInterface(DomWebViewBridge(this@DomWebView), "ExpoDomWebViewBridge")
@@ -163,9 +198,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   private fun createWebViewClient() = object : WebViewClient() {
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
       super.onPageStarted(view, url, favicon)
-      injectJavaScript(INSTALL_GLOBALS_SCRIPT.replace("\"%%WEBVIEW_ID%%\"", webViewId.toString()))
-      this@DomWebView.injectedJSBeforeContentLoaded?.let {
-        injectJavaScript(it)
+      view?.evaluateJavascript(INSTALL_GLOBALS_SCRIPT.replace("\"%%WEBVIEW_ID%%\"", webViewId.toString()), null)
+      this@DomWebView.injectedJSBeforeContentLoaded?.let { script ->
+        view?.evaluateJavascript(script, null)
       }
     }
 
@@ -174,6 +209,31 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
       this@DomWebView.injectedJS?.let {
         injectJavaScript(it)
       }
+    }
+
+    override fun onRenderProcessGone(view: WebView?, detail: RenderProcessGoneDetail?): Boolean {
+      if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        return false
+      }
+      val didCrash = detail?.didCrash() ?: false
+      if (didCrash) {
+        log.error("The WebView rendering process crashed.")
+      } else {
+        log.warn("The WebView rendering process was killed by the system.")
+      }
+      // If view is null, the WebView has already been disposed and there's
+      // nothing left to dispatch. Returning true still prevents the app crash.
+      if (view == null) {
+        return true
+      }
+      this@DomWebView.onRenderProcessGone(
+        OnRenderProcessGoneEvent(
+          url = view.url ?: "",
+          title = view.title ?: "",
+          didCrash = didCrash
+        )
+      )
+      return true
     }
   }
 
@@ -195,4 +255,8 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   }
 
   // endregion Internals
+
+  companion object {
+    private val log = Logger(listOf(LogHandlers.createOSLogHandler("DomWebView")))
+  }
 }
