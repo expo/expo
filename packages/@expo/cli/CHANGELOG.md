@@ -37,6 +37,7 @@
 - Fix mangled async chunk filenames for catch-all routes ([#43547](https://github.com/expo/expo/pull/43547) by [@hassankhan](https://github.com/hassankhan))
 - Consistently resolve `mainModuleName`s using `convertEntryPointToRelative` and fix relative path semantics of `--entry-file` argumnts, which was previously expected to be relative to the server root rather than the project root. This fixes build issues when using export commands for projects in monorepos on Windows ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
 - Avoid writing plugin state to app config when writing the package name or bundle identifier. ([#45136](https://github.com/expo/expo/pull/45136) by [@alanjhughes](https://github.com/alanjhughes))
+- Remove CDP target filter which was connecting to evaluate target properties; meant to exclude dev-menu ([#45201](https://github.com/expo/expo/pull/45201) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
