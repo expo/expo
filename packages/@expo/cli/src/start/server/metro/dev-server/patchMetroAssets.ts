@@ -5,10 +5,6 @@
  * Metro's `getAsset` validates the base asset path via `fileExistsInFileMap` before resolving
  * scaled variants. If only scaled files exist (no `@1x` base), the check throws prematurely.
  *
- * This patch wraps `getAsset` so that when the `fileExistsInFileMap` check fails, it retries
- * without it — falling back to Metro's `pathBelongsToRoots` validation which doesn't have
- * this bug.
- *
  * TODO(@kitten): Remove once metro hotfixes is published with the upstream fix.
  * See: https://github.com/facebook/metro/commit/c6478d78e9ec5a3442a9dc35077d8bf8e3a7d669
  */
