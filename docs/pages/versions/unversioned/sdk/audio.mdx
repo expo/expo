@@ -169,6 +169,9 @@ export default function App() {
       setAudioModeAsync({
         playsInSilentMode: true,
         allowsRecording: true,
+        // To record in the background, also set allowsBackgroundRecording: true
+        // and enable the enableBackgroundRecording config plugin option.
+        // See "Recording audio in the background" below.
       });
     })();
   }, []);
