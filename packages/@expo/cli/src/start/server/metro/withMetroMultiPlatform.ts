@@ -35,16 +35,12 @@ import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolv
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
-import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-import { installExitHooks } from '../../../utils/exit';
 import { resolveWatchFolders } from '../../../utils/resolveWatchFolders';
-import type { TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { loadTsConfigPathsAsync } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
+import { createTypescriptResolver } from './createTypescriptResolver';
 
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (
@@ -174,14 +170,12 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
 export function withExtendedResolver(
   config: ConfigT,
   {
-    tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
-    tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
     isExporting?: boolean;
@@ -240,53 +234,6 @@ export function withExtendedResolver(
     // https://github.com/expo/router/issues/37
     web: ['browser', 'module', 'main'],
   };
-
-  let tsConfigResolve =
-    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
-      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-          paths: tsconfig.paths ?? {},
-          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
-          hasBaseUrl: !!tsconfig.baseUrl,
-        })
-      : null;
-
-  // TODO: Move this to be a transform key for invalidation.
-  if (!isExporting && !env.CI) {
-    if (isTsconfigPathsEnabled) {
-      // TODO: We should track all the files that used imports and invalidate them
-      // currently the user will need to save all the files that use imports to
-      // use the new aliases.
-      // TODO(@kitten): It's unclear why we don't use Metro here, also the above todo is
-      // infeasible without switching to Metro and somehow cascading
-      const configWatcher = new FileNotifier(config.projectRoot, [
-        './tsconfig.json',
-        './jsconfig.json',
-      ]);
-      configWatcher.startObserving(() => {
-        debug('Reloading tsconfig.json');
-        loadTsConfigPathsAsync(config.projectRoot).then((tsConfigPaths) => {
-          if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
-            debug('Enabling tsconfig.json paths support');
-            tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-              paths: tsConfigPaths.paths ?? {},
-              baseUrl: tsConfigPaths.baseUrl ?? config.projectRoot,
-              hasBaseUrl: !!tsConfigPaths.baseUrl,
-            });
-          } else {
-            debug('Disabling tsconfig.json paths support');
-            tsConfigResolve = null;
-          }
-        });
-      });
-
-      // TODO: This probably prevents the process from exiting.
-      installExitHooks(() => {
-        configWatcher.stopObserving();
-      });
-    } else {
-      debug('Skipping tsconfig.json paths support');
-    }
-  }
 
   let nodejsSourceExtensions: string[] | null = null;
 
@@ -453,22 +400,15 @@ export function withExtendedResolver(
       }
       return null;
     },
-    // tsconfig paths
-    function requestTsconfigPaths(
-      context: ResolutionContext,
-      moduleName: string,
-      platform: string | null
-    ) {
-      return (
-        tsConfigResolve?.(
-          {
-            originModulePath: context.originModulePath,
-            moduleName,
-          },
-          getOptionalResolver(context, platform)
-        ) ?? null
-      );
-    },
+
+    isTsconfigPathsEnabled
+      ? createTypescriptResolver({
+          getStrictResolver,
+          projectRoot: config.projectRoot,
+          getMetroBundler,
+          watch: !isExporting && !env.CI,
+        })
+      : undefined,
 
     // Node.js externals support
     function requestNodeExternals(
@@ -995,12 +935,6 @@ export async function withMetroMultiPlatformAsync(
     );
   }
 
-  let tsconfig: null | TsConfigPaths = null;
-
-  if (isTsconfigPathsEnabled) {
-    tsconfig = await loadTsConfigPathsAsync(projectRoot);
-  }
-
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
       ([platform, bundler]) => bundler === 'metro' && exp.platforms?.includes(platform as Platform)
@@ -1025,9 +959,8 @@ export async function withMetroMultiPlatformAsync(
 
   return withExtendedResolver(config, {
     autolinkingModuleResolverInput,
-    tsconfig,
-    isExporting,
     isTsconfigPathsEnabled,
+    isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });

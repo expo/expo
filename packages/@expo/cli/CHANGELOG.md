@@ -38,6 +38,7 @@
 - Consistently resolve `mainModuleName`s using `convertEntryPointToRelative` and fix relative path semantics of `--entry-file` argumnts, which was previously expected to be relative to the server root rather than the project root. This fixes build issues when using export commands for projects in monorepos on Windows ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
 - Avoid writing plugin state to app config when writing the package name or bundle identifier. ([#45136](https://github.com/expo/expo/pull/45136) by [@alanjhughes](https://github.com/alanjhughes))
 - Remove CDP target filter which was connecting to evaluate target properties; meant to exclude dev-menu ([#45201](https://github.com/expo/expo/pull/45201) by [@kitten](https://github.com/kitten))
+- Support TypeScript `tsconfig.json` with `paths` config without `baseUrl` properly, and `jsconfig.json` with full `extends` semantics ([#45227](https://github.com/expo/expo/pull/45227) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -57,6 +58,7 @@
 - Update to `dnssd-advertise@^1.1.4` ([#44589](https://github.com/expo/expo/pull/44589) by [@kitten](https://github.com/kitten))
 - Update to `multitars@^1.0.0` ([#44774](https://github.com/expo/expo/pull/44774) by [@kitten](https://github.com/kitten))
 - [Internal] Improve performance of internal debug logging ([#44706](https://github.com/expo/expo/pull/44706) by [@kitten](https://github.com/kitten))
+- Implement freestanding, faster TypeScript resolver ([#45227](https://github.com/expo/expo/pull/45227) by [@kitten](https://github.com/kitten))
 
 ## 55.0.12 — 2026-02-25
 
