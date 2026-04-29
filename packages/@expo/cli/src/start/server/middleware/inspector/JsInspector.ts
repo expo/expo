@@ -1,7 +1,6 @@
 import type { CustomMessageHandlerConnection } from '@react-native/dev-middleware';
 import chalk from 'chalk';
 
-import { evaluateJsFromCdpAsync } from './CdpClient';
 import { selectAsync } from '../../../../utils/prompts';
 import { pageIsSupported } from '../../metro/debugging/pageIsSupported';
 
@@ -92,27 +91,7 @@ export async function queryAllInspectorAppsAsync(
   // The newest runtime will be at the end of the list,
   // reversing the result would save time from try-error.
   const apps: MetroInspectorProxyApp[] = (await resp.json()).reverse();
-  const results: MetroInspectorProxyApp[] = [];
-  for (const app of apps) {
-    // Only use targets with better reloading support
-    if (!pageIsSupported(app)) {
-      continue;
-    }
-
-    try {
-      // Hide targets that are marked as hidden from the inspector, e.g. instances from expo-dev-menu and expo-dev-launcher.
-      if (await appShouldBeIgnoredAsync(app)) {
-        continue;
-      }
-    } catch (e: unknown) {
-      // If we can't evaluate the JS, we just ignore the error and skips the target.
-      debug(`Can't evaluate the JS on the app:`, JSON.stringify(e, null, 2));
-      continue;
-    }
-
-    results.push(app);
-  }
-  return results;
+  return apps.filter((app) => pageIsSupported(app));
 }
 
 export async function promptInspectorAppAsync(apps: MetroInspectorProxyApp[]) {
@@ -138,17 +117,4 @@ export async function promptInspectorAppAsync(apps: MetroInspectorProxyApp[]) {
   const value = await selectAsync(chalk`Debug target {dim (Hermes only)}`, choices);
 
   return choices.find((item) => item.value === value)?.app;
-}
-
-const HIDE_FROM_INSPECTOR_ENV = 'globalThis.__expo_hide_from_inspector__';
-
-async function appShouldBeIgnoredAsync(app: MetroInspectorProxyApp): Promise<boolean> {
-  const hideFromInspector = await evaluateJsFromCdpAsync(
-    app.webSocketDebuggerUrl,
-    HIDE_FROM_INSPECTOR_ENV
-  );
-  debug(
-    `[appShouldBeIgnoredAsync] webSocketDebuggerUrl[${app.webSocketDebuggerUrl}] hideFromInspector[${hideFromInspector}]`
-  );
-  return hideFromInspector !== undefined;
 }
