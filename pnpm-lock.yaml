@@ -1788,6 +1788,9 @@ importers:
       '@expo/metro-config':
         specifier: workspace:~55.0.9
         version: link:../metro-config
+      '@expo/metro-file-map':
+        specifier: workspace:55.0.0
+        version: link:../metro-file-map
       '@expo/osascript':
         specifier: workspace:^2.4.2
         version: link:../osascript
@@ -2581,6 +2584,49 @@ importers:
       sass:
         specifier: ^1.60.0
         version: 1.98.0
+
+  packages/@expo/metro-file-map:
+    dependencies:
+      debug:
+        specifier: ^4.3.4
+        version: 4.4.3
+      fb-watchman:
+        specifier: ^2.0.2
+        version: 2.0.2
+      invariant:
+        specifier: ^2.2.4
+        version: 2.2.4
+      jest-worker:
+        specifier: ^29.7.0
+        version: 29.7.0
+      micromatch:
+        specifier: ^4.0.4
+        version: 4.0.8
+      walker:
+        specifier: ^1.0.8
+        version: 1.0.8
+    devDependencies:
+      '@expo/metro':
+        specifier: 56.0.0-rc.0
+        version: 56.0.0-rc.0
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.12
+      '@types/fb-watchman':
+        specifier: ^2.0.6
+        version: 2.0.6
+      '@types/invariant':
+        specifier: ^2.2.37
+        version: 2.2.37
+      '@types/micromatch':
+        specifier: ^4.0.10
+        version: 4.0.10
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
 
   packages/@expo/metro-runtime:
     dependencies:
@@ -9041,6 +9087,9 @@ packages:
 
   '@types/express@5.0.6':
     resolution: {integrity: sha512-sKYVuV7Sv9fbPIt/442koC7+IIwK5olP1KWeD88e/idgoJqDm3JV/YUiPwkoKK92ylff2MGxSz1CSjsXelx0YA==}
+
+  '@types/fb-watchman@2.0.6':
+    resolution: {integrity: sha512-1uLrko2lamBq7v5gZQOEnHa+GzK7wkPeGndFijhhK5kjqqXLVfzfeL6bVLiKCqVNaM5BVVcKRQ2Z57AzH4HcyA==}
 
   '@types/fbemitter@2.0.35':
     resolution: {integrity: sha512-Xem6d7qUfmouCHntCrRYgDBwbf+WWRd6G+7WEFlEZFZ67LZXiYRvT2LV8wcZa6mIaAil95+ABQdKgB6hPIsnng==}
@@ -19322,6 +19371,10 @@ snapshots:
       '@types/body-parser': 1.19.6
       '@types/express-serve-static-core': 5.1.1
       '@types/serve-static': 2.2.0
+
+  '@types/fb-watchman@2.0.6':
+    dependencies:
+      '@types/node': 22.19.15
 
   '@types/fbemitter@2.0.35': {}
 

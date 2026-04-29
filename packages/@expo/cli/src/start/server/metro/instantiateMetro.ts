@@ -20,6 +20,7 @@ import path from 'path';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { replaceMetroFileMap } from './createFileMap-fork';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
@@ -376,19 +377,23 @@ export async function instantiateMetroAsync(
       }
     : undefined;
 
-  const { address, server, hmrServer, metro } = await runServer(
-    metroBundler,
-    metroConfig,
-    {
-      host: options.host,
-      websocketEndpoints,
-      watch: !isExporting && isWatchEnabled(),
-      secureServerOptions,
-    },
-    {
-      mockServer: isExporting,
-    }
-  );
+  const watch = !isExporting && isWatchEnabled();
+
+  const { address, server, hmrServer, metro } = await replaceMetroFileMap(() => {
+    return runServer(
+      metroBundler,
+      metroConfig,
+      {
+        host: options.host,
+        websocketEndpoints,
+        watch,
+        secureServerOptions,
+      },
+      {
+        mockServer: isExporting,
+      }
+    );
+  });
 
   event('instantiate', {
     atlas: env.EXPO_ATLAS,
