@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [android] Follow system day/night theme in crop activity. ([#44944](https://github.com/expo/expo/pull/44944) by [@jeferson-sb](https://github.com/jeferson-sb))
 - [android] Handle edge-to-edge display in crop activity. ([#44208](https://github.com/expo/expo/pull/44208) by [@zoontek](https://github.com/zoontek))
 - fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
 - [android] fix cropper default colors in light mode ([#42437](https://github.com/expo/expo/pull/42437) by [@fobos531](https://github.com/fobos531))
