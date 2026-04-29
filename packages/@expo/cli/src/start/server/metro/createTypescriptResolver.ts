@@ -32,11 +32,10 @@ interface SuffixEntry {
 }
 
 interface TsConfigResolveConfig {
-  baseUrl: string;
-  hasBaseUrl: boolean;
   exactMatches: Record<string, string[] | undefined>;
   prefixRe: RegExp | null;
   prefixMap: Record<string, SuffixEntry[]>;
+  baseUrl: string | null;
   configNormalPaths: Set<string> | undefined;
 }
 
@@ -177,7 +176,7 @@ function resolveWithTsConfigPaths(
 
   // Only resolve against baseUrl if no `paths` groups were matched.
   // Base URL is resolved after paths, and before node_modules.
-  if (config.hasBaseUrl) {
+  if (config.baseUrl != null) {
     const possibleResult = joinBaseUrl(config.baseUrl, moduleName);
     const result = resolve(possibleResult);
     if (result) {
@@ -219,7 +218,7 @@ function toResolveConfig(
     return null;
   }
 
-  const baseUrl = tsconfig.baseUrl ?? projectRoot;
+  const pathsBasePath = tsconfig.baseUrl ?? tsconfig.pathsBasePath ?? projectRoot;
   const paths = tsconfig.paths ?? {};
   const exactMatches: Record<string, string[]> = Object.create(null);
   const prefixMap: Record<string, SuffixEntry[]> = Object.create(null);
@@ -232,7 +231,7 @@ function toResolveConfig(
     // Pre-join with baseUrl so the hot path avoids path.join entirely
     const mapping = paths[key]
       .filter((p) => typeof p === 'string' && !p.endsWith('.d.ts'))
-      .map((p) => joinBaseUrl(baseUrl, p));
+      .map((p) => joinBaseUrl(pathsBasePath, p));
     if (mapping.length > 0) {
       const starIndex = key.indexOf('*');
       if (starIndex === -1) {
@@ -256,11 +255,10 @@ function toResolveConfig(
     : null;
 
   return {
-    baseUrl,
-    hasBaseUrl: !!tsconfig.baseUrl,
     exactMatches,
     prefixRe,
     prefixMap,
+    baseUrl: tsconfig.baseUrl ?? null,
     configNormalPaths: tsconfig.configNormalPaths,
   };
 }
