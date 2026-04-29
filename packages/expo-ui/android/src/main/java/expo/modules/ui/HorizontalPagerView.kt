@@ -4,8 +4,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.drop
 import androidx.compose.ui.unit.dp
@@ -17,6 +15,7 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.OptimizedComposeProps
+import expo.modules.ui.state.ObservableState
 
 @OptimizedRecord
 data class HorizontalPagerPageSelectedEvent(
@@ -25,9 +24,8 @@ data class HorizontalPagerPageSelectedEvent(
 
 @OptimizedComposeProps
 data class HorizontalPagerProps(
-  val currentPage: Int? = null,
-  val defaultPage: Int = 0,
-  val animatePageChanges: Boolean = true,
+  val currentPageState: ObservableState? = null,
+  val commandState: ObservableState? = null,
   val pageSpacing: Float = 0f,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val userScrollEnabled: Boolean = true,
@@ -42,41 +40,37 @@ fun FunctionalComposableScope.HorizontalPagerContent(
   onPageSelected: (HorizontalPagerPageSelectedEvent) -> Unit
 ) {
   val pageCount = view.size
-  val initialPage = (props.currentPage ?: props.defaultPage).coerceAtLeast(0)
+  val currentPageState = props.currentPageState
+  val initialPage = ((currentPageState?.value as? Number)?.toInt() ?: 0).coerceAtLeast(0)
   val pagerState = rememberPagerState(
     initialPage = initialPage
   ) { pageCount }
 
-  // Suppresses onPageSelected during programmatic scrolls. Without this, the
-  // settledPage collector below would fire onPageSelected with the value the
-  // parent just set via currentPage — a redundant round-trip. For animated
-  // scrolls it also prevents an infinite loop when animateScrollToPage is
-  // cancelled mid-flight and settles at an intermediate page.
-  val isProgrammaticScroll = remember { mutableStateOf(false) }
-
-  LaunchedEffect(props.currentPage) {
-    val target = props.currentPage ?: return@LaunchedEffect
+  // Observe scroll commands from JS. The JS-side seq counter makes consecutive
+  // requests with the same (page, animated) tuple distinct so the Map's
+  // structural equality changes and this effect re-keys.
+  val command = props.commandState?.binding<Map<String, Any?>?>(null)
+  LaunchedEffect(command) {
+    if (command == null) return@LaunchedEffect
+    val target = ((command["page"] as? Number)?.toInt() ?: return@LaunchedEffect).coerceAtLeast(0)
+    val animated = command["animated"] as? Boolean ?: true
     if (pagerState.currentPage != target) {
-      isProgrammaticScroll.value = true
-      try {
-        if (props.animatePageChanges) {
-          pagerState.animateScrollToPage(target)
-        } else {
-          pagerState.scrollToPage(target)
-        }
-      } finally {
-        isProgrammaticScroll.value = false
+      if (animated) {
+        pagerState.animateScrollToPage(target)
+      } else {
+        pagerState.scrollToPage(target)
       }
     }
   }
 
+  // Mirror settled page back to JS. Drop the first emission (pagerState's
+  // initial value) so we don't echo on mount.
   LaunchedEffect(pagerState) {
     snapshotFlow { pagerState.settledPage }
       .drop(1)
       .collect { page ->
-        if (!isProgrammaticScroll.value) {
-          onPageSelected(HorizontalPagerPageSelectedEvent(page))
-        }
+        currentPageState?.value = page
+        onPageSelected(HorizontalPagerPageSelectedEvent(page))
       }
   }
 
