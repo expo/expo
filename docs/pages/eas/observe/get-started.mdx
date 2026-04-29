@@ -192,9 +192,9 @@ For details on filtering, release comparison, and session investigation, see the
 
 You can also query metrics from the terminal using the EAS CLI:
 
-- `eas observe:versions`: List app versions with build and update details.
-- `eas observe:metrics`: Show aggregated performance metrics grouped by app version.
-- `eas observe:events`: Show individual performance events ordered by metric value.
+- `eas observe:versions`: Lists app versions along with their build IDs, update group IDs, and release dates. Useful for finding the version identifiers needed to filter the other commands.
+- `eas observe:metrics`: Shows aggregated performance metrics (such as median, p75, and p95 values) grouped by app version. Use this to compare overall startup performance across releases.
+- `eas observe:events`: Shows individual performance events ordered by metric value, including session and device metadata. Use this to investigate specific slow sessions or outliers.
 
 Run any of these commands with `--help` to see the available flags and arguments.
 
