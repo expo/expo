@@ -20,7 +20,7 @@ function NativeTabsView(props) {
         return ((0, jsx_runtime_1.jsx)(react_tabs_1.TabsContent, { value: tab.routeKey, className: native_tabs_module_css_1.default.tabContent, forceMount: true, children: tab.contentRenderer() }, tab.routeKey));
     });
     return ((0, jsx_runtime_1.jsxs)(react_tabs_1.Tabs, { className: native_tabs_module_css_1.default.nativeTabsContainer, defaultValue: defaultTab.routeKey, value: value, onValueChange: (value) => {
-            props.onTabChange({ selectedKey: value, provenance: 0 });
+            props.onTabChange({ selectedKey: value, provenance: 0, isNativeAction: true });
         }, style: convertNativeTabsPropsToStyleVars(props, currentTab.options), children: [(0, jsx_runtime_1.jsx)(react_tabs_1.TabsList, { "aria-label": "Main", className: native_tabs_module_css_1.default.navigationMenuRoot, children: items }), children] }));
 }
 function TabItem(props) {

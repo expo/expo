@@ -16,8 +16,12 @@ const icon_1 = require("./utils/icon");
 const children_1 = require("../utils/children");
 // TODO(@ubax): add per platform implementations splitted into .platform files
 function NativeTabsView(props) {
-    const { minimizeBehavior, disableIndicator, focusedIndex, provenance, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
-    const deferredFocusedIndex = (0, react_1.useDeferredValue)(focusedIndex);
+    const { minimizeBehavior, disableIndicator, focusedIndex, provenance: provenanceProp, tabs, sidebarAdaptable, nonTriggerChildren, } = props;
+    const stableState = (0, react_1.useMemo)(() => ({
+        focusedIndex,
+        provenance: provenanceProp,
+    }), [focusedIndex, provenanceProp]);
+    const { focusedIndex: deferredFocusedIndex, provenance } = (0, react_1.useDeferredValue)(stableState);
     // We need to check if the deferred index is not out of bounds
     // This can happen when the focused index is the last tab, and user removes that tab
     // In that case the deferred index will still point to the last tab, but after re-render
@@ -59,8 +63,12 @@ function NativeTabsView(props) {
             bottomAccessory: bottomAccessoryFn,
         }, 
         // TODO(@ubax): Adjust docs and add support for tabBarRespectsIMEInsets
-        android: {}, tabBarHidden: props.hidden, onTabSelected: ({ nativeEvent: { selectedScreenKey, provenance: nextProvenance } }) => {
-            props.onTabChange({ selectedKey: selectedScreenKey, provenance: nextProvenance });
+        android: {}, tabBarHidden: props.hidden, onTabSelected: ({ nativeEvent: { selectedScreenKey, provenance: nextProvenance, isNativeAction }, }) => {
+            props.onTabChange({
+                selectedKey: selectedScreenKey,
+                provenance: nextProvenance,
+                isNativeAction,
+            });
         }, children: children }));
 }
 function Screen(props) {

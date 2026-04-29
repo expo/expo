@@ -333,6 +333,8 @@ export interface OnTabChangeEventPayload {
    * contract.
    */
   provenance: number;
+  // TODO(@ubax): consider renaming this field
+  isNativeAction: boolean;
 }
 
 export interface NativeTabsViewProps

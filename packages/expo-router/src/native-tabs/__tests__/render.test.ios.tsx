@@ -379,6 +379,7 @@ describe('First focused tab', () => {
     expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/^index-[-\w]+/);
     expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/^second-[-\w]+/);
     expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost.mock.calls[0][0].navState.selectedScreenKey).toMatch(/^index-[-\w]+/);
     expect(TabsHost.mock.calls[1][0].navState.selectedScreenKey).toMatch(/^second-[-\w]+/);
 
     TabsScreen.mockClear();
