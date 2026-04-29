@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Bump to `@expo/metro@55.1.1` and `metro@0.83.7` ([#45206](https://github.com/expo/expo/pull/45206) by [@kitten](https://github.com/kitten))
+- Remove CDP target filter which was connecting to evaluate target properties; meant to exclude dev-menu ([#45201](https://github.com/expo/expo/pull/45201) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
