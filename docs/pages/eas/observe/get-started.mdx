@@ -46,12 +46,11 @@ Make sure you are using the latest version of `expo`, then install `expo-observe
 Wrap your root layout with `AppMetricsRoot`. This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
 
 ```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
 import { AppMetricsRoot } from 'expo-observe';
 
 function RootLayout() {
-  return {
-    /* your layout */
-  };
+  return <Stack />;
 }
 
 export default AppMetricsRoot.wrap(RootLayout);
