@@ -1,5 +1,5 @@
-import type { Resolution } from '@expo/metro/metro-resolver';
 import TreeFS from '@expo/metro/metro-file-map/lib/TreeFS';
+import type { Resolution } from '@expo/metro/metro-resolver';
 import { vol } from 'memfs';
 import path from 'path';
 
@@ -92,7 +92,6 @@ describe(_toResolveConfig, () => {
       paths: { '@/*': ['./a/*'], '@/utils/*': ['./b/*'] },
     });
     expect(config.prefixRe!.source).toBe('^(@\\/utils\\/|@\\/)');
-
   });
 
   it('uses pathsBasePath when baseUrl is absent', () => {
@@ -200,6 +199,32 @@ describe(_resolveWithTsConfigPaths, () => {
     expect(result).toEqual(resolved('/project/@/utils'));
   });
 
+  it('catch-all fallthrough respects suffix matching', () => {
+    const config = buildConfig({
+      paths: { '@/*': ['./src/*'], '*.css': ['./styles/*.css'] },
+    });
+    // @/button.css fails via @/ prefix, falls through to *.css catch-all
+    const result = _resolveWithTsConfigPaths(
+      config,
+      '@/button.css',
+      makeResolve(new Set(['/project/styles/@/button.css']))
+    );
+    expect(result).toEqual(resolved('/project/styles/@/button.css'));
+  });
+
+  it('catch-all fallthrough skips entries with wrong suffix', () => {
+    const config = buildConfig({
+      paths: { '@/*': ['./src/*'], '*.css': ['./styles/*.css'] },
+    });
+    // @/utils fails via @/ prefix, falls through to *.css catch-all but suffix doesn't match
+    const result = _resolveWithTsConfigPaths(
+      config,
+      '@/utils',
+      makeResolve(new Set(['/project/styles/@/utils.css']))
+    );
+    expect(result).toBeNull();
+  });
+
   it('does not retry "*" catch-all when it was the matched prefix', () => {
     const config = buildConfig({ paths: { '*': ['./vendor/*'] } });
     const resolve = jest.fn(() => null);
@@ -210,17 +235,17 @@ describe(_resolveWithTsConfigPaths, () => {
 
   it('falls back to baseUrl when no prefix matches', () => {
     const config = buildConfig({ baseUrl: '/src', paths: { '@/*': ['./lib/*'] } });
-    const result = _resolveWithTsConfigPaths(
-      config,
-      'utils',
-      makeResolve(new Set(['/src/utils']))
-    );
+    const result = _resolveWithTsConfigPaths(config, 'utils', makeResolve(new Set(['/src/utils'])));
     expect(result).toEqual(resolved('/src/utils'));
   });
 
   it('does not try baseUrl after prefix match consumed the name', () => {
     const config = buildConfig({ baseUrl: '/src', paths: { '@/*': ['./lib/*'] } });
-    const result = _resolveWithTsConfigPaths(config, '@/utils', makeResolve(new Set(['/src/@/utils'])));
+    const result = _resolveWithTsConfigPaths(
+      config,
+      '@/utils',
+      makeResolve(new Set(['/src/@/utils']))
+    );
     expect(result).toBeNull();
   });
 
@@ -443,10 +468,7 @@ describe(_loadTsConfigWithExtends, () => {
   });
 
   it('returns empty paths/baseUrl when config has no compilerOptions', () => {
-    vol.fromJSON(
-      { 'tsconfig.json': JSON.stringify({}) },
-      '/project'
-    );
+    vol.fromJSON({ 'tsconfig.json': JSON.stringify({}) }, '/project');
     const result = _loadTsConfigWithExtends(
       '/project',
       '/project/tsconfig.json',
