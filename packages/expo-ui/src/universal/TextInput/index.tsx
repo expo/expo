@@ -27,6 +27,7 @@ export function TextInput({
   defaultValue,
   numberOfLines,
   testID,
+  placeholderTextColor,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -57,6 +58,7 @@ export function TextInput({
       ref={innerRef}
       value={state.value}
       placeholder={placeholder}
+      placeholderTextColor={placeholderTextColor}
       autoFocus={autoFocus}
       editable={editable}
       readOnly={readOnly}

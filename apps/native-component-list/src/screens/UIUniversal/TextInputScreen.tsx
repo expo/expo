@@ -43,6 +43,7 @@ export default function TextInputScreen() {
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
   const [focused, setFocused] = useState(false);
   const [redCursor, setRedCursor] = useState(false);
+  const [bluePlaceholder, setBluePlaceholder] = useState(false);
   const [textAlign, setTextAlign] = useState<TextAlign>('auto');
   const [numberOfLines, setNumberOfLines] = useState<number | undefined>(undefined);
   const inputRef = useRef<TextInputRef>(null);
@@ -92,6 +93,7 @@ export default function TextInputScreen() {
               onFocus={() => setFocused(true)}
               onBlur={() => setFocused(false)}
               cursorColor={redCursor ? 'red' : undefined}
+              placeholderTextColor={bluePlaceholder ? 'blue' : undefined}
               textAlign={textAlign}
               numberOfLines={numberOfLines}
             />
@@ -105,6 +107,11 @@ export default function TextInputScreen() {
             <Switch value={multiline} onValueChange={setMultiline} label="multiline" />
             <Switch value={autoCorrect} onValueChange={setAutoCorrect} label="autoCorrect" />
             <Switch value={redCursor} onValueChange={setRedCursor} label="cursorColor (red)" />
+            <Switch
+              value={bluePlaceholder}
+              onValueChange={setBluePlaceholder}
+              label="placeholderTextColor (blue)"
+            />
             <Button
               label="ref.focus()"
               variant="outlined"

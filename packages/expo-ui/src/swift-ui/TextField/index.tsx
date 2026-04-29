@@ -7,6 +7,7 @@ import { useNativeState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ViewEvent } from '../../types';
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
@@ -61,6 +62,12 @@ export type TextFieldProps = {
    * @default 'horizontal'
    */
   axis?: 'horizontal' | 'vertical';
+  /**
+   * Slot children — supports `<TextField.Placeholder>` with a `<Text>` child
+   * (any text-styling modifiers on that `Text` are preserved as the
+   * placeholder's styling).
+   */
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
 export type NativeTextFieldProps = Omit<
@@ -78,6 +85,10 @@ const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNa
   'ExpoUI',
   'TextFieldView'
 );
+
+function Placeholder({ children }: { children: React.ReactNode }) {
+  return <Slot name="placeholder">{children}</Slot>;
+}
 
 /**
  * Renders a SwiftUI `TextField`.
@@ -111,3 +122,5 @@ export function TextField(props: TextFieldProps) {
     />
   );
 }
+
+TextField.Placeholder = Placeholder;

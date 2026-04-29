@@ -79,13 +79,21 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 #endif
   }
 
+  private var promptText: Text? {
+    guard let slot = props.children?.slot("placeholder") else { return nil }
+    return slot.props.children?
+      .compactMap { ($0.childView as? TextView)?.buildText() }
+      .first
+  }
+
   var body: some View {
     if let state = props.text {
       StatefulTextField(
         state: state,
         props: props,
         textManager: textManager,
-        isFocused: $isFocused
+        isFocused: $isFocused,
+        promptText: promptText
       )
     }
   }
@@ -96,6 +104,7 @@ private struct StatefulTextField: View {
   @ObservedObject var props: TextFieldProps
   @ObservedObject var textManager: TextFieldManager
   @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
 
   private var swiftUIAxis: Axis {
     props.axis == .vertical ? .vertical : .horizontal
@@ -107,31 +116,35 @@ private struct StatefulTextField: View {
     if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
 #if !os(tvOS)
       TextField(
-        props.placeholder,
+        promptText == nil ? props.placeholder : "",
         text: textBinding,
         selection: $textManager.selection,
+        prompt: promptText,
         axis: swiftUIAxis
       )
       .focused($isFocused)
 #else
       TextField(
-        props.placeholder,
+        promptText == nil ? props.placeholder : "",
         text: textBinding,
+        prompt: promptText,
         axis: swiftUIAxis
       )
       .focused($isFocused)
 #endif
     } else if #available(iOS 16.0, tvOS 16.0, *) {
       TextField(
-        props.placeholder,
+        promptText == nil ? props.placeholder : "",
         text: textBinding,
+        prompt: promptText,
         axis: swiftUIAxis
       )
       .focused($isFocused)
     } else {
       TextField(
-        props.placeholder,
-        text: textBinding
+        promptText == nil ? props.placeholder : "",
+        text: textBinding,
+        prompt: promptText
       )
       .focused($isFocused)
     }

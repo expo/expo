@@ -75,6 +75,7 @@ export function TextInput({
   numberOfLines,
   underlineColorAndroid,
   testID,
+  placeholderTextColor,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -138,13 +139,20 @@ export function TextInput({
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       colors={
-        cursorColor || underlineColorAndroid
+        cursorColor || underlineColorAndroid || placeholderTextColor
           ? {
               ...(cursorColor ? { cursorColor } : null),
               ...(underlineColorAndroid
                 ? {
                     unfocusedIndicatorColor: underlineColorAndroid,
                     focusedIndicatorColor: underlineColorAndroid,
+                  }
+                : null),
+              ...(placeholderTextColor
+                ? {
+                    unfocusedPlaceholderColor: placeholderTextColor,
+                    focusedPlaceholderColor: placeholderTextColor,
+                    disabledPlaceholderColor: placeholderTextColor,
                   }
                 : null),
             }

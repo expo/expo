@@ -146,6 +146,10 @@ export interface TextInputProps {
      */
     underlineColorAndroid?: ColorValue;
     /**
+     * Color of the placeholder text.
+     */
+    placeholderTextColor?: ColorValue;
+    /**
      * Identifier used to locate the component in end-to-end tests.
      */
     testID?: string;

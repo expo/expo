@@ -55,6 +55,12 @@ export type TextFieldProps = {
      * @default 'horizontal'
      */
     axis?: 'horizontal' | 'vertical';
+    /**
+     * Slot children — supports `<TextField.Placeholder>` with a `<Text>` child
+     * (any text-styling modifiers on that `Text` are preserved as the
+     * placeholder's styling).
+     */
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
 export type NativeTextFieldProps = Omit<TextFieldProps, 'text' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'> & ViewEvent<'onTextChange', {
     value: string;
@@ -71,4 +77,9 @@ export type NativeTextFieldProps = Omit<TextFieldProps, 'text' | 'onTextChange' 
  * Renders a SwiftUI `TextField`.
  */
 export declare function TextField(props: TextFieldProps): import("react/jsx-runtime").JSX.Element;
+export declare namespace TextField {
+    var Placeholder: ({ children }: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+}
 //# sourceMappingURL=index.d.ts.map

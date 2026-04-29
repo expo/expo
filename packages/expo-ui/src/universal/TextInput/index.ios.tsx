@@ -1,4 +1,4 @@
-import { TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
+import { Text, TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
 import { useImperativeHandle, useRef } from 'react';
 
 import {
@@ -9,6 +9,7 @@ import {
 import {
   autocorrectionDisabled,
   disabled as disabledMod,
+  foregroundStyle,
   keyboardType as keyboardTypeMod,
   lineLimit,
   multilineTextAlignment,
@@ -34,36 +35,10 @@ function mapReturnKeyType(rn: ReturnKeyTypeOptions): SwiftUISubmitLabel {
 }
 
 function mapKeyboardType(rn: KeyboardTypeOptions): SwiftUIKeyboardType {
-  switch (rn) {
-    case 'default':
-      return 'default';
-    case 'email-address':
-      return 'email-address';
-    case 'numeric':
-      return 'decimal-pad';
-    case 'number-pad':
-      return 'numeric';
-    case 'decimal-pad':
-      return 'decimal-pad';
-    case 'phone-pad':
-      return 'phone-pad';
-    case 'url':
-      return 'url';
-    case 'ascii-capable':
-      return 'ascii-capable';
-    case 'numbers-and-punctuation':
-      return 'numbers-and-punctuation';
-    case 'name-phone-pad':
-      return 'name-phone-pad';
-    case 'twitter':
-      return 'twitter';
-    case 'web-search':
-      return 'web-search';
-    case 'visible-password':
-      return 'default';
-    default:
-      return 'default';
-  }
+  if (rn === 'numeric') return 'decimal-pad';
+  if (rn === 'number-pad') return 'numeric';
+  if (rn === 'visible-password') return 'default';
+  return rn as SwiftUIKeyboardType;
 }
 
 export function TextInput({
@@ -89,6 +64,7 @@ export function TextInput({
   defaultValue,
   numberOfLines,
   testID,
+  placeholderTextColor,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -151,8 +127,13 @@ export function TextInput({
       onTextChange={onChangeText}
       onFocusChange={handleFocusChange}
       modifiers={modifiers.length > 0 ? modifiers : undefined}
-      testID={testID}
-    />
+      testID={testID}>
+      {placeholderTextColor && placeholder ? (
+        <TextField.Placeholder>
+          <Text modifiers={[foregroundStyle(placeholderTextColor)]}>{placeholder}</Text>
+        </TextField.Placeholder>
+      ) : null}
+    </TextField>
   );
 }
 
