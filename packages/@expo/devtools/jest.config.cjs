@@ -5,4 +5,7 @@ module.exports = {
   displayName: require('./package').name,
   rootDir: __dirname,
   roots: ['src'],
+  moduleNameMapper: {
+    '^(.*)\\.js$': '$1',
+  },
 };
