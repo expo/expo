@@ -26,7 +26,7 @@ test("prevents removing a screen with 'usePreventRemove' hook", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -137,7 +137,7 @@ test("prevents removing a screen when 'usePreventRemove' hook is called multiple
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -250,7 +250,7 @@ test("should have no effect when 'usePreventRemove' hook is set to false", () =>
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -351,7 +351,7 @@ test("prevents removing a child screen with 'usePreventRemove' hook", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -521,7 +521,7 @@ test("prevents removing a grand child screen with 'usePreventRemove' hook", () =
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -696,7 +696,7 @@ test("prevents removing by multiple screens with 'usePreventRemove' hook", () =>
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -853,7 +853,7 @@ test("prevents removing a child screen with 'usePreventRemove' hook with 'resetR
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };

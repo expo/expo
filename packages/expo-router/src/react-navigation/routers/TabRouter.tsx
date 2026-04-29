@@ -95,7 +95,7 @@ const getRouteHistory = (
   const history = [
     {
       type: TYPE_ROUTE,
-      key: routes[index].key,
+      key: routes[index]!.key,
     },
   ];
 
@@ -106,7 +106,7 @@ const getRouteHistory = (
       for (let i = index; i > 0; i--) {
         history.unshift({
           type: TYPE_ROUTE,
-          key: routes[i - 1].key,
+          key: routes[i - 1]!.key,
         });
       }
       break;
@@ -114,7 +114,7 @@ const getRouteHistory = (
       if (index !== 0) {
         history.unshift({
           type: TYPE_ROUTE,
-          key: routes[0].key,
+          key: routes[0]!.key,
         });
       }
       break;
@@ -125,7 +125,7 @@ const getRouteHistory = (
       if (index !== initialRouteIndex) {
         history.unshift({
           type: TYPE_ROUTE,
-          key: routes[initialRouteIndex].key,
+          key: routes[initialRouteIndex]!.key,
         });
       }
       break;
@@ -147,7 +147,7 @@ const changeIndex = (
   let history = state.history;
 
   if (backBehavior === 'history' || backBehavior === 'fullHistory') {
-    const currentRoute = state.routes[index];
+    const currentRoute = state.routes[index]!;
 
     if (backBehavior === 'history') {
       // Remove the existing key from the history to de-duplicate it
@@ -248,7 +248,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       });
 
       const index = Math.min(
-        Math.max(routeNames.indexOf(state.routes[state?.index ?? 0]?.name), 0),
+        Math.max(routeNames.indexOf(state.routes[state?.index ?? 0]?.name as string), 0),
         routes.length - 1
       );
 
@@ -284,7 +284,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           }
       );
 
-      const index = Math.max(0, routeNames.indexOf(state.routes[state.index].name));
+      const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
 
       let history = state.history.filter(
         // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
@@ -377,7 +377,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           return {
             ...updatedState,
             preloadedRouteKeys: updatedState.preloadedRouteKeys.filter(
-              (key) => key !== state.routes[updatedState.index].key
+              (key) => key !== state.routes[updatedState.index]!.key
             ),
           };
         }
@@ -390,7 +390,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             const index = nextState.index;
 
             if (index != null) {
-              const focusedRoute = nextState.routes[index];
+              const focusedRoute = nextState.routes[index]!;
               const historyItemIndex = state.history.findLastIndex(
                 (item) => item.key === focusedRoute.key
               );
@@ -400,7 +400,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
               if (historyItemIndex !== -1) {
                 updatedHistory = [...state.history];
                 updatedHistory[historyItemIndex] = {
-                  ...updatedHistory[historyItemIndex],
+                  ...updatedHistory[historyItemIndex]!,
                   params: focusedRoute.params,
                 };
               }
@@ -432,12 +432,12 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
 
           if (
             backBehavior === 'fullHistory' &&
-            routes[index].params !== previousHistoryItem.params
+            routes[index]!.params !== previousHistoryItem!.params
           ) {
             routes = [...state.routes];
             routes[index] = {
-              ...routes[index],
-              params: previousHistoryItem.params,
+              ...routes[index]!,
+              params: previousHistoryItem!.params,
             };
           }
 
@@ -445,7 +445,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             ...state,
             routes,
             preloadedRouteKeys: state.preloadedRouteKeys.filter(
-              (key) => key !== state.routes[index].key
+              (key) => key !== state.routes[index]!.key
             ),
             history: state.history.slice(0, -1),
             index,
@@ -459,7 +459,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             return null;
           }
 
-          const route = state.routes[routeIndex];
+          const route = state.routes[routeIndex]!;
 
           const getId = routeGetIdList[route.name];
 

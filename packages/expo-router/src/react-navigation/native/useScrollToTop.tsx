@@ -94,7 +94,7 @@ export function useScrollToTop(ref: React.RefObject<ScrollableWrapper>) {
           // So we should scroll to top only when we are on first screen
           const isFirst =
             tabNavigations.includes(navigation) ||
-            navigation.getState().routes[0].key === route.key;
+            navigation.getState().routes[0]!.key === route.key;
 
           // Run the operation in the next frame so we're sure all listeners have been run
           // This is necessary to know if preventDefault() has been called

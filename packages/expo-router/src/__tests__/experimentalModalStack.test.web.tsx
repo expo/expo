@@ -33,7 +33,7 @@ describe('ExperimentalModalStack', () => {
 
     expect(mockRouterModal).toHaveBeenCalledTimes(1);
 
-    const passedChildren = mockRouterModal.mock.calls[0][0].children;
+    const passedChildren = mockRouterModal.mock.calls[0]![0].children;
     const childArray = React.Children.toArray(passedChildren);
 
     expect(childArray).toHaveLength(2);
@@ -52,7 +52,7 @@ describe('ExperimentalModalStack', () => {
 
     expect(mockRouterModal).toHaveBeenCalledTimes(1);
 
-    const passedChildren = mockRouterModal.mock.calls[0][0].children;
+    const passedChildren = mockRouterModal.mock.calls[0]![0].children;
     const childArray = React.Children.toArray(passedChildren);
 
     expect(childArray).toHaveLength(1);
@@ -69,6 +69,6 @@ describe('ExperimentalModalStack', () => {
     );
 
     expect(mockRouterModal).toHaveBeenCalledTimes(1);
-    expect(mockRouterModal.mock.calls[0][0].screenOptions).toEqual({ headerShown: false });
+    expect(mockRouterModal.mock.calls[0]![0].screenOptions).toEqual({ headerShown: false });
   });
 });

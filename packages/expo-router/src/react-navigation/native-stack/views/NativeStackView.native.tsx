@@ -475,7 +475,7 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
     <SafeAreaProviderCompat>
       <ScreenStack style={styles.container}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
-          const descriptor = descriptors[route.key] ?? preloadedDescriptors[route.key];
+          const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isFocused = state.index === index;
           const isBelowFocused = state.index - 1 === index;
           const previousKey = state.routes[index - 1]?.key;

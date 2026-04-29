@@ -78,7 +78,7 @@ export function useEventEmitter<T extends Record<string, any>>(
         target !== undefined
           ? items[target]?.slice()
           : ([] as Listeners)
-              .concat(...Object.keys(items).map((t) => items[t]))
+              .concat(...Object.keys(items).map((t) => items[t]!))
               .filter((cb, i, self) => self.lastIndexOf(cb) === i);
 
       const event: EventArg<any, any, any> = {

@@ -150,7 +150,7 @@ export function BaseNavigationContainer({
     if (target == null) {
       console.error(NOT_INITIALIZED_ERROR);
     } else {
-      listeners.focus[0]((navigation) =>
+      listeners.focus[0]!((navigation) =>
         navigation.dispatch({
           ...CommonActions.reset(state),
           target,
@@ -307,7 +307,7 @@ export function BaseNavigationContainer({
           let params = false;
 
           for (let i = 0; i < location.length; i++) {
-            const curr = location[i];
+            const curr = location[i]!;
             const prev = location[i - 1];
 
             pointer = pointer[curr];

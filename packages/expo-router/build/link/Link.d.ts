@@ -12,6 +12,6 @@ export declare const Link: ((props: LinkProps) => import("react/jsx-runtime").JS
     AppleZoomTarget: typeof LinkAppleZoomTarget;
 };
 export type LinkComponent = typeof Link;
-export { LinkProps, WebAnchorProps };
+export type { LinkProps, WebAnchorProps };
 export { Redirect, type RedirectProps } from './Redirect';
 //# sourceMappingURL=Link.d.ts.map

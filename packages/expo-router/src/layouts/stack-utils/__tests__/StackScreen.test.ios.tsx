@@ -230,8 +230,8 @@ describe(appendScreenStackPropsToOptions, () => {
         expect(typeof result[itemsKey]).toBe('function');
         const items = result[itemsKey]?.({});
         expect(items).toHaveLength(2);
-        expect(items?.[0].type).toBe('button');
-        expect(items?.[1].type).toBe('button');
+        expect(items?.[0]!.type).toBe('button');
+        expect(items?.[1]!.type).toBe('button');
         expect(result[otherKey]).toBeUndefined();
       }
     );

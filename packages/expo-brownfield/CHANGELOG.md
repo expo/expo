@@ -21,6 +21,7 @@
 - [ios] Fix loading assets in brownfield. ([#44724](https://github.com/expo/expo/pull/44724) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Support rendering multiple ReactNativeView simultaneously ([#44891](https://github.com/expo/expo/pull/44891) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Support registering custom turbo modules from the hosting app ([#44929](https://github.com/expo/expo/pull/44929) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add support for iOS prebuilds. ([#45148](https://github.com/expo/expo/pull/45148) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

@@ -212,6 +212,7 @@ open class DevMenuManager: NSObject {
     } else {
       isReactAppRunning = false
     }
+    updateAutoLaunchObserver()
   }
 
   @objc
@@ -228,6 +229,7 @@ open class DevMenuManager: NSObject {
 
     DispatchQueue.main.async {
       self.openMenu()
+      UserDefaults.standard.set(false, forKey: showsAtLaunchKey)
     }
   }
 

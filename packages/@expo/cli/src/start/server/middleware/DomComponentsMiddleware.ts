@@ -2,6 +2,7 @@ import { convertEntryPointToRelative } from '@expo/config/paths';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { DOM_POLYFILLS_SCRIPT } from './domPolyfills';
 import type { ExpoMetroOptions } from './metroOptions';
 import { createBundleUrlPath } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
@@ -128,6 +129,17 @@ export function getDomComponentHtml(src?: string, { title }: { title?: string } 
     <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
         <!-- Root element for the DOM component. -->
         <div id="root"></div>
+        <script>${DOM_POLYFILLS_SCRIPT}</script>
+        <script>
+          var injectedObject = {};
+          try {
+            injectedObject = JSON.parse(window.ReactNativeWebView.injectedObjectJson());
+          } catch (e) {
+            throw new Error('Failed to parse injectedObjectJson: ' + e.message);
+          }
+          window.$$EXPO_DOM_HOST_OS = injectedObject.EXPO_DOM_HOST_OS;
+          window.$$EXPO_INITIAL_PROPS = injectedObject.initialProps;
+        </script>
         ${src ? `<script crossorigin src="${src.replace(/^https?:/, '')}"></script>` : ''}
     </body>
 </html>`;

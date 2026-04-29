@@ -186,13 +186,13 @@ export function useNavigationCache<
           setOptions: (options: object) => {
             setOptions((o) => ({
               ...o,
-              [route.key]: { ...o[route.key], ...options },
+              [route.key]: { ...o[route.key]!, ...options },
             }));
           },
           isFocused: () => {
             const state = base.getState();
 
-            if (state.routes[state.index].key !== route.key) {
+            if (state.routes[state.index]!.key !== route.key) {
               return false;
             }
 

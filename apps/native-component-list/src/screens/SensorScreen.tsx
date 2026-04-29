@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import * as Sensors from 'expo-sensors';
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const FAST_INTERVAL = 16;
 const SLOW_INTERVAL = 1000;
@@ -21,7 +21,7 @@ export default class SensorScreen extends React.Component {
         <BarometerSensor />
         <LightSensor />
         <DeviceMotionSensor />
-        <PedometerSensor />
+        {Platform.OS === 'ios' && <PedometerSensor />}
       </ScrollView>
     );
   }

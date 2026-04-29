@@ -91,19 +91,19 @@ export function NativeTabsNavigator({
       routes
         // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
         // If it is not defined, then it was not specified, and we should hide the tab.
-        .filter((route) => descriptors[route.key].options?.hidden !== true)
+        .filter((route) => descriptors[route.key]!.options?.hidden !== true)
         .map(
           (route): NativeTabsViewTabItem => ({
-            options: descriptors[route.key].options,
+            options: descriptors[route.key]!.options,
             routeKey: route.key,
             name: route.name,
-            contentRenderer: () => descriptors[route.key].render(),
+            contentRenderer: () => descriptors[route.key]!.render(),
           })
         ),
     [routes, descriptors]
   );
   const visibleFocusedTabIndex = useMemo(
-    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index].key),
+    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index]!.key),
     [visibleTabs, routes, state.index]
   );
   const visibleTabsKeys = useMemo(
@@ -122,8 +122,7 @@ export function NativeTabsNavigator({
 
   const onTabChange = useCallback(
     (tabKey: string) => {
-      const descriptor = descriptors[tabKey];
-      const route = descriptor.route;
+      const { route } = descriptors[tabKey]!;
       navigation.emit({
         type: 'tabPress',
         target: tabKey,

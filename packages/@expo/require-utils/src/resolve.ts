@@ -10,6 +10,7 @@ declare module 'node:module' {
 
 export interface ResolveFromParams {
   followSymlinks?: boolean;
+  skipNodePath?: boolean;
   extensions?: readonly string[];
 }
 
@@ -18,7 +19,13 @@ export function resolveFrom(
   moduleId: string,
   params?: ResolveFromParams
 ): string | null {
-  const exts = params?.extensions ?? Object.keys(Module._extensions);
+  // We exclude extension resolution, if we're resolving a plain JSON file
+  const isJSON = moduleId.endsWith('.json');
+  const exts = !isJSON ? (params?.extensions ?? Object.keys(Module._extensions)) : [];
+
+  const skipNodePath = !!params?.skipNodePath;
+  const followSymlinks = params?.followSymlinks ?? skipNodePath;
+
   const resolved = path.resolve(fromDirectory, moduleId);
   // (1) check direct path / exact match
   if (fs.existsSync(resolved)) {
@@ -35,7 +42,7 @@ export function resolveFrom(
   }
 
   // (3) if we're not following symlinks, we try to resolve against `node_modules` folders unresolved
-  if (!params?.followSymlinks) {
+  if (!followSymlinks || skipNodePath) {
     const resolvedDir = path.resolve(fromDirectory);
     const moduleDirs = Module._nodeModulePaths(resolvedDir);
     for (const modulesDir of moduleDirs) {
@@ -49,14 +56,14 @@ export function resolveFrom(
         ext = ext[0] !== '.' ? `.${ext}` : ext;
         const candidateWithExt = candidate + ext;
         if (fs.existsSync(candidateWithExt)) {
-          return candidateWithExt;
+          return followSymlinks ? maybeResolve(candidateWithExt) : candidateWithExt;
         }
       }
     }
   }
 
-  // (4): Fallback to native Node resolution
-  return nativeResolveFrom(fromDirectory, moduleId);
+  // (4): Fallback to native Node resolution, if `skipNodePath` is disabled
+  return !skipNodePath ? nativeResolveFrom(fromDirectory, moduleId) : null;
 }
 
 function nativeResolveFrom(fromDirectory: string, moduleId: string): string | null {

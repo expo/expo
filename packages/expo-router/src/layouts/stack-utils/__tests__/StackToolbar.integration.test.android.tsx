@@ -168,7 +168,7 @@ describe('Stack.Toolbar Android integration tests', () => {
 
         // Android uses headerLeft/headerRight (ScreenStackHeaderLeftView/RightView),
         // NOT headerLeftBarButtonItems/headerRightBarButtonItems (iOS-only)
-        const headerConfig = MockedScreenStackItem.mock.calls[0][0].headerConfig;
+        const headerConfig = MockedScreenStackItem.mock.calls[0]![0].headerConfig;
         expect(headerConfig?.headerLeftBarButtonItems).toBeUndefined();
         expect(headerConfig?.headerRightBarButtonItems).toBeUndefined();
 
@@ -206,7 +206,7 @@ describe('Stack.Toolbar Android integration tests', () => {
       expect(screen.getAllByTestId('IconButton')).toHaveLength(2);
 
       // Android uses headerLeft/headerRight, not iOS bar button items
-      const headerConfig = MockedScreenStackItem.mock.calls[0][0].headerConfig;
+      const headerConfig = MockedScreenStackItem.mock.calls[0]![0].headerConfig;
       expect(headerConfig?.headerLeftBarButtonItems).toBeUndefined();
       expect(headerConfig?.headerRightBarButtonItems).toBeUndefined();
 
@@ -233,7 +233,7 @@ describe('Stack.Toolbar Android integration tests', () => {
         expect(screen.getByTestId('index')).toBeVisible();
         expect(screen.getByTestId(`custom-${placement}`)).toBeVisible();
 
-        const headerConfig = MockedScreenStackItem.mock.calls[0][0].headerConfig;
+        const headerConfig = MockedScreenStackItem.mock.calls[0]![0].headerConfig;
         expect(headerConfig?.headerLeftBarButtonItems).toBeUndefined();
         expect(headerConfig?.headerRightBarButtonItems).toBeUndefined();
 

@@ -10,9 +10,18 @@ export interface DomWebViewProps extends ViewProps, AndroidProps, IosScrollViewP
     containerStyle?: StyleProp<ViewStyle>;
     /**
      * Set this to provide JavaScript that will be injected into the web page
+     * when the view loads.
+     */
+    injectedJavaScript?: string;
+    /**
+     * Set this to provide JavaScript that will be injected into the web page
      * once the webview is initialized but before the view loads any content.
      */
     injectedJavaScriptBeforeContentLoaded?: string;
+    /**
+     * Inject a JavaScript object to be accessed as a JSON string via JavaScript in the WebView.
+     */
+    injectedJavaScriptObject?: object;
     /**
      * Enables WebView remote debugging using Chrome (Android) or Safari (iOS).
      */

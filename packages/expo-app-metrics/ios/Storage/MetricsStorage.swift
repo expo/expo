@@ -62,14 +62,21 @@ public final class MetricsStorage: Sendable {
   }
 
   /**
+   Returns all sessions across the current and historical entries, ordered with the
+   current launch first.
+   */
+  @AppMetricsActor
+  public func getAllSessions() -> [Session] {
+    return getAllEntries().flatMap({ $0.sessions })
+  }
+
+  /**
    Returns all main sessions across the current and historical entries, ordered with the
    current launch first.
    */
   @AppMetricsActor
   public func getAllMainSessions() -> [MainSession] {
-    return getAllEntries()
-      .flatMap({ $0.sessions })
-      .compactMap({ $0 as? MainSession })
+    return getAllSessions().compactMap({ $0 as? MainSession })
   }
 
   /**

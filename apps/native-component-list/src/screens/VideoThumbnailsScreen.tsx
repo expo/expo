@@ -21,11 +21,7 @@ export default function VideoThumbnailsScreen() {
       {image && <Image source={{ uri: image }} style={styles.image} />}
       <Text>{image}</Text>
       <Button
-        onPress={() =>
-          generateThumbnail(
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-          )
-        }
+        onPress={() => generateThumbnail('https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4')}
         title="Check Valid Source"
       />
       <Button

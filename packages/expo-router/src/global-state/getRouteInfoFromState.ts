@@ -47,8 +47,9 @@ type StrictFocusedRouteParams =
 export function getRouteInfoFromState(state?: StrictState): UrlObject {
   if (!state) return defaultRouteInfo;
 
+  // TODO(@kitten): Review edge-case type safety
   const index = 'index' in state ? (state.index ?? 0) : 0;
-  let route = state.routes[index];
+  let route = state.routes[index]!;
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
     const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
@@ -71,7 +72,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   let params: UrlObject['params'] = Object.create(null);
 
   while (state) {
-    route = state.routes['index' in state && state.index ? state.index : 0];
+    route = state.routes['index' in state && state.index ? state.index : 0]!;
 
     Object.assign(params, route.params);
 

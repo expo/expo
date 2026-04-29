@@ -11,7 +11,9 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
   // swiftlint:enable implicitly_unwrapped_optional
 
   private var source: DomWebViewSource?
+  private var injectedJS: WKUserScript?
   private var injectedJSBeforeContentLoaded: WKUserScript?
+  private var injectedObjectJsonScript: WKUserScript?
   var webviewDebuggingEnabled = false
   var decelerationRate: UIScrollView.DecelerationRate = .normal
 
@@ -89,11 +91,36 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     self.source = source
   }
 
+  func setInjectedJS(_ script: String?) {
+    if let script, !script.isEmpty {
+      injectedJS = WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+    } else {
+      injectedJS = nil
+    }
+    needsResetupScripts = true
+  }
+
   func setInjectedJSBeforeContentLoaded(_ script: String?) {
     if let script, !script.isEmpty {
       injectedJSBeforeContentLoaded = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: false)
     } else {
       injectedJSBeforeContentLoaded = nil
+    }
+    needsResetupScripts = true
+  }
+
+  func setInjectedJavaScriptObject(_ source: String?) {
+    if let source, !source.isEmpty {
+      let script = """
+      window.ReactNativeWebView = window.ReactNativeWebView || {};
+      window.ReactNativeWebView.injectedObjectJson = function () {
+        return `\(source)`;
+      }
+      true;
+      """
+      injectedObjectJsonScript = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+    } else {
+      injectedObjectJsonScript = nil
     }
     needsResetupScripts = true
   }
@@ -165,8 +192,14 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
 
     userContentController.add(self, name: Self.POST_MESSAGE_HANDLER_NAME)
 
+    if let injectedJS {
+      userContentController.addUserScript(injectedJS)
+    }
     if let injectedJSBeforeContentLoaded {
       userContentController.addUserScript(injectedJSBeforeContentLoaded)
+    }
+    if let injectedObjectJsonScript {
+      userContentController.addUserScript(injectedObjectJsonScript)
     }
 
     let addDomWebViewBridgeScript = """

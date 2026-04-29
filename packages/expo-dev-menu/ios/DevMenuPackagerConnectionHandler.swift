@@ -39,6 +39,14 @@ class DevMenuPackagerConnectionHandler {
         queue: DispatchQueue.main,
         forMethod: "devMenu"
       )
+
+      // RCTDevSettings starts the packager WS before its bundleManager has a host,
+      // leaving the socket on localhost so it can't be reached from a physical device.
+      // Reconnect to the bundle URL once AppContext is ready.
+      if let bundleURL = manager.currentAppContext?.bundleURL, let host = bundleURL.host {
+        let port = bundleURL.port ?? 8081
+        packagerConnection?.reconnect("\(host):\(port)")
+      }
     }
 #endif
   }

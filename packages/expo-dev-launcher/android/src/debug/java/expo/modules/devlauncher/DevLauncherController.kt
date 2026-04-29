@@ -282,7 +282,7 @@ class DevLauncherController private constructor(
   }
 
   fun launchDefaultUrlOrNavigateToLauncher(scope: CoroutineScope, defaultLaunchUrl: Uri, activityToBeInvalidated: ReactActivity?) {
-    scope.launch{
+    scope.launch {
       try {
         loadApp(defaultLaunchUrl, activityToBeInvalidated)
       } catch (_: Throwable) {

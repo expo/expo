@@ -1,5 +1,5 @@
 import ExpoFileSystem from './ExpoFileSystem';
-import { type DownloadOptions, type PathInfo } from './ExpoFileSystem.types';
+import { type DownloadOptions, type PathInfo, type UploadOptions, type UploadResult, type DownloadTaskOptions, type DownloadPauseState, type UploadTaskState, type DownloadTaskState } from './ExpoFileSystem.types';
 import { PathUtilities } from './pathUtilities';
 export declare class Paths extends PathUtilities {
     /**
@@ -67,6 +67,9 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     arrayBuffer(): Promise<ArrayBuffer>;
     stream(): ReadableStream<Uint8Array<ArrayBuffer>>;
     slice(start?: number, end?: number, contentType?: string): Blob;
+    upload(url: string, options?: UploadOptions): Promise<UploadResult>;
+    createUploadTask(url: string, options?: UploadOptions): UploadTask;
+    static createDownloadTask(url: string, destination: File | Directory, options?: DownloadTaskOptions): DownloadTask;
 }
 /**
  * Represents a directory on the filesystem.
@@ -105,5 +108,45 @@ export declare class Directory extends ExpoFileSystem.FileSystemDirectory {
     get name(): string;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
+}
+/**
+ * Represents an upload task with progress tracking and cancellation support.
+ */
+export declare class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
+    private _state;
+    private _file;
+    private _url;
+    private _options?;
+    private _subscription?;
+    private _abortHandler?;
+    constructor(file: File, url: string, options?: UploadOptions);
+    get state(): UploadTaskState;
+    uploadAsync(): Promise<UploadResult>;
+    cancel(): void;
+}
+/**
+ * Represents a download task with pause/resume support and progress tracking.
+ */
+export declare class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
+    private _state;
+    private _url;
+    private _destination;
+    private _options?;
+    private _resumeData?;
+    private _subscription?;
+    private _abortHandler?;
+    private _inFlightOperation?;
+    private _pauseRequest?;
+    constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
+    get state(): DownloadTaskState;
+    downloadAsync(): Promise<File | null>;
+    pause(): void;
+    pauseAsync(): Promise<void>;
+    resumeAsync(): Promise<File | null>;
+    cancel(): void;
+    savable(): DownloadPauseState;
+    static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
+    private _runDownloadOperation;
+    private _emitFinalProgressEvent;
 }
 //# sourceMappingURL=FileSystem.d.ts.map

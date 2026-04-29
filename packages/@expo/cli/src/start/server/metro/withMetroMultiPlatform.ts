@@ -14,11 +14,14 @@ import type {
 } from '@expo/metro/metro-resolver';
 import { resolve as resolver } from '@expo/metro/metro-resolver';
 import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
+import { resolveFrom } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
-import type { AutolinkingModuleResolverInput } from './createExpoAutolinkingResolver';
+import type {
+  AutolinkingModuleResolverInput,
+  AutolinkingPlatform,
+} from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
@@ -198,7 +201,10 @@ export function withExtendedResolver(
     },
   };
 
-  const isExpoRouterResolvable = !!resolveFrom.silent(config.projectRoot, 'expo-router');
+  const isExpoRouterInstalled = hasExpoRouterModule(
+    config.projectRoot,
+    autolinkingModuleResolverInput
+  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -210,12 +216,12 @@ export function withExtendedResolver(
     _universalAliases = [];
 
     // This package is currently always installed as it is included in the `expo` package.
-    if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+    if (resolveFrom(config.projectRoot, '@expo/vector-icons/package.json')) {
       debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
     if (isReactServerComponentsEnabled) {
-      if (resolveFrom.silent(config.projectRoot, 'expo-router/rsc')) {
+      if (resolveFrom(config.projectRoot, 'expo-router/rsc')) {
         debug('Enabling bridge alias: expo-router -> expo-router/rsc');
         _universalAliases.push([/^expo-router$/, 'expo-router/rsc']);
         // Bridge the internal entry point which is a standalone import to ensure package.json resolution works as expected.
@@ -250,6 +256,8 @@ export function withExtendedResolver(
       // TODO: We should track all the files that used imports and invalidate them
       // currently the user will need to save all the files that use imports to
       // use the new aliases.
+      // TODO(@kitten): It's unclear why we don't use Metro here, also the above todo is
+      // infeasible without switching to Metro and somehow cascading
       const configWatcher = new FileNotifier(config.projectRoot, [
         './tsconfig.json',
         './jsconfig.json',
@@ -324,7 +332,7 @@ export function withExtendedResolver(
   const getAsyncRequireModule = () => {
     if (_asyncRequireModuleResolvedPath === undefined) {
       _asyncRequireModuleResolvedPath =
-        resolveFrom.silent(config.projectRoot, config.transformer.asyncRequireModulePath) ?? null;
+        resolveFrom(config.projectRoot, config.transformer.asyncRequireModulePath) ?? null;
     }
     return _asyncRequireModuleResolvedPath
       ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
@@ -685,7 +693,7 @@ export function withExtendedResolver(
 
       if (!env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK) {
         // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
-        if (moduleName.startsWith('@react-navigation/') && isExpoRouterResolvable) {
+        if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
           const filePath = context.originModulePath;
           if (!filePath.includes('node_modules')) {
             // TODO(@ubax): Add link to migration guide, once it is published
@@ -1027,4 +1035,19 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+}
+
+function hasExpoRouterModule(
+  projectRoot: string,
+  autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined
+) {
+  if (autolinkingModuleResolverInput) {
+    // If we have autolinking enabled, we can skip resolution
+    const platform = Object.keys(autolinkingModuleResolverInput)[0] as AutolinkingPlatform;
+    return !!autolinkingModuleResolverInput[platform]?.resolvedModulePaths['expo-router'];
+  } else {
+    return !!resolveFrom(projectRoot, 'expo-router/package.json', {
+      skipNodePath: true,
+    });
+  }
 }

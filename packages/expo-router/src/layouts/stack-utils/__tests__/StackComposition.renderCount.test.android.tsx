@@ -55,7 +55,7 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
 
     // Final call should have merged composition options
-    const finalProps = ScreenStackItem.mock.calls[1][0];
+    const finalProps = ScreenStackItem.mock.calls[1]![0];
     expect(finalProps.headerConfig?.title).toBe('Home');
     expect(finalProps.headerConfig?.backButtonInCustomView).toBe(false);
     expect(finalProps.headerConfig?.backgroundColor).toBe('blue');
@@ -93,7 +93,7 @@ describe('Stack composition components render count', () => {
 
     // layout render + index composition registration
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
-    expect(ScreenStackItem.mock.calls[1][0].headerConfig?.title).toBe('Home');
+    expect(ScreenStackItem.mock.calls[1]![0].headerConfig?.title).toBe('Home');
 
     jest.clearAllMocks();
 
@@ -115,7 +115,7 @@ describe('Stack composition components render count', () => {
     // but we can optimize this in the future
     expect(ScreenStackItem).toHaveBeenCalledTimes(4);
     // Last call should have detail's composition options
-    expect(ScreenStackItem.mock.calls[3][0].headerConfig?.title).toBe('Detail');
+    expect(ScreenStackItem.mock.calls[3]![0].headerConfig?.title).toBe('Detail');
 
     jest.clearAllMocks();
 
@@ -164,7 +164,7 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
 
     // Final call should have ALL four components' options merged
-    const finalProps = ScreenStackItem.mock.calls[1][0];
+    const finalProps = ScreenStackItem.mock.calls[1]![0];
     expect(finalProps.headerConfig?.title).toBe('Home');
     expect(finalProps.headerConfig?.backButtonInCustomView).toBe(false);
     expect(finalProps.headerConfig?.backgroundColor).toBe('blue');
@@ -216,8 +216,8 @@ describe('Stack composition components render count', () => {
     // ScreenStackItem calls after A -> B:
     // [0] screen A (nav state), [1] screen B (initial), [2] screen A (rerender), [3] screen B (composition)
     expect(ScreenStackItem).toHaveBeenCalledTimes(4);
-    expect(ScreenStackItem.mock.calls[3][0].headerConfig?.title).toBe('Screen B');
-    expect(ScreenStackItem.mock.calls[3][0].headerConfig?.backTitle).toBe('Back to A');
+    expect(ScreenStackItem.mock.calls[3]![0].headerConfig?.title).toBe('Screen B');
+    expect(ScreenStackItem.mock.calls[3]![0].headerConfig?.backTitle).toBe('Back to A');
 
     // Navigate B -> C
     jest.clearAllMocks();
@@ -303,7 +303,7 @@ describe('Stack composition components render count', () => {
     expect(screen.getByTestId('title')).toHaveTextContent('Initial');
 
     // Verify initial title propagated
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.title).toBe('Initial');
 
     // Clear after initial settle
@@ -320,7 +320,7 @@ describe('Stack composition components render count', () => {
 
     // ScreenStackItem SHOULD be called — composition options changed
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('Updated');
+    expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('Updated');
   });
 
   it('conditionally removed composition component clears its options', () => {
@@ -348,7 +348,7 @@ describe('Stack composition components render count', () => {
     expect(screen.getByTestId('content')).toBeVisible();
 
     // Verify initial state has back button options
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.title).toBe('Home');
     expect(initialProps.headerConfig?.backTitle).toBe('Go Back');
 
@@ -363,7 +363,7 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
     // The back button options should be cleared (unregistered from composition registry)
-    const finalProps = ScreenStackItem.mock.calls[0][0];
+    const finalProps = ScreenStackItem.mock.calls[0]![0];
     // Title still present (its composition component is still mounted)
     expect(finalProps.headerConfig?.title).toBe('Home');
     // Back button title should be gone (component unmounted, unregistered)
@@ -414,7 +414,7 @@ describe('Stack composition components render count', () => {
     // Initial render + suite 0 registration (batched)
     expect(ScreenStackItem).toHaveBeenCalledTimes(2);
 
-    const initialProps = ScreenStackItem.mock.calls[1][0];
+    const initialProps = ScreenStackItem.mock.calls[1]![0];
     expect(initialProps.headerConfig?.title).toBe('Home');
     expect(initialProps.headerConfig?.backButtonInCustomView).toBe(false);
     expect(initialProps.headerConfig?.backgroundColor).toBe('blue');
@@ -429,7 +429,7 @@ describe('Stack composition components render count', () => {
     expect(indexRender).toHaveBeenCalledTimes(1);
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
-    const suite1Props = ScreenStackItem.mock.calls[0][0];
+    const suite1Props = ScreenStackItem.mock.calls[0]![0];
     expect(suite1Props.headerConfig?.title).toBe('Browse');
     expect(suite1Props.headerConfig?.backgroundColor).toBe('green');
     // BackButton unmounted — its options should be cleared
@@ -444,7 +444,7 @@ describe('Stack composition components render count', () => {
     expect(indexRender).toHaveBeenCalledTimes(1);
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
 
-    const suite2Props = ScreenStackItem.mock.calls[0][0];
+    const suite2Props = ScreenStackItem.mock.calls[0]![0];
     expect(suite2Props.headerConfig?.title).toBe('Search');
     expect(suite2Props.headerConfig?.backButtonInCustomView).toBe(false);
     // Header unmounted — backgroundColor reverts to React Navigation's default theme card color

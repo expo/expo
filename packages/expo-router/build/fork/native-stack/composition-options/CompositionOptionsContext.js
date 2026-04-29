@@ -26,7 +26,7 @@ function registryReducer(state, action) {
         if (!existing || filtered?.length === existing.length) {
             return state;
         }
-        if (filtered.length === 0) {
+        if (!filtered?.length) {
             const { [routeKey]: _, ...newState } = state;
             return newState;
         }

@@ -826,7 +826,7 @@ describe(useLoaderData, () => {
     expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
 
     await act(async () => {
-      await fetchLoaderMock.mock.results[0].value;
+      await fetchLoaderMock.mock.results[0]!.value;
     });
 
     expect(cache.getData('/users/123')).toEqual({ fromFetch: true });

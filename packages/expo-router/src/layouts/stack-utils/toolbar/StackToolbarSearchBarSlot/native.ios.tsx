@@ -15,7 +15,7 @@ export const NativeToolbarSearchBarSlot: React.FC<NativeToolbarSearchBarSlotProp
   separateBackground,
 }) => {
   const id = useId();
-  if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0], 10) < 26) {
+  if (process.env.EXPO_OS !== 'ios' || parseInt(String(Platform.Version).split('.')[0]!, 10) < 26) {
     return null;
   }
   if (hidden) {

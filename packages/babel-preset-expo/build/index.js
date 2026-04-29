@@ -33,6 +33,7 @@ function babelPresetExpo(api, options = {}) {
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
     const isHermesV1 = api.caller(common_1.getIsHermesV1);
+    const isDomComponent = api.caller(common_1.getIsDomComponent);
     const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
     const supportsStaticESM = api.caller((caller) => caller?.supportsStaticESM);
@@ -46,9 +47,11 @@ function babelPresetExpo(api, options = {}) {
     if (!platform && isWebpack) {
         platform = 'web';
     }
-    // Use the simpler babel preset for web and server environments (both web and native SSR).
-    const isModernEngine = platform === 'web' || isServerEnv;
     const platformOptions = getOptions(options, platform);
+    // Use the simpler babel preset for web and server environments (both web and native SSR).
+    // For DOM components, the webview may be an Android factory WebView that doesn't support many modern JavaScript features,
+    // so we need to use the more compatible preset for web regardless.
+    const isModernEngine = (platform === 'web' || isServerEnv) && !isDomComponent;
     // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
     // adds extra dependencies (requires/imports) we need to disable it
     if (metroSourceType === 'script') {
@@ -67,7 +70,7 @@ function babelPresetExpo(api, options = {}) {
             platformOptions.disableImportExportTransform = supportsStaticESM ?? false;
         }
     }
-    if (platformOptions.unstable_transformProfile == null) {
+    if (platformOptions.unstable_transformProfile == null && !isDomComponent) {
         platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
     }
     // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
@@ -275,11 +278,28 @@ function babelPresetExpo(api, options = {}) {
                 // plugin is run after the TypeScript plugins. This is normally handled by the combination of standard `@babel/preset-env` and `@babel/preset-typescript` but React Native
                 // doesn't do that and we can't rely on Hermes spec compliance enough to use standard presets.
                 const babelPresetReactNativeEnv = getPreset(null, presetOpts);
-                // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
-                // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
-                // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
                 babelPresetReactNativeEnv.overrides.push({
-                    plugins: [require('./babel-plugin-transform-export-namespace-from')],
+                    plugins: [
+                        // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
+                        // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
+                        // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
+                        require('./babel-plugin-transform-export-namespace-from'),
+                        ...(isDomComponent
+                            ? [
+                                // These plugins are required to support the older JavaScript environment of Android factory WebViews.
+                                // For example Android 9 and Chromium 66.
+                                // callsite: https://github.com/expo/expo/blob/fa2c26e39549edc144657c50a189271ca56d1ab9/packages/%40expo/log-box/src/LogBox.ts#L88
+                                [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
+                                // callsite: https://github.com/facebook/metro/blob/7446b90ea53fa0173256da690a01df12e67b0deb/packages/metro-runtime/src/polyfills/require.js#L97
+                                [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
+                                // callsite: https://github.com/expo/expo/blob/fa2c26e39549edc144657c50a189271ca56d1ab9/packages/%40expo/log-box/src/Data/LogBoxData.tsx#L404
+                                [
+                                    require('@babel/plugin-transform-logical-assignment-operators'),
+                                    { loose: true },
+                                ],
+                            ]
+                            : []),
+                    ],
                 });
                 return babelPresetReactNativeEnv;
             })(),

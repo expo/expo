@@ -165,8 +165,8 @@ it('should protect nested protected routes', () => {
   expect(screen).toHavePathname('/a');
 
   expect(store.state!.index).toBe(0);
-  expect(store.state!.routes[0].name).toBe('__root');
-  expect(store.state!.routes[0].state!.routeNames).toStrictEqual(['a', 'index']);
+  expect(store.state!.routes[0]!.name).toBe('__root');
+  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index']);
 
   // change the guard for route B to true: should make B available and also C
   // should be available now as all its parents guards are true
@@ -187,8 +187,8 @@ it('should protect nested protected routes', () => {
   expect(screen).toHavePathname('/c');
 
   expect(store.state!.index).toBe(0);
-  expect(store.state!.routes[0].name).toBe('__root');
-  expect(store.state!.routes[0].state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
+  expect(store.state!.routes[0]!.name).toBe('__root');
+  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
 });
 
 it('should default to anchor during initial load', () => {
