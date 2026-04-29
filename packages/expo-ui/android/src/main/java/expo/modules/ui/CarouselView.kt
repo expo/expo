@@ -43,14 +43,14 @@ class PaddingValuesRecord : Record {
   }
 }
 
-fun paddingValuesFromEither(either: Either<Float, PaddingValuesRecord>?): PaddingValues {
-  if (either == null) {
+fun Either<Float, PaddingValuesRecord>?.toPaddingValues(): PaddingValues {
+  if (this == null) {
     return PaddingValues(0.dp)
   }
 
   return when {
-    either.`is`(Float::class) -> PaddingValues(either.get(Float::class).dp)
-    either.`is`(PaddingValuesRecord::class) -> either.get(PaddingValuesRecord::class).toPaddingValues()
+    `is`(Float::class) -> PaddingValues(get(Float::class).dp)
+    `is`(PaddingValuesRecord::class) -> get(PaddingValuesRecord::class).toPaddingValues()
     else -> throw IllegalStateException()
   }
 }
@@ -70,7 +70,7 @@ data class HorizontalCenteredHeroCarouselProps(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionalComposableScope.HorizontalCenteredHeroCarouselContent(props: HorizontalCenteredHeroCarouselProps) {
-  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val contentPadding = props.contentPadding.toPaddingValues()
   val carouselState = rememberCarouselState(0) { view.size }
   val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.SINGLE_ADVANCE) {
     FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
@@ -110,7 +110,7 @@ data class HorizontalMultiBrowseCarouselProps(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionalComposableScope.HorizontalMultiBrowseCarouselContent(props: HorizontalMultiBrowseCarouselProps) {
-  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val contentPadding = props.contentPadding.toPaddingValues()
   val carouselState = rememberCarouselState(0) { view.size }
   val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.SINGLE_ADVANCE) {
     FlingBehaviorType.SINGLE_ADVANCE -> CarouselDefaults.singleAdvanceFlingBehavior(state = carouselState)
@@ -148,7 +148,7 @@ data class HorizontalUncontainedCarouselProps(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FunctionalComposableScope.HorizontalUncontainedCarouselContent(props: HorizontalUncontainedCarouselProps) {
-  val contentPadding = paddingValuesFromEither(props.contentPadding)
+  val contentPadding = props.contentPadding.toPaddingValues()
   val carouselState = rememberCarouselState(0) { view.size }
   // Uncontained defaults to noSnap, unlike the other two which default to singleAdvance
   val flingBehavior: TargetedFlingBehavior = when (props.flingBehavior ?: FlingBehaviorType.NO_SNAP) {

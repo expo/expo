@@ -251,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'HorizontalPager component',
+    route: 'ui/horizontal-pager',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalPagerScreen'));
+    },
+  },
+  {
     name: 'Carousel component',
     route: 'ui/carousel',
     options: {},
