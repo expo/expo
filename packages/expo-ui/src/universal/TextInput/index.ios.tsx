@@ -68,9 +68,14 @@ export function TextInput({
   autoCorrect,
   returnKeyType,
   onSubmitEditing,
+  onFocus,
+  onBlur,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
+
+  const handleFocusChange =
+    onFocus || onBlur ? (focused: boolean) => (focused ? onFocus?.() : onBlur?.()) : undefined;
 
   const modifiers: ModifierConfig[] = [];
   if (editable === false) modifiers.push(disabledMod(true));
@@ -93,6 +98,7 @@ export function TextInput({
       autoFocus={autoFocus}
       axis={multiline ? 'vertical' : 'horizontal'}
       onTextChange={onChangeText}
+      onFocusChange={handleFocusChange}
       modifiers={modifiers.length > 0 ? modifiers : undefined}
     />
   );

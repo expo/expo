@@ -35,6 +35,7 @@ export default function TextInputScreen() {
   const [autoCorrect, setAutoCorrect] = useState(true);
   const [returnKeyType, setReturnKeyType] = useState<ReturnKeyTypeOptions>('done');
   const [lastSubmitted, setLastSubmitted] = useState<string | null>(null);
+  const [focused, setFocused] = useState(false);
 
   const cycleKeyboardType = () => {
     const i = KEYBOARD_TYPES.indexOf(keyboardType);
@@ -67,7 +68,10 @@ export default function TextInputScreen() {
               autoCorrect={autoCorrect}
               returnKeyType={returnKeyType}
               onSubmitEditing={setLastSubmitted}
+              onFocus={() => setFocused(true)}
+              onBlur={() => setFocused(false)}
             />
+            <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
           </Column>
 

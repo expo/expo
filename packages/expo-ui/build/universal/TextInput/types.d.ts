@@ -71,5 +71,13 @@ export interface TextInputProps {
      * text in the input.
      */
     onSubmitEditing?: (text: string) => void;
+    /**
+     * Called when the field gains focus.
+     */
+    onFocus?: () => void;
+    /**
+     * Called when the field loses focus.
+     */
+    onBlur?: () => void;
 }
 //# sourceMappingURL=types.d.ts.map

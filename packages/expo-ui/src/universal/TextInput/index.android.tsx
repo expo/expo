@@ -55,9 +55,16 @@ export function TextInput({
   autoCorrect,
   returnKeyType,
   onSubmitEditing,
+  onFocus,
+  onBlur,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = (value ?? fallback) as typeof fallback;
+
+  const handleFocusChanged =
+    onFocus || onBlur
+      ? (focused: boolean) => (focused ? onFocus?.() : onBlur?.())
+      : undefined;
 
   const keyboardOptions =
     keyboardType || autoCapitalize || autoCorrect !== undefined || returnKeyType
@@ -88,7 +95,8 @@ export function TextInput({
       singleLine={!multiline}
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
-      onValueChange={onChangeText}>
+      onValueChange={onChangeText}
+      onFocusChanged={handleFocusChanged}>
       {placeholder ? (
         <ComposeTextField.Placeholder>
           <Text>{placeholder}</Text>

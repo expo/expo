@@ -15,6 +15,8 @@ export function TextInput({
   autoCorrect,
   returnKeyType,
   onSubmitEditing,
+  onFocus,
+  onBlur,
 }: TextInputProps) {
   const fallback = useNativeState<string>('');
   const state = value ?? fallback;
@@ -33,6 +35,8 @@ export function TextInput({
       onSubmitEditing={
         onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined
       }
+      onFocus={onFocus ? () => onFocus() : undefined}
+      onBlur={onBlur ? () => onBlur() : undefined}
       onChangeText={(text) => {
         state.value = text;
         onChangeText?.(text);
