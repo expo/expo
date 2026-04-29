@@ -192,8 +192,13 @@ export function _resolveWithTsConfigPaths(
       // This could also apply to `*.[ext]` paths commonly though
       if (prefix !== '' && config.prefixMap[''] != null) {
         for (const entry of config.prefixMap['']) {
+          let star = moduleName;
+          if (entry.suffix) {
+            if (!moduleName.endsWith(entry.suffix)) continue;
+            star = moduleName.slice(0, -entry.suffix.length);
+          }
           for (const alias of entry.mapping) {
-            const possibleResult = alias.replace('*', moduleName);
+            const possibleResult = alias.replace('*', star);
             const result = resolve(possibleResult);
             if (result != null) {
               debug(`${moduleName} -> ${possibleResult}`);
