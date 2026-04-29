@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `EXPO_IOS_SIMULATOR_UDID` env var to target a specific iOS simulator when running `expo start --ios` or pressing `i` in the dev server. Useful for running multiple simulators against multiple dev servers in parallel. by [@sstur](https://github.com/sstur)
 - Output logs to `.expo` folder for agent processes. ([#44146](https://github.com/expo/expo/pull/44146) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow `expo start`, `expo export`, and `expo config` to work without `react-native` installed for web-only projects. ([#44294](https://github.com/expo/expo/pull/44294) by [@EvanBacon](https://github.com/EvanBacon))
 - Pass optional name to metro require for async modules. ([#44224](https://github.com/expo/expo/pull/44224) by [@EvanBacon](https://github.com/EvanBacon))

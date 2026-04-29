@@ -14,6 +14,7 @@ import {
 import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
 import { delayAsync, waitForActionAsync } from '../../../utils/delay';
+import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
 import { parsePlistAsync } from '../../../utils/plist';
@@ -80,6 +81,12 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }: BaseResolveDeviceProps<
     Partial<Pick<SimControl.Device, 'udid' | 'osType'>>
   > = {}): Promise<AppleDeviceManager> {
+    // Allow targeting a specific simulator via env var. Skipped when
+    // `shouldPrompt` is true so users can still pick interactively (Shift+I
+    // in the dev server interface).
+    if (!device && !shouldPrompt && env.EXPO_IOS_SIMULATOR_UDID) {
+      device = { udid: env.EXPO_IOS_SIMULATOR_UDID };
+    }
     if (shouldPrompt) {
       const devices = await getSelectableSimulatorsAsync(device);
       device = await promptAppleDeviceAsync(devices, device?.osType);
