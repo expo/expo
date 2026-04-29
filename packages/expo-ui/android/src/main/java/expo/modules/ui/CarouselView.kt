@@ -1,7 +1,6 @@
 package expo.modules.ui
 
 import androidx.compose.foundation.gestures.TargetedFlingBehavior
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.material3.carousel.HorizontalCenteredHeroCarousel
@@ -12,47 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.size
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
-import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class FlingBehaviorType(val value: String) : Enumerable {
   SINGLE_ADVANCE("singleAdvance"),
   NO_SNAP("noSnap")
-}
-
-@OptimizedRecord
-class PaddingValuesRecord : Record {
-  @Field val start: Float? = null
-  @Field val top: Float? = null
-  @Field val end: Float? = null
-  @Field val bottom: Float? = null
-
-  fun toPaddingValues(): PaddingValues {
-    return PaddingValues(
-      start?.dp ?: 0.dp,
-      top?.dp ?: 0.dp,
-      end?.dp ?: 0.dp,
-      bottom?.dp ?: 0.dp
-    )
-  }
-}
-
-fun Either<Float, PaddingValuesRecord>?.toPaddingValues(): PaddingValues {
-  if (this == null) {
-    return PaddingValues(0.dp)
-  }
-
-  return when {
-    `is`(Float::class) -> PaddingValues(get(Float::class).dp)
-    `is`(PaddingValuesRecord::class) -> get(PaddingValuesRecord::class).toPaddingValues()
-    else -> throw IllegalStateException()
-  }
 }
 
 @OptimizedComposeProps

@@ -1,29 +1,45 @@
 import { requireNativeView } from 'expo';
+import type { Ref } from 'react';
 
-import {
-  COMMAND_STATE_SYMBOL,
-  type PagerNativeState,
-  usePagerNativeState,
-} from './usePagerNativeState';
-import { getStateId } from '../../State/utils';
 import { type ModifierConfig, type ViewEvent } from '../../types';
 import type { PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export { usePagerNativeState, type PagerNativeState };
+export type HorizontalPagerHandle = {
+  /**
+   * Mirrors Compose's `PagerState.animateScrollToPage`. Resolves when the
+   * animation completes.
+   */
+  animateScrollToPage: (page: number) => Promise<void>;
+  /**
+   * Mirrors Compose's `PagerState.scrollToPage`. Jumps without animation.
+   */
+  scrollToPage: (page: number) => Promise<void>;
+};
 
 export type HorizontalPagerProps = {
   /**
-   * Pager state created with `usePagerNativeState`. Pass it to drive the pager from
-   * JS (`state.animateScrollToPage(...)`) or read its current page reactively
-   * (`state.currentPage.value`). If omitted, the pager mounts at page 0 and is
-   * driven only by user swipes — use `onPageSelected` to observe.
+   * Imperative handle for programmatic navigation. Mirrors the methods on
+   * Compose's `PagerState`.
    */
-  state?: PagerNativeState;
+  ref?: Ref<HorizontalPagerHandle>;
   /**
-   * Called when the settled page changes after a user swipe.
+   * Page to mount on. Mirrors `rememberPagerState(initialPage = …)`. Subsequent
+   * changes have no effect — use the ref methods to navigate after mount.
+   * @default 0
    */
-  onPageSelected?: (position: number) => void;
+  initialPage?: number;
+  /**
+   * Fires when Compose's `PagerState.currentPage` changes — i.e. when the page
+   * closest to the snap position flips, including mid-swipe as the user
+   * crosses between pages.
+   */
+  onCurrentPageChange?: (page: number) => void;
+  /**
+   * Fires when Compose's `PagerState.settledPage` changes — i.e. after a
+   * swipe or programmatic scroll has fully settled.
+   */
+  onSettledPageChange?: (page: number) => void;
   /**
    * Spacing between pages in dp.
    * @default 0
@@ -31,6 +47,7 @@ export type HorizontalPagerProps = {
   pageSpacing?: number;
   /**
    * Padding for pager content (dp or per-side object).
+   * @default 0
    */
   contentPadding?: number | PaddingValuesRecord;
   /**
@@ -58,11 +75,12 @@ export type HorizontalPagerProps = {
   children: React.ReactNode;
 };
 
-type NativeHorizontalPagerProps = Omit<HorizontalPagerProps, 'onPageSelected' | 'state'> &
-  ViewEvent<'onPageSelected', { position: number }> & {
-    currentPageState: number | null;
-    commandState: number | null;
-  };
+type NativeHorizontalPagerProps = Omit<
+  HorizontalPagerProps,
+  'onCurrentPageChange' | 'onSettledPageChange'
+> &
+  ViewEvent<'onCurrentPageChange', { position: number }> &
+  ViewEvent<'onSettledPageChange', { position: number }>;
 
 const NativeView: React.ComponentType<NativeHorizontalPagerProps> = requireNativeView(
   'ExpoUI',
@@ -70,15 +88,16 @@ const NativeView: React.ComponentType<NativeHorizontalPagerProps> = requireNativ
 );
 
 function transformProps(props: HorizontalPagerProps): NativeHorizontalPagerProps {
-  const { modifiers, onPageSelected, state, ...restProps } = props;
+  const { modifiers, onCurrentPageChange, onSettledPageChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-    currentPageState: getStateId(state?.currentPage),
-    commandState: getStateId(state?.[COMMAND_STATE_SYMBOL]),
-    onPageSelected: onPageSelected
-      ? ({ nativeEvent: { position } }) => onPageSelected(position)
+    onCurrentPageChange: onCurrentPageChange
+      ? ({ nativeEvent: { position } }) => onCurrentPageChange(position)
+      : undefined,
+    onSettledPageChange: onSettledPageChange
+      ? ({ nativeEvent: { position } }) => onSettledPageChange(position)
       : undefined,
   };
 }
