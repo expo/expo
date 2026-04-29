@@ -21,8 +21,13 @@ export function TextInput({
   onBlur,
   cursorColor,
   textAlign,
+  readOnly,
+  inputMode,
+  enterKeyHint,
+  defaultValue,
 }: TextInputProps) {
-  const fallback = useNativeState<string>('');
+  const initialFallbackRef = useRef(defaultValue ?? '');
+  const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = value ?? fallback;
 
   const innerRef = useRef<RNTextInput>(null);
@@ -51,11 +56,14 @@ export function TextInput({
       placeholder={placeholder}
       autoFocus={autoFocus}
       editable={editable}
+      readOnly={readOnly}
       multiline={multiline}
       keyboardType={keyboardType}
+      inputMode={inputMode}
       autoCapitalize={autoCapitalize}
       autoCorrect={autoCorrect}
       returnKeyType={returnKeyType}
+      enterKeyHint={enterKeyHint}
       cursorColor={typeof cursorColor === 'string' ? cursorColor : undefined}
       style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}
       onSubmitEditing={

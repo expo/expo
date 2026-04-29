@@ -1,5 +1,11 @@
 import { TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
 import { useImperativeHandle, useRef } from 'react';
+
+import {
+  enterKeyHintToReturnKeyType,
+  inputModeToKeyboardType,
+  resolveEditable,
+} from './utils';
 import {
   autocorrectionDisabled,
   disabled as disabledMod,
@@ -65,19 +71,28 @@ export function TextInput({
   onChangeText,
   placeholder,
   autoFocus,
-  editable,
+  editable: editableProp,
   multiline,
-  keyboardType,
+  keyboardType: keyboardTypeProp,
   autoCapitalize,
   autoCorrect,
-  returnKeyType,
+  returnKeyType: returnKeyTypeProp,
   onSubmitEditing,
   onFocus,
   onBlur,
   cursorColor,
   textAlign,
+  readOnly,
+  inputMode,
+  enterKeyHint,
+  defaultValue,
 }: TextInputProps) {
-  const fallback = useNativeState<string>('');
+  const editable = resolveEditable(editableProp, readOnly);
+  const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
+  const returnKeyType = returnKeyTypeProp ?? enterKeyHintToReturnKeyType(enterKeyHint);
+
+  const initialFallbackRef = useRef(defaultValue ?? '');
+  const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
 
   const innerRef = useRef<TextFieldRef>(null);

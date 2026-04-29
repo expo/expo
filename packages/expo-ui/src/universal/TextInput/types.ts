@@ -2,6 +2,7 @@ import type { Ref } from 'react';
 import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import type { ObservableState } from '../State';
+import type { EnterKeyHint, InputMode } from './utils';
 
 /**
  * Imperative methods exposed via the `TextInput` ref.
@@ -127,4 +128,28 @@ export interface TextInputProps {
    * @default 'auto'
    */
   textAlign?: 'auto' | 'left' | 'right' | 'center' | 'justify';
+
+  /**
+   * Alias for `editable={false}`. When both are set, `editable` wins.
+   * @default false
+   */
+  readOnly?: boolean;
+
+  /**
+   * HTML-style hint for the keyboard variant. Maps to `keyboardType`. When
+   * both are set, `keyboardType` wins.
+   */
+  inputMode?: InputMode;
+
+  /**
+   * HTML-style hint for the keyboard return key. Maps to `returnKeyType`.
+   * When both are set, `returnKeyType` wins.
+   */
+  enterKeyHint?: EnterKeyHint;
+
+  /**
+   * Initial text shown when the input mounts and `value` is not provided.
+   * Ignored once the user starts typing or if `value` is set.
+   */
+  defaultValue?: string;
 }
