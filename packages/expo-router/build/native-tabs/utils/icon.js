@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertIconColorPropToObject = convertIconColorPropToObject;
 exports.useAwaitedScreensIcon = useAwaitedScreensIcon;
-exports.convertOptionsIconToRNScreensPropsIcon = convertOptionsIconToRNScreensPropsIcon;
 exports.convertOptionsIconToIOSPropsIcon = convertOptionsIconToIOSPropsIcon;
 exports.convertOptionsIconToAndroidPropsIcon = convertOptionsIconToAndroidPropsIcon;
 exports.convertComponentSrcToImageSource = convertComponentSrcToImageSource;
@@ -49,15 +48,6 @@ function useAwaitedScreensIcon(icon) {
 }
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
-}
-function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
-    if (!icon) {
-        return undefined;
-    }
-    return {
-        ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
-        android: convertOptionsIconToAndroidPropsIcon(icon),
-    };
 }
 function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
     if (icon && 'sf' in icon && icon.sf) {

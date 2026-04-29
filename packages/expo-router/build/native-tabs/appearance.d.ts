@@ -1,8 +1,8 @@
 import type { ColorValue } from 'react-native';
-import type { TabsScreenAppearance, TabsScreenItemStateAppearance } from 'react-native-screens';
-import { type NativeTabOptions, type NativeTabsBlurEffect, type NativeTabsLabelStyle } from './types';
-export declare function createStandardAppearanceFromOptions(options: NativeTabOptions): TabsScreenAppearance;
-export declare function createScrollEdgeAppearanceFromOptions(options: NativeTabOptions): TabsScreenAppearance;
+import type { TabsScreenAppearanceAndroid, TabsScreenAppearanceIOS, TabsScreenItemStateAppearanceIOS } from 'react-native-screens';
+import { type NativeTabOptions, type NativeTabsBlurEffect, type NativeTabsLabelStyle, type NativeTabsTabBarItemLabelVisibilityMode } from './types';
+export declare function createStandardAppearanceFromOptions(options: NativeTabOptions): TabsScreenAppearanceIOS;
+export declare function createScrollEdgeAppearanceFromOptions(options: NativeTabOptions): TabsScreenAppearanceIOS;
 export interface AppearanceStyle extends NativeTabsLabelStyle {
     iconColor?: ColorValue;
     backgroundColor?: ColorValue | null;
@@ -14,8 +14,17 @@ export interface AppearanceStyle extends NativeTabsLabelStyle {
         vertical?: number;
     };
 }
-export declare function appendSelectedStyleToAppearance(selectedStyle: AppearanceStyle, appearance: TabsScreenAppearance): TabsScreenAppearance;
-export declare function appendStyleToAppearance(style: AppearanceStyle, appearance: TabsScreenAppearance, states: ('selected' | 'focused' | 'disabled' | 'normal')[]): TabsScreenAppearance;
-export declare function convertStyleToAppearance(style: AppearanceStyle | undefined): TabsScreenAppearance;
-export declare function convertStyleToItemStateAppearance(style: AppearanceStyle | undefined): TabsScreenItemStateAppearance;
+export declare function appendSelectedStyleToAppearance(selectedStyle: AppearanceStyle, appearance: TabsScreenAppearanceIOS): TabsScreenAppearanceIOS;
+export declare function appendStyleToAppearance(style: AppearanceStyle, appearance: TabsScreenAppearanceIOS, states: ('selected' | 'focused' | 'disabled' | 'normal')[]): TabsScreenAppearanceIOS;
+export declare function convertStyleToAppearance(style: AppearanceStyle | undefined): TabsScreenAppearanceIOS;
+export declare function convertStyleToItemStateAppearance(style: AppearanceStyle | undefined): TabsScreenItemStateAppearanceIOS;
+interface BuildAndroidAppearanceArgs {
+    options: NativeTabOptions;
+    tintColor: ColorValue | undefined;
+    rippleColor: ColorValue | undefined;
+    disableIndicator: boolean | undefined;
+    labelVisibilityMode: NativeTabsTabBarItemLabelVisibilityMode | undefined;
+}
+export declare function createAndroidScreenAppearance({ options, tintColor, rippleColor, disableIndicator, labelVisibilityMode, }: BuildAndroidAppearanceArgs): TabsScreenAppearanceAndroid;
+export {};
 //# sourceMappingURL=appearance.d.ts.map

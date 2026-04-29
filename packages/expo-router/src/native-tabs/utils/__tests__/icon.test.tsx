@@ -6,7 +6,8 @@ import type { NativeTabsProps, SymbolOrImageSource } from '../../types';
 import {
   convertComponentSrcToImageSource,
   convertIconColorPropToObject,
-  convertOptionsIconToRNScreensPropsIcon,
+  convertOptionsIconToAndroidPropsIcon,
+  convertOptionsIconToIOSPropsIcon,
   useAwaitedScreensIcon,
 } from '../icon';
 
@@ -47,138 +48,155 @@ describe(convertIconColorPropToObject, () => {
   });
 });
 
-describe(convertOptionsIconToRNScreensPropsIcon, () => {
+describe(convertOptionsIconToIOSPropsIcon, () => {
   it('returns undefined when icon is undefined', () => {
-    expect(convertOptionsIconToRNScreensPropsIcon(undefined)).toBeUndefined();
+    expect(convertOptionsIconToIOSPropsIcon(undefined)).toBeUndefined();
   });
 
-  it('returns ios and android icon objects when sf is provided', () => {
-    const result = convertOptionsIconToRNScreensPropsIcon({ sf: 'square.fill' });
-    expect(result).toEqual({
-      ios: { type: 'sfSymbol', name: 'square.fill' },
-      android: undefined,
+  it('returns sfSymbol icon when sf is provided', () => {
+    expect(convertOptionsIconToIOSPropsIcon({ sf: 'square.fill' })).toEqual({
+      type: 'sfSymbol',
+      name: 'square.fill',
     });
   });
 
-  it('returns ios and android icon objects when src is provided as an object', () => {
+  it('returns imageSource when src is provided as an object', () => {
     const src = { uri: 'https://example.com/icon.png' };
-    const result = convertOptionsIconToRNScreensPropsIcon({ src });
-    expect(result).toEqual({
-      ios: { type: 'imageSource', imageSource: src },
-      android: { type: 'imageSource', imageSource: src },
+    expect(convertOptionsIconToIOSPropsIcon({ src })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
     });
   });
 
-  it('returns ios and android icon objects when src is a numeric resource identifier', () => {
+  it('returns imageSource when src is a numeric resource identifier', () => {
     const src = 123;
-    const result = convertOptionsIconToRNScreensPropsIcon({ src });
-    expect(result).toEqual({
-      ios: { type: 'imageSource', imageSource: src },
-      android: { type: 'imageSource', imageSource: src },
+    expect(convertOptionsIconToIOSPropsIcon({ src })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
     });
   });
 
   it('returns undefined when sf is falsy (empty string)', () => {
     // @ts-expect-error testing falsy value
-    expect(convertOptionsIconToRNScreensPropsIcon({ sf: '' })).toEqual({
-      ios: undefined,
-      android: undefined,
-    });
+    expect(convertOptionsIconToIOSPropsIcon({ sf: '' })).toBeUndefined();
   });
 
   it('returns undefined when src is falsy (null)', () => {
     // Intentionally passing null to test falsy value handling
     expect(
-      convertOptionsIconToRNScreensPropsIcon({ src: null as unknown as ImageSourcePropType })
-    ).toEqual({
-      ios: undefined,
-      android: undefined,
-    });
+      convertOptionsIconToIOSPropsIcon({ src: null as unknown as ImageSourcePropType })
+    ).toBeUndefined();
   });
 
   it('prefers sf over src when both are provided', () => {
     const src = { uri: 'https://example.com/icon.png' };
     const sf = 'star.fill';
-    const result = convertOptionsIconToRNScreensPropsIcon({ sf, src });
-    expect(result).toEqual({
-      ios: { type: 'sfSymbol', name: sf },
-      android: expect.objectContaining({}),
+    expect(convertOptionsIconToIOSPropsIcon({ sf, src })).toEqual({
+      type: 'sfSymbol',
+      name: sf,
     });
   });
 
-  it('returns android drawableResource when drawable is provided', () => {
+  it('returns undefined when only drawable is provided (Android-only field)', () => {
     const drawableOnly = { drawable: 'ic_launcher' } as const;
-    expect(convertOptionsIconToRNScreensPropsIcon(drawableOnly)).toEqual({
-      ios: undefined,
-      android: { type: 'drawableResource', name: 'ic_launcher' },
-    });
+    expect(convertOptionsIconToIOSPropsIcon(drawableOnly)).toBeUndefined();
   });
 
   describe('renderingMode', () => {
-    it('returns templateSource for iOS when renderingMode is "template"', () => {
+    it('returns templateSource when renderingMode is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'template' });
-      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+      expect(convertOptionsIconToIOSPropsIcon({ src, renderingMode: 'template' })).toEqual({
+        type: 'templateSource',
+        templateSource: src,
+      });
     });
 
-    it('returns imageSource for iOS when renderingMode is "original"', () => {
+    it('returns imageSource when renderingMode is "original"', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon({ src, renderingMode: 'original' });
-      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
-    });
-
-    it('returns imageSource for Android regardless of renderingMode', () => {
-      const src = { uri: 'https://example.com/icon.png' };
-      const resultTemplate = convertOptionsIconToRNScreensPropsIcon({
-        src,
-        renderingMode: 'template',
+      expect(convertOptionsIconToIOSPropsIcon({ src, renderingMode: 'original' })).toEqual({
+        type: 'imageSource',
+        imageSource: src,
       });
-      const resultOriginal = convertOptionsIconToRNScreensPropsIcon({
-        src,
-        renderingMode: 'original',
-      });
-      // Android always uses imageSource
-      expect(resultTemplate?.android).toEqual({ type: 'imageSource', imageSource: src });
-      expect(resultOriginal?.android).toEqual({ type: 'imageSource', imageSource: src });
     });
   });
 
   describe('smart default with iconColor', () => {
     it('defaults to imageSource (original) when iconColor is undefined', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon({ src }, undefined);
-      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+      expect(convertOptionsIconToIOSPropsIcon({ src }, undefined)).toEqual({
+        type: 'imageSource',
+        imageSource: src,
+      });
     });
 
     it('defaults to templateSource (template) when iconColor is set', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon({ src }, '#ff0000');
-      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+      expect(convertOptionsIconToIOSPropsIcon({ src }, '#ff0000')).toEqual({
+        type: 'templateSource',
+        templateSource: src,
+      });
     });
 
     it('respects explicit renderingMode="original" even when iconColor is set', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon(
-        { src, renderingMode: 'original' },
-        '#ff0000'
-      );
-      expect(result?.ios).toEqual({ type: 'imageSource', imageSource: src });
+      expect(
+        convertOptionsIconToIOSPropsIcon({ src, renderingMode: 'original' }, '#ff0000')
+      ).toEqual({ type: 'imageSource', imageSource: src });
     });
 
     it('respects explicit renderingMode="template" even when iconColor is undefined', () => {
       const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon(
-        { src, renderingMode: 'template' },
-        undefined
-      );
-      expect(result?.ios).toEqual({ type: 'templateSource', templateSource: src });
+      expect(
+        convertOptionsIconToIOSPropsIcon({ src, renderingMode: 'template' }, undefined)
+      ).toEqual({ type: 'templateSource', templateSource: src });
     });
+  });
+});
 
-    it('does not affect Android behavior when iconColor is set', () => {
-      const src = { uri: 'https://example.com/icon.png' };
-      const result = convertOptionsIconToRNScreensPropsIcon({ src }, '#ff0000');
-      // Android always uses imageSource regardless of iconColor
-      expect(result?.android).toEqual({ type: 'imageSource', imageSource: src });
+describe(convertOptionsIconToAndroidPropsIcon, () => {
+  it('returns drawableResource when drawable is provided', () => {
+    expect(convertOptionsIconToAndroidPropsIcon({ drawable: 'ic_launcher' })).toEqual({
+      type: 'drawableResource',
+      name: 'ic_launcher',
+    });
+  });
+
+  it('returns imageSource when src is provided as an object', () => {
+    const src = { uri: 'https://example.com/icon.png' };
+    expect(convertOptionsIconToAndroidPropsIcon({ src })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
+    });
+  });
+
+  it('returns imageSource when src is a numeric resource identifier', () => {
+    const src = 123;
+    expect(convertOptionsIconToAndroidPropsIcon({ src })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
+    });
+  });
+
+  it('returns undefined when only sf is provided (iOS-only field)', () => {
+    expect(convertOptionsIconToAndroidPropsIcon({ sf: 'square.fill' })).toBeUndefined();
+  });
+
+  it('returns undefined when src is falsy (null)', () => {
+    // Intentionally passing null to test falsy value handling
+    expect(
+      convertOptionsIconToAndroidPropsIcon({ src: null as unknown as ImageSourcePropType })
+    ).toBeUndefined();
+  });
+
+  it('returns imageSource regardless of renderingMode', () => {
+    const src = { uri: 'https://example.com/icon.png' };
+    expect(convertOptionsIconToAndroidPropsIcon({ src, renderingMode: 'template' })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
+    });
+    expect(convertOptionsIconToAndroidPropsIcon({ src, renderingMode: 'original' })).toEqual({
+      type: 'imageSource',
+      imageSource: src,
     });
   });
 });

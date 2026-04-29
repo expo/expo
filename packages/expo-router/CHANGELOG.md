@@ -17,6 +17,7 @@
 - Copy material top tabs as `/js-top-tabs`. ([#44268](https://github.com/expo/expo/pull/44268) by [@jakex7](https://github.com/jakex7))
 - Support `ColorValue`. ([#44301](https://github.com/expo/expo/pull/44301) by [@jakex7](https://github.com/jakex7))
 - Allow customizing route-level `<Suspense>` fallback ([#43885](https://github.com/expo/expo/pull/43885) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade react-native-screens version to 4.25.0-beta.1 ([#45172](https://github.com/expo/expo/pull/45172) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

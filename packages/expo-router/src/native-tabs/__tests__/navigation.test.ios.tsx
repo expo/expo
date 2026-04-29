@@ -23,6 +23,7 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 describe('Native Bottom Tabs Navigation', () => {
@@ -34,22 +35,21 @@ describe('Native Bottom Tabs Navigation', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(2);
   }
 
-  function expectTwoRenders() {
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+  function lastHostSelectedKey() {
+    const calls = TabsHost.mock.calls;
+    return calls[calls.length - 1][0].navState.selectedScreenKey;
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].isFocused).toBe(false);
+    expect(TabsScreen.mock.calls[renderNumber - 1][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[renderNumber - 1 + 1][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].isFocused).toBe(true);
+    expect(TabsScreen.mock.calls[renderNumber - 1][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[renderNumber - 1 + 1][0].screenKey).toMatch(/^second-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/^second-[-\w]+/);
   }
 
   beforeEach(() => {
@@ -87,12 +87,12 @@ describe('Native Bottom Tabs Navigation', () => {
 
   it('can navigate using router.push', () => {
     act(() => router.push('/second'));
-    expectTwoRenders();
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
     TabsScreen.mockClear();
     act(() => router.push('/'));
-    expectTwoRenders();
-    expectIndexTabFocused(2);
+    expectOneRender();
+    expectIndexTabFocused();
   });
 
   it('can navigate using Link', () => {
@@ -100,12 +100,12 @@ describe('Native Bottom Tabs Navigation', () => {
 
     // First render is deferred index=0, index =1
     // Second one is deferred index=1, index =1
-    expectTwoRenders();
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-index-link')));
-    expectTwoRenders();
-    expectIndexTabFocused(2);
+    expectOneRender();
+    expectIndexTabFocused();
   });
 
   it('does not re-render when router.push is called to the same tab', () => {
@@ -121,7 +121,7 @@ describe('Native Bottom Tabs Navigation', () => {
 
     TabsScreen.mockClear();
     act(() => router.push('/second'));
-    expectSecondTabFocused(2);
+    expectSecondTabFocused();
 
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-second-link'))); // link to same tab
@@ -135,7 +135,7 @@ describe('Native Bottom Tabs Navigation', () => {
 
     TabsScreen.mockClear();
     act(() => router.push('/second'));
-    expectSecondTabFocused(2);
+    expectSecondTabFocused(1);
 
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
