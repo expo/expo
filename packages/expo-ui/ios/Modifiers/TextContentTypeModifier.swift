@@ -183,7 +183,7 @@ internal struct TextContentTypeModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if let textContentType {
-      content.textContentType(.creditCardExpiration)
+      content.textContentType(textContentType.toUITextContentType)
     } else {
       content
     }
