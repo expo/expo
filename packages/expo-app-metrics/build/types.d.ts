@@ -130,6 +130,13 @@ export type CallStackFrame = {
     offsetIntoBinaryTextSegment?: number | null;
     sampleCount?: number | null;
     subFrames?: CallStackFrame[] | null;
+    /**
+     * Resolved symbol from on-device `dladdr` symbolication. Mangled for Swift symbols.
+     * `null` when the binary is not loaded in this process or could not be resolved.
+     *
+     * @platform ios
+     */
+    symbol?: string | null;
 };
 export type CallStack = {
     threadAttributed?: boolean | null;
