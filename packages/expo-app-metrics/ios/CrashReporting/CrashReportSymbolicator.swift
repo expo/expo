@@ -75,10 +75,26 @@ enum CrashReportSymbolicator {
   }
 
   /**
-   Demangles a Swift symbol via `swift_demangle` from `libswiftCore.dylib`.
-   Returns the input unchanged for non-Swift symbols or if demangling fails.
+   Demangles a Swift or Itanium-ABI C++ symbol on-device.
+
+   Swift symbols are recognized by their `$s` / `_$s` prefix and demangled via
+   `swift_demangle` from `libswiftCore.dylib`. C++ symbols are recognized by their
+   `_Z` / `__Z` prefix and demangled via `__cxa_demangle` from `libc++abi.dylib`.
+
+   Anything else (Objective-C selectors, plain C symbols, already-demangled names)
+   is returned unchanged.
    */
   static func demangle(_ symbol: String) -> String {
+    if symbol.hasPrefix("$s") || symbol.hasPrefix("_$s") {
+      return swiftDemangle(symbol) ?? symbol
+    }
+    if symbol.hasPrefix("_Z") || symbol.hasPrefix("__Z") {
+      return cxxDemangle(symbol) ?? symbol
+    }
+    return symbol
+  }
+
+  private static func swiftDemangle(_ symbol: String) -> String? {
     return symbol.withCString { cstr in
       guard let ptr = _swift_demangle(
         mangledName: cstr,
@@ -87,7 +103,20 @@ enum CrashReportSymbolicator {
         outputBufferSize: nil,
         flags: 0
       ) else {
-        return symbol
+        return nil
+      }
+      defer {
+        free(ptr)
+      }
+      return String(cString: ptr)
+    }
+  }
+
+  private static func cxxDemangle(_ symbol: String) -> String? {
+    return symbol.withCString { cstr in
+      var status: Int32 = 0
+      guard let ptr = _cxa_demangle(cstr, nil, nil, &status), status == 0 else {
+        return nil
       }
       defer {
         free(ptr)
@@ -129,4 +158,16 @@ private func _swift_demangle(
   outputBuffer: UnsafeMutablePointer<CChar>?,
   outputBufferSize: UnsafeMutablePointer<UInt>?,
   flags: UInt32
+) -> UnsafeMutablePointer<CChar>?
+
+// `__cxa_demangle` is the Itanium ABI C++ demangler, exported by `libc++abi.dylib` (already
+// linked through `-lc++` in the test_spec / via the C++ standard library).
+// On success returns a malloc'd C string the caller must `free`, and writes 0 to `status`.
+// Non-zero status values mean: -1 = OOM, -2 = invalid mangled name, -3 = invalid argument.
+@_silgen_name("__cxa_demangle")
+private func _cxa_demangle(
+  _ mangledName: UnsafePointer<CChar>?,
+  _ outputBuffer: UnsafeMutablePointer<CChar>?,
+  _ length: UnsafeMutablePointer<Int>?,
+  _ status: UnsafeMutablePointer<Int32>?
 ) -> UnsafeMutablePointer<CChar>?

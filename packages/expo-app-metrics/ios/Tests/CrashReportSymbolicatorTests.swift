@@ -15,9 +15,21 @@ struct CrashReportSymbolicatorTests {
     }
 
     @Test
-    func `passes a non-Swift symbol through unchanged`() {
+    func `demangles a C++ symbol`() {
+      // Mangled form of `foo::bar()`.
+      #expect(CrashReportSymbolicator.demangle("_ZN3foo3barEv") == "foo::bar()")
+    }
+
+    @Test
+    func `passes a plain C symbol through unchanged`() {
       let cSymbol = "malloc"
       #expect(CrashReportSymbolicator.demangle(cSymbol) == cSymbol)
+    }
+
+    @Test
+    func `passes an Objective-C selector through unchanged`() {
+      let selector = "-[NSString length]"
+      #expect(CrashReportSymbolicator.demangle(selector) == selector)
     }
 
     @Test
