@@ -24,6 +24,7 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesCore
+    - ExpoModulesJSI
     - fast_float
     - fmt
     - glog
@@ -55,6 +56,7 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesCore
+    - ExpoModulesJSI
     - ExpoModulesTestCore
     - fast_float
     - fmt
@@ -83,10 +85,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoAgeRange (0.2.10):
-    - ExpoModulesCore
-  - ExpoAppleAuthentication (55.0.8):
-    - ExpoModulesCore
   - ExpoAsset (55.0.7):
     - ExpoModulesCore
   - ExpoAudio (55.0.8):
@@ -171,8 +169,6 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (55.0.7):
     - ExpoModulesCore
-  - ExpoLivePhoto (55.0.8):
-    - ExpoModulesCore
   - ExpoLocalAuthentication (55.0.8):
     - ExpoModulesCore
   - ExpoLocalization (55.0.8):
@@ -190,8 +186,6 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoMeshGradient (55.0.8):
-    - ExpoModulesCore
   - ExpoModulesCore (55.0.12):
     - boost
     - DoubleConversion
@@ -253,13 +247,11 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI/Tests (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
@@ -4012,8 +4004,6 @@ DEPENDENCIES:
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
   - Expo/Tests (from `../../../packages/expo`)
-  - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
-  - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -4046,7 +4036,6 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
-  - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
@@ -4054,11 +4043,10 @@ DEPENDENCIES:
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
-  - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
+  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
@@ -4259,10 +4247,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../packages/expo"
-  ExpoAgeRange:
-    :path: "../../../packages/expo-age-range/ios"
-  ExpoAppleAuthentication:
-    :path: "../../../packages/expo-apple-authentication/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
   ExpoAudio:
@@ -4321,8 +4305,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-linear-gradient/ios"
   ExpoLinking:
     :path: "../../../packages/expo-linking/ios"
-  ExpoLivePhoto:
-    :path: "../../../packages/expo-live-photo/ios"
   ExpoLocalAuthentication:
     :path: "../../../packages/expo-local-authentication/ios"
   ExpoLocalization:
@@ -4335,12 +4317,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-mail-composer/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
-  ExpoMeshGradient:
-    :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
-    :path: "../../../packages/expo-modules-core"
+    :path: "../../../packages/expo-modules-jsi/apple"
   ExpoModulesTestCore:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoModulesWorklets:
@@ -4596,9 +4576,7 @@ SPEC CHECKSUMS:
   EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
   EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: afa1e57c45ee9b2b4d2b048df78f1de8849eb507
-  ExpoAgeRange: 87dd980cb26e47b1108e24c39bcfb88a9ab1030e
-  ExpoAppleAuthentication: c8096cd35e4e4f88aec34fcbfcd9deae7cea04d3
+  Expo: be6381e9c1390a5be199a157939b52ef0a461dc0
   ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
   ExpoAudio: 40c883c60ed3bb17ecb3744a00732fb47029535b
   ExpoBackgroundFetch: ee315c8d1a54a3f358fc0cedb68e808e95935c57
@@ -4628,16 +4606,14 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 72475c0e8644ad4dae17742bde04d5a0fe4ad4f9
   ExpoLinearGradient: 76405dc81ad27c300347829ed90ba26e7597e846
   ExpoLinking: 8505f5b8fa023e82b9d3ac7be1f1241f35b415dd
-  ExpoLivePhoto: cebdeea82761402e1bb2e0b61bd1622d889c729e
   ExpoLocalAuthentication: efe64e98f2686d8bd0bd04300ba5ed360b3d0100
   ExpoLocalization: 19a0300c9fe626c884ce65cbbc421f9980bd5636
   ExpoLocation: 957da1f900af30208ee9245590dbd50c9d267709
   ExpoLogBox: 4a892fbcf6e343ffc1a6b714dcdc04a754d7e42f
   ExpoMailComposer: edd4f46a26ea55ff0e3a83ef0192e79f647911c8
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
-  ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: 13bc5b9a2fefacfab477b20600dc57821aa4a200
-  ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
+  ExpoModulesCore: d39abb48e55d828ac2abd4800e226244bcdb6447
+  ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
@@ -4661,7 +4637,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 2340f0b7f599c9ce6ba49a885f783de919cf4dd3
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
-  EXUpdates: 56ce06b32bea90efb1e4c6b28d73e4cfb472b71b
+  EXUpdates: 33cea909186babc6befefeed3596a82b6c1d63de
   EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 4cd65993d9ef677523093deeb7d8710f39fb9ed7
