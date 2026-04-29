@@ -25,6 +25,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(expo-brownfield): unwrap native event in addSharedStateListener ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
+
 ### 💡 Others
 
 - [iOS] Use `JavaScriptValue.getAny()` in place of the removed `getRaw()`. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
