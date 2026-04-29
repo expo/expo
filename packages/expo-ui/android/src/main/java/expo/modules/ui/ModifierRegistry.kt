@@ -47,6 +47,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
@@ -590,6 +591,18 @@ object ModifierRegistry {
         minFractionVisible = params.minFractionVisible,
       ) { isVisible ->
         eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
+      }
+    }
+
+    register("onSizeChanged") { _, _, _, eventDispatcher ->
+      val density = LocalDensity.current
+      Modifier.onSizeChanged { size ->
+        with(density) {
+          eventDispatcher("onSizeChanged", mapOf(
+            "width" to size.width.toDp().value,
+            "height" to size.height.toDp().value
+          ))
+        }
       }
     }
 

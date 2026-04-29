@@ -59,6 +59,7 @@ export default function TextInputScreen() {
   const [secureTextEntry, setSecureTextEntry] = useState(false);
   const [autoComplete, setAutoComplete] =
     useState<(typeof AUTO_COMPLETES)[number]>(undefined);
+  const [contentSize, setContentSize] = useState<{ width: number; height: number } | null>(null);
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -135,9 +136,15 @@ export default function TextInputScreen() {
               }
               secureTextEntry={secureTextEntry}
               autoComplete={autoComplete}
+              onContentSizeChange={setContentSize}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
+            <Text>
+              {contentSize
+                ? `Content size: ${contentSize.width.toFixed(1)} × ${contentSize.height.toFixed(1)}`
+                : 'Content size: pending'}
+            </Text>
           </Column>
 
           <Column spacing={8}>

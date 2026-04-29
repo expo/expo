@@ -20,6 +20,7 @@ import {
   keyboardType as keyboardTypeMod,
   lineLimit,
   multilineTextAlignment,
+  onGeometryChange,
   onSubmit,
   submitLabel,
   textContentType,
@@ -78,6 +79,7 @@ export function TextInput({
   textStyle,
   secureTextEntry,
   autoComplete,
+  onContentSizeChange,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -135,6 +137,7 @@ export function TextInput({
   if (mappedContentType) {
     modifiers.push(textContentType(mappedContentType as Parameters<typeof textContentType>[0]));
   }
+  if (onContentSizeChange) modifiers.push(onGeometryChange(onContentSizeChange));
 
   if (secureTextEntry) {
     return (

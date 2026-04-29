@@ -347,6 +347,18 @@ export const onVisibilityChanged = (
     }
   );
 
+/**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export const onSizeChanged = (
+  handler: (size: { width: number; height: number }) => void
+) =>
+  createModifierWithEventListener(
+    'onSizeChanged',
+    (size: { width: number; height: number }) => handler(size)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================

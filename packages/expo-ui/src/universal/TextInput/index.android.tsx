@@ -6,7 +6,11 @@ import {
   type TextFieldRef,
   useNativeState,
 } from '@expo/ui/jetpack-compose';
-import { semantics, testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  onSizeChanged,
+  semantics,
+  testID as testIDModifier,
+} from '@expo/ui/jetpack-compose/modifiers';
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
@@ -81,6 +85,7 @@ export function TextInput({
   style,
   secureTextEntry,
   autoComplete,
+  onContentSizeChange,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -140,6 +145,7 @@ export function TextInput({
         ...transformToModifiers(style, {}),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
+        ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
       ]}
       value={state}
       autoFocus={autoFocus}

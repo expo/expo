@@ -32,6 +32,7 @@ export function TextInput({
   textStyle,
   secureTextEntry,
   autoComplete,
+  onContentSizeChange,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -88,6 +89,11 @@ export function TextInput({
         state.value = text;
         onChangeText?.(text);
       }}
+      onContentSizeChange={
+        onContentSizeChange
+          ? (e) => onContentSizeChange(e.nativeEvent.contentSize)
+          : undefined
+      }
     />
   );
 }

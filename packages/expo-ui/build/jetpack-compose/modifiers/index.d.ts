@@ -229,6 +229,14 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
     minFractionVisible?: number;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */

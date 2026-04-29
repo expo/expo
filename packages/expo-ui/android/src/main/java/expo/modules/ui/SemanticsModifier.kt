@@ -30,8 +30,6 @@ internal fun String?.toContentType(): ContentType? = when (this) {
   "honorific-suffix", "name-suffix" -> ContentType.PersonNameSuffix
   "street-address", "address-line1" -> ContentType.AddressStreet
   "address-line2" -> ContentType.AddressAuxiliaryDetails
-  "postal-address" -> ContentType.AddressPostalAddress
-  "postal-address-extended" -> ContentType.AddressPostalAddress
   "postal-address-locality" -> ContentType.AddressLocality
   "postal-address-region" -> ContentType.AddressRegion
   "postal-address-extended-postal-code" -> ContentType.PostalCodeExtended

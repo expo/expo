@@ -1618,6 +1618,10 @@ extension ViewModifierRegistry {
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("onGeometryChange") { params, appContext, eventDispatcher in
+      return try OnGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("refreshable") { params, appContext, eventDispatcher in
       return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }

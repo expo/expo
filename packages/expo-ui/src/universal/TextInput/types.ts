@@ -192,6 +192,11 @@ export interface TextInputProps {
   placeholderTextColor?: ColorValue;
 
   /**
+   * Called when the rendered size of the input changes. Sizes in points/dp.
+   */
+  onContentSizeChange?: (size: { width: number; height: number }) => void;
+
+  /**
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;
