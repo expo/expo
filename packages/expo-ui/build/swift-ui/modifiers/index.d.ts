@@ -2,6 +2,7 @@
  * Core modifier factory and type definitions for SwiftUI view modifiers.
  * This system allows both built-in and 3rd party modifiers to use the same API.
  */
+import type { SFSymbol } from 'sf-symbols-typescript';
 import { animation } from './animation/index';
 import { background } from './background';
 import { containerBackground } from './containerBackground';
@@ -619,6 +620,47 @@ export declare const listRowBackground: (color: Color) => ModifierConfig;
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowseparator(_:edges:)).
  */
 export declare const listRowSeparator: (visibility: "automatic" | "visible" | "hidden", edges?: "all" | "top" | "bottom") => ModifierConfig;
+export type SwipeActionRole = 'default' | 'destructive' | 'cancel';
+export type SwipeActionsEdge = 'leading' | 'trailing';
+export type SwipeActionsOptions = {
+    edge?: SwipeActionsEdge;
+    allowsFullSwipe?: boolean;
+};
+export type SwipeAction = {
+    /**
+     * The text shown for the swipe action.
+     * Omit this to render an icon-only swipe action.
+     */
+    label?: string;
+    /**
+     * Optional SF Symbol name shown with the label.
+     */
+    systemImage?: SFSymbol;
+    /**
+     * The semantic role of the action.
+     * @default 'default'
+     */
+    role?: SwipeActionRole;
+    /**
+     * The button background color. This maps to SwiftUI's `tint`.
+     */
+    backgroundColor?: Color;
+    /**
+     * Callback invoked when the action is pressed.
+     */
+    onPress?: () => void;
+};
+/**
+ * Adds swipe actions to a view.
+ * Apply at most one `swipeActions` modifier per edge.
+ *
+ * @param actions - The list of swipe action buttons to display.
+ * @param options - The swipe action configuration.
+ * @param options.edge - The edge where the swipe actions are revealed.
+ * @param options.allowsFullSwipe - Whether a full swipe automatically performs the first action.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/swipeactions(edge:allowsfullswipe:content:)).
+ */
+export declare const swipeActions: (actions: SwipeAction[], options?: SwipeActionsOptions) => ModifierConfig;
 /**
  * Sets the truncation mode for lines of text that are too long to fit in the available space.
  * @param mode - The truncation mode that specifies where to truncate the text within the text view, if needed.

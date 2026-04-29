@@ -66,6 +66,7 @@ import {
   lineLimit,
   contentShape,
   shapes,
+  swipeActions,
 } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import {
@@ -123,6 +124,95 @@ export default function ModifiersScreen() {
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
   const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
+  const [swipeActionRows, setSwipeActionRows] = useState([
+    { id: '1', title: 'Full swipe enabled', allowsFullSwipe: true, iconOnlyActions: false },
+    { id: '2', title: 'Full swipe disabled', allowsFullSwipe: false, iconOnlyActions: false },
+    { id: '3', title: 'Icon only full swipe enabled', allowsFullSwipe: true, iconOnlyActions: true },
+    {
+      id: '4',
+      title: 'Icon only full swipe disabled',
+      allowsFullSwipe: false,
+      iconOnlyActions: true,
+    },
+  ]);
+  const swipeActionColors = {
+    destructive: '#FF3B30',
+    primary: '#007AFF',
+    success: '#34C759',
+    secondary: '#8E8E93',
+  };
+
+  const showSwipeAlert = (
+    action: 'More' | 'Read' | 'Flag' | 'Delete',
+    title: string,
+    details?: string
+  ) => {
+    switch (action) {
+      case 'More':
+        Alert.alert('More Actions', `Opened extra actions for "${title}". ${details ?? ''}`.trim());
+        return;
+      case 'Read':
+        Alert.alert('Marked as Read', `"${title}" has been marked as read. ${details ?? ''}`.trim());
+        return;
+      case 'Flag':
+        Alert.alert('Flag Added', `"${title}" was flagged for follow-up. ${details ?? ''}`.trim());
+        return;
+      case 'Delete':
+        Alert.alert('Row Deleted', `"${title}" was removed from the swipe actions demo.`);
+        return;
+    }
+  };
+
+  const handleSwipeDelete = (id: string, title: string) => {
+    setSwipeActionRows((prev) => prev.filter((item) => item.id !== id));
+    showSwipeAlert('Delete', title);
+  };
+
+  const trailingSwipeActionsForRow = (row: (typeof swipeActionRows)[number]) => [
+    {
+      label: row.iconOnlyActions ? undefined : 'Delete',
+      systemImage: 'trash.fill' as const,
+      backgroundColor: swipeActionColors.destructive,
+      role: 'destructive' as const,
+      onPress: () => handleSwipeDelete(row.id, row.title),
+    },
+    {
+      label: row.iconOnlyActions ? undefined : 'More',
+      systemImage: 'ellipsis.circle.fill' as const,
+      backgroundColor: swipeActionColors.primary,
+      onPress: () =>
+        showSwipeAlert(
+          'More',
+          row.title,
+          row.iconOnlyActions ? 'This row is using icon-only swipe buttons.' : 'This row shows labeled swipe buttons.'
+        ),
+    },
+  ];
+
+  const leadingSwipeActionsForRow = (row: (typeof swipeActionRows)[number]) => [
+    {
+      label: row.iconOnlyActions ? undefined : 'Read',
+      systemImage: 'envelope.open.fill' as const,
+      backgroundColor: swipeActionColors.success,
+      onPress: () =>
+        showSwipeAlert(
+          'Read',
+          row.title,
+          row.allowsFullSwipe ? 'Trailing full swipe is enabled on this row.' : 'Trailing full swipe is disabled on this row.'
+        ),
+    },
+    {
+      label: row.iconOnlyActions ? undefined : 'Flag',
+      systemImage: 'flag.fill' as const,
+      backgroundColor: swipeActionColors.secondary,
+      onPress: () =>
+        showSwipeAlert(
+          'Flag',
+          row.title,
+          row.iconOnlyActions ? 'The action was triggered from an icon-only leading swipe.' : 'The action was triggered from a labeled leading swipe.'
+        ),
+    },
+  ];
 
   return (
     <ScrollView>
@@ -217,6 +307,33 @@ export default function ModifiersScreen() {
             <Text>Default separator</Text>
             <Text>Default separator</Text>
             <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          </Section>
+
+          <Section
+            title="Swipe Actions modifier"
+            footer={
+              <Text>
+                Includes labeled and icon-only actions. The enabled rows allow full swipe on the
+                trailing delete action, while the disabled rows require revealing the actions.
+              </Text>
+            }>
+
+            {swipeActionRows.map((row) => (
+              <Text
+                key={row.id}
+                modifiers={[
+                  swipeActions(trailingSwipeActionsForRow(row), {
+                    edge: 'trailing',
+                    allowsFullSwipe: row.allowsFullSwipe,
+                  }),
+                  swipeActions(leadingSwipeActionsForRow(row), {
+                    edge: 'leading',
+                    allowsFullSwipe: false,
+                  }),
+                ]}>
+                {row.title}
+              </Text>
+            ))}
           </Section>
 
           {/* Text modifiers */}

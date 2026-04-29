@@ -1906,6 +1906,22 @@ extension ViewModifierRegistry {
       return try DeleteDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("leadingSwipeActions") { params, appContext, eventDispatcher in
+      return try SwipeActionsModifier(
+        from: params,
+        appContext: appContext,
+        eventDispatcher: eventDispatcher
+      )
+    }
+
+    register("trailingSwipeActions") { params, appContext, eventDispatcher in
+      return try SwipeActionsModifier(
+        from: params,
+        appContext: appContext,
+        eventDispatcher: eventDispatcher
+      )
+    }
+
     register("environment") { params, appContext, _ in
       return try EnvironmentModifier(from: params, appContext: appContext)
     }
