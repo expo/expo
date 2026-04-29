@@ -10,6 +10,7 @@ import {
   autocorrectionDisabled,
   disabled as disabledMod,
   keyboardType as keyboardTypeMod,
+  lineLimit,
   multilineTextAlignment,
   onSubmit,
   submitLabel,
@@ -86,6 +87,7 @@ export function TextInput({
   inputMode,
   enterKeyHint,
   defaultValue,
+  numberOfLines,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -129,6 +131,9 @@ export function TextInput({
   if (textAlign === 'left') modifiers.push(multilineTextAlignment('leading'));
   else if (textAlign === 'right') modifiers.push(multilineTextAlignment('trailing'));
   else if (textAlign === 'center') modifiers.push(multilineTextAlignment('center'));
+  if (multiline && numberOfLines && numberOfLines > 0) {
+    modifiers.push(lineLimit(numberOfLines, { reservesSpace: true }));
+  }
 
   return (
     <TextField

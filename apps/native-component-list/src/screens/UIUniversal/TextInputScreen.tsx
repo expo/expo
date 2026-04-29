@@ -30,6 +30,8 @@ const RETURN_KEY_TYPES: ReturnKeyTypeOptions[] = ['done', 'go', 'next', 'search'
 type TextAlign = 'auto' | 'left' | 'right' | 'center' | 'justify';
 const TEXT_ALIGNS: TextAlign[] = ['auto', 'left', 'center', 'right', 'justify'];
 
+const NUMBER_OF_LINES: (number | undefined)[] = [undefined, 3, 5];
+
 export default function TextInputScreen() {
   const text = useNativeState('');
   const [editable, setEditable] = useState(true);
@@ -42,7 +44,13 @@ export default function TextInputScreen() {
   const [focused, setFocused] = useState(false);
   const [redCursor, setRedCursor] = useState(false);
   const [textAlign, setTextAlign] = useState<TextAlign>('auto');
+  const [numberOfLines, setNumberOfLines] = useState<number | undefined>(undefined);
   const inputRef = useRef<TextInputRef>(null);
+
+  const cycleNumberOfLines = () => {
+    const i = NUMBER_OF_LINES.indexOf(numberOfLines);
+    setNumberOfLines(NUMBER_OF_LINES[(i + 1) % NUMBER_OF_LINES.length]);
+  };
 
   const cycleTextAlign = () => {
     const i = TEXT_ALIGNS.indexOf(textAlign);
@@ -85,6 +93,7 @@ export default function TextInputScreen() {
               onBlur={() => setFocused(false)}
               cursorColor={redCursor ? 'red' : undefined}
               textAlign={textAlign}
+              numberOfLines={numberOfLines}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -130,6 +139,11 @@ export default function TextInputScreen() {
               label={`textAlign: ${textAlign}`}
               variant="outlined"
               onPress={cycleTextAlign}
+            />
+            <Button
+              label={`numberOfLines: ${numberOfLines ?? 'auto'}`}
+              variant="outlined"
+              onPress={cycleNumberOfLines}
             />
           </Column>
         </Column>

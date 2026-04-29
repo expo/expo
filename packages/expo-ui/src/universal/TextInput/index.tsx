@@ -25,6 +25,7 @@ export function TextInput({
   inputMode,
   enterKeyHint,
   defaultValue,
+  numberOfLines,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -58,6 +59,7 @@ export function TextInput({
       editable={editable}
       readOnly={readOnly}
       multiline={multiline}
+      numberOfLines={numberOfLines}
       keyboardType={keyboardType}
       inputMode={inputMode}
       autoCapitalize={autoCapitalize}

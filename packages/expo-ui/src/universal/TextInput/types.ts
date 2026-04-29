@@ -152,4 +152,13 @@ export interface TextInputProps {
    * Ignored once the user starts typing or if `value` is set.
    */
   defaultValue?: string;
+
+  /**
+   * Number of lines the field reserves when `multiline` is true. Forces a
+   * fixed visible height of that many lines.
+   *
+   * Lacking native support:
+   * - iOS: requires iOS 16+; below that, the field grows naturally.
+   */
+  numberOfLines?: number;
 }

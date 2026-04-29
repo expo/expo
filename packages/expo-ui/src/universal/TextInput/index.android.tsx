@@ -71,6 +71,7 @@ export function TextInput({
   inputMode,
   enterKeyHint,
   defaultValue,
+  numberOfLines,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -127,6 +128,8 @@ export function TextInput({
       autoFocus={autoFocus}
       readOnly={editable === false}
       singleLine={!multiline}
+      maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
+      minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       colors={cursorColor ? { cursorColor } : undefined}
       textStyle={
         textAlign && textAlign !== 'auto' ? { textAlign } : undefined

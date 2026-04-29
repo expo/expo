@@ -1,4 +1,13 @@
-import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
+import type { ComponentProps } from 'react';
+import type {
+  KeyboardTypeOptions,
+  ReturnKeyTypeOptions,
+  TextInput as RNTextInput,
+} from 'react-native';
+
+type RNProps = ComponentProps<typeof RNTextInput>;
+export type AutoComplete = NonNullable<RNProps['autoComplete']>;
+export type TextContentType = NonNullable<RNProps['textContentType']>;
 
 export type InputMode =
   | 'none'
