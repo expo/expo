@@ -52,7 +52,6 @@ import java.net.URI
 import java.net.URL
 import java.nio.file.Path
 import java.time.LocalDate
-import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.time.Duration
 
@@ -135,7 +134,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (jClass.isEnum) {
       @Suppress("UNCHECKED_CAST")
-      return EnumTypeConverter(jClass.kotlin as KClass<Enum<*>>)
+      return EnumTypeConverter(jClass as Class<out Enum<*>>)
     }
 
     val cachedConverter = cachedRecordConverters[jClass]
