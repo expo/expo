@@ -118,7 +118,8 @@ export const SQLiteProvider = memo(
     prevProps.directory === nextProps.directory &&
     prevProps.onInit === nextProps.onInit &&
     prevProps.onError === nextProps.onError &&
-    prevProps.useSuspense === nextProps.useSuspense
+    prevProps.useSuspense === nextProps.useSuspense &&
+    prevProps.children === nextProps.children
 );
 
 /**
@@ -169,10 +170,11 @@ function SQLiteProviderSuspense({
   children,
   onInit,
 }: Omit<SQLiteProviderProps, 'onError' | 'useSuspense'>) {
+  const stableOptions = useDeepStableValue(options);
   const databasePromise = getDatabaseAsync({
     databaseName,
     directory,
-    options,
+    options: stableOptions,
     assetSource,
     onInit,
   });
@@ -193,13 +195,15 @@ function SQLiteProviderNonSuspense({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  const stableOptions = useDeepStableValue(options);
+
   useEffect(() => {
     async function setup() {
       try {
         const db = await openDatabaseWithInitAsync({
           databaseName,
           directory,
-          options,
+          options: stableOptions,
           assetSource,
           onInit,
         });
@@ -226,7 +230,7 @@ function SQLiteProviderNonSuspense({
       databaseRef.current = null;
       setLoading(true);
     };
-  }, [databaseName, directory, options, onInit]);
+  }, [databaseName, directory, stableOptions, onInit]);
 
   if (error != null) {
     const handler =
@@ -331,6 +335,22 @@ export async function importDatabaseFromAssetAsync(
     asset.localUri,
     assetSource.forceOverwrite ?? false
   );
+}
+
+/**
+ * Returns the previous reference while `value` remains deeply equal.
+ */
+function useDeepStableValue<T>(value: T): T {
+  const ref = useRef(value);
+  if (
+    !deepEqual(
+      ref.current as { [key: string]: any } | undefined,
+      value as { [key: string]: any } | undefined
+    )
+  ) {
+    ref.current = value;
+  }
+  return ref.current;
 }
 
 /**
