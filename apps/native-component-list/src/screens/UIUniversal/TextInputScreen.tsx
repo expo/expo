@@ -57,11 +57,11 @@ export default function TextInputScreen() {
   const [customStyle, setCustomStyle] = useState(false);
   const [customTextStyle, setCustomTextStyle] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(false);
-  const [autoComplete, setAutoComplete] =
-    useState<(typeof AUTO_COMPLETES)[number]>(undefined);
+  const [autoComplete, setAutoComplete] = useState<(typeof AUTO_COMPLETES)[number]>(undefined);
   const [contentSize, setContentSize] = useState<{ width: number; height: number } | null>(null);
   const [maxLengthOn, setMaxLengthOn] = useState(false);
   const [caretHidden, setCaretHidden] = useState(false);
+  const [yellowSelection, setYellowSelection] = useState(false);
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -141,6 +141,7 @@ export default function TextInputScreen() {
               onContentSizeChange={setContentSize}
               maxLength={maxLengthOn ? 10 : undefined}
               caretHidden={caretHidden}
+              selectionColor={yellowSelection ? 'yellow' : undefined}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -177,15 +178,12 @@ export default function TextInputScreen() {
               onValueChange={setSecureTextEntry}
               label="secureTextEntry"
             />
+            <Switch value={maxLengthOn} onValueChange={setMaxLengthOn} label="maxLength (10)" />
+            <Switch value={caretHidden} onValueChange={setCaretHidden} label="caretHidden" />
             <Switch
-              value={maxLengthOn}
-              onValueChange={setMaxLengthOn}
-              label="maxLength (10)"
-            />
-            <Switch
-              value={caretHidden}
-              onValueChange={setCaretHidden}
-              label="caretHidden"
+              value={yellowSelection}
+              onValueChange={setYellowSelection}
+              label="selectionColor (yellow)"
             />
             <Button
               label="ref.focus()"

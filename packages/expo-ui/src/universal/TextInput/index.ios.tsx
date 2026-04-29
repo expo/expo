@@ -78,6 +78,7 @@ export function TextInput({
   onContentSizeChange,
   maxLength,
   caretHidden,
+  selectionColor,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -138,6 +139,7 @@ export function TextInput({
     modifiers.push(onSubmit(() => onSubmitEditing(state.value)));
   }
   if (caretHidden) modifiers.push(tint('transparent'));
+  else if (selectionColor) modifiers.push(tint(selectionColor));
   else if (cursorColor) modifiers.push(tint(cursorColor));
   if (textAlign === 'left') modifiers.push(multilineTextAlignment('leading'));
   else if (textAlign === 'right') modifiers.push(multilineTextAlignment('trailing'));

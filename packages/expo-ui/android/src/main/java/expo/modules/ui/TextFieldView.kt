@@ -3,6 +3,7 @@ package expo.modules.ui
 import android.graphics.Color
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextField
@@ -121,6 +122,12 @@ data class TextFieldColorsRecord(
   @Field val errorSuffixColor: Color? = null,
 ) : Record
 
+@OptimizedRecord
+data class TextFieldSelectionColorsRecord(
+  @Field val handleColor: Color? = null,
+  @Field val backgroundColor: Color? = null,
+) : Record
+
 data class KeyboardActionEvent(
   @Field val action: String,
   @Field val value: String,
@@ -210,6 +217,7 @@ data class TextFieldProps(
   val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
   val shape: ShapeRecord? = null,
   val colors: TextFieldColorsRecord? = null,
+  val textSelectionColors: TextFieldSelectionColorsRecord? = null,
   val onValueChangeSync: WorkletCallback? = null,
   val modifiers: ModifierList = emptyList(),
 ) : ComposeProps
@@ -363,8 +371,20 @@ fun FunctionalComposableScope.TextFieldContent(
   val isOutlined = props.variant == TextFieldVariant.OUTLINED
   val shape = shapeFromShapeRecord(props.shape)
     ?: if (isOutlined) OutlinedTextFieldDefaults.shape else TextFieldDefaults.shape
-  val colors = props.colors?.toColors(isOutlined)
+  val baseColors = props.colors?.toColors(isOutlined)
     ?: if (isOutlined) OutlinedTextFieldDefaults.colors() else TextFieldDefaults.colors()
+  val colors = props.textSelectionColors?.let { record ->
+    val handle = record.handleColor.composeOrNull
+    val background = record.backgroundColor.composeOrNull
+    if (handle == null && background == null) baseColors
+    else baseColors.copy(
+      textSelectionColors = TextSelectionColors(
+        handleColor = handle ?: baseColors.textSelectionColors.handleColor,
+        backgroundColor = background ?: handle?.copy(alpha = 0.4f)
+          ?: baseColors.textSelectionColors.backgroundColor,
+      )
+    )
+  } ?: baseColors
 
   val localSelection = remember { mutableStateOf(TextRange.Zero) }
   val raw = state.value

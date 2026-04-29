@@ -35,6 +35,7 @@ export function TextInput({
   onContentSizeChange,
   maxLength,
   caretHidden,
+  selectionColor,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -75,6 +76,7 @@ export function TextInput({
       autoComplete={autoComplete}
       maxLength={maxLength}
       caretHidden={caretHidden}
+      selectionColor={selectionColor}
       testID={testID}
       keyboardType={keyboardType}
       inputMode={inputMode}

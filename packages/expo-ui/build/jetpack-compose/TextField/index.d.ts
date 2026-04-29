@@ -122,6 +122,16 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
      */
     visualTransformation?: 'password' | 'none';
     /**
+     * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+     * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+     * `backgroundColor` is the highlighted-text background (typically the same
+     * tint at lower alpha so the underlying text stays readable).
+     */
+    textSelectionColors?: {
+        handleColor?: ColorValue;
+        backgroundColor?: ColorValue;
+    };
+    /**
      * Text styling for the field's content. Maps to Compose's `TextStyle`.
      */
     textStyle?: {

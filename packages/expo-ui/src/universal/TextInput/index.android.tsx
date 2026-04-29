@@ -18,11 +18,7 @@ import { worklets } from '../../State/optionalWorklets';
 
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
-import {
-  enterKeyHintToReturnKeyType,
-  inputModeToKeyboardType,
-  resolveEditable,
-} from './utils';
+import { enterKeyHintToReturnKeyType, inputModeToKeyboardType, resolveEditable } from './utils';
 
 function mapReturnKeyType(rn: ReturnKeyTypeOptions): TextFieldImeAction {
   if (rn === 'google' || rn === 'yahoo') return 'search';
@@ -90,6 +86,7 @@ export function TextInput({
   onContentSizeChange,
   maxLength,
   caretHidden,
+  selectionColor,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -203,6 +200,7 @@ export function TextInput({
           : undefined
       }
       visualTransformation={secureTextEntry ? 'password' : undefined}
+      textSelectionColors={selectionColor ? { handleColor: selectionColor } : undefined}
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
       onValueChange={maxLength !== undefined ? handleValueChange : onChangeText}

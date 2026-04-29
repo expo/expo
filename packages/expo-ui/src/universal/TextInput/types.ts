@@ -207,6 +207,13 @@ export interface TextInputProps {
   caretHidden?: boolean;
 
   /**
+   * Color of the selected text highlight. On iOS this also tints the cursor
+   * (UIKit's `tintColor` covers both); pass `cursorColor` only if you want
+   * different cursor color on Android.
+   */
+  selectionColor?: ColorValue;
+
+  /**
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;
