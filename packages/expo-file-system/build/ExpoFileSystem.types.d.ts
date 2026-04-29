@@ -39,6 +39,70 @@ export type FileWriteOptions = {
      */
     append?: boolean;
 };
+/**
+ * The default debounce time for file system watcher events in milliseconds.
+ */
+export declare const DEFAULT_DEBOUNCE_MS = 100;
+/**
+ * The type of change that triggered a watcher event.
+ * - `created` &mdash; a new file or directory was created
+ * - `modified` &mdash; the file contents or metadata changed
+ * - `deleted` &mdash; the file or directory was removed
+ * - `renamed` &mdash; the file or directory was renamed or moved
+ */
+export type WatchEventType = 'created' | 'modified' | 'deleted' | 'renamed';
+/**
+ * Describes a change detected by a file system watcher.
+ */
+export type WatchEvent<T extends File | Directory> = {
+    /**
+     * The kind of change that occurred.
+     */
+    type: WatchEventType;
+    /**
+     * The file or directory that changed. For `renamed` events, this is the original path before the rename.
+     */
+    target: T;
+    /**
+     * Raw platform-specific event flags for advanced use cases.
+     * On Android: FileObserver event flags.
+     * On iOS: DispatchSource.FileSystemEvent flags.
+     */
+    nativeEventFlags?: number;
+    /**
+     * For rename events, the new path after rename.
+     * Populated when MOVED_FROM and MOVED_TO events are correlated within the debounce window.
+     * @platform android
+     */
+    newTarget?: T;
+};
+/**
+ * Options for configuring a file system watcher.
+ */
+export type WatchOptions = {
+    /**
+     * The debounce interval in milliseconds for coalescing rapid successive events into a single callback.
+     * @default DEFAULT_DEBOUNCE_MS
+     */
+    debounce?: number;
+    /**
+     * Limits which event types trigger the callback. If omitted, all event types are observed.
+     *
+     * On iOS, directory watchers only provide coarse-grained notifications that the directory itself
+     * changed, so filtering for child-level `created`, `deleted`, or `renamed` events is not reliable.
+     */
+    events?: WatchEventType[];
+};
+/**
+ * A handle to an active file system watcher. Call `remove()` to stop watching and release resources.
+ */
+export type WatchSubscription = {
+    /**
+     * Stops watching for changes and releases native resources.
+     * After calling this method, the callback will no longer be invoked.
+     */
+    remove(): void;
+};
 export type DirectoryCreateOptions = {
     /**
      * Whether to create intermediate directories if they do not exist.
@@ -132,6 +196,17 @@ export declare class Directory {
     create(options?: DirectoryCreateOptions): void;
     createFile(name: string, mimeType: string | null): File;
     createDirectory(name: string): Directory;
+    /**
+     * Watches this directory for changes to its contents.
+     *
+     * On iOS, DispatchSource can only detect that the directory changed,
+     * not which specific child was affected. The `target` will always be
+     * the directory itself, and content changes are reported as `modified`.
+     * Call `directory.list()` to determine what changed.
+     *
+     * On Android, FileObserver provides granular child-level events.
+     */
+    watch(callback: (event: WatchEvent<File | Directory>) => void, options?: WatchOptions): WatchSubscription;
     /**
      * Copies a directory.
      */
@@ -453,6 +528,10 @@ export declare class File {
      * @platform android
      */
     contentUri: string;
+    /**
+     * Watches for changes affecting this file.
+     */
+    watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription;
 }
 export declare class FileHandle {
     close(): void;

@@ -386,5 +386,21 @@ class FileSystemModule : Module() {
         task.cancel()
       }
     }
+
+    Class(FileSystemWatcher::class) {
+      Events("change")
+
+      Constructor { uri: Uri, options: WatchOptions? ->
+        FileSystemWatcher(appContext, uri, options)
+      }
+
+      Function("start") { watcher: FileSystemWatcher ->
+        watcher.start()
+      }
+
+      Function("stop") { watcher: FileSystemWatcher ->
+        watcher.stop()
+      }
+    }
   }
 }
