@@ -1,0 +1,148 @@
+---
+title: AlertDialog
+description: A Jetpack Compose AlertDialog component for displaying native alert dialogs.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI AlertDialog matches the official Jetpack Compose [AlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API. Content is provided via slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`) that map directly to Compose's slot parameters.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic alert dialog
+
+```tsx BasicAlertDialogExample.tsx
+import { useState } from 'react';
+import { Host, AlertDialog, Button, TextButton, Text } from '@expo/ui/jetpack-compose';
+
+export default function BasicAlertDialogExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Show Alert</Text>
+      </Button>
+      {visible && (
+        <AlertDialog onDismissRequest={() => setVisible(false)}>
+          <AlertDialog.Title>
+            <Text>Confirm Action</Text>
+          </AlertDialog.Title>
+          <AlertDialog.Text>
+            <Text>Are you sure you want to proceed?</Text>
+          </AlertDialog.Text>
+          <AlertDialog.ConfirmButton>
+            <TextButton onClick={() => setVisible(false)}>
+              <Text>Confirm</Text>
+            </TextButton>
+          </AlertDialog.ConfirmButton>
+          <AlertDialog.DismissButton>
+            <TextButton onClick={() => setVisible(false)}>
+              <Text>Cancel</Text>
+            </TextButton>
+          </AlertDialog.DismissButton>
+        </AlertDialog>
+      )}
+    </Host>
+  );
+}
+```
+
+### Custom colors
+
+```tsx CustomColorsExample.tsx
+import { useState } from 'react';
+import { Host, AlertDialog, Button, TextButton, Text } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorsExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Show Alert</Text>
+      </Button>
+      {visible && (
+        <AlertDialog
+          onDismissRequest={() => setVisible(false)}
+          colors={{
+            containerColor: '#1E1E2E',
+            titleContentColor: '#CDD6F4',
+            textContentColor: '#BAC2DE',
+          }}>
+          <AlertDialog.Title>
+            <Text>Custom Dialog</Text>
+          </AlertDialog.Title>
+          <AlertDialog.Text>
+            <Text>This dialog uses custom colors.</Text>
+          </AlertDialog.Text>
+          <AlertDialog.ConfirmButton>
+            <TextButton onClick={() => setVisible(false)}>
+              <Text>OK</Text>
+            </TextButton>
+          </AlertDialog.ConfirmButton>
+          <AlertDialog.DismissButton>
+            <TextButton onClick={() => setVisible(false)}>
+              <Text>Cancel</Text>
+            </TextButton>
+          </AlertDialog.DismissButton>
+        </AlertDialog>
+      )}
+    </Host>
+  );
+}
+```
+
+### With icon
+
+```tsx IconDialogExample.tsx
+import { useState } from 'react';
+import { Host, AlertDialog, Button, TextButton, Text, Icon } from '@expo/ui/jetpack-compose';
+
+export default function IconDialogExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Show Alert</Text>
+      </Button>
+      {visible && (
+        <AlertDialog onDismissRequest={() => setVisible(false)}>
+          <AlertDialog.Icon>
+            {/* Replace with your own icon asset */}
+            <Icon source={require('./info-icon.xml')} />
+          </AlertDialog.Icon>
+          <AlertDialog.Title>
+            <Text>Dialog with Icon</Text>
+          </AlertDialog.Title>
+          <AlertDialog.Text>
+            <Text>This dialog has an icon above the title.</Text>
+          </AlertDialog.Text>
+          <AlertDialog.ConfirmButton>
+            <TextButton onClick={() => setVisible(false)}>
+              <Text>OK</Text>
+            </TextButton>
+          </AlertDialog.ConfirmButton>
+        </AlertDialog>
+      )}
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { AlertDialog } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/alertdialog" apiName="AlertDialog" />
