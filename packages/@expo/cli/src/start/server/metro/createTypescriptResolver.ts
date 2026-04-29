@@ -18,6 +18,12 @@ const debug = require('debug')('expo:start:server:metro:typescript-resolver') as
 
 const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
+function joinBaseUrl(baseUrl: string, lookup: string): string {
+  // Joins baseUrl with a tsconfig alias or module name. Wildcard characters ('*')
+  // pass through unchanged, and './' / '../' segments are normalized.
+  return path.join(baseUrl, lookup);
+}
+
 interface SuffixEntry {
   suffix: string;
   mapping: string[];
@@ -43,6 +49,7 @@ const toResolveConfig = (
     return null;
   }
 
+  const baseUrl = tsconfig.baseUrl ?? projectRoot;
   const paths = tsconfig.paths ?? {};
   const exactMatches: Record<string, string[]> = Object.create(null);
   const prefixMap: Record<string, SuffixEntry[]> = Object.create(null);
@@ -52,7 +59,10 @@ const toResolveConfig = (
     if (!Array.isArray(paths[key])) {
       continue;
     }
-    const mapping = paths[key].filter((p) => typeof p === 'string' && !p.endsWith('.d.ts'));
+    // Pre-join with baseUrl so the hot path avoids path.join entirely
+    const mapping = paths[key]
+      .filter((p) => typeof p === 'string' && !p.endsWith('.d.ts'))
+      .map((p) => joinBaseUrl(baseUrl, p));
     if (mapping.length > 0) {
       const starIndex = key.indexOf('*');
       if (starIndex === -1) {
@@ -76,7 +86,7 @@ const toResolveConfig = (
     : null;
 
   return {
-    baseUrl: tsconfig.baseUrl ?? projectRoot,
+    baseUrl,
     hasBaseUrl: !!tsconfig.baseUrl,
     exactMatches,
     prefixRe,
@@ -92,10 +102,9 @@ function resolveWithTsConfigPaths(
   const exactPaths = config.exactMatches[moduleName];
   if (exactPaths != null) {
     for (const alias of exactPaths) {
-      const possibleResult = path.join(config.baseUrl, alias);
-      const result = resolve(possibleResult);
+      const result = resolve(alias);
       if (result != null) {
-        debug(`${moduleName} -> ${possibleResult}`);
+        debug(`${moduleName} -> ${alias}`);
         return result;
       }
     }
@@ -115,8 +124,7 @@ function resolveWithTsConfigPaths(
           star = rest.slice(0, -entry.suffix.length);
         }
         for (const alias of entry.mapping) {
-          const nextModuleName = alias.replace('*', star);
-          const possibleResult = path.join(config.baseUrl, nextModuleName);
+          const possibleResult = alias.replace('*', star);
           const result = resolve(possibleResult);
           if (result != null) {
             debug(`${moduleName} -> ${possibleResult}`);
@@ -134,7 +142,7 @@ function resolveWithTsConfigPaths(
   // Only resolve against baseUrl if no `paths` groups were matched.
   // Base URL is resolved after paths, and before node_modules.
   if (config.hasBaseUrl) {
-    const possibleResult = path.join(config.baseUrl, moduleName);
+    const possibleResult = joinBaseUrl(config.baseUrl, moduleName);
     const result = resolve(possibleResult);
     if (result) {
       debug(`baseUrl: ${moduleName} -> ${possibleResult}`);
