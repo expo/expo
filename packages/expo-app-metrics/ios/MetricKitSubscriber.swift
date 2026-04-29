@@ -11,20 +11,28 @@ import MetricKit
 
 final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
   /**
+   Processes payloads that MetricKit retained from previous app launches. Call this after
+   registering the subscriber with `MXMetricManager.shared.add(_:)` so MetricKit has
+   acknowledged a subscriber for the current process.
+   */
+  func processPastPayloads() {
+    didReceive(MXMetricManager.shared.pastPayloads)
+    didReceive(MXMetricManager.shared.pastDiagnosticPayloads)
+  }
+
+  // MARK: - MXMetricManagerSubscriber
+
+  /**
    Receives payloads with performance metrics like CPU and memory usage.
    Sent periodically (usually every 24 hours), or when your app gets steady usage.
    */
-  func didReceive(_ payloads: [MXMetricPayload]) {
-    prettyPrintPayloads(payloads)
-  }
+  func didReceive(_ payloads: [MXMetricPayload]) {}
 
   /**
    Receives payloads with diagnostic data like crash logs, hang reports, and more.
    Delivered on the next app launch after the event occurs.
    */
   func didReceive(_ payloads: [MXDiagnosticPayload]) {
-    prettyPrintPayloads(payloads)
-
     let crashReports = payloads.flatMap { payload in
       return (payload.crashDiagnostics ?? []).map { diagnostic in
         return CrashReport(diagnostic: diagnostic, payload: payload)
@@ -48,20 +56,4 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
   }
 }
 
-private func prettyPrintPayloads(_ payloads: [MXPayload]) {
-  for payload in payloads {
-    if let json = try? JSONSerialization.jsonObject(with: payload.jsonRepresentation()),
-       let data = try? JSONSerialization.data(withJSONObject: json, options: [.prettyPrinted]) {
-      // For now let's just log data.
-      print(String(decoding: data, as: UTF8.self))
-    }
-  }
-}
-
-private protocol MXPayload {
-  func jsonRepresentation() -> Data
-}
-
-extension MXMetricPayload: MXPayload {}
-extension MXDiagnosticPayload: MXPayload {}
 #endif

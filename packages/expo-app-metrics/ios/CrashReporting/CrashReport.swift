@@ -46,19 +46,33 @@ public struct CrashReport: Codable, Sendable {
    Picks the most likely `MainSession` that this crash report belongs to.
 
    MetricKit only gives us the diagnostic payload's time window (`timestampBegin` to
-   `timestampEnd`, typically a 24-hour bucket), not an exact crash time. We approximate
-   the match in two passes:
+   `timestampEnd`, typically a 24-hour bucket), not an exact crash time. Xcode's
+   "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
+   equal "now," so we can't rely on the session's `startDate` falling inside it.
 
-   1. Among sessions started within the window, prefer the one that never finished
-      (`endDate == nil`) — an unfinished main session is a strong signal of a crash.
-   2. If none match, fall back to the session with the latest `startDate` still within
-      the window. Returns `nil` if no session falls within the window at all.
+   1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
+      pick sessions that intersect the payload window. Among those, prefer the one
+      that never finished (`endDate == nil`) — an unfinished main session is a strong
+      signal of a crash. Otherwise pick the intersecting session with the latest
+      `startDate`.
+   2. If nothing intersects *and* the window is zero-width (Xcode-simulated payloads
+      where intersection is impossible by construction), fall back to the latest
+      unfinished session overall, then to the latest session by `startDate`.
+   3. Otherwise return `nil` — a real payload window that doesn't overlap any session
+      is genuinely unattributable, and silently misattributing it to the current
+      session would hide that.
    */
   func findMatchingSession(in mainSessions: [MainSession]) -> MainSession? {
-    let candidates = mainSessions.filter { session in
-      return session.startDate >= timestampBegin && session.startDate <= timestampEnd
+    let intersecting = mainSessions.filter { session in
+      let sessionEnd = session.endDate ?? .distantFuture
+      return session.startDate <= timestampEnd && sessionEnd >= timestampBegin
     }
-    if candidates.isEmpty {
+    let candidates: [MainSession]
+    if !intersecting.isEmpty {
+      candidates = intersecting
+    } else if timestampBegin == timestampEnd {
+      candidates = mainSessions
+    } else {
       return nil
     }
     let unfinished = candidates.filter({ $0.endDate == nil })
@@ -87,6 +101,12 @@ public struct CrashReport: Codable, Sendable {
       public let offsetIntoBinaryTextSegment: UInt64?
       public let sampleCount: Int?
       public let subFrames: [Frame]?
+      /**
+       Resolved symbol from on-device `dladdr` symbolication. Swift and Itanium-ABI C++
+       names are demangled; Objective-C selectors and plain C symbols are returned as-is.
+       `nil` when the binary is not loaded in this process or `dladdr` could not resolve it.
+       */
+      public let symbol: String?
     }
   }
 
@@ -126,7 +146,8 @@ extension CrashReport {
     self.signal = diagnostic.signal?.intValue
     self.terminationReason = diagnostic.terminationReason as String?
     self.virtualMemoryRegionInfo = diagnostic.virtualMemoryRegionInfo as String?
-    self.callStackTree = try? JSONDecoder().decode(CallStackTree.self, from: diagnostic.callStackTree.jsonRepresentation())
+    let decodedTree = try? JSONDecoder().decode(CallStackTree.self, from: diagnostic.callStackTree.jsonRepresentation())
+    self.callStackTree = decodedTree.map(CrashReportSymbolicator.symbolicate)
     self.appVersion = diagnostic.applicationVersion
     self.timestampBegin = payload.timeStampBegin
     self.timestampEnd = payload.timeStampEnd
