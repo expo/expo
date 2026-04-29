@@ -1,0 +1,57 @@
+---
+title: Migrate from Expo Router 55 to 56
+sidebar_title: SDK 55 to 56
+description: Learn how to migrate Expo Router from SDK 55 to 56.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+Starting with SDK 56, Expo Router no longer depends on React Navigation. Imports from `@react-navigation/*` packages need to be repointed at the matching `expo-router` entry points. The runtime API is unchanged. Only the module specifiers move.
+
+## Automated migration
+
+Run the codemod from the root of your project:
+
+<Terminal cmd={['$ npx @expo/codemod sdk-56-expo-router-react-navigation-replace src']} />
+
+Replace **src** with the directory (or glob) that contains your application code. The codemod is idempotent. Running it on already-migrated code is a no-op.
+
+## Import mapping
+
+Use the following table to map each React Navigation import to its `expo-router` equivalent:
+
+| React Navigation source | Expo Router target |
+| --- | --- |
+| `@react-navigation/native` | `expo-router` |
+| `@react-navigation/core` | `expo-router` |
+| `@react-navigation/elements` | `expo-router` |
+| `@react-navigation/routers` | `expo-router` |
+| `@react-navigation/stack` | `expo-router/js-stack` |
+| `@react-navigation/bottom-tabs` | `expo-router/js-tabs` |
+| `@react-navigation/material-top-tabs` | `expo-router/js-top-tabs` |
+
+Named, aliased, and type-only imports are preserved automatically. Only the module specifier changes.
+
+> **Note**: The `@react-navigation/native-stack` package does not have a direct equivalent. Use the [`Stack`](/router/advanced/stack) layout instead.
+
+## Manual migration
+
+If you cannot run the codemod, repoint each import by hand:
+
+```tsx
+// Before (SDK 55)
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+
+// After (SDK 56)
+import { NavigationContainer, useNavigation } from 'expo-router';
+import { createMaterialTopTabNavigator } from 'expo-router/js-top-tabs';
+```
+
+## Libraries
+
+Many third-party libraries still import from `@react-navigation/core`. To ease the SDK 56 transition, Expo CLI automatically rewrites those imports to `expo-router` when they originate from **node_modules**. Your application code is unaffected by this rewrite.
+
+This is a temporary compatibility shim. We will publish a dedicated library migration guide soon, after which the automatic rewrite will be removed.
+
+To opt out, set the `EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1` environment variable before starting the bundler. The same flag also disables the bundler error that fires when application code imports from `@react-navigation/*`.
