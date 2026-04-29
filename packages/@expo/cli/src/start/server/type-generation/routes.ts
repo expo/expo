@@ -33,12 +33,13 @@ export interface SetupTypedRoutesOptions {
 }
 
 export async function setupTypedRoutes(options: SetupTypedRoutesOptions) {
+  // TODO(@kitten): Remove indirection here. Unclear why it's needed
   const typedRoutesModule = require.resolve('@expo/router-server/build/typed-routes');
   return typedRoutes(typedRoutesModule, options);
 }
 
 async function typedRoutes(
-  typedRoutesModulePath: any,
+  typedRoutesModulePath: string,
   { server, metro, typesDirectory, projectRoot, routerDirectory, plugin }: SetupTypedRoutesOptions
 ) {
   /*
@@ -48,7 +49,9 @@ async function typedRoutes(
    */
   process.env.EXPO_ROUTER_APP_ROOT = routerDirectory;
 
-  const typedRoutesModule = require(typedRoutesModulePath);
+  const typedRoutesModule: typeof import('@expo/router-server/build/typed-routes') = require(
+    typedRoutesModulePath
+  );
 
   /*
    * Typed Routes can be run with out Metro or a Server, e.g. `expo customize tsconfig.json`

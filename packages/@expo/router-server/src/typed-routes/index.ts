@@ -25,7 +25,7 @@ export function getWatchHandler(
 ) {
   const routeFiles = new Set(ctx.keys().filter((key) => isTypedRoute(key)));
 
-  return async function callback({ filePath, type }: { filePath: string; type: string }) {
+  return async function callback(filePath: string, type: 'add' | 'change' | 'delete') {
     // Sanity check that we are in an Expo Router project
     if (!process.env.EXPO_ROUTER_APP_ROOT) return;
 

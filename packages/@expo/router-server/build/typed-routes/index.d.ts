@@ -13,10 +13,7 @@ export declare function getWatchHandler(outputDir: string, { ctx, regenerateFn }
     regenerateFn?: ((outputDir: string, options?: {
         partialTypedGroups?: boolean;
     } | undefined, ctx?: RequireContextPonyFill | undefined) => void) | undefined;
-}): ({ filePath, type }: {
-    filePath: string;
-    type: string;
-}) => Promise<void>;
+}): (filePath: string, type: "add" | "change" | "delete") => Promise<void>;
 /**
  * Regenerate the declaration file.
  *

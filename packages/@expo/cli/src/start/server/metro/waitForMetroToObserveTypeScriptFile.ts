@@ -1,17 +1,11 @@
 import type MetroServer from '@expo/metro/metro/Server';
+import type { ChangeEvent } from '@expo/metro/metro-file-map';
+import type FileMap from '@expo/metro/metro-file-map';
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
 
 const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
-
-export type FileChangeEvent = {
-  filePath: string;
-  metadata?: {
-    type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
-  } | null;
-  type: string;
-};
 
 /**
  * Use the native file watcher / Metro ruleset to detect if a
@@ -25,42 +19,31 @@ export function waitForMetroToObserveTypeScriptFile(
   },
   callback: () => Promise<void>
 ): () => void {
-  const watcher = runner.metro.getBundler().getBundler().getWatcher();
-
+  // TODO(@kitten): This is highly inefficient. We shouldn't watch all changes to determine this
+  // and instead use startup heuristic and do a pre-bundling check
+  const watcher = runner.metro.getBundler().getBundler().getWatcher() as FileMap;
   const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 
-  const listener = ({ eventsQueue }: { eventsQueue: FileChangeEvent[] }) => {
-    for (const event of eventsQueue) {
-      if (
-        event.type === 'add' &&
-        event.metadata?.type !== 'd' &&
+  const listener = ({ changes }: ChangeEvent) => {
+    for (const change of changes.addedFiles) {
+      if (/node_modules/.test(change[0])) {
         // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
-        !/node_modules/.test(event.filePath)
-      ) {
-        const { filePath } = event;
-        // Is TypeScript?
-        if (
-          // If the user adds a TypeScript file to the observable files in their project.
-          /\.tsx?$/.test(filePath) ||
-          // Or if the user adds a tsconfig.json file to the project root.
-          filePath === tsconfigPath
-        ) {
-          debug('Detected TypeScript file added to the project: ', filePath);
-          callback();
-          off();
-          return;
-        }
+        continue;
+      } else if (/\.tsx?$/.test(change[0]) || change[0] === tsconfigPath) {
+        // If the user adds a TypeScript file to the observable files in their project.
+        debug('Detected TypeScript file added to the project: ', change[0]);
+        callback();
+        off();
+        return;
       }
     }
   };
 
   debug('Waiting for TypeScript files to be added to the project...');
   watcher.addListener('change', listener);
-
   const off = () => {
     watcher.removeListener('change', listener);
   };
-
   runner.server.addListener?.('close', off);
   return off;
 }
@@ -73,44 +56,37 @@ export function observeFileChanges(
   files: string[],
   callback: () => void | Promise<void>
 ): () => void {
-  const watcher = runner.metro.getBundler().getBundler().getWatcher();
+  const watcher = runner.metro.getBundler().getBundler().getWatcher() as FileMap;
+  const watchFilePaths = new Set(files);
 
-  const listener = ({
-    eventsQueue,
-  }: {
-    eventsQueue: {
-      filePath: string;
-      metadata?: {
-        type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
-      } | null;
-      type: string;
-    }[];
-  }) => {
-    for (const event of eventsQueue) {
-      if (
-        // event.type === 'add' &&
-        event.metadata?.type !== 'd' &&
+  const listener = ({ changes }: ChangeEvent) => {
+    for (const change of changes.addedFiles) {
+      if (/node_modules/.test(change[0])) {
         // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
-        !/node_modules/.test(event.filePath)
-      ) {
-        const { filePath } = event;
-        // Is TypeScript?
-        if (files.includes(filePath)) {
-          debug('Observed change:', filePath);
-          callback();
-          return;
-        }
+        continue;
+      } else if (watchFilePaths.has(change[0])) {
+        debug('Observed change:', change[0]);
+        callback();
+        return;
+      }
+    }
+    for (const change of changes.modifiedFiles) {
+      if (/node_modules/.test(change[0])) {
+        // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
+        continue;
+      } else if (watchFilePaths.has(change[0])) {
+        debug('Observed change:', change[0]);
+        callback();
+        return;
       }
     }
   };
 
   debug('Watching file changes:', files);
   watcher.addListener('change', listener);
-
   const off = () => {
     watcher.removeListener('change', listener);
   };
-
   runner.server.addListener?.('close', off);
   return off;
 }
@@ -120,12 +96,12 @@ export function observeAnyFileChanges(
     metro: MetroServer;
     server: ServerLike;
   },
-  callback: (events: FileChangeEvent[]) => void | Promise<void>
+  callback: (events: ChangeEvent) => void | Promise<void>
 ): () => void {
   const watcher = runner.metro.getBundler().getBundler().getWatcher();
 
-  const listener = ({ eventsQueue }: { eventsQueue: FileChangeEvent[] }) => {
-    callback(eventsQueue);
+  const listener = (event: ChangeEvent) => {
+    callback(event);
   };
 
   watcher.addListener('change', listener);
