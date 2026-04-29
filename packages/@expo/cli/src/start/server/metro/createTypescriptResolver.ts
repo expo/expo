@@ -31,7 +31,7 @@ interface SuffixEntry {
   mapping: string[];
 }
 
-interface TsConfigResolveConfig {
+export interface TsConfigResolveConfig {
   exactMatches: Record<string, string[] | undefined>;
   prefixRe: RegExp | null;
   prefixMap: Record<string, SuffixEntry[]>;
@@ -61,7 +61,7 @@ export function createTypescriptResolver({
     initialized = true;
     const bundler = getMetroBundler();
     const tsconfig = loadTsConfigPaths(projectRoot, bundler._depGraph);
-    input.current = toResolveConfig(tsconfig, projectRoot);
+    input.current = _toResolveConfig(tsconfig, projectRoot);
     if (watch) {
       setupTsConfigWatcher(input, bundler, projectRoot);
     }
@@ -83,7 +83,7 @@ export function createTypescriptResolver({
       return null;
     }
 
-    return resolveWithTsConfigPaths(
+    return _resolveWithTsConfigPaths(
       input.current,
       moduleName,
       getOptionalResolve(immutableContext, platform, getStrictResolver)
@@ -98,7 +98,7 @@ function setupTsConfigWatcher(
 ): void {
   function reload() {
     const tsconfig = loadTsConfigPaths(projectRoot, bundler._depGraph);
-    input.current = toResolveConfig(tsconfig, projectRoot);
+    input.current = _toResolveConfig(tsconfig, projectRoot);
   }
 
   const watcher = bundler.getWatcher() as FileMap;
@@ -129,7 +129,7 @@ function joinBaseUrl(baseUrl: string, lookup: string): string {
   return path.join(baseUrl, lookup);
 }
 
-function resolveWithTsConfigPaths(
+export function _resolveWithTsConfigPaths(
   config: TsConfigResolveConfig,
   moduleName: string,
   resolve: (moduleName: string) => Resolution | null
@@ -225,7 +225,7 @@ function getOptionalResolve(
   };
 }
 
-function toResolveConfig(
+export function _toResolveConfig(
   tsconfig: ParsedTsConfig | null,
   projectRoot: string
 ): TsConfigResolveConfig | null {
@@ -294,7 +294,7 @@ function loadTsConfigPaths(projectRoot: string, depGraph: DependencyGraph): Pars
   }
 
   try {
-    return loadTsConfigWithExtends(projectRoot, configPath, depGraph);
+    return _loadTsConfigWithExtends(projectRoot, configPath, depGraph);
   } catch (error: any) {
     if (error?.isJsonFileError || error?.name === 'SyntaxError') {
       debug(`Failed to parse ${configPath}: ${error.message}`);
@@ -304,7 +304,7 @@ function loadTsConfigPaths(projectRoot: string, depGraph: DependencyGraph): Pars
   }
 }
 
-function loadTsConfigWithExtends(
+export function _loadTsConfigWithExtends(
   projectRoot: string,
   configPath: string,
   depGraph: DependencyGraph
