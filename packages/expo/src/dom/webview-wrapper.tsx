@@ -101,6 +101,10 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
     { names: [], props: {} }
   );
 
+  // Keep `initialProps` stable to prevent webview reloads when
+  // `injectedJavaScriptObject` changes.
+  const initialPropsRef = React.useRef(smartActions);
+
   // When the `marshalProps` change, emit them to the webview.
   React.useEffect(() => {
     emit({ type: '$$props', data: smartActions });
@@ -141,7 +145,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
       // Inject the top-most OS for the DOM component to read.
       EXPO_DOM_HOST_OS: process.env.EXPO_OS,
       // Inject the initial props
-      initialProps: smartActions,
+      initialProps: initialPropsRef.current,
     },
     injectedJavaScript: [
       dom?.matchContents ? getInjectBodySizeObserverScript() : null,
