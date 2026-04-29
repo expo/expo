@@ -222,8 +222,7 @@ interface TextSpanStyle {
   val shadow: TextShadowRecord?
 }
 
-// TODO(@lukmccall): Figure out why it's crashing with `Attempt to invoke virtual method 'io.github.lukmccall.pika.PIntrospectionData expo.modules.ui.TextSpanRecord$Companion.__PIntrospectionData()' on a null object reference`
-// @OptimizedRecord
+@OptimizedRecord
 data class TextSpanRecord(
   @Field override val text: String = "",
   @Field val children: List<TextSpanRecord>? = null,
