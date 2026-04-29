@@ -1,15 +1,16 @@
-import { Code } from '@expo/html-elements';
-import { useCallback, useEffect, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
-
-import { useRouterMetricsHelpers } from '@/router-metrics-integration';
-import { Button } from '../../../components/Button';
 import AppMetrics, { type Metric } from 'expo-app-metrics';
 import ExpoObserve from 'expo-observe';
+import { useCallback, useEffect, useState } from 'react';
+import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+
+import { Button } from '@/components/Button';
+import { Divider } from '@/components/Divider';
+import { JSONView } from '@/components/JSONView';
+import { useRouterMetricsHelpers } from '@/router-metrics-integration';
+import { useTheme } from '@/utils/theme';
 
 export default function Index() {
-  const colorScheme = useColorScheme();
-  const isDark = colorScheme === 'dark';
+  const theme = useTheme();
   const [metrics, setMetrics] = useState<Metric[]>([]);
   const [showEntries, setShowEntries] = useState(false);
 
@@ -46,20 +47,18 @@ export default function Index() {
 
   return (
     <ScrollView
-      style={[styles.container, { backgroundColor: isDark ? '#000000' : '#FFFFFF' }]}
+      style={[styles.container, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.contentContainer}>
       <Button title="Mark as interactive" onPress={handleMarkInteractive} theme="secondary" />
       <Button title="Dispatch events" onPress={handleDispatchEvents} theme="secondary" />
       <Button title="Clear stored entries" onPress={handleClearStoredEntries} theme="secondary" />
       <Button title="Get stored entries" onPress={handleGetStoredEntries} theme="secondary" />
 
-      <View style={[styles.divider, { backgroundColor: isDark ? '#333333' : '#E5E5E5' }]} />
+      <Divider />
 
       <View style={styles.header}>
         {metrics.length === 0 ? (
-          <Text style={[styles.countText, { color: isDark ? '#FFFFFF' : '#000000' }]}>
-            No stored entries
-          </Text>
+          <Text style={[styles.countText, { color: theme.text.default }]}>No stored entries</Text>
         ) : (
           <Button
             title={
@@ -70,26 +69,9 @@ export default function Index() {
         )}
       </View>
 
-      {showEntries && metrics.length ? <JSONView value={metrics} isDark={isDark} /> : null}
+      {showEntries && metrics.length ? <JSONView value={metrics} /> : null}
     </ScrollView>
   );
-}
-
-function JSONView({ value, isDark }: { value: any; isDark: boolean }) {
-  return (
-    <Code style={[styles.code, { color: isDark ? '#E5E5E5' : '#000000' }]}>
-      {JSON.stringify(value, deterministicJSONReplacer, 2)}
-    </Code>
-  );
-}
-
-// A replacer function for JSON.stringify that guarantees the same keys order
-function deterministicJSONReplacer(_: any, value: any) {
-  return typeof value !== 'object' || value === null || Array.isArray(value)
-    ? value
-    : Object.fromEntries(
-        Object.entries(value).sort(([keyA], [keyB]) => (keyA < keyB ? -1 : keyA > keyB ? 1 : 0))
-      );
 }
 
 const styles = StyleSheet.create({
@@ -105,14 +87,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'center',
   },
-  code: {
-    fontSize: 12,
-  },
   contentContainer: {
     paddingBottom: Platform.select({ ios: 30, android: 150 }),
-  },
-  divider: {
-    height: 1,
-    marginVertical: 20,
   },
 });

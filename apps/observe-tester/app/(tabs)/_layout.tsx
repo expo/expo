@@ -7,6 +7,10 @@ export default function TabsLayout() {
         <NativeTabs.Trigger.Label>Metrics</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon sf="gauge.with.needle" md="sync" />
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="(sessions)">
+        <NativeTabs.Trigger.Label>Sessions</NativeTabs.Trigger.Label>
+        <NativeTabs.Trigger.Icon sf="clock" md="schedule" />
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="debug">
         <NativeTabs.Trigger.Icon sf="wrench.and.screwdriver" md="info" />
         <NativeTabs.Trigger.Label>Debug</NativeTabs.Trigger.Label>
