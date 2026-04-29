@@ -2,6 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addToPbxNativeTargetSection = addToPbxNativeTargetSection;
 function addToPbxNativeTargetSection(xcodeProject, { targetName, targetUuid, productFile, xCConfigurationList, }) {
+    const existingTargetUuid = xcodeProject.findTargetKey(targetName);
+    if (existingTargetUuid) {
+        return {
+            uuid: existingTargetUuid,
+            pbxNativeTarget: xcodeProject.pbxNativeTargetSection()[existingTargetUuid],
+        };
+    }
     const target = {
         uuid: targetUuid,
         pbxNativeTarget: {

@@ -2,11 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addTargetDependency = addTargetDependency;
 function addTargetDependency(xcodeProject, target) {
-    if (!xcodeProject.hash.project.objects['PBXTargetDependency']) {
-        xcodeProject.hash.project.objects['PBXTargetDependency'] = {};
+    const { objects } = xcodeProject.hash.project;
+    objects.PBXTargetDependency ??= {};
+    objects.PBXContainerItemProxy ??= {};
+    const mainTargetUuid = xcodeProject.getFirstTarget().uuid;
+    const mainTarget = xcodeProject.pbxNativeTargetSection()[mainTargetUuid];
+    mainTarget.dependencies ??= [];
+    if (mainTarget.dependencies.some((dependency) => objects.PBXTargetDependency[dependency.value]?.target === target.uuid)) {
+        return;
     }
-    if (!xcodeProject.hash.project.objects['PBXContainerItemProxy']) {
-        xcodeProject.hash.project.objects['PBXContainerItemProxy'] = {};
-    }
-    xcodeProject.addTargetDependency(xcodeProject.getFirstTarget().uuid, [target.uuid]);
+    xcodeProject.addTargetDependency(mainTargetUuid, [target.uuid]);
 }

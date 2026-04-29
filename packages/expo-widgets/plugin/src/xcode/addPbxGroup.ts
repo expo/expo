@@ -10,9 +10,13 @@ export function addPbxGroup(
     widgetFiles: string[];
   }
 ) {
+  if (xcodeProject.pbxGroupByName(targetName)) {
+    return;
+  }
+
   // Add PBX group
   const { uuid: pbxGroupUuid } = xcodeProject.addPbxGroup(
-    [...widgetFiles, `${targetName}.entitlements`],
+    Array.from(new Set([...widgetFiles, `${targetName}.entitlements`])),
     targetName,
     targetName
   );
