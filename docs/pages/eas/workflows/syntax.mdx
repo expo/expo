@@ -520,10 +520,10 @@ concurrency:
 # @end #
 ```
 
-| Property             | Type      | Description                                                                                                                                             |
-| -------------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `cancel_in_progress` | `boolean` | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch.                                                |
-| `group`              | `string`  | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
+| Property             | Type     | Description                                                                                                                                             |
+| -------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cancel_in_progress` | `true`   | If true, new workflow runs started from GitHub will cancel current in-progress runs for the same branch.                                                |
+| `group`              | `string` | We do not support custom concurrency groups yet. Set this placeholder value so that when we do support custom groups, your workflow remains compatible. |
 
 ## Control flow
 
