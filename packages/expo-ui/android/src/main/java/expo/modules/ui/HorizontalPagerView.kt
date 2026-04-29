@@ -4,28 +4,34 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
 import androidx.compose.ui.unit.dp
 import androidx.core.view.size
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.OptimizedComposeProps
-import expo.modules.ui.state.ObservableState
 
 @OptimizedRecord
-data class HorizontalPagerPageSelectedEvent(
+data class HorizontalPagerCurrentPageChangeEvent(
+  @Field val position: Int = 0
+) : Record
+
+@OptimizedRecord
+data class HorizontalPagerSettledPageChangeEvent(
   @Field val position: Int = 0
 ) : Record
 
 @OptimizedComposeProps
 data class HorizontalPagerProps(
-  val currentPageState: ObservableState? = null,
-  val commandState: ObservableState? = null,
+  val initialPage: Int = 0,
   val pageSpacing: Float = 0f,
   val contentPadding: Either<Float, PaddingValuesRecord>? = null,
   val userScrollEnabled: Boolean = true,
@@ -37,41 +43,39 @@ data class HorizontalPagerProps(
 @Composable
 fun FunctionalComposableScope.HorizontalPagerContent(
   props: HorizontalPagerProps,
-  onPageSelected: (HorizontalPagerPageSelectedEvent) -> Unit
+  animateScrollToPage: AsyncFunctionHandle<Int>,
+  scrollToPage: AsyncFunctionHandle<Int>,
+  onCurrentPageChange: (HorizontalPagerCurrentPageChangeEvent) -> Unit,
+  onSettledPageChange: (HorizontalPagerSettledPageChangeEvent) -> Unit
 ) {
   val pageCount = view.size
-  val currentPageState = props.currentPageState
-  val initialPage = ((currentPageState?.value as? Number)?.toInt() ?: 0).coerceAtLeast(0)
   val pagerState = rememberPagerState(
-    initialPage = initialPage
+    initialPage = props.initialPage.coerceIn(0, pageCount - 1)
   ) { pageCount }
+  val scope = rememberCoroutineScope()
 
-  // Observe scroll commands from JS. The JS-side seq counter makes consecutive
-  // requests with the same (page, animated) tuple distinct so the Map's
-  // structural equality changes and this effect re-keys.
-  val command = props.commandState?.binding<Map<String, Any?>?>(null)
-  LaunchedEffect(command) {
-    if (command == null) return@LaunchedEffect
-    val target = ((command["page"] as? Number)?.toInt() ?: return@LaunchedEffect).coerceAtLeast(0)
-    val animated = command["animated"] as? Boolean ?: true
-    if (pagerState.currentPage != target) {
-      if (animated) {
-        pagerState.animateScrollToPage(target)
-      } else {
-        pagerState.scrollToPage(target)
-      }
-    }
+  // Dispatch into the composition's scope so the scroll runs with Compose's
+  // MonotonicFrameClock; .join() lets the JS-side promise await completion.
+  animateScrollToPage.handle { page ->
+    scope.launch { pagerState.animateScrollToPage(page) }.join()
   }
 
-  // Mirror settled page back to JS. Drop the first emission (pagerState's
-  // initial value) so we don't echo on mount.
+  scrollToPage.handle { page ->
+    scope.launch { pagerState.scrollToPage(page) }.join()
+  }
+
+  // Mirror Compose's PagerState observable fields to JS callbacks. Drop the
+  // first emission so we don't echo the initial value back on mount.
+  LaunchedEffect(pagerState) {
+    snapshotFlow { pagerState.currentPage }
+      .drop(1)
+      .collect { onCurrentPageChange(HorizontalPagerCurrentPageChangeEvent(it)) }
+  }
+
   LaunchedEffect(pagerState) {
     snapshotFlow { pagerState.settledPage }
       .drop(1)
-      .collect { page ->
-        currentPageState?.value = page
-        onPageSelected(HorizontalPagerPageSelectedEvent(page))
-      }
+      .collect { onSettledPageChange(HorizontalPagerSettledPageChangeEvent(it)) }
   }
 
   val contentPadding = props.contentPadding.toPaddingValues()

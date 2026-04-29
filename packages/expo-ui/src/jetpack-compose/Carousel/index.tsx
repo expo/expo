@@ -4,7 +4,7 @@ import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
- * Per-side padding values in dp for carousel content.
+ * Per-side padding values in dp for the content.
  */
 export type PaddingValuesRecord = {
   start?: number;

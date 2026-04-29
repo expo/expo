@@ -421,10 +421,19 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView<HorizontalPagerProps>("HorizontalPagerView") {
-      val onPageSelected by Event<HorizontalPagerPageSelectedEvent>()
+      val animateScrollToPage by AsyncFunction<Int>()
+      val scrollToPage by AsyncFunction<Int>()
+      val onCurrentPageChange by Event<HorizontalPagerCurrentPageChangeEvent>()
+      val onSettledPageChange by Event<HorizontalPagerSettledPageChangeEvent>()
 
       Content { props ->
-        HorizontalPagerContent(props) { onPageSelected(it) }
+        HorizontalPagerContent(
+          props,
+          animateScrollToPage,
+          scrollToPage,
+          { onCurrentPageChange(it) },
+          { onSettledPageChange(it) }
+        )
       }
     }
 
