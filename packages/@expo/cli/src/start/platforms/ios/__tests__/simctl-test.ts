@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 
 import * as Log from '../../../../log';
 import {
+  bootDeviceAsync,
   getContainerPathAsync,
   getDevicesAsync,
   getInfoPlistValueAsync,
@@ -72,6 +73,26 @@ describe(getInfoPlistValueAsync, () => {
       ['read', '/path/to/my-app.app/Info', 'CFBundleShortVersionString'],
       expect.anything()
     );
+  });
+});
+
+describe(bootDeviceAsync, () => {
+  it(`does not throw when device is already booted`, async () => {
+    jest.mocked(spawnAsync).mockRejectedValueOnce({
+      stderr: 'Unable to boot device in current state: Booted',
+    });
+
+    await expect(bootDeviceAsync({ udid: 'fake-udid' })).resolves.toBeUndefined();
+  });
+
+  it(`throws with troubleshooting link when boot fails`, async () => {
+    jest.mocked(spawnAsync).mockRejectedValueOnce(
+      Object.assign(new Error('xcrun simctl boot exited with non-zero code: 148'), {
+        stderr: 'Unable to boot device in current state: Creating',
+      })
+    );
+
+    await expect(bootDeviceAsync({ udid: 'fake-udid' })).rejects.toThrow(/Troubleshooting guide/);
   });
 });
 
