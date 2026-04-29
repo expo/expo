@@ -4,6 +4,7 @@
 // In development, it watches for config changes and reloads the paths configuration.
 
 import type { ResolutionContext, Resolution } from '@expo/metro/metro-resolver';
+import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
@@ -12,16 +13,26 @@ import { FileNotifier } from '../../../utils/FileNotifier';
 import { installExitHooks } from '../../../utils/exit';
 import type { TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { loadTsConfigPathsAsync } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 
 const debug = require('debug')(
   'expo:start:server:metro:typescript-resolver'
 ) as typeof console.log;
 
+const isAbsolute = process.platform === 'win32' ? path.win32.isAbsolute : path.posix.isAbsolute;
+
+const escapePrefix = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+interface SuffixEntry {
+  suffix: string;
+  paths: string[];
+}
+
 interface TsConfigResolveConfig {
-  paths: Record<string, string[]>;
   baseUrl: string;
   hasBaseUrl: boolean;
+  exactMatches: Record<string, string[] | undefined>;
+  prefixRe: RegExp | null;
+  prefixMap: Record<string, SuffixEntry[]>;
 }
 
 export interface TypescriptResolverInput {
@@ -35,12 +46,116 @@ const toResolveConfig = (
   if (!tsconfig || (!tsconfig.paths && tsconfig.baseUrl == null)) {
     return null;
   }
+
+  const paths = tsconfig.paths ?? {};
+  const exactMatches: Record<string, string[]> = Object.create(null);
+  const prefixMap: Record<string, SuffixEntry[]> = Object.create(null);
+  const seenPrefixes: string[] = [];
+
+  for (const key in paths) {
+    if (!Array.isArray(paths[key])) {
+      continue;
+    }
+    const starIndex = key.indexOf('*');
+    if (starIndex === -1) {
+      exactMatches[key] = paths[key];
+    } else {
+      const prefix = key.slice(0, starIndex);
+      const suffix = key.slice(starIndex + 1);
+      if (!prefixMap[prefix]) {
+        prefixMap[prefix] = [];
+        seenPrefixes.push(prefix);
+      }
+      prefixMap[prefix].push({ suffix, paths: paths[key] });
+    }
+  }
+
+  // Match longest prefix first
+  seenPrefixes.sort((a, b) => b.length - a.length);
+  const prefixRe = seenPrefixes.length
+    ? new RegExp(`^(${seenPrefixes.map(escapePrefix).join('|')})`)
+    : null;
+
   return {
-    paths: tsconfig.paths ?? {},
     baseUrl: tsconfig.baseUrl ?? projectRoot,
     hasBaseUrl: !!tsconfig.baseUrl,
+    exactMatches,
+    prefixRe,
+    prefixMap,
   };
 };
+
+function resolveWithTsConfigPaths(
+  config: TsConfigResolveConfig,
+  moduleName: string,
+  originModulePath: string,
+  resolve: (moduleName: string) => Resolution | null
+): Resolution | null {
+  if (
+    // Library authors cannot utilize this feature in userspace.
+    /node_modules/.test(originModulePath) ||
+    // Absolute paths are not supported
+    isAbsolute(moduleName) ||
+    // Relative paths are not supported
+    /^\.\.?($|[\\/])/.test(moduleName)
+  ) {
+    return null;
+  }
+
+  const exactPaths = config.exactMatches[moduleName];
+  if (exactPaths) {
+    for (const alias of exactPaths) {
+      if (/\.d\.ts$/.test(alias)) continue;
+      const possibleResult = path.join(config.baseUrl, alias);
+      const result = resolve(possibleResult);
+      if (result) {
+        debug(`${moduleName} -> ${possibleResult}`);
+        return result;
+      }
+    }
+    // Exact match found in keys but none resolved; don't fall through to wildcards
+    return null;
+  }
+
+  if (config.prefixRe) {
+    const match = config.prefixRe.exec(moduleName);
+    if (match) {
+      const prefix = match[1]!;
+      const rest = moduleName.slice(prefix.length);
+      for (const entry of config.prefixMap[prefix]!) {
+        if (entry.suffix && !rest.endsWith(entry.suffix)) continue;
+        const star = entry.suffix ? rest.slice(0, -entry.suffix.length) : rest;
+        for (const alias of entry.paths) {
+          const nextModuleName = alias.replace('*', star);
+          if (/\.d\.ts$/.test(nextModuleName)) continue;
+          const possibleResult = path.join(config.baseUrl, nextModuleName);
+          const result = resolve(possibleResult);
+          if (result) {
+            debug(`${moduleName} -> ${possibleResult}`);
+            return result;
+          }
+        }
+        // First matching suffix wins; don't try other suffix entries
+        return null;
+      }
+      // Prefix matched but no suffix matched; don't fall through to baseUrl
+      return null;
+    }
+  }
+
+  // Only resolve against baseUrl if no `paths` groups were matched.
+  // Base URL is resolved after paths, and before node_modules.
+  if (config.hasBaseUrl) {
+    const possibleResult = path.join(config.baseUrl, moduleName);
+    const result = resolve(possibleResult);
+    if (result) {
+      debug(`baseUrl: ${moduleName} -> ${possibleResult}`);
+      return result;
+    }
+  }
+
+  return null;
+}
 
 export async function createTypescriptResolverInput({
   projectRoot,
@@ -94,7 +209,8 @@ export function createTypescriptResolver(
     }
     return resolveWithTsConfigPaths(
       input.current,
-      { originModulePath: immutableContext.originModulePath, moduleName },
+      moduleName,
+      immutableContext.originModulePath,
       getOptionalResolve(immutableContext, platform, getStrictResolver)
     );
   };
