@@ -41,6 +41,10 @@ class DomWebViewModule : Module() {
         view.webviewDebuggingEnabled = enabled
       }
 
+      Prop("useExpoModulesBridge") { view: DomWebView, enabled: Boolean ->
+        view.useExpoModulesBridge = enabled
+      }
+
       Prop("mediaPlaybackRequiresUserAction") { view: DomWebView, enabled: Boolean ->
         view.mediaPlaybackRequiresUserAction = enabled
       }

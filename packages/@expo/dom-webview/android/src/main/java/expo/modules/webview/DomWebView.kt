@@ -42,6 +42,13 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
     }
   var nestedScrollEnabled = true
 
+  var useExpoModulesBridge: Boolean = false
+    set(value) {
+      if (field == value) return
+      field = value
+      needsResetupScripts = true
+    }
+
   var mediaPlaybackRequiresUserAction: Boolean
     get() = webView.settings.mediaPlaybackRequiresUserGesture
     set(value) {
@@ -140,6 +147,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   }
 
   fun evalSync(data: String): String {
+    if (!useExpoModulesBridge) {
+      return "{\"isPromise\":false,\"value\":null}"
+    }
     val json = JSONObject(data)
     val deferredId = json.getInt("deferredId")
     val source = json.getString("source")
@@ -198,7 +208,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   private fun createWebViewClient() = object : WebViewClient() {
     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
       super.onPageStarted(view, url, favicon)
-      view?.evaluateJavascript(INSTALL_GLOBALS_SCRIPT.replace("\"%%WEBVIEW_ID%%\"", webViewId.toString()), null)
+      if (this@DomWebView.useExpoModulesBridge) {
+        view?.evaluateJavascript(INSTALL_GLOBALS_SCRIPT.replace("\"%%WEBVIEW_ID%%\"", webViewId.toString()), null)
+      }
       this@DomWebView.injectedJSBeforeContentLoaded?.let { script ->
         view?.evaluateJavascript(script, null)
       }

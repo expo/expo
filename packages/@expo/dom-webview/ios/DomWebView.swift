@@ -24,6 +24,12 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
   var allowsPictureInPictureMediaPlayback: Bool = true
   var allowsAirPlayForMediaPlayback: Bool = true
 
+  // MARK: - Bridge props
+
+  var useExpoModulesBridge: Bool = false {
+    didSet { needsResetupScripts = true }
+  }
+
   // MARK: - WKWebView / UIScrollView props (mutable post-creation)
 
   var webviewDebuggingEnabled: Bool = false {
@@ -227,7 +233,7 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     initiatedByFrame frame: WKFrameInfo,
     completionHandler: @escaping SyncCompletionHandler
   ) {
-    if !prompt.hasPrefix(Self.EVAL_PROMPT_HEADER) {
+    if !prompt.hasPrefix(Self.EVAL_PROMPT_HEADER) || !useExpoModulesBridge {
       completionHandler(nil)
       return
     }
@@ -331,16 +337,6 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
       userContentController.addUserScript(injectedObjectJsonScript)
     }
 
-    let addDomWebViewBridgeScript = """
-    window.ExpoDomWebViewBridge = {
-      eval: function eval(params) {
-        return window.prompt('\(Self.EVAL_PROMPT_HEADER)' + params);
-      },
-    };
-    true;
-    """
-    userContentController.addUserScript(WKUserScript(source: addDomWebViewBridgeScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
-
     let addRNWObjectScript = """
     window.ReactNativeWebView ||= {};
     window.ReactNativeWebView.postMessage = function postMessage(data) {
@@ -350,13 +346,25 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     """
     userContentController.addUserScript(WKUserScript(source: addRNWObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
 
-    guard let webViewId = self.id else {
-      return
-    }
+    if useExpoModulesBridge {
+      let addDomWebViewBridgeScript = """
+      window.ExpoDomWebViewBridge = {
+        eval: function eval(params) {
+          return window.prompt('\(Self.EVAL_PROMPT_HEADER)' + params);
+        },
+      };
+      true;
+      """
+      userContentController.addUserScript(WKUserScript(source: addDomWebViewBridgeScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
 
-    let addExpoDomWebViewObjectScript = "\(INSTALL_GLOBALS_SCRIPT);true;"
-      .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))
-    userContentController.addUserScript(WKUserScript(source: addExpoDomWebViewObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+      guard let webViewId = self.id else {
+        return
+      }
+
+      let addExpoDomWebViewObjectScript = "\(INSTALL_GLOBALS_SCRIPT);true;"
+        .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))
+      userContentController.addUserScript(WKUserScript(source: addExpoDomWebViewObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+    }
   }
 
   private func nativeJsiEvalSync(deferredId: Int, source: String, completionHandler: @escaping SyncCompletionHandler) {

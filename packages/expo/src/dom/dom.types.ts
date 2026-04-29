@@ -38,6 +38,33 @@ export interface DOMProps extends Omit<RNWebViewProps, 'source'> {
   useExpoDOMWebView?: boolean;
 
   /**
+   * When enabled, DOM components can import and call Expo native modules
+   * directly via a `globalThis.expo.modules` proxy, for example:
+   *
+   * ```ts
+   * 'use dom';
+   * import * as Haptics from 'expo-haptics';
+   *
+   * export default function MyComponent() {
+   *   return (
+   *     <button onClick={() => Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)}>
+   *       Tap me
+   *     </button>
+   *   );
+   * }
+   * ```
+   *
+   * Only effective when `useExpoDOMWebView` is `true`. The proxy forwards calls
+   * to the host JS runtime via a bridge that effectively runs arbitrary
+   * JavaScript in that runtime, so any third-party script or script-injection
+   * vulnerability in the DOM bundle gains the same capability. Leave disabled
+   * unless the bundle is fully trusted.
+   *
+   * @default false
+   */
+  unstable_useExpoModulesBridge?: boolean;
+
+  /**
    * Allows dynamically redirecting a component to a different source, for example a prebuilt version.
    * @internal
    */

@@ -40,6 +40,10 @@ public final class DomWebViewModule: Module {
         view.webviewDebuggingEnabled = enabled
       }
 
+      Prop("useExpoModulesBridge") { (view: DomWebView, enabled: Bool) in
+        view.useExpoModulesBridge = enabled
+      }
+
       // MARK: - WKWebViewConfiguration props (init-only)
 
       Prop("allowsInlineMediaPlayback") { (view: DomWebView, enabled: Bool) in

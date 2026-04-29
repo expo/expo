@@ -34,7 +34,8 @@ interface Props {
 
 const RawWebView = React.forwardRef<object, Props>((props, ref) => {
   const { children, dom: domProps, filePath, ref: _ref, ...marshalProps } = props as Props;
-  const { overrideUri, ...dom } = domProps || {};
+  const { overrideUri, unstable_useExpoModulesBridge, ...dom } = domProps || {};
+  const useExpoModulesBridge = unstable_useExpoModulesBridge ?? false;
   if (__DEV__) {
     if (children !== undefined) {
       throw new Error(
@@ -68,7 +69,8 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
     );
   }
 
-  const webView = resolveWebView(dom?.useExpoDOMWebView ?? false);
+  const useExpoDOMWebView = dom?.useExpoDOMWebView ?? false;
+  const webView = resolveWebView(useExpoDOMWebView);
   const webviewRef = React.useRef<WebViewRef>(null);
   const domImperativeHandlePropsRef = React.useRef<string[]>([]);
   const source = { uri: overrideUri ?? `${getBaseURL()}/${filePath}` };
@@ -138,7 +140,8 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
         subscription.remove();
       });
     },
-    ...domProps,
+    ...dom,
+    ...(useExpoDOMWebView ? { useExpoModulesBridge } : null),
     containerStyle: [containerStyle, debugZeroHeightStyle, dom?.containerStyle],
     onLayout: (__DEV__ ? debugOnLayout : dom?.onLayout) as RawWebViewProps['onLayout'],
     injectedJavaScriptObject: {
