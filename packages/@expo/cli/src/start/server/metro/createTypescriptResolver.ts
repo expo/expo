@@ -90,11 +90,11 @@ function resolveWithTsConfigPaths(
   resolve: (moduleName: string) => Resolution | null
 ): Resolution | null {
   const exactPaths = config.exactMatches[moduleName];
-  if (exactPaths) {
+  if (exactPaths != null) {
     for (const alias of exactPaths) {
       const possibleResult = path.join(config.baseUrl, alias);
       const result = resolve(possibleResult);
-      if (result) {
+      if (result != null) {
         debug(`${moduleName} -> ${possibleResult}`);
         return result;
       }
@@ -103,19 +103,22 @@ function resolveWithTsConfigPaths(
     return null;
   }
 
-  if (config.prefixRe) {
+  if (config.prefixRe != null) {
     const match = config.prefixRe.exec(moduleName);
-    if (match) {
+    if (match != null) {
       const prefix = match[1]!;
       const rest = moduleName.slice(prefix.length);
       for (const entry of config.prefixMap[prefix]!) {
-        if (entry.suffix && !rest.endsWith(entry.suffix)) continue;
-        const star = entry.suffix ? rest.slice(0, -entry.suffix.length) : rest;
+        let star = rest;
+        if (entry.suffix) {
+          if (!rest.endsWith(entry.suffix)) continue;
+          star = rest.slice(0, -entry.suffix.length);
+        }
         for (const alias of entry.mapping) {
           const nextModuleName = alias.replace('*', star);
           const possibleResult = path.join(config.baseUrl, nextModuleName);
           const result = resolve(possibleResult);
-          if (result) {
+          if (result != null) {
             debug(`${moduleName} -> ${possibleResult}`);
             return result;
           }
