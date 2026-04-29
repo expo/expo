@@ -44,7 +44,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
 
   var mediaPlaybackRequiresUserAction: Boolean
     get() = webView.settings.mediaPlaybackRequiresUserGesture
-    set(value) { webView.settings.mediaPlaybackRequiresUserGesture = value }
+    set(value) {
+      webView.settings.mediaPlaybackRequiresUserGesture = value
+    }
 
   private var needsResetupScripts = false
 
