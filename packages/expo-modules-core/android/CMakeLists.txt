@@ -10,5 +10,11 @@ include(${CMAKE_SOURCE_DIR}/cmake/common.cmake)
 # defines expo-modules-jsi target
 include(${CMAKE_SOURCE_DIR}/cmake/jsi.cmake)
 
+# defines expo-modules-common
+include(${CMAKE_SOURCE_DIR}/cmake/common_source.cmake)
+
+# defines expo-modules-cpp-api target
+include(${CMAKE_SOURCE_DIR}/cmake/cpp_api.cmake)
+
 # defines expo-modules-core target
 include(${CMAKE_SOURCE_DIR}/cmake/main.cmake)
