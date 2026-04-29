@@ -74,6 +74,8 @@ rules:
     mentions: ['alanjhughes', 'behenate']
   - patterns: ['packages/expo-background-fetch/**']
     mentions: ['Kudo', 'chrfalch']
+  - patterns: ['packages/expo-background-task/**']
+    mentions: ['chrfalch', 'bycedric']
   - patterns: ['packages/expo-battery/**']
     mentions: ['behenate']
   - patterns: ['packages/expo-blur/**']
