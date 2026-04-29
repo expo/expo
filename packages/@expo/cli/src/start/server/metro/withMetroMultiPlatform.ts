@@ -18,7 +18,10 @@ import { resolveFrom } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
 
-import type { AutolinkingModuleResolverInput } from './createExpoAutolinkingResolver';
+import type {
+  AutolinkingModuleResolverInput,
+  AutolinkingPlatform,
+} from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
@@ -198,9 +201,10 @@ export function withExtendedResolver(
     },
   };
 
-  const isExpoRouterInstalled = !!resolveFrom(config.projectRoot, 'expo-router/package.json', {
-    skipNodePath: true,
-  });
+  const isExpoRouterInstalled = hasExpoRouterModule(
+    config.projectRoot,
+    autolinkingModuleResolverInput
+  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -1029,4 +1033,19 @@ export async function withMetroMultiPlatformAsync(
 
 function isDirectoryIn(targetPath: string, rootPath: string) {
   return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+}
+
+function hasExpoRouterModule(
+  projectRoot: string,
+  autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined
+) {
+  if (autolinkingModuleResolverInput) {
+    // If we have autolinking enabled, we can skip resolution
+    const platform = Object.keys(autolinkingModuleResolverInput)[0] as AutolinkingPlatform;
+    return !!autolinkingModuleResolverInput[platform]?.resolvedModulePaths['expo-router'];
+  } else {
+    return !!resolveFrom(projectRoot, 'expo-router/package.json', {
+      skipNodePath: true,
+    });
+  }
 }
