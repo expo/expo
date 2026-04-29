@@ -45,6 +45,26 @@ describe(ensureProcessExitsAfterDelay, () => {
 
     // Immediately let it pass
     expect(exitSpy).not.toHaveBeenCalled();
+    exitSpy.mockRestore();
+  });
+
+  it("force-exits when a ref'd Timeout leaks", async () => {
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
+
+    // Simulate a library leaking a ref'd timer. Without the fix,
+    // ensureProcessExitsAfterDelay returns early because only Timeouts remain and
+    // never schedules an exit — hanging the process forever.
+    const leaked = setTimeout(() => {}, 60000);
+
+    ensureProcessExitsAfterDelay();
+
+    // Wait long enough for the 200ms force-exit grace period to fire (wider margin for slow CI)
+    await timers.setTimeout(800);
+
+    expect(exitSpy).toHaveBeenCalledWith(0);
+
+    clearTimeout(leaked);
+    exitSpy.mockRestore();
   });
 
   it('detects and logs unexpected active child processes and force exits', async () => {
@@ -68,7 +88,7 @@ describe(ensureProcessExitsAfterDelay, () => {
       'Detected 1 process preventing Expo from exiting, forcefully exiting now.'
     );
 
-    exitSpy.mockReset();
+    exitSpy.mockRestore();
     pending.kill();
   });
 });

@@ -18,6 +18,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo export` hanging forever when libraries evaluated during static rendering leak ref'd timers. ([#44837](https://github.com/expo/expo/pull/44837) by [@vonovak](https://github.com/vonovak))
 - Prevent opening Expo Go on Apple Watch. ([#44147](https://github.com/expo/expo/pull/44147) by [@EvanBacon](https://github.com/EvanBacon))
 - Support files >= 2 GiB in AFC device upload ([#43755](https://github.com/expo/expo/pull/43755) by [@yocontra](https://github.com/yocontra))
 - Revert the `-quiet` change to ensure build env vars are always printed. ([#43906](https://github.com/expo/expo/pull/43906) by [@EvanBacon](https://github.com/EvanBacon))

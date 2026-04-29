@@ -107,25 +107,40 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     return true;
   });
 
+  if (!unexpectedActiveResources.length) {
+    debug('no active resources detected, process can safely exit');
+    return;
+  }
+
   // Check if only Timeouts remain (no blocking resources like ProcessWrap/PipeWrap)
   const hasBlockingResources = unexpectedActiveResources.some(
     (resource) => resource !== 'Timeout' && resource !== 'CloseReq'
   );
 
-  const canExitProcess = !unexpectedActiveResources.length || !hasBlockingResources;
-  if (canExitProcess) {
-    if (unexpectedActiveResources.length && !hasBlockingResources) {
-      debug('only non-blocking resources remain (Timeout/CloseReq), process can safely exit');
-    } else {
-      debug('no active resources detected, process can safely exit');
-    }
+  if (!hasBlockingResources) {
+    // NOTE: process.getActiveResourcesInfo() returns both ref'd and unref'd Timeouts,
+    // so we can't assume remaining Timeouts will let the process exit naturally.
+    // During export, user modules are evaluated in this Node process for static
+    // rendering. Libraries with module-level side effects can leak ref'd timers
+    // (setInterval/setTimeout without .unref()) that keep the event loop alive
+    // indefinitely after export completes.
+    //
+    // Schedule an unref'd force-exit: if the process can exit naturally (timers are
+    // actually unref'd), natural exit wins and this never fires. If the timers are
+    // ref'd and blocking, we force-exit after a brief delay instead of hanging.
+    debug('only non-blocking resources remain (Timeout/CloseReq), scheduling force-exit');
+    const forceExitId = setTimeout(() => {
+      debug('force-exiting after Timeout/CloseReq grace period');
+      process.exit(0);
+    }, 200) as unknown as NodeJS.Timeout;
+    forceExitId.unref();
     return;
-  } else {
-    debug(
-      `process is trying to exit, but is stuck on unexpected active resources:`,
-      unexpectedActiveResources
-    );
   }
+
+  debug(
+    `process is trying to exit, but is stuck on unexpected active resources:`,
+    unexpectedActiveResources
+  );
 
   // Check if the process needs to be force-closed
   const elapsedTime = Date.now() - startedAtMs;
