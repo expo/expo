@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fall back to embedded app config when `expoConfig` is missing `extra.expoClient` from the updates manifest, preventing crash loops on app version downgrades with the same fingerprint. ([#44091](https://github.com/expo/expo/issues/44091)) ([#44191](https://github.com/expo/expo/pull/44191) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 - Switch app config generation from `@expo/config` to `expo/config` public API ([#44721](https://github.com/expo/expo/pull/44721) by [@kitten](https://github.com/kitten))

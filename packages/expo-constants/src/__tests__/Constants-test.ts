@@ -179,6 +179,22 @@ describe(`manifest`, () => {
       expect(ConstantsWithMock.expoConfig).toEqual(fakeEmbeddedAppConfig);
       expect(console.warn).not.toHaveBeenCalled();
     });
+
+    it('falls back to embedded app config when updates manifest has no extra.expoClient', () => {
+      const manifestWithoutExpoClient: Manifest = {
+        id: 'fakeid-old',
+        metadata: {},
+        createdAt: '',
+        runtimeVersion: '1',
+        launchAsset: { url: '' },
+        assets: [],
+      };
+      mockExponentConstants({ manifest: fakeEmbeddedAppConfig });
+      mockExpoUpdates({ manifest: manifestWithoutExpoClient, isEmbeddedLaunch: false });
+      const ConstantsWithMock = require('../Constants').default;
+      expect(ConstantsWithMock.expoConfig).toEqual(fakeEmbeddedAppConfig);
+      expect(console.warn).not.toHaveBeenCalled();
+    });
   });
 
   // web will only ever be in bare environment
