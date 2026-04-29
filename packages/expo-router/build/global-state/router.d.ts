@@ -29,7 +29,7 @@ export declare function linkTo(originalHref: Href, options?: LinkToOptions): voi
  *}
  * ```
  */
-export type Router = {
+export type ImperativeRouter = {
     /**
      * Goes back in the navigation history.
      */
@@ -92,5 +92,5 @@ export type Router = {
 /**
  * @hidden
  */
-export declare const router: Router;
+export declare const router: ImperativeRouter;
 //# sourceMappingURL=router.d.ts.map

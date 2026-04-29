@@ -1,6 +1,6 @@
 import { Navigator, Slot } from './views/Navigator';
 export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, useLoaderData, } from './hooks';
-export { router, type Router } from './imperative-api';
+export { router, type ImperativeRouter } from './imperative-api';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
