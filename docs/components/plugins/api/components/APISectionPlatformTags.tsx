@@ -30,7 +30,7 @@ export const APISectionPlatformTags = ({
   const { platforms: defaultPlatforms } = usePageMetadata();
   const { version } = usePageApiVersion();
 
-  const isCompatibleVersion = ['unversioned', 'latest', 'v55.0.0', 'v54.0.0', 'v53.0.0'].includes(
+  const isCompatibleVersion = ['unversioned', 'latest', 'v56.0.0', 'v55.0.0', 'v54.0.0', 'v53.0.0'].includes(
     version
   );
   const platformsData = platforms ?? getAllTagData('platform', comment);
