@@ -43,10 +43,10 @@ private fun openUpdateManifestPermalink(
 private fun UpdateRowContents(
   message: String?,
   createdAt: String?,
-  runtimeVersion: String?,
+  sdkVersion: String?,
   omitCompatibility: Boolean
 ) {
-  val isCompatible = isUpdateCompatible(runtimeVersion)
+  val isCompatible = isUpdateCompatible(sdkVersion)
 
   Text(
     text = message ?: "No message",
@@ -73,7 +73,7 @@ fun UpdateRow(
   omitCompatibility: Boolean = false
 ) {
   val uriHandler = LocalUriHandler.current
-  val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
+  val isCompatible = isUpdateCompatible(update.updateData.expoGoSDKVersion)
 
   val modifier = if (isCompatible) {
     Modifier.clickable {
@@ -89,7 +89,7 @@ fun UpdateRow(
     UpdateRowContents(
       message = update.updateData.message,
       createdAt = update.updateData.createdAt as? String,
-      runtimeVersion = update.updateData.runtimeVersion,
+      sdkVersion = update.updateData.expoGoSDKVersion,
       omitCompatibility = omitCompatibility
     )
   }
@@ -101,7 +101,7 @@ fun UpdateRow(
   omitCompatibility: Boolean = false
 ) {
   val uriHandler = LocalUriHandler.current
-  val isCompatible = isUpdateCompatible(update.updateData.runtimeVersion)
+  val isCompatible = isUpdateCompatible(update.updateData.expoGoSDKVersion)
 
   val modifier = if (isCompatible) {
     Modifier.clickable {
@@ -117,7 +117,7 @@ fun UpdateRow(
     UpdateRowContents(
       message = update.updateData.message,
       createdAt = update.updateData.createdAt as? String,
-      runtimeVersion = update.updateData.runtimeVersion,
+      sdkVersion = update.updateData.expoGoSDKVersion,
       omitCompatibility = omitCompatibility
     )
   }
