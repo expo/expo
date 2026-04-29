@@ -1,0 +1,207 @@
+---
+title: Set up Expo Observe
+sidebar_title: Get started
+description: Learn how to install Expo Observe and start collecting performance metrics from your production app.
+searchRank: 9
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+Expo Observe tracks your app's startup performance in production. This guide walks you through installing the library, setting up your app, and viewing your first metrics.
+
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Access to the Expo Observe preview">
+    Expo Observe is in Private Preview and access is granted on request. [Request access
+    here](https://expo.dev/changelog/introducing-expo-observe).
+  </Requirement>
+  <Requirement title="An Expo user account">
+    Expo Observe is available to anyone with an Expo account. You can sign up at
+    [expo.dev/signup](https://expo.dev/signup).
+  </Requirement>
+  <Requirement title="Expo SDK 55 or later">
+    Expo Observe requires SDK 55 or later. Run `npx expo-doctor` to check your SDK version and `npx
+    expo install --fix` to update dependencies.
+  </Requirement>
+  <Requirement title="An EAS project">
+    Your app must be linked to an EAS project. Ensure `extra.eas.projectId` in your app config
+    includes the project ID, or create one by running `eas init`.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+## Install the library
+
+Make sure you are using the latest version of `expo`, then install `expo-observe`:
+
+<Terminal cmd={['$ npx expo install --fix', '', '$ npx expo install expo-observe']} />
+
+</Step>
+
+<Step label="2">
+
+## Wrap your root layout
+
+Wrap your root layout with `AppMetricsRoot`. This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import { AppMetricsRoot } from 'expo-observe';
+
+function RootLayout() {
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
+```
+
+</Step>
+
+<Step label="3">
+
+## Mark interactive
+
+Call `markInteractive()` when your app is fully ready for user interaction. This should be called **after** any initialization work behind the splash screen completes, such as:
+
+- Checking for updates
+- Authenticating the user
+- Fetching initial data
+- Animating the splash screen
+
+<Tabs>
+
+<Tab label="With Expo Router">
+
+```tsx app/_layout.tsx
+import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+import { useEffect, useState } from 'react';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+function RootLayout() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await authenticateUser();
+        await fetchInitialData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hide();
+      AppMetrics.markInteractive();
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+
+  return <Stack />;
+}
+
+export default AppMetricsRoot.wrap(RootLayout);
+```
+
+</Tab>
+
+<Tab label="Without Expo Router">
+
+```tsx App.tsx
+import { useEffect, useState } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import { AppMetrics, AppMetricsRoot } from 'expo-observe';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
+
+function App() {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await authenticateUser();
+        await fetchInitialData();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    prepare();
+  }, []);
+
+  useEffect(() => {
+    if (isReady) {
+      SplashScreen.hideAsync();
+      AppMetrics.markInteractive();
+    }
+  }, [isReady]);
+
+  if (!isReady) {
+    return null;
+  }
+
+  // your app
+}
+
+export default AppMetricsRoot.wrap(App);
+```
+
+</Tab>
+
+</Tabs>
+
+> **info** `markInteractive()` can safely be called multiple times per session, but only the first call records the measurement. If your app has multiple entry screens (for example, an onboarding flow, login flow, or deep link targets), call `markInteractive` on **every one of these screens**. If you only place it on one screen, [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive) will not be recorded when the app opens via a deep link to a different screen.
+
+</Step>
+
+<Step label="4">
+
+## Create a new build
+
+After installing `expo-observe` and adding the instrumentation, create a new build of your app:
+
+<Terminal cmd={['$ eas build']} />
+
+> **info** By default, metrics are not dispatched when `NODE_ENV=development`. To test your integration during development, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
+
+</Step>
+
+<Step label="5">
+
+## View your metrics
+
+Open your project and open [**Observe** tab in EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/observe) to view metrics from your app.
+
+For details on filtering, release comparison, and session investigation, see the [Dashboard guide](/eas/observe/dashboard/).
+
+You can also query metrics from the terminal using the EAS CLI:
+
+- `eas observe:versions`: Lists app versions along with their build IDs, update group IDs, and release dates. Useful for finding the version identifiers needed to filter the other commands.
+- `eas observe:metrics`: Shows aggregated performance metrics (such as median, p75, and p95 values) grouped by app version. Use this to compare overall startup performance across releases.
+- `eas observe:events`: Shows individual performance events ordered by metric value, including session and device metadata. Use this to investigate specific slow sessions or outliers.
+
+Run any of these commands with `--help` to see the available flags and arguments.
+
+</Step>
