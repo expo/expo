@@ -185,6 +185,24 @@ export interface TextInputProps {
      */
     selectionColor?: ColorValue;
     /**
+     * Observable state holding the current text selection range.
+     * Read `value` for current `{start, end}`; write `value` to programmatically
+     * select. Create with `useNativeState({ start: 0, end: 0 })`.
+     *
+     * @platform ios 18.0+ — pre-iOS 18 the prop is ignored.
+     */
+    selection?: ObservableState<{
+        start: number;
+        end: number;
+    }>;
+    /**
+     * Called when the text selection range changes.
+     */
+    onSelectionChange?: (selection: {
+        start: number;
+        end: number;
+    }) => void;
+    /**
      * Identifier used to locate the component in end-to-end tests.
      */
     testID?: string;

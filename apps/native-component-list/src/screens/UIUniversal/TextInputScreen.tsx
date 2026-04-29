@@ -62,6 +62,8 @@ export default function TextInputScreen() {
   const [maxLengthOn, setMaxLengthOn] = useState(false);
   const [caretHidden, setCaretHidden] = useState(false);
   const [yellowSelection, setYellowSelection] = useState(false);
+  const selection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const [selectionDisplay, setSelectionDisplay] = useState({ start: 0, end: 0 });
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -142,6 +144,8 @@ export default function TextInputScreen() {
               maxLength={maxLengthOn ? 10 : undefined}
               caretHidden={caretHidden}
               selectionColor={yellowSelection ? 'yellow' : undefined}
+              selection={selection}
+              onSelectionChange={setSelectionDisplay}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -150,6 +154,15 @@ export default function TextInputScreen() {
                 ? `Content size: ${contentSize.width.toFixed(1)} × ${contentSize.height.toFixed(1)}`
                 : 'Content size: pending'}
             </Text>
+            <Text>{`Selection: ${selectionDisplay.start}–${selectionDisplay.end}`}</Text>
+            <Button
+              label="Select 0–7"
+              variant="outlined"
+              onPress={async () => {
+                await inputRef.current?.focus();
+                selection.value = { start: 0, end: 7 };
+              }}
+            />
           </Column>
 
           <Column spacing={8}>

@@ -36,6 +36,8 @@ export function TextInput({
   maxLength,
   caretHidden,
   selectionColor,
+  selection,
+  onSelectionChange,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -98,6 +100,12 @@ export function TextInput({
       onContentSizeChange={
         onContentSizeChange
           ? (e) => onContentSizeChange(e.nativeEvent.contentSize)
+          : undefined
+      }
+      selection={selection?.value}
+      onSelectionChange={
+        onSelectionChange
+          ? (e) => onSelectionChange(e.nativeEvent.selection)
           : undefined
       }
     />

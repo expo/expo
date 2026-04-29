@@ -79,6 +79,8 @@ export function TextInput({
   maxLength,
   caretHidden,
   selectionColor,
+  selection,
+  onSelectionChange,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -176,6 +178,8 @@ export function TextInput({
       axis={multiline ? 'vertical' : 'horizontal'}
       onTextChange={maxLength !== undefined ? handleTextChange : onChangeText}
       onFocusChange={handleFocusChange}
+      selection={selection as Parameters<typeof TextField>[0]['selection']}
+      onSelectionChange={onSelectionChange}
       modifiers={modifiers.length > 0 ? modifiers : undefined}
       testID={testID}>
       {placeholderTextColor && placeholder ? (

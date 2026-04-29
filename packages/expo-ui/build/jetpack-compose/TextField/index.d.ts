@@ -132,6 +132,25 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
         backgroundColor?: ColorValue;
     };
     /**
+     * Observable state holding the current selection range, bidirectionally
+     * synced with the field's selection. Prefer using TFV-mode `value` for
+     * tightly coupled text/selection logic; this prop exists primarily so the
+     * universal `TextInput` layer can keep selection split from text.
+     * @internal
+     */
+    selection?: ObservableState<{
+        start: number;
+        end: number;
+    }>;
+    /**
+     * Called when the selection range changes.
+     * @internal
+     */
+    onSelectionChange?: (selection: {
+        start: number;
+        end: number;
+    }) => void;
+    /**
      * Text styling for the field's content. Maps to Compose's `TextStyle`.
      */
     textStyle?: {

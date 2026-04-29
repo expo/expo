@@ -12,18 +12,19 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
 /**
- * Can be used for imperatively focusing and selecting text on the `TextField` component.
+ * Can be used for imperatively focusing and setting text on the `TextField` component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
-  /**
-   * Programmatically select text using start and end indices.
-   * @platform ios 18.0+ tvos 18.0+
-   */
-  setSelection: (start: number, end: number) => Promise<void>;
 };
+
+/**
+ * Selection range observable. Read `value` for the current selection,
+ * write to `value` to programmatically move/select.
+ */
+export type TextFieldSelection = { start: number; end: number };
 
 export type TextFieldProps = {
   ref?: Ref<TextFieldRef>;
@@ -33,6 +34,12 @@ export type TextFieldProps = {
    * If omitted, the field manages its own internal state.
    */
   text?: ObservableState<string>;
+  /**
+   * An observable state holding the current selection. Create with
+   * `useNativeState<TextFieldSelection>({ start: 0, end: 0 })`.
+   * @platform ios 18.0+ tvos 18.0+
+   */
+  selection?: ObservableState<TextFieldSelection>;
   /** If true, the text field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;
   /**
@@ -51,10 +58,10 @@ export type TextFieldProps = {
    */
   onFocusChange?: (focused: boolean) => void;
   /**
-   * A callback triggered when user selects text in the TextField.
+   * A callback triggered when the text selection range changes.
    * @platform ios 18.0+ tvos 18.0+
    */
-  onSelectionChange?: ({ start, end }: { start: number; end: number }) => void;
+  onSelectionChange?: (selection: { start: number; end: number }) => void;
   /**
    * The axis along which the text field grows when content exceeds a single line.
    * - `'horizontal'` — single line (default).
@@ -72,12 +79,13 @@ export type TextFieldProps = {
 
 export type NativeTextFieldProps = Omit<
   TextFieldProps,
-  'text' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'
+  'text' | 'selection' | 'onTextChange' | 'onFocusChange' | 'onSelectionChange'
 > &
   ViewEvent<'onTextChange', { value: string }> &
   ViewEvent<'onFocusChange', { value: boolean }> &
   ViewEvent<'onSelectionChange', { start: number; end: number }> & {
     text?: number | null;
+    selection?: number | null;
     onTextChangeSync?: number | null;
   };
 
@@ -94,7 +102,7 @@ function Placeholder({ children }: { children: React.ReactNode }) {
  * Renders a SwiftUI `TextField`.
  */
 export function TextField(props: TextFieldProps) {
-  const { text, onTextChange, onFocusChange, onSelectionChange, modifiers, ...restProps } = props;
+  const { text, selection, onTextChange, onFocusChange, onSelectionChange, modifiers, ...restProps } = props;
 
   const fallbackText = useNativeState('');
   const textState = text ?? fallbackText;
@@ -108,6 +116,7 @@ export function TextField(props: TextFieldProps) {
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
       text={getStateId(textState)}
+      selection={selection ? getStateId(selection) : undefined}
       onTextChangeSync={getStateId(workletCallback)}
       onTextChange={
         !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined

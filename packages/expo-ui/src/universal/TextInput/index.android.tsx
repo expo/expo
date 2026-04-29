@@ -87,6 +87,8 @@ export function TextInput({
   maxLength,
   caretHidden,
   selectionColor,
+  selection,
+  onSelectionChange,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -204,7 +206,9 @@ export function TextInput({
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
       onValueChange={maxLength !== undefined ? handleValueChange : onChangeText}
-      onFocusChanged={handleFocusChanged}>
+      onFocusChanged={handleFocusChanged}
+      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+      onSelectionChange={onSelectionChange}>
       {placeholder ? (
         <ComposeTextField.Placeholder>
           <Text>{placeholder}</Text>
