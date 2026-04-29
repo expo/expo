@@ -132,6 +132,29 @@ struct CrashReportTests {
     }
 
     @Test
+    func `returns nil for a real (non-zero-width) window that intersects no session`() {
+      // A real MetricKit payload from a 24-hour bucket that doesn't overlap any
+      // session must NOT be silently misattributed to the current unfinished session.
+      let windowEnd = Date.now.addingTimeInterval(-86400)
+      let windowStart = windowEnd.addingTimeInterval(-3600)
+
+      let unfinishedToday = MainSession(
+        id: "unfinished-today",
+        startDate: Date.now.addingTimeInterval(-60),
+        endDate: nil
+      )
+      let finishedToday = MainSession(
+        id: "finished-today",
+        startDate: Date.now.addingTimeInterval(-3600),
+        endDate: Date.now.addingTimeInterval(-1800)
+      )
+
+      let report = makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd)
+      let match = report.findMatchingSession(in: [unfinishedToday, finishedToday])
+      #expect(match == nil)
+    }
+
+    @Test
     func `returns nil when the input is empty`() {
       let report = makeCrashReport(
         timestampBegin: Date.now.addingTimeInterval(-3600),

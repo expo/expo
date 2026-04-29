@@ -44,7 +44,6 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       for crashReport in crashReports {
         if let session = crashReport.findMatchingSession(in: mainSessions) {
           session.storeCrashReport(crashReport)
-          print("[AppMetrics] Stored crash report for session: \(session.id)")
           didStoreAny = true
         } else {
           logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
@@ -57,12 +56,4 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
   }
 }
 
-// `MXMetricPayload` and `MXDiagnosticPayload` both expose `jsonRepresentation()` but share
-// no Apple-provided supertype that declares it, so we unify them with this protocol.
-private protocol MXPayload {
-  func jsonRepresentation() -> Data
-}
-
-extension MXMetricPayload: MXPayload {}
-extension MXDiagnosticPayload: MXPayload {}
 #endif

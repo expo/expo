@@ -48,25 +48,33 @@ public struct CrashReport: Codable, Sendable {
    MetricKit only gives us the diagnostic payload's time window (`timestampBegin` to
    `timestampEnd`, typically a 24-hour bucket), not an exact crash time. Xcode's
    "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
-   equal "now," so we can't rely on the session's `startDate` falling inside it. We
-   approximate the match in three passes:
+   equal "now," so we can't rely on the session's `startDate` falling inside it.
 
    1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
       pick sessions that intersect the payload window. Among those, prefer the one
       that never finished (`endDate == nil`) — an unfinished main session is a strong
-      signal of a crash.
-   2. If none of the intersecting sessions are unfinished, fall back to the
-      intersecting session with the latest `startDate`.
-   3. If nothing intersects (e.g. simulated payloads with `timestampBegin == timestampEnd`),
-      fall back to the latest unfinished session overall, then to the latest session
-      by `startDate`. Returns `nil` only if `mainSessions` is empty.
+      signal of a crash. Otherwise pick the intersecting session with the latest
+      `startDate`.
+   2. If nothing intersects *and* the window is zero-width (Xcode-simulated payloads
+      where intersection is impossible by construction), fall back to the latest
+      unfinished session overall, then to the latest session by `startDate`.
+   3. Otherwise return `nil` — a real payload window that doesn't overlap any session
+      is genuinely unattributable, and silently misattributing it to the current
+      session would hide that.
    */
   func findMatchingSession(in mainSessions: [MainSession]) -> MainSession? {
     let intersecting = mainSessions.filter { session in
       let sessionEnd = session.endDate ?? .distantFuture
       return session.startDate <= timestampEnd && sessionEnd >= timestampBegin
     }
-    let candidates = intersecting.isEmpty ? mainSessions : intersecting
+    let candidates: [MainSession]
+    if !intersecting.isEmpty {
+      candidates = intersecting
+    } else if timestampBegin == timestampEnd {
+      candidates = mainSessions
+    } else {
+      return nil
+    }
     let unfinished = candidates.filter({ $0.endDate == nil })
     if let session = unfinished.max(by: { $0.startDate < $1.startDate }) {
       return session

@@ -140,10 +140,17 @@ enum CrashReportSymbolicator {
   /**
    Map from binary name (filename only) to its current load address (slide-adjusted).
 
-   Computed once on first access. Apps don't `dlopen` libraries dynamically post-launch in
-   practice (everything used by the Expo / React Native runtime is linked at startup), so
-   the dyld image table is effectively constant for the lifetime of the process — caching
-   it avoids ~500 `String` allocations on every crash-report ingest.
+   Computed once on first access. The Expo / React Native runtime links everything at
+   startup and doesn't `dlopen` further, so the dyld image table is effectively constant
+   for the lifetime of the process — caching it avoids ~500 `String` allocations on every
+   crash-report ingest.
+
+   Trade-off: a third-party SDK that `dlopen`s a framework after launch (rare but legal —
+   some MDM/analytics SDKs and `Bundle.load()` of code-bearing bundles do this) will leave
+   frames from that framework with `symbol: nil` for live `didReceive` deliveries that
+   land after the dlopen. We accept this — past-payload processing at launch (the common
+   path) sees the full table, and the alternative (rebuilding per ingest) costs more than
+   it's worth for a corner case.
    */
   private static let loadedImages: [String: UInt64] = {
     var result: [String: UInt64] = [:]
@@ -155,9 +162,12 @@ enum CrashReportSymbolicator {
       }
       let path = String(cString: namePtr)
       let name = path.split(separator: "/").last.map(String.init) ?? path
-      // `header` is the in-process `__TEXT` base (already slide-adjusted by dyld at load time).
-      // `offsetIntoBinaryTextSegment` is the offset into `__TEXT`, so adding the two yields the
-      // current-process address we can pass to `dladdr`.
+      // `header` is the in-process Mach-O image base (already slide-adjusted by dyld). We rely
+      // on `__TEXT` starting at the image header — true for all Apple-emitted Mach-O binaries
+      // because the load commands themselves live inside `__TEXT`, so `vmaddr(__TEXT) == header`
+      // — and add `offsetIntoBinaryTextSegment` to get the current-process address for `dladdr`.
+      // If Apple ever ships a binary where `__TEXT` doesn't start at the header, this would be
+      // off by `vmaddr(__TEXT) - header`; the robust fix is to walk `LC_SEGMENT_64` for `__TEXT`.
       let textAddress = UInt64(UInt(bitPattern: header))
       result[name] = textAddress
     }
