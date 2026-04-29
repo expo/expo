@@ -29,22 +29,20 @@ enum CrashReportSymbolicator {
    Annotates each frame in the tree with its resolved symbol, when one is available.
    */
   static func symbolicate(_ tree: CrashReport.CallStackTree) -> CrashReport.CallStackTree {
-    let images = loadedImages()
     let callStacks = tree.callStacks?.map { stack in
       CrashReport.CallStackTree.CallStack(
         threadAttributed: stack.threadAttributed,
-        callStackRootFrames: stack.callStackRootFrames?.map { symbolicateFrame($0, images: images) }
+        callStackRootFrames: stack.callStackRootFrames?.map(symbolicateFrame)
       )
     }
     return CrashReport.CallStackTree(callStacks: callStacks)
   }
 
   private static func symbolicateFrame(
-    _ frame: CrashReport.CallStackTree.Frame,
-    images: [String: UInt64]
+    _ frame: CrashReport.CallStackTree.Frame
   ) -> CrashReport.CallStackTree.Frame {
-    let symbol = resolveSymbol(for: frame, images: images)
-    let subFrames = frame.subFrames?.map { symbolicateFrame($0, images: images) }
+    let symbol = resolveSymbol(for: frame)
+    let subFrames = frame.subFrames?.map(symbolicateFrame)
     return CrashReport.CallStackTree.Frame(
       binaryName: frame.binaryName,
       binaryUUID: frame.binaryUUID,
@@ -57,12 +55,11 @@ enum CrashReportSymbolicator {
   }
 
   private static func resolveSymbol(
-    for frame: CrashReport.CallStackTree.Frame,
-    images: [String: UInt64]
+    for frame: CrashReport.CallStackTree.Frame
   ) -> String? {
     guard let binaryName = frame.binaryName,
           let offset = frame.offsetIntoBinaryTextSegment,
-          let loadAddress = images[binaryName] else {
+          let loadAddress = loadedImages[binaryName] else {
       return nil
     }
     let currentAddress = loadAddress + offset
@@ -126,9 +123,14 @@ enum CrashReportSymbolicator {
   }
 
   /**
-   Returns a map from binary name (filename only) to its current load address (slide-adjusted).
+   Map from binary name (filename only) to its current load address (slide-adjusted).
+
+   Computed once on first access. Apps don't `dlopen` libraries dynamically post-launch in
+   practice (everything used by the Expo / React Native runtime is linked at startup), so
+   the dyld image table is effectively constant for the lifetime of the process — caching
+   it avoids ~500 `String` allocations on every crash-report ingest.
    */
-  private static func loadedImages() -> [String: UInt64] {
+  private static let loadedImages: [String: UInt64] = {
     var result: [String: UInt64] = [:]
     let count = _dyld_image_count()
     for i in 0..<count {
@@ -145,7 +147,7 @@ enum CrashReportSymbolicator {
       result[name] = textAddress
     }
     return result
-  }
+  }()
 }
 
 // `swift_demangle` is exported by `libswiftCore.dylib` but not declared in any public header.
