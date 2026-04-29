@@ -17,6 +17,7 @@ import type {
 } from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
+import { resolveStyle } from './utils/resolveStyle';
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 /**
@@ -271,7 +272,7 @@ export class Image extends React.PureComponent<ImageProps> {
       color: colorStyle,
       fontSize: fontSizeStyle,
       ...restStyle
-    } = (StyleSheet.flatten(style) as ImageStyle & TextStyle) || {};
+    } = (StyleSheet.flatten(resolveStyle(style)) as ImageStyle & TextStyle) || {};
     const resizeMode = resizeModeProp ?? resizeModeStyle;
 
     if ((defaultSource || loadingIndicatorSource) && !loggedDefaultSourceDeprecationWarning) {
