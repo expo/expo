@@ -75,7 +75,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         merge?: boolean;
     } : never): void;
     preload<RouteName extends string>(...args: RouteName extends unknown ? [screen: RouteName, params?: object | undefined] : never): void;
-    reset(state: TabNavigationState<any> | import("../react-navigation/core").PartialState<TabNavigationState<any>>): void;
+    reset(state: TabNavigationState<any> | import("..").PartialState<TabNavigationState<any>>): void;
     goBack(): void;
     isFocused(): boolean;
     canGoBack(): boolean;
@@ -88,7 +88,7 @@ export declare const TabsDescriptorsContext: import("react").Context<Record<stri
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, {}, {}> | undefined>(id?: string | undefined): T;
@@ -111,7 +111,7 @@ export declare const TabsNavigatorContext: import("react").Context<({
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>>) => Readonly<{
@@ -143,15 +143,15 @@ export declare const TabsNavigatorContext: import("react").Context<({
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }> | import("../react-navigation/core").PartialState<Readonly<{
+    }> | import("..").PartialState<Readonly<{
         key: string;
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>>): void;
@@ -165,7 +165,7 @@ export declare const TabsNavigatorContext: import("react").Context<({
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+        routes: import("..").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>;
