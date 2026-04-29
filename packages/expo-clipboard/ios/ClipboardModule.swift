@@ -51,7 +51,7 @@ public class ClipboardModule: Module {
 
     // MARK: - Images
 
-    AsyncFunction("setImageAsync") { (content: String) in
+    AsyncFunction("setImageAsync") { (content: String, _options: SetImageOptions) in
       guard let data = Data(base64Encoded: content),
             let image = UIImage(data: data) else {
         throw InvalidImageException(content)
