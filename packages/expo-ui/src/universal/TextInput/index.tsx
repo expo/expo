@@ -33,6 +33,7 @@ export function TextInput({
   secureTextEntry,
   autoComplete,
   onContentSizeChange,
+  maxLength,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -71,6 +72,7 @@ export function TextInput({
       numberOfLines={numberOfLines}
       secureTextEntry={secureTextEntry}
       autoComplete={autoComplete}
+      maxLength={maxLength}
       testID={testID}
       keyboardType={keyboardType}
       inputMode={inputMode}

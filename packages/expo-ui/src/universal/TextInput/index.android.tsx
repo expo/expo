@@ -14,6 +14,8 @@ import {
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { worklets } from '../../State/optionalWorklets';
+
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import {
@@ -86,6 +88,7 @@ export function TextInput({
   secureTextEntry,
   autoComplete,
   onContentSizeChange,
+  maxLength,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -115,6 +118,19 @@ export function TextInput({
     isFocusedRef.current = focused;
     if (focused) onFocus?.();
     else onBlur?.();
+  };
+
+  const onChangeTextWorklet = worklets?.isWorkletFunction?.(onChangeText)
+    ? onChangeText
+    : undefined;
+
+  const handleValueChange = (text: string) => {
+    'worklet';
+    if (maxLength !== undefined && text.length > maxLength) {
+      state.value = text.slice(0, maxLength);
+      return;
+    }
+    onChangeTextWorklet?.(text);
   };
 
   const keyboardOptions =
@@ -184,7 +200,7 @@ export function TextInput({
       visualTransformation={secureTextEntry ? 'password' : undefined}
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
-      onValueChange={onChangeText}
+      onValueChange={maxLength !== undefined ? handleValueChange : onChangeText}
       onFocusChanged={handleFocusChanged}>
       {placeholder ? (
         <ComposeTextField.Placeholder>

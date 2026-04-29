@@ -197,6 +197,11 @@ export interface TextInputProps {
   onContentSizeChange?: (size: { width: number; height: number }) => void;
 
   /**
+   * Maximum number of characters allowed.
+   */
+  maxLength?: number;
+
+  /**
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;

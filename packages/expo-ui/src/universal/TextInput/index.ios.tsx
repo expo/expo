@@ -1,11 +1,7 @@
-import {
-  SecureField,
-  Text,
-  TextField,
-  type TextFieldRef,
-  useNativeState,
-} from '@expo/ui/swift-ui';
+import { SecureField, Text, TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
 import { useImperativeHandle, useRef } from 'react';
+
+import { worklets } from '../../State/optionalWorklets';
 
 import {
   autoCompleteToTextContentType,
@@ -80,6 +76,7 @@ export function TextInput({
   secureTextEntry,
   autoComplete,
   onContentSizeChange,
+  maxLength,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -109,6 +106,19 @@ export function TextInput({
     isFocusedRef.current = focused;
     if (focused) onFocus?.();
     else onBlur?.();
+  };
+
+  const onChangeTextWorklet = worklets?.isWorkletFunction?.(onChangeText)
+    ? onChangeText
+    : undefined;
+
+  const handleTextChange = (text: string) => {
+    'worklet';
+    if (maxLength !== undefined && text.length > maxLength) {
+      state.value = text.slice(0, maxLength);
+      return;
+    }
+    onChangeTextWorklet?.(text);
   };
 
   const modifiers: ModifierConfig[] = [
@@ -145,7 +155,7 @@ export function TextInput({
         text={state}
         placeholder={placeholder}
         autoFocus={autoFocus}
-        onTextChange={onChangeText}
+        onTextChange={maxLength !== undefined ? handleTextChange : onChangeText}
         onFocusChange={handleFocusChange}
         modifiers={modifiers.length > 0 ? modifiers : undefined}
         testID={testID}
@@ -160,7 +170,7 @@ export function TextInput({
       placeholder={placeholder}
       autoFocus={autoFocus}
       axis={multiline ? 'vertical' : 'horizontal'}
-      onTextChange={onChangeText}
+      onTextChange={maxLength !== undefined ? handleTextChange : onChangeText}
       onFocusChange={handleFocusChange}
       modifiers={modifiers.length > 0 ? modifiers : undefined}
       testID={testID}>

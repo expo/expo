@@ -60,6 +60,7 @@ export default function TextInputScreen() {
   const [autoComplete, setAutoComplete] =
     useState<(typeof AUTO_COMPLETES)[number]>(undefined);
   const [contentSize, setContentSize] = useState<{ width: number; height: number } | null>(null);
+  const [maxLengthOn, setMaxLengthOn] = useState(false);
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -137,6 +138,7 @@ export default function TextInputScreen() {
               secureTextEntry={secureTextEntry}
               autoComplete={autoComplete}
               onContentSizeChange={setContentSize}
+              maxLength={maxLengthOn ? 10 : undefined}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -172,6 +174,11 @@ export default function TextInputScreen() {
               value={secureTextEntry}
               onValueChange={setSecureTextEntry}
               label="secureTextEntry"
+            />
+            <Switch
+              value={maxLengthOn}
+              onValueChange={setMaxLengthOn}
+              label="maxLength (10)"
             />
             <Button
               label="ref.focus()"
