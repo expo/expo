@@ -10,6 +10,7 @@ import { testID as testIDModifier } from '@expo/ui/jetpack-compose/modifiers';
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import {
   enterKeyHintToReturnKeyType,
@@ -76,6 +77,8 @@ export function TextInput({
   underlineColorAndroid,
   testID,
   placeholderTextColor,
+  textStyle,
+  style,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -131,7 +134,10 @@ export function TextInput({
   return (
     <ComposeTextField
       ref={innerRef}
-      modifiers={testID ? [testIDModifier(testID)] : undefined}
+      modifiers={[
+        ...transformToModifiers(style, {}),
+        ...(testID ? [testIDModifier(testID)] : []),
+      ]}
       value={state}
       autoFocus={autoFocus}
       readOnly={editable === false}
@@ -159,7 +165,12 @@ export function TextInput({
           : undefined
       }
       textStyle={
-        textAlign && textAlign !== 'auto' ? { textAlign } : undefined
+        textStyle || (textAlign && textAlign !== 'auto')
+          ? {
+              ...textStyle,
+              ...(textAlign && textAlign !== 'auto' ? { textAlign } : null),
+            }
+          : undefined
       }
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}

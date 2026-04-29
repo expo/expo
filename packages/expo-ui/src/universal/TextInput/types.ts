@@ -2,6 +2,8 @@ import type { Ref } from 'react';
 import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import type { ObservableState } from '../State';
+import type { UniversalTextStyle } from '../Text/types';
+import type { UniversalStyle } from '../types';
 import type { EnterKeyHint, InputMode } from './utils';
 
 /**
@@ -179,4 +181,14 @@ export interface TextInputProps {
    * Identifier used to locate the component in end-to-end tests.
    */
   testID?: string;
+
+  /**
+   * Box-level style — sizing, padding, background, border, opacity.
+   */
+  style?: UniversalStyle;
+
+  /**
+   * Text-level style — font, color, alignment, spacing.
+   */
+  textStyle?: UniversalTextStyle;
 }

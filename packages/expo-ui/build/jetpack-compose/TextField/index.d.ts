@@ -117,11 +117,16 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
     maxLines?: number;
     minLines?: number;
     /**
-     * Text styling for the field's content. Maps to Compose's
-     * `TextStyle`.
+     * Text styling for the field's content. Maps to Compose's `TextStyle`.
      */
     textStyle?: {
         textAlign?: 'left' | 'right' | 'center' | 'justify';
+        color?: ColorValue;
+        fontSize?: number;
+        fontFamily?: string;
+        fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
+        lineHeight?: number;
+        letterSpacing?: number;
     };
     keyboardOptions?: TextFieldKeyboardOptions;
     keyboardActions?: TextFieldKeyboardActions;

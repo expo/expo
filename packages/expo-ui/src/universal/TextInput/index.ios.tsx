@@ -21,6 +21,7 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 
 type SwiftUIKeyboardType = Parameters<typeof keyboardTypeMod>[0];
@@ -65,6 +66,8 @@ export function TextInput({
   numberOfLines,
   testID,
   placeholderTextColor,
+  style,
+  textStyle,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -96,7 +99,9 @@ export function TextInput({
     else onBlur?.();
   };
 
-  const modifiers: ModifierConfig[] = [];
+  const modifiers: ModifierConfig[] = [
+    ...transformToModifiers(style, {}, undefined, { textStyle }),
+  ];
   if (editable === false) modifiers.push(disabledMod(true));
   if (keyboardType) modifiers.push(keyboardTypeMod(mapKeyboardType(keyboardType)));
   if (autoCapitalize) {

@@ -44,6 +44,8 @@ export default function TextInputScreen() {
   const [focused, setFocused] = useState(false);
   const [redCursor, setRedCursor] = useState(false);
   const [bluePlaceholder, setBluePlaceholder] = useState(false);
+  const [customStyle, setCustomStyle] = useState(false);
+  const [customTextStyle, setCustomTextStyle] = useState(false);
   const [textAlign, setTextAlign] = useState<TextAlign>('auto');
   const [numberOfLines, setNumberOfLines] = useState<number | undefined>(undefined);
   const inputRef = useRef<TextInputRef>(null);
@@ -96,6 +98,23 @@ export default function TextInputScreen() {
               placeholderTextColor={bluePlaceholder ? 'blue' : undefined}
               textAlign={textAlign}
               numberOfLines={numberOfLines}
+              style={
+                customStyle
+                  ? {
+                      width: 240,
+                      padding: 12,
+                      backgroundColor: '#f0f0f0',
+                      borderRadius: 8,
+                      borderColor: 'black',
+                      borderWidth: 1,
+                    }
+                  : undefined
+              }
+              textStyle={
+                customTextStyle
+                  ? { fontSize: 20, color: 'darkblue', fontWeight: '600', letterSpacing: 0.5 }
+                  : undefined
+              }
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -111,6 +130,16 @@ export default function TextInputScreen() {
               value={bluePlaceholder}
               onValueChange={setBluePlaceholder}
               label="placeholderTextColor (blue)"
+            />
+            <Switch
+              value={customStyle}
+              onValueChange={setCustomStyle}
+              label="style (240w, gray bg, rounded)"
+            />
+            <Switch
+              value={customTextStyle}
+              onValueChange={setCustomTextStyle}
+              label="textStyle (20pt, darkblue, 600)"
             />
             <Button
               label="ref.focus()"
@@ -147,11 +176,7 @@ export default function TextInputScreen() {
               variant="outlined"
               onPress={cycleReturnKeyType}
             />
-            <Button
-              label={`textAlign: ${textAlign}`}
-              variant="outlined"
-              onPress={cycleTextAlign}
-            />
+            <Button label={`textAlign: ${textAlign}`} variant="outlined" onPress={cycleTextAlign} />
             <Button
               label={`numberOfLines: ${numberOfLines ?? 'auto'}`}
               variant="outlined"

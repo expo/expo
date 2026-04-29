@@ -28,6 +28,8 @@ export function TextInput({
   numberOfLines,
   testID,
   placeholderTextColor,
+  style,
+  textStyle,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -72,7 +74,7 @@ export function TextInput({
       returnKeyType={returnKeyType}
       enterKeyHint={enterKeyHint}
       cursorColor={typeof cursorColor === 'string' ? cursorColor : undefined}
-      style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}
+      style={[style, textStyle, textAlign && textAlign !== 'auto' ? { textAlign } : null]}
       onSubmitEditing={
         onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined
       }

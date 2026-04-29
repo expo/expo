@@ -23,6 +23,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -51,7 +53,13 @@ data class TextFieldKeyboardOptionsRecord(
 
 @OptimizedRecord
 data class TextFieldTextStyleRecord(
-  @Field val textAlign: String? = null,
+  @Field val textAlign: TextAlignType? = null,
+  @Field val color: Color? = null,
+  @Field val fontSize: Float? = null,
+  @Field val fontFamily: String? = null,
+  @Field val fontWeight: TextFontWeight? = null,
+  @Field val lineHeight: Float? = null,
+  @Field val letterSpacing: Float? = null,
 ) : Record
 
 @OptimizedRecord
@@ -228,14 +236,6 @@ private fun String?.toCapitalization(): KeyboardCapitalization = when (this) {
   else -> KeyboardCapitalization.None
 }
 
-private fun String?.toTextAlign(): TextAlign? = when (this) {
-  "left" -> TextAlign.Left
-  "right" -> TextAlign.Right
-  "center" -> TextAlign.Center
-  "justify" -> TextAlign.Justify
-  else -> null
-}
-
 private fun String?.toImeAction(): ImeAction = when (this) {
   "default" -> ImeAction.Default
   "none" -> ImeAction.None
@@ -397,8 +397,21 @@ fun FunctionalComposableScope.TextFieldContent(
     }
   }
 
-  val textAlign = props.textStyle?.textAlign.toTextAlign()
-  val textStyle = if (textAlign != null) TextStyle(textAlign = textAlign) else TextStyle.Default
+  val ts = props.textStyle
+  val ctx = appContext.reactContext
+  val textStyle = if (ts == null) {
+    TextStyle.Default
+  } else {
+    TextStyle(
+      color = colorToComposeColorOrNull(ts.color) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      fontSize = ts.fontSize?.sp ?: TextUnit.Unspecified,
+      fontWeight = ts.fontWeight?.toComposeFontWeight(),
+      fontFamily = ctx?.let { resolveFontFamily(ts.fontFamily, it) },
+      letterSpacing = ts.letterSpacing?.sp ?: TextUnit.Unspecified,
+      lineHeight = ts.lineHeight?.sp ?: TextUnit.Unspecified,
+      textAlign = ts.textAlign?.toComposeTextAlign() ?: TextAlign.Unspecified,
+    )
+  }
 
   if (isOutlined) {
     OutlinedTextField(
