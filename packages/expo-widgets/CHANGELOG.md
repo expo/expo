@@ -20,6 +20,7 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Fix duplicate widget target and file references created on repeated `npx expo prebuild` runs. ([#45090](https://github.com/expo/expo/issues/45090) by [@vj2303](https://github.com/vj2303))
 - Add support for `AccessoryWidgetBackground` views from `@expo/ui` in widget rendering. ([#44499](https://github.com/expo/expo/pull/44499) by [@cinques](https://github.com/cinques))
 - Fix `ExpoWidgets.bundle` not copied to widget extension when `use_frameworks` is active. ([#44065](https://github.com/expo/expo/pull/44065) by [@marvwhere](https://github.com/marvwhere))
 - Add missing project root to `watchFolders` in `metro.config.js` ([#43449](https://github.com/expo/expo/pull/43449) by [@kitten](https://github.com/kitten))

@@ -23,6 +23,16 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 ) =>
   withXcodeProject(config, (config) => {
     const xcodeProject = config.modResults;
+
+    // Check if the target already exists to avoid duplicates on repeated prebuilds
+    const nativeTargets = xcodeProject.pbxNativeTargetSection();
+    const existingTarget = Object.values(nativeTargets).find(
+      (target: any) => target.name === targetName
+    );
+    if (existingTarget) {
+      return config;
+    }
+
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
 

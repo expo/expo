@@ -44,6 +44,12 @@ const addToPbxProjectSection_1 = require("./addToPbxProjectSection");
 const addXCConfigurationList_1 = require("./addXCConfigurationList");
 const withTargetXcodeProject = (config, { targetName, bundleIdentifier, deploymentTarget, appleTeamId, getFileUris }) => (0, config_plugins_1.withXcodeProject)(config, (config) => {
     const xcodeProject = config.modResults;
+    // Check if the target already exists to avoid duplicates on repeated prebuilds
+    const nativeTargets = xcodeProject.pbxNativeTargetSection();
+    const existingTarget = Object.values(nativeTargets).find((target) => target.name === targetName);
+    if (existingTarget) {
+        return config;
+    }
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
     const xCConfigurationList = (0, addXCConfigurationList_1.addXCConfigurationList)(xcodeProject, {
