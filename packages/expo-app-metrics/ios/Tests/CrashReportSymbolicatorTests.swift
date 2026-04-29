@@ -21,6 +21,35 @@ struct CrashReportSymbolicatorTests {
     }
 
     @Test
+    func `demangles real Hermes and JSI symbols`() {
+      // Symbols pulled from the shipped `hermesvm.framework` and `ExpoModulesJSI.framework`
+      // binaries; representative of what shows up in MetricKit call stacks for RN apps.
+      #expect(
+        CrashReportSymbolicator.demangle(
+          "_ZN8facebook6hermes17makeHermesRuntimeERKN6hermes2vm13RuntimeConfigE"
+        ) == "facebook::hermes::makeHermesRuntime(hermes::vm::RuntimeConfig const&)"
+      )
+      #expect(
+        CrashReportSymbolicator.demangle(
+          "_ZN8facebook6hermes3cdp11CDPDebugAPI6createERNS0_13HermesRuntimeEm"
+        ) == "facebook::hermes::cdp::CDPDebugAPI::create(facebook::hermes::HermesRuntime&, unsigned long)"
+      )
+      #expect(
+        CrashReportSymbolicator.demangle(
+          "_ZN4expo12isTypedArrayERN8facebook3jsi7RuntimeERKNS1_6ObjectE"
+        ) == "expo::isTypedArray(facebook::jsi::Runtime&, facebook::jsi::Object const&)"
+      )
+    }
+
+    @Test
+    func `returns invalid mangled C++ input unchanged`() {
+      // Starts with `_Z` so we'll attempt to demangle, but the rest is garbage —
+      // `__cxa_demangle` should return non-zero status and we should fall back to the input.
+      let bogus = "_Znot_a_valid_mangling"
+      #expect(CrashReportSymbolicator.demangle(bogus) == bogus)
+    }
+
+    @Test
     func `passes a plain C symbol through unchanged`() {
       let cSymbol = "malloc"
       #expect(CrashReportSymbolicator.demangle(cSymbol) == cSymbol)

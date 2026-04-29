@@ -343,6 +343,7 @@ struct MetricsStorageTests {
     @Test
     func `getAllMainSessions returns only MainSession instances across entries`() throws {
       let storage = MetricsStorage(fileName: "test_polymorphic_accessor")
+      try storage.clear()
       // Current entry: one main + one foreground.
       let currentMain = MainSession()
       let currentForeground = ForegroundSession()
