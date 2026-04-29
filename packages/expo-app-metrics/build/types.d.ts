@@ -171,6 +171,15 @@ export interface ExpoAppMetricsModuleType {
      */
     getAllSessions(): Promise<Session[]>;
     /**
+     * Returns the raw MetricKit diagnostic payloads retained from previous app launches,
+     * parsed from their JSON representation. Returns an empty array on platforms that
+     * don't support MetricKit (tvOS) or when no payloads are available.
+     *
+     * @private This API is unstable and may change without notice.
+     * @platform ios
+     */
+    getPastDiagnosticPayloads(): unknown[];
+    /**
      * Simulates a crash report, attributing it to the current main session.
      * Intended for development and debugging only.
      *

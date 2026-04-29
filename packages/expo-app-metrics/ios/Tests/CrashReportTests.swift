@@ -72,24 +72,63 @@ struct CrashReportTests {
     }
 
     @Test
-    func `returns nil when no session is in the window`() {
+    func `matches a session whose interval intersects the window even if its start predates the window`() {
       let windowEnd = Date.now
       let windowStart = windowEnd.addingTimeInterval(-3600)
 
-      let beforeWindow = MainSession(
-        id: "before",
+      // Session started before the window but is still active when the window begins,
+      // so it intersects the payload window and should match.
+      let spanning = MainSession(
+        id: "spanning",
         startDate: windowStart.addingTimeInterval(-1000),
-        endDate: nil
-      )
-      let afterWindow = MainSession(
-        id: "after",
-        startDate: windowEnd.addingTimeInterval(1000),
         endDate: nil
       )
 
       let report = makeCrashReport(timestampBegin: windowStart, timestampEnd: windowEnd)
-      let match = report.findMatchingSession(in: [beforeWindow, afterWindow])
-      #expect(match == nil)
+      let match = report.findMatchingSession(in: [spanning])
+      #expect(match?.id == "spanning")
+    }
+
+    @Test
+    func `falls back to the latest unfinished session when nothing intersects (zero-width window)`() {
+      // Simulated MetricKit payloads have timestampBegin == timestampEnd == now,
+      // so no historical session can possibly intersect. Fall back to the latest unfinished one.
+      let now = Date.now
+
+      let oldFinished = MainSession(
+        id: "old-finished",
+        startDate: now.addingTimeInterval(-7200),
+        endDate: now.addingTimeInterval(-7000)
+      )
+      let unfinished = MainSession(
+        id: "unfinished",
+        startDate: now.addingTimeInterval(-3600),
+        endDate: nil
+      )
+
+      let report = makeCrashReport(timestampBegin: now, timestampEnd: now)
+      let match = report.findMatchingSession(in: [oldFinished, unfinished])
+      #expect(match?.id == "unfinished")
+    }
+
+    @Test
+    func `falls back to the latest session by start date when nothing intersects and none are unfinished`() {
+      let now = Date.now
+
+      let earlier = MainSession(
+        id: "earlier",
+        startDate: now.addingTimeInterval(-7200),
+        endDate: now.addingTimeInterval(-7000)
+      )
+      let later = MainSession(
+        id: "later",
+        startDate: now.addingTimeInterval(-3600),
+        endDate: now.addingTimeInterval(-3500)
+      )
+
+      let report = makeCrashReport(timestampBegin: now, timestampEnd: now)
+      let match = report.findMatchingSession(in: [earlier, later])
+      #expect(match?.id == "later")
     }
 
     @Test

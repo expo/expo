@@ -148,6 +148,13 @@ export type CallStackFrame = {
   offsetIntoBinaryTextSegment?: number | null;
   sampleCount?: number | null;
   subFrames?: CallStackFrame[] | null;
+  /**
+   * Resolved symbol from on-device `dladdr` symbolication. Mangled for Swift symbols.
+   * `null` when the binary is not loaded in this process or could not be resolved.
+   *
+   * @platform ios
+   */
+  symbol?: string | null;
 };
 
 export type CallStack = {
@@ -192,6 +199,16 @@ export interface ExpoAppMetricsModuleType {
    * @platform ios
    */
   getAllSessions(): Promise<Session[]>;
+
+  /**
+   * Returns the raw MetricKit diagnostic payloads retained from previous app launches,
+   * parsed from their JSON representation. Returns an empty array on platforms that
+   * don't support MetricKit (tvOS) or when no payloads are available.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform ios
+   */
+  getPastDiagnosticPayloads(): unknown[];
 
   /**
    * Simulates a crash report, attributing it to the current main session.

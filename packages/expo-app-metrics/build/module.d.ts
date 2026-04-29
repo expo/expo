@@ -5,6 +5,7 @@ declare const _default: {
     getStoredEntries(): Promise<import("./types").Metric[]>;
     clearStoredEntries(): Promise<void>;
     getAllSessions(): Promise<import("./types").Session[]>;
+    getPastDiagnosticPayloads(): unknown[];
     simulateCrashReport(): void;
     triggerCrash(kind: import("./types").CrashKind): void;
     startSession(): string;

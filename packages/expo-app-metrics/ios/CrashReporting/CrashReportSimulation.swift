@@ -48,7 +48,8 @@ private func simulateCallStackTree() -> CrashReport.CallStackTree {
       address: UInt64.random(in: addressRange),
       offsetIntoBinaryTextSegment: UInt64.random(in: offsetRange),
       sampleCount: 1,
-      subFrames: nil
+      subFrames: nil,
+      symbol: nil
     )
   }
 
