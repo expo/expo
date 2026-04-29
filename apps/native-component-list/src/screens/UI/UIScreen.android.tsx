@@ -235,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Mask component',
+    route: 'ui/mask',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaskScreen'));
+    },
+  },
+  {
     name: 'BottomSheet component',
     route: 'ui/bottomsheet',
     options: {},

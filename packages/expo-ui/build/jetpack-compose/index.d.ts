@@ -17,6 +17,7 @@ export * from './Divider';
 export * from './Host';
 export * from './LazyColumn';
 export * from './LazyRow';
+export * from './Mask';
 export * from './ListItem';
 export * from './RNHostView';
 export * from './DatePicker';

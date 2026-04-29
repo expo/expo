@@ -649,6 +649,12 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<MaskViewProps>("MaskView") {
+      Content { props ->
+        MaskViewContent(props)
+      }
+    }
+
     //endregion Expo UI views
   }
 }
