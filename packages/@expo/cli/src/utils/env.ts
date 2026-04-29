@@ -188,6 +188,11 @@ class Env {
     return string('EXPO_ADB_USER', '0');
   }
 
+  /** Default iOS simulator UDID to target when running `expo start --ios` or pressing `i` in the dev server. Skipped when the user explicitly picks a simulator via the Shift+I prompt. Useful for running multiple simulators against multiple dev servers in parallel. */
+  get EXPO_IOS_SIMULATOR_UDID(): string {
+    return string('EXPO_IOS_SIMULATOR_UDID', '');
+  }
+
   /** Used internally to enable E2E utilities. This behavior is not stable to external users. */
   get __EXPO_E2E_TEST(): boolean {
     return boolish('__EXPO_E2E_TEST', false);
