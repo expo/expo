@@ -17,6 +17,16 @@ To start the development server, run the following command:
 
 <Terminal cmd={['$ npx expo start']} />
 
+You may want specify your LAN ip if you have multiple network card. For example, if i want to use my local `192.168.50.171`
+
+I can write like this
+
+```bash
+cross-env EXPO_PACKAGER_PROXY_URL=http://192.168.50.171:8081 EXPO_NO_TELEMETRY=1 expo start
+```
+
+Here we using cross-env to make sure it works at each platform like Windows/MacOS/Linux.
+
 </Step>
 
 <Step label="2">
