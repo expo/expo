@@ -357,6 +357,11 @@ export const onVisibilityChanged = (
  */
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
 
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
+
 // =============================================================================
 // Clip Modifier & Shapes
 // =============================================================================

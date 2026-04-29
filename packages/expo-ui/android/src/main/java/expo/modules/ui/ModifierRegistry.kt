@@ -50,6 +50,8 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
@@ -564,6 +566,13 @@ object ModifierRegistry {
       val params = recordFromMap<TestIDParams>(map)
       params.testID?.let { testID ->
         Modifier.applyTestTag(testID)
+      } ?: Modifier
+    }
+
+    register("semantics") { map, _, _, _ ->
+      val params = recordFromMap<SemanticsParams>(map)
+      params.contentType.toContentType()?.let { ct ->
+        Modifier.semantics { contentType = ct }
       } ?: Modifier
     }
 

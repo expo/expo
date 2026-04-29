@@ -31,6 +31,7 @@ export function TextInput({
   style,
   textStyle,
   secureTextEntry,
+  autoComplete,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -68,6 +69,7 @@ export function TextInput({
       multiline={multiline}
       numberOfLines={numberOfLines}
       secureTextEntry={secureTextEntry}
+      autoComplete={autoComplete}
       testID={testID}
       keyboardType={keyboardType}
       inputMode={inputMode}

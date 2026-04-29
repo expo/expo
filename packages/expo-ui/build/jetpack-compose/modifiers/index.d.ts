@@ -233,6 +233,12 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
  * @param tag - Test ID string.
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export declare const semantics: (params: {
+    contentType?: string;
+}) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;

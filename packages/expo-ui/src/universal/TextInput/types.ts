@@ -4,7 +4,7 @@ import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'reac
 import type { ObservableState } from '../State';
 import type { UniversalTextStyle } from '../Text/types';
 import type { UniversalStyle } from '../types';
-import type { EnterKeyHint, InputMode } from './utils';
+import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 
 /**
  * Imperative methods exposed via the `TextInput` ref.
@@ -164,6 +164,12 @@ export interface TextInputProps {
    * Ignored once the user starts typing or if `value` is set.
    */
   defaultValue?: string;
+
+  /**
+   * Autofill hint. iOS maps to `textContentType`; Android maps to Compose's
+   * `Modifier.semantics { contentType = ... }`.
+   */
+  autoComplete?: AutoComplete;
 
   /**
    * Number of lines the field reserves when `multiline` is true. Forces a

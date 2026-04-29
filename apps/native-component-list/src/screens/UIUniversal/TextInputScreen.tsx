@@ -32,6 +32,16 @@ const TEXT_ALIGNS: TextAlign[] = ['auto', 'left', 'center', 'right', 'justify'];
 
 const NUMBER_OF_LINES: (number | undefined)[] = [undefined, 3, 5];
 
+const AUTO_COMPLETES = [
+  undefined,
+  'email',
+  'username',
+  'password',
+  'one-time-code',
+  'tel',
+  'name',
+] as const;
+
 export default function TextInputScreen() {
   const text = useNativeState('');
   const [editable, setEditable] = useState(true);
@@ -47,6 +57,13 @@ export default function TextInputScreen() {
   const [customStyle, setCustomStyle] = useState(false);
   const [customTextStyle, setCustomTextStyle] = useState(false);
   const [secureTextEntry, setSecureTextEntry] = useState(false);
+  const [autoComplete, setAutoComplete] =
+    useState<(typeof AUTO_COMPLETES)[number]>(undefined);
+
+  const cycleAutoComplete = () => {
+    const i = AUTO_COMPLETES.indexOf(autoComplete);
+    setAutoComplete(AUTO_COMPLETES[(i + 1) % AUTO_COMPLETES.length]);
+  };
   const [textAlign, setTextAlign] = useState<TextAlign>('auto');
   const [numberOfLines, setNumberOfLines] = useState<number | undefined>(undefined);
   const inputRef = useRef<TextInputRef>(null);
@@ -117,6 +134,7 @@ export default function TextInputScreen() {
                   : undefined
               }
               secureTextEntry={secureTextEntry}
+              autoComplete={autoComplete}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -188,6 +206,11 @@ export default function TextInputScreen() {
               label={`numberOfLines: ${numberOfLines ?? 'auto'}`}
               variant="outlined"
               onPress={cycleNumberOfLines}
+            />
+            <Button
+              label={`autoComplete: ${autoComplete ?? 'none'}`}
+              variant="outlined"
+              onPress={cycleAutoComplete}
             />
           </Column>
         </Column>

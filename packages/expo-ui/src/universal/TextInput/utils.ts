@@ -7,7 +7,6 @@ import type {
 
 type RNProps = ComponentProps<typeof RNTextInput>;
 export type AutoComplete = NonNullable<RNProps['autoComplete']>;
-export type TextContentType = NonNullable<RNProps['textContentType']>;
 
 export type InputMode =
   | 'none'
@@ -57,3 +56,60 @@ export function resolveEditable(
   if (readOnly === true) return false;
   return undefined;
 }
+
+/**
+ * Maps RN's `autoComplete` value to the SwiftUI `textContentType` modifier
+ * value (mirrors RN-iOS's internal mapping in `TextInput.js`).
+ */
+export function autoCompleteToTextContentType(ac: AutoComplete | undefined): string | undefined {
+  if (!ac) return undefined;
+  return AUTO_COMPLETE_TO_TEXT_CONTENT_TYPE[ac];
+}
+
+const AUTO_COMPLETE_TO_TEXT_CONTENT_TYPE: Partial<Record<AutoComplete, string>> = {
+  'additional-name': 'middleName',
+  'address-line1': 'streetAddressLine1',
+  'address-line2': 'streetAddressLine2',
+  'birthdate-day': 'birthdateDay',
+  'birthdate-full': 'birthdate',
+  'birthdate-month': 'birthdateMonth',
+  'birthdate-year': 'birthdateYear',
+  'cc-csc': 'creditCardSecurityCode',
+  'cc-exp': 'creditCardExpiration',
+  'cc-exp-month': 'creditCardExpirationMonth',
+  'cc-exp-year': 'creditCardExpirationYear',
+  'cc-family-name': 'creditCardFamilyName',
+  'cc-given-name': 'creditCardGivenName',
+  'cc-middle-name': 'creditCardMiddleName',
+  'cc-name': 'creditCardName',
+  'cc-number': 'creditCardNumber',
+  'cc-type': 'creditCardType',
+  country: 'countryName',
+  'current-password': 'password',
+  email: 'emailAddress',
+  'family-name': 'familyName',
+  'given-name': 'givenName',
+  'honorific-prefix': 'namePrefix',
+  'honorific-suffix': 'nameSuffix',
+  name: 'name',
+  'name-family': 'familyName',
+  'name-given': 'givenName',
+  'name-middle': 'middleName',
+  'name-prefix': 'namePrefix',
+  'name-suffix': 'nameSuffix',
+  'new-password': 'newPassword',
+  nickname: 'nickname',
+  'one-time-code': 'oneTimeCode',
+  organization: 'organizationName',
+  'organization-title': 'jobTitle',
+  password: 'password',
+  'password-new': 'newPassword',
+  'postal-address': 'fullStreetAddress',
+  'postal-address-country': 'countryName',
+  'postal-code': 'postalCode',
+  'sms-otp': 'oneTimeCode',
+  'street-address': 'fullStreetAddress',
+  tel: 'telephoneNumber',
+  url: 'URL',
+  username: 'username',
+};

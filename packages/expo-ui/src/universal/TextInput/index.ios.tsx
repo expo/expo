@@ -8,6 +8,7 @@ import {
 import { useImperativeHandle, useRef } from 'react';
 
 import {
+  autoCompleteToTextContentType,
   enterKeyHintToReturnKeyType,
   inputModeToKeyboardType,
   resolveEditable,
@@ -21,6 +22,7 @@ import {
   multilineTextAlignment,
   onSubmit,
   submitLabel,
+  textContentType,
   textInputAutocapitalization,
   tint,
   type ModifierConfig,
@@ -75,6 +77,7 @@ export function TextInput({
   style,
   textStyle,
   secureTextEntry,
+  autoComplete,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -127,6 +130,10 @@ export function TextInput({
   else if (textAlign === 'center') modifiers.push(multilineTextAlignment('center'));
   if (multiline && numberOfLines && numberOfLines > 0) {
     modifiers.push(lineLimit(numberOfLines, { reservesSpace: true }));
+  }
+  const mappedContentType = autoCompleteToTextContentType(autoComplete);
+  if (mappedContentType) {
+    modifiers.push(textContentType(mappedContentType as Parameters<typeof textContentType>[0]));
   }
 
   if (secureTextEntry) {
