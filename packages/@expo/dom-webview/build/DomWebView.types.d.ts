@@ -27,6 +27,23 @@ export interface DomWebViewProps extends ViewProps, AndroidProps, IosScrollViewP
      */
     webviewDebuggingEnabled?: boolean;
     /**
+     * When enabled, the page can call Expo native modules via a
+     * `globalThis.expo.modules` proxy, for example:
+     *
+     * ```ts
+     * import * as Haptics from 'expo-haptics';
+     * await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+     * ```
+     *
+     * The proxy forwards calls to the host JS runtime via a bridge that
+     * effectively runs arbitrary JavaScript in that runtime, so any third-party
+     * script or script-injection vulnerability in the loaded content gains the
+     * same capability. Leave disabled unless the content is fully trusted.
+     *
+     * @default false
+     */
+    useExpoModulesBridge?: boolean;
+    /**
      * Whether HTML5 videos may play inline. When `false`, video elements are
      * forced into fullscreen playback. The default is `true`. Note: this differs
      * from `react-native-webview`, which defaults to `false`.
