@@ -540,6 +540,8 @@ function getBabelTransformArgs(file, { options, config, projectRoot }, plugins =
         options: {
             ...babelTransformerOptions,
             enableBabelRCLookup: config.enableBabelRCLookup,
+            // NOTE(@kitten): Hint for babel transformer on where to look up Babel config from
+            extendsBabelConfigPath: config.enableBabelRCLookup !== false ? config.extendsBabelConfigPath : undefined,
             // NOTE(@kitten): This shouldn't be relevant via this code path. However, in case it does,
             // this prevents us from adding imports/requires to @babel/runtime when we're transforming a script
             enableBabelRuntime: options.type === 'script' ? false : config.enableBabelRuntime,
@@ -597,7 +599,7 @@ async function transform(config, projectRoot, filename, data, options) {
     };
     return transformJSWithBabel(file, context);
 }
-function getCacheKey(config) {
+function getCacheKey(config, opts) {
     const { 
     // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
     expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, ...remainingConfig } = config;
@@ -614,11 +616,15 @@ function getCacheKey(config) {
         ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
     ]);
     const babelTransformer = require(babelTransformerPath);
-    return [
-        filesKey,
-        (0, metro_cache_1.stableHash)(remainingConfig).toString('hex'),
-        babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
-    ].join('$');
+    const babelTransformerCacheKey = babelTransformer.getCacheKey
+        ? babelTransformer.getCacheKey({
+            projectRoot: opts?.projectRoot,
+            enableBabelRCLookup: config.enableBabelRCLookup,
+            // NOTE(@kitten): Custom modification to pass this custom Babel resolution option to `getCacheKey` for consistency
+            extendsBabelConfigPath: config.extendsBabelConfigPath,
+        })
+        : '';
+    return [filesKey, (0, metro_cache_1.stableHash)(remainingConfig).toString('hex'), babelTransformerCacheKey].join('$');
 }
 /**
  * Produces a Babel template that transforms an "import(...)" call into a

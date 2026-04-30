@@ -3,7 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
 const node_assert_1 = __importDefault(require("node:assert"));
+const node_path_1 = __importDefault(require("node:path"));
+const babel_core_1 = require("./babel-core");
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
 const debug = require('debug')('expo:metro-config:babel-transformer');
@@ -165,8 +168,41 @@ plugins, }) => {
         }
     }
 };
+/**
+ * Generates a cache key component based on the user's Babel configuration files.
+ * This uses Babel's loadPartialConfig to resolve which config files apply
+ * to the project, and includes their contents in the cache key so that changes
+ * to babel.config.js, .babelrc, or any file they reference will invalidate the
+ * transform cache.
+ *
+ * This is called once by the main thread (not on worker instances).
+ */
+function getCacheKey(options) {
+    if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
+        return '';
+    }
+    // In Expo, we pass the `extendsBabelConfigPath` ourselves, but if we're not using this with the Expo CLI
+    // we re-resolve the Babel config, same as in `loadBabelConfig`
+    const configName = options.extendsBabelConfigPath ?? (0, loadBabelConfig_1.resolveBabelrcName)(options.projectRoot);
+    if (!configName) {
+        return '';
+    }
+    const partialConfig = (0, babel_core_1.loadPartialConfigSync)({
+        cwd: options.projectRoot,
+        root: options.projectRoot,
+        extends: node_path_1.default.resolve(options.projectRoot, configName),
+        configFile: false,
+        babelrc: false,
+    });
+    const files = partialConfig?.files;
+    if (files == null || files.size === 0) {
+        return '';
+    }
+    return (0, metro_cache_key_1.getCacheKey)([...files].sort());
+}
 const babelTransformer = {
     transform,
+    getCacheKey,
 };
 module.exports = babelTransformer;
 //# sourceMappingURL=babel-transformer.js.map

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.loadBabelConfig = void 0;
+exports.resolveBabelrcName = resolveBabelrcName;
 /**
  * Copyright (c) 650 Industries (Expo). All rights reserved.
  * Copyright (c) Meta Platforms, Inc. and affiliates.
@@ -28,6 +29,12 @@ const BABEL_CONFIG_NAMES = [
     'babel.config.ts',
     'babel.config.mts',
 ];
+function resolveBabelrcName(projectRoot) {
+    // Check for various babel config files in the project root
+    return BABEL_CONFIG_NAMES.find((configFileName) => {
+        return node_fs_1.default.existsSync(node_path_1.default.resolve(projectRoot, configFileName));
+    });
+}
 /**
  * Returns a memoized function that checks for the existence of a
  * project-level .babelrc file. If it doesn't exist, it reads the
@@ -37,19 +44,17 @@ exports.loadBabelConfig = (function () {
     let result = null;
     return function _getBabelRC(options) {
         if (result == null) {
-            const { projectRoot, enableBabelRCLookup = true } = options;
+            const { projectRoot, enableBabelRCLookup = true, extendsBabelConfigPath } = options;
             result = {};
-            if (options.projectRoot && enableBabelRCLookup) {
+            if (enableBabelRCLookup && extendsBabelConfigPath) {
+                result.exts = node_path_1.default.resolve(projectRoot, extendsBabelConfigPath);
+            }
+            else if (projectRoot && enableBabelRCLookup) {
                 // Check for various babel config files in the project root
-                // TODO(@kitten): We should move this to the `customTransformOptions` to make this
-                // participate in the cache key. We should also add `getCacheKey` to `babel-transformer`
-                // and then take this into account there
-                const foundBabelRCPath = BABEL_CONFIG_NAMES.find((configFileName) => {
-                    return node_fs_1.default.existsSync(node_path_1.default.resolve(projectRoot, configFileName));
-                });
+                const foundBabelRCName = resolveBabelrcName(projectRoot);
                 // Extend the config if a babel config file is found
-                if (foundBabelRCPath) {
-                    result.exts = node_path_1.default.resolve(projectRoot, foundBabelRCPath);
+                if (foundBabelRCName) {
+                    result.exts = node_path_1.default.resolve(projectRoot, foundBabelRCName);
                 }
             }
             // Use the default preset for react-native if no babel config file is found
