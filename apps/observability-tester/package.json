@@ -8,7 +8,7 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "test:ios": "xcodebuild test -workspace ios/Observe.xcworkspace -scheme ExpoAppMetrics-Unit-Tests -destination 'platform=iOS Simulator,name=iPhone 17' && xcodebuild test -workspace ios/Observe.xcworkspace -scheme ExpoObserve-Unit-Tests -destination 'platform=iOS Simulator,name=iPhone 17'",
+    "test:ios": "xcodebuild test -workspace ios/Observe.xcworkspace -scheme ExpoAppMetrics-Unit-Tests -destination 'platform=iOS Simulator' && xcodebuild test -workspace ios/Observe.xcworkspace -scheme ExpoObserve-Unit-Tests -destination 'platform=iOS Simulator'",
     "test:android": "cd android && ./gradlew :expo-app-metrics:testDebugUnitTest :expo-observe:testDebugUnitTest",
     "web": "expo start --web",
     "lint": "expo lint"
