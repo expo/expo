@@ -94,6 +94,58 @@ export default function ScrollViewHiddenIndicatorsExample() {
 }
 ```
 
+### Shared scroll position
+
+Track the leading scroll target id from JavaScript and scroll to a target by writing to the state. Mark each scroll target with the `id` modifier, wrap the content container in `scrollTargetLayout`, and apply the `scrollPosition` modifier to the `ScrollView`. The optional `onChange` callback fires on the JS thread when the leading target changes. Requires iOS 17.
+
+The `scrollPosition` modifier also works on other scrollable containers like `LazyVStack` and `LazyHStack`.
+
+Writes to `state.value` must run on the UI runtime. Wrap them in `scheduleOnUI` from `react-native-worklets`, or call them from inside a `'worklet'` function. Writes from the JS runtime trip Main Thread Checker.
+
+```tsx ScrollViewSharedPositionExample.tsx
+import { Button, Host, ScrollView, Text, VStack, useNativeState } from '@expo/ui/swift-ui';
+import { id, padding, scrollPosition, scrollTargetLayout } from '@expo/ui/swift-ui/modifiers';
+import { scheduleOnUI } from 'react-native-worklets';
+
+export default function ScrollViewSharedPositionExample() {
+  const activeID = useNativeState<string | null>(null);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={12}>
+        <ScrollView
+          modifiers={[
+            scrollPosition(activeID, {
+              onChange: newID => {
+                console.log('[JS thread] leading target:', newID);
+              },
+            }),
+          ]}>
+          <VStack modifiers={[scrollTargetLayout()]}>
+            {Array.from({ length: 30 }, (_, i) => (
+              <Text
+                key={`item-${i}`}
+                modifiers={[id(`item-${i}`), padding({ horizontal: 16, vertical: 12 })]}>
+                {`Item ${i}`}
+              </Text>
+            ))}
+          </VStack>
+        </ScrollView>
+        <Button
+          label="Scroll to item 10 from worklet"
+          onPress={() => {
+            scheduleOnUI(() => {
+              'worklet';
+              activeID.value = 'item-10';
+            });
+          }}
+        />
+      </VStack>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
