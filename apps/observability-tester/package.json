@@ -8,6 +8,8 @@
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "test:ios": "bash scripts/test-ios.sh",
+    "test:android": "cd android && ./gradlew :expo-app-metrics:testDebugUnitTest :expo-observe:testDebugUnitTest",
     "web": "expo start --web",
     "lint": "expo lint"
   },

@@ -167,10 +167,10 @@ struct MetricsStorageTests {
       let entry = MetricsStorage.Entry(id: 0)
       let data = try JSONEncoder().encode(entry)
       let json = try #require(JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any])
-      let appInfo = try #require(json["app"] as? [String: String])
+      let appInfo = try #require(json["app"] as? [String: Any])
       let deviceInfo = try #require(json["device"] as? [String: String])
-      #expect(appInfo["appName"] == entry.app.appName)
-      #expect(appInfo["appVersion"] == entry.app.appVersion)
+      #expect(appInfo["appName"] as? String == entry.app.appName)
+      #expect(appInfo["appVersion"] as? String == entry.app.appVersion)
       #expect(deviceInfo["modelName"] == entry.device.modelName)
       #expect(deviceInfo["systemVersion"] == entry.device.systemVersion)
       #expect(try #require(json["sessions"] as? [Any]).count == 0)
@@ -343,6 +343,7 @@ struct MetricsStorageTests {
     @Test
     func `getAllMainSessions returns only MainSession instances across entries`() throws {
       let storage = MetricsStorage(fileName: "test_polymorphic_accessor")
+      // Clear any leftover state from previous test runs persisted in the documents directory.
       try storage.clear()
       // Current entry: one main + one foreground.
       let currentMain = MainSession()
