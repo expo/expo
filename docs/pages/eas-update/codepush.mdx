@@ -151,6 +151,6 @@ CodePush and EAS Update are both services that allow you to send hotfixes to the
 
 A key distinction between CodePush and EAS Update that can impact your release process is that **with CodePush, the client controls the target update deployment at runtime**, and **with EAS Update, the default path is controlled on the server side, by mapping channels to branches**. In the default EAS Update flow, a build requests updates for its configured channel, and EAS Update returns the latest compatible update from the branch mapped to that channel.
 
-The ability to control the target deployment at runtime is commonly used with CodePush in staging environments to allow non-technical stakeholders to test features from a single build on Google Play Beta/TestFlight. With EAS Update, you can use [channel surfing](/eas-update/override/#what-is-channel-surfing) to switch update channels in release builds at runtime. Development builds can also load updates from any compatible channel and are a good fit for developer-focused testing.
+The ability to control the target deployment at runtime is commonly used with CodePush in staging environments to allow non-technical stakeholders to test features from a single build on Google Play Beta and TestFlight. With EAS Update, you can use [channel surfing](/eas-update/override/#what-is-channel-surfing) to switch update channels in production builds at runtime. Development builds can also load updates from any compatible channel and are a good fit for developer-focused testing.
 
 </Collapsible>
