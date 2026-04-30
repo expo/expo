@@ -1,9 +1,8 @@
 import { ThemeProvider } from 'ThemeProvider';
-import { AppMetricsRoot } from 'expo-observe';
+import * as DevMenu from 'expo-dev-menu';
+import ExpoObserve, { AppMetricsRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
-import * as DevMenu from 'expo-dev-menu';
-import ExpoObserve from 'expo-observe';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -68,6 +67,7 @@ function useLoaded() {
 
 ExpoObserve.configure({
   dispatchingEnabled: true,
+  dispatchInDebug: true,
   sampleRate: 0.9,
 });
 

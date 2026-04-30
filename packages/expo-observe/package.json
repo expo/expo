@@ -1,7 +1,7 @@
 {
   "name": "expo-observe",
   "title": "Expo Observe",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
