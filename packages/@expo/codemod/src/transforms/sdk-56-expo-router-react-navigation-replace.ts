@@ -29,10 +29,10 @@ type ImportSpecifierWithKind = (
 ) & { importKind?: 'type' | 'value' };
 
 const IMPORT_MAP: Record<string, string> = {
-  '@react-navigation/native': 'expo-router',
-  '@react-navigation/elements': 'expo-router',
-  '@react-navigation/core': 'expo-router',
-  '@react-navigation/routers': 'expo-router',
+  '@react-navigation/native': 'expo-router/react-navigation',
+  '@react-navigation/elements': 'expo-router/react-navigation',
+  '@react-navigation/core': 'expo-router/react-navigation',
+  '@react-navigation/routers': 'expo-router/react-navigation',
   '@react-navigation/stack': 'expo-router/js-stack',
   '@react-navigation/bottom-tabs': 'expo-router/js-tabs',
   '@react-navigation/material-top-tabs': 'expo-router/js-top-tabs',

@@ -9,7 +9,7 @@ declare const RouterModal: React.ForwardRefExoticComponent<Omit<import("../..").
         routes: import("../../react-navigation/core").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
-    }>, import("../..").EventMapBase>) => null;
+    }>, import("../../react-navigation").EventMapBase>) => null;
     Protected: typeof import("../../views/Protected").Protected;
 };
 declare const RouterModalScreen: (props: import("../..").ScreenProps<object, Readonly<{
@@ -20,6 +20,6 @@ declare const RouterModalScreen: (props: import("../..").ScreenProps<object, Rea
     routes: import("../../react-navigation/core").NavigationRoute<ParamListBase, string>[];
     type: string;
     stale: false;
-}>, import("../..").EventMapBase>) => null;
+}>, import("../../react-navigation").EventMapBase>) => null;
 export { RouterModal, RouterModalScreen };
 //# sourceMappingURL=ModalStack.d.ts.map

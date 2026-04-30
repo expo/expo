@@ -115,7 +115,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
-        getParent<T = import("..").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
+        getParent<T = import("../react-navigation").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): Readonly<{
             key: string;
             index: number;
@@ -125,11 +125,11 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
             type: string;
             stale: false;
         }>;
-    } & import("..").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("..").EventEmitter<TabNavigationEventMap> & {
+    } & import("../react-navigation").PrivateValueStore<[ParamListBase, unknown, unknown]> & import("../react-navigation").EventEmitter<TabNavigationEventMap> & {
         setParams(params: Partial<object | undefined>): void;
         replaceParams(params: object | undefined): void;
     } & TabActionHelpers<ParamListBase>;
-    describe: (route: import("..").RouteProp<ParamListBase>, placeholder: boolean) => import("..").Descriptor<import("./TabContext").ExpoTabsNavigatorScreenOptions, Omit<{
+    describe: (route: import("../react-navigation").RouteProp<ParamListBase>, placeholder: boolean) => import("../react-navigation").Descriptor<import("./TabContext").ExpoTabsNavigatorScreenOptions, Omit<{
         dispatch(action: Readonly<{
             type: string;
             payload?: object;
@@ -164,10 +164,10 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
-        getParent<T = import("..").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
+        getParent<T = import("../react-navigation").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): TabNavigationState<any>;
-    } & import("..").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T = import("..").NavigationProp<ParamListBase, string, string | undefined, Readonly<{
+    } & import("../react-navigation").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
+        getParent<T = import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, Readonly<{
             key: string;
             index: number;
             routeNames: string[];
@@ -180,8 +180,8 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
     } & {
         setParams(params: Partial<object | undefined>): void;
         replaceParams(params: object | undefined): void;
-    } & import("..").EventConsumer<TabNavigationEventMap & import("..").EventMapCore<TabNavigationState<any>>> & import("..").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("..").RouteProp<ParamListBase>>;
-    descriptors: Record<string, import("..").Descriptor<import("./TabContext").ExpoTabsNavigatorScreenOptions, Omit<{
+    } & import("../react-navigation").EventConsumer<TabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<any>>> & import("../react-navigation").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("../react-navigation").RouteProp<ParamListBase>>;
+    descriptors: Record<string, import("../react-navigation").Descriptor<import("./TabContext").ExpoTabsNavigatorScreenOptions, Omit<{
         dispatch(action: Readonly<{
             type: string;
             payload?: object;
@@ -216,10 +216,10 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
         isFocused(): boolean;
         canGoBack(): boolean;
         getId(): string | undefined;
-        getParent<T = import("..").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
+        getParent<T = import("../react-navigation").NavigationHelpers<ParamListBase, {}> | undefined>(id?: string): T;
         getState(): TabNavigationState<any>;
-    } & import("..").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
-        getParent<T = import("..").NavigationProp<ParamListBase, string, string | undefined, Readonly<{
+    } & import("../react-navigation").PrivateValueStore<[ParamListBase, unknown, unknown]>, "getParent"> & {
+        getParent<T = import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, Readonly<{
             key: string;
             index: number;
             routeNames: string[];
@@ -232,7 +232,7 @@ export declare function useTabsWithChildren(options: UseTabsWithChildrenOptions)
     } & {
         setParams(params: Partial<object | undefined>): void;
         replaceParams(params: object | undefined): void;
-    } & import("..").EventConsumer<TabNavigationEventMap & import("..").EventMapCore<TabNavigationState<any>>> & import("..").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("..").RouteProp<ParamListBase>>>;
+    } & import("../react-navigation").EventConsumer<TabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<any>>> & import("../react-navigation").PrivateValueStore<[ParamListBase, string, TabNavigationEventMap]> & TabActionHelpers<ParamListBase>, import("../react-navigation").RouteProp<ParamListBase>>>;
     NavigationContent: ({ children }: {
         children: React.ReactNode;
     }) => import("react/jsx-runtime").JSX.Element;

@@ -5,7 +5,7 @@ import type { RequireContext } from '../types';
 export declare function useStore(context: RequireContext, linkingConfigOptions: LinkingConfigOptions, serverUrl?: string): {
     shouldShowTutorial(): boolean;
     readonly state: ReactNavigationState | undefined;
-    readonly navigationRef: import("..").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly navigationRef: import("../react-navigation").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
     getRouteInfo(): import("./getRouteInfoFromState").UrlObject;
     readonly redirects: StoreRedirects[];

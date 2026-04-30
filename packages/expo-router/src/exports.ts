@@ -63,5 +63,3 @@ export { unstable_navigationEvents } from './navigationEvents';
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
  */
 export { Tabs } from './layouts/Tabs';
-
-export * from './react-navigation';
