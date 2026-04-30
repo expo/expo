@@ -1,0 +1,137 @@
+---
+title: ToggleButton
+description: Jetpack Compose ToggleButton components for displaying native Material3 toggle buttons.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI provides four toggle button components that match the official Jetpack Compose Toggle Button API: [`ToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-toggle-button.html), [`IconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-icon-toggle-button.html), [`FilledIconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-filled-icon-toggle-button.html), and [`OutlinedIconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-outlined-icon-toggle-button.html).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic toggle button
+
+A toggle button with text and icon content.
+
+```tsx BasicToggleButtonExample.tsx
+import { useState } from 'react';
+import { Host, ToggleButton, Text } from '@expo/ui/jetpack-compose';
+
+export default function BasicToggleButtonExample() {
+  const [checked, setChecked] = useState(false);
+
+  return (
+    <Host matchContents>
+      <ToggleButton checked={checked} onCheckedChange={setChecked}>
+        <Text>Favorite</Text>
+      </ToggleButton>
+    </Host>
+  );
+}
+```
+
+### Icon toggle button variants
+
+Use different icon toggle button components to convey varying levels of emphasis.
+
+```tsx IconToggleButtonVariantsExample.tsx
+import { useState } from 'react';
+import {
+  Host,
+  IconToggleButton,
+  FilledIconToggleButton,
+  OutlinedIconToggleButton,
+  Icon,
+  Row,
+} from '@expo/ui/jetpack-compose';
+
+const starIcon = require('./assets/star.png');
+
+export default function IconToggleButtonVariantsExample() {
+  const [checked1, setChecked1] = useState(false);
+  const [checked2, setChecked2] = useState(true);
+  const [checked3, setChecked3] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Row horizontalArrangement={{ spacedBy: 8 }}>
+        <IconToggleButton checked={checked1} onCheckedChange={setChecked1}>
+          <Icon source={starIcon} size={24} />
+        </IconToggleButton>
+        <FilledIconToggleButton checked={checked2} onCheckedChange={setChecked2}>
+          <Icon source={starIcon} size={24} />
+        </FilledIconToggleButton>
+        <OutlinedIconToggleButton checked={checked3} onCheckedChange={setChecked3}>
+          <Icon source={starIcon} size={24} />
+        </OutlinedIconToggleButton>
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Custom colors
+
+Override checked and unchecked colors using the `colors` prop.
+
+```tsx CustomColorsToggleButtonExample.tsx
+import { useState } from 'react';
+import { Host, ToggleButton, Text } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorsToggleButtonExample() {
+  const [checked, setChecked] = useState(true);
+
+  return (
+    <Host matchContents>
+      <ToggleButton
+        checked={checked}
+        onCheckedChange={setChecked}
+        colors={{
+          checkedContainerColor: '#4CAF50',
+          checkedContentColor: '#FFFFFF',
+          containerColor: '#E0E0E0',
+          contentColor: '#333333',
+        }}>
+        <Text>{checked ? 'ON' : 'OFF'}</Text>
+      </ToggleButton>
+    </Host>
+  );
+}
+```
+
+### Disabled toggle button
+
+```tsx DisabledToggleButtonExample.tsx
+import { Host, ToggleButton, Text } from '@expo/ui/jetpack-compose';
+
+export default function DisabledToggleButtonExample() {
+  return (
+    <Host matchContents>
+      <ToggleButton checked={false} enabled={false}>
+        <Text>Disabled</Text>
+      </ToggleButton>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import {
+  ToggleButton,
+  IconToggleButton,
+  FilledIconToggleButton,
+  OutlinedIconToggleButton,
+} from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/togglebutton" apiName="ToggleButton" />

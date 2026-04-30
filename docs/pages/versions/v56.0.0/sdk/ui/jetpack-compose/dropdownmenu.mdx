@@ -1,0 +1,62 @@
+---
+title: DropdownMenu
+description: A Jetpack Compose DropdownMenu component for displaying dropdown menus.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://developer.android.com/develop/ui/compose/components/menu) and displays a dropdown menu when a trigger element is pressed.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic dropdown menu
+
+```tsx BasicDropdownMenuExample.tsx
+import { Host, DropdownMenu, Button, Text, Icon } from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+export default function BasicDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <Button variant="bordered" onClick={() => setIsExpanded(true)}>
+            Show Menu
+          </Button>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem
+            onClick={() => {
+              setIsExpanded(false);
+              console.log('Home pressed');
+            }}>
+            <DropdownMenuItem.Text>
+              <Text>Home</Text>
+            </DropdownMenuItem.Text>
+            <DropdownMenuItem.LeadingIcon>
+              <Icon source={homeIcon} size={24} />
+            </DropdownMenuItem.LeadingIcon>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { DropdownMenu } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/dropdownmenu" apiName="DropdownMenu" />
