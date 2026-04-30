@@ -28,12 +28,12 @@ function expandTemplate(template: string, values: FormatValues = {}): (string | 
   const parts: (string | ReactElement)[] = [];
   let lastIndex = 0;
   let key = 0;
-  let match: RegExpExecArray | null;
-  while ((match = tokenRegex.exec(template))) {
-    if (match.index > lastIndex) {
-      parts.push(template.slice(lastIndex, match.index));
+  for (const match of template.matchAll(tokenRegex)) {
+    const matchIndex = match.index ?? 0;
+    if (matchIndex > lastIndex) {
+      parts.push(template.slice(lastIndex, matchIndex));
     }
-    const [, tagName, inner, varName] = match;
+    const [whole, tagName, inner, varName] = match;
     if (tagName) {
       const fn = values[tagName];
       const inside = expandTemplate(inner, values);
@@ -47,7 +47,7 @@ function expandTemplate(template: string, values: FormatValues = {}): (string | 
         parts.push(<span key={`v-${key++}`}>{v as ReactNode}</span>);
       }
     }
-    lastIndex = tokenRegex.lastIndex;
+    lastIndex = matchIndex + whole.length;
   }
   if (lastIndex < template.length) {
     parts.push(template.slice(lastIndex));
