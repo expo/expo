@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -103,7 +104,7 @@ class IconView(context: Context, appContext: AppContext) :
       Icon(
         painter = painter,
         contentDescription = contentDescription,
-        tint = tint?.compose ?: androidx.compose.ui.graphics.Color.Unspecified,
+        tint = tint?.compose ?: LocalContentColor.current,
         modifier = Modifier
           .then(iconSize?.let { Modifier.size(it.dp) } ?: Modifier)
           .then(ModifierRegistry.applyModifiers(modifiers, appContext, this@Content, globalEventDispatcher))

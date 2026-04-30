@@ -3,6 +3,7 @@ package expo.modules.ui
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Typeface
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -264,7 +265,7 @@ data class TextProps(
 private fun AnnotatedString.Builder.appendSpans(spans: List<TextSpanRecord>, context: Context?) {
   for (span in spans) {
     val style = SpanStyle(
-      color = colorToComposeColorOrNull(span.color) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      color = colorToComposeColorOrNull(span.color) ?: LocalContentColor.current,
       fontSize = span.fontSize?.sp ?: androidx.compose.ui.unit.TextUnit.Unspecified,
       fontWeight = span.fontWeight?.toComposeFontWeight(),
       fontStyle = span.fontStyle?.toComposeFontStyle(),
