@@ -34,6 +34,11 @@ describe('exports server', () => {
   )('$name requests', (config) => {
     const server = setupServer(config);
 
+    it('sets the `Transfer-Encoding: chunked` header', async () => {
+      const res = await server.fetchAsync('/');
+      expect(res.headers.get('Transfer-Encoding')).toEqual('chunked');
+    });
+
     it(`can serve up index html`, async () => {
       const html = getHtml(await server.fetchAsync('/').then((res) => res.text()));
       expect(html.querySelector('[data-testid="index-text"]')?.textContent).toEqual('Index');
@@ -214,7 +219,25 @@ describe('exports server', () => {
     it('injects hydration assets into SSR response', async () => {
       const html = await server.fetchAsync('/').then((res) => res.text());
 
-      expect(html).toMatch(/<script src="\/_expo\/static\/js\/web\/entry-.*\.js" defer><\/script>/);
+      // Streaming SSR uses bootstrapScripts which emits async scripts (with an id attribute)
+      expect(html).toMatch(
+        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
+      );
+    });
+
+    it('emits the hydration flag before the bootstrap script', async () => {
+      const html = await server.fetchAsync('/').then((res) => res.text());
+
+      const hydrationFlagIndex = html.indexOf(
+        '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
+      );
+      const bootstrapScriptIndex = html.search(
+        /<script src="\/_expo\/static\/js\/web\/entry-.*\.js"[^>]*async=""><\/script>/
+      );
+
+      expect(hydrationFlagIndex).toBeGreaterThanOrEqual(0);
+      expect(bootstrapScriptIndex).toBeGreaterThanOrEqual(0);
+      expect(hydrationFlagIndex).toBeLessThan(bootstrapScriptIndex);
     });
 
     it('SSR styles are injected', async () => {
@@ -242,7 +265,10 @@ describe('exports server', () => {
 
       const links = indexHtml.querySelectorAll('html > head > link').filter((link) => {
         // Fonts are tested elsewhere
-        return link.attributes.as !== 'font';
+        if (link.attributes.as === 'font') return false;
+        // Streaming SSR adds <link rel="preload" as="script"> for bootstrapScripts
+        if (link.attributes.as === 'script') return false;
+        return true;
       });
       expect(links.length).toBe(
         // Global CSS, CSS Module
@@ -284,7 +310,10 @@ describe('exports server', () => {
 
       // CSS Module
       expect(
-        fs.readFileSync(path.join(server.outputDir, 'client', links[2]?.attributes.href ?? ''), 'utf-8')
+        fs.readFileSync(
+          path.join(server.outputDir, 'client', links[2]?.attributes.href ?? ''),
+          'utf-8'
+        )
       ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
       const styledHtml = getHtml(await server.fetchAsync('/styled').then((res) => res.text()));
@@ -310,7 +339,11 @@ describe('exports server', () => {
 
       expect(
         fs.readFileSync(
-          path.join(server.outputDir, 'client', links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''),
+          path.join(
+            server.outputDir,
+            'client',
+            links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''
+          ),
           'utf-8'
         )
       ).toBeDefined();
@@ -340,10 +373,33 @@ describe('exports server', () => {
       // Root element
       expect(page).toContain('<div id="root">');
 
-      const sanitized = page.replace(
-        /<script src="\/_expo\/static\/js\/web\/.*" defer>/,
-        '<script src="/_expo/static/js/web/[mock].js" defer>'
-      );
+      const sanitized = page
+        // Streaming SSR: <script src="..." id="_R_" async="">
+        .replace(
+          /<script src="\/_expo\/static\/js\/web\/[^"]*"[^>]*async="">/,
+          '<script src="/_expo/static/js/web/[mock].js" async="">'
+        )
+        // Streaming SSR: <link rel="preload" as="script" fetchPriority="low" href="..."/>
+        .replace(
+          /<link rel="preload" as="script"[^>]*href="\/_expo\/static\/js\/web\/[^"]*"[^>]*\/>/,
+          '<link rel="preload" as="script" href="/_expo/static/js/web/[mock].js"/>'
+        )
+        .replace(
+          /<link rel="preload" href="\/_expo\/static\/css\/global-[^"]*\.css" as="style">/,
+          '<link rel="preload" href="/_expo/static/css/global-[mock].css" as="style">'
+        )
+        .replace(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/global-[^"]*\.css">/,
+          '<link rel="stylesheet" href="/_expo/static/css/global-[mock].css">'
+        )
+        .replace(
+          /<link rel="preload" href="\/_expo\/static\/css\/test\.module-[^"]*\.css" as="style">/,
+          '<link rel="preload" href="/_expo/static/css/test.module-[mock].css" as="style">'
+        )
+        .replace(
+          /<link rel="stylesheet" href="\/_expo\/static\/css\/test\.module-[^"]*\.css">/,
+          '<link rel="stylesheet" href="/_expo/static/css/test.module-[mock].css">'
+        );
       expect(sanitized).toMatchSnapshot();
 
       expect(

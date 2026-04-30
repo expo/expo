@@ -58,7 +58,7 @@ function createEnvironment(input) {
             const url = new URL(request.url);
             const location = new URL(url.pathname + url.search, url.origin);
             const assets = mergeAssets(topLevelAssets, options?.assets);
-            return ssrModule.getStaticContent(location, {
+            return ssrModule.getStreamingContent(location, {
                 loader: options?.loader,
                 request,
                 assets,
