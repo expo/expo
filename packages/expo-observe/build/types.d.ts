@@ -52,5 +52,16 @@ export interface ExpoObserveModuleType {
      * Configures observability settings.
      */
     configure(config: Config): void;
+    /**
+     * Pushes JS-bundle-derived facts (`process.env.NODE_ENV`, `__DEV__`) into native
+     * storage. Called automatically once when the package is first imported; should
+     * not be called by host apps directly.
+     *
+     * @internal
+     */
+    setBundleDefaults(defaults: {
+        environment: string;
+        isJsDev: boolean;
+    }): void;
 }
 //# sourceMappingURL=types.d.ts.map
