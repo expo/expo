@@ -1,6 +1,6 @@
 import type { LoaderFunction } from 'expo-server';
 import { useRouteInfo } from './global-state/router-store';
-import type { Router } from './imperative-api';
+import type { ImperativeRouter } from './imperative-api';
 import type { NavigationState } from './react-navigation/native';
 import type { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
 export { useRouteInfo };
@@ -48,7 +48,7 @@ export declare function useNavigationContainerRef(): import("./react-navigation"
  *}
  * ```
  */
-export declare function useRouter(): Router;
+export declare function useRouter(): ImperativeRouter;
 /**
  * @private
  * @returns The current global pathname with query params attached. This may change in the future to include the hostname

@@ -14,7 +14,7 @@ export {
   useLoaderData,
 } from './hooks';
 
-export { router, type Router } from './imperative-api';
+export { router, type ImperativeRouter } from './imperative-api';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };

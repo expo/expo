@@ -7,7 +7,7 @@ import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { getRouteInfoFromState } from './global-state/getRouteInfoFromState';
 import { store, useRouteInfo } from './global-state/router-store';
-import type { Router } from './imperative-api';
+import type { ImperativeRouter } from './imperative-api';
 import { router } from './imperative-api';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { LoaderCacheContext } from './loaders/LoaderCache';
@@ -75,7 +75,7 @@ const displayWarningForProp = (prop: string) => {
 
 const createNOOPWithWarning = (prop: string) => () => displayWarningForProp(prop);
 
-const routerWithWarnings: Router = {
+const routerWithWarnings: ImperativeRouter = {
   back: createNOOPWithWarning('back'),
   canGoBack: () => {
     displayWarningForProp('canGoBack');
@@ -114,7 +114,7 @@ const routerWithWarnings: Router = {
  *}
  * ```
  */
-export function useRouter(): Router {
+export function useRouter(): ImperativeRouter {
   const { isPreview } = usePreviewInfo();
   if (isPreview) {
     return routerWithWarnings;
