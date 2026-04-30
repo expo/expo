@@ -420,6 +420,23 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<HorizontalPagerProps>("HorizontalPagerView") {
+      val animateScrollToPage by AsyncFunction<Int>()
+      val scrollToPage by AsyncFunction<Int>()
+      val onCurrentPageChange by Event<HorizontalPagerCurrentPageChangeEvent>()
+      val onSettledPageChange by Event<HorizontalPagerSettledPageChangeEvent>()
+
+      Content { props ->
+        HorizontalPagerContent(
+          props,
+          animateScrollToPage,
+          scrollToPage,
+          { onCurrentPageChange(it) },
+          { onSettledPageChange(it) }
+        )
+      }
+    }
+
     ExpoUIView<HorizontalCenteredHeroCarouselProps>("HorizontalCenteredHeroCarouselView") {
       Content { props ->
         HorizontalCenteredHeroCarouselContent(props)
