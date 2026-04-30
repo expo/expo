@@ -13,6 +13,7 @@ import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-conf
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
+import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
@@ -186,6 +187,10 @@ export async function loadMetroConfigAsync(
       },
     },
   };
+
+  // NOTE(@kitten): Pass a hint to the transformer on where to find the Babel config
+  asWritable(config.transformer).extendsBabelConfigPath =
+    config.transformer.enableBabelRCLookup !== false ? resolveBabelrcName(projectRoot) : undefined;
 
   // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
   // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
