@@ -43,6 +43,7 @@
 - Fixed runtime crash when missing `Host` component for SwiftUI or Jetpack Compose components. ([#44118](https://github.com/expo/expo/pull/44118) by [@kudo](https://github.com/kudo))
 - [iOS] Restore pre-ExpoModulesJSI `Record` conversion behavior by hydrating only declared fields, preserving `undefined` handling for object properties, and emitting typed records directly to JS. ([#45085](https://github.com/expo/expo/pull/45085) by [@barthap](https://github.com/barthap))
 - Fix reading EXConstants.bundle when using prebuilds + brownfield with SPM ([#45148](https://github.com/expo/expo/pull/45148) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Guard against null `eventEmitter` in `SwiftUIVirtualView.dispatchEvent` to prevent SIGSEGV after view teardown. ([#45175](https://github.com/expo/expo/pull/45175) by [@DORI2001](https://github.com/DORI2001))
 
 ### 💡 Others
 
