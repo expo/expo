@@ -194,6 +194,23 @@ describe('system information', () => {
     expect(screen.getByText('Hermes version')).toBeOnTheScreen();
     expect(screen.getByText('for RN 0.79.5')).toBeOnTheScreen();
   });
+
+  it('does not crash when window.location is undefined', () => {
+    const previousWindow = (global as any).window;
+    (global as any).window = {};
+
+    try {
+      renderRouter({
+        _layout: () => <Slot />,
+        index: () => <Text />,
+      });
+      act(() => router.replace('/_sitemap'));
+      expect(screen.getByText('System Information')).toBeOnTheScreen();
+      expect(screen.queryByText('Location origin')).toBeNull();
+    } finally {
+      (global as any).window = previousWindow;
+    }
+  });
 });
 
 describe('links', () => {

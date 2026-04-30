@@ -116,7 +116,7 @@ function SystemInfo() {
         }
         return HERMES_VERSION;
     };
-    const locationOrigin = window.location.origin;
+    const locationOrigin = window.location?.origin;
     const expoSdkVersion = expo_constants_1.default.expoConfig?.sdkVersion || 'Unknown';
     const hermesVersion = getHermesVersion();
     return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { testID: "sitemap-system-info", style: {
