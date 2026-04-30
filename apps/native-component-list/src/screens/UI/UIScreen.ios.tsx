@@ -259,6 +259,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ScrollView shared position',
+    route: 'ui/scrollview-shared-position',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewSharedPositionScreen'));
+    },
+  },
+  {
     name: 'Shapes',
     route: 'ui/shapes',
     options: {},
