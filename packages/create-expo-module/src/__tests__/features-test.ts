@@ -10,13 +10,20 @@ describe('resolveFeatures', () => {
     expect(resolveFeatures([])).toEqual([]);
   });
 
-  it('returns all features when fullExample is true', () => {
+  it('returns the core feature set when fullExample is true', () => {
     const result = resolveFeatures([], true);
     expect(result).toContain('Function');
     expect(result).toContain('View');
+    expect(result).toContain('ViewEvent');
     expect(result).toContain('SharedObject');
-    expect(result).toContain('SwiftUIView');
-    expect(result).toContain('ComposeView');
+  });
+
+  it('does not include SwiftUI or Compose features in fullExample', () => {
+    const result = resolveFeatures([], true);
+    expect(result).not.toContain('SwiftUIView');
+    expect(result).not.toContain('SwiftUIModifier');
+    expect(result).not.toContain('ComposeView');
+    expect(result).not.toContain('ComposeModifier');
   });
 
   it('auto-includes View when ViewEvent is selected', () => {
