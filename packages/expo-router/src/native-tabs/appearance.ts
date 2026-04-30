@@ -1,8 +1,10 @@
 import type { ColorValue } from 'react-native';
 import type {
-  TabsScreenAppearance,
-  TabsScreenItemAppearance,
-  TabsScreenItemStateAppearance,
+  TabsScreenAppearanceAndroid,
+  TabsScreenAppearanceIOS,
+  TabsScreenItemAppearanceIOS,
+  TabsScreenItemStateAppearanceAndroid,
+  TabsScreenItemStateAppearanceIOS,
 } from 'react-native-screens';
 
 import {
@@ -10,14 +12,16 @@ import {
   type NativeTabOptions,
   type NativeTabsBlurEffect,
   type NativeTabsLabelStyle,
+  type NativeTabsTabBarItemLabelVisibilityMode,
 } from './types';
+import { Color } from '../color';
 import { convertFontWeightToStringFontWeight } from '../utils/style';
 
 const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 
 export function createStandardAppearanceFromOptions(
   options: NativeTabOptions
-): TabsScreenAppearance {
+): TabsScreenAppearanceIOS {
   let blurEffect = options.blurEffect;
   if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
     console.warn(
@@ -53,7 +57,7 @@ export function createStandardAppearanceFromOptions(
 
 export function createScrollEdgeAppearanceFromOptions(
   options: NativeTabOptions
-): TabsScreenAppearance {
+): TabsScreenAppearanceIOS {
   let blurEffect = options.disableTransparentOnScrollEdge ? options.blurEffect : 'none';
   if (blurEffect && !supportedBlurEffectsSet.has(blurEffect)) {
     console.warn(
@@ -101,12 +105,12 @@ export interface AppearanceStyle extends NativeTabsLabelStyle {
 
 export function appendSelectedStyleToAppearance(
   selectedStyle: AppearanceStyle,
-  appearance: TabsScreenAppearance
-): TabsScreenAppearance {
+  appearance: TabsScreenAppearanceIOS
+): TabsScreenAppearanceIOS {
   return appendStyleToAppearance(selectedStyle, appearance, ['selected', 'focused']);
 }
 
-const EMPTY_APPEARANCE_ITEM: TabsScreenItemAppearance = {
+const EMPTY_APPEARANCE_ITEM: TabsScreenItemAppearanceIOS = {
   normal: {},
   selected: {},
   focused: {},
@@ -115,9 +119,9 @@ const EMPTY_APPEARANCE_ITEM: TabsScreenItemAppearance = {
 
 export function appendStyleToAppearance(
   style: AppearanceStyle,
-  appearance: TabsScreenAppearance,
+  appearance: TabsScreenAppearanceIOS,
   states: ('selected' | 'focused' | 'disabled' | 'normal')[]
-): TabsScreenAppearance {
+): TabsScreenAppearanceIOS {
   const baseItemAppearance =
     appearance.stacked || appearance.inline || appearance.compactInline || {};
 
@@ -131,7 +135,7 @@ export function appendStyleToAppearance(
     },
   }));
 
-  const itemAppearance: TabsScreenItemAppearance = {
+  const itemAppearance: TabsScreenItemAppearanceIOS = {
     ...EMPTY_APPEARANCE_ITEM,
     ...baseItemAppearance,
     ...Object.fromEntries(newAppearances.map(({ key, appearance }) => [key, appearance])),
@@ -149,12 +153,14 @@ export function appendStyleToAppearance(
   };
 }
 
-export function convertStyleToAppearance(style: AppearanceStyle | undefined): TabsScreenAppearance {
+export function convertStyleToAppearance(
+  style: AppearanceStyle | undefined
+): TabsScreenAppearanceIOS {
   if (!style) {
     return {};
   }
   const stateAppearance = convertStyleToItemStateAppearance(style);
-  const itemAppearance: TabsScreenItemAppearance = {
+  const itemAppearance: TabsScreenItemAppearanceIOS = {
     normal: stateAppearance,
     selected: stateAppearance,
     focused: stateAppearance,
@@ -172,11 +178,11 @@ export function convertStyleToAppearance(style: AppearanceStyle | undefined): Ta
 
 export function convertStyleToItemStateAppearance(
   style: AppearanceStyle | undefined
-): TabsScreenItemStateAppearance {
+): TabsScreenItemStateAppearanceIOS {
   if (!style) {
     return {};
   }
-  const stateAppearance: TabsScreenItemStateAppearance = {
+  const stateAppearance: TabsScreenItemStateAppearanceIOS = {
     tabBarItemBadgeBackgroundColor: style.badgeBackgroundColor,
     tabBarItemTitlePositionAdjustment: style.titlePositionAdjustment,
     tabBarItemIconColor: style.iconColor,
@@ -187,11 +193,67 @@ export function convertStyleToItemStateAppearance(
     tabBarItemTitleFontColor: style.color,
   };
 
-  (Object.keys(stateAppearance) as (keyof TabsScreenItemStateAppearance)[]).forEach((key) => {
+  (Object.keys(stateAppearance) as (keyof TabsScreenItemStateAppearanceIOS)[]).forEach((key) => {
     if (stateAppearance[key] === undefined) {
       delete stateAppearance[key];
     }
   });
 
   return stateAppearance;
+}
+
+// TODO(@ubax): Separate appearance computation into platform specific files
+interface BuildAndroidAppearanceArgs {
+  options: NativeTabOptions;
+  // TODO(@ubax): Move this props into separate options
+  tintColor: ColorValue | undefined;
+  rippleColor: ColorValue | undefined;
+  disableIndicator: boolean | undefined;
+  labelVisibilityMode: NativeTabsTabBarItemLabelVisibilityMode | undefined;
+}
+
+export function createAndroidScreenAppearance({
+  options,
+  tintColor,
+  rippleColor,
+  disableIndicator,
+  labelVisibilityMode,
+}: BuildAndroidAppearanceArgs): TabsScreenAppearanceAndroid {
+  const labelStyle = options.labelStyle;
+  const selectedLabelStyle = options.selectedLabelStyle;
+
+  const normal: TabsScreenItemStateAppearanceAndroid = {
+    tabBarItemTitleFontColor: labelStyle?.color ?? Color.android.dynamic.onSurfaceVariant,
+    tabBarItemIconColor: options.iconColor ?? Color.android.dynamic.onSurfaceVariant,
+  };
+  const selected: TabsScreenItemStateAppearanceAndroid = {
+    tabBarItemTitleFontColor:
+      selectedLabelStyle?.color ??
+      labelStyle?.color ??
+      tintColor ??
+      Color.android.dynamic.onSurface,
+    tabBarItemIconColor:
+      options.selectedIconColor ??
+      options.iconColor ??
+      tintColor ??
+      Color.android.dynamic.onSecondaryContainer,
+  };
+
+  return {
+    tabBarBackgroundColor: options.backgroundColor ?? Color.android.dynamic.surfaceContainer,
+    tabBarItemRippleColor: rippleColor ?? Color.android.dynamic.primary,
+    tabBarItemLabelVisibilityMode: labelVisibilityMode,
+    tabBarItemActiveIndicatorColor:
+      options.indicatorColor ?? Color.android.dynamic.secondaryContainer,
+    tabBarItemActiveIndicatorEnabled: !disableIndicator,
+    tabBarItemTitleFontFamily: labelStyle?.fontFamily,
+    tabBarItemTitleSmallLabelFontSize: labelStyle?.fontSize,
+    tabBarItemTitleLargeLabelFontSize: selectedLabelStyle?.fontSize ?? labelStyle?.fontSize,
+    tabBarItemTitleFontWeight: labelStyle?.fontWeight,
+    tabBarItemTitleFontStyle: labelStyle?.fontStyle,
+    tabBarItemBadgeBackgroundColor: options.badgeBackgroundColor,
+    tabBarItemBadgeTextColor: options.badgeTextColor,
+    normal,
+    selected,
+  };
 }

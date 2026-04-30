@@ -27,9 +27,9 @@
       "types": "./build/jetpack-compose/modifiers/index.d.ts",
       "default": "./src/jetpack-compose/modifiers/index.ts"
     },
-    "./datetimepicker": {
-      "types": "./build/datetime-picker/index.d.ts",
-      "default": "./src/datetime-picker/index.tsx"
+    "./community/datetime-picker": {
+      "types": "./build/community/datetime-picker/index.d.ts",
+      "default": "./src/community/datetime-picker/index.tsx"
     },
     "./community/bottom-sheet": {
       "types": "./build/community/bottom-sheet/index.d.ts",

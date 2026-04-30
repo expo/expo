@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useCallback, useMemo } from 'react';
+import React, { use, useCallback, useMemo, useRef } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
@@ -11,6 +11,7 @@ import type {
   NativeTabOptions,
   NativeTabsProps,
   NativeTabsViewTabItem,
+  OnTabChangeEventPayload,
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
@@ -119,24 +120,30 @@ export function NativeTabsNavigator({
     }
   }
   const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+  const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(
-    (tabKey: string) => {
-      const { route } = descriptors[tabKey]!;
-      navigation.emit({
-        type: 'tabPress',
-        target: tabKey,
-        data: {
-          __internalTabsType: 'native',
-        },
-      });
-      navigation.dispatch({
-        type: 'JUMP_TO',
-        target: state.key,
-        payload: {
-          name: route.name,
-        },
-      });
+    ({ selectedKey, provenance, isNativeAction }: OnTabChangeEventPayload) => {
+      // We should always send the last provenance we got from native side
+      provenanceRef.current = provenance;
+
+      if (isNativeAction) {
+        const { route } = descriptors[selectedKey]!;
+        navigation.emit({
+          type: 'tabPress',
+          target: selectedKey,
+          data: {
+            __internalTabsType: 'native',
+          },
+        });
+        navigation.dispatch({
+          type: 'JUMP_TO',
+          target: state.key,
+          payload: {
+            name: route.name,
+          },
+        });
+      }
     },
     [descriptors, navigation, state.key]
   );
@@ -148,6 +155,10 @@ export function NativeTabsNavigator({
           {...rest}
           key={visibleTabsKeys}
           focusedIndex={focusedIndex}
+          // Provenance should only be sent with updates, and updates
+          // on JS side are only triggered by rerender, so passing ref
+          // here is ok.
+          provenance={provenanceRef.current}
           tabs={visibleTabs}
           onTabChange={onTabChange}
         />

@@ -1,9 +1,10 @@
 import { View, type NativeSyntheticEvent } from 'react-native';
 import {
   Tabs as _Tabs,
+  type TabSelectedEvent,
   type TabsHostProps,
   // @ts-expect-error: method is declared in mock below
-  __triggerNativeFocusChange,
+  __triggerTabSelected,
 } from 'react-native-screens';
 
 import { act, renderRouter } from '../../testing-library';
@@ -11,7 +12,7 @@ import { NativeTabs } from '../NativeTabs';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
-  let triggerNativeFocusChange: NonNullable<TabsHostProps['onNativeFocusChange']> = () => {};
+  let triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = () => {};
   const actualScreens = jest.requireActual(
     'react-native-screens'
   ) as typeof import('react-native-screens');
@@ -19,21 +20,20 @@ jest.mock('react-native-screens', () => {
     ...actualScreens,
     Tabs: {
       ...actualScreens.Tabs,
-      Host: jest.fn(({ children, onNativeFocusChange }) => {
-        triggerNativeFocusChange = onNativeFocusChange || (() => {});
+      Host: jest.fn(({ children, onTabSelected }) => {
+        triggerTabSelected = onTabSelected || (() => {});
         return <View testID="Tabs">{children}</View>;
       }),
       Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
     },
-    __triggerNativeFocusChange: (
-      event: Parameters<NonNullable<TabsHostProps['onNativeFocusChange']>>[0]
-    ) => triggerNativeFocusChange(event),
+    __triggerTabSelected: (event: Parameters<NonNullable<TabsHostProps['onTabSelected']>>[0]) =>
+      triggerTabSelected(event),
   };
 });
 
-const triggerNativeFocusChange: TabsHostProps['onNativeFocusChange'] = (...args) =>
+const triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = (event) =>
   act(() => {
-    __triggerNativeFocusChange(...args);
+    __triggerTabSelected(event);
   });
 
 const TabsScreen = _Tabs.Screen as jest.MockedFunction<typeof _Tabs.Screen>;
@@ -55,6 +55,18 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
+function tabSelectedEvent(selectedScreenKey: string): NativeSyntheticEvent<TabSelectedEvent> {
+  return {
+    nativeEvent: {
+      selectedScreenKey,
+      provenance: 0,
+      isRepeated: false,
+      hasTriggeredSpecialEffect: false,
+      isNativeAction: true,
+    },
+  } as NativeSyntheticEvent<TabSelectedEvent>;
+}
+
 describe('NativeTabs.Trigger listeners prop', () => {
   it('calls tabPress listener when tab is pressed', () => {
     const tabPressListener = jest.fn();
@@ -69,14 +81,9 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
+    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: indexTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(indexTabKey));
 
     act(() => jest.runAllTimers());
 
@@ -105,14 +112,9 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
+    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: indexTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(indexTabKey));
 
     act(() => jest.runAllTimers());
 
@@ -135,14 +137,9 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const secondTabKey = TabsScreen.mock.calls[1]![0].tabKey;
+    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: secondTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(secondTabKey));
 
     act(() => jest.runAllTimers());
 
@@ -165,27 +162,17 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
-    const secondTabKey = TabsScreen.mock.calls[1]![0].tabKey;
+    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: indexTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(indexTabKey));
 
     act(() => jest.runAllTimers());
     expect(screenListener).toHaveBeenCalledTimes(1);
 
     jest.clearAllMocks();
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: secondTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(secondTabKey));
 
     act(() => jest.runAllTimers());
     expect(screenListener).toHaveBeenCalledTimes(1);
@@ -211,14 +198,9 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
+    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: indexTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(indexTabKey));
 
     act(() => jest.runAllTimers());
 
@@ -241,14 +223,9 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0]![0].tabKey;
+    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
 
-    triggerNativeFocusChange({
-      nativeEvent: { tabKey: indexTabKey, repeatedSelectionHandledBySpecialEffect: false },
-    } as NativeSyntheticEvent<{
-      tabKey: string;
-      repeatedSelectionHandledBySpecialEffect: boolean;
-    }>);
+    triggerTabSelected(tabSelectedEvent(indexTabKey));
 
     act(() => jest.runAllTimers());
 
