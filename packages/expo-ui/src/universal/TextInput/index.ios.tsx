@@ -1,14 +1,4 @@
 import { SecureField, Text, TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
-import { useImperativeHandle, useRef } from 'react';
-
-import { worklets } from '../../State/optionalWorklets';
-
-import {
-  autoCompleteToTextContentType,
-  enterKeyHintToReturnKeyType,
-  inputModeToKeyboardType,
-  resolveEditable,
-} from './utils';
 import {
   autocorrectionDisabled,
   disabled as disabledMod,
@@ -24,10 +14,18 @@ import {
   tint,
   type ModifierConfig,
 } from '@expo/ui/swift-ui/modifiers';
+import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
+import { worklets } from '../../State/optionalWorklets';
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
+import {
+  autoCompleteToTextContentType,
+  enterKeyHintToReturnKeyType,
+  inputModeToKeyboardType,
+  resolveEditable,
+} from './utils';
 
 type SwiftUIKeyboardType = Parameters<typeof keyboardTypeMod>[0];
 type SwiftUISubmitLabel = Parameters<typeof submitLabel>[0];

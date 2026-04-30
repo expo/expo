@@ -63,7 +63,11 @@ export function transformToModifiers(
   // Text styling (innermost — applies to text content before container modifiers)
   const textStyle = options?.textStyle;
   if (textStyle) {
-    if (textStyle.fontFamily != null || textStyle.fontSize != null || textStyle.fontWeight != null) {
+    if (
+      textStyle.fontFamily != null ||
+      textStyle.fontSize != null ||
+      textStyle.fontWeight != null
+    ) {
       mods.push(
         font({
           family: textStyle.fontFamily,

@@ -102,7 +102,15 @@ function Placeholder({ children }: { children: React.ReactNode }) {
  * Renders a SwiftUI `TextField`.
  */
 export function TextField(props: TextFieldProps) {
-  const { text, selection, onTextChange, onFocusChange, onSelectionChange, modifiers, ...restProps } = props;
+  const {
+    text,
+    selection,
+    onTextChange,
+    onFocusChange,
+    onSelectionChange,
+    modifiers,
+    ...restProps
+  } = props;
 
   const fallbackText = useNativeState('');
   const textState = text ?? fallbackText;

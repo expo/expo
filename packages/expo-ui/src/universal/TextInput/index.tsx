@@ -90,9 +90,7 @@ export function TextInput({
       enterKeyHint={enterKeyHint}
       cursorColor={typeof cursorColor === 'string' ? cursorColor : undefined}
       style={[style, textStyle, textAlign && textAlign !== 'auto' ? { textAlign } : null]}
-      onSubmitEditing={
-        onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined
-      }
+      onSubmitEditing={onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined}
       onFocus={onFocus ? () => onFocus() : undefined}
       onBlur={onBlur ? () => onBlur() : undefined}
       onChangeText={(text) => {
@@ -100,16 +98,12 @@ export function TextInput({
         onChangeText?.(text);
       }}
       onContentSizeChange={
-        onContentSizeChange
-          ? (e) => onContentSizeChange(e.nativeEvent.contentSize)
-          : undefined
+        onContentSizeChange ? (e) => onContentSizeChange(e.nativeEvent.contentSize) : undefined
       }
       selectTextOnFocus={selectTextOnFocus}
       selection={selection?.value}
       onSelectionChange={
-        onSelectionChange
-          ? (e) => onSelectionChange(e.nativeEvent.selection)
-          : undefined
+        onSelectionChange ? (e) => onSelectionChange(e.nativeEvent.selection) : undefined
       }
     />
   );

@@ -189,7 +189,18 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
     color?: ColorValue;
     fontSize?: number;
     fontFamily?: string;
-    fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
+    fontWeight?:
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900'
+      | 'normal'
+      | 'bold';
     lineHeight?: number;
     letterSpacing?: number;
   };
@@ -297,8 +308,7 @@ function useTransformedProps<T extends TextFieldValueLike>(
         : undefined,
     onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
     onSelectionChange: onSelectionChange
-      ? (event) =>
-          onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
       : undefined,
     onKeyboardAction: keyboardActions
       ? (event) => {

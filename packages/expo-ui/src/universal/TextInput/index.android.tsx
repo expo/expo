@@ -15,7 +15,6 @@ import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 import { worklets } from '../../State/optionalWorklets';
-
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import { enterKeyHintToReturnKeyType, inputModeToKeyboardType, resolveEditable } from './utils';

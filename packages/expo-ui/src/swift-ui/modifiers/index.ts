@@ -191,12 +191,9 @@ export const onDisappear = (handler: () => void) =>
  * @param handler - Function called with the new size.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/ongeometrychange(for:of:action:)).
  */
-export const onGeometryChange = (
-  handler: (size: { width: number; height: number }) => void
-) =>
-  createModifierWithEventListener(
-    'onGeometryChange',
-    (size: { width: number; height: number }) => handler(size)
+export const onGeometryChange = (handler: (size: { width: number; height: number }) => void) =>
+  createModifierWithEventListener('onGeometryChange', (size: { width: number; height: number }) =>
+    handler(size)
   );
 
 /**
