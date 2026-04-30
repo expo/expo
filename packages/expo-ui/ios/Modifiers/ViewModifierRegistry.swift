@@ -1830,6 +1830,14 @@ extension ViewModifierRegistry {
       return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
     }
 
+    register("id") { params, appContext, _ in
+      return try IDModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollPosition") { params, appContext, eventDispatcher in
+      return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
