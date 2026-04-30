@@ -18,6 +18,7 @@ public struct AppMetrics {
   static func registerMetricKitSubscriber() {
     #if !targetEnvironment(simulator)
     MXMetricManager.shared.add(metricKitSubscriber)
+    metricKitSubscriber.processPastPayloads()
     #endif
   }
   #endif
