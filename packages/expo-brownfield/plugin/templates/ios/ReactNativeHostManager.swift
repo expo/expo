@@ -13,7 +13,7 @@ internal import EXDevMenu
 public class ReactNativeHostManager {
   public static let shared = ReactNativeHostManager()
 
-  private var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
+  private var reactNativeDelegate: ReactNativeDelegate?
   private var reactNativeFactory: RCTReactNativeFactory?
   private var firstLoadInitialized: Bool = false
   private var devMenuInitialized: Bool = false

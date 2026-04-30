@@ -12,7 +12,7 @@ public struct BrownfieldState {
 
   @discardableResult
   public static func subscribe(
-    _ key: String, 
+    _ key: String,
     _ callback: @escaping (Any?) -> Void
   ) -> AnyCancellable {
     return BrownfieldStateInternal.shared.subscribe(key, callback)

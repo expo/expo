@@ -97,6 +97,7 @@ const getCommonBuildSettings = (targetName, currentProjectVersion, bundleIdentif
         USER_SCRIPT_SANDBOXING: '"NO"',
         SKIP_INSTALL: '"NO"',
         ENABLE_MODULE_VERIFIER: '"NO"',
+        GCC_SYMBOLS_PRIVATE_EXTERN: '"YES"',
     };
 };
 const inferProjectName = (platformProjectRoot) => {

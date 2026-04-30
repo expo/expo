@@ -24,9 +24,9 @@ public struct ReactNativeView: View {
   var launchOptions: [AnyHashable: Any]? = [:]
 
   public init(
-    moduleName: String = "main", 
+    moduleName: String = "main",
     initialProps: [AnyHashable: Any] = [:],
-    launchOptions: [AnyHashable: Any] = [:],  
+    launchOptions: [AnyHashable: Any] = [:],
   ) {
     self.moduleName = moduleName
     self.initialProps = initialProps

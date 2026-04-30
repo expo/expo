@@ -1,6 +1,6 @@
 import UIKit
 
-@objc
+@objc(${{prefix}}ReactNativeViewController)
 public class ReactNativeViewController: UIViewController {
   private let moduleName: String
   private let initialProps: [AnyHashable: Any]?
