@@ -14,6 +14,7 @@ import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import type { BuildFlavor } from './Prebuilder.types';
+import { resolvePackagePath } from './resolvePackage';
 import type { BuildPlatform, SPMProduct } from './SPMConfig.types';
 import { createAsyncSpinner } from './Utils';
 
@@ -26,40 +27,83 @@ const PLATFORM_TO_SDK: Partial<Record<BuildPlatform, string>> = {
   'tvOS Simulator': 'appletvsimulator',
 };
 
+// Pods that expose React Native source headers via `Pods/Headers/Public/<pod>/`.
+// Tuple is: [source dir relative to react-native package root, exposure path under <pod>/].
+const RN_HEADER_POD_LAYOUT: Record<string, [string, string]> = {
+  'React-jsi': ['ReactCommon/jsi/jsi', 'jsi'],
+  'React-runtimescheduler': [
+    'ReactCommon/react/renderer/runtimescheduler',
+    'react/renderer/runtimescheduler',
+  ],
+  'React-rendererconsistency': [
+    'ReactCommon/react/renderer/consistency',
+    'react/renderer/consistency',
+  ],
+  'React-performancetimeline': [
+    'ReactCommon/react/performance/timeline',
+    'react/performance/timeline',
+  ],
+  'React-timing': ['ReactCommon/react/timing', 'react/timing'],
+  'React-debug': ['ReactCommon/react/debug', 'react/debug'],
+  'React-callinvoker': ['ReactCommon/callinvoker/ReactCommon', 'ReactCommon'],
+  'React-runtimeexecutor': ['ReactCommon/runtimeexecutor/ReactCommon', 'ReactCommon'],
+};
+
 function customBuildKey(pkg: SPMPackageSource, product: SPMProduct): string {
   return `${pkg.packageName}/${product.name}`;
 }
 
-// Builds the `PODS_ROOT` layout that `apple/scripts/build-xcframework.sh` reads.
+// Builds a synthetic `PODS_ROOT` layout that mimics what CocoaPods produces
+// for the apps we build: `Headers/Public/<pod>/...` directories that
+// `apple/scripts/build-xcframework.sh` consumes via header search paths in
+// `Package.swift`. Inputs come from React Native source (resolved via npm)
+// for code headers and from the artifact cache for prebuilt third-party deps.
 async function stagePodsRootAsync(
   pkg: SPMPackageSource,
   artifacts: DownloadedDependencies
 ): Promise<string> {
   const stage = path.join(pkg.buildPath, PODS_STAGE_DIRNAME);
-  const links: [string, string][] = [
-    [path.join(artifacts.hermes, 'destroot'), 'hermes-engine/destroot'],
-    [path.join(artifacts.react, 'React.xcframework'), 'React-Core-prebuilt/React.xcframework'],
-    [
-      path.join(artifacts.reactNativeDependencies, 'ReactNativeDependencies.xcframework'),
-      'ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework',
-    ],
-  ];
-  for (const [target, rel] of links) {
-    const link = path.join(stage, rel);
+  const headersPublic = path.join(stage, 'Headers', 'Public');
+  const reactNativeSourcePath = resolvePackagePath('react-native');
+
+  const links: [string, string][] = [];
+
+  // React Native source headers, surfaced as Pods/Headers/Public/<pod>/<exposure>.
+  for (const [pod, [sourceRel, exposure]] of Object.entries(RN_HEADER_POD_LAYOUT)) {
+    links.push([
+      path.join(reactNativeSourcePath, sourceRel),
+      path.join(headersPublic, pod, exposure),
+    ]);
+  }
+
+  // Hermes headers from the artifact cache: <hermes>/destroot/include/hermes/...
+  // surfaced as Pods/Headers/Public/hermes-engine/hermes/...
+  links.push([
+    path.join(artifacts.hermes, 'destroot', 'include', 'hermes'),
+    path.join(headersPublic, 'hermes-engine', 'hermes'),
+  ]);
+
+  // ReactNativeDependencies bundles folly/boost/fmt/glog/double-conversion/etc.
+  // The Headers dir mirrors `Pods/Headers/Public/ReactNativeDependencies` exactly.
+  links.push([
+    path.join(artifacts.reactNativeDependencies, 'Headers'),
+    path.join(headersPublic, 'ReactNativeDependencies'),
+  ]);
+
+  for (const [target, link] of links) {
     await fs.mkdirp(path.dirname(link));
     await fs.remove(link).catch(() => {});
     await fs.ensureSymlink(target, link);
   }
 
-  // Stage React-VFS.yaml as a rewritten copy (not a symlink) so the build
-  // script's `sed s|${PODS_ROOT}/React-Core-prebuilt|...|` substitution finds
-  // the prefix it expects. The cached yaml has absolute cache paths; we
-  // rewrite them to the staged React-Core-prebuilt location.
-  const vfsSource = await fs.readFile(path.join(artifacts.react, 'React-VFS.yaml'), 'utf8');
-  const cachePrefix = path.join(artifacts.react, 'React.xcframework');
-  const stagedPrefix = path.join(stage, 'React-Core-prebuilt', 'React.xcframework');
-  const vfsRewritten = vfsSource.split(cachePrefix).join(stagedPrefix);
-  await fs.writeFile(path.join(stage, 'React-Core-prebuilt', 'React-VFS.yaml'), vfsRewritten);
+  // Cache invalidation signal — the build script hashes this file to detect
+  // RN version bumps (the real CocoaPods install drops a similar JSON here).
+  const localPodspecs = path.join(stage, 'Local Podspecs');
+  await fs.mkdirp(localPodspecs);
+  await fs.writeJson(path.join(localPodspecs, 'React-Core.podspec.json'), {
+    name: 'React-Core',
+    version: artifacts.reactNativeVersion,
+  });
 
   return stage;
 }
