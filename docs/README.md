@@ -603,6 +603,27 @@ import { Terminal } from '~/ui/components/Snippet';
 />
 ```
 
+### Use `Prerequisites` for setup checklists
+
+When a guide depends on the reader having a specific environment or prior step in place, wrap the requirements in a `Prerequisites` component. It renders as a collapsible block and threads each requirement's title through the page heading manager so it can be linked.
+
+```mdx
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+
+<Prerequisites>
+  <Requirement title="Set up your development environment">
+    Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+  </Requirement>
+  <Requirement title="Install EAS CLI">Run `npm install -g eas-cli` and log in.</Requirement>
+</Prerequisites>
+```
+
+Pass `open` to render the block expanded by default:
+
+```mdx
+<Prerequisites open>...</Prerequisites>
+```
+
 ### Use callouts
 
 Four different types of callouts can be used with markdown syntax for `> ...` blockquote. Each callout represents a purpose.
