@@ -14,7 +14,7 @@ import { Step } from '~/ui/components/Step';
 
 1. Ensure you have created a **new build** after installing `expo-observe`. Metrics are only collected from builds that include the library.
 2. Check that you are viewing the correct project in the EAS dashboard.
-3. If testing in development, ensure `enableInDebug` is set to `true` in your app config. See [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
+3. If testing in a debug build, ensure `dispatchInDebug` is set to `true` via `configure()`. See [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
 
 ### Time to first render not showing
 

@@ -19,10 +19,11 @@ ExpoObserve.configure({
 });
 ```
 
-| Option               | Type      | Default                | Description                                    |
-| -------------------- | --------- | ---------------------- | ---------------------------------------------- |
-| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events |
-| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server |
+| Option               | Type      | Default                | Description                                                                                        |
+| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                     |
+| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                     |
+| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds. |
 
 ## `dispatchEvents()`
 
@@ -38,23 +39,19 @@ await ExpoObserve.dispatchEvents();
 
 ## Enable metrics in development
 
-By default, metrics with the `development` environment are filtered out and not dispatched to the server. To collect development metrics (for example, to test your integration), set `enableInDebug` to `true` in your **app config**:
+By default, metrics collected from debug builds are dropped without being dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
-```json app.json
-{
-  "expo": {
-    "extra": {
-      "eas": {
-        "observe": {
-          "enableInDebug": true
-        }
-      }
-    }
-  }
-}
+```js
+import ExpoObserve from 'expo-observe';
+
+ExpoObserve.configure({
+  dispatchInDebug: true,
+});
 ```
 
-> **warning** Enable this only when testing your Expo Observe integration. Development performance differs significantly from production, so collecting development metrics may affect the results shown in your dashboard.
+`dispatchInDebug` has no effect on release builds; release builds always dispatch (subject to [`dispatchingEnabled`](#configure)). If `dispatchingEnabled` is `false`, nothing dispatches regardless of `dispatchInDebug`.
+
+> **warning** Enable this only when testing your Expo Observe integration. Development performance differs significantly from production, so collecting development metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 
@@ -80,4 +77,4 @@ The endpoint URL is baked into the native layer of the app at build time, so cha
 
 All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default. To override it, use [`configure({ environment })`](#configure).
 
-Metrics with the `development` environment are filtered out before dispatching unless [`enableInDebug` is set to `true`](#enable-metrics-in-development) in your app config. You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+Metrics collected from debug builds are dropped before dispatching unless [`dispatchInDebug` is set to `true`](#enable-metrics-in-development) via `configure()`. You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
