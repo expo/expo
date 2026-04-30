@@ -1,0 +1,75 @@
+---
+title: 'チュートリアル：React Native と Expo を使う'
+sidebar_title: はじめに
+description: Expo を使って Android、iOS、web で動作するユニバーサルアプリを作るための React Native チュートリアル入門。
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+これからユニバーサルアプリを作る旅に出発しましょう。このチュートリアルでは、Android、iOS、web で動作する Expo アプリを、ひとつのコードベースで作成します。さっそく始めましょう！
+
+## React Native と Expo チュートリアルについて
+
+このチュートリアルの目的は、Expo を始めて Expo SDK に慣れることです。以下のトピックを扱います。
+
+- TypeScript を有効にしたデフォルトテンプレートでアプリを作成する
+- Expo Router で 2 画面のボトムタブレイアウトを実装する
+- アプリのレイアウトを分解して flexbox で実装する
+- 各プラットフォームのシステム UI を使ってメディアライブラリから画像を選択する
+- React Native の `<Modal>` と `<FlatList>` コンポーネントを使ってステッカーモーダルを作成する
+- ステッカーを操作するためのタッチジェスチャーを追加する
+- サードパーティライブラリを使ってスクリーンショットを撮影し、ディスクに保存する
+- Android、iOS、web のプラットフォーム差異に対応する
+- 最後に、ステータスバー、スプラッシュスクリーン、アイコンを設定してアプリを完成させる
+
+これらのトピックは、Expo アプリ作成の基礎を学ぶための土台になります。このチュートリアルは自分のペースで進められ、完了までに最大 2 時間ほどかかります。
+
+初心者にも取り組みやすいように、チュートリアルは 9 章に分けています。続けて進めることも、いったん中断して後で戻ってくることもできます。各章にはステップを完了するために必要なコードスニペットが含まれているため、ゼロからコードを書きながら進めても、スニペットをコピー＆ペーストして進めても構いません。
+
+始める前に、これから作るものを見てみましょう。Android、iOS、web で動作する **StickerSmash** という名前のアプリです。
+
+<ContentSpotlight file="tutorial/final.mp4" />
+
+> **info** このチュートリアルの完全なソースコードは [GitHub](https://github.com/expo/examples/tree/master/stickersmash) で公開されています。
+
+## このチュートリアルの使い方
+
+このチュートリアルは [実践による学習](https://en.wikipedia.org/wiki/Learning-by-doing) を重視しており、説明よりも実際に作ることに重きを置いています。ゼロからアプリを作りながら、アプリ構築の流れを体験できます。
+
+チュートリアル全体を通して、重要なコードや前のサンプルから変更された箇所は <span className="tutorial-code-annotation">緑色でハイライト</span> されます。デスクトップではハイライト部分にマウスを重ねる、モバイルではタップすることで、変更内容の詳細を確認できます。たとえば、以下のスニペットでハイライトされたコードは、その役割を説明しています。
+
+{/* prettier-ignore */}
+```tsx Hello World|collapseHeight=300
+import { StyleSheet, Text, View } from 'react-native';
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      /* @tutinfo This used to say: "Edit app/index.tsx to edit this screen.". Now it says: "Hello world!". */<Text>Hello world!</Text>/* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
+
+## 次のステップ
+
+アプリの作成を始める準備が整いました。
+
+<BoxLink
+  title="始める"
+  Icon={BookOpen02Icon}
+  description="まずは新しい Expo アプリを作成しましょう。"
+  href="/ja/tutorial/create-your-first-app"
+/>

@@ -1,6 +1,7 @@
 import {
   buildLocalePath,
   getCanonicalPath,
+  getJapaneseSectionTitle,
   getJapaneseSidebarTitle,
   type SupportedLocale,
 } from '~/common/i18n';
@@ -232,6 +233,12 @@ function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
     if (translatedTitle) {
       next.name = translatedTitle;
       next.sidebarTitle = translatedTitle;
+    }
+  }
+  if (locale === 'ja' && next.type !== 'page' && route.name) {
+    const translatedSection = getJapaneseSectionTitle(route.name);
+    if (translatedSection) {
+      next.sidebarTitle = translatedSection;
     }
   }
   if (next.children) {

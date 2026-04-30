@@ -1,0 +1,454 @@
+---
+title: 画面を構築する
+description: このチュートリアルでは、React Native の Pressable や Expo Image などのコンポーネントを使って画面を構築する方法を学びます。
+hasVideoLink: true
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、StickerSmash アプリの最初の画面を作成します。
+
+<ContentSpotlight
+  alt="初期レイアウト。"
+  src="/static/images/tutorial/initial-layout.png"
+  className="max-w-[300px]"
+/>
+
+上記の画面には、画像と 2 つのボタンが表示されています。ユーザーはどちらかのボタンを使って画像を選択できます。1 つ目のボタンではデバイスから画像を選択でき、2 つ目のボタンではアプリが用意したデフォルト画像をそのまま使用できます。
+
+ユーザーが画像を選択すると、その画像にステッカーを追加できるようになります。それでは、この画面を作っていきましょう。
+
+<VideoBoxLink
+  videoId="3rcOP8xDwTQ"
+  title="視聴：ユニバーサル Expo アプリで画面を構築する"
+  description="Pressable、Expo Image などのコアコンポーネントを使用して、StickerSmash アプリの最初の画面を構築し、画像選択のレイアウトを作成します。"
+/>
+
+---
+
+<Step label="1">
+
+## 画面を分解する
+
+コードを書いて画面を構築する前に、いくつかの主要な要素に分解してみましょう。
+
+<ContentSpotlight
+  alt="初期レイアウトの分解。"
+  src="/static/images/tutorial/breakdown-of-layout.png"
+  className="max-w-[300px]"
+/>
+
+主要な要素は 2 つです。
+
+- 画面の中央に大きな画像が表示されています
+- 画面の下半分に 2 つのボタンがあります
+
+1 つ目のボタンは複数のコンポーネントで構成されています。親要素には黄色のボーダーがあり、その内側に行レイアウトでアイコンとテキストコンポーネントが配置されています。
+
+<ContentSpotlight
+  alt="行レイアウトのボタンコンポーネントの分解。"
+  src="/static/images/tutorial/breakdown-of-buttons.png"
+  className="max-w-[400px]"
+/>
+
+UI を小さな部品に分解できたので、コーディングを始める準備が整いました。
+
+</Step>
+
+<Step label="2">
+
+## 画像を表示する
+
+アプリ内で画像を表示するために `expo-image` ライブラリを使用します。このライブラリは、画像を読み込んで描画するためのクロスプラットフォームな `<Image>` コンポーネントを提供します。使用しているデフォルトのプロジェクトテンプレートにすでに含まれています。
+
+Image コンポーネントは画像のソースを値として受け取ります。ソースには [静的アセット](https://reactnative.dev/docs/images#static-image-resources) または URL を指定できます。たとえば、**assets/images** ディレクトリから読み込むソースは静的アセットです。また、`uri` プロパティを使って [ネットワーク](https://reactnative.dev/docs/images#network-images) から取得することもできます。
+
+<ContentSpotlight
+  alt="チュートリアルでプレースホルダーとして使用する背景画像。"
+  src="/static/images/tutorial/background-image.png"
+  className="max-w-[250px]"
+/>
+
+**app/(tabs)/index.tsx** ファイルで Image コンポーネントを使うには:
+
+1. `expo-image` ライブラリから `Image` をインポートします。
+2. **assets/images/background-image.png** を `Image` コンポーネントの `source` プロパティとして使用するために、`PlaceholderImage` 変数を作成します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx|collapseHeight=380
+import { View, StyleSheet } from 'react-native';
+/* @tutinfo Import the <CODE>Image</CODE> component. */ import { Image } from 'expo-image'; /* @end */
+
+/* @tutinfo Import the image from the "assets/images/" directory. Since this picture is a static resource, you have to reference it using <CODE>require</CODE>. */
+const PlaceholderImage = require('@/assets/images/background-image.png');
+/* @end */
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      /* @tutinfo Wrap the <CODE>Image</CODE> component inside a container. Also, add the image component to display the placeholder image. */
+      <View style={styles.imageContainer}>
+        <Image source={PlaceholderImage} style={styles.image} />
+      </View>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    /* @tutinfo Modify container styles to remove <CODE>justifyContent</CODE> property. */
+    alignItems: 'center',
+    /* @end */
+  },
+  /* @tutinfo Add styles for the image container and image. */
+  imageContainer: {
+    flex: 1,
+  },
+  image: {
+    width: 320,
+    height: 440,
+    borderRadius: 18,
+  },
+  /* @end */
+});
+```
+
+</Step>
+
+<Step label="3">
+
+## コンポーネントをファイルに分割する
+
+この画面にコンポーネントを追加していく中で、コードを複数のファイルに分割しましょう。チュートリアル全体を通して、カスタムコンポーネントの作成には components ディレクトリを使用します。
+
+1. トップレベルの **components** ディレクトリを作成し、その中に **ImageViewer.tsx** ファイルを作成します。
+2. 画像を表示するコードと `image` スタイルをこのファイルに移動します。
+
+{/* prettier-ignore */}
+```tsx components/ImageViewer.tsx|collapseHeight=280
+import { ImageSourcePropType, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
+
+type Props = {
+  imgSource: ImageSourcePropType;
+};
+
+export default function ImageViewer({ imgSource }: Props) {
+  return <Image source={imgSource} style={styles.image} />;
+}
+
+const styles = StyleSheet.create({
+  image: {
+    width: 320,
+    height: 440,
+    borderRadius: 18,
+  },
+});
+```
+
+> **info** **ImageViewer** はカスタムコンポーネントであるため、**app** ディレクトリではなく別のディレクトリに配置しています。**app** ディレクトリ内のファイルはすべて、レイアウトファイルかルートファイルのいずれかです。詳細については [ナビゲーション以外のコンポーネントは app ディレクトリの外に置く](/router/basics/core-concepts/#5-non-navigation-components-live-outside-of-app-directory) を参照してください。
+
+`ImageViewer` をインポートして、**app/(tabs)/index.tsx** で使用します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx|collapseHeight=320
+import { StyleSheet, View } from 'react-native';
+
+/* @tutinfo */import ImageViewer from '@/components/ImageViewer'; /* @end */
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        /* @tutinfo Replace <CODE>Image</CODE> component with <CODE>ImageViewer</CODE>. */
+        <ImageViewer imgSource={PlaceholderImage} />
+        /* @end */
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+});
+```
+
+<Collapsible summary={<>import 文の <CODE>@</CODE> とは何ですか？</>}>
+
+`@` 記号は、相対パスの代わりにカスタムコンポーネントや他のモジュールをインポートするためのカスタム [パスエイリアス](/guides/typescript/#path-aliases-optional) です。Expo CLI が **tsconfig.json** で自動的に設定します。
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+## Pressable を使ってボタンを作成する
+
+React Native にはタッチイベントを扱うためのコンポーネントがいくつかありますが、柔軟性が高い [`<Pressable>`](https://reactnative.dev/docs/pressable) が推奨されます。シングルタップ、長押し、押下時と解放時で別々のイベントの発火など、さまざまな操作を検出できます。
+
+デザイン上、作成すべきボタンは 2 つあります。それぞれスタイルとラベルが異なります。まずは、これらのボタンの再利用可能なコンポーネントを作成しましょう。**components** ディレクトリ内に **Button.tsx** ファイルを作成し、次のコードを記述します。
+
+{/* prettier-ignore */}
+```tsx components/Button.tsx|collapseHeight=280
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+
+type Props = {
+  label: string;
+};
+
+export default function Button({ label }: Props) {
+  return (
+    <View style={styles.buttonContainer}>
+      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
+        <Text style={styles.buttonLabel}>{label}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: 320,
+    height: 68,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 3,
+  },
+  button: {
+    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  buttonLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+```
+
+画面上のいずれかのボタンをタップすると、アプリはアラートを表示します。これは、`<Pressable>` が `onPress` プロパティで `alert()` を呼び出しているためです。このコンポーネントを **app/(tabs)/index.tsx** ファイルにインポートし、これらのボタンを囲む `<View>` のスタイルを追加しましょう。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+
+/* @tutinfo */import Button from '@/components/Button'; /* @end */
+import ImageViewer from '@/components/ImageViewer';
+
+const PlaceholderImage = require("@/assets/images/background-image.png");
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} />
+      </View>
+      /* @tutinfo Use the reusable <CODE>Button</CODE> component to create two buttons and encapsulate them inside a <CODE>View</CODE> component. */
+      <View style={styles.footerContainer}>
+        <Button label="Choose a photo" />
+        <Button label="Use this photo" />
+      </View>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: 28,
+  },
+  /* @tutinfo Add the styles the following styles. */
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  /* @end */
+});
+```
+
+Android、iOS、web でアプリを確認してみましょう。
+
+<ContentSpotlight
+  alt="初期レイアウト。"
+  src="/static/images/tutorial/buttons-created.png"
+  className="max-w-[720px]"
+/>
+
+「Use this photo」のラベルが付いた 2 つ目のボタンは、デザイン通りのボタンに近い見た目になっています。一方、1 つ目のボタンはデザインに合わせるために追加のスタイル設定が必要です。
+
+</Step>
+
+<Step label="5">
+
+## 再利用可能なボタンコンポーネントを強化する
+
+「Choose a photo」ボタンには「Use this photo」ボタンとは異なるスタイルが必要なので、`primary` テーマを適用できるよう新しい `theme` プロパティを追加します。このボタンにはラベルの前にアイコンも表示します。アイコンには `@expo/vector-icons` ライブラリのものを使用します。
+
+ボタンにアイコンを読み込んで表示するために、ライブラリから `FontAwesome` を使いましょう。**components/Button.tsx** を修正して、次のコードスニペットを追加します。
+
+{/* prettier-ignore */}
+```tsx components/Button.tsx
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+/* @tutinfo Import FontAwesome. */import FontAwesome from '@expo/vector-icons/FontAwesome';/* @end */
+
+type Props = {
+  label: string;
+  /* @tutinfo Add theme prop. */theme?: 'primary';/* @end */
+};
+
+export default function Button({ label, /* @tutinfo The prop <CODEtheme</CODE> to detect the button variant. */theme/* @end */ }: Props) {
+  /* @tutinfo Conditionally render the primary themed button. */
+  if (theme === 'primary') {
+  /* @end */
+  /* @tutinfo */
+    return (
+      <View
+        style={[
+          styles.buttonContainer,
+          { borderWidth: 4, borderColor: '#ffd33d', borderRadius: 18 },
+        ]}>
+        <Pressable
+          style={[styles.button, { backgroundColor: '#fff' }]}
+          onPress={() => alert('You pressed a button.')}>
+          <FontAwesome name="picture-o" size={18} color="#25292e" style={styles.buttonIcon} />
+          <Text style={[styles.buttonLabel, { color: '#25292e' }]}>{label}</Text>
+        </Pressable>
+      </View>
+    );
+  /* @end */
+  /* @tutinfo */
+  }
+  /* @end */
+
+  return (
+    <View style={styles.buttonContainer}>
+      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
+        <Text style={styles.buttonLabel}>{label}</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  buttonContainer: {
+    width: 320,
+    height: 68,
+    marginHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 3,
+  },
+  button: {
+    borderRadius: 10,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+  },
+  /* @tutinfo Conditionally render the primary themed button. */
+  buttonIcon: {
+    paddingRight: 8,
+  },
+  /* @end */
+  buttonLabel: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+```
+
+上記のコードが何をしているのか確認しましょう。
+
+- primary テーマのボタンは **インラインスタイル** を使用し、`style` プロパティに直接渡したオブジェクトで `StyleSheet.create()` で定義したスタイルを上書きします。
+- primary テーマの `<Pressable>` コンポーネントは、`backgroundColor` プロパティに値 `#fff` を指定して、ボタンの背景を白に設定しています。このプロパティを `styles.button` に追加すると、primary テーマと未指定のテーマの両方に背景色が適用されてしまいます。
+- インラインスタイルは JavaScript を使用し、特定の値についてデフォルトのスタイルを上書きします。
+
+次に、**app/(tabs)/index.tsx** ファイルを修正して、1 つ目のボタンに `theme="primary"` プロパティを設定します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} />
+      </View>
+      <View style={styles.footerContainer}>
+        /* @tutinfo Add <CODE>"primary"</CODE> theme on the first button. */
+        <Button theme="primary" label="Choose a photo" />
+        /* @end */
+        <Button label="Use this photo" />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+});
+```
+
+Android、iOS、web でアプリを確認してみましょう。
+
+<ContentSpotlight file="tutorial/04-complete-layout.mp4" />
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterIndex={2}
+  name="GET_STARTED"
+  chapterTitle="第 3 章：画面を構築する"
+  summary="アプリの最初の画面の構築に向けて、初期デザインの実装が完了しました。"
+  nextChapterDescription="次の章では、デバイスのメディアライブラリから画像を選択する機能を追加します。"
+  nextChapterTitle="画像ピッカーを使用する"
+  nextChapterLink="/ja/tutorial/image-picker"
+/>

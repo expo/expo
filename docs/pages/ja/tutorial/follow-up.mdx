@@ -1,0 +1,57 @@
+---
+title: 学習リソース
+description: Expo と React Native について学ぶための、厳選されたリソースを紹介します。
+---
+
+import { A } from '~/ui/components/Text';
+
+サンプルアプリが完成したので、ここからはアプリの構築に使用した技術についてさらに詳しく学んでいきましょう。
+
+## プロジェクトをアプリとして構築する
+
+自分のマシンで新しいアプリの作成を始めるには、`npx create-expo-app@latest --template default@sdk-55` を使い、続けて [開発環境のセットアップ](/get-started/set-up-your-environment/) を行います。
+
+> **注：** SDK 55 への移行期間中は、`--template` フラグを付けずに `create-expo-app@latest` を実行すると SDK 54 のプロジェクトが作成されます。実機で Expo Go を使用する予定がある場合は、SDK 54 のプロジェクトを使用してください。そうでない場合は、`--template default@sdk-55` を指定して SDK 55 のプロジェクトを作成してください。
+
+### おすすめのリソース
+
+新しいプロジェクトを作成したら、アプリ開発を進めるうえで役立つさまざまなツールや概念について学んでいけます。
+
+- [開発ツール](/develop/tools/)：アプリ構築のさまざまな場面で役立つ Expo ツールのリファレンスです。
+- [開発ビルド](/develop/development-builds/introduction/)：開発ビルドを使用すると、アプリのビルドプロセスを完全にコントロールでき、デバイスやシミュレーターでアプリをテストできます。
+- [開発の概要](/workflow/overview/)：Expo でアプリを開発するうえでの重要な概念や、コア開発ループの流れを高レベルで解説しています。
+- [Expo Router](/router/introduction/)：チュートリアルでは Expo Router の基本を扱い、タブナビゲーターを実装しました。ライブラリの詳細についてはドキュメントを参照してみてください。
+- [アプリアイコン](/develop/user-interface/splash-screen-and-app-icon/#app-icon) と [スプラッシュスクリーン](/develop/user-interface/splash-screen-and-app-icon/#splash-screen)：アプリアイコンとスプラッシュスクリーンのカスタマイズについて、ガイドで詳しく学べます。また、**app.json** ファイルで設定できるプロパティについては、[アプリ設定リファレンス](/workflow/configuration) を参照してみてください。
+- アプリストアへの [アプリ配信](/deploy/build-project/) と [提出](/deploy/submit-to-app-stores/)：アプリのリリース準備が整った後、アプリストアへの公開や提出方法について学べるリソースです。
+- [デバッグ](/debugging/runtime-issues/)：問題が発生したときに、デバッグツールを使ってエラーを見つけて修正できます。
+
+## 学習
+
+### React
+
+チュートリアルでは、React のコンポーネントと API を使用しました。Expo でアプリを構築するうえで、React をしっかり理解しておくことは欠かせません。React 公式ドキュメントの [クイックスタート](https://react.dev/learn) と [Hooks](https://react.dev/reference/react/hooks) のセクションを読んでみることをおすすめします。
+
+### React Native
+
+チュートリアルアプリの開発では、React Native を幅広く使用しました。詳しく学ぶには、[React Native 基礎ガイド](https://reactnative.dev/docs/getting-started) から始められます。また、次のドキュメントも参考にしてみてください。
+
+- [View API リファレンス](https://reactnative.dev/docs/view)
+- [Text API リファレンス](https://reactnative.dev/docs/text)
+- [プラットフォーム固有のコード](https://reactnative.dev/docs/platform-specific-code)
+- [リストでデータを表示する](https://reactnative.dev/docs/using-a-listview)
+
+コンポーネントのレイアウトには Flexbox を使用しました。Flexbox についてさらに学ぶには、次のリソースを確認してみてください。
+
+- [Height と Width](https://reactnative.dev/docs/height-and-width)
+- [Flexbox によるレイアウト](https://reactnative.dev/docs/flexbox)
+
+### ジェスチャーとアニメーション
+
+さまざまな種類のジェスチャーやアニメーションの実装について学ぶには、次のドキュメントをおすすめします。
+
+- [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/)
+- [React Native Reanimated](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started)
+
+## コミュニティに参加する
+
+<A href="https://chat.expo.dev/" shouldLeakReferrer>Discord</A> のコミュニティに参加して、他の Expo ユーザーとチャットしたり質問を投げかけたりしてみましょう。

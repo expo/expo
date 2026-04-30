@@ -31,5 +31,8 @@
   "footerThankYouSignUp": "Thank you for the sign up! 💙",
   "footerUnsubscribePrefix": "Unsubscribe at any time. Read our ",
   "footerPrivacyPolicy": "privacy policy",
-  "footerUnsubscribeSuffix": "."
+  "footerUnsubscribeSuffix": ".",
+  "progressTrackerMarkAsRead": "Mark this chapter as read",
+  "progressTrackerMarkAsUnread": "Mark this chapter as unread",
+  "progressTrackerNext": "Next: {title}"
 }

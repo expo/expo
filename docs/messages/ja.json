@@ -31,5 +31,8 @@
   "footerThankYouSignUp": "ご登録ありがとうございます！💙",
   "footerUnsubscribePrefix": "いつでも配信停止できます。",
   "footerPrivacyPolicy": "プライバシーポリシー",
-  "footerUnsubscribeSuffix": "をお読みください。"
+  "footerUnsubscribeSuffix": "をお読みください。",
+  "progressTrackerMarkAsRead": "この章を読了にする",
+  "progressTrackerMarkAsUnread": "この章を未読に戻す",
+  "progressTrackerNext": "次へ：{title}"
 }

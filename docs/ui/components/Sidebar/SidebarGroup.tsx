@@ -41,7 +41,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   const router = useRouter();
 
   const title = route.sidebarTitle ?? route.name;
-  const Icon = route.hideIcon ? undefined : getIconElement(title);
+  const Icon = route.hideIcon ? undefined : getIconElement(route.name);
 
   if (route.children?.[0]?.section === 'EAS tutorial') {
     const allChaptersCompleted = chapters.every(chapter => chapter.completed);
