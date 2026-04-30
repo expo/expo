@@ -170,7 +170,7 @@ Metric data is retained for a minimum of 60 days.
 
 ### Sampling
 
-All sessions are tracked. There is no sampling applied to the data collection.
+By default, all installs dispatch their metrics. To dispatch from a fraction of installs instead, set [`sampleRate`](/eas/observe/configuration/#sampling) when calling `configure()`. The decision is deterministic per install, so a device is consistently in-sample or out-of-sample across app launches.
 
 ### Environment
 
