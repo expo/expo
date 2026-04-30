@@ -94,8 +94,6 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
         self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
       }
-      // requestGeometryUpdate's validation cache isn't invalidated by setNeedsUpdate, so flipping
-      // between previously-applied narrow masks gets rejected. The legacy KVO path bypasses it.
       UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
       UIViewController.attemptRotationToDeviceOrientation()
 
