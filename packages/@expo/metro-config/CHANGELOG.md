@@ -19,6 +19,7 @@
 
 - Remove outdated `watcher.unstable_workerThreads` option ([#44591](https://github.com/expo/expo/pull/44591) by [@kitten](https://github.com/kitten))
 - Delete Hermes v1 detection as it's the default ([#45263](https://github.com/expo/expo/pull/45263) by [@kitten](https://github.com/kitten))
+- Add more stringent Babel config detection that disables redundant Babel config/rc file crawling, and support more Babel config filenames by default ([#45254](https://github.com/expo/expo/pull/45254) by [@kitten](https://github.com/kitten))
 
 ## 55.0.9 — 2026-02-25
 
