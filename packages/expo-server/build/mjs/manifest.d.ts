@@ -103,6 +103,9 @@ export interface GetStaticContentOptions {
         data?: unknown;
         key: string;
     };
+    metadata?: {
+        headTags: string;
+    } | null;
     request?: Request;
     assets?: AssetInfo;
 }

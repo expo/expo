@@ -391,6 +391,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           if (loaderExport && typeof loaderExport !== 'function') {
             throw new Error(`Route "${filePath}" exports a loader that is not a function.`);
           }
+
+          const metadataExport = routeModule?.generateMetadata;
+          if (metadataExport && typeof metadataExport !== 'function') {
+            throw new Error(`Route "${filePath}" exports generateMetadata that is not a function.`);
+          }
         }
 
         return routeModule;
