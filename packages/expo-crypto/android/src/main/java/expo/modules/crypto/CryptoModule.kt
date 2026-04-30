@@ -18,7 +18,7 @@ class CryptoModule : Module() {
     Function("digestString", this@CryptoModule::digestString)
     AsyncFunction("digestStringAsync", this@CryptoModule::digestString)
     Function("getRandomValues", this@CryptoModule::getRandomValues)
-    Function("digest", this@CryptoModule::digest)
+    AsyncFunction("digestAsync", this@CryptoModule::digestAsync)
     Function("randomUUID") {
       UUID.randomUUID().toString()
     }
@@ -42,12 +42,9 @@ class CryptoModule : Module() {
     }
   }
 
-  private fun digest(algorithm: DigestAlgorithm, output: TypedArray, data: TypedArray) {
-    val messageDigest = MessageDigest.getInstance(algorithm.value).apply { update(data.toDirectBuffer()) }
-
-    val digest: ByteArray = messageDigest.digest()
-    val outputLength = min(digest.size, output.byteLength)
-    output.write(digest, 0, outputLength)
+  private fun digestAsync(algorithm: DigestAlgorithm, data: ByteArray): ByteArray {
+    val messageDigest = MessageDigest.getInstance(algorithm.value).apply { update(data) }
+    return messageDigest.digest()
   }
 
   private fun getRandomValues(typedArray: TypedArray) {
