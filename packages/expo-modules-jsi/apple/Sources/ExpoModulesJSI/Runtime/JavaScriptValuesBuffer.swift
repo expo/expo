@@ -22,6 +22,15 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   /**
+   A type-erased raw pointer to the first value of the buffer, suitable for
+   passing across Swift/ObjC++ boundaries where `facebook.jsi.Value` cannot
+   appear in a public signature.
+   */
+  public var rawBaseAddress: UnsafeRawPointer? {
+    return baseAddress.map { UnsafeRawPointer($0) }
+  }
+
+  /**
    The number of values in the buffer.
    */
   public var count: Int {
@@ -135,5 +144,17 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       copy.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, buffer[index]))
     }
     return copy
+  }
+
+  /**
+   Allocates a new owning buffer that copies each `JavaScriptValue` from the given array.
+   */
+  @JavaScriptActor
+  public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
+    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
+    for (index, value) in values.enumerated() {
+      buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
   }
 }

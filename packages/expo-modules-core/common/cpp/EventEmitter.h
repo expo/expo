@@ -97,6 +97,11 @@ public:
 void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
 
 /**
+ Same as above but takes a raw `jsi::Value` pointer and count.
+ */
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
+
+/**
  Gets `expo.EventEmitter` class from the given runtime.
  */
 jsi::Function getClass(jsi::Runtime &runtime);
