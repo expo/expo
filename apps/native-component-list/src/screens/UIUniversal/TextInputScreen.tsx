@@ -9,7 +9,10 @@ import {
   type TextInputRef,
   useNativeState,
 } from '@expo/ui';
+import { shadow as composeShadow } from '@expo/ui/jetpack-compose/modifiers';
+import { italic } from '@expo/ui/swift-ui/modifiers';
 import { useRef, useState } from 'react';
+import { Platform } from 'react-native';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
@@ -65,6 +68,7 @@ export default function TextInputScreen() {
   const selection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
   const [selectionDisplay, setSelectionDisplay] = useState({ start: 0, end: 0 });
   const [selectTextOnFocus, setSelectTextOnFocus] = useState(false);
+  const [escapeHatchOn, setEscapeHatchOn] = useState(false);
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -148,6 +152,13 @@ export default function TextInputScreen() {
               selection={selection}
               onSelectionChange={setSelectionDisplay}
               selectTextOnFocus={selectTextOnFocus}
+              modifiers={
+                escapeHatchOn
+                  ? Platform.OS === 'ios'
+                    ? [italic(true)]
+                    : [composeShadow(8)]
+                  : undefined
+              }
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -204,6 +215,15 @@ export default function TextInputScreen() {
               value={selectTextOnFocus}
               onValueChange={setSelectTextOnFocus}
               label="selectTextOnFocus"
+            />
+            <Switch
+              value={escapeHatchOn}
+              onValueChange={setEscapeHatchOn}
+              label={
+                Platform.OS === 'ios'
+                  ? 'modifiers (italic — iOS escape hatch)'
+                  : 'modifiers (shadow — Android escape hatch)'
+              }
             />
             <Button
               label="ref.focus()"

@@ -92,6 +92,7 @@ export function TextInput({
   selection,
   onSelectionChange,
   selectTextOnFocus,
+  modifiers: userModifiers,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const numberOfLines = numberOfLinesProp ?? rows;
@@ -178,6 +179,7 @@ export function TextInput({
     <ComposeTextField
       ref={innerRef}
       modifiers={[
+        ...(userModifiers ?? []),
         ...transformToModifiers(style, {}),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),

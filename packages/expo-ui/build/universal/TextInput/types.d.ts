@@ -1,5 +1,6 @@
 import type { Ref } from 'react';
 import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
+import type { ModifierConfig } from '../../types';
 import type { ObservableState } from '../State';
 import type { UniversalTextStyle } from '../Text/types';
 import type { UniversalStyle } from '../types';
@@ -229,5 +230,13 @@ export interface TextInputProps {
      * Text-level style — font, color, alignment, spacing.
      */
     textStyle?: UniversalTextStyle;
+    /**
+     * Platform-specific modifier escape hatch. Pass an array of modifier configs
+     * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
+     * Modifiers from the wrong platform are ignored at runtime.
+     * @platform android
+     * @platform ios
+     */
+    modifiers?: ModifierConfig[];
 }
 //# sourceMappingURL=types.d.ts.map

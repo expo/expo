@@ -83,6 +83,7 @@ export function TextInput({
   selection,
   onSelectionChange,
   selectTextOnFocus,
+  modifiers: userModifiers,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -144,6 +145,7 @@ export function TextInput({
   };
 
   const modifiers: ModifierConfig[] = [
+    ...(userModifiers ?? []),
     ...transformToModifiers(style, {}, undefined, { textStyle }),
   ];
   if (editable === false) modifiers.push(disabledMod(true));
