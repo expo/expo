@@ -63,6 +63,7 @@
 - [Internal] Improve performance of internal debug logging ([#44706](https://github.com/expo/expo/pull/44706) by [@kitten](https://github.com/kitten))
 - Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
 - Implement freestanding, faster TypeScript resolver ([#45227](https://github.com/expo/expo/pull/45227) by [@kitten](https://github.com/kitten))
+- Provide Babel config path hint to Expo Metro transformer ([#45260](https://github.com/expo/expo/pull/45260) by [@kitten](https://github.com/kitten))
 
 ## 55.0.12 — 2026-02-25
 
