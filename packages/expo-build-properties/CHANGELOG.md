@@ -9,7 +9,7 @@
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. (#PR by [@shubhporwal](https://github.com/shubhporwal)) ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
+- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
 
 ### 🐛 Bug fixes
 
