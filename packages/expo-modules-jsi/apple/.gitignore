@@ -3,6 +3,9 @@
 .DerivedData
 .swiftpm
 
+# Generated module map for the `jsi` Clang module (written by build-xcframework.sh)
+.generated
+
 # Staged slices for incremental xcframework builds
 .xcframework-slices
 

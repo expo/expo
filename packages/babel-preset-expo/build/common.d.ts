@@ -12,6 +12,7 @@ export declare function getIsNodeModule(caller?: any): boolean;
 export declare function getBaseUrl(caller?: any): string;
 export declare function getReactCompiler(caller?: any): boolean;
 export declare function getIsServer(caller?: any): boolean;
+export declare function getIsDomComponent(caller?: any): boolean;
 export declare function getIsLoaderBundle(caller?: any): boolean;
 export declare function getIsHermesV1(caller?: any): boolean;
 export declare function getMetroSourceType(caller?: any): "script" | "module" | "asset" | undefined;

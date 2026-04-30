@@ -45,13 +45,13 @@ function ModalStackRouteDrawer({
   }
 
   const [snap, setSnap] = React.useState<number | string | null>(
-    useCustomSnapPoints && isArrayDetents ? allowed[0] : 1
+    useCustomSnapPoints && isArrayDetents ? allowed[0]! : 1
   );
 
   // Update the snap value when custom snap points change.
   React.useEffect(() => {
     if (isSheet) {
-      const next = useCustomSnapPoints && isArrayDetents ? allowed[0] : 1;
+      const next = useCustomSnapPoints && isArrayDetents ? allowed[0]! : 1;
       setSnap(next);
     } else {
       // Desktop modal always fixed snap at 1

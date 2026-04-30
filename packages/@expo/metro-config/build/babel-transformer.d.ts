@@ -19,4 +19,6 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
     /** When true, indicates this bundle should contain only the loader export */
     isLoaderBundle?: boolean;
     isHermesV1?: boolean;
+    /** When true, indicates this file is part of a DOM component bundle */
+    isDomComponent?: boolean;
 };

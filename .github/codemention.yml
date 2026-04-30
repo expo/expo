@@ -9,6 +9,8 @@ rules:
   - patterns: ['docs/**']
     mentions: ['amandeepmittal']
   - patterns: ['packages/@expo/cli/**']
+    mentions: ['ubax']
+  - patterns: ['packages/@expo/codemod/**']
     mentions: ['EvanBacon', 'bycedric', 'kitten']
   - patterns: ['packages/@expo/config/**']
     mentions: ['EvanBacon']

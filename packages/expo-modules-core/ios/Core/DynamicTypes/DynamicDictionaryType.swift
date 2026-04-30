@@ -27,7 +27,14 @@ internal struct DynamicDictionaryType: AnyDynamicType {
     if let jsObject = try? jsValue.asObject() {
       var result: [AnyHashable: Any] = [:]
       for key in jsObject.getPropertyNames() {
-        result[key] = try appContext.converter.toNative(jsObject.getProperty(key), valueType)
+        let property = jsObject.getProperty(key)
+
+        // Match `JavaScriptValue.getAny()` semantics by treating `undefined`
+        // object values as absent entries during recursive hydration.
+        if property.isUndefined() {
+          continue
+        }
+        result[key] = try appContext.converter.toNative(property, valueType)
       }
       return result
     }
@@ -49,9 +56,9 @@ internal struct DynamicDictionaryType: AnyDynamicType {
   }
 
   /**
-   Type-aware conversion: converts each value using `valueType.castToJS` so types like
-   `SharedObject` — which need per-type JS representations — are handled correctly when
-   nested inside a dictionary.
+   Type-aware conversion for dictionaries that were already normalized by `convertResult`.
+   Values must use `castToJS` here to avoid re-entering `convertResult` for values that
+   are already in their post-conversion shape, such as `JavaScriptValue.undefined`.
    */
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     guard let dict = value as? [AnyHashable: Any] else {
@@ -62,6 +69,23 @@ internal struct DynamicDictionaryType: AnyDynamicType {
     for (key, element) in dict {
       guard let key = key as? String else { continue }
       jsObject.setProperty(key, value: try valueType.castToJS(element, appContext: appContext))
+    }
+    return jsObject.asValue()
+  }
+
+  /**
+   Converts original native dictionaries directly to JavaScript, allowing nested values
+   to use their own direct conversion paths before any dictionary-level normalization.
+   */
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    guard let dict = value as? [AnyHashable: Any] else {
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext)
+    }
+    let runtime = try appContext.runtime
+    let jsObject = runtime.createObject()
+    for (key, element) in dict {
+      guard let key = key as? String else { continue }
+      jsObject.setProperty(key, value: try valueType.convertToJS(element, appContext: appContext))
     }
     return jsObject.asValue()
   }

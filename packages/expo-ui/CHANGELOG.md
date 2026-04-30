@@ -30,13 +30,19 @@
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 - [jetpack-compose] Changed `Host` underlying `MaterialTheme` to `MaterialExpressiveTheme`. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
 
+### 🐛 Bug fixes
+
+- [iOS] Fix SwiftUI `aspectRatio` modifier to allow omitting `ratio` and use the content's intrinsic aspect ratio. ([#45232](https://github.com/expo/expo/pull/45232) by [@2hwayoung](https://github.com/2hwayoung))
+
 ### 🎉 New features
 
 - [universal] Added `TextInput` component that mirrors RN's `TextInput` API but routes to SwiftUI on iOS, Compose on Android, and RN's `TextInput` on web. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Added `HorizontalPager` component wrapping Compose's `HorizontalPager`. ([#45163](https://github.com/expo/expo/pull/45163) by [@vonovak](https://github.com/vonovak))
 - [compose] Added worklet and `ObservableState` support to `TextField`. Added `value` prop accepting `ObservableState<string | TextFieldValue>` (create via `useNativeState`). `onValueChange` now supports worklets for synchronous UI-thread updates. Added `TextFieldValue` type with `text` + `selection` for worklet-driven caret control. Replaced `defaultValue`, callers pass state via `useNativeState` or omit for an empty field. ([#45024](https://github.com/expo/expo/pull/45024) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Overlay` component. ([#44610](https://github.com/expo/expo/pull/44610) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `Mask` component wrapping SwiftUI's `.mask(alignment:_:)` modifier, with a `Mask.Content` slot for the mask element. ([#44934](https://github.com/expo/expo/pull/44934) by [@vonovak](https://github.com/vonovak))
 - add ExposedDropdownMenuBox ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
 - Added `@expo/ui/community/segmented-control` — a drop-in replacement for `@react-native-segmented-control/segmented-control`. ([#44611](https://github.com/expo/expo/pull/44611) by [@vonovak](https://github.com/vonovak))
 - Added `@expo/ui/community/picker` — Android, iOS and web `Picker` drop-in replacement for `@react-native-picker/picker`. ([#44058](https://github.com/expo/expo/pull/44058) by [@vonovak](https://github.com/vonovak))
@@ -82,6 +88,7 @@
 - [jetpack-compose] Added `defaultMinSize` modifier. ([#44813](https://github.com/expo/expo/pull/44813) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Added Material 3 dynamic colors support. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
 - Added universal `FieldGroup` and `Spacer`. ([#44814](https://github.com/expo/expo/pull/44814) by [@kudo](https://github.com/kudo))
+- Added `@expo/ui/community/bottom-sheet` as drop-in replacement for `@gorhom/bottom-sheet`. ([#44683](https://github.com/expo/expo/pull/44683) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -101,6 +108,7 @@
 ### 💡 Others
 
 - [iOS] Add `AsyncFunction` support in `ExpoUIView` definition function. ([#43669](https://github.com/expo/expo/pull/43669) by [@nishan](https://github.com/intergalacticspacehighway))
+- Moved `DateTimePicker` to `@expo/ui/community/datetime-picker`. The old `@expo/ui/datetimepicker` export still works but logs a deprecation warning in development. ([@vonovak](https://github.com/vonovak)) ([#45211](https://github.com/expo/expo/pull/45211) by [@vonovak](https://github.com/vonovak))
 - [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
@@ -110,6 +118,8 @@
 - [Android] Added AsyncFunction support to the functional `ExpoUIView` DSL. ([#44081](https://github.com/expo/expo/pull/44081) by [@kudo](https://github.com/kudo))
 - [iOS] Fixed build error when using precompiled `ExpoModulesCore.xcframework`. ([#45016](https://github.com/expo/expo/pull/45016) by [@kudo](https://github.com/kudo))
 - [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
+- [jetpack-compose] Added `expand` and `partialExpand` to `ModalBottomSheet`. ([#44682](https://github.com/expo/expo/pull/44682) by [@kudo](https://github.com/kudo))
+- Removed iOS universal `Host` workaround. ([#45173](https://github.com/expo/expo/pull/45173) by [@kudo](https://github.com/kudo))
 
 ## 55.0.1 — 2026-02-25
 

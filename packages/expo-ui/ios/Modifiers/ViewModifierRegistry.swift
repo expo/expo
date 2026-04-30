@@ -495,11 +495,16 @@ internal struct LayoutPriorityModifier: ViewModifier, Record {
 }
 
 internal struct AspectRatioModifier: ViewModifier, Record {
-  @Field var ratio: Double = 1.0
+  @Field var ratio: Double?
   @Field var contentMode: String = "fit"
 
   func body(content: Content) -> some View {
-    content.aspectRatio(ratio, contentMode: contentMode == "fill" ? .fill : .fit)
+    let mode: ContentMode = contentMode == "fill" ? .fill : .fit
+    if let ratio {
+      content.aspectRatio(ratio, contentMode: mode)
+    } else {
+      content.aspectRatio(contentMode: mode)
+    }
   }
 }
 

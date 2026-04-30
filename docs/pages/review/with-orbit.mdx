@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
-[Expo Orbit](https://expo.dev/orbit) is a macOS and Windows app designed to speed up installing and running builds from EAS. It makes running your builds and updates as easy as pressing **Open in Orbit**.
+[Expo Orbit](https://expo.dev/orbit) is a macOS, Windows, and Linux app designed to speed up installing and running builds from EAS. It makes running your builds and updates as easy as pressing **Open in Orbit**.
 
 <Collapsible summary="How does automatic installation and launching of updates work?">
 
@@ -18,12 +18,12 @@ If you don't have any development builds available, either because they have all
 
 </Collapsible>
 
-<Prerequisites numberOfRequirements={2}>
-  <Requirement number={1} title="Install the Orbit app">
+<Prerequisites>
+  <Requirement title="Install the Orbit app">
     Download Orbit directly from [GitHub releases](https://github.com/expo/orbit/releases), or see
     the [alternative installation method](/build/orbit/#installation).
   </Requirement>
-  <Requirement number={2} title="Sign in to your Expo account">
+  <Requirement title="Sign in to your Expo account">
     After installing the app, sign in to your Expo account from **Settings**.
   </Requirement>
 </Prerequisites>

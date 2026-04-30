@@ -115,7 +115,7 @@ function SlotNavigator(props: NavigatorProps<any>) {
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
   );
 }
 
@@ -154,7 +154,7 @@ function NavigatorSlot() {
 
   const { state, descriptors } = context;
 
-  return descriptors[state.routes[state.index].key]?.render() ?? null;
+  return descriptors[state.routes[state.index]!.key]?.render() ?? null;
 }
 
 /**

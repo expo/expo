@@ -60,7 +60,6 @@ export function getTestModules() {
     require('./tests/CryptoAES'),
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
-    require('./tests/LinearGradient'),
     require('./tests/HTML'),
     require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
@@ -68,6 +67,10 @@ export function getTestModules() {
     require('./tests/Fetch'),
     require('./tests/SQLite')
   );
+
+  if (Platform.OS !== 'android') {
+    modules.push(require('./tests/LinearGradient'));
+  }
 
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/Blob'));

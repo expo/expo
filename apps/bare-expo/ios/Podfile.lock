@@ -638,13 +638,6 @@ PODS:
     - Yoga
   - ExpoPrint (55.0.8):
     - ExpoModulesCore
-  - ExpoRouter (55.0.2):
-    - ExpoModulesCore
-    - RNScreens
-  - ExpoRouter/Tests (55.0.2):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-    - RNScreens
   - ExpoScreenCapture (55.0.8):
     - ExpoModulesCore
   - ExpoScreenOrientation (55.0.8):
@@ -3332,8 +3325,6 @@ DEPENDENCIES:
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
-  - ExpoRouter (from `../../../packages/expo-router/ios`)
-  - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -3660,9 +3651,6 @@ EXTERNAL SOURCES:
   ExpoPrint:
     inhibit_warnings: false
     :path: "../../../packages/expo-print/ios"
-  ExpoRouter:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-router/ios"
   ExpoScreenCapture:
     inhibit_warnings: false
     :path: "../../../packages/expo-screen-capture/ios"
@@ -3980,15 +3968,14 @@ SPEC CHECKSUMS:
   ExpoMaps: 94294944cff46ad1170ce4f92800adecbcdd04ac
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: e25604088a83936db2694ace1ca680fecf34817d
+  ExpoModulesCore: 0b10a40c52e82e182c70dbfc12001ec30ba74cbd
   ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
-  ExpoObserve: 51e1417609e00aa5496211d0248333ee2eac6ea8
+  ExpoObserve: d5a52bd0670d1b2bc24a1d59cf9322f3c843a045
   ExpoPrint: 884afdcfe9adea0d36f121353652d0cfa7963deb
-  ExpoRouter: 617b413f30eb9fa39b210e4261814b13afd0418b
   ExpoScreenCapture: fe37f0547515f17434b002dcda5e1725fc61fe6f
   ExpoScreenOrientation: 1ec7e1beaa3adf7ef0dd1f7bad278f9a96fd518c
   ExpoSecureStore: 2cfd2091ba612c4b53a3ab53bab7cd29f4df7448
@@ -4120,6 +4107,6 @@ SPEC CHECKSUMS:
   Yoga: 04bb4bfeb02c0000b940c1e6e89e856cd8de5a71
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: a63ddafbc2bc8dd131f1bd3f4790fd1cf3a50279
+PODFILE CHECKSUM: cded84e5ed31720829134c3bfcd1283e1d36ada7
 
 COCOAPODS: 1.16.2

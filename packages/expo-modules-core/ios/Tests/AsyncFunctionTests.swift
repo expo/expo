@@ -27,6 +27,10 @@ struct AsyncFunctionTests {
         promise.resolve(record)
       }
 
+      AsyncFunction("resolvesRecordWithUndefined") {
+        return WithUndefinedRecord()
+      }
+
       AsyncFunction("returnsOptionalString") { (returnNil: Bool) -> String? in
         return returnNil ? nil : "present"
       }
@@ -64,6 +68,17 @@ struct AsyncFunctionTests {
   }
 
   @Test
+  func `converts a Record with undefined fields returned from async function`() async throws {
+    let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecordWithUndefined()")
+    let object = try result.asObject()
+
+    #expect(object.hasProperty("a") == true)
+    #expect(try object.getProperty("a").asDouble() == 1.0)
+    #expect(object.hasProperty("b") == true)
+    #expect(object.getProperty("b").isUndefined() == true)
+  }
+
+  @Test
   func `returns null when the optional return value is nil`() async throws {
     let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalString(true)")
     #expect(result.isNull() == true)
@@ -94,4 +109,9 @@ fileprivate struct TestRecord: Record {
 
   @Field
   var message: String = ""
+}
+
+fileprivate struct WithUndefinedRecord: Record {
+  @Field var a: ValueOrUndefined<Double> = .value(unwrapped: 1.0)
+  @Field var b: ValueOrUndefined<Double> = .undefined
 }

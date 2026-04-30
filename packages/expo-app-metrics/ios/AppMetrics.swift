@@ -1,9 +1,25 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 import ExpoModulesCore
 
+#if !os(tvOS)
+import MetricKit
+#endif
+
 public struct AppMetrics {
   #if !os(tvOS)
   static let metricKitSubscriber = MetricKitSubscriber()
+
+  /**
+   Registers the MetricKit subscriber to receive diagnostic and performance payloads.
+   Even though MetricKit doesn't work on the simulator, it prints some logs (probably once a day)
+   that are piped to the terminal when using the `expo run:ios` command.
+   To avoid them, we explicitly don't register the subscriber on the simulator.
+   */
+  static func registerMetricKitSubscriber() {
+    #if !targetEnvironment(simulator)
+    MXMetricManager.shared.add(metricKitSubscriber)
+    #endif
+  }
   #endif
 
   public static let storage = MetricsStorage()

@@ -38,7 +38,8 @@ class BaseObservabilityManagerTest {
 
     // Default to enabled so existing tests aren't short-circuited
     mockkObject(ObservePreferences)
-    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true, sampleRate = null)
+    every { ObservePreferences.getBundleDefaults(any()) } returns null
   }
 
   @After
@@ -78,31 +79,45 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
-  fun `when dispatchingEnabled is unset and isDebugBuild is true, pending metrics are removed without dispatching`() =
+  fun `when dispatchingEnabled is null on a stored config and isDebugBuild is false, metrics are dispatched`() =
     runTest {
-      // Arrange — debug builds default to off so dev metrics don't ship without explicit opt-in.
-      every { ObservePreferences.getConfig(any()) } returns null
-      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
+      // Arrange — a stored config without an explicit dispatchingEnabled doesn't suppress dispatch on release builds.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = null)
+      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
+      val devSession = createSessionWithMetrics(
+        sessionId = "dev-session",
+        environment = "development",
+        metrics = listOf(devMetric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
 
       val removedIds = mutableListOf<String>()
       coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
         removedIds.addAll(firstArg<List<String>>())
       }
 
-      val manager = createManager(isDebugBuild = true)
+      val manager = createManager(isDebugBuild = false)
 
       // Act
       manager.dispatchUnsentMetrics()
 
-      // Assert — short-circuit: no session lookup, no dispatch, single removePendingMetrics call.
-      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
-      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
-      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1", "id2")) }
-      assertEquals(2, removedIds.size)
+      // Assert
+      coVerify {
+        mockEventDispatcher.dispatch(
+          match { events ->
+            events.size == 1 && events[0].metadata.environment == "development"
+          }
+        )
+      }
+      assertEquals(1, removedIds.size)
+      assertTrue(removedIds.contains("dev-metric-id"))
     }
 
   @Test
-  fun `when dispatchingEnabled is true and isDebugBuild is true, metrics are dispatched`() =
+  fun `when dispatchingEnabled is true, and isDebugBuild is false, metrics are dispatched`() =
     runTest {
       // Arrange — explicit opt-in lifts the debug default.
       every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = true)
@@ -122,7 +137,7 @@ class BaseObservabilityManagerTest {
         removedIds.addAll(firstArg<List<String>>())
       }
 
-      val manager = createManager(isDebugBuild = true)
+      val manager = createManager(isDebugBuild = false)
 
       // Act
       manager.dispatchUnsentMetrics()
@@ -140,7 +155,7 @@ class BaseObservabilityManagerTest {
     }
 
   @Test
-  fun `when dispatchingEnabled is unset and isDebugBuild is false, metrics are dispatched`() =
+  fun `when stored config is absent and isDebugBuild is false, metrics are dispatched`() =
     runTest {
       // Arrange — release builds default to on.
       every { ObservePreferences.getConfig(any()) } returns null
@@ -168,6 +183,411 @@ class BaseObservabilityManagerTest {
           }
         )
       }
+    }
+
+  // endregion
+
+  // region dispatchInDebug tests
+
+  @Test
+  fun `when dispatchInDebug is true on debug build, metrics are dispatched`() =
+    runTest {
+      // Arrange — explicit opt-in lifts the debug-build gate.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
+      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
+      val devSession = createSessionWithMetrics(
+        sessionId = "dev-session",
+        environment = "development",
+        metrics = listOf(devMetric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+
+      val removedIds = mutableListOf<String>()
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
+        removedIds.addAll(firstArg<List<String>>())
+      }
+
+      val manager = createManager(isDebugBuild = true)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+      assertEquals(listOf("dev-metric-id"), removedIds)
+    }
+
+  @Test
+  fun `when dispatchInDebug is false explicitly on debug build, pending metrics are removed without dispatching`() =
+    runTest {
+      // Arrange — explicit opt-out behaves like the default on debug builds.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
+
+      val removedIds = mutableListOf<String>()
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
+        removedIds.addAll(firstArg<List<String>>())
+      }
+
+      val manager = createManager(isDebugBuild = true)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert — short-circuit: no session lookup, no dispatch, single removePendingMetrics call.
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1", "id2")) }
+      assertEquals(2, removedIds.size)
+    }
+
+  @Test
+  fun `when dispatchInDebug is true on release build, metrics dispatch normally`() =
+    runTest {
+      // Arrange — dispatchInDebug is a no-op on release builds; release always dispatches (subject to other gates).
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
+      val prodMetric = createMetric("metric1", metricId = "prod-metric-id")
+      val prodSession = createSessionWithMetrics(
+        sessionId = "prod-session",
+        environment = "production",
+        metrics = listOf(prodMetric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("prod-metric-id")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+
+      val manager = createManager(isDebugBuild = false)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `when dispatchingEnabled is false, dispatchInDebug being true has no effect`() =
+    runTest {
+      // Arrange — dispatchingEnabled=false wins over dispatchInDebug=true.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+        dispatchingEnabled = false,
+        dispatchInDebug = true
+      )
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(isDebugBuild = true)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1")) }
+    }
+
+  // endregion
+
+  // region Combined isDev signal tests (isJsDev || isDebugBuild)
+
+  @Test
+  fun `when isJsDev is true on release native build, dispatchInDebug=false discards metrics`() =
+    runTest {
+      // Arrange — release native binary running a Metro dev JS bundle. JS dev alone gates dispatch.
+      every { ObservePreferences.getBundleDefaults(any()) } returns
+        PersistedBundleDefaults(environment = "development", isJsDev = true)
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(isDebugBuild = false)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1")) }
+    }
+
+  @Test
+  fun `when isJsDev is true and isDebugBuild is true, dispatchInDebug=true dispatches`() =
+    runTest {
+      // Arrange — both signals say dev; explicit override lifts the gate.
+      every { ObservePreferences.getBundleDefaults(any()) } returns
+        PersistedBundleDefaults(environment = "development", isJsDev = true)
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = true)
+      val devMetric = createMetric("metric1", metricId = "dev-metric-id")
+      val devSession = createSessionWithMetrics(
+        sessionId = "dev-session",
+        environment = "development",
+        metrics = listOf(devMetric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("dev-metric-id")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(devSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(isDebugBuild = true)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `when isJsDev is false and isDebugBuild is false, metrics dispatch (release everywhere)`() =
+    runTest {
+      // Arrange — full release path.
+      every { ObservePreferences.getBundleDefaults(any()) } returns
+        PersistedBundleDefaults(environment = "production", isJsDev = false)
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+      val prodMetric = createMetric("metric1", metricId = "prod-metric-id")
+      val prodSession = createSessionWithMetrics(
+        sessionId = "prod-session",
+        environment = "production",
+        metrics = listOf(prodMetric)
+      )
+
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("prod-metric-id")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(prodSession)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(isDebugBuild = false)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `when getBundleDefaults returns null, gate is determined by isDebugBuild alone`() =
+    runTest {
+      // Arrange — cold start before JS has run. isJsDev defaults to false.
+      every { ObservePreferences.getBundleDefaults(any()) } returns null
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchInDebug = false)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(isDebugBuild = true)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert — isDebugBuild alone gates dispatch.
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1")) }
+    }
+
+  // endregion
+
+  // region sampleRate tests
+
+  @Test
+  fun `when sampleRate is null, metrics dispatch normally`() =
+    runTest {
+      // Arrange
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = null)
+      val metric = createMetric("metric1", metricId = "id1")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+
+      // `deterministicUniformValue` must not matter when sampleRate is null.
+      val manager = createManager(deterministicUniformValue = 0.999)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `when deterministicUniformValue is less than sampleRate, metrics dispatch`() =
+    runTest {
+      // Arrange — sampleRate = 0.5, device value = 0.2 → in-sample
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+      val metric = createMetric("metric1", metricId = "id1")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+
+      val manager = createManager(deterministicUniformValue = 0.2)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `when deterministicUniformValue is greater than sampleRate, metrics are dropped without dispatching`() =
+    runTest {
+      // Arrange — sampleRate = 0.5, device value = 0.8 → out-of-sample
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
+
+      val removedIds = mutableListOf<String>()
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
+        removedIds.addAll(firstArg<List<String>>())
+      }
+
+      val manager = createManager(deterministicUniformValue = 0.8)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert — no dispatch, pending is cleared
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
+      assertEquals(listOf("id1", "id2"), removedIds)
+    }
+
+  @Test
+  fun `when deterministicUniformValue is equal to sampleRate, metrics are dropped without dispatching`() =
+    runTest {
+      // Arrange — sampleRate = 0.5, device value = 0.5 → out-of-sample (comparison is strict <).
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1", "id2")
+
+      val removedIds = mutableListOf<String>()
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } answers {
+        removedIds.addAll(firstArg<List<String>>())
+      }
+
+      val manager = createManager(deterministicUniformValue = 0.5)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert — no dispatch, pending is cleared
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 0) { mockSessionManager.getSessionsWithMetrics(any()) }
+      assertEquals(listOf("id1", "id2"), removedIds)
+    }
+
+  @Test
+  fun `when sampleRate is 0_0, metrics are always dropped`() =
+    runTest {
+      // Arrange — any deterministic value is >= 0, so sampleRate=0 → out.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(deterministicUniformValue = 0.0)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1")) }
+    }
+
+  @Test
+  fun `when sampleRate is 1_0, metrics always dispatch`() =
+    runTest {
+      // Arrange — deterministic value of 0.999... is always < 1.0.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0)
+      val metric = createMetric("metric1", metricId = "id1")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+
+      val manager = createManager(deterministicUniformValue = 0.9999999)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `sampleRate above 1_0 is clamped and metrics dispatch`() =
+    runTest {
+      // Arrange — 2.0 → clamped to 1.0 → in-sample.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 2.0)
+      val metric = createMetric("metric1", metricId = "id1")
+      val session = createSessionWithMetrics(
+        sessionId = "session-1",
+        environment = "production",
+        metrics = listOf(metric)
+      )
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockSessionManager.getSessionsWithMetrics(any()) } returns listOf(session)
+      coEvery { mockEventDispatcher.dispatch(any()) } returns true
+
+      val manager = createManager(deterministicUniformValue = 0.95)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 1) { mockEventDispatcher.dispatch(any()) }
+    }
+
+  @Test
+  fun `sampleRate below 0_0 is clamped and metrics are dropped`() =
+    runTest {
+      // Arrange — -0.5 → clamped to 0.0 → out-of-sample.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = -0.5)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(deterministicUniformValue = 0.0)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1")) }
+    }
+
+  @Test
+  fun `when dispatchingEnabled is false, sampleRate of 1_0 still drops metrics`() =
+    runTest {
+      // Arrange — dispatchingEnabled=false wins over sampleRate=1.0.
+      every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false, sampleRate = 1.0)
+      coEvery { mockPendingMetricsManager.getAllPendingMetricIds() } returns listOf("id1")
+      coEvery { mockPendingMetricsManager.removePendingMetrics(any()) } just runs
+
+      val manager = createManager(deterministicUniformValue = 0.0)
+
+      // Act
+      manager.dispatchUnsentMetrics()
+
+      // Assert
+      coVerify(exactly = 0) { mockEventDispatcher.dispatch(any()) }
+      coVerify(exactly = 1) { mockPendingMetricsManager.removePendingMetrics(listOf("id1")) }
     }
 
   // endregion
@@ -581,14 +1001,18 @@ class BaseObservabilityManagerTest {
 
   // region Helper methods
 
-  private fun createManager(isDebugBuild: Boolean = false): BaseObservabilityManager {
+  private fun createManager(
+    isDebugBuild: Boolean = false,
+    deterministicUniformValue: Double = 0.0
+  ): BaseObservabilityManager {
     val manager = BaseObservabilityManager(
       context = mockContext,
       sessionManager = mockSessionManager,
       pendingMetricsManager = mockPendingMetricsManager,
       projectId = testProjectId,
       baseUrl = testBaseUrl,
-      isDebugBuild = isDebugBuild
+      isDebugBuild = isDebugBuild,
+      deterministicUniformValueProvider = { deterministicUniformValue }
     )
     // Replace the internal EventDispatcher with our mock
     val field = BaseObservabilityManager::class.java.getDeclaredField("eventDispatcher")

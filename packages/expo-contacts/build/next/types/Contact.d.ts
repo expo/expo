@@ -912,23 +912,26 @@ export declare class Contact {
     static hasAny(): Promise<boolean>;
     /**
      * A static method that opens the native contact picker UI allowing the user to select a contact.
-     * @returns a promise resolving to the selected [`Contact`](#contact) instance.
+     * @returns a promise resolving to the selected [`Contact`](#contact) instance, or `null` if the user cancelled.
      * @example
      * ```ts
      * const contact = await Contact.presentPicker();
+     * if (contact) {
+     *   // user selected a contact
+     * }
      * ```
      */
-    static presentPicker(): Promise<Contact>;
+    static presentPicker(): Promise<Contact | null>;
     /**
-     * A static method that presents a system dialog to request access to contacts if not already granted.
+     * A static method that presents a system dialog to request access to specific contacts (iOS 18+).
      * @platform ios
-     * @returns a promise resolving to `true` if access is granted, `false` otherwise.
+     * @returns a promise resolving to an array of [`Contact`](#contact) instances the user granted access to.
      * @example
      * ```ts
-     * const accessGranted = await Contact.presentAccessPicker();
+     * const contacts = await Contact.presentAccessPicker();
      * ```
      */
-    static presentAccessPicker(): Promise<boolean>;
+    static presentAccessPicker(): Promise<Contact[]>;
     /**
      * A static method that retrieves specific fields for all contacts or a subset of contacts.
      * This is an optimized method for fetching bulk data; it avoids creating full [`Contact`](#contact) instances.
@@ -943,16 +946,5 @@ export declare class Contact {
      * });
      */
     static getAllDetails<T extends readonly ContactField[]>(fields: T, options?: ContactQueryOptions): Promise<PartialContactDetails<T>[]>;
-    /**
-     * A static method that requests permissions to access contacts.
-     * @returns a promise resolving to an object indicating if permission was granted.
-     * @example
-     * ```ts
-     * const { granted } = await Contact.requestPermissionsAsync();
-     * ```
-     */
-    static requestPermissionsAsync(): Promise<{
-        granted: boolean;
-    }>;
 }
 //# sourceMappingURL=Contact.d.ts.map

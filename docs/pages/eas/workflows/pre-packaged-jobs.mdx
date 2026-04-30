@@ -16,8 +16,8 @@ Build your project into an Android or iOS app.
 
 Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="A completed build from your local machine">
+<Prerequisites>
+  <Requirement title="A completed build from your local machine">
     Complete a build with EAS CLI using the same platform and profile as the pre-packaged job. Learn
     how to [create your first build](/build/setup/) to get started.
   </Requirement>
@@ -183,8 +183,8 @@ jobs:
 
 Deploy your application using [EAS Hosting](/eas/hosting/introduction).
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="A project set up for EAS Hosting">
+<Prerequisites>
+  <Requirement title="A project set up for EAS Hosting">
     See [Get started with EAS Hosting](/eas/hosting/get-started/#prerequisites) for setup
     instructions.
   </Requirement>
@@ -502,8 +502,8 @@ jobs:
 
 Submit an Android or iOS build to the app store using EAS Submit.
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="CI/CD submission configuration">
+<Prerequisites>
+  <Requirement title="CI/CD submission configuration">
     Submission jobs require additional configuration to run within a CI/CD process. See the [Google
     Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) and
     [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services)
@@ -602,8 +602,8 @@ jobs:
 
 Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="An iOS store build and Apple Developer account">
+<Prerequisites>
+  <Requirement title="An iOS store build and Apple Developer account">
     TestFlight jobs require an iOS build created with `distribution: store` and an Apple Developer
     account configured. See the [TestFlight submission
     guide](/submit/ios/#submitting-your-app-using-cicd-services) for more information.
@@ -708,8 +708,8 @@ jobs:
 
 Publish an update using [EAS Update](/eas-update/introduction/).
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="EAS Update configured">
+<Prerequisites>
+  <Requirement title="EAS Update configured">
     To publish update previews and to send over-the-air updates. Run `npx eas-cli@latest
     update:configure`, then create new builds. Learn more about [configuring EAS
     Update](/eas-update/getting-started/#prerequisites).
@@ -1242,8 +1242,8 @@ jobs:
 
 Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying EAS Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
 
-<Prerequisites numberOfRequirements={1}>
-  <Requirement number={1} title="A GitHub repository connected to your project">
+<Prerequisites>
+  <Requirement title="A GitHub repository connected to your project">
     To use the GitHub Comment job, your project must have a GitHub repository connected. Learn how
     to [connect your GitHub repository](/build/building-from-github/) to get started.
   </Requirement>

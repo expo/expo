@@ -2,19 +2,21 @@ import { getBareExtensions } from '@expo/config/paths';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ConfigT } from '@expo/metro/metro-config';
 import type { CustomResolutionContext, Resolution } from '@expo/metro/metro-resolver';
+import { resolveFrom } from '@expo/require-utils';
 import { vol } from 'memfs';
 import assert from 'node:assert';
-import resolveFrom from 'resolve-from';
 
 import type { AutolinkingModuleResolverInput } from '../createExpoAutolinkingResolver';
 import { shouldCreateVirtualShim } from '../externals';
 import { getNodejsExtensions, withExtendedResolver } from '../withMetroMultiPlatform';
 
-jest.mock('resolve-from', () => {
-  const actual = jest.requireActual<typeof import('resolve-from')>('resolve-from');
-  const resolve = jest.fn(actual) as any as typeof actual;
-  resolve.silent = jest.fn(actual.silent);
-  return resolve;
+jest.mock('@expo/require-utils', () => {
+  const actual = jest.requireActual<typeof import('@expo/require-utils')>('@expo/require-utils');
+  const resolveFrom = jest.fn(actual.resolveFrom) as any as typeof actual.resolveFrom;
+  return {
+    ...actual,
+    resolveFrom,
+  };
 });
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => ({
@@ -358,8 +360,10 @@ describe(withExtendedResolver, () => {
   });
 
   it(`resolves to @expo/vector-icons on any platform`, async () => {
-    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
-      return moduleId === '@expo/vector-icons' ? 'node_modules/@expo/vector-icons' : undefined;
+    jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
+      return moduleId === '@expo/vector-icons/package.json'
+        ? 'node_modules/@expo/vector-icons'
+        : undefined;
     });
 
     ['ios', 'web'].forEach((platform) => {
@@ -383,8 +387,10 @@ describe(withExtendedResolver, () => {
   });
 
   it(`resolves nested imports to @expo/vector-icons on any platform`, async () => {
-    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
-      return moduleId === '@expo/vector-icons' ? 'node_modules/@expo/vector-icons' : undefined;
+    jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
+      return moduleId === '@expo/vector-icons/package.json'
+        ? 'node_modules/@expo/vector-icons'
+        : undefined;
     });
 
     ['ios', 'web'].forEach((platform) => {
@@ -408,7 +414,7 @@ describe(withExtendedResolver, () => {
   });
 
   it(`does not alias react-native-vector-icons if @expo/vector-icons is not installed`, async () => {
-    jest.mocked(resolveFrom.silent).mockReturnValue(undefined);
+    jest.mocked(resolveFrom).mockReturnValue(undefined);
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
@@ -774,7 +780,7 @@ describe(withExtendedResolver, () => {
       '/'
     );
 
-    jest.mocked(resolveFrom.silent).mockImplementation((_from, moduleId) => {
+    jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === config.transformer.asyncRequireModulePath ? expectedPath : undefined;
     });
 

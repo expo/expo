@@ -157,9 +157,9 @@ describe('state mutation safety', () => {
       },
     };
 
-    const paramsBefore = { ...state.routes[0].params };
+    const paramsBefore = { ...state.routes[0]!.params };
     getPathDataFromState(state, config);
     // The original params on the route should not have been mutated
-    expect(state.routes[0].params).toEqual(paramsBefore);
+    expect(state.routes[0]!.params).toEqual(paramsBefore);
   });
 });

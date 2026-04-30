@@ -45,7 +45,7 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
              };
   }
   if (appRecord.status == kEXKernelAppRecordStatusRunning) {
-    RCTEventDispatcher *dispatcher = [[appRecord.appManager.reactHost moduleRegistry] moduleForName:"EventDispatcher"];
+    RCTEventDispatcher *dispatcher = [appRecord.appManager.reactModuleRegistry moduleForName:"EventDispatcher"];
     [dispatcher sendAppEventWithName:EXUpdatesEventName body:@[EXUpdatesEventName, body]];
   }
 }

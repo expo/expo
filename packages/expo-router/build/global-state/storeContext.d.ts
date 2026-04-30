@@ -1,7 +1,7 @@
 export declare const StoreContext: import("react").Context<{
     shouldShowTutorial(): boolean;
     readonly state: import("./types").ReactNavigationState | undefined;
-    readonly navigationRef: import("..").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly navigationRef: import("../react-navigation").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
     getRouteInfo(): import("./getRouteInfoFromState").UrlObject;
     readonly redirects: import("./types").StoreRedirects[];
@@ -11,24 +11,24 @@ export declare const StoreContext: import("react").Context<{
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
+        routes: import("../react-navigation").NavigationRoute<import("../react-navigation").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
         stale?: true;
-        routes: import("../react-navigation/core").PartialRoute<import("../react-navigation/core").Route<string, object | undefined>>[];
+        routes: import("../react-navigation").PartialRoute<import("../react-navigation").Route<string, object | undefined>>[];
     }> & {
         state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
+            routes: import("../react-navigation").NavigationRoute<import("../react-navigation").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
             stale?: true;
-            routes: import("../react-navigation/core").PartialRoute<import("../react-navigation/core").Route<string, object | undefined>>[];
+            routes: import("../react-navigation").PartialRoute<import("../react-navigation").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;
@@ -40,7 +40,7 @@ export declare const StoreContext: import("react").Context<{
 export declare const useExpoRouterStore: () => {
     shouldShowTutorial(): boolean;
     readonly state: import("./types").ReactNavigationState | undefined;
-    readonly navigationRef: import("..").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
+    readonly navigationRef: import("../react-navigation").NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
     readonly routeNode: import("../Route").RouteNode | null;
     getRouteInfo(): import("./getRouteInfoFromState").UrlObject;
     readonly redirects: import("./types").StoreRedirects[];
@@ -50,24 +50,24 @@ export declare const useExpoRouterStore: () => {
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
+        routes: import("../react-navigation").NavigationRoute<import("../react-navigation").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
         stale?: true;
-        routes: import("../react-navigation/core").PartialRoute<import("../react-navigation/core").Route<string, object | undefined>>[];
+        routes: import("../react-navigation").PartialRoute<import("../react-navigation").Route<string, object | undefined>>[];
     }> & {
         state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../react-navigation/core").NavigationRoute<import("../react-navigation/core").ParamListBase, string>[];
+            routes: import("../react-navigation").NavigationRoute<import("../react-navigation").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
             stale?: true;
-            routes: import("../react-navigation/core").PartialRoute<import("../react-navigation/core").Route<string, object | undefined>>[];
+            routes: import("../react-navigation").PartialRoute<import("../react-navigation").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: import("../getLinkingConfig").ExpoLinkingOptions | undefined;

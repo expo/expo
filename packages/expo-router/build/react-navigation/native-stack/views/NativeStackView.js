@@ -56,7 +56,8 @@ function NativeStackView({ state, descriptors, describe }) {
             const nextKey = state.routes[i + 1]?.key;
             const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
             const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
-            const { options, navigation, render } = descriptors[route.key] ?? preloadedDescriptors[route.key];
+            const { options, navigation, render } = (descriptors[route.key] ??
+                preloadedDescriptors[route.key]);
             const headerBack = previousDescriptor
                 ? {
                     title: (0, elements_1.getHeaderTitle)(previousDescriptor.options, previousDescriptor.route.name),

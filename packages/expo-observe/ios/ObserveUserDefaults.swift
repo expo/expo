@@ -7,6 +7,18 @@ import ExpoAppMetrics
  */
 internal struct PersistedConfig: Codable {
   var dispatchingEnabled: Bool?
+  var dispatchInDebug: Bool?
+  var sampleRate: Double?
+}
+
+/**
+ Bundle-derived facts pushed from the JS layer at package import time.
+
+ Set atomically by `setBundleDefaults`.
+ */
+internal struct PersistedBundleDefaults: Codable {
+  var environment: String
+  var isJsDev: Bool
 }
 
 /**
@@ -26,6 +38,7 @@ internal final class ObserveUserDefaults: UserDefaults {
     case lastDispatchedEntryId
     case lastDispatchDate
     case config
+    case bundleDefaults
   }
 
   private init() {
@@ -62,6 +75,7 @@ internal final class ObserveUserDefaults: UserDefaults {
       defaults.set(newValue, forKey: Keys.lastDispatchedEntryId.rawValue)
     }
   }
+
   static var config: PersistedConfig? {
     guard let data = defaults.data(forKey: Keys.config.rawValue) else { return nil }
     return try? JSONDecoder().decode(PersistedConfig.self, from: data)
@@ -70,5 +84,15 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setConfig(_ newValue: PersistedConfig) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.config.rawValue)
+  }
+
+  static var bundleDefaults: PersistedBundleDefaults? {
+    guard let data = defaults.data(forKey: Keys.bundleDefaults.rawValue) else { return nil }
+    return try? JSONDecoder().decode(PersistedBundleDefaults.self, from: data)
+  }
+
+  static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
+    guard let data = try? JSONEncoder().encode(newValue) else { return }
+    defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
   }
 }

@@ -103,6 +103,16 @@ public:
   }
 
   /**
+   Re-publishes an existing `CppError` into the current thread's slot. Used from Swift
+   to relay a `CppError` that was caught from a `throw` (and thus already drained from
+   the slot by `getCurrent`) so the original `jsi::JSError` — including its stack, code
+   and custom properties — can be rethrown into JavaScript.
+   */
+  inline static void setCurrent(CppError cppError) {
+    _current = std::make_unique<CppError>(std::move(cppError));
+  }
+
+  /**
    Sets the current thread's error by creating a `jsi::JSError` from the given message.
    Called from Swift when a host function closure throws a plain error.
    */

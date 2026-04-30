@@ -1,5 +1,6 @@
 import EASClient
 import ExpoAppMetrics
+import ExpoModulesCore
 
 @AppMetricsActor
 internal struct ObservabilityManager {
@@ -8,12 +9,6 @@ internal struct ObservabilityManager {
   private static var projectId: String? = nil
   private static var useOpenTelemetry = false
 
-  // Determined at compile time of the host app's binary.
-  #if DEBUG
-  private static let isDebugBuild: Bool = true
-  #else
-  private static let isDebugBuild: Bool = false
-  #endif
 
   /**
    Returns entries from AppMetrics storage that have not been dispatched yet.
@@ -44,11 +39,7 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      // Single dispatch gate. When unset, defaults to off in debug builds and on otherwise so
-      // dev metrics aren't shipped without explicit opt-in.
-      let dispatchingEnabled = ObserveUserDefaults.config?.dispatchingEnabled ?? !isDebugBuild
-      if !dispatchingEnabled {
-        // Mark all pending entries as dispatched without sending them
+      if !Self.shouldDispatch() {
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
       }
@@ -97,6 +88,23 @@ internal struct ObservabilityManager {
     }
   }
 
+  // Static function extracted for testability
+  internal nonisolated static func shouldDispatch(
+    config: PersistedConfig?, isDev: Bool, isInSample: Bool
+  ) -> Bool {
+    let dispatchingEnabled = config?.dispatchingEnabled ?? true
+    let dispatchInDebug = config?.dispatchInDebug ?? false
+    return dispatchingEnabled && isInSample && (!isDev || dispatchInDebug)
+  }
+
+  private static func shouldDispatch() -> Bool {
+    let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
+    let isDev = EXAppDefines.APP_DEBUG || isJsDev
+    return Self.shouldDispatch(
+      config: ObserveUserDefaults.config, isDev: isDev, isInSample: isInSample()
+    )
+  }
+
   internal nonisolated static func setEndpointUrl(_ urlString: String?, projectId: String) {
     let defaultUrl = "https://o.expo.dev"
     let urlString = urlString ?? defaultUrl
@@ -115,5 +123,13 @@ internal struct ObservabilityManager {
     AppMetricsActor.isolated {
       self.useOpenTelemetry = enabled
     }
+  }
+
+  private static func isInSample() -> Bool {
+    guard let rate = ObserveUserDefaults.config?.sampleRate else {
+      return true
+    }
+    let clamped = min(max(rate, 0.0), 1.0)
+    return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }

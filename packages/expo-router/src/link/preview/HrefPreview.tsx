@@ -30,7 +30,7 @@ export function HrefPreview({ href }: { href: Href }) {
     let routerState: typeof hrefState | undefined = hrefState;
     let rnState = store.state;
     while (routerState && rnState) {
-      const routerRoute: ResultState['routes'][number] = routerState.routes[0];
+      const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
       // When the route we want to show is not present in react-navigation state
       // Then most likely it is a protected route
       if (rnState.stale === false && !rnState.routeNames?.includes(routerRoute.name)) {
@@ -143,7 +143,8 @@ function getParamsAndNodeFromHref(hrefState: ResultState) {
   const params: UnknownOutputParams = {};
 
   while (state && routeNode) {
-    const route = state.routes[state.index || state.routes.length - 1];
+    // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
+    const route = state.routes[state.index || state.routes.length - 1]!;
     Object.assign(params, route.params);
     state = route.state;
     routeNode = routeNode.children.find((child) => child.route === route.name);

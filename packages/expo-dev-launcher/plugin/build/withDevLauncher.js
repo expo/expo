@@ -121,6 +121,20 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
             return config;
         });
     }
+    const iOSSkipOnboarding = props.ios?.skipOnboarding ?? props.skipOnboarding;
+    if (iOSSkipOnboarding !== undefined) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevMenuIsOnboardingFinished'] = iOSSkipOnboarding;
+            return config;
+        });
+    }
+    const iOSShowMenuAtLaunch = props.ios?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (iOSShowMenuAtLaunch !== undefined) {
+        config = (0, config_plugins_1.withInfoPlist)(config, (config) => {
+            config.modResults['EXDevMenuShowsAtLaunch'] = iOSShowMenuAtLaunch;
+            return config;
+        });
+    }
     const androidLaunchMode = props.android?.launchMode ??
         props.launchMode ??
         props.android?.launchModeExperimental ??
@@ -148,6 +162,22 @@ exports.default = (0, config_plugins_1.createRunOncePlugin)((config, props = {})
         config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
             const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
             config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevClientEmbeddedBundle', String(true));
+            return config;
+        });
+    }
+    const androidSkipOnboarding = props.android?.skipOnboarding ?? props.skipOnboarding;
+    if (androidSkipOnboarding !== undefined) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuIsOnboardingFinished', String(androidSkipOnboarding));
+            return config;
+        });
+    }
+    const androidShowMenuAtLaunch = props.android?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (androidShowMenuAtLaunch !== undefined) {
+        config = (0, config_plugins_1.withAndroidManifest)(config, (config) => {
+            const mainApplication = config_plugins_1.AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+            config_plugins_1.AndroidConfig.Manifest.addMetaDataItemToMainApplication(mainApplication, 'EXDevMenuShowsAtLaunch', String(androidShowMenuAtLaunch));
             return config;
         });
     }
