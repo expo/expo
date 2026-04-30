@@ -2,7 +2,7 @@ import type { LoaderFunction } from 'expo-server';
 import { useRouteInfo } from './global-state/router-store';
 import type { Router } from './imperative-api';
 import type { NavigationState } from './react-navigation/native';
-import type { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import type { RouteParams, RouteSegments, UnknownOutputParams, RoutePath } from './types';
 export { useRouteInfo };
 /**
  * Returns the [navigation state](https://reactnavigation.org/docs/navigation-state/)
@@ -90,11 +90,11 @@ export declare function useUnstableGlobalHref(): string;
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export declare function useSegments<TSegments extends Route = Route>(): RouteSegments<TSegments>;
+export declare function useSegments<TSegments extends RoutePath = RoutePath>(): RouteSegments<TSegments>;
 /**
  *  @hidden
  */
-export declare function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
+export declare function useSegments<TSegments extends RouteSegments<RoutePath>>(): TSegments;
 /**
  * Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` returns `/acme`.
  * Segments will be normalized. For example, `/[id]?id=normal` becomes `/normal`.
@@ -120,7 +120,7 @@ export declare function useGlobalSearchParams<TParams extends UnknownOutputParam
 /**
  * @hidden
  */
-export declare function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+export declare function useGlobalSearchParams<TRoute extends RoutePath>(): RouteParams<TRoute>;
 /**
  * Returns URL parameters for globally selected route, including dynamic path segments.
  * This function updates even when the route is not focused. Useful for analytics or
@@ -147,7 +147,7 @@ export declare function useGlobalSearchParams<TRoute extends Route>(): RoutePara
  * }
  * ```
  */
-export declare function useGlobalSearchParams<TRoute extends Route, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
+export declare function useGlobalSearchParams<TRoute extends RoutePath, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
 /**
  * @hidden
  */
@@ -155,7 +155,7 @@ export declare function useLocalSearchParams<TParams extends UnknownOutputParams
 /**
  * @hidden
  */
-export declare function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+export declare function useLocalSearchParams<TRoute extends RoutePath>(): RouteParams<TRoute>;
 /**
  * Returns the URL parameters for the contextually focused route. Useful for stacks where you may push a new screen
  * that changes the query parameters.  For dynamic routes, both the route parameters and the search parameters are returned.
@@ -179,7 +179,7 @@ export declare function useLocalSearchParams<TRoute extends Route>(): RouteParam
  *  return <Text>User: {user}</Text>;
  * }
  */
-export declare function useLocalSearchParams<TRoute extends Route, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
+export declare function useLocalSearchParams<TRoute extends RoutePath, TParams extends UnknownOutputParams = UnknownOutputParams>(): RouteParams<TRoute> & TParams;
 export declare function useSearchParams({ global }?: {
     global?: boolean | undefined;
 }): URLSearchParams;
