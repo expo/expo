@@ -15,6 +15,7 @@ import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
+import { prefetchBundleAsync } from '../prefetchBundle';
 import { startBundlerAsync } from '../startBundler';
 
 const debug = require('debug')('expo:run:android');
@@ -81,6 +82,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     headless: !props.shouldStartBundler,
   });
+  // prefetch the bundle so it's cached when the app requests it.
+  prefetchBundleAsync(projectRoot, manager, 'android');
 
   if (!options.binary) {
     // Find the APK file path
