@@ -11,7 +11,10 @@
       "default": "./index.js"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "build": "apple/scripts/build-xcframework.sh",
+    "test": "apple/scripts/test.sh"
+  },
   "keywords": [
     "expo",
     "modules",
