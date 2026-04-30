@@ -372,14 +372,14 @@ class ContactsNextModule : Module() {
       StaticAsyncFunction("hasAny") Coroutine { ->
         Contact.hasAny(contactRepository)
       }
+    }
 
-      StaticAsyncFunction("requestPermissionsAsync") { promise: Promise ->
-        permissionsDelegate.requestPermissions(promise)
-      }
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      permissionsDelegate.getPermissions(promise)
+    }
 
-      StaticAsyncFunction("getPermissions") { promise: Promise ->
-        permissionsDelegate.getPermissions(promise)
-      }
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      permissionsDelegate.requestPermissions(promise)
     }
 
     Events(CONTACTS_DID_CHANGE_EVENT)
