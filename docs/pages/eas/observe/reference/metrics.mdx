@@ -119,7 +119,7 @@ All of these must be true:
 
 **Our recommendation:** under 3s including the cold launch time.
 
-#### Extra params
+#### Automatic event params
 
 Each TTI event includes extra params to help triage issues:
 
@@ -132,6 +132,31 @@ Each TTI event includes extra params to help triage issues:
 - **High TTI + low total delay:** startup is slow but smooth. Optimize what's blocking the launch sequence (bundle size, data fetching, initialization chains).
 - **High TTI + high total delay + many slow frames:** main thread contention. Offload work and simplify the initial render tree.
 - **High TTI + high delay + frozen frames:** something is blocking hard. Look for synchronous I/O, large JSON parsing, or blocking API calls.
+
+#### Custom event params
+
+You can attach your own params to the TTI event by passing them to `markInteractive()`. This is useful for slicing TTI by app-specific dimensions such as user cohort, tenant, feature flag variant, or the type of content the screen loaded.
+
+```tsx
+AppMetrics.markInteractive({
+  params: {
+    tenant: 'acme',
+    cohort: 'beta',
+    cacheHit: true,
+  },
+});
+```
+
+You can also override the route name attached to the event, which is otherwise populated from the initial route detected by Expo Router:
+
+```tsx
+AppMetrics.markInteractive({
+  routeName: '/feed',
+  params: { cacheHit: true },
+});
+```
+
+Param values can be strings, numbers, booleans, or other JSON-serializable values.
 
 ## Data handling
 
