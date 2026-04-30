@@ -10,7 +10,6 @@ import {
   getIsDev,
   getIsDomComponent,
   getIsFastRefreshEnabled,
-  getIsHermesV1,
   getIsNodeModule,
   getIsProd,
   getIsReactServer,
@@ -110,7 +109,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
-  const isHermesV1 = api.caller(getIsHermesV1);
   const isDomComponent = api.caller(getIsDomComponent);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
@@ -220,13 +218,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       { loose: true, useBuiltIns: true },
     ]);
   } else if (!isModernEngine) {
-    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-    // JSX is used in a function body. This is technically not required in production, but we
-    // should retain the same behavior since it's hard to debug the differences.
-    if (!isHermesV1) {
-      extraPlugins.push(require('@babel/plugin-transform-parameters'));
-    }
-
     extraPlugins.push(
       // Add support for class static blocks.
       [require('@babel/plugin-transform-class-static-block'), { loose: true }]
