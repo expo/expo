@@ -7,11 +7,18 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+  BabelTransformerCacheKeyOptions,
+} from '@expo/metro/metro-babel-transformer';
+import { getCacheKey as getFileCacheKey } from '@expo/metro/metro-cache-key';
 import assert from 'node:assert';
+import path from 'node:path';
 
 import type { TransformOptions } from './babel-core';
-import { loadBabelConfig } from './loadBabelConfig';
+import { loadPartialConfigSync } from './babel-core';
+import { loadBabelConfig, resolveBabelrcName } from './loadBabelConfig';
 import { transformSync } from './transformSync';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
@@ -242,8 +249,44 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
+/**
+ * Generates a cache key component based on the user's Babel configuration files.
+ * This uses Babel's loadPartialConfig to resolve which config files apply
+ * to the project, and includes their contents in the cache key so that changes
+ * to babel.config.js, .babelrc, or any file they reference will invalidate the
+ * transform cache.
+ *
+ * This is called once by the main thread (not on worker instances).
+ */
+function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
+  if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
+    return '';
+  }
+
+  const configName = resolveBabelrcName(options.projectRoot);
+  if (!configName) {
+    return '';
+  }
+
+  const partialConfig = loadPartialConfigSync({
+    cwd: options.projectRoot,
+    root: options.projectRoot,
+    extends: path.resolve(options.projectRoot, configName),
+    configFile: false,
+    babelrc: false,
+  });
+
+  const files = partialConfig?.files;
+  if (files == null || files.size === 0) {
+    return '';
+  }
+
+  return getFileCacheKey([...files].sort());
+}
+
 const babelTransformer: BabelTransformer = {
   transform,
+  getCacheKey,
 };
 
 module.exports = babelTransformer;

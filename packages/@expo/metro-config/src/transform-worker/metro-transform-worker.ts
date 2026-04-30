@@ -805,7 +805,10 @@ export async function transform(
   return transformJSWithBabel(file, context);
 }
 
-export function getCacheKey(config: JsTransformerConfig): string {
+export function getCacheKey(
+  config: JsTransformerConfig,
+  opts?: Readonly<{ projectRoot: string }>
+): string {
   const {
     // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
     expo_customTransformerPath: _customTransformerPath,
@@ -827,12 +830,17 @@ export function getCacheKey(config: JsTransformerConfig): string {
     ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
   ]);
 
-  const babelTransformer = require(babelTransformerPath);
-  return [
-    filesKey,
-    stableHash(remainingConfig).toString('hex'),
-    babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
-  ].join('$');
+  const babelTransformer: BabelTransformer = require(babelTransformerPath);
+  const babelTransformerCacheKey = babelTransformer.getCacheKey
+    ? babelTransformer.getCacheKey({
+        projectRoot: opts?.projectRoot,
+        enableBabelRCLookup: config.enableBabelRCLookup,
+      })
+    : '';
+
+  return [filesKey, stableHash(remainingConfig).toString('hex'), babelTransformerCacheKey].join(
+    '$'
+  );
 }
 
 /**
