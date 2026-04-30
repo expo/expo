@@ -95,6 +95,18 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propValueGetter: (config) => config.android?.enableBundleCompression?.toString(),
     },
     {
+        propName: 'expo.gif.enabled',
+        propValueGetter: (config) => config.android?.gifEnabled?.toString(),
+    },
+    {
+        propName: 'expo.webp.enabled',
+        propValueGetter: (config) => config.android?.webpEnabled?.toString(),
+    },
+    {
+        propName: 'expo.webp.animated',
+        propValueGetter: (config) => config.android?.webpAnimated?.toString(),
+    },
+    {
         propName: 'reactNativeArchitectures',
         propValueGetter: (config) => config.android?.buildArchs?.join(','),
     },

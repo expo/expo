@@ -228,6 +228,36 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
   enableBundleCompression?: boolean;
 
   /**
+   * Enable GIF support in React Native's `<Image>` component. This property does not affect
+   * `expo-image`, which uses Glide on Android.
+   *
+   * @see [Optimizing app size](https://docs.expo.dev/distribution/app-size/)
+   *
+   * @default true
+   */
+  gifEnabled?: boolean;
+
+  /**
+   * Enable WebP support in React Native's `<Image>` component. This property does not affect
+   * `expo-image`, which uses Glide on Android.
+   *
+   * @see [Optimizing app size](https://docs.expo.dev/distribution/app-size/)
+   *
+   * @default true
+   */
+  webpEnabled?: boolean;
+
+  /**
+   * Enable animated WebP support in React Native's `<Image>` component. Requires `webpEnabled`
+   * to also be `true`. iOS does not support animated WebP via React Native's `<Image>`.
+   *
+   * @see [Optimizing app size](https://docs.expo.dev/distribution/app-size/)
+   *
+   * @default false
+   */
+  webpAnimated?: boolean;
+
+  /**
    * Enable building React Native from source. Turning this on will significantly increase the build times.
    * @deprecated Use `buildReactNativeFromSource` instead.
    * @default false
@@ -745,6 +775,9 @@ const schema: JSONSchema<PluginConfigType> = {
           nullable: true,
         },
         enableBundleCompression: { type: 'boolean', nullable: true },
+        gifEnabled: { type: 'boolean', nullable: true },
+        webpEnabled: { type: 'boolean', nullable: true },
+        webpAnimated: { type: 'boolean', nullable: true },
         buildFromSource: { type: 'boolean', nullable: true },
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
