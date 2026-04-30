@@ -15,6 +15,22 @@ interface LoadBabelConfigResult {
   presets?: PluginItem[];
 }
 
+const BABEL_CONFIG_NAMES = [
+  '.babelrc',
+  '.babelrc.js',
+  '.babelrc.cjs',
+  '.babelrc.mjs',
+  '.babelrc.json',
+  '.babelrc.cts',
+  'babel.config.js',
+  'babel.config.cjs',
+  'babel.config.mjs',
+  'babel.config.json',
+  'babel.config.cts',
+  'babel.config.ts',
+  'babel.config.mts',
+];
+
 /**
  * Returns a memoized function that checks for the existence of a
  * project-level .babelrc file. If it doesn't exist, it reads the
@@ -32,11 +48,12 @@ export const loadBabelConfig = (function () {
       result = {};
       if (options.projectRoot && enableBabelRCLookup) {
         // Check for various babel config files in the project root
-        const possibleBabelRCPaths = ['.babelrc', '.babelrc.js', 'babel.config.js'];
-
-        const foundBabelRCPath = possibleBabelRCPaths.find((configFileName) =>
-          fs.existsSync(path.resolve(projectRoot, configFileName))
-        );
+        // TODO(@kitten): We should move this to the `customTransformOptions` to make this
+        // participate in the cache key. We should also add `getCacheKey` to `babel-transformer`
+        // and then take this into account there
+        const foundBabelRCPath = BABEL_CONFIG_NAMES.find((configFileName) => {
+          return fs.existsSync(path.resolve(projectRoot, configFileName));
+        });
 
         // Extend the config if a babel config file is found
         if (foundBabelRCPath) {
