@@ -75,7 +75,8 @@ export function TextInput({
   inputMode,
   enterKeyHint,
   defaultValue,
-  numberOfLines,
+  numberOfLines: numberOfLinesProp,
+  rows,
   underlineColorAndroid,
   testID,
   placeholderTextColor,
@@ -87,16 +88,22 @@ export function TextInput({
   maxLength,
   caretHidden,
   selectionColor,
+  selectionHandleColor,
   selection,
   onSelectionChange,
+  selectTextOnFocus,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
+  const numberOfLines = numberOfLinesProp ?? rows;
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
   const returnKeyType = returnKeyTypeProp ?? enterKeyHintToReturnKeyType(enterKeyHint);
 
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
+
+  const fallbackSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const effectiveSelection = selection ?? (selectTextOnFocus ? fallbackSelection : undefined);
 
   const innerRef = useRef<TextFieldRef>(null);
   const isFocusedRef = useRef(false);
@@ -116,6 +123,19 @@ export function TextInput({
 
   const handleFocusChanged = (focused: boolean) => {
     isFocusedRef.current = focused;
+    if (focused && selectTextOnFocus && effectiveSelection) {
+      const length = state.value.length;
+      if (worklets?.scheduleOnUI) {
+        worklets.scheduleOnUI(() => {
+          'worklet';
+          effectiveSelection.value = { start: 0, end: length };
+        });
+      } else {
+        console.warn(
+          'selectTextOnFocus is not supported without worklet support. Please ensure you have the react-native-worklets package installed and configured.'
+        );
+      }
+    }
     if (focused) onFocus?.();
     else onBlur?.();
   };
@@ -202,12 +222,16 @@ export function TextInput({
           : undefined
       }
       visualTransformation={secureTextEntry ? 'password' : undefined}
-      textSelectionColors={selectionColor ? { handleColor: selectionColor } : undefined}
+      textSelectionColors={
+        selectionColor || selectionHandleColor
+          ? { handleColor: selectionHandleColor ?? selectionColor }
+          : undefined
+      }
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
       onValueChange={maxLength !== undefined ? handleValueChange : onChangeText}
       onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+      selection={effectiveSelection as Parameters<typeof ComposeTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
       {placeholder ? (
         <ComposeTextField.Placeholder>

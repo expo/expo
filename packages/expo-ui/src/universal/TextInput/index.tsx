@@ -26,6 +26,7 @@ export function TextInput({
   enterKeyHint,
   defaultValue,
   numberOfLines,
+  rows,
   testID,
   placeholderTextColor,
   style,
@@ -38,6 +39,7 @@ export function TextInput({
   selectionColor,
   selection,
   onSelectionChange,
+  selectTextOnFocus,
 }: TextInputProps) {
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -73,7 +75,7 @@ export function TextInput({
       editable={editable}
       readOnly={readOnly}
       multiline={multiline}
-      numberOfLines={numberOfLines}
+      numberOfLines={numberOfLines ?? rows}
       secureTextEntry={secureTextEntry}
       autoComplete={autoComplete}
       maxLength={maxLength}
@@ -102,6 +104,7 @@ export function TextInput({
           ? (e) => onContentSizeChange(e.nativeEvent.contentSize)
           : undefined
       }
+      selectTextOnFocus={selectTextOnFocus}
       selection={selection?.value}
       onSelectionChange={
         onSelectionChange

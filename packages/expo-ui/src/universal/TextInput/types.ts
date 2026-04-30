@@ -181,6 +181,11 @@ export interface TextInputProps {
   numberOfLines?: number;
 
   /**
+   * HTML-style alias for `numberOfLines`. When both are set, `numberOfLines` wins.
+   */
+  rows?: number;
+
+  /**
    * Color of the underline indicator on Android. iOS / web ignore this.
    * @platform android
    */
@@ -214,6 +219,12 @@ export interface TextInputProps {
   selectionColor?: ColorValue;
 
   /**
+   * Color of the selection drag handles.
+   * @platform android
+   */
+  selectionHandleColor?: ColorValue;
+
+  /**
    * Observable state holding the current text selection range.
    * Read `value` for current `{start, end}`; write `value` to programmatically
    * select. Create with `useNativeState({ start: 0, end: 0 })`.
@@ -226,6 +237,13 @@ export interface TextInputProps {
    * Called when the text selection range changes.
    */
   onSelectionChange?: (selection: { start: number; end: number }) => void;
+
+  /**
+   * If true, all text is selected when the field gains focus.
+   * @default false
+   * @platform ios 18.0+, android, web
+   */
+  selectTextOnFocus?: boolean;
 
   /**
    * Identifier used to locate the component in end-to-end tests.

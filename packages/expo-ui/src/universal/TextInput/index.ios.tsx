@@ -68,7 +68,8 @@ export function TextInput({
   inputMode,
   enterKeyHint,
   defaultValue,
-  numberOfLines,
+  numberOfLines: numberOfLinesProp,
+  rows,
   testID,
   placeholderTextColor,
   style,
@@ -81,6 +82,7 @@ export function TextInput({
   selectionColor,
   selection,
   onSelectionChange,
+  selectTextOnFocus,
 }: TextInputProps) {
   const editable = resolveEditable(editableProp, readOnly);
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
@@ -89,6 +91,9 @@ export function TextInput({
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
+
+  const fallbackSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const effectiveSelection = selection ?? (selectTextOnFocus ? fallbackSelection : undefined);
 
   const innerRef = useRef<TextFieldRef>(null);
   const isFocusedRef = useRef(false);
@@ -108,6 +113,19 @@ export function TextInput({
 
   const handleFocusChange = (focused: boolean) => {
     isFocusedRef.current = focused;
+    if (focused && selectTextOnFocus && effectiveSelection) {
+      const length = state.value.length;
+      if (worklets?.scheduleOnUI) {
+        worklets.scheduleOnUI(() => {
+          'worklet';
+          effectiveSelection.value = { start: 0, end: length };
+        });
+      } else {
+        console.warn(
+          'selectTextOnFocus is not supported without worklet support. Please ensure you have the react-native-worklets package installed and configured.'
+        );
+      }
+    }
     if (focused) onFocus?.();
     else onBlur?.();
   };
@@ -146,6 +164,7 @@ export function TextInput({
   if (textAlign === 'left') modifiers.push(multilineTextAlignment('leading'));
   else if (textAlign === 'right') modifiers.push(multilineTextAlignment('trailing'));
   else if (textAlign === 'center') modifiers.push(multilineTextAlignment('center'));
+  const numberOfLines = numberOfLinesProp ?? rows;
   if (multiline && numberOfLines && numberOfLines > 0) {
     modifiers.push(lineLimit(numberOfLines, { reservesSpace: true }));
   }
@@ -178,7 +197,7 @@ export function TextInput({
       axis={multiline ? 'vertical' : 'horizontal'}
       onTextChange={maxLength !== undefined ? handleTextChange : onChangeText}
       onFocusChange={handleFocusChange}
-      selection={selection as Parameters<typeof TextField>[0]['selection']}
+      selection={effectiveSelection as Parameters<typeof TextField>[0]['selection']}
       onSelectionChange={onSelectionChange}
       modifiers={modifiers.length > 0 ? modifiers : undefined}
       testID={testID}>

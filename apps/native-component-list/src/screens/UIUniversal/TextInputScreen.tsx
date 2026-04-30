@@ -64,6 +64,7 @@ export default function TextInputScreen() {
   const [yellowSelection, setYellowSelection] = useState(false);
   const selection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
   const [selectionDisplay, setSelectionDisplay] = useState({ start: 0, end: 0 });
+  const [selectTextOnFocus, setSelectTextOnFocus] = useState(false);
 
   const cycleAutoComplete = () => {
     const i = AUTO_COMPLETES.indexOf(autoComplete);
@@ -146,6 +147,7 @@ export default function TextInputScreen() {
               selectionColor={yellowSelection ? 'yellow' : undefined}
               selection={selection}
               onSelectionChange={setSelectionDisplay}
+              selectTextOnFocus={selectTextOnFocus}
             />
             <Text>{`Focused: ${focused}`}</Text>
             <Text>{`Last submitted: ${lastSubmitted ?? 'none'}`}</Text>
@@ -197,6 +199,11 @@ export default function TextInputScreen() {
               value={yellowSelection}
               onValueChange={setYellowSelection}
               label="selectionColor (yellow)"
+            />
+            <Switch
+              value={selectTextOnFocus}
+              onValueChange={setSelectTextOnFocus}
+              label="selectTextOnFocus"
             />
             <Button
               label="ref.focus()"
