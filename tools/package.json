@@ -69,7 +69,7 @@
     "tar": "^7.5.12",
     "terminal-link": "^2.1.1",
     "typedoc": "^0.28.15",
-    "uuid": "^9.0.0"
+    "uuid": "^14.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
