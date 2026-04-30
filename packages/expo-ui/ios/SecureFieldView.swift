@@ -41,13 +41,21 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     isFocused = false
   }
 
+  private var promptText: Text? {
+    guard let slot = props.children?.slot("placeholder") else { return nil }
+    return slot.props.children?
+      .compactMap { ($0.childView as? TextView)?.buildText() }
+      .first
+  }
+
   var body: some View {
     if let state = props.text {
       StatefulSecureField(
         state: state,
         props: props,
         textManager: textManager,
-        isFocused: $isFocused
+        isFocused: $isFocused,
+        promptText: promptText
       )
     }
   }
@@ -58,12 +66,14 @@ private struct StatefulSecureField: View {
   @ObservedObject var props: SecureFieldProps
   @ObservedObject var textManager: TextFieldManager
   @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
 
   var body: some View {
     let textBinding = state.binding("")
     SecureField(
-      props.placeholder,
-      text: textBinding
+      promptText == nil ? props.placeholder : "",
+      text: textBinding,
+      prompt: promptText
     )
       .focused($isFocused)
       .onAppear {

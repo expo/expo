@@ -7,6 +7,7 @@ import { useNativeState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ViewEvent } from '../../types';
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import type { CommonViewModifierProps } from '../types';
 
@@ -46,6 +47,10 @@ export type SecureFieldProps = {
    * A callback triggered when the field gains or loses focus.
    */
   onFocusChange?: (focused: boolean) => void;
+  /**
+   * Slot children - supports `<SecureField.Placeholder>` with a `<Text>` child
+   */
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
 export type NativeSecureFieldProps = Omit<
@@ -62,6 +67,10 @@ const SecureFieldNativeView: React.ComponentType<NativeSecureFieldProps> = requi
   'ExpoUI',
   'SecureFieldView'
 );
+
+function Placeholder({ children }: { children: React.ReactNode }) {
+  return <Slot name="placeholder">{children}</Slot>;
+}
 
 /**
  * Renders a SwiftUI `SecureField` for password input.
@@ -89,3 +98,5 @@ export function SecureField(props: SecureFieldProps) {
     />
   );
 }
+
+SecureField.Placeholder = Placeholder;

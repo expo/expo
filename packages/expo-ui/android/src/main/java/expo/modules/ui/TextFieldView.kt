@@ -480,21 +480,18 @@ fun FunctionalComposableScope.TextFieldContent(
     }
   }
 
-  val ts = props.textStyle
-  val ctx = appContext.reactContext
-  val textStyle = if (ts == null) {
-    TextStyle.Default
-  } else {
+  val context = appContext.reactContext
+  val textStyle = props.textStyle?.let { textStyleProps ->
     TextStyle(
-      color = colorToComposeColorOrNull(ts.color) ?: androidx.compose.ui.graphics.Color.Unspecified,
-      fontSize = ts.fontSize?.sp ?: TextUnit.Unspecified,
-      fontWeight = ts.fontWeight?.toComposeFontWeight(),
-      fontFamily = ctx?.let { resolveFontFamily(ts.fontFamily, it) },
-      letterSpacing = ts.letterSpacing?.sp ?: TextUnit.Unspecified,
-      lineHeight = ts.lineHeight?.sp ?: TextUnit.Unspecified,
-      textAlign = ts.textAlign?.toComposeTextAlign() ?: TextAlign.Unspecified,
+      color = colorToComposeColorOrNull(textStyleProps.color) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      fontSize = textStyleProps.fontSize?.sp ?: TextUnit.Unspecified,
+      fontWeight = textStyleProps.fontWeight?.toComposeFontWeight(),
+      fontFamily = context?.let { resolveFontFamily(textStyleProps.fontFamily, it) },
+      letterSpacing = textStyleProps.letterSpacing?.sp ?: TextUnit.Unspecified,
+      lineHeight = textStyleProps.lineHeight?.sp ?: TextUnit.Unspecified,
+      textAlign = textStyleProps.textAlign?.toComposeTextAlign() ?: TextAlign.Unspecified,
     )
-  }
+  } ?: TextStyle.Default
 
   val visualTransformation = when (props.visualTransformation) {
     "password" -> PasswordVisualTransformation()

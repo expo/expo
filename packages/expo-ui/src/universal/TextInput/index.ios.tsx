@@ -29,19 +29,19 @@ import {
 type SwiftUIKeyboardType = Parameters<typeof keyboardTypeMod>[0];
 type SwiftUISubmitLabel = Parameters<typeof submitLabel>[0];
 
-function mapReturnKeyType(rn: ReturnKeyTypeOptions): SwiftUISubmitLabel {
-  if (rn === 'google' || rn === 'yahoo') return 'search';
-  if (rn === 'default' || rn === 'none' || rn === 'previous' || rn === 'emergency-call') {
+function mapReturnKeyType(value: ReturnKeyTypeOptions): SwiftUISubmitLabel {
+  if (value === 'google' || value === 'yahoo') return 'search';
+  if (value === 'default' || value === 'none' || value === 'previous' || value === 'emergency-call') {
     return 'return';
   }
-  return rn as SwiftUISubmitLabel;
+  return value as SwiftUISubmitLabel;
 }
 
-function mapKeyboardType(rn: KeyboardTypeOptions): SwiftUIKeyboardType {
-  if (rn === 'numeric') return 'decimal-pad';
-  if (rn === 'number-pad') return 'numeric';
-  if (rn === 'visible-password') return 'default';
-  return rn as SwiftUIKeyboardType;
+function mapKeyboardType(value: KeyboardTypeOptions): SwiftUIKeyboardType {
+  if (value === 'numeric') return 'decimal-pad';
+  if (value === 'number-pad') return 'numeric';
+  if (value === 'visible-password') return 'default';
+  return value as SwiftUIKeyboardType;
 }
 
 export function TextInput({
@@ -159,8 +159,13 @@ export function TextInput({
         onFocusChange={handleFocusChange}
         maxLength={maxLength}
         modifiers={modifiers.length > 0 ? modifiers : undefined}
-        testID={testID}
-      />
+        testID={testID}>
+        {placeholderTextColor && placeholder ? (
+          <SecureField.Placeholder>
+            <Text modifiers={[foregroundStyle(placeholderTextColor)]}>{placeholder}</Text>
+          </SecureField.Placeholder>
+        ) : null}
+      </SecureField>
     );
   }
 

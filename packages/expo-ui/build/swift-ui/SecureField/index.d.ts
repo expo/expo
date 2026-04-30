@@ -37,6 +37,10 @@ export type SecureFieldProps = {
      * A callback triggered when the field gains or loses focus.
      */
     onFocusChange?: (focused: boolean) => void;
+    /**
+     * Slot children - supports `<SecureField.Placeholder>` with a `<Text>` child
+     */
+    children?: React.ReactNode;
 } & CommonViewModifierProps;
 export type NativeSecureFieldProps = Omit<SecureFieldProps, 'text' | 'onTextChange' | 'onFocusChange'> & ViewEvent<'onTextChange', {
     value: string;
@@ -50,4 +54,9 @@ export type NativeSecureFieldProps = Omit<SecureFieldProps, 'text' | 'onTextChan
  * Renders a SwiftUI `SecureField` for password input.
  */
 export declare function SecureField(props: SecureFieldProps): import("react/jsx-runtime").JSX.Element;
+export declare namespace SecureField {
+    var Placeholder: ({ children }: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+}
 //# sourceMappingURL=index.d.ts.map

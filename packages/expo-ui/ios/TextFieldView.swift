@@ -113,8 +113,10 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 }
 
 private func extractInt(_ raw: Any?, _ key: String) -> Int? {
-  guard let dict = raw as? NSDictionary, let n = dict[key] as? NSNumber else { return nil }
-  return n.intValue
+  guard let dict = raw as? NSDictionary, let value = dict[key] as? NSNumber else {
+    return nil
+  }
+  return value.intValue
 }
 
 private struct StatefulTextField: View {

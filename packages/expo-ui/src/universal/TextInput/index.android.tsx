@@ -18,14 +18,14 @@ import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import { enterKeyHintToReturnKeyType, inputModeToKeyboardType, resolveEditable } from './utils';
 
-function mapReturnKeyType(rn: ReturnKeyTypeOptions): TextFieldImeAction {
-  if (rn === 'google' || rn === 'yahoo') return 'search';
-  if (rn === 'join' || rn === 'route' || rn === 'emergency-call') return 'default';
-  return rn as TextFieldImeAction;
+function mapReturnKeyType(value: ReturnKeyTypeOptions): TextFieldImeAction {
+  if (value === 'google' || value === 'yahoo') return 'search';
+  if (value === 'join' || value === 'route' || value === 'emergency-call') return 'default';
+  return value as TextFieldImeAction;
 }
 
-function mapKeyboardType(rn: KeyboardTypeOptions): TextFieldKeyboardType {
-  switch (rn) {
+function mapKeyboardType(value: KeyboardTypeOptions): TextFieldKeyboardType {
+  switch (value) {
     case 'default':
       return 'text';
     case 'email-address':

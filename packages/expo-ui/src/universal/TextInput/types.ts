@@ -74,7 +74,9 @@ export interface TextInputProps {
 
   /**
    * If true, the input obscures its text — used for password fields.
-   * - iOS: backed by SwiftUI's `SecureField`
+   * - iOS: backed by SwiftUI's `SecureField`. The following props are no-ops
+   *   in this mode: `selection`, `selectTextOnFocus`, `onSelectionChange`,
+   *   `multiline`, `numberOfLines`.
    * - Android: backed by Compose's `PasswordVisualTransformation`.
    * @default false
    */
@@ -204,6 +206,10 @@ export interface TextInputProps {
 
   /**
    * Called when the rendered size of the input changes. Sizes in points/dp.
+   *
+   * Unlike RN's `onContentSizeChange`, this dispatches the *view*'s outer
+   * geometry, including any padding/border applied via `style` or modifiers.
+   * If you use this for autogrow, account for that
    */
   onContentSizeChange?: (size: { width: number; height: number }) => void;
 
@@ -214,6 +220,10 @@ export interface TextInputProps {
 
   /**
    * If true, the cursor is hidden.
+   *
+   * On iOS, this is implemented via `tint('transparent')`, which also makes
+   * the selection highlight invisible. If you set both `caretHidden` and
+   * `selectionColor`, the caret-hide wins on iOS.
    */
   caretHidden?: boolean;
 
@@ -244,7 +254,9 @@ export interface TextInputProps {
   onSelectionChange?: (selection: { start: number; end: number }) => void;
 
   /**
-   * If true, all text is selected when the field gains focus.
+   * If true, all text is selected when the field gains focus. Implemented
+   * via `setSelection(0, length)` on focus, so if you also pass `selection`,
+   * its value is overwritten on every focus.
    * @default false
    * @platform ios 18.0+, android, web
    */
