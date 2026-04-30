@@ -1,12 +1,14 @@
 import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
-import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { convertEntryPointToRelative, resolveEntryPoint } from '@expo/config/paths';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
+import path from 'path';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import {
+  convertPathToModuleSpecifier,
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
@@ -66,7 +68,40 @@ export type ManifestMiddlewareOptions = {
   constructUrl: UrlCreator['constructUrl'];
   isNativeWebpack?: boolean;
   privateKeyPath?: string;
+  watchFolders?: readonly string[];
 };
+
+export function resolveRelativeEntryPoint(
+  projectRoot: string,
+  props: { platform?: string; pkg?: PackageJSONConfig },
+  watchFolders?: readonly string[]
+): string {
+  const absoluteEntry = resolveEntryPoint(projectRoot, props);
+  const relative = convertEntryPointToRelative(projectRoot, absoluteEntry);
+
+  if (!relative.startsWith('..') || !watchFolders?.length) {
+    return relative;
+  }
+
+  for (let i = 0; i < watchFolders.length; i++) {
+    const watchFolder = watchFolders[i]!;
+    if (!path.isAbsolute(watchFolder)) {
+      debug(`Expected watchFolders[${i}] to be an absolute path, got: ${watchFolder}`);
+      continue;
+    }
+    if (absoluteEntry.startsWith(watchFolder + path.sep) || absoluteEntry === watchFolder) {
+      let relativeToWatch = convertPathToModuleSpecifier(
+        absoluteEntry.slice(watchFolder.length + 1)
+      );
+      if (relativeToWatch.endsWith('.js')) {
+        relativeToWatch = relativeToWatch.slice(0, -3);
+      }
+      return '[metro-watchFolders]/' + i + '/' + relativeToWatch;
+    }
+  }
+
+  return relative;
+}
 
 /** Base middleware creator for serving the Expo manifest (like the index.html but for native runtimes). */
 export abstract class ManifestMiddleware<
@@ -74,6 +109,7 @@ export abstract class ManifestMiddleware<
 > extends ExpoMiddleware {
   private initialProjectConfig: ProjectConfig;
   private platformBundlers: PlatformBundlers;
+  private watchFolders: readonly string[] | undefined;
 
   constructor(
     protected projectRoot: string,
@@ -88,6 +124,7 @@ export abstract class ManifestMiddleware<
     );
     this.initialProjectConfig = getConfig(projectRoot);
     this.platformBundlers = getPlatformBundlers(projectRoot, this.initialProjectConfig.exp);
+    this.watchFolders = options.watchFolders;
   }
 
   /** Exposed for testing. */
@@ -157,9 +194,9 @@ export abstract class ManifestMiddleware<
       return 'index';
     }
 
-    const entry = resolveRelativeEntryPoint(this.projectRoot, props);
-    debug(`Resolved entry point: ${entry} (project root: ${this.projectRoot})`);
-    return entry;
+    const resolved = resolveRelativeEntryPoint(this.projectRoot, props, this.watchFolders);
+    debug(`Resolved entry point: ${resolved} (project root: ${this.projectRoot})`);
+    return resolved;
   }
 
   /** Parse request headers into options. */

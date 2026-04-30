@@ -8,7 +8,7 @@ import * as ProjectDevices from '../../../project/devices';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
 import type { ManifestRequestInfo } from '../ManifestMiddleware';
-import { ManifestMiddleware } from '../ManifestMiddleware';
+import { ManifestMiddleware, resolveRelativeEntryPoint } from '../ManifestMiddleware';
 import type { ServerRequest, ServerResponse } from '../server.types';
 
 class MockServerResponse extends PassThrough {
@@ -35,7 +35,8 @@ jest.mock('../resolveAssets', () => ({
 }));
 jest.mock('@expo/config/paths', () => ({
   ...jest.requireActual('@expo/config/paths'),
-  resolveRelativeEntryPoint: () => 'index',
+  resolveEntryPoint: jest.fn(() => '/index.js'),
+  convertEntryPointToRelative: jest.fn(() => 'index'),
 }));
 jest.mock('@expo/config', () => ({
   getNameFromConfig: jest.fn(jest.requireActual('@expo/config').getNameFromConfig),
@@ -341,5 +342,81 @@ describe('getHandler', () => {
     expect(next).not.toHaveBeenCalled();
     // Ensure the user sees the error in the terminal.
     expect(Log.exception).toHaveBeenCalled();
+  });
+});
+
+describe('resolveRelativeEntryPoint', () => {
+  const { resolveEntryPoint, convertEntryPointToRelative } = require('@expo/config/paths') as {
+    resolveEntryPoint: jest.Mock;
+    convertEntryPointToRelative: jest.Mock;
+  };
+
+  afterEach(() => {
+    resolveEntryPoint.mockReset();
+    resolveEntryPoint.mockReturnValue('/index.js');
+    convertEntryPointToRelative.mockReset();
+    convertEntryPointToRelative.mockReturnValue('index');
+  });
+
+  it('uses convertEntryPointToRelative when no watchFolders', () => {
+    resolveEntryPoint.mockReturnValueOnce('/project/index.js');
+    expect(resolveRelativeEntryPoint('/project', { platform: 'ios' })).toBe('index');
+  });
+
+  it('uses convertEntryPointToRelative when entry is inside server root', () => {
+    resolveEntryPoint.mockReturnValueOnce('/project/index.js');
+    convertEntryPointToRelative.mockReturnValueOnce('index');
+    expect(
+      resolveRelativeEntryPoint('/project', { platform: 'ios' }, ['/workspace/packages'])
+    ).toBe('index');
+  });
+
+  it('uses convertEntryPointToRelative when entry is outside root but not in any watchFolder', () => {
+    resolveEntryPoint.mockReturnValueOnce('/other/entry.js');
+    convertEntryPointToRelative.mockReturnValueOnce('../../other/entry');
+    expect(
+      resolveRelativeEntryPoint('/project', { platform: 'ios' }, ['/workspace/packages'])
+    ).toBe('../../other/entry');
+  });
+
+  it('rewrites to [metro-watchFolders] prefix when entry is outside root and inside a watch folder', () => {
+    resolveEntryPoint.mockReturnValueOnce('/workspace/.scratch/node_modules/expo-router/entry.js');
+    convertEntryPointToRelative.mockReturnValueOnce(
+      '../../.scratch/node_modules/expo-router/entry'
+    );
+    expect(
+      resolveRelativeEntryPoint('/project', { platform: 'ios' }, [
+        '/workspace/.scratch/node_modules',
+      ])
+    ).toBe('[metro-watchFolders]/0/expo-router/entry');
+  });
+
+  it('uses the correct watch folder index', () => {
+    resolveEntryPoint.mockReturnValueOnce('/workspace/.scratch/node_modules/expo-router/entry.js');
+    convertEntryPointToRelative.mockReturnValueOnce(
+      '../../.scratch/node_modules/expo-router/entry'
+    );
+    expect(
+      resolveRelativeEntryPoint('/project', { platform: 'ios' }, [
+        '/workspace/other',
+        '/workspace/.scratch/node_modules',
+      ])
+    ).toBe('[metro-watchFolders]/1/expo-router/entry');
+  });
+
+  it('strips .js extension from watchFolder-relative path', () => {
+    resolveEntryPoint.mockReturnValueOnce('/watchdir/lib/main.js');
+    convertEntryPointToRelative.mockReturnValueOnce('../../watchdir/lib/main');
+    expect(resolveRelativeEntryPoint('/project', { platform: 'ios' }, ['/watchdir'])).toBe(
+      '[metro-watchFolders]/0/lib/main'
+    );
+  });
+
+  it('preserves non-.js extensions in watchFolder-relative path', () => {
+    resolveEntryPoint.mockReturnValueOnce('/watchdir/lib/main.tsx');
+    convertEntryPointToRelative.mockReturnValueOnce('../../watchdir/lib/main.tsx');
+    expect(resolveRelativeEntryPoint('/project', { platform: 'ios' }, ['/watchdir'])).toBe(
+      '[metro-watchFolders]/0/lib/main.tsx'
+    );
   });
 });
