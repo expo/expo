@@ -6,7 +6,7 @@ declare const RouterModal: React.ForwardRefExoticComponent<Omit<import("../..").
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+        routes: import("../../react-navigation").NavigationRoute<ParamListBase, string>[];
         type: string;
         stale: false;
     }>, import("../../react-navigation").EventMapBase>) => null;
@@ -17,7 +17,7 @@ declare const RouterModalScreen: (props: import("../..").ScreenProps<object, Rea
     index: number;
     routeNames: string[];
     history?: unknown[];
-    routes: import("../../react-navigation/core").NavigationRoute<ParamListBase, string>[];
+    routes: import("../../react-navigation").NavigationRoute<ParamListBase, string>[];
     type: string;
     stale: false;
 }>, import("../../react-navigation").EventMapBase>) => null;
