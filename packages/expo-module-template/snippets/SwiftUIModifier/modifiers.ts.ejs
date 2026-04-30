@@ -1,0 +1,7 @@
+import { createModifier } from '@expo/ui/swift-ui/modifiers';
+
+export const <%= project.swiftUIModifierName.charAt(0).toLowerCase() + project.swiftUIModifierName.slice(1) %> = (params: {
+  color?: string;
+  width?: number;
+  cornerRadius?: number;
+}) => createModifier('<%= project.swiftUIModifierName.charAt(0).toLowerCase() + project.swiftUIModifierName.slice(1) %>', params);

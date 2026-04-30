@@ -48,6 +48,9 @@
     ]
   },
   "peerDependencies": {
+<% if (usesExpoUI) { -%>
+    "@expo/ui": "*",
+<% } -%>
     "expo": "*",
     "react": "*",
     "react-native": "*"

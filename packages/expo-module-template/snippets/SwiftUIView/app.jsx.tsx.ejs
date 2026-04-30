@@ -1,0 +1,9 @@
+        <Group name="SwiftUI View">
+          <Host style={styles.view}>
+            <<%- project.swiftUIViewName %>
+              title="Hello from <%- project.name %>"
+              modifiers={[padding({ all: 16 }), cornerRadius(12), background('#f0f0f0')]}>
+              <Text>Child content</Text>
+            </<%- project.swiftUIViewName %>>
+          </Host>
+        </Group>

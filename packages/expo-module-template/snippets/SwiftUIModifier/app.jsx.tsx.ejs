@@ -1,0 +1,11 @@
+        <Group name="SwiftUI Modifier">
+          <Host style={styles.view}>
+            <VStack
+              modifiers={[
+                padding({ all: 20 }),
+                <%= project.swiftUIModifierName.charAt(0).toLowerCase() + project.swiftUIModifierName.slice(1) %>({ color: '#FF6B35', width: 3, cornerRadius: 8 }),
+              ]}>
+              <Text>Custom modifier example</Text>
+            </VStack>
+          </Host>
+        </Group>

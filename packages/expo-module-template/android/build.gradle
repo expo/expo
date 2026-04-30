@@ -1,6 +1,20 @@
+<% if (usesCompose) { -%>
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+  dependencies {
+    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
+  }
+}
+
+<% } -%>
 plugins {
   id 'com.android.library'
   id 'expo-module-gradle-plugin'
+<% if (usesCompose) { -%>
+  id 'org.jetbrains.kotlin.plugin.compose'
+<% } -%>
 }
 
 group = '<%- project.package %>'
@@ -12,7 +26,25 @@ android {
     versionCode 1
     versionName "<% if (type === 'remote') { %><%- project.version %><% } else { %>0.1.0<% } %>"
   }
+<% if (usesCompose) { -%>
+  buildFeatures {
+    compose true
+  }
+<% } -%>
   lintOptions {
     abortOnError false
   }
 }
+<% if (usesCompose) { -%>
+
+dependencies {
+  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
+  implementation 'androidx.compose.ui:ui-android:1.10.6'
+  implementation 'androidx.compose.material3:material3-android:1.5.0-alpha17'
+  if (findProject(':expo-ui') != null) {
+    implementation project(':expo-ui')
+  } else {
+    implementation 'expo.modules.ui:expo.modules.ui:+'
+  }
+}
+<% } -%>

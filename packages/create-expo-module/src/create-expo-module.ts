@@ -9,7 +9,7 @@ import validateNpmPackage from 'validate-npm-package-name';
 import { addPlatformSupport } from './addPlatformSupport';
 import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
-import { ALL_FEATURES, resolveFeatures } from './features';
+import { ALL_FEATURES, filterFeaturesByPlatforms, resolveFeatures } from './features';
 import {
   PACKAGE_MANAGERS,
   installDependencies,
@@ -516,7 +516,8 @@ async function askForSubstitutionDataAsync(
   const interactive = isInteractive();
 
   const platforms = await resolvePlatformsAsync(isLocal, interactive, options);
-  const features = await resolveFeaturesAsync(interactive, options);
+  const rawFeatures = await resolveFeaturesAsync(interactive, options);
+  const features = filterFeaturesByPlatforms(rawFeatures, platforms);
 
   if (!interactive) {
     return getSubstitutionDataFromOptions(slug, isLocal, options, platforms, features);
@@ -556,6 +557,10 @@ async function askForSubstitutionDataAsync(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
+        swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
+        composeViewName: handleSuffix(name, 'ComposeView'),
+        composeModifierName: handleSuffix(name, 'ComposeModifier'),
         sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
         platforms,
         features,
@@ -585,6 +590,10 @@ async function askForSubstitutionDataAsync(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
+      swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
+      composeViewName: handleSuffix(name, 'ComposeView'),
+      composeModifierName: handleSuffix(name, 'ComposeModifier'),
       sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
       platforms,
       features,
@@ -656,6 +665,10 @@ async function getSubstitutionDataFromOptions(
         package: projectPackage,
         moduleName: handleSuffix(name, 'Module'),
         viewName: handleSuffix(name, 'View'),
+        swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
+        swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
+        composeViewName: handleSuffix(name, 'ComposeView'),
+        composeModifierName: handleSuffix(name, 'ComposeModifier'),
         sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
         platforms,
         features,
@@ -701,6 +714,10 @@ async function getSubstitutionDataFromOptions(
       package: projectPackage,
       moduleName: handleSuffix(name, 'Module'),
       viewName: handleSuffix(name, 'View'),
+      swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
+      swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
+      composeViewName: handleSuffix(name, 'ComposeView'),
+      composeModifierName: handleSuffix(name, 'ComposeModifier'),
       sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
       platforms,
       features,
