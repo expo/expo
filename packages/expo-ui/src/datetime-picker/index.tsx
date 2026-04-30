@@ -8,7 +8,7 @@ export {
 
 if (__DEV__) {
   console.warn(
-    "[@expo/ui] '@expo/ui/datetimepicker' is deprecated. Import from '@expo/ui/community/datetime-picker' instead."
+    "[@expo/ui] Importing from '@expo/ui/datetime-picker' is deprecated. Import from '@expo/ui/community/datetime-picker' instead."
   );
 }
 
