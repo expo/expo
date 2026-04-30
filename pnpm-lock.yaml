@@ -1279,6 +1279,12 @@ importers:
       expo-task-manager:
         specifier: workspace:*
         version: link:../../packages/expo-task-manager
+      expo-updates:
+        specifier: workspace:*
+        version: link:../../packages/expo-updates
+      native-component-list:
+        specifier: workspace:*
+        version: link:../native-component-list
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -1294,6 +1300,9 @@ importers:
       react-native-screens:
         specifier: 4.24.0
         version: 4.24.0(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      test-suite:
+        specifier: workspace:*
+        version: link:../test-suite
     devDependencies:
       '@types/jest':
         specifier: ^29.5.12
