@@ -9,10 +9,12 @@ import {
   type TextInputRef,
   useNativeState,
 } from '@expo/ui';
-import { shadow as composeShadow } from '@expo/ui/jetpack-compose/modifiers';
-import { italic } from '@expo/ui/swift-ui/modifiers';
 import { useRef, useState } from 'react';
 import { Platform } from 'react-native';
+
+const italic = Platform.OS === 'ios' ? require('@expo/ui/swift-ui/modifiers').italic : null;
+const composeShadow =
+  Platform.OS === 'android' ? require('@expo/ui/jetpack-compose/modifiers').shadow : null;
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
@@ -154,9 +156,11 @@ export default function TextInputScreen() {
               selectTextOnFocus={selectTextOnFocus}
               modifiers={
                 escapeHatchOn
-                  ? Platform.OS === 'ios'
+                  ? Platform.OS === 'ios' && italic
                     ? [italic()]
-                    : [composeShadow(8)]
+                    : Platform.OS === 'android' && composeShadow
+                      ? [composeShadow(8)]
+                      : undefined
                   : undefined
               }
             />
