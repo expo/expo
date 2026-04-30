@@ -10,9 +10,9 @@ import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
  */
 export type TextInputRef = {
     /** Programmatically focus the input. */
-    focus: () => Promise<void>;
+    focus: () => void;
     /** Programmatically blur the input. */
-    blur: () => Promise<void>;
+    blur: () => void;
     /** Clear the current text. */
     clear: () => void;
     /** Returns whether the input currently has focus. */
