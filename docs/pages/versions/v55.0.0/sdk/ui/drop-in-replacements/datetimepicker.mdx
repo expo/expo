@@ -26,7 +26,7 @@ If you need lower-level control (custom modifiers, styles, or layouts), use thos
 
 ## Migrating from `@react-native-community/datetimepicker`
 
-- Update the import from `import DateTimePicker from '@react-native-community/datetimepicker'` to `import DateTimePicker from '@expo/ui/community/datetime-picker'`.
+- Update the import from `import DateTimePicker from '@react-native-community/datetimepicker'` to `import DateTimePicker from '@expo/ui/datetimepicker'`.
 - There is no imperative `DateTimePickerAndroid.open()` API. Render the component and use `presentation="dialog"` instead.
 - `minuteInterval`, `textColor`, `firstDayOfWeek`, `neutralButton`, `onNeutralButtonPress`, `fullscreen`, `title` and `startOnYearSelection` props are not supported.
 - Use `timeZoneName` (IANA name) instead of `timeZoneOffsetInMinutes`.
@@ -37,7 +37,7 @@ If you need lower-level control (custom modifiers, styles, or layouts), use thos
 
 ```tsx DateTimePickerExample.tsx
 import { useState } from 'react';
-import DateTimePicker from '@expo/ui/community/datetime-picker';
+import DateTimePicker from '@expo/ui/datetimepicker';
 
 export default function DateTimePickerExample() {
   const [date, setDate] = useState(new Date());
@@ -58,7 +58,7 @@ export default function DateTimePickerExample() {
 
 ```tsx TimePickerExample.tsx
 import { useState } from 'react';
-import DateTimePicker from '@expo/ui/community/datetime-picker';
+import DateTimePicker from '@expo/ui/datetimepicker';
 
 export default function TimePickerExample() {
   const [date, setDate] = useState(new Date());
@@ -79,7 +79,7 @@ export default function TimePickerExample() {
 
 ```tsx ConstrainedDatePickerExample.tsx
 import { useState } from 'react';
-import DateTimePicker from '@expo/ui/community/datetime-picker';
+import DateTimePicker from '@expo/ui/datetimepicker';
 
 const today = new Date();
 const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
@@ -108,7 +108,7 @@ On Android, you can use `presentation="dialog"` to show the picker as a modal di
 ```tsx AndroidDialogExample.tsx
 import { useState } from 'react';
 import { Button, View } from 'react-native';
-import DateTimePicker from '@expo/ui/community/datetime-picker';
+import DateTimePicker from '@expo/ui/datetimepicker';
 
 export default function AndroidDialogExample() {
   const [date, setDate] = useState(new Date());
@@ -139,7 +139,7 @@ export default function AndroidDialogExample() {
 ## API
 
 ```tsx
-import DateTimePicker from '@expo/ui/community/datetime-picker';
+import DateTimePicker from '@expo/ui/datetimepicker';
 ```
 
-<APISection packageName="expo-ui/community/datetime-picker" apiName="DateTimePicker" />
+<APISection packageName="expo-ui/datetime-picker" apiName="DateTimePicker" />
