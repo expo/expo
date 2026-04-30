@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- [SwiftUI] `TextField`: removed `setSelection` ref method; replaced with `selection: ObservableState<TextFieldSelection>` prop. Migrate by writing `selection.value = { start, end }` instead of calling `ref.current?.setSelection(...)`. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
 - [SwiftUI] Use `fixedSize` modifier for Host `matchContents` ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Use intrinsic size for Host `matchContents` to match iOS ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
 - [SwiftUI] `TextField`: removed `defaultValue`, added `text` prop backed by an `ObservableState` (from `useNativeState`), added worklet support for `onTextChange`, and renamed `onValueChange` → `onTextChange`. ([#44988](https://github.com/expo/expo/pull/44988) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -32,6 +33,7 @@
 
 ### 🎉 New features
 
+- [universal] Added `TextInput` component that mirrors RN's `TextInput` API but routes to SwiftUI on iOS, Compose on Android, and RN's `TextInput` on web. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
 - [compose] Added worklet and `ObservableState` support to `TextField`. Added `value` prop accepting `ObservableState<string | TextFieldValue>` (create via `useNativeState`). `onValueChange` now supports worklets for synchronous UI-thread updates. Added `TextFieldValue` type with `text` + `selection` for worklet-driven caret control. Replaced `defaultValue`, callers pass state via `useNativeState` or omit for an empty field. ([#45024](https://github.com/expo/expo/pull/45024) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
