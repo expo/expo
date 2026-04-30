@@ -13,7 +13,7 @@ import {
   emitDomSetParams,
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
-import type { Href, Route, RouteInputParams } from '../types';
+import type { Href, RoutePath, RouteInputParams } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 
 export function navigate(url: Href, options?: NavigationOptions) {
@@ -223,7 +223,7 @@ export type ImperativeRouter = {
   /**
    * Updates the current route's query params.
    */
-  setParams: <T extends Route>(params: Partial<RouteInputParams<T>>) => void;
+  setParams: <T extends RoutePath>(params: Partial<RouteInputParams<T>>) => void;
   /**
    * Reloads the currently mounted route in experimental server mode. This can be used to re-fetch data.
    * @hidden
