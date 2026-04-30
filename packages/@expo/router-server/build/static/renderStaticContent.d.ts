@@ -5,12 +5,16 @@
  * LICENSE file in the root directory of this source tree.
  */
 import '@expo/metro-runtime';
+import { resolveMetadata } from '../server/metadata';
 export type GetStaticContentOptions = {
     loader?: {
         data?: any;
         /** Unique key for the route. Derived from the route's contextKey */
         key: string;
     };
+    metadata?: {
+        headTags: string;
+    } | null;
     request?: Request;
     /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
     assets?: {
@@ -31,5 +35,6 @@ export declare function getStaticContent(location: URL, options?: GetStaticConte
  * (i.e. `renderStreamingContent.tsx`) as it doesn't belong with static rendering logic.
  */
 export declare function getStreamingContent(location: URL, options?: GetStaticContentOptions): Promise<ReadableStream<Uint8Array>>;
+export { resolveMetadata };
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';
 //# sourceMappingURL=renderStaticContent.d.ts.map
