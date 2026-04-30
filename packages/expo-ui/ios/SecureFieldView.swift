@@ -2,7 +2,7 @@ import SwiftUI
 import ExpoModulesCore
 
 final class SecureFieldProps: UIBaseViewProps {
-  @Field var text: ObservableState?
+  @Field var text: ObservableState = ObservableState(value: "")
   @Field var maxLength: Int?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
@@ -21,7 +21,7 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setText(_ text: String) {
-    props.text?.value = text
+    props.text.value = text
   }
 
   func focus() {
@@ -49,15 +49,13 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   var body: some View {
-    if let state = props.text {
-      StatefulSecureField(
-        state: state,
-        props: props,
-        textManager: textManager,
-        isFocused: $isFocused,
-        promptText: promptText
-      )
-    }
+    StatefulSecureField(
+      state: props.text,
+      props: props,
+      textManager: textManager,
+      isFocused: $isFocused,
+      promptText: promptText
+    )
   }
 }
 

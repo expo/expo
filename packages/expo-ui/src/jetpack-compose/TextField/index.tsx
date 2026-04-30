@@ -3,7 +3,7 @@ import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { worklets } from '../../State/optionalWorklets';
-import { type ObservableState, useNativeState } from '../../State/useNativeState';
+import type { ObservableState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ModifierConfig, ViewEvent } from '../../types';
@@ -289,11 +289,7 @@ function useTransformedProps<T extends TextFieldValueLike>(
     ...restProps
   } = props;
 
-  const internalValue = useNativeState<string>('');
-  const state: ObservableState<TextFieldValueLike> =
-    (value as ObservableState<TextFieldValueLike> | undefined) ?? internalValue;
-
-  const isStringMode = typeof state.value === 'string';
+  const isStringMode = !value || typeof value.value === 'string';
 
   const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
   const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
@@ -304,7 +300,7 @@ function useTransformedProps<T extends TextFieldValueLike>(
     ...restProps,
     variant,
     children,
-    value: getStateId(state),
+    value: value ? getStateId(value as ObservableState<TextFieldValueLike>) : undefined,
     selection: selection ? getStateId(selection) : undefined,
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:

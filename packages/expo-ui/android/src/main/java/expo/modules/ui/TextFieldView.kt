@@ -203,8 +203,8 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 
 @OptimizedComposeProps
 data class TextFieldProps(
-  val value: ObservableState? = null,
-  val selection: ObservableState? = null,
+  val value: ObservableState = ObservableState(""),
+  val selection: ObservableState = ObservableState(mapOf("start" to 0, "end" to 0)),
   val maxLength: Int? = null,
   val autoFocus: Boolean = false,
   val variant: TextFieldVariant = TextFieldVariant.FILLED,
@@ -308,7 +308,7 @@ fun FunctionalComposableScope.TextFieldContent(
 ) {
   val focusManager = LocalFocusManager.current
   val focusRequester = remember { FocusRequester() }
-  val state = props.value ?: return
+  val state = props.value
 
   val isStringMode = state.value is String
   setText.handle { text ->
@@ -333,7 +333,7 @@ fun FunctionalComposableScope.TextFieldContent(
     val text = state.value.extractText()
     val clampedStart = req.start.coerceIn(0, text.length)
     val clampedEnd = req.end.coerceIn(0, text.length)
-    props.selection?.value = mapOf("start" to clampedStart, "end" to clampedEnd)
+    props.selection.value = mapOf("start" to clampedStart, "end" to clampedEnd)
   }
   clear.handle {
     state.value = if (isStringMode) {
@@ -414,7 +414,7 @@ fun FunctionalComposableScope.TextFieldContent(
     localValue.value = TextFieldValue(text, selection)
   }
 
-  props.selection?.value?.let { rawSel ->
+  props.selection.value?.let { rawSel ->
     val selMap = rawSel as? Map<*, *>
     val externalStart = (selMap?.get("start") as? Number)?.toInt()
     val externalEnd = (selMap?.get("end") as? Number)?.toInt()
@@ -465,16 +465,14 @@ fun FunctionalComposableScope.TextFieldContent(
       }
     }
     if (new.selection != prev.selection) {
-      props.selection?.let { selObservable ->
-        val cur = selObservable.value as? Map<*, *>
-        val curStart = (cur?.get("start") as? Number)?.toInt()
-        val curEnd = (cur?.get("end") as? Number)?.toInt()
-        if (curStart != new.selection.start || curEnd != new.selection.end) {
-          selObservable.value = mapOf(
-            "start" to new.selection.start,
-            "end" to new.selection.end
-          )
-        }
+      val cur = props.selection.value as? Map<*, *>
+      val curStart = (cur?.get("start") as? Number)?.toInt()
+      val curEnd = (cur?.get("end") as? Number)?.toInt()
+      if (curStart != new.selection.start || curEnd != new.selection.end) {
+        props.selection.value = mapOf(
+          "start" to new.selection.start,
+          "end" to new.selection.end
+        )
       }
       onSelectionChanged(TextFieldSelectionPayload(new.selection.start, new.selection.end))
     }

@@ -1,6 +1,6 @@
 import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
-import { type ObservableState } from '../../State/useNativeState';
+import type { ObservableState } from '../../State/useNativeState';
 import type { ModifierConfig } from '../../types';
 /**
  * Can be used for imperatively focusing and setting text/selection on the `TextField` component.

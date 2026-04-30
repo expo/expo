@@ -3,7 +3,6 @@ import type { Ref } from 'react';
 
 import { worklets } from '../../State/optionalWorklets';
 import type { ObservableState } from '../../State/useNativeState';
-import { useNativeState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ViewEvent } from '../../types';
@@ -121,9 +120,6 @@ export function TextField(props: TextFieldProps) {
     ...restProps
   } = props;
 
-  const fallbackText = useNativeState('');
-  const textState = text ?? fallbackText;
-
   const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
   const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
 
@@ -132,7 +128,7 @@ export function TextField(props: TextFieldProps) {
       {...restProps}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      text={getStateId(textState)}
+      text={text ? getStateId(text) : undefined}
       selection={selection ? getStateId(selection) : undefined}
       onTextChangeSync={getStateId(workletCallback)}
       onTextChange={

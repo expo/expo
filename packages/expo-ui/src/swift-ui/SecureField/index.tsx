@@ -3,7 +3,6 @@ import type { Ref } from 'react';
 
 import { worklets } from '../../State/optionalWorklets';
 import type { ObservableState } from '../../State/useNativeState';
-import { useNativeState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ViewEvent } from '../../types';
@@ -78,9 +77,6 @@ function Placeholder({ children }: { children: React.ReactNode }) {
 export function SecureField(props: SecureFieldProps) {
   const { text, onTextChange, onFocusChange, modifiers, ...restProps } = props;
 
-  const fallbackText = useNativeState('');
-  const textState = text ?? fallbackText;
-
   const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
   const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
 
@@ -89,7 +85,7 @@ export function SecureField(props: SecureFieldProps) {
       {...restProps}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      text={getStateId(textState)}
+      text={text ? getStateId(text) : undefined}
       onTextChangeSync={getStateId(workletCallback)}
       onTextChange={
         !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined

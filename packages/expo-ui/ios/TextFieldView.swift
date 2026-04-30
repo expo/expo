@@ -7,8 +7,8 @@ enum TextFieldAxis: String, Enumerable {
 }
 
 final class TextFieldProps: UIBaseViewProps {
-  @Field var text: ObservableState?
-  @Field var selection: ObservableState?
+  @Field var text: ObservableState = ObservableState(value: "")
+  @Field var selection: ObservableState = ObservableState(value: ["start": 0, "end": 0])
   @Field var maxLength: Int?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
@@ -39,11 +39,11 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setText(_ text: String) {
-    props.text?.value = text
+    props.text.value = text
   }
 
   func clear() {
-    props.text?.value = ""
+    props.text.value = ""
   }
 
   func focus() {
@@ -64,11 +64,10 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setSelection(start: Int, end: Int) {
-    guard let selection = props.selection else { return }
-    let text = (props.text?.value as? String) ?? ""
+    let text = (props.text.value as? String) ?? ""
     let lower = max(0, min(min(start, end), text.count))
     let upper = max(0, min(max(start, end), text.count))
-    selection.value = ["start": lower, "end": upper]
+    props.selection.value = ["start": lower, "end": upper]
   }
 
   private var promptText: Text? {
@@ -79,36 +78,34 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   var body: some View {
-    if let state = props.text {
 #if !os(tvOS)
-      if #available(iOS 18.0, macOS 15.0, *), let selection = props.selection {
-        StatefulSelectableTextField(
-          state: state,
-          selection: selection,
-          props: props,
-          textManager: textManager,
-          isFocused: $isFocused,
-          promptText: promptText
-        )
-      } else {
-        StatefulTextField(
-          state: state,
-          props: props,
-          textManager: textManager,
-          isFocused: $isFocused,
-          promptText: promptText
-        )
-      }
-#else
-      StatefulTextField(
-        state: state,
+    if #available(iOS 18.0, macOS 15.0, *) {
+      StatefulSelectableTextField(
+        state: props.text,
+        selection: props.selection,
         props: props,
         textManager: textManager,
         isFocused: $isFocused,
         promptText: promptText
       )
-#endif
+    } else {
+      StatefulTextField(
+        state: props.text,
+        props: props,
+        textManager: textManager,
+        isFocused: $isFocused,
+        promptText: promptText
+      )
     }
+#else
+    StatefulTextField(
+      state: props.text,
+      props: props,
+      textManager: textManager,
+      isFocused: $isFocused,
+      promptText: promptText
+    )
+#endif
   }
 }
 
