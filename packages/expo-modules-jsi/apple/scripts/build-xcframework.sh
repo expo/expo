@@ -8,8 +8,8 @@
 # Features:
 #   - Hash-based caching: skips rebuild if source files haven't changed
 #   - Additive slices: builds only the requested platform, preserves others
-#   - Dependency symlinks: links React, hermes-engine, and ReactNativeDependencies
-#     from the Pods directory so Package.swift can reference them locally
+#   - Reads React/JSI/Hermes headers directly from Pods/Headers/Public, so the
+#     same configuration works for both prebuilt and source-built React Native
 #   - Cleans .swiftinterface files for cross-compiler compatibility
 #
 # Usage:
@@ -30,6 +30,8 @@ HASH_FILE="${SLICES_DIR}/.build-hash"
 
 CONFIGURATION="Release"
 DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
+SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
+SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 CLEAN=false
@@ -69,12 +71,6 @@ SOURCE_DIRS=(
 SOURCE_FILES=(
   "${PACKAGE_DIR}/Package.swift"
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
-  # Dep xcframework identity — forces a rebuild when deps change (e.g. after
-  # an RN upgrade). Info.plist contains version metadata and is read through
-  # the symlink, so a new underlying dep invalidates the hash.
-  "${PACKAGE_DIR}/Sources/React/React.xcframework/Info.plist"
-  "${PACKAGE_DIR}/Sources/ReactNativeDependencies/ReactNativeDependencies.xcframework/Info.plist"
-  "${PACKAGE_DIR}/Sources/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework/Info.plist"
 )
 
 # Computes a SHA256 hash of all source files.
@@ -128,9 +124,10 @@ build_slice() {
 
   # Use env -i to clear inherited Xcode environment variables from the parent build.
   # Without this, the nested xcodebuild inherits SDKROOT, PLATFORM_NAME, etc.
-  # which causes SDK/platform mismatches.
+  # which causes SDK/platform mismatches. PODS_ROOT is forwarded explicitly
+  # because Package.swift reads it to resolve header search paths.
   # Run from PACKAGE_DIR so xcodebuild finds the SPM package, not the Pods project.
-  (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" \
+  (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" \
     xcodebuild \
     build \
     -scheme "$PACKAGE_NAME" \
@@ -217,65 +214,46 @@ assemble_xcframework() {
   echo "$current_hash" > "$HASH_FILE"
 }
 
-# Creates symlinks from Sources/ to the dependency xcframeworks in the Pods directory.
-# This allows Package.swift to reference them via local paths without committing them.
-symlink_dependencies() {
-  if [[ -z "${PODS_ROOT:-}" ]]; then
-    log "error: PODS_ROOT is not set. Run this script as a CocoaPods build phase or set PODS_ROOT manually."
-    exit 1
-  fi
-
-  local sources="${PACKAGE_DIR}/Sources"
-
-  # hermes-engine and React are committed directories containing files that
-  # can't come from Pods (module.modulemap, VFS overlay). Only their
-  # heavy subdirectories are symlinked. `ln -sfn` atomically replaces an
-  # existing symlink so we recover from dangling links and keep the target
-  # in sync when PODS_ROOT changes.
-  local hermes_destroot="${sources}/hermes-engine/destroot"
-  if [[ -d "${PODS_ROOT}/hermes-engine/destroot" ]]; then
-    [[ -d "$hermes_destroot" && ! -L "$hermes_destroot" ]] && rm -rf "$hermes_destroot"
-    ln -sfn "${PODS_ROOT}/hermes-engine/destroot" "$hermes_destroot"
-  fi
-
-  local react_xcframework="${sources}/React/React.xcframework"
-  if [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]]; then
-    [[ -d "$react_xcframework" && ! -L "$react_xcframework" ]] && rm -rf "$react_xcframework"
-    ln -sfn "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" "$react_xcframework"
-  fi
-
-  local rndeps_xcframework="${sources}/ReactNativeDependencies/ReactNativeDependencies.xcframework"
-  if [[ -d "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" ]]; then
-    [[ -d "$rndeps_xcframework" && ! -L "$rndeps_xcframework" ]] && rm -rf "$rndeps_xcframework"
-    ln -sfn "${PODS_ROOT}/ReactNativeDependencies/framework/packages/react-native/ReactNativeDependencies.xcframework" "$rndeps_xcframework"
-  fi
-
-  # Generate the VFS overlay with paths matching the local Sources/React directory.
-  # The Pods VFS uses absolute Pods paths which don't match when the compiler
-  # resolves headers through our symlinked Sources/React path.
-  # Regenerate when the Pods source is newer (e.g. after a React Native upgrade).
-  local vfs_output="${sources}/React/React-VFS.yaml"
-  local vfs_source="${PODS_ROOT}/React-Core-prebuilt/React-VFS.yaml"
-  if [[ -f "$vfs_source" ]] && [[ ! -f "$vfs_output" || "$vfs_source" -nt "$vfs_output" ]]; then
-    log "Regenerating React VFS overlay"
-    sed "s|${PODS_ROOT}/React-Core-prebuilt|${sources}/React|g" "$vfs_source" > "$vfs_output"
-  fi
-}
-
 # --- Main ---
 
-if [[ -n "${PODS_ROOT:-}" ]]; then
-  # Resolve to an absolute path so symlinks and the build hash are stable
-  # regardless of whether PODS_ROOT was passed as relative or absolute.
-  PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
+if [[ -z "${PODS_ROOT:-}" ]]; then
+  log "error: PODS_ROOT is not set. Run this script as a CocoaPods build phase or set PODS_ROOT manually."
+  exit 1
 fi
+
+# Resolve to an absolute path so the build hash is stable regardless of
+# whether PODS_ROOT was passed as relative or absolute.
+PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
+
+# React Native version — forces a rebuild after an RN upgrade. The local
+# podspec is regenerated by `pod install` and only changes when the underlying
+# RN version changes.
+if [[ -f "${PODS_ROOT}/Local Podspecs/React-Core.podspec.json" ]]; then
+  SOURCE_FILES+=("${PODS_ROOT}/Local Podspecs/React-Core.podspec.json")
+fi
+
+# Generate the module map for the `jsi` Clang module. The umbrella header is
+# referenced by absolute path so this works regardless of where Pods lives.
+# The same Pods/Headers/Public/React-jsi/jsi/jsi.h path exists in both prebuilt
+# and source-built React Native layouts. Stored outside `.build/` so we can
+# wipe SwiftPM state freely without losing this file.
+GENERATED_DIR="${PACKAGE_DIR}/.generated"
+GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
+mkdir -p "$GENERATED_DIR"
+cat > "$GENERATED_MODULE_MAP" <<EOF
+module jsi {
+  umbrella header "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
+
+  export *
+  module * { export * }
+}
+EOF
+SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
-  rm -rf "$XCFRAMEWORK_PATH" "$SLICES_DIR"
-  log "Cleaned existing xcframework and staged slices"
+  rm -rf "$XCFRAMEWORK_PATH" "$SLICES_DIR" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+  log "Cleaned existing xcframework, staged slices, DerivedData, and SwiftPM state"
 fi
-
-symlink_dependencies
 
 # Determine which platforms to build.
 if [[ -n "$PLATFORM_NAME" ]]; then
@@ -306,8 +284,12 @@ if [[ -f "$HASH_FILE" ]]; then
     PLATFORMS=("${platforms_to_build[@]}")
   else
     # Sources changed — remove all staged slices so they get rebuilt.
+    # Also wipe DerivedData and .build because Swift Package Manager caches
+    # the resolved package graph there and Package.swift reads PODS_ROOT at
+    # resolve time; without this, switching PODS_ROOT (e.g. between apps)
+    # leaks paths from the previous resolution into the new build.
     log "Source files changed, rebuilding all slices"
-    rm -rf "$SLICES_DIR" "$XCFRAMEWORK_PATH"
+    rm -rf "$SLICES_DIR" "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
   fi
 fi
 
