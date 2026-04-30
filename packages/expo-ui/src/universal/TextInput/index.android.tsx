@@ -127,7 +127,6 @@ export function TextInput({
     else onBlur?.();
   };
 
-
   const keyboardOptions =
     keyboardType || autoCapitalize || autoCorrect !== undefined || returnKeyType
       ? {

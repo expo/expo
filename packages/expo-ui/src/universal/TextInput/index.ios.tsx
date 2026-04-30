@@ -31,7 +31,12 @@ type SwiftUISubmitLabel = Parameters<typeof submitLabel>[0];
 
 function mapReturnKeyType(value: ReturnKeyTypeOptions): SwiftUISubmitLabel {
   if (value === 'google' || value === 'yahoo') return 'search';
-  if (value === 'default' || value === 'none' || value === 'previous' || value === 'emergency-call') {
+  if (
+    value === 'default' ||
+    value === 'none' ||
+    value === 'previous' ||
+    value === 'emergency-call'
+  ) {
     return 'return';
   }
   return value as SwiftUISubmitLabel;
@@ -115,7 +120,6 @@ export function TextInput({
     if (focused) onFocus?.();
     else onBlur?.();
   };
-
 
   const modifiers: ModifierConfig[] = [
     ...(userModifiers ?? []),
