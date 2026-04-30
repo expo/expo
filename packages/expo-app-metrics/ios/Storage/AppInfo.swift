@@ -20,6 +20,11 @@ public struct AppInfo: Codable, Equatable, Sendable {
     public let updateId: String?
     public let runtimeVersion: String?
     public let requestHeaders: [String: String]?
+    public var channel: String? {
+      get {
+        return requestHeaders?["expo-channel-name"]
+      }
+    }
   }
 
   public init(

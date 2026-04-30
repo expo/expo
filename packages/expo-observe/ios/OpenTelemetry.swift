@@ -146,8 +146,8 @@ extension Event {
       attributes.append(OTAttribute(key: "expo.app.update_id", rawValue: appUpdateId))
       attributes.append(OTAttribute(key: "expo.app.updates.id", rawValue: appUpdateId))
     }
-    if let requestHeadersString = try? metadata.appUpdatesInfo?.requestHeaders?.toJSONString() {
-      attributes.append(OTAttribute(key: "expo.app.updates.request_headers", rawValue: requestHeadersString))
+    if let channel = metadata.appUpdatesInfo?.channel {
+      attributes.append(OTAttribute(key: "expo.app.updates.channel", rawValue: channel))
     }
     if let appUpdateRuntimeVersion = metadata.appUpdatesInfo?.runtimeVersion {
       attributes.append(OTAttribute(key: "expo.app.updates.runtime_version", rawValue: appUpdateRuntimeVersion))

@@ -142,9 +142,7 @@ struct OpenTelemetryTests {
     // New keys
     #expect(attrs["expo.app.updates.id"] == "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9")
     #expect(attrs["expo.app.updates.runtime_version"] == "1.0.0")
-    let requestHeadersString = attrs["expo.app.updates.request_headers"]!
-    let parsedHeaders = try! JSONSerialization.jsonObject(with: requestHeadersString.data(using: .utf8)!) as! [String: String]
-    #expect(parsedHeaders["expo-channel-name"] == "production")
+    #expect(attrs["expo.app.updates.channel"] == "production")
     #expect(attrs["expo.sdk.version"] == "55.0.0")
     #expect(attrs["expo.react_native.version"] == "0.83.1")
     #expect(attrs["expo.eas_client.id"] == testEasClientId)
@@ -177,7 +175,7 @@ struct OpenTelemetryTests {
     #expect(keys.contains("expo.app.update_id") == false)
     #expect(keys.contains("expo.app.updates.id") == false)
     #expect(keys.contains("expo.app.updates.runtime_version") == false)
-    #expect(keys.contains("expo.app.updates.request_headers") == false)
+    #expect(keys.contains("expo.app.updates.channel") == false)
   }
 
   // MARK: - Full OTEvent
