@@ -12,6 +12,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@expo/ui": "~55.0.1",
     "expo": "~55.0.2",
     "expo-constants": "~55.0.7",
     "expo-device": "~55.0.9",
