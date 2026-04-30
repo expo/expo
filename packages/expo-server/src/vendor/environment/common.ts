@@ -43,7 +43,7 @@ interface EnvironmentInput {
 
 export interface CommonEnvironment {
   getRoutesManifest(): Promise<Manifest | null>;
-  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getApiRoute(route: Route): Promise<unknown>;
   getMiddleware(middleware: MiddlewareInfo): Promise<any>;
   getLoaderData(request: Request, route: Route): Promise<Response>;
@@ -89,7 +89,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
       const location = new URL(url.pathname + url.search, url.origin);
       const assets = mergeAssets(topLevelAssets, options?.assets);
 
-      return ssrModule.getStaticContent(location, {
+      return ssrModule.getStreamingContent(location, {
         loader: options?.loader,
         request,
         assets,

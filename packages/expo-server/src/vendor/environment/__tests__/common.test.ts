@@ -207,7 +207,7 @@ describe('getHtml', () => {
       })
     );
 
-    expect(html).toBe('<html>SSR content</html>');
+    expect(await new Response(html as ReadableStream).text()).toBe('<html>SSR content</html>');
     expect(input.loadModule).toHaveBeenCalledWith('_expo/server/render.js');
     expect(input.readText).not.toHaveBeenCalled();
   });
@@ -295,7 +295,7 @@ describe('getHtml', () => {
     expect(input.loadModule).toHaveBeenCalledTimes(2);
   });
 
-  it('passes location, request, and assets to `getStaticContent()`', async () => {
+  it('passes location, request, and assets to `getStreamingContent()`', async () => {
     const mockSSRModule = createMockSSRModule();
     const input = createMockInput({
       manifest: {
@@ -316,7 +316,7 @@ describe('getHtml', () => {
       })
     );
 
-    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
       expect.objectContaining({
         pathname: '/path',
         search: '?query=1',
@@ -324,6 +324,14 @@ describe('getHtml', () => {
       expect.objectContaining({
         request,
         assets: { css: ['/style.css'], js: ['/app.js'] },
+      })
+    );
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
+      expect.any(URL),
+      expect.objectContaining({
+        request: expect.objectContaining({
+          signal: request.signal,
+        }),
       })
     );
   });
@@ -349,7 +357,7 @@ describe('getHtml', () => {
       })
     );
 
-    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
         assets: {
@@ -364,7 +372,7 @@ describe('getHtml', () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     const renderError = new Error('Render failed');
     const mockSSRModule = {
-      getStaticContent: jest.fn().mockRejectedValue(renderError),
+      getStreamingContent: jest.fn().mockRejectedValue(renderError),
     };
     const input = createMockInput({
       manifest: {
@@ -426,7 +434,7 @@ describe('getHtml', () => {
 
     expect(input.loadModule).toHaveBeenCalledWith('_expo/loaders/index.js');
     expect(loaderModule.loader).toHaveBeenCalledWith(expect.any(ImmutableRequest), {});
-    expect(mockSSRModule.getStaticContent).toHaveBeenCalledWith(
+    expect(mockSSRModule.getStreamingContent).toHaveBeenCalledWith(
       expect.any(URL),
       expect.objectContaining({
         loader: { key: '/index', data: loaderData },
@@ -724,6 +732,17 @@ function createMockRoute<T extends string | RegExp = string>(
 
 function createMockSSRModule(): ServerRenderModule {
   return {
-    getStaticContent: jest.fn().mockResolvedValue('<html>SSR content</html>'),
+    getStreamingContent: jest
+      .fn()
+      .mockResolvedValue(createMockHtmlStream('<html>SSR content</html>')),
   };
+}
+
+function createMockHtmlStream(html: string): ReadableStream<Uint8Array> {
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      controller.enqueue(new TextEncoder().encode(html));
+      controller.close();
+    },
+  });
 }

@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getManifest = exports.getBuildTimeServerManifestAsync = void 0;
 exports.getStaticContent = getStaticContent;
+exports.getStreamingContent = getStreamingContent;
 const jsx_runtime_1 = require("react/jsx-runtime");
 /**
  * Copyright © 2023 650 Industries.
@@ -51,11 +52,11 @@ const expo_router_1 = require("expo-router");
 const _ctx_1 = require("expo-router/_ctx");
 const head_1 = __importDefault(require("expo-router/head"));
 const static_1 = require("expo-router/internal/static");
-const server_node_1 = __importDefault(require("react-dom/server.node"));
+const server_1 = __importDefault(require("react-dom/server"));
 const getRootComponent_1 = require("./getRootComponent");
-const html_1 = require("./html");
 const debug_1 = require("../utils/debug");
-const html_2 = require("../utils/html");
+const html_1 = require("../utils/html");
+const streams_1 = require("../utils/streams");
 const debug = (0, debug_1.createDebug)('expo:router:server:renderStaticContent');
 function resetReactNavigationContexts() {
     // https://github.com/expo/router/discussions/588
@@ -65,7 +66,11 @@ function resetReactNavigationContexts() {
     const contexts = '__react_navigation__elements_contexts';
     globalThis[contexts] = new Map();
 }
-async function getStaticContent(location, options) {
+/**
+ * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
+ * tree, resets server contexts, and computes loader data.
+ */
+function prepareRenderContext(location, options) {
     const headContext = {};
     const Root = (0, getRootComponent_1.getRootComponent)();
     const { 
@@ -88,35 +93,37 @@ async function getStaticContent(location, options) {
             [loaderKey]: options?.loader?.data ?? null,
         }
         : null;
-    const html = server_node_1.default.renderToString((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }));
+    return { headContext, element, getStyleElement, loadedData };
+}
+async function getStaticContent(location, options) {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
+    const html = server_1.default.renderToString((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }));
     // Eval the CSS after the HTML is rendered so that the CSS is in the same order
-    const css = server_node_1.default.renderToStaticMarkup(getStyleElement());
+    const css = server_1.default.renderToStaticMarkup(getStyleElement());
     let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
     output = output.replace('</head>', `${css}</head>`);
     const fonts = Font.getServerResources();
     debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-    // debug('Push static fonts:', fonts)
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
     if (loadedData) {
-        const loaderDataScript = server_node_1.default.renderToStaticMarkup((0, jsx_runtime_1.jsx)(html_1.PreloadedDataScript, { data: loadedData }));
-        output = output.replace('</head>', `${loaderDataScript}</head>`);
+        output = output.replace('</head>', `${(0, html_1.createLoaderDataScript)(loadedData)}</head>`);
     }
     // Inject hydration assets (JS/CSS bundles). Used in SSR mode
     if (options?.assets) {
         if (options.assets.css.length > 0) {
-            const injectedCSS = (0, html_2.createInjectedCssElements)(options.assets.css);
+            const injectedCSS = (0, html_1.createInjectedCssElements)(options.assets.css);
             output = output.replace('</head>', `${injectedCSS}\n</head>`);
         }
         if (options.assets.js.length > 0) {
-            const injectedJS = (0, html_2.createInjectedScriptElements)(options.assets.js);
-            output = output.replace('</body>', `${injectedJS}\n</body>`);
+            // In non-streaming mode, use deferred scripts in the body
+            output = output.replace('</body>', `${(0, html_1.createInjectedScriptElements)(options.assets.js)}\n</body>`);
         }
     }
     return '<!DOCTYPE html>' + output;
 }
 function mixHeadComponentsWithStaticResults(helmet, html) {
-    const { headTags, htmlAttributes, bodyAttributes } = (0, html_2.serializeHelmetToHtml)(helmet);
+    const { headTags, htmlAttributes, bodyAttributes } = (0, html_1.serializeHelmetToHtml)(helmet);
     if (headTags) {
         html = html.replace('<head>', `<head>${headTags}`);
     }
@@ -124,6 +131,47 @@ function mixHeadComponentsWithStaticResults(helmet, html) {
     html = html.replace('<html ', `<html ${htmlAttributes} `);
     html = html.replace('<body ', `<body ${bodyAttributes} `);
     return html;
+}
+/**
+ * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
+ * that emits the full HTML document with head injections applied.
+ *
+ * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
+ * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
+ * the client after hydration instead.
+ *
+ * @privateRemarks This function should be moved to a separate file
+ * (i.e. `renderStreamingContent.tsx`) as it doesn't belong with static rendering logic.
+ */
+async function getStreamingContent(location, options) {
+    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
+    const stream = await server_1.default.renderToReadableStream((0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }), {
+        bootstrapScripts: options?.assets?.js,
+        signal: options?.request?.signal,
+    });
+    // Collect head injection content after the shell stream is ready.
+    const css = server_1.default.renderToStaticMarkup(getStyleElement());
+    const { headTags, htmlAttributes, bodyAttributes } = (0, html_1.serializeHelmetToHtml)(headContext.helmet);
+    const fonts = Font.getServerResources();
+    debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+    const injectionParts = [];
+    if (headTags)
+        injectionParts.push(headTags);
+    injectionParts.push((0, html_1.getHydrationFlagScript)());
+    if (css)
+        injectionParts.push(css);
+    if (fonts.length > 0)
+        injectionParts.push(fonts.join(''));
+    if (loadedData)
+        injectionParts.push((0, html_1.createLoaderDataScript)(loadedData));
+    if (options?.assets?.css && options.assets.css.length > 0) {
+        injectionParts.push((0, html_1.createInjectedCssElements)(options.assets.css));
+    }
+    return stream.pipeThrough((0, streams_1.createDocumentMetadataInjectionTransform)({
+        injectionParts,
+        htmlAttributes,
+        bodyAttributes,
+    }));
 }
 // Re-export for use in server
 var getServerManifest_1 = require("./getServerManifest");
