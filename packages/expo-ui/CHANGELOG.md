@@ -32,7 +32,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix SwiftUI `aspectRatio` modifier to allow omitting `ratio` and use the content's intrinsic aspect ratio.
+- [iOS] Fix SwiftUI `aspectRatio` modifier to allow omitting `ratio` and use the content's intrinsic aspect ratio. ([#45232](https://github.com/expo/expo/pull/45232) by [@2hwayoung](https://github.com/2hwayoung))
 
 ### 🎉 New features
 
