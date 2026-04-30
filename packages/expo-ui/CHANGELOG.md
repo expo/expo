@@ -30,6 +30,10 @@
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 - [jetpack-compose] Changed `Host` underlying `MaterialTheme` to `MaterialExpressiveTheme`. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
 
+### 🐛 Bug fixes
+
+- [iOS] Fix SwiftUI `aspectRatio` modifier to allow omitting `ratio` and use the content's intrinsic aspect ratio. ([#45232](https://github.com/expo/expo/pull/45232) by [@2hwayoung](https://github.com/2hwayoung))
+
 ### 🎉 New features
 
 - [android] Added `HorizontalPager` component wrapping Compose's `HorizontalPager`. ([#45163](https://github.com/expo/expo/pull/45163) by [@vonovak](https://github.com/vonovak))
