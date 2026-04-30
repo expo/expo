@@ -49,11 +49,14 @@ export const loadBabelConfig = (function () {
   return function _getBabelRC(options: {
     projectRoot: string;
     enableBabelRCLookup?: boolean | undefined;
+    extendsBabelConfigPath?: string | undefined;
   }): LoadBabelConfigResult {
     if (result == null) {
-      const { projectRoot, enableBabelRCLookup = true } = options;
+      const { projectRoot, enableBabelRCLookup = true, extendsBabelConfigPath } = options;
       result = {};
-      if (projectRoot && enableBabelRCLookup) {
+      if (enableBabelRCLookup && extendsBabelConfigPath) {
+        result.exts = path.resolve(projectRoot, extendsBabelConfigPath);
+      } else if (projectRoot && enableBabelRCLookup) {
         // Check for various babel config files in the project root
         const foundBabelRCName = resolveBabelrcName(projectRoot);
         // Extend the config if a babel config file is found

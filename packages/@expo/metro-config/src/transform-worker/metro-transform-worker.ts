@@ -728,6 +728,9 @@ function getBabelTransformArgs(
     options: {
       ...babelTransformerOptions,
       enableBabelRCLookup: config.enableBabelRCLookup,
+      // NOTE(@kitten): Hint for babel transformer on where to look up Babel config from
+      extendsBabelConfigPath:
+        config.enableBabelRCLookup !== false ? config.extendsBabelConfigPath : undefined,
       // NOTE(@kitten): This shouldn't be relevant via this code path. However, in case it does,
       // this prevents us from adding imports/requires to @babel/runtime when we're transforming a script
       enableBabelRuntime: options.type === 'script' ? false : config.enableBabelRuntime,
