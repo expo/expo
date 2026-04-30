@@ -10,6 +10,7 @@ import {
   FileMode,
   type UploadOptions,
   type UploadResult,
+  type DownloadProgress,
   type DownloadTaskOptions,
   type DownloadPauseState,
   type UploadTaskState,
@@ -184,6 +185,7 @@ File.downloadFileAsync = async function downloadFileAsync(
 
   let subscription: EventSubscription | undefined;
   let abortHandler: (() => void) | undefined;
+  let lastProgress: DownloadProgress | undefined;
 
   try {
     if (options?.signal?.aborted) {
@@ -193,7 +195,8 @@ File.downloadFileAsync = async function downloadFileAsync(
     if (downloadUuid && options?.onProgress) {
       subscription = ExpoFileSystem.addListener('downloadProgress', (event) => {
         if (event.uuid === downloadUuid) {
-          options.onProgress!(event.data);
+          lastProgress = event.data;
+          options.onProgress!(lastProgress);
         }
       });
     }
@@ -206,7 +209,16 @@ File.downloadFileAsync = async function downloadFileAsync(
     }
 
     const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options, downloadUuid);
-    return new File(outputURI);
+    const file = new File(outputURI);
+    const fileSize = file.size ?? 0;
+    if (
+      options?.onProgress &&
+      fileSize > 0 &&
+      (lastProgress?.bytesWritten !== fileSize || lastProgress?.totalBytes !== fileSize)
+    ) {
+      options.onProgress({ bytesWritten: fileSize, totalBytes: fileSize });
+    }
+    return file;
   } catch (error: any) {
     if (options?.signal?.aborted) {
       throw createAbortError(options.signal.reason);

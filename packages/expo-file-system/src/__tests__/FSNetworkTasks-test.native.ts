@@ -597,6 +597,7 @@ describe('DownloadPauseState persistence', () => {
 describe('Progress callback', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    delete (File.prototype as any).size;
   });
 
   it('onProgress callback is wired via addListener for UploadTask', async () => {
@@ -632,5 +633,26 @@ describe('Progress callback', () => {
     await task.downloadAsync();
 
     expect(addListenerSpy).toHaveBeenCalledWith('progress', onProgress);
+  });
+
+  it('File.downloadFileAsync emits final progress when native completes without a complete event', async () => {
+    const onProgress = jest.fn();
+    const outputUri = 'file:///mock/cache/video.mp4';
+    const dest = new File(Paths.cache, 'video.mp4');
+
+    Object.defineProperty(File.prototype, 'size', {
+      configurable: true,
+      get: () => 42,
+    });
+
+    jest.spyOn(ExpoFileSystem, 'downloadFileAsync').mockResolvedValue(outputUri);
+    jest.spyOn(ExpoFileSystem, 'addListener').mockReturnValue({ remove: jest.fn() } as any);
+
+    const file = await File.downloadFileAsync('https://example.com/video.mp4', dest, {
+      onProgress,
+    });
+
+    expect(file.uri).toBe(outputUri);
+    expect(onProgress).toHaveBeenCalledWith({ bytesWritten: 42, totalBytes: 42 });
   });
 });
