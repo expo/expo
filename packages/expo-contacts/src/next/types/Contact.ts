@@ -1068,5 +1068,4 @@ export declare class Contact {
     fields: T,
     options?: ContactQueryOptions
   ): Promise<PartialContactDetails<T>[]>;
-
 }
