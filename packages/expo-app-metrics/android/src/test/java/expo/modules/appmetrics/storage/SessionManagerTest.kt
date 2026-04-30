@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
+import expo.modules.appmetrics.AppUpdatesInfo
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -112,7 +113,11 @@ class SessionManagerTest {
         appIdentifier = "com.test.app",
         appVersion = "1.2.3",
         appBuildNumber = "42",
-        appUpdateId = "update-123",
+        appUpdatesInfo = AppUpdatesInfo(
+          updateId = "update-123",
+          runtimeVersion = null,
+          requestHeaders = null
+        ),
         deviceOs = "Android",
         deviceOsVersion = "14",
         deviceModel = "Pixel 8",
@@ -621,7 +626,7 @@ class SessionManagerTest {
     appIdentifier: String = "com.test.app",
     appVersion: String? = "1.0.0",
     appBuildNumber: String? = "1",
-    appUpdateId: String? = null,
+    appUpdatesInfo: AppUpdatesInfo? = null,
     appEasBuildId: String? = null,
     deviceOs: String? = "Android",
     deviceOsVersion: String? = "14",
@@ -637,7 +642,7 @@ class SessionManagerTest {
       appIdentifier = appIdentifier,
       appVersion = appVersion,
       appBuildNumber = appBuildNumber,
-      appUpdateId = appUpdateId,
+      appUpdatesInfo = appUpdatesInfo,
       appEasBuildId = appEasBuildId,
       languageTag = languageTag,
       deviceOs = deviceOs,

@@ -24,8 +24,12 @@ class OpenTelemetryTest {
     appIdentifier = "dev.expo.observe.demo",
     appVersion = "1.0.0",
     appBuildNumber = "1",
-    appUpdateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
     appEasBuildId = null,
+    appUpdatesInfo = Metadata.AppUpdatesInfo(
+      updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+      runtimeVersion = null,
+      requestHeaders = null
+    ),
     languageTag = "en-US",
     deviceOs = "Android",
     deviceOsVersion = "16",
@@ -230,11 +234,45 @@ class OpenTelemetryTest {
     assertEquals("kotlin", attrs["telemetry.sdk.language"])
     assertEquals("Observe", attrs["expo.app.name"])
     assertEquals("1", attrs["expo.app.build_number"])
+    // Backward-compat key
     assertEquals("9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9", attrs["expo.app.update_id"])
+    // New key
+    assertEquals("9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9", attrs["expo.app.updates.id"])
     assertEquals("55.0.0", attrs["expo.sdk.version"])
     assertEquals("0.83.1", attrs["expo.react_native.version"])
     assertEquals(testEasClientId, attrs["expo.eas_client.id"])
     assertNull(attrs["expo.eas_build.id"])
+  }
+
+  @Test
+  fun `toOTMetadata emits update runtime version and channel when present`() {
+    val metadata = testMetadata.copy(
+      appUpdatesInfo = Metadata.AppUpdatesInfo(
+        updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+        runtimeVersion = "1.0.0",
+        requestHeaders = mapOf(
+          "expo-channel-name" to "production",
+          "expo-runtime-version" to "1.0.0"
+        )
+      )
+    )
+    val event = Event(metadata = metadata, metrics = emptyList())
+    val attrs = event.toOTMetadata(testEasClientId).attributes.associate { it.key to it.value.stringValue }
+
+    assertEquals("1.0.0", attrs["expo.app.updates.runtime_version"])
+    assertEquals("production", attrs["expo.app.updates.channel"])
+  }
+
+  @Test
+  fun `toOTMetadata excludes update attributes when appUpdatesInfo is null`() {
+    val metadata = testMetadata.copy(appUpdatesInfo = null)
+    val event = Event(metadata = metadata, metrics = emptyList())
+    val keys = event.toOTMetadata(testEasClientId).attributes.map { it.key }
+
+    assertFalse(keys.contains("expo.app.update_id"))
+    assertFalse(keys.contains("expo.app.updates.id"))
+    assertFalse(keys.contains("expo.app.updates.runtime_version"))
+    assertFalse(keys.contains("expo.app.updates.channel"))
   }
 
   // -- Full OTEvent --

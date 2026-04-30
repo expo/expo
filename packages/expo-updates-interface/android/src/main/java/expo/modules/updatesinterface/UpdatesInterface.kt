@@ -26,6 +26,7 @@ interface UpdatesInterface {
   /**
    * These properties are only set when updates is enabled
    */
+  val requestHeaders: Map<String, String>? get() = null
   val launchedUpdateId: UUID? get() = null
   val embeddedUpdateId: UUID? get() = null
   val launchAssetPath: String? get() = null

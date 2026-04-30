@@ -3,6 +3,8 @@ package expo.modules.observe
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
@@ -12,8 +14,8 @@ data class Metadata(
   val appIdentifier: String,
   val appVersion: String?,
   val appBuildNumber: String?,
-  val appUpdateId: String?,
   val appEasBuildId: String?,
+  val appUpdatesInfo: AppUpdatesInfo?,
   val languageTag: String?,
   val deviceOs: String?,
   val deviceOsVersion: String?,
@@ -24,15 +26,43 @@ data class Metadata(
   val clientVersion: String?,
   val environment: String? = null
 ) {
+  @Serializable
+  data class AppUpdatesInfo(
+    val updateId: String?,
+    val runtimeVersion: String?,
+    val requestHeaders: Map<String, String>?
+  ) {
+    val channel: String?
+      get() = requestHeaders?.get("expo-channel-name")
+  }
+
   companion object {
-    fun fromSessionMetadata(session: Session): Metadata =
-      Metadata(
+    fun fromSessionMetadata(session: Session): Metadata {
+      val appUpdatesInfo = if (
+        session.appUpdateId != null ||
+        session.appUpdateRuntimeVersion != null ||
+        session.appUpdateRequestHeaders != null
+      ) {
+        val requestHeaders = session.appUpdateRequestHeaders?.let {
+          runCatching {
+            Json.decodeFromString(MapSerializer(String.serializer(), String.serializer()), it)
+          }.getOrNull()
+        }
+        AppUpdatesInfo(
+          updateId = session.appUpdateId,
+          runtimeVersion = session.appUpdateRuntimeVersion,
+          requestHeaders = requestHeaders
+        )
+      } else {
+        null
+      }
+      return Metadata(
         appName = session.appName,
         appIdentifier = session.appIdentifier ?: "",
         appVersion = session.appVersion,
         appBuildNumber = session.appBuildNumber,
-        appUpdateId = session.appUpdateId,
         appEasBuildId = session.appEasBuildId,
+        appUpdatesInfo = appUpdatesInfo,
         deviceOs = session.deviceOs,
         deviceOsVersion = session.deviceOsVersion,
         deviceModel = session.deviceModel,
@@ -43,6 +73,7 @@ data class Metadata(
         languageTag = session.languageTag,
         environment = session.environment
       )
+    }
   }
 }
 

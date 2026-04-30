@@ -20,6 +20,8 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
     return DisabledUpdatesStateChangeSubscription()
   }
 
+  public var requestHeaders: [String : String]?
+
   public var launchedUpdateId: UUID?
 
   public var embeddedUpdateId: UUID?

@@ -8,6 +8,9 @@ import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.utils.TimeUtils
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -50,7 +53,11 @@ class SessionManager(
       appIdentifier = metadata?.appIdentifier,
       appVersion = metadata?.appVersion,
       appBuildNumber = metadata?.appBuildNumber,
-      appUpdateId = metadata?.appUpdateId,
+      appUpdateId = metadata?.appUpdatesInfo?.updateId,
+      appUpdateRuntimeVersion = metadata?.appUpdatesInfo?.runtimeVersion,
+      appUpdateRequestHeaders = metadata?.appUpdatesInfo?.requestHeaders?.let {
+        Json.encodeToString(MapSerializer(String.serializer(), String.serializer()), it)
+      },
       appEasBuildId = metadata?.appEasBuildId,
       deviceOs = metadata?.deviceOs,
       deviceOsVersion = metadata?.deviceOsVersion,

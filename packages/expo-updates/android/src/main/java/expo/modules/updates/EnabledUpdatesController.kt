@@ -343,6 +343,9 @@ class EnabledUpdatesController(
   override val updateUrl: Uri?
     get() = updatesConfiguration.updateUrl
 
+  override val requestHeaders: Map<String, String>?
+    get() = updatesConfiguration.requestHeaders
+
   override val launchedUpdateId: UUID?
     get() = startupProcedure.launchedUpdate?.id
 

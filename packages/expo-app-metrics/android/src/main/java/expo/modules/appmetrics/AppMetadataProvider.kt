@@ -46,7 +46,7 @@ public object AppMetadataProvider {
       appIdentifier = context.packageName,
       appVersion = packageInfo.versionName,
       appBuildNumber = getAppBuildNumber(packageInfo),
-      appUpdateId = getAppUpdateId(),
+      appUpdatesInfo = getAppUpdatesInfo(),
       appEasBuildId = BuildConfig.EXPO_EAS_BUILD_ID,
       languageTag = Locale.getDefault().getLanguageTag(),
       deviceOs = DEVICE_OS,
@@ -79,14 +79,18 @@ fun getAppBuildNumber(packageInfo: PackageInfo): String =
     packageInfo.versionCode.toString()
   }
 
-fun getAppUpdateId(): String? {
-  val controller = UpdatesControllerRegistry.controller?.get() ?: return null
+fun getAppUpdatesInfo(): AppUpdatesInfo {
+  val controller = UpdatesControllerRegistry.controller?.get()
+    ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
   val launchedUpdateId = controller.launchedUpdateId
   val embeddedUpdateId = controller.embeddedUpdateId
-  if (launchedUpdateId == embeddedUpdateId) {
-    return null
-  }
-  return launchedUpdateId?.toString()
+  // Ignore embedded launches – they are not available on the website anyway.
+  val updateId = if (launchedUpdateId == embeddedUpdateId) null else launchedUpdateId?.toString()
+  return AppUpdatesInfo(
+    updateId = updateId,
+    runtimeVersion = controller.runtimeVersion,
+    requestHeaders = controller.requestHeaders
+  )
 }
 
 fun getModelName(): String {

@@ -203,6 +203,8 @@ class DisabledUpdatesController(
 
   override val updateUrl: Uri? = null
 
+  override val requestHeaders: Map<String, String>? = null
+
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     return DisabledUpdatesStateChangeSubscription()
   }
