@@ -263,7 +263,9 @@ function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
     return '';
   }
 
-  const configName = resolveBabelrcName(options.projectRoot);
+  // In Expo, we pass the `extendsBabelConfigPath` ourselves, but if we're not using this with the Expo CLI
+  // we re-resolve the Babel config, same as in `loadBabelConfig`
+  const configName = options.extendsBabelConfigPath ?? resolveBabelrcName(options.projectRoot);
   if (!configName) {
     return '';
   }

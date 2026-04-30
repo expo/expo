@@ -22,6 +22,12 @@ declare module '@expo/metro/metro-transform-worker' {
 
 import * as __metroBabelTransformer from '@expo/metro/metro-babel-transformer';
 declare module '@expo/metro/metro-babel-transformer' {
+  // NOTE(@kitten): Custom modification to pass this custom Babel resolution option to `getCacheKey` for consistency
+  interface BabelTransformerCacheKeyOptions {
+    /** Normal path at which Babel config is found (must be relative to project root) */
+    readonly extendsBabelConfigPath?: string | undefined;
+  }
+
   interface BabelTransformerOptions {
     /** @privateRemarks Augmentation passed to the Expo Babel caller and used in `babel-preset-expo` to force `enableBabelRuntime` to `false` */
     type?: 'script' | 'module' | 'asset';

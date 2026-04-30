@@ -835,6 +835,8 @@ export function getCacheKey(
     ? babelTransformer.getCacheKey({
         projectRoot: opts?.projectRoot,
         enableBabelRCLookup: config.enableBabelRCLookup,
+        // NOTE(@kitten): Custom modification to pass this custom Babel resolution option to `getCacheKey` for consistency
+        extendsBabelConfigPath: config.extendsBabelConfigPath,
       })
     : '';
 
