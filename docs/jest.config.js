@@ -9,6 +9,9 @@ const jestConfig = {
   clearMocks: true,
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/$1',
+    // Stub react-intl in tests so components that call useIntl() don't
+    // require an <IntlProvider> ancestor. See __mocks__/react-intl.tsx.
+    '^react-intl$': '<rootDir>/__mocks__/react-intl.tsx',
     // note(simek): force Jest to use non ESM bundle
     '^@radix-ui/react-dropdown-menu$':
       '<rootDir>/node_modules/@radix-ui/react-dropdown-menu/dist/index.js',

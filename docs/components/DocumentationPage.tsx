@@ -3,8 +3,14 @@ import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
 import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
+import { getLocaleFromPath } from '~/common/i18n';
 import * as RoutesUtils from '~/common/routes';
-import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
+import {
+  appendSectionToRoute,
+  getBreadcrumbTrail,
+  isRouteActive,
+  localizeRoutes,
+} from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
@@ -61,7 +67,8 @@ export default function DocumentationPage({
   const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
 
   const pathname = router?.pathname ?? '/';
-  const routes = RoutesUtils.getRoutes(pathname, version);
+  const locale = getLocaleFromPath(pathname);
+  const routes = localizeRoutes(RoutesUtils.getRoutes(pathname, version), locale);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
   const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
   const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);

@@ -3,6 +3,7 @@ import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon'
 import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
 import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
+import { useIntl } from 'react-intl';
 
 import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
 import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
@@ -14,6 +15,7 @@ const getPrompt = (url: string) =>
 
 export function MarkdownActionsDropdown() {
   const router = useRouter();
+  const intl = useIntl();
 
   const pathname = router?.pathname;
   const asPath = router?.asPath;
@@ -144,7 +146,7 @@ export function MarkdownActionsDropdown() {
       <div className="flex flex-row items-center gap-1.5">
         <Copy04Icon className="icon-xs text-icon-secondary" />
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
-          Copy page
+          {intl.formatMessage({ id: 'copyPage' })}
         </FOOTNOTE>
         <ChevronDownIcon className="icon-xs text-icon-secondary" />
       </div>

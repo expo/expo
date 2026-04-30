@@ -1,3 +1,9 @@
+import {
+  buildLocalePath,
+  getCanonicalPath,
+  getJapaneseSidebarTitle,
+  type SupportedLocale,
+} from '~/common/i18n';
 import * as Utilities from '~/common/utilities';
 import { stripVersionFromPath } from '~/common/utilities';
 import { PageApiVersionContextType } from '~/providers/page-api-version';
@@ -16,43 +22,50 @@ export const getRoutes = (
 };
 
 export const isArchivePath = (path: string) => {
-  return Utilities.pathStartsWith('archive', path);
+  return Utilities.pathStartsWith('archive', getCanonicalPath(path));
 };
 
 export const isInternalPath = (path: string) => {
-  return Utilities.pathStartsWith('internal', path);
+  return Utilities.pathStartsWith('internal', getCanonicalPath(path));
 };
 
 export const isVersionedPath = (path: string) => {
-  return Utilities.pathStartsWith('versions', path);
+  return Utilities.pathStartsWith('versions', getCanonicalPath(path));
 };
 
 export const isReferencePath = (path: string) => {
-  return navigation.referenceDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.referenceDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isHomePath = (path: string) => {
-  return navigation.homeDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.homeDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isGeneralPath = (path: string) => {
-  return navigation.generalDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.generalDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isFeaturePreviewPath = (path: string) => {
-  return navigation.featurePreview.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.featurePreview.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isPreviewPath = (path: string) => {
-  return navigation.previewDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.previewDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isLearnPath = (path: string) => {
-  return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const isEasPath = (path: string) => {
-  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, path));
+  const canonical = getCanonicalPath(path);
+  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, canonical));
 };
 
 export const getPageSection = (path: string) => {
@@ -181,6 +194,50 @@ export function getBreadcrumbTrail(
 
       return { name: item.name, url };
     });
+}
+
+function isInternalHref(href?: string) {
+  if (!href) {
+    return false;
+  }
+  if (href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) {
+    return false;
+  }
+  return href.startsWith('/');
+}
+
+export function localizeRoutes<T extends NavigationRoute | NavigationRouteWithSection>(
+  routes: T[],
+  locale: SupportedLocale
+): T[] {
+  if (locale === 'en') {
+    return routes;
+  }
+  return routes.map(route => localizeRoute(route, locale));
+}
+
+function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
+  route: T,
+  locale: SupportedLocale
+): T {
+  const next: T = { ...route };
+  if (isInternalHref(next.href)) {
+    next.href = buildLocalePath(next.href, locale);
+  }
+  if (isInternalHref(next.as)) {
+    next.as = buildLocalePath(next.as as string, locale);
+  }
+  if (locale === 'ja' && next.type === 'page' && route.href) {
+    const translatedTitle = getJapaneseSidebarTitle(route.href);
+    if (translatedTitle) {
+      next.name = translatedTitle;
+      next.sidebarTitle = translatedTitle;
+    }
+  }
+  if (next.children) {
+    next.children = next.children.map(child => localizeRoute(child, locale));
+  }
+  return next;
 }
 
 export function appendSectionToRoute(route?: NavigationRouteWithSection) {
