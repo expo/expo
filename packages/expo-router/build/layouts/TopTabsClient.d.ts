@@ -7,38 +7,38 @@ declare const MaterialTopTabs: import("react").ForwardRefExoticComponent<Omit<im
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
-        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("..").Descriptor<MaterialTopTabNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, MaterialTopTabNavigationOptions, MaterialTopTabNavigationEventMap>, import("..").RouteProp<ParamListBase, string>>>;
+        navigation: import("../react-navigation").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("../react-navigation").Descriptor<MaterialTopTabNavigationOptions, import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, MaterialTopTabNavigationOptions, MaterialTopTabNavigationEventMap>, import("../react-navigation").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        tabPress: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        swipeStart: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "swipeStart", unknown>;
-        swipeEnd: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "swipeEnd", unknown>;
-        focus: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        swipeStart: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "swipeStart", unknown>;
+        swipeEnd: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "swipeEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
-        tabPress: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        swipeStart: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "swipeStart", unknown>;
-        swipeEnd: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "swipeEnd", unknown>;
-        focus: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<MaterialTopTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        swipeStart: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "swipeStart", unknown>;
+        swipeEnd: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "swipeEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<MaterialTopTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: MaterialTopTabNavigationOptions | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => MaterialTopTabNavigationOptions) | undefined;
-    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, MaterialTopTabNavigationOptions, import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, MaterialTopTabNavigationOptions, import("../react-navigation/material-top-tabs").MaterialTopTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;

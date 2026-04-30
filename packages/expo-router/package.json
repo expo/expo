@@ -43,6 +43,8 @@
     "unstable-split-view.d.ts",
     "node",
     "plugin",
+    "react-navigation.js",
+    "react-navigation.d.ts",
     "rsc",
     "server.d.ts",
     "server.js",

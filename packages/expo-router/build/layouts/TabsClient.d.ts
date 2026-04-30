@@ -7,38 +7,38 @@ declare const BottomTabNavigator: import("react").ComponentType<Omit<import("../
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
-        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("..").Descriptor<BottomTabNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("..").RouteProp<ParamListBase, string>>>;
+        navigation: import("../react-navigation").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("../react-navigation").Descriptor<BottomTabNavigationOptions, import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("../react-navigation").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        tabPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        transitionStart: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        focus: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        transitionStart: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
-        tabPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        transitionStart: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        focus: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        transitionStart: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => BottomTabNavigationOptions) | undefined;
-    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
@@ -59,38 +59,38 @@ declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<impo
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
-        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("..").Descriptor<BottomTabNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("..").RouteProp<ParamListBase, string>>>;
+        navigation: import("../react-navigation").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("../react-navigation").Descriptor<BottomTabNavigationOptions, import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("../react-navigation").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        tabPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        transitionStart: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        focus: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        transitionStart: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
-        tabPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        transitionStart: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        focus: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        transitionStart: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => BottomTabNavigationOptions) | undefined;
-    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
@@ -106,38 +106,38 @@ declare const ExpoTabs: import("react").ForwardRefExoticComponent<Omit<Omit<impo
     children: React.ReactNode;
     layout?: ((props: {
         state: TabNavigationState<ParamListBase>;
-        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("..").Descriptor<BottomTabNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("..").RouteProp<ParamListBase, string>>>;
+        navigation: import("../react-navigation").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("../react-navigation").Descriptor<BottomTabNavigationOptions, import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, TabNavigationState<ParamListBase>, BottomTabNavigationOptions, BottomTabNavigationEventMap>, import("../react-navigation").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        tabPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        transitionStart: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        focus: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        transitionStart: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
-        tabPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
-        tabLongPress: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
-        transitionStart: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        focus: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<BottomTabNavigationEventMap & import("..").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
+        tabPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabPress", true>;
+        tabLongPress: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "tabLongPress", unknown>;
+        transitionStart: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<BottomTabNavigationEventMap & import("../react-navigation").EventMapCore<TabNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: BottomTabNavigationOptions | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => BottomTabNavigationOptions) | undefined;
-    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, BottomTabNavigationOptions, import("../react-navigation/bottom-tabs").BottomTabNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;

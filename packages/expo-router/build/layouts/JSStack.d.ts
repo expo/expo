@@ -7,40 +7,40 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
-        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("..").Descriptor<StackNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, StackNavigationOptions, StackNavigationEventMap>, import("..").RouteProp<ParamListBase, string>>>;
+        navigation: import("../react-navigation").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("../react-navigation").Descriptor<StackNavigationOptions, import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, StackNavigationOptions, StackNavigationEventMap>, import("../react-navigation").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        transitionStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
-        gestureEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
-        gestureCancel: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        focus: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
+        gestureEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
+        gestureCancel: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
-        transitionStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
-        gestureEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
-        gestureCancel: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        focus: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
+        gestureEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
+        gestureCancel: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: StackNavigationOptions | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => StackNavigationOptions) | undefined;
-    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
@@ -56,40 +56,40 @@ declare const JSStack: import("react").ForwardRefExoticComponent<Omit<Omit<impor
     children: React.ReactNode;
     layout?: ((props: {
         state: StackNavigationState<ParamListBase>;
-        navigation: import("..").NavigationHelpers<ParamListBase, {}>;
-        descriptors: Record<string, import("..").Descriptor<StackNavigationOptions, import("..").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, StackNavigationOptions, StackNavigationEventMap>, import("..").RouteProp<ParamListBase, string>>>;
+        navigation: import("../react-navigation").NavigationHelpers<ParamListBase, {}>;
+        descriptors: Record<string, import("../react-navigation").Descriptor<StackNavigationOptions, import("../react-navigation").NavigationProp<ParamListBase, string, string | undefined, StackNavigationState<ParamListBase>, StackNavigationOptions, StackNavigationEventMap>, import("../react-navigation").RouteProp<ParamListBase, string>>>;
         children: React.ReactNode;
     }) => React.ReactElement) | undefined;
     screenListeners?: Partial<{
-        transitionStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
-        gestureEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
-        gestureCancel: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        focus: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
+        gestureEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
+        gestureCancel: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }> | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
     }) => Partial<{
-        transitionStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
-        transitionEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
-        gestureStart: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
-        gestureEnd: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
-        gestureCancel: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
-        focus: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
-        blur: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
-        state: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
-        beforeRemove: import("..").EventListenerCallback<StackNavigationEventMap & import("..").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
+        transitionStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionStart", unknown>;
+        transitionEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "transitionEnd", unknown>;
+        gestureStart: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureStart", unknown>;
+        gestureEnd: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureEnd", unknown>;
+        gestureCancel: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "gestureCancel", unknown>;
+        focus: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "focus", unknown>;
+        blur: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "blur", unknown>;
+        state: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "state", unknown>;
+        beforeRemove: import("../react-navigation").EventListenerCallback<StackNavigationEventMap & import("../react-navigation").EventMapCore<StackNavigationState<ParamListBase>>, "beforeRemove", true>;
     }>) | undefined;
     screenOptions?: StackNavigationOptions | ((props: {
-        route: import("..").RouteProp<ParamListBase, string>;
+        route: import("../react-navigation").RouteProp<ParamListBase, string>;
         navigation: import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>;
         theme: ReactNavigation.Theme;
     }) => StackNavigationOptions) | undefined;
-    screenLayout?: ((props: import("..").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
+    screenLayout?: ((props: import("../react-navigation").ScreenLayoutArgs<ParamListBase, string, StackNavigationOptions, import("../react-navigation/stack").StackNavigationProp<ParamListBase, string, string | undefined>>) => React.ReactElement) | undefined;
     UNSTABLE_router?: (<Action extends Readonly<{
         type: string;
         payload?: object;
