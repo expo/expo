@@ -9,6 +9,7 @@ enum TextFieldAxis: String, Enumerable {
 final class TextFieldProps: UIBaseViewProps {
   @Field var text: ObservableState?
   @Field var selection: ObservableState?
+  @Field var maxLength: Int?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
   @Field var axis: TextFieldAxis = .horizontal
@@ -41,6 +42,10 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     props.text?.value = text
   }
 
+  func clear() {
+    props.text?.value = ""
+  }
+
   func focus() {
     textManager.isFocused = true
   }
@@ -56,6 +61,14 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
 
     textManager.isFocused = false
     isFocused = false
+  }
+
+  func setSelection(start: Int, end: Int) {
+    guard let selection = props.selection else { return }
+    let text = (props.text?.value as? String) ?? ""
+    let lower = max(0, min(min(start, end), text.count))
+    let upper = max(0, min(max(start, end), text.count))
+    selection.value = ["start": lower, "end": upper]
   }
 
   private var promptText: Text? {
@@ -144,6 +157,10 @@ private struct StatefulTextField: View {
         }
       }
       .onChange(of: state.value as? String) { newValue in
+        if let max = props.maxLength, let str = newValue, str.count > max {
+          state.value = String(str.prefix(max))
+          return
+        }
         props.onTextChange(["value": newValue])
         props.onTextChangeSync?.invoke(arguments: [newValue])
       }
@@ -189,6 +206,10 @@ private struct StatefulSelectableTextField: View {
       }
     }
     .onChange(of: state.value as? String) { newValue in
+      if let max = props.maxLength, let str = newValue, str.count > max {
+        state.value = String(str.prefix(max))
+        return
+      }
       props.onTextChange(["value": newValue])
       props.onTextChangeSync?.invoke(arguments: [newValue])
     }
@@ -219,8 +240,8 @@ private struct StatefulSelectableTextField: View {
       guard let start = extractInt(selection.value, "start"),
             let end = extractInt(selection.value, "end") else { return }
       let text = (state.value as? String) ?? ""
-      let lower = min(min(start, end), text.count)
-      let upper = min(max(start, end), text.count)
+      let lower = max(0, min(min(start, end), text.count))
+      let upper = max(0, min(max(start, end), text.count))
       let startIdx = text.index(text.startIndex, offsetBy: lower)
       let endIdx = text.index(text.startIndex, offsetBy: upper)
       let newSel = SwiftUI.TextSelection(range: startIdx..<endIdx)

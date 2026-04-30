@@ -3,16 +3,22 @@ import type { ObservableState } from '../../State/useNativeState';
 import type { ViewEvent } from '../../types';
 import type { CommonViewModifierProps } from '../types';
 /**
- * Can be used for imperatively focusing and setting text on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
+    /** Clear the current text. */
+    clear: () => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
+    /**
+     * Programmatically set the selection range.
+     * @platform ios 18.0+ tvos 18.0+
+     */
+    setSelection: (start: number, end: number) => Promise<void>;
 };
 /**
- * Selection range observable. Read `value` for the current selection,
- * write to `value` to programmatically move/select.
+ * Selection range — `start` and `end` are character offsets into the field's text.
  */
 export type TextFieldSelection = {
     start: number;
@@ -27,11 +33,14 @@ export type TextFieldProps = {
      */
     text?: ObservableState<string>;
     /**
-     * An observable state holding the current selection. Create with
-     * `useNativeState<TextFieldSelection>({ start: 0, end: 0 })`.
+     * Observable state the field writes the current selection to.
+     * Create with `useNativeState<TextFieldSelection>({ start: 0, end: 0 })`.
+     * Use `ref.setSelection(start, end)` to set programmatically.
      * @platform ios 18.0+ tvos 18.0+
      */
     selection?: ObservableState<TextFieldSelection>;
+    /** Maximum number of characters allowed. Truncates natively as the user types. */
+    maxLength?: number;
     /** If true, the text field will be focused automatically when mounted. @default false */
     autoFocus?: boolean;
     /**

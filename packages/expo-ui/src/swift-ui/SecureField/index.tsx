@@ -27,6 +27,8 @@ export type SecureFieldProps = {
    * If omitted, the field manages its own internal state.
    */
   text?: ObservableState<string>;
+  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  maxLength?: number;
   /** If true, the secure field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;
   /**

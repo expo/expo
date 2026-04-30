@@ -55,11 +55,17 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("clear") { (view: TextFieldView) in
+        view.clear()
+      }
       AsyncFunction("blur") { (view: TextFieldView) in
         view.blur()
       }
       AsyncFunction("focus") { (view: TextFieldView) in
         view.focus()
+      }
+      AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
+        view.setSelection(start: start, end: end)
       }
     }
     ExpoUIView(ShareLinkView.self) {

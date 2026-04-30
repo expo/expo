@@ -17,6 +17,11 @@ export type TextInputRef = {
     clear: () => void;
     /** Returns whether the input currently has focus. */
     isFocused: () => boolean;
+    /**
+     * Programmatically set the selection range.
+     * @platform ios 18.0+
+     */
+    setSelection: (start: number, end: number) => Promise<void>;
 };
 /**
  * Props for the `TextInput` component.
@@ -195,10 +200,9 @@ export interface TextInputProps {
      */
     selectionHandleColor?: ColorValue;
     /**
-     * Observable state holding the current text selection range.
-     * Read `value` for current `{start, end}`; write `value` to programmatically
-     * select. Create with `useNativeState({ start: 0, end: 0 })`.
-     *
+     * Observable state the field writes the current selection to.
+     * Create with `useNativeState({ start: 0, end: 0 })`.
+     * Use `ref.setSelection(start, end)` to set selection programmatically.
      * @platform ios 18.0+ — pre-iOS 18 the prop is ignored.
      */
     selection?: ObservableState<{

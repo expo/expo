@@ -4,7 +4,6 @@
 
 ### 🛠 Breaking changes
 
-- [SwiftUI] `TextField`: removed `setSelection` ref method; replaced with `selection: ObservableState<TextFieldSelection>` prop. Migrate by writing `selection.value = { start, end }` instead of calling `ref.current?.setSelection(...)`. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
 - [SwiftUI] Use `fixedSize` modifier for Host `matchContents` ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Use intrinsic size for Host `matchContents` to match iOS ([#44642](https://github.com/expo/expo/pull/44642) by [@nishan](https://github.com/intergalacticspacehighway))
 - [SwiftUI] `TextField`: removed `defaultValue`, added `text` prop backed by an `ObservableState` (from `useNativeState`), added worklet support for `onTextChange`, and renamed `onValueChange` → `onTextChange`. ([#44988](https://github.com/expo/expo/pull/44988) by [@nishan](https://github.com/intergalacticspacehighway))

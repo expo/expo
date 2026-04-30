@@ -3,6 +3,7 @@ import ExpoModulesCore
 
 final class SecureFieldProps: UIBaseViewProps {
   @Field var text: ObservableState?
+  @Field var maxLength: Int?
   @Field var autoFocus: Bool = false
   @Field var placeholder: String = ""
   @Field var onTextChangeSync: WorkletCallback?
@@ -71,6 +72,10 @@ private struct StatefulSecureField: View {
         }
       }
       .onChange(of: state.value as? String) { newValue in
+        if let max = props.maxLength, let str = newValue, str.count > max {
+          state.value = String(str.prefix(max))
+          return
+        }
         props.onTextChange(["value": newValue])
         props.onTextChangeSync?.invoke(arguments: [newValue])
       }

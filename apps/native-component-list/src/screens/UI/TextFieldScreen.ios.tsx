@@ -26,7 +26,7 @@ import {
   foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { runOnJS, scheduleOnUI } from 'react-native-worklets';
+import { runOnJS } from 'react-native-worklets';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
@@ -34,6 +34,10 @@ export default function TextFieldScreen() {
   const username = useNativeState('johndoe');
   const imperativeText = useNativeState('Select me!');
   const imperativeSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
+  const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState<TextFieldSelection>({
+    start: 0,
+    end: 0,
+  });
   const maskedPhone = useNativeState('');
   const phoneSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
 
@@ -180,11 +184,12 @@ export default function TextFieldScreen() {
             ref={textRef}
             text={imperativeText}
             selection={imperativeSelection}
+            onSelectionChange={setImperativeSelDisplay}
             placeholder="Imperative field"
             modifiers={[autocorrectionDisabled()]}
           />
           <Text modifiers={[foregroundStyle('secondary')]}>
-            Selection: {`${imperativeSelection.value.start}–${imperativeSelection.value.end}`}
+            {`Selection: ${imperativeSelDisplay.start}–${imperativeSelDisplay.end}`}
           </Text>
           <HStack spacing={12}>
             <Button
@@ -204,11 +209,9 @@ export default function TextFieldScreen() {
             />
             <Button
               modifiers={[buttonStyle('bordered')]}
-              onPress={() => {
-                scheduleOnUI(() => {
-                  'worklet';
-                  imperativeSelection.value = { start: 0, end: 7 };
-                });
+              onPress={async () => {
+                await textRef.current?.focus();
+                textRef.current?.setSelection(0, 7);
               }}
               label="Select"
             />

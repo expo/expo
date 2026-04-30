@@ -14,7 +14,6 @@ import {
 import { useImperativeHandle, useRef } from 'react';
 import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
-import { worklets } from '../../State/optionalWorklets';
 import { transformToModifiers } from '../transformStyle';
 import type { TextInputProps } from './types';
 import { enterKeyHintToReturnKeyType, inputModeToKeyboardType, resolveEditable } from './utils';
@@ -102,9 +101,6 @@ export function TextInput({
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
 
-  const fallbackSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
-  const effectiveSelection = selection ?? (selectTextOnFocus ? fallbackSelection : undefined);
-
   const innerRef = useRef<TextFieldRef>(null);
   const isFocusedRef = useRef(false);
   useImperativeHandle(
@@ -113,45 +109,24 @@ export function TextInput({
       focus: () => innerRef.current?.focus() ?? Promise.resolve(),
       blur: () => innerRef.current?.blur() ?? Promise.resolve(),
       clear: () => {
-        // TODO: schedule this on UI thread via worklet
-        state.value = '';
+        innerRef.current?.clear();
       },
       isFocused: () => isFocusedRef.current,
+      setSelection: (start: number, end: number) =>
+        innerRef.current?.setSelection(start, end) ?? Promise.resolve(),
     }),
     [state]
   );
 
   const handleFocusChanged = (focused: boolean) => {
     isFocusedRef.current = focused;
-    if (focused && selectTextOnFocus && effectiveSelection) {
-      const length = state.value.length;
-      if (worklets?.scheduleOnUI) {
-        worklets.scheduleOnUI(() => {
-          'worklet';
-          effectiveSelection.value = { start: 0, end: length };
-        });
-      } else {
-        console.warn(
-          'selectTextOnFocus is not supported without worklet support. Please ensure you have the react-native-worklets package installed and configured.'
-        );
-      }
+    if (focused && selectTextOnFocus) {
+      innerRef.current?.setSelection(0, state.value.length);
     }
     if (focused) onFocus?.();
     else onBlur?.();
   };
 
-  const onChangeTextWorklet = worklets?.isWorkletFunction?.(onChangeText)
-    ? onChangeText
-    : undefined;
-
-  const handleValueChange = (text: string) => {
-    'worklet';
-    if (maxLength !== undefined && text.length > maxLength) {
-      state.value = text.slice(0, maxLength);
-      return;
-    }
-    onChangeTextWorklet?.(text);
-  };
 
   const keyboardOptions =
     keyboardType || autoCapitalize || autoCorrect !== undefined || returnKeyType
@@ -230,9 +205,10 @@ export function TextInput({
       }
       keyboardOptions={keyboardOptions}
       keyboardActions={keyboardActions}
-      onValueChange={maxLength !== undefined ? handleValueChange : onChangeText}
+      onValueChange={onChangeText}
+      maxLength={maxLength}
       onFocusChanged={handleFocusChanged}
-      selection={effectiveSelection as Parameters<typeof ComposeTextField>[0]['selection']}
+      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
       {placeholder ? (
         <ComposeTextField.Placeholder>

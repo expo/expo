@@ -205,6 +205,7 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 data class TextFieldProps(
   val value: ObservableState? = null,
   val selection: ObservableState? = null,
+  val maxLength: Int? = null,
   val autoFocus: Boolean = false,
   val variant: TextFieldVariant = TextFieldVariant.FILLED,
   val enabled: Boolean = true,
@@ -296,6 +297,8 @@ private fun getSelection(
 fun FunctionalComposableScope.TextFieldContent(
   props: TextFieldProps,
   setText: AsyncFunctionHandle<String>,
+  setSelection: AsyncFunctionHandle<TextFieldSelectionPayload>,
+  clear: AsyncFunctionHandle<Unit>,
   focus: AsyncFunctionHandle<Unit>,
   blur: AsyncFunctionHandle<Unit>,
   onValueChanged: (TextFieldValuePayload) -> Unit,
@@ -325,6 +328,19 @@ fun FunctionalComposableScope.TextFieldContent(
   }
   blur.handle {
     focusManager.clearFocus()
+  }
+  setSelection.handle { req ->
+    val text = state.value.extractText()
+    val clampedStart = req.start.coerceIn(0, text.length)
+    val clampedEnd = req.end.coerceIn(0, text.length)
+    props.selection?.value = mapOf("start" to clampedStart, "end" to clampedEnd)
+  }
+  clear.handle {
+    state.value = if (isStringMode) {
+      ""
+    } else {
+      mapOf("text" to "", "selection" to mapOf("start" to 0, "end" to 0))
+    }
   }
 
   // Slots
@@ -414,7 +430,19 @@ fun FunctionalComposableScope.TextFieldContent(
 
   val value = localValue.value
 
-  val onValueChange: (TextFieldValue) -> Unit = { new ->
+  val onValueChange: (TextFieldValue) -> Unit = { incoming ->
+    val new = props.maxLength?.let { max ->
+      if (incoming.text.length > max) {
+        val truncated = incoming.text.substring(0, max)
+        incoming.copy(
+          text = truncated,
+          selection = TextRange(
+            incoming.selection.start.coerceAtMost(max),
+            incoming.selection.end.coerceAtMost(max)
+          )
+        )
+      } else null
+    } ?: incoming
     val prev = localValue.value
     localValue.value = new
     if (new.text != prev.text || new.selection != prev.selection) {

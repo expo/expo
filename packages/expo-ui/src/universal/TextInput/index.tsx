@@ -61,8 +61,12 @@ export function TextInput({
         state.value = '';
       },
       isFocused: () => innerRef.current?.isFocused() ?? false,
+      setSelection: (start: number, end: number) => {
+        if (selection) selection.value = { start, end };
+        return Promise.resolve();
+      },
     }),
-    [state]
+    [state, selection]
   );
 
   return (
@@ -103,7 +107,17 @@ export function TextInput({
       selectTextOnFocus={selectTextOnFocus}
       selection={selection?.value}
       onSelectionChange={
-        onSelectionChange ? (e) => onSelectionChange(e.nativeEvent.selection) : undefined
+        onSelectionChange
+          ? (e) => {
+              const next = e.nativeEvent.selection;
+              if (selection) selection.value = next;
+              onSelectionChange(next);
+            }
+          : selection
+            ? (e) => {
+                selection.value = e.nativeEvent.selection;
+              }
+            : undefined
       }
     />
   );

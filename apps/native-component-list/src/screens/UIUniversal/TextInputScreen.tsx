@@ -173,7 +173,7 @@ export default function TextInputScreen() {
               variant="outlined"
               onPress={async () => {
                 await inputRef.current?.focus();
-                selection.value = { start: 0, end: 7 };
+                inputRef.current?.setSelection(0, 7);
               }}
             />
           </Column>

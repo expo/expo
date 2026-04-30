@@ -3,12 +3,18 @@ import type { ColorValue } from 'react-native';
 import { type ObservableState } from '../../State/useNativeState';
 import type { ModifierConfig } from '../../types';
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
+    /** Clear the current text. */
+    clear: () => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
+    /**
+     * Programmatically set the selection range.
+     */
+    setSelection: (start: number, end: number) => Promise<void>;
 };
 export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
 export type TextFieldKeyboardType = 'text' | 'number' | 'email' | 'phone' | 'decimal' | 'password' | 'ascii' | 'uri' | 'numberPassword';
@@ -132,16 +138,17 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
         backgroundColor?: ColorValue;
     };
     /**
-     * Observable state holding the current selection range, bidirectionally
-     * synced with the field's selection. Prefer using TFV-mode `value` for
-     * tightly coupled text/selection logic; this prop exists primarily so the
-     * universal `TextInput` layer can keep selection split from text.
+     * Observable state the field writes the current selection to.
+     * Create with `useNativeState({ start: 0, end: 0 })`.
+     * Use `ref.setSelection(start, end)` to set programmatically.
      * @internal
      */
     selection?: ObservableState<{
         start: number;
         end: number;
     }>;
+    /** Maximum number of characters allowed. Truncates natively as the user types. */
+    maxLength?: number;
     /**
      * Called when the selection range changes.
      * @internal

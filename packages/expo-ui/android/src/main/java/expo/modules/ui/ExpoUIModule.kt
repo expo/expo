@@ -584,6 +584,8 @@ class ExpoUIModule : Module() {
 
     ExpoUIView<TextFieldProps>("TextFieldView") {
       val setText by AsyncFunction<String>()
+      val setSelection by AsyncFunction<TextFieldSelectionPayload>()
+      val clear by AsyncFunction()
       val focus by AsyncFunction()
       val blur by AsyncFunction()
       val onValueChange by Event<TextFieldValuePayload>()
@@ -595,6 +597,8 @@ class ExpoUIModule : Module() {
         TextFieldContent(
           props,
           setText,
+          setSelection,
+          clear,
           focus,
           blur,
           onValueChanged = { onValueChange(it) },
