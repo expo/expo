@@ -45,6 +45,10 @@ const withWidgetSourceFiles = (config, { widgets, targetName, onFilesGenerated, 
     async (config) => {
         const projectRoot = config.modRequest.platformProjectRoot;
         const targetDirectory = path.join(projectRoot, targetName);
+        const existingInfoPlistPath = path.join(targetDirectory, 'Info.plist');
+        const existingInfoPlist = fs.existsSync(existingInfoPlistPath)
+            ? fs.readFileSync(existingInfoPlistPath, 'utf8')
+            : null;
         if (fs.existsSync(targetDirectory)) {
             fs.rmSync(targetDirectory, { recursive: true, force: true });
         }
@@ -54,7 +58,7 @@ const withWidgetSourceFiles = (config, { widgets, targetName, onFilesGenerated, 
             'com.apple.security.application-groups': [groupIdentifier],
         };
         fs.writeFileSync(entitlementsPath, plist_1.default.build(entitlementsContent));
-        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory, config.ios?.version ?? config.version ?? '1.0', config.ios?.buildNumber ?? '1');
+        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory, config.ios?.version ?? config.version ?? '1.0', config.ios?.buildNumber ?? '1', existingInfoPlist);
         const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
         const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
         onFilesGenerated([entitlementsPath, infoPlistPath, indexSwiftPath, ...widgetSwiftPaths]);
@@ -89,8 +93,18 @@ const createWidgetSwift = (widget, targetPath) => {
     fs.writeFileSync(widgetFilePath, widgetSwift(widget));
     return widgetFilePath;
 };
-const createInfoPlist = (groupIdentifier, targetPath, marketingVersion, bundleVersion) => {
+const createInfoPlist = (groupIdentifier, targetPath, marketingVersion, bundleVersion, existingInfoPlist) => {
     const infoPlistPath = `${targetPath}/Info.plist`;
+    if (existingInfoPlist) {
+        const parsedInfoPlist = plist_1.default.parse(existingInfoPlist);
+        if (parsedInfoPlist.NSExtension?.NSExtensionPointIdentifier === 'com.apple.widgetkit-extension' &&
+            parsedInfoPlist.ExpoWidgetsAppGroupIdentifier === groupIdentifier &&
+            parsedInfoPlist.CFBundleShortVersionString === marketingVersion &&
+            parsedInfoPlist.CFBundleVersion === bundleVersion) {
+            fs.writeFileSync(infoPlistPath, existingInfoPlist);
+            return infoPlistPath;
+        }
+    }
     fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier, marketingVersion, bundleVersion));
     return infoPlistPath;
 };
