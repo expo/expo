@@ -21,4 +21,7 @@ data class AppUpdatesInfo(
   val updateId: String?,
   val runtimeVersion: String?,
   val requestHeaders: Map<String, String>?
-)
+) {
+  val channel: String?
+    get() = requestHeaders?.get("expo-channel-name")
+}

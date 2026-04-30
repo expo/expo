@@ -245,7 +245,7 @@ class OpenTelemetryTest {
   }
 
   @Test
-  fun `toOTMetadata emits update runtime version and request headers when present`() {
+  fun `toOTMetadata emits update runtime version and channel when present`() {
     val metadata = testMetadata.copy(
       appUpdatesInfo = Metadata.AppUpdatesInfo(
         updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
@@ -260,12 +260,7 @@ class OpenTelemetryTest {
     val attrs = event.toOTMetadata(testEasClientId).attributes.associate { it.key to it.value.stringValue }
 
     assertEquals("1.0.0", attrs["expo.app.updates.runtime_version"])
-
-    val headersJson = attrs["expo.app.updates.request_headers"]
-    assertNotNull(headersJson)
-    val parsedHeaders = Json.parseToJsonElement(headersJson!!).jsonObject
-    assertEquals("production", parsedHeaders["expo-channel-name"]?.jsonPrimitive?.content)
-    assertEquals("1.0.0", parsedHeaders["expo-runtime-version"]?.jsonPrimitive?.content)
+    assertEquals("production", attrs["expo.app.updates.channel"])
   }
 
   @Test
@@ -277,7 +272,7 @@ class OpenTelemetryTest {
     assertFalse(keys.contains("expo.app.update_id"))
     assertFalse(keys.contains("expo.app.updates.id"))
     assertFalse(keys.contains("expo.app.updates.runtime_version"))
-    assertFalse(keys.contains("expo.app.updates.request_headers"))
+    assertFalse(keys.contains("expo.app.updates.channel"))
   }
 
   // -- Full OTEvent --
