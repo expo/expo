@@ -23,6 +23,7 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
 describe('Native Bottom Tabs Navigation', () => {
@@ -38,18 +39,25 @@ describe('Native Bottom Tabs Navigation', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(4);
   }
 
+  function lastHostSelectedKey() {
+    const calls = TabsHost.mock.calls;
+    return calls[calls.length - 1][0].navState.selectedScreenKey;
+  }
+
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].isFocused).toBe(true);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].isFocused).toBe(false);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
+      /^second-[-\w]+/
+    );
+    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].tabKey).toMatch(/^index-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2]![0].isFocused).toBe(false);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].tabKey).toMatch(/^second-[-\w]+/);
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1]![0].isFocused).toBe(true);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
+      /^second-[-\w]+/
+    );
+    expect(lastHostSelectedKey()).toMatch(/^second-[-\w]+/);
   }
 
   beforeEach(() => {
