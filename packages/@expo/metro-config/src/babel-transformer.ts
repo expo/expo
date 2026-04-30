@@ -169,9 +169,10 @@ const transform: BabelTransformer['transform'] = ({
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
-  const { enableBabelRCLookup = true } = options;
-
   try {
+    const { enableBabelRCLookup } = options;
+    const { exts, presets } = loadBabelConfig(options);
+
     const babelConfig: TransformOptions = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -190,12 +191,19 @@ const transform: BabelTransformer['transform'] = ({
       filename,
       highlightCode: true,
 
-      // Load the project babel config file.
-      ...loadBabelConfig(options),
+      root: options.projectRoot, // Default value
 
-      babelrc: enableBabelRCLookup,
-      ...(enableBabelRCLookup === false && { configFile: false }),
+      babelrcRoots: enableBabelRCLookup ? options.projectRoot : false, // Default value
+      // NOTE(@kitten): This will and has always only searched `projectRoot`, excluding node_modules and other workspaces
+      // As such, we'll only enable it when `enableBabelRCLookup` is explicitly enabled for non-node_modules
+      babelrc: enableBabelRCLookup ? !filename.includes('node_modules') : false,
+      // NOTE(@kitten): This used to duplicate the config file, which is already piped into `extends`
+      // However, for deprecated/legacy behaviour, we'll still enable it when `enableBabelRCLookup` is explicitly enabled
+      configFile: !!enableBabelRCLookup, // Otherwise duplicates our search below
 
+      // Add the discovered config file
+      extends: exts,
+      presets,
       plugins,
 
       // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
