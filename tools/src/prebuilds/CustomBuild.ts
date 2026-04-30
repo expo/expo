@@ -14,9 +14,9 @@ import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import type { BuildFlavor } from './Prebuilder.types';
-import { resolvePackagePath } from './resolvePackage';
 import type { BuildPlatform, SPMProduct } from './SPMConfig.types';
 import { createAsyncSpinner } from './Utils';
+import { resolvePackagePath } from './resolvePackage';
 
 const PODS_STAGE_DIRNAME = 'pods-stage';
 
@@ -84,9 +84,10 @@ async function stagePodsRootAsync(
   ]);
 
   // ReactNativeDependencies bundles folly/boost/fmt/glog/double-conversion/etc.
-  // The Headers dir mirrors `Pods/Headers/Public/ReactNativeDependencies` exactly.
+  // headers inside the xcframework itself, so we expose its `Headers/` dir as
+  // `Pods/Headers/Public/ReactNativeDependencies`.
   links.push([
-    path.join(artifacts.reactNativeDependencies, 'Headers'),
+    path.join(artifacts.reactNativeDependencies, 'ReactNativeDependencies.xcframework', 'Headers'),
     path.join(headersPublic, 'ReactNativeDependencies'),
   ]);
 
