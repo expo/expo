@@ -5,7 +5,7 @@
   "compilerOptions": {
     "allowJs": true,
     "esModuleInterop": true,
-    "jsx": "react-native",
+    "jsx": "react-jsx",
     "lib": ["DOM", "ESNext"],
     "module": "preserve",
     "moduleDetection": "force",
@@ -17,5 +17,12 @@
     "target": "ESNext"
   },
 
-  "exclude": ["${configDir}/node_modules", "${configDir}/babel.config.js", "${configDir}/metro.config.js", "${configDir}/jest.config.js", "${configDir}/android", "${configDir}/ios"]
+  "exclude": [
+    "${configDir}/node_modules",
+    "${configDir}/babel.config.js",
+    "${configDir}/metro.config.js",
+    "${configDir}/jest.config.js",
+    "${configDir}/android",
+    "${configDir}/ios"
+  ]
 }
