@@ -12,6 +12,14 @@ declare module '@expo/metro/metro/DeltaBundler/types' {
   }
 }
 
+import * as __metroTransformWorker from '@expo/metro/metro-transform-worker';
+declare module '@expo/metro/metro-transform-worker' {
+  export interface JsTransformerConfig {
+    /** Normal path at which Babel config is found (must be relative to project root) */
+    readonly extendsBabelConfigPath?: string | undefined;
+  }
+}
+
 import * as __metroBabelTransformer from '@expo/metro/metro-babel-transformer';
 declare module '@expo/metro/metro-babel-transformer' {
   interface BabelTransformerOptions {
@@ -82,3 +90,5 @@ declare module '@expo/metro/metro-source-map/source-map' {
   /** @privateRemarks Augmented to switch argument type to `BabelSourceMapSegment` */
   export function toSegmentTuple(mapping: BabelSourceMapSegment): MetroSourceMapSegmentTuple;
 }
+
+
