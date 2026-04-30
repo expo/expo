@@ -372,7 +372,6 @@ class ContactsNextModule : Module() {
       StaticAsyncFunction("hasAny") Coroutine { ->
         Contact.hasAny(contactRepository)
       }
-
     }
 
     AsyncFunction("getPermissionsAsync") { promise: Promise ->
