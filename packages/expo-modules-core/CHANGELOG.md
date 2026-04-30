@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Guard against null `eventEmitter` in `SwiftUIVirtualView.dispatchEvent` to prevent SIGSEGV after view teardown. ([#45175](https://github.com/expo/expo/pull/45175) by [@DORI2001](https://github.com/DORI2001))
+
 ### 💡 Others
 
 ## 55.0.23 — 2026-04-21
