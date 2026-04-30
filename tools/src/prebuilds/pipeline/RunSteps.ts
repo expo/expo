@@ -86,11 +86,14 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
   // Build a map of product name -> package name
   // This is needed because external packages reference each other by product name
   // (e.g., "RNWorklets") rather than package name (e.g., "react-native-worklets")
+  // Source-only products are excluded — they are never built as xcframeworks,
+  // so other products cannot depend on them as binary dependencies.
   const productToPackage = new Map<string, string>();
   for (const pkg of packages) {
     try {
       const spmConfig = pkg.getSwiftPMConfiguration();
       for (const product of spmConfig.products) {
+        if (product.sourceOnly) continue;
         productToPackage.set(product.name, pkg.packageName);
       }
     } catch {
@@ -106,6 +109,9 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
     try {
       const spmConfig = pkg.getSwiftPMConfiguration();
       for (const product of spmConfig.products) {
+        // Source-only products are not built, so their externalDependencies
+        // do not influence prebuild ordering.
+        if (product.sourceOnly) continue;
         if (product.externalDependencies) {
           for (const dep of product.externalDependencies) {
             // Dependencies can be "package-name" or "package-name/ProductName"
@@ -120,8 +126,10 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
               // Try to resolve as product name first, fallback to literal
               packageName = productToPackage.get(dep) ?? dep;
             }
-            // Only track dependencies that are in our build set
-            if (packageMap.has(packageName)) {
+            // Only track dependencies that are in our build set, and ignore
+            // intra-package product references (a product depending on another
+            // product within the same package is not a build-order dependency).
+            if (packageMap.has(packageName) && packageName !== pkg.packageName) {
               deps.add(packageName);
             }
           }
@@ -285,6 +293,9 @@ export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPM
       }
 
       for (const product of spmConfig.products) {
+        // Source-only products are never built, so their externalDependencies
+        // do not need to be present in the build set.
+        if (product.sourceOnly) continue;
         if (!product.externalDependencies) continue;
 
         for (const dep of product.externalDependencies) {

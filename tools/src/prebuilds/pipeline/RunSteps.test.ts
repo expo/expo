@@ -46,6 +46,10 @@ function makeProduct(name: string, externalDeps: string[] = []): SPMProduct {
   };
 }
 
+function makeSourceOnlyProduct(name: string, externalDeps: string[] = []): SPMProduct {
+  return { ...makeProduct(name, externalDeps), sourceOnly: true };
+}
+
 // ---------------------------------------------------------------------------
 // resolveFlavorTemplatedPath
 // ---------------------------------------------------------------------------
@@ -184,6 +188,43 @@ describe('sortPackagesByDependencies', () => {
     assert.deepEqual(
       sorted.map((p) => p.packageName),
       ['react-native-worklets', 'a']
+    );
+  });
+
+  it('skips sourceOnly products when computing dependencies', () => {
+    // A source-only companion product (e.g. ExpoModulesWorkletsAdapter) is not
+    // built as an xcframework, so its externalDependencies must not influence
+    // build order or pull packages into the build graph.
+    const builtProduct = makeProduct('Built');
+    const adapter = makeSourceOnlyProduct('Adapter', ['external/Worklets']);
+    const owner = makePkg('owner', [builtProduct, adapter]);
+    const externalPkg = makePkg('external', [makeProduct('Worklets')]);
+    const { sorted, dependsOn } = sortPackagesByDependencies([owner, externalPkg]);
+    // owner's dependsOn must be empty — the source-only product's deps are ignored
+    assert.equal(dependsOn.get('owner')!.size, 0);
+    // No cycle and no forced ordering: insertion order preserved
+    assert.deepEqual(
+      sorted.map((p) => p.packageName),
+      ['owner', 'external']
+    );
+  });
+
+  it('ignores intra-package product references (no self-cycle)', () => {
+    // A package with multiple products where one product depends on another
+    // product in the same package must NOT register as a self-dependency.
+    const productMain = makeProduct('Main');
+    const productExtra = makeProduct('Extra', ['Main']); // bare product name in same package
+    const pkg = makePkg('multi-product', [productMain, productExtra]);
+    const consumer = makePkg('consumer', [makeProduct('Consumer', ['multi-product/Main'])]);
+    const { sorted, dependsOn } = sortPackagesByDependencies([consumer, pkg]);
+    // multi-product depends on itself only via intra-package product → must be empty
+    assert.equal(dependsOn.get('multi-product')!.size, 0);
+    // consumer depends on multi-product
+    assert.deepEqual([...dependsOn.get('consumer')!], ['multi-product']);
+    // No cycle → multi-product sorted first, then consumer
+    assert.deepEqual(
+      sorted.map((p) => p.packageName),
+      ['multi-product', 'consumer']
     );
   });
 

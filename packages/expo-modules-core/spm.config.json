@@ -171,6 +171,7 @@
     {
       "name": "ExpoModulesWorkletsAdapter",
       "podName": "ExpoModulesWorkletsAdapter",
+      "sourceOnly": true,
       "platforms": [
         "iOS(.v16)"
       ],
