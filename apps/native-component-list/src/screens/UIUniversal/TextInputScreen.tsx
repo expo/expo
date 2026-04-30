@@ -155,7 +155,7 @@ export default function TextInputScreen() {
               modifiers={
                 escapeHatchOn
                   ? Platform.OS === 'ios'
-                    ? [italic(true)]
+                    ? [italic()]
                     : [composeShadow(8)]
                   : undefined
               }
