@@ -32,6 +32,7 @@
 - [android] set react native version for all published artfacts ([#43693](https://github.com/expo/expo/pull/43693) by [@pmleczek](https://github.com/pmleczek))
 - [test] add fixes to ios debug e2es ([#43703](https://github.com/expo/expo/pull/43703) by [@pmleczek](https://github.com/pmleczek))
 - Validate package installation before running CLI commands ([#44210](https://github.com/expo/expo/pull/44210) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Adjust CLI Android/iOS library file discovery to remove symlink following ([#44280](https://github.com/expo/expo/pull/44280) by [@kitten](https://github.com/kitten))
 
 ## 55.0.11 — 2026-02-25
 
