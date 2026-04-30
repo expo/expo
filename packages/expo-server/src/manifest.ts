@@ -1,3 +1,5 @@
+import type { ReactNode } from 'react';
+
 /**
  * Asset manifest for client hydration bundles.
  *
@@ -107,7 +109,18 @@ export type Route = RouteInfo<RegExp>;
  */
 export interface GetStaticContentOptions {
   loader?: { data?: unknown; key: string };
-  metadata?: { headTags: string } | null;
+  request?: Request;
+  assets?: AssetInfo;
+}
+
+/**
+ * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ */
+export interface GetStreamingContentOptions {
+  loader?: { data?: unknown; key: string };
+  metadata?: {
+    headNodes: ReactNode[];
+  } | null;
   request?: Request;
   assets?: AssetInfo;
 }

@@ -1,9 +1,9 @@
 import {
-  createInjectedCssElements,
-  createInjectedScriptElements,
-  createLoaderDataScript,
+  createInjectedCssAsString,
+  createInjectedScriptsAsString,
+  createLoaderDataScriptAsString,
   escapeUnsafeCharacters,
-  getHydrationFlagScript,
+  getHydrationFlagScriptAsString,
   serializeHelmetToHtml,
 } from '../html';
 
@@ -45,20 +45,20 @@ describe(escapeUnsafeCharacters, () => {
   });
 });
 
-describe(createInjectedCssElements, () => {
+describe(createInjectedCssAsString, () => {
   it('returns empty string for empty array', () => {
-    expect(createInjectedCssElements([])).toBe('');
+    expect(createInjectedCssAsString([])).toBe('');
   });
 
   it('returns preload + stylesheet for a single href', () => {
-    expect(createInjectedCssElements(['/styles/main.css'])).toBe(
+    expect(createInjectedCssAsString(['/styles/main.css'])).toBe(
       '<link rel="preload" href="/styles/main.css" as="style">\n' +
         '<link rel="stylesheet" href="/styles/main.css">'
     );
   });
 
   it('returns preload + stylesheet pairs for multiple hrefs', () => {
-    const result = createInjectedCssElements(['/a.css', '/b.css']);
+    const result = createInjectedCssAsString(['/a.css', '/b.css']);
     expect(result).toBe(
       '<link rel="preload" href="/a.css" as="style">\n' +
         '<link rel="stylesheet" href="/a.css">\n' +
@@ -68,36 +68,36 @@ describe(createInjectedCssElements, () => {
   });
 });
 
-describe(createInjectedScriptElements, () => {
+describe(createInjectedScriptsAsString, () => {
   it('returns empty string for empty array', () => {
-    expect(createInjectedScriptElements([])).toBe('');
+    expect(createInjectedScriptsAsString([])).toBe('');
   });
 
   it('returns a single defer script tag', () => {
-    expect(createInjectedScriptElements(['/bundle.js'])).toBe(
+    expect(createInjectedScriptsAsString(['/bundle.js'])).toBe(
       '<script src="/bundle.js" defer></script>'
     );
   });
 
   it('returns multiple defer script tags', () => {
-    const result = createInjectedScriptElements(['/a.js', '/b.js']);
+    const result = createInjectedScriptsAsString(['/a.js', '/b.js']);
     expect(result).toBe('<script src="/a.js" defer></script>\n<script src="/b.js" defer></script>');
   });
 });
 
-describe(getHydrationFlagScript, () => {
+describe(getHydrationFlagScriptAsString, () => {
   it('returns the exact hydration flag script tag', () => {
-    expect(getHydrationFlagScript()).toBe(
+    expect(getHydrationFlagScriptAsString()).toBe(
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
     );
   });
 });
 
-describe(createLoaderDataScript, () => {
+describe(createLoaderDataScriptAsString, () => {
   it('returns the expected inline script markup', () => {
     const data = { '/': { foo: 'bar' } };
 
-    expect(createLoaderDataScript(data)).toBe(
+    expect(createLoaderDataScriptAsString(data)).toBe(
       '<script id="expo-router-data">' +
         'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{\\"foo\\":\\"bar\\"}}");' +
         '</script>'
@@ -106,7 +106,7 @@ describe(createLoaderDataScript, () => {
 
   it('uses an escaped payload for unsafe HTML input', () => {
     const data = { '/route': '<script>alert("xss")</script>' };
-    const result = createLoaderDataScript(data);
+    const result = createLoaderDataScriptAsString(data);
 
     expect(result).toContain('<script id="expo-router-data">');
     expect(result).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');

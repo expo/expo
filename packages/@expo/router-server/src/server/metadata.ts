@@ -1,8 +1,9 @@
 import { ctx } from 'expo-router/_ctx';
 import type { LoadedRoute } from 'expo-router/build/Route';
 import type { GenerateMetadataFunction, ImmutableRequest, Metadata } from 'expo-server';
+import type { ReactNode } from 'react';
 
-import { serializeMetadataToHtml } from '../utils/metadata/serialize';
+import { serializeMetadataToHtml, serializeMetadataToReact } from '../utils/metadata/serialize';
 
 type ResolveMetadataOptions = {
   route: {
@@ -15,6 +16,7 @@ type ResolveMetadataOptions = {
 
 type ResolvedMetadata = {
   metadata: Metadata;
+  headNodes: ReactNode[];
   headTags: string;
 };
 
@@ -45,6 +47,7 @@ export async function resolveMetadata(
 
   return {
     metadata,
+    headNodes: serializeMetadataToReact(metadata),
     headTags: serializeMetadataToHtml(metadata),
   };
 }
