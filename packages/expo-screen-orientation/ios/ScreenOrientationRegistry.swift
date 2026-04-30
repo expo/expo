@@ -93,10 +93,11 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         let windowScene = self.rootViewController?.view.window?.windowScene
         windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
         self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
-      } else {
-        UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
-        UIViewController.attemptRotationToDeviceOrientation()
       }
+      // requestGeometryUpdate's validation cache isn't invalidated by setNeedsUpdate, so flipping
+      // between previously-applied narrow masks gets rejected. The legacy KVO path bypasses it.
+      UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
+      UIViewController.attemptRotationToDeviceOrientation()
 
       if self.currentScreenOrientation == .unknown {
         // CurrentScreenOrientation might be unknown (especially just after launch), but at this point we already know it.

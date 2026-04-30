@@ -85,8 +85,9 @@ class ScreenOrientationViewController: UIViewController {
   override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransition(to: size, with: coordinator)
 
-    // Update after the transition ends, this ensures that the trait collection passed to didUpdateDimensionsEvent is already updated
-    coordinator.animate(alongsideTransition: { [weak self] _ in
+    // Use the completion block, windowScene.interfaceOrientation is still stale during the
+    // alongside-transition closure, which makes viewDidTransition read .unknown.
+    coordinator.animate(alongsideTransition: nil) { [weak self] _ in
       guard let self = self, let windowInterfaceOrientation = self.windowInterfaceOrientation else {
         return
       }
@@ -95,7 +96,7 @@ class ScreenOrientationViewController: UIViewController {
         self.screenOrientationRegistry.viewDidTransition(toOrientation: windowInterfaceOrientation)
       }
       self.previousInterfaceOrientation = windowInterfaceOrientation
-    })
+    }
   }
 
   /// Finds the VC whose subtree has a react-native-screens screen with orientation set.
