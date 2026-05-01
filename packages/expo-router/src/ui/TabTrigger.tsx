@@ -154,7 +154,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       return {
         isFocused: state.index === config.index,
-        route: state.routes[config.index],
+        route: state.routes[config.index]!,
         resolvedHref: stripGroupSegmentsFromPath(appendBaseUrl(config.href)),
         ...config,
       };

@@ -784,7 +784,7 @@ describe('function-form options', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('Page: index');
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('Page: index');
   });
 
   it('calls function-form options with route and navigation', () => {
@@ -800,7 +800,7 @@ describe('function-form options', () => {
     });
 
     expect(optionsFn).toHaveBeenCalled();
-    const arg = optionsFn.mock.calls[0][0];
+    const arg = optionsFn.mock.calls[0]![0];
     expect(arg).toHaveProperty('route');
     expect(arg).toHaveProperty('navigation');
     expect(arg.route).toHaveProperty('name', 'index');
@@ -825,7 +825,7 @@ describe('function-form options', () => {
 
     expect(screen.getByTestId('profile')).toBeVisible();
 
-    expect(MockedScreenStackItem.mock.calls[2][0].headerConfig?.title).toBe('Page: profile');
+    expect(MockedScreenStackItem.mock.calls[2]![0].headerConfig?.title).toBe('Page: profile');
   });
 
   it('warns when function-form options are used in page context', () => {
@@ -871,7 +871,7 @@ describe('Screen options with /index suffix normalization', () => {
     expect(screen).toHavePathname('/settings/general');
 
     // Verify the title option is actually applied
-    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('General Settings');
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('General Settings');
 
     expect(spy).not.toHaveBeenCalledWith(
       expect.stringContaining('[Layout children]'),
@@ -903,7 +903,7 @@ describe('Screen options with /index suffix normalization', () => {
     expect(screen).toHavePathname('/otp/signin');
 
     // Verify the title option is actually applied
-    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('OTP Flow');
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('OTP Flow');
 
     expect(spy).not.toHaveBeenCalledWith(
       expect.stringContaining('[Layout children]'),
@@ -935,7 +935,7 @@ describe('Screen options with /index suffix normalization', () => {
     expect(screen).toHavePathname('/otp/signin/step1');
 
     // Verify the title option is actually applied
-    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('OTP Flow');
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('OTP Flow');
 
     expect(spy).not.toHaveBeenCalledWith(
       expect.stringContaining('[Layout children]'),

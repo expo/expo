@@ -44,6 +44,7 @@ export * from './Namespace';
 export * from './GlassEffectContainer';
 export * from './ScrollView';
 export * from './Shapes';
+export * from './Mask';
 export * from './Overlay';
 export * from './Popover';
 export * from './Grid';

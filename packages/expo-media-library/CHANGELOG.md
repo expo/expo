@@ -27,6 +27,7 @@
 
 ### 💡 Others
 
+- Mark legacy API deprecated ([#44605](https://github.com/expo/expo/pull/44605) by [@Wenszel](https://github.com/Wenszel))
 - [next] Replace JS static overrides with StaticAsyncFunction ([#44473](https://github.com/expo/expo/pull/44473) by [@Wenszel](https://github.com/Wenszel))
 
 ### ⚠️ Notices

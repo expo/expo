@@ -29,6 +29,7 @@
 require 'fileutils'
 require 'json'
 require 'net/http'
+require 'set'
 require 'uri'
 
 module Expo
@@ -59,6 +60,10 @@ module Expo
 
     # Regex to strip `framework module React { ... }` from modulemaps
     FRAMEWORK_MODULE_REACT_REGEX = /framework module React \{.*?\n\}\s*/m
+
+    # ExpoModulesJSI is always provided as an xcframework by its own podspec/npm package,
+    # so it is not resolved through the Expo precompiled tarball pipeline.
+    CUSTOM_XCFRAMEWORK_DEPENDENCIES = %w[ExpoModulesJSI].freeze
 
     # Module-level caches (initialized lazily)
     @pod_lookup_map = nil
@@ -235,7 +240,7 @@ module Expo
       def has_prebuilt_xcframework?(pod_name)
         return false unless enabled?
 
-        !resolve_prebuilt_info(pod_name).nil?
+        resolve_prebuilt_status(pod_name)[:available]
       end
 
       # Returns whether test specs should be included for a pod.
@@ -478,13 +483,13 @@ module Expo
       def try_link_with_prebuilt_xcframework(spec)
         return false unless enabled?
 
-        resolved = resolve_prebuilt_info(spec.name)
-        unless resolved
-          log_linking_status(spec.name, false, "no prebuilt xcframework available")
+        resolution = resolve_prebuilt_status(spec.name)
+        unless resolution[:available]
+          log_linking_status(spec.name, false, resolution)
           return false
         end
 
-        pod_info, product_name, default_tarball = resolved
+        pod_info, product_name, default_tarball = resolution[:resolved]
 
         log_linking_status(spec.name, true, default_tarball)
 
@@ -513,10 +518,13 @@ module Expo
       # @param spec [Pod::Specification] The podspec to patch
       # @return [Pod::Specification] A new patched specification (or original on failure)
       def patch_spec_for_prebuilt(spec)
-        resolved = resolve_prebuilt_info(spec.name)
-        return spec unless resolved
+        resolution = resolve_prebuilt_status(spec.name)
+        unless resolution[:available]
+          log_linking_status(spec.name, false, resolution) if resolution[:reason] == :dependency_unavailable
+          return spec
+        end
 
-        pod_info, product_name, default_tarball = resolved
+        pod_info, product_name, default_tarball = resolution[:resolved]
 
         log_linking_status(spec.name, true, default_tarball)
 
@@ -590,7 +598,8 @@ module Expo
           if info[:found]
             Pod::UI.info "#{prefix}  📦 #{pod_name.green}#{version_suffix}"
           else
-            Pod::UI.info "#{prefix}  ⚠️  #{pod_name}#{version_suffix} #{"(Build from source: framework not found #{info[:path]})".yellow}"
+            reason = format_prebuilt_unavailable_reason(info)
+            Pod::UI.info "#{prefix}  ⚠️  #{pod_name}#{version_suffix} #{"(#{reason})".dark}"
           end
           spm_versions = pod_lookup_map.dig(pod_name, :spm_dependency_versions) || {}
           info[:spm_deps].each do |dep_name|
@@ -1273,15 +1282,27 @@ module Expo
       # (no monorepo root). Uses resolved podspec dirs so non-flat layouts work.
       def scan_node_modules_configs(project_root)
         resolved_modules.each do |mod|
-          (mod['pods'] || []).each do |pod|
-            next unless pod['podspecDir']
-            # Convention: podspecDir is `<package>/ios`; spm.config.json lives at `<package>/`.
-            config_path = File.join(File.dirname(pod['podspecDir']), 'spm.config.json')
-            process_spm_config(config_path, :internal, project_root) if File.exist?(config_path)
-          end
+          podspec_dir = (mod['pods'] || []).map { |pod| pod['podspecDir'] }.compact.first
+          next unless podspec_dir
+
+          config_path = spm_config_path_for_podspec_dir(podspec_dir)
+          next unless config_path
+
+          process_spm_config(config_path, :internal, project_root)
         end
 
         scan_external_configs(project_root)
+      end
+
+      # Resolves spm.config.json from an Expo autolinking podspecDir. Most modules
+      # report `<package>/ios`, while packages with root podspecs report `<package>`.
+      def spm_config_path_for_podspec_dir(podspec_dir)
+        [podspec_dir, File.dirname(podspec_dir)].uniq.each do |package_dir|
+          config_path = File.join(package_dir, 'spm.config.json')
+          return config_path if File.exist?(config_path)
+        end
+
+        nil
       end
 
       # Scans spm.config.json files from external-configs/ios/ for 3rd-party packages
@@ -1380,6 +1401,7 @@ module Expo
             targets: targets,
             spm_dependency_frameworks: spm_dependency_frameworks,
             spm_dependency_versions: spm_dependency_versions,
+            prebuilt_dependency_pods: prebuilt_dependency_pods(product['externalDependencies']),
             autolink_when: product['autolinkWhen']
           }
         end
@@ -1461,8 +1483,28 @@ module Expo
           targets: targets,
           spm_dependency_frameworks: spm_dependency_frameworks,
           spm_dependency_versions: spm_dependency_versions,
+          prebuilt_dependency_pods: prebuilt_dependency_pods(product['externalDependencies']),
           autolink_when: product['autolinkWhen']
         }
+      end
+
+      # Returns local Expo product dependencies whose prebuilt availability must
+      # match this product's availability. Runtime deps like React/Hermes are not
+      # encoded as package/product strings and are ignored here.
+      def prebuilt_dependency_pods(external_dependencies)
+        (external_dependencies || []).filter_map do |dep|
+          next unless dep.is_a?(String) && dep.include?('/')
+
+          parts = dep.split('/')
+          is_scoped = parts[0].start_with?('@')
+          package_name = is_scoped ? "#{parts[0]}/#{parts[1]}" : parts[0]
+          product_name = is_scoped ? parts[2] : parts[1]
+
+          next unless package_name&.start_with?('expo-', '@expo/')
+          next if CUSTOM_XCFRAMEWORK_DEPENDENCIES.include?(product_name)
+
+          product_name
+        end.uniq
       end
 
       # Resolves the codegen module name. For external packages, prefers codegenConfig.name
@@ -1698,16 +1740,49 @@ module Expo
       # Resolves prebuilt xcframework info for a pod.
       # @return [Array, nil] [pod_info, product_name, tarball_path] or nil
       def resolve_prebuilt_info(pod_name)
-        return nil if build_from_source?(pod_name)
+        resolution = resolve_prebuilt_status(pod_name)
+        resolution[:available] ? resolution[:resolved] : nil
+      end
 
+      # Resolves only this pod's own prebuilt artifact without checking parent dependencies.
+      # @return [Hash] Availability information with :available, :resolved, :reason, and :path.
+      def resolve_own_prebuilt_info(pod_name)
         pod_info = pod_lookup_map[pod_name]
-        return nil unless pod_info
+        return { available: false, reason: :missing_config } unless pod_info
 
         product_name = pod_info[:product_name] || pod_name
         tarball = resolve_prebuilt_tarball(pod_info, product_name, build_flavor, pod_name)
-        return nil unless File.exist?(tarball)
+        return { available: false, reason: :missing_tarball, path: tarball } unless File.exist?(tarball)
 
-        [pod_info, product_name, tarball]
+        { available: true, resolved: [pod_info, product_name, tarball] }
+      end
+
+      # A pod may use a prebuilt xcframework only when its own prebuilt artifact
+      # exists and every local Expo dependency also uses prebuilt.
+      def resolve_prebuilt_status(pod_name, visiting = Set.new)
+        return { available: false, reason: :build_from_source } if build_from_source?(pod_name)
+        return { available: true } if visiting.include?(pod_name)
+
+        own_resolution = resolve_own_prebuilt_info(pod_name)
+        return own_resolution unless own_resolution[:available]
+
+        pod_info = own_resolution[:resolved][0]
+        next_visiting = visiting.dup.add(pod_name)
+
+        (pod_info[:prebuilt_dependency_pods] || []).each do |dep_name|
+          dep_resolution = resolve_prebuilt_status(dep_name, next_visiting)
+          next if dep_resolution[:available]
+
+          return {
+            available: false,
+            reason: :dependency_unavailable,
+            dependency: dep_name,
+            dependency_reason: dep_resolution[:reason],
+            dependency_path: dep_resolution[:path]
+          }
+        end
+
+        own_resolution
       end
 
       def resolve_prebuilt_tarball(pod_info, product_name, flavor, pod_name = nil)
@@ -1979,10 +2054,27 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Records the linking status for a pod (only once per pod to avoid duplicates).
-      def log_linking_status(pod_name, found, path)
+      def log_linking_status(pod_name, found, info = nil)
         @linked_pods ||= {}
         return if @linked_pods[pod_name]
-        @linked_pods[pod_name] = { found: found, path: path, spm_deps: [] }
+        status = info.is_a?(Hash) ? info.dup : { path: info }
+        @linked_pods[pod_name] = status.merge(found: found, spm_deps: [])
+      end
+
+      def format_prebuilt_unavailable_reason(info)
+        case info[:reason]
+        when :build_from_source
+          'configured by buildFromSource'
+        when :missing_config
+          'prebuilt config not found'
+        when :missing_tarball
+          'prebuilt tarball not found'
+        when :dependency_unavailable
+          reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
+          "dependency #{info[:dependency]} is not using prebuilt: #{reason}"
+        else
+          info[:path] || 'prebuilt unavailable'
+        end
       end
 
       # Records an SPM dependency xcframework bundled inside a precompiled pod.

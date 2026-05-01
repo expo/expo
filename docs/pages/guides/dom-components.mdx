@@ -14,8 +14,8 @@ Expo offers a novel approach to work with modern web code directly in a native a
 
 While the Expo native runtime generally does not support elements like `<div>` or `<img>`, there may be instances where you need to quickly incorporate web components. In such cases, DOM components provide a useful solution.
 
-<Prerequisites numberOfRequirements={2}>
-  <Requirement number={1} title="Expo CLI and the Expo Metro Config">
+<Prerequisites>
+  <Requirement title="Expo CLI and the Expo Metro Config">
     If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), you're all set.
 
     If you don't have the `expo` package in your project yet, install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
@@ -25,7 +25,7 @@ While the Expo native runtime generally does not support elements like `<div>` o
     If the command fails, refer to the [Installing Expo modules](/bare/installing-expo-modules/#manual-installation) guide.
 
   </Requirement>
-  <Requirement number={2} title="Expo Metro Runtime, React DOM, and React Native Web">
+  <Requirement title="Expo Metro Runtime, React DOM, and React Native Web">
     If you are using Expo Router and Expo Web, you can skip this step. Otherwise, install the following packages:
 
     <Terminal cmd={['$ npx expo install @expo/metro-runtime react-dom react-native-web']} />

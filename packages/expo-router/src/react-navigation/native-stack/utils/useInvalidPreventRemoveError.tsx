@@ -7,7 +7,7 @@ import type { NativeStackDescriptorMap } from '../types';
 export function useInvalidPreventRemoveError(descriptors: NativeStackDescriptorMap) {
   const { preventedRoutes } = usePreventRemoveContext();
   const preventedRouteKey = Object.keys(preventedRoutes)[0];
-  const preventedDescriptor = descriptors[preventedRouteKey];
+  const preventedDescriptor = descriptors[preventedRouteKey!];
   const isHeaderBackButtonMenuEnabledOnPreventedScreen =
     preventedDescriptor?.options?.headerBackButtonMenuEnabled;
   const preventedRouteName = preventedDescriptor?.route?.name;

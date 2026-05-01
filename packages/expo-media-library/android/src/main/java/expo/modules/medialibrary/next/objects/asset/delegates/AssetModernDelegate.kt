@@ -31,6 +31,7 @@ import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetBucketId
 import expo.modules.medialibrary.next.objects.asset.factories.buildUniqueDisplayName
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.MediaStorePermissionsDelegate
@@ -49,6 +50,7 @@ import kotlin.let
 class AssetModernDelegate(
   override val contentUri: Uri,
   val assetDeleter: AssetDeleter,
+  val assetMover: AssetMover,
   val mediaStorePermissionsDelegate: MediaStorePermissionsDelegate,
   val assetFactory: AssetFactory,
   context: Context
@@ -148,7 +150,7 @@ class AssetModernDelegate(
     if (contentResolver.queryAlbumTitle(albumId) == null) {
       return emptyList()
     }
-    return listOf(Album(albumId, assetDeleter, assetFactory, contextRef.getOrThrow()))
+    return listOf(Album(albumId, assetDeleter, assetFactory, assetMover, contextRef.getOrThrow()))
   }
 
   override suspend fun getLocation(): Location? =

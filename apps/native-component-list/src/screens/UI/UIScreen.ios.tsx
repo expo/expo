@@ -27,6 +27,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
     name: 'Community Picker replacement',
     route: 'ui/community-picker',
     options: {},
@@ -280,6 +288,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./LinkScreen'));
+    },
+  },
+  {
+    name: 'Mask component',
+    route: 'ui/mask',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaskScreen'));
     },
   },
   {

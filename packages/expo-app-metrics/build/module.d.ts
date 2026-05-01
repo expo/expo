@@ -4,6 +4,9 @@ declare const _default: {
     markFirstRender(): void;
     getStoredEntries(): Promise<import("./types").Metric[]>;
     clearStoredEntries(): Promise<void>;
+    getAllSessions(): Promise<import("./types").Session[]>;
+    simulateCrashReport(): void;
+    triggerCrash(kind: import("./types").CrashKind): void;
     startSession(): string;
     stopSession(sessionId: string): void;
     addCustomMetricToSession(sessionId: string, metric: {

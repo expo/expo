@@ -1,7 +1,30 @@
 import { requireNativeView } from 'expo';
+import type { ColorValue } from 'react-native';
 
 import type { ExpoModifier } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+export type HorizontalFloatingToolbarColors = {
+  /**
+   * Color of the toolbar container (background).
+   */
+  toolbarContainerColor?: ColorValue;
+
+  // Color of the toolbar content (icons/text).
+  // TODO: At the moment IconView's tint color defaults to Color.Unspecified instead of LocalContentColor.current.
+  // Thus the color override will not work.
+  // toolbarContentColor?: ColorValue;
+
+  /**
+   * Color of the floating action button container (background).
+   */
+  fabContainerColor?: ColorValue;
+
+  // Color of the floating action button content (icon).
+  // TODO: At the moment IconView's tint color defaults to Color.Unspecified instead of LocalContentColor.current.
+  // Thus the color override will not work.
+  // fabContentColor?: ColorValue;
+};
 
 export type HorizontalFloatingToolbarProps = {
   /**
@@ -9,6 +32,12 @@ export type HorizontalFloatingToolbarProps = {
    * @default 'standard'
    */
   variant?: 'standard' | 'vibrant';
+
+  /**
+   * Per-slot color overrides. Any field set here replaces the corresponding
+   * color from the variant default; unset fields fall back to the variant.
+   */
+  colors?: HorizontalFloatingToolbarColors;
 
   /**
    * The children of the component.

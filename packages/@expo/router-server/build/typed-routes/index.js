@@ -23,7 +23,7 @@ exports.version = 52;
 function getWatchHandler(outputDir, { ctx = defaultCtx, regenerateFn = exports.regenerateDeclarations } = {} // Exposed for testing
 ) {
     const routeFiles = new Set(ctx.keys().filter((key) => (0, routing_1.isTypedRoute)(key)));
-    return async function callback({ filePath, type }) {
+    return async function callback(filePath, type) {
         // Sanity check that we are in an Expo Router project
         if (!process.env.EXPO_ROUTER_APP_ROOT)
             return;

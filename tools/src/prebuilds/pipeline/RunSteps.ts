@@ -310,27 +310,41 @@ export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPM
           if (CACHE_DEPS.has(depPackageName)) continue;
           if (packagesByName.has(depPackageName) || added.has(depPackageName)) continue;
 
-          // Check if the xcframework already exists (for both debug and release)
-          // Check both non-versioned and versioned paths (versioned: output/<ver>/<rn>/<hermes>/<flavor>/xcframeworks/)
-          const depBuildPath = path.join(getPrecompileDir(), '.build', depPackageName);
-          const debugExists = frameworkExistsAtAnyVersion(depBuildPath, depProductName, 'Debug');
-          const releaseExists = frameworkExistsAtAnyVersion(
-            depBuildPath,
-            depProductName,
-            'Release'
-          );
-
-          if (debugExists && releaseExists) continue;
-
-          // Try to find the package and add it to the build set
+          // Resolve the dep package once — needed for both the customBuild check
+          // and the auto-add below.
           const depPkg = getPackageByName(depPackageName);
-          if (depPkg && depPkg.hasSwiftPMConfiguration()) {
-            logger.info(
-              `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}, xcframework not found)`
+          if (!depPkg || !depPkg.hasSwiftPMConfiguration()) continue;
+
+          // customBuild products own their staleness signal (their build script
+          // hashes its own inputs and no-ops on cache hit). Always include them
+          // so the script runs and can detect source changes the existence
+          // check below cannot.
+          const depProduct = depPkg
+            .getSwiftPMConfiguration()
+            .products.find((p) => p.name === depProductName);
+          const isCustomBuild = !!depProduct?.customBuild;
+
+          if (!isCustomBuild) {
+            // Standard SPM products: skip if both flavors are already on disk.
+            // Check both non-versioned and versioned paths (versioned: output/<ver>/<rn>/<hermes>/<flavor>/xcframeworks/)
+            const depBuildPath = path.join(getPrecompileDir(), '.build', depPackageName);
+            const debugExists = frameworkExistsAtAnyVersion(depBuildPath, depProductName, 'Debug');
+            const releaseExists = frameworkExistsAtAnyVersion(
+              depBuildPath,
+              depProductName,
+              'Release'
             );
-            added.set(depPackageName, depPkg);
-            changed = true;
+
+            if (debugExists && releaseExists) continue;
           }
+
+          logger.info(
+            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}${
+              isCustomBuild ? ', customBuild — script decides cache' : ', xcframework not found'
+            })`
+          );
+          added.set(depPackageName, depPkg);
+          changed = true;
         }
       }
     }

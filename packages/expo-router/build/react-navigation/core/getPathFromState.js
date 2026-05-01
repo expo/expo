@@ -38,9 +38,7 @@ const queryString = __importStar(require("query-string"));
 const getPatternParts_1 = require("./getPatternParts");
 const validatePathConfig_1 = require("./validatePathConfig");
 const getActiveRoute = (state) => {
-    const route = typeof state.index === 'number'
-        ? state.routes[state.index]
-        : state.routes[state.routes.length - 1];
+    const route = state.index != null ? state.routes[state.index] : state.routes[state.routes.length - 1];
     if (route.state) {
         return getActiveRoute(route.state);
     }

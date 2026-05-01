@@ -1,7 +1,7 @@
 /**
  Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
  */
-public class Session: Codable, MetricsReceiver {
+public class Session: Codable, MetricsReceiver, @unchecked Sendable {
   /**
    Unique ID of the session in UUID v4 format.
    */
@@ -33,6 +33,17 @@ public class Session: Codable, MetricsReceiver {
     self.type = type
 
     AppMetrics.storage.currentEntry.add(session: self)
+  }
+
+  /**
+   Test-only initializer that builds a session with explicit values and skips registering it
+   with the global storage. Do not use from production code.
+   */
+  init(id: String, type: SessionType, startDate: Date, endDate: Date?) {
+    self.id = id
+    self.type = type
+    self.startDate = startDate
+    self.endDate = endDate
   }
 
   /**

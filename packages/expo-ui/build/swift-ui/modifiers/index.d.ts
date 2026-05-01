@@ -566,11 +566,11 @@ export declare const backgroundOverlay: (params: {
 }) => ModifierConfig;
 /**
  * Sets aspect ratio constraint.
- * @param params - Width/height aspect ratio and content mode.
+ * @param params - Optional width/height aspect ratio and content mode.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/aspectratio(_:contentmode:)).
  */
 export declare const aspectRatio: (params: {
-    ratio: number;
+    ratio?: number;
     contentMode?: "fit" | "fill";
 }) => ModifierConfig;
 /**

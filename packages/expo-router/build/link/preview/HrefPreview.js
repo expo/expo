@@ -101,6 +101,7 @@ function getParamsAndNodeFromHref(hrefState) {
     let routeNode = router_store_1.store.routeNode;
     const params = {};
     while (state && routeNode) {
+        // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
         const route = state.routes[state.index || state.routes.length - 1];
         Object.assign(params, route.params);
         state = route.state;

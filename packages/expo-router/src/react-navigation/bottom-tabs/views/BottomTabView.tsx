@@ -75,7 +75,7 @@ export function BottomTabView(props: Props) {
       Platform.OS === 'ios',
   } = props;
 
-  const focusedRouteKey = state.routes[state.index].key;
+  const focusedRouteKey = state.routes[state.index]!.key;
 
   /**
    * List of loaded tabs, tabs will be loaded when navigated to.
@@ -120,10 +120,10 @@ export function BottomTabView(props: Props) {
       Animated.parallel(
         state.routes
           .map((route, index) => {
-            const { options } = descriptors[route.key];
+            const { options } = descriptors[route.key]!;
             const {
               animation = 'none',
-              transitionSpec = NAMED_TRANSITIONS_PRESETS[animation].transitionSpec,
+              transitionSpec = NAMED_TRANSITIONS_PRESETS[animation]!.transitionSpec,
             } = options;
 
             let spec = transitionSpec;
@@ -138,7 +138,7 @@ export function BottomTabView(props: Props) {
 
             const toValue = index === state.index ? 0 : index >= state.index ? 1 : -1;
 
-            return Animated[spec.animation](tabAnims[route.key], {
+            return Animated[spec.animation](tabAnims[route.key]!, {
               ...spec.config,
               toValue,
               useNativeDriver,
@@ -174,7 +174,7 @@ export function BottomTabView(props: Props) {
         ...SafeAreaProviderCompat.initialMetrics.insets,
         ...props.safeAreaInsets,
       },
-      style: descriptors[state.routes[state.index].key].options.tabBarStyle,
+      style: descriptors[state.routes[state.index]!.key]!.options.tabBarStyle,
     })
   );
 
@@ -201,9 +201,9 @@ export function BottomTabView(props: Props) {
   const { routes } = state;
 
   // If there is no animation, we only have 2 states: visible and invisible
-  const hasTwoStates = !routes.some((route) => hasAnimation(descriptors[route.key].options));
+  const hasTwoStates = !routes.some((route) => hasAnimation(descriptors[route.key]!.options));
 
-  const { tabBarPosition = 'bottom' } = descriptors[focusedRouteKey].options;
+  const { tabBarPosition = 'bottom' } = descriptors[focusedRouteKey]!.options;
 
   const tabBarElement = (
     <BottomTabBarHeightCallbackContext.Provider key="tabbar" value={setTabBarHeight}>
@@ -223,11 +223,11 @@ export function BottomTabView(props: Props) {
         hasTwoStates={hasTwoStates}
         style={styles.screens}>
         {routes.map((route, index) => {
-          const descriptor = descriptors[route.key];
+          const descriptor = descriptors[route.key]!;
           const {
             lazy = true,
             animation = 'none',
-            sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation].sceneStyleInterpolator,
+            sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
           const isPreloaded = state.preloadedRouteKeys.includes(route.key);
@@ -251,7 +251,7 @@ export function BottomTabView(props: Props) {
           const { sceneStyle } =
             sceneStyleInterpolator?.({
               current: {
-                progress: tabAnims[route.key],
+                progress: tabAnims[route.key]!,
               },
             }) ?? {};
 
@@ -259,7 +259,7 @@ export function BottomTabView(props: Props) {
           const activityState = isFocused
             ? STATE_ON_TOP // the screen is on top after the transition
             : animationEnabled // is animation is not enabled, immediately move to inactive state
-              ? tabAnims[route.key].interpolate({
+              ? tabAnims[route.key]!.interpolate({
                   inputRange: [0, 1 - EPSILON, 1],
                   outputRange: [
                     STATE_TRANSITIONING_OR_BELOW_TOP, // screen visible during transition

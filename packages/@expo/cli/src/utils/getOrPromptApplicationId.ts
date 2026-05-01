@@ -121,9 +121,7 @@ async function promptForBundleIdWithInitialAsync(
   if (
     await attemptModification(
       projectRoot,
-      {
-        ios: { ...(exp.ios || {}), bundleIdentifier },
-      },
+      { ios: { bundleIdentifier } },
       { ios: { bundleIdentifier } }
     )
   ) {
@@ -262,12 +260,8 @@ async function promptForPackageWithInitialAsync(
   if (
     await attemptModification(
       projectRoot,
-      {
-        android: { ...(exp.android || {}), package: packageName },
-      },
-      {
-        android: { package: packageName },
-      }
+      { android: { package: packageName } },
+      { android: { package: packageName } }
     )
   ) {
     Log.log(chalk.gray`\u203A Android package name: ${packageName}`);

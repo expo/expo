@@ -18,6 +18,8 @@
 - [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
 - [iOS] Fix deadlock in `DevMenuPackagerConnectionHandler.setup`. ([#44405](https://github.com/expo/expo/pull/44405) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove `#Preview` SwiftUI blocks that cause build failures when consuming the package as a dependency. ([#44775](https://github.com/expo/expo/pull/44775) by [@fabriziocucci](https://github.com/fabriziocucci))
+- [iOS] Fix dev menu auto-launch not triggering. The `updateAutoLaunchObserver()` now called from `setAppContext`. ([#45167](https://github.com/expo/expo/pull/45167) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Reconnect the packager to the bundle URL host so expo-cli commands reach the app on physical devices. ([#45195](https://github.com/expo/expo/pull/45195) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

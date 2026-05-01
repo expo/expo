@@ -32,7 +32,7 @@ internal final class ConstantsProvider: EXConstantsInterface {
         ]
       ]
     ]
-    // Deprecated, but still used internally. We need to check if the manifest is set, otherwise it will result in 
+    // Deprecated, but still used internally. We need to check if the manifest is set, otherwise it will result in
     // an error where the whole manifest is null since we cannot wrap an Optional null in JS correctly.
     if let manifest = getManifest() {
       result["manifest"] = manifest
@@ -100,6 +100,16 @@ private func findEXConstantsBundle() -> Bundle? {
   // EXConstants.bundle is embedded inside a dynamic framework (e.g. expo-brownfield xcframework)
   if let bundleUrl = Bundle(for: ConstantsProvider.self).resourceURL?.appendingPathComponent(bundleName),
      let bundle = Bundle(url: bundleUrl) {
+    return bundle
+  }
+
+  // When using expo precompiled modules and brownfield, EXConstants.bundle may be in different frameworks.
+  // Scan all loaded frameworks as a fallback to find EXConstants.bundle regardless of location.
+  for framework in Bundle.allFrameworks {
+    guard let bundleUrl = framework.resourceURL?.appendingPathComponent(bundleName),
+          let bundle = Bundle(url: bundleUrl) else {
+      continue
+    }
     return bundle
   }
 

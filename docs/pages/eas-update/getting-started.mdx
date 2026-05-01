@@ -17,14 +17,14 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
 > **info** If you plan to use EAS Update with EAS Build, we recommend following the [EAS Build setup guide](/build/setup/) before proceeding here. That said, [you can use EAS Update without any other EAS services](/eas-update/standalone-service/).
 
-<Prerequisites numberOfRequirements={4}>
-  <Requirement number={1} title="An Expo account">
+<Prerequisites>
+  <Requirement title="An Expo account">
     EAS Update is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
 
     Paid subscribers can publish updates to more users and use more bandwidth and storage. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing).
 
   </Requirement>
-  <Requirement number={2} title="A React Native project">
+  <Requirement title="A React Native project">
     Don't have a project yet? It's quick and easy to create a "Hello world" app you can use with this guide. Run the following command to create a new project:
 
     <Terminal cmd={['$ npx create-expo-app@latest my-app --template default@sdk-55']} />
@@ -32,7 +32,7 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
     EAS Update also works well with projects created by `npx create-react-native-app`, `npx react-native`, `ignite-cli`, and other project bootstrapping tools.
 
   </Requirement>
-  <Requirement number={3} title="Expo CLI and the Expo Metro Config">
+  <Requirement title="Expo CLI and the Expo Metro Config">
     If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), you're all set.
 
     If you don't have the `expo` package in your project yet, install it by running the command below and [opt in to using Expo CLI and Metro Config](/bare/installing-expo-modules/#configure-expo-cli-for-bundling-on-android-and-ios):
@@ -43,7 +43,6 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
   </Requirement>
   <Requirement
-    number={4}
     title={
       <>
         Use <CODE>registerRootComponent</CODE> instead of <CODE>registerComponent</CODE>

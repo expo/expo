@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
     name: 'Community Picker replacement',
     route: 'ui/community-picker',
     options: {},

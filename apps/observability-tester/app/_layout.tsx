@@ -14,6 +14,7 @@ if (IS_ROUTER_INTEGRATION_ENABLED) {
 ExpoObserve.configure({
   environment: 'custom-env',
   dispatchingEnabled: true,
+  dispatchInDebug: true,
 });
 
 export default function RootLayout() {

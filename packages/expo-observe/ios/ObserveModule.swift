@@ -8,6 +8,13 @@ internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: L
 internal struct Config: Record {
   @Field var environment: String?
   @Field var dispatchingEnabled: Bool?
+  @Field var dispatchInDebug: Bool?
+  @Field var sampleRate: Double?
+}
+
+internal struct BundleDefaults: Record {
+  @Field var environment: String = ""
+  @Field var isJsDev: Bool = false
 }
 
 public final class ObserveModule: Module {
@@ -33,10 +40,33 @@ public final class ObserveModule: Module {
     Function("configure") { (config: Config) in
       AppMetricsActor.isolated {
         // Each call to `configure(...)` is a full replacement: absent fields reset prior values.
-        ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: config.dispatchingEnabled))
-        if let environment = config.environment {
-          AppMetrics.setEnvironment(environment)
+        ObserveUserDefaults.setConfig(
+          PersistedConfig(
+            dispatchingEnabled: config.dispatchingEnabled,
+            dispatchInDebug: config.dispatchInDebug,
+            sampleRate: config.sampleRate
+          )
+        )
+        let resolvedEnvironment = config.environment ?? ObserveUserDefaults.bundleDefaults?.environment
+        if let resolvedEnvironment {
+          AppMetrics.setEnvironment(resolvedEnvironment)
         }
+      }
+    }
+
+    Function("setBundleDefaults") { (defaults: BundleDefaults) in
+      guard !defaults.environment.isEmpty else {
+        observeLogger.warn(
+          "[EAS Observe] setBundleDefaults received empty environment; skipping. " +
+          "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
+        )
+        return
+      }
+      AppMetricsActor.isolated {
+        ObserveUserDefaults.setBundleDefaults(
+          PersistedBundleDefaults(environment: defaults.environment, isJsDev: defaults.isJsDev)
+        )
+        AppMetrics.setEnvironment(defaults.environment)
       }
     }
   }
