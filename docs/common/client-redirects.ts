@@ -145,10 +145,6 @@ function endsInNull(path: string) {
   return path.endsWith('/null');
 }
 
-// Path-prefix renames. Mirrors the catch-all rules in `public/_redirects` for
-// `/eas/<category>/**` paths that were never canonical. Kept in sync so the
-// client-side fallback handles in-app Next.js navigation that never reaches
-// the edge. See ENG-18522.
 const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
   { pattern: /^\/eas\/build\/(.*)$/, replacement: '/build/$1' },
   { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },

@@ -368,9 +368,6 @@
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
 
 # EAS Build, Submit, Update, and Insights predate the /eas/* URL convention;
-# canonical paths are /build/**, /submit/**, /eas-update/**, /eas-insights/**.
-# Catch-all redirects fix old links (e.g. onboarding emails) and LLM-guessed
-# URLs that point at /eas/<category>/**. See ENG-18522.
 /eas/build/* /build/:splat 301
 /eas/build /build/introduction 301
 /eas/submit/* /submit/:splat 301
