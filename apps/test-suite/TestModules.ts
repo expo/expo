@@ -41,6 +41,8 @@ export function getTestModules() {
     // Sanity
     require('./tests/Basic'),
     require('./tests/JSDestructuring'),
+    require('./tests/JSAsync'),
+    require('./tests/JSAsyncGenerator'),
     require('./tests/JSBlockScoping'),
     require('./tests/JSPrivateMethods'),
     require('./tests/JSPrivateProperties'),
