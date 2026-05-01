@@ -1,6 +1,8 @@
 import { ListForEach } from './ListForEach';
 import { type CommonViewModifierProps } from '../types';
 export { ListForEach, type ListForEachProps } from './ListForEach';
+export { LazyForEach, type LazyForEachProps } from './LazyForEach';
+export { LazyWorkletForEach, type LazyWorkletForEachProps } from './LazyWorkletForEach';
 export interface ListProps extends CommonViewModifierProps {
     /**
      * The children elements to be rendered inside the list.
@@ -22,5 +24,7 @@ export interface ListProps extends CommonViewModifierProps {
 export declare function List(props: ListProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace List {
     var ForEach: typeof ListForEach;
+    var LazyForEach: typeof import("./LazyForEach").LazyForEach;
+    var LazyWorkletForEach: typeof import("./LazyWorkletForEach").LazyWorkletForEach;
 }
 //# sourceMappingURL=index.d.ts.map

@@ -26,4 +26,24 @@ internal final class WorkletCallback: SharedObject {
     }
     worklet.execute(on: runtime, arguments: arguments)
   }
+
+  /**
+   Invokes the worklet synchronously on the UI runtime and returns its JSON-shaped result.
+   Returns nil if the runtime or worklet is unavailable, or if the worklet returns null/undefined.
+   */
+  func invokeReturning(arguments: [Any] = []) -> Any? {
+    guard let worklet else {
+      #if DEBUG
+      log.warn("WorkletCallback.invokeReturning: worklet is nil.")
+      #endif
+      return nil
+    }
+    guard let runtime = appContext?._uiRuntime as? WorkletRuntime else {
+      #if DEBUG
+      log.warn("WorkletCallback.invokeReturning: UI worklet runtime is not available.")
+      #endif
+      return nil
+    }
+    return worklet.executeReturning(on: runtime, arguments: arguments)
+  }
 }

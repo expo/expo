@@ -29,4 +29,12 @@ public class WorkletRuntime: JavaScriptRuntime, @unchecked Sendable {
   public func execute(_ serializable: JavaScriptSerializable, arguments: [Any] = []) {
     handle.executeWorklet(serializable, arguments: arguments)
   }
+
+  /**
+   Executes worklet synchronously and returns its result as a Swift `Any?`.
+   The result is a JSON-shaped value: `nil`, `Bool`, `Double`, `String`, `[Any]`, or `[String: Any]`.
+   */
+  public func executeReturning(_ serializable: JavaScriptSerializable, arguments: [Any] = []) -> Any? {
+    return handle.executeWorkletReturning(serializable, arguments: arguments)
+  }
 }

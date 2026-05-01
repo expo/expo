@@ -110,6 +110,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ListView.self)
     ExpoUIView(ListForEachView.self)
     ExpoUIView(LazyListForEachView.self)
+    ExpoUIView(LazyListWorkletForEachView.self)
 
     ExpoUIView(PickerView.self)
 

@@ -30,6 +30,13 @@ NS_SWIFT_NAME(WorkletRuntimeHandle)
 - (void)executeWorklet:(EXJavaScriptSerializable *)serializable
              arguments:(NSArray *)arguments;
 
+/**
+ Executes worklet synchronously and returns its result converted to an Objective-C object.
+ Returns nil if the worklet returns null/undefined or if invocation fails.
+ */
+- (nullable id)executeWorkletReturning:(EXJavaScriptSerializable *)serializable
+                              arguments:(NSArray *)arguments;
+
 @end
 
 NS_ASSUME_NONNULL_END

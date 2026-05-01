@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 
 import { LazyForEach } from './LazyForEach';
+import { LazyWorkletForEach } from './LazyWorkletForEach';
 import { ListForEach } from './ListForEach';
 import { type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
@@ -8,6 +9,7 @@ import { type CommonViewModifierProps } from '../types';
 
 export { ListForEach, type ListForEachProps } from './ListForEach';
 export { LazyForEach, type LazyForEachProps } from './LazyForEach';
+export { LazyWorkletForEach, type LazyWorkletForEachProps } from './LazyWorkletForEach';
 
 const ListNativeView: React.ComponentType<NativeListProps> = requireNativeView<NativeListProps>(
   'ExpoUI',
@@ -62,3 +64,4 @@ export function List(props: ListProps) {
 
 List.ForEach = ListForEach;
 List.LazyForEach = LazyForEach;
+List.LazyWorkletForEach = LazyWorkletForEach;

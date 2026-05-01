@@ -34,6 +34,14 @@ public class Worklet: AnySerializable {
     runtime.execute(serializable.jsSerializable, arguments: arguments)
   }
 
+  /**
+   Executes the worklet synchronously and returns its result.
+   The returned value is a JSON-shaped Swift `Any?`: `nil`, `Bool`, `Double`, `String`, `[Any]`, or `[String: Any]`.
+   */
+  public func executeReturning(on runtime: WorkletRuntime, arguments: [Any] = []) -> Any? {
+    return runtime.executeReturning(serializable.jsSerializable, arguments: arguments)
+  }
+
   // MARK: - AnyArgument
 
   public static func getDynamicType() -> AnyDynamicType {
