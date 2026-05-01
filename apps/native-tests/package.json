@@ -12,7 +12,7 @@
     "expo": "~55.0.19",
     "expo-background-task": "~55.0.17",
     "expo-clipboard": "55.0.13",
-    "expo-dev-client": "~55.0.29",
+    "expo-dev-client": "~55.0.30",
     "expo-router": "~55.0.13",
     "expo-image": "~55.0.9",
     "expo-media-library": "55.0.15",
