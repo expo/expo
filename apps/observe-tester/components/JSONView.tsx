@@ -9,9 +9,16 @@ type JSONViewProps = {
   value: unknown;
   bordered?: boolean;
   textColor?: string;
+  /** Hides the floating "Copy" button when set to `false`. */
+  showCopyButton?: boolean;
 };
 
-export function JSONView({ value, bordered = true, textColor }: JSONViewProps) {
+export function JSONView({
+  value,
+  bordered = true,
+  textColor,
+  showCopyButton = true,
+}: JSONViewProps) {
   const theme = useTheme();
   const [copied, setCopied] = useState(false);
   const json = JSON.stringify(value, deterministicJSONReplacer, 2);
@@ -33,24 +40,26 @@ export function JSONView({ value, bordered = true, textColor }: JSONViewProps) {
           </Code>
         </View>
       </ScrollView>
-      <Pressable
-        onPress={async () => {
-          await Clipboard.setStringAsync(json);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        }}
-        style={({ pressed }) => [
-          styles.copyButton,
-          {
-            backgroundColor: theme.background.element,
-            borderColor: theme.border.default,
-          },
-          pressed && styles.copyButtonPressed,
-        ]}>
-        <Text style={[styles.copyButtonText, { color: theme.text.secondary }]}>
-          {copied ? 'Copied' : 'Copy'}
-        </Text>
-      </Pressable>
+      {showCopyButton ? (
+        <Pressable
+          onPress={async () => {
+            await Clipboard.setStringAsync(json);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+          }}
+          style={({ pressed }) => [
+            styles.copyButton,
+            {
+              backgroundColor: theme.background.element,
+              borderColor: theme.border.default,
+            },
+            pressed && styles.copyButtonPressed,
+          ]}>
+          <Text style={[styles.copyButtonText, { color: theme.text.secondary }]}>
+            {copied ? 'Copied' : 'Copy'}
+          </Text>
+        </Pressable>
+      ) : null}
     </View>
   );
 }

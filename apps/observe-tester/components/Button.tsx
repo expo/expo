@@ -5,12 +5,23 @@ import { useTheme } from '@/utils/theme';
 
 type ButtonTheme = 'primary' | 'secondary' | 'tertiary';
 
+type ButtonColors = {
+  backgroundColor?: string;
+  borderColor?: string;
+  textColor?: string;
+};
+
 type ButtonProps = {
   title: string;
   description?: string;
   onPress?: () => void;
   theme?: ButtonTheme;
   disabled?: boolean;
+  /**
+   * Optional per-call color overrides. Each key falls back to the value derived
+   * from `theme`, so callers can override only the colors they care about.
+   */
+  colors?: ButtonColors;
 } & PressableProps;
 
 export function Button({
@@ -19,15 +30,18 @@ export function Button({
   onPress,
   theme = 'primary',
   disabled,
+  colors,
   ...rest
 }: ButtonProps) {
   const styleguide = useTheme();
   const tokens = styleguide.button[theme];
   const disabledTokens = tokens.disabled;
 
-  const backgroundColor = disabled ? disabledTokens.background : tokens.background;
-  const borderColor = disabled ? disabledTokens.border : tokens.border;
-  const textColor = disabled ? disabledTokens.text : tokens.text;
+  const backgroundColor = disabled
+    ? disabledTokens.background
+    : (colors?.backgroundColor ?? tokens.background);
+  const borderColor = disabled ? disabledTokens.border : (colors?.borderColor ?? tokens.border);
+  const textColor = disabled ? disabledTokens.text : (colors?.textColor ?? tokens.text);
 
   return (
     <Pressable

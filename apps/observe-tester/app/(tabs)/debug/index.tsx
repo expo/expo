@@ -6,6 +6,7 @@ import { Button } from '@/components/Button';
 import { CrashReportsSection } from '@/components/CrashReportsSection';
 import { Divider } from '@/components/Divider';
 import { JSAnimation } from '@/components/JSAnimation';
+import { LogEventsSection } from '@/components/LogEventsSection';
 import { useRouterMetricsHelpers } from '@/router-metrics-integration';
 import { useTheme } from '@/utils/theme';
 
@@ -25,6 +26,8 @@ export default function Debug() {
     <ScrollView
       style={{ backgroundColor: theme.background.screen }}
       contentContainerStyle={styles.container}>
+      <LogEventsSection />
+      {typeof AppMetrics.logEvent === 'function' ? <Divider /> : null}
       <CrashReportsSection />
       {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
       <Button

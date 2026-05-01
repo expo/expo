@@ -107,6 +107,77 @@ export type MetricAttributes = {
      */
     params?: Record<string, unknown>;
 };
+/**
+ * Severity of a log event, ordered from least to most severe:
+ *
+ * - `"trace"` — Fine-grained tracing, typically only useful while reproducing
+ *   a specific issue.
+ * - `"debug"` — Diagnostic detail useful during development; usually filtered
+ *   out in production.
+ * - `"info"` — Routine, expected events that record normal app behavior.
+ * - `"warn"` — Unexpected but recoverable conditions worth investigating.
+ * - `"error"` — An operation failed; the app continues running but is in a
+ *   degraded state.
+ * - `"fatal"` — A severe failure, often immediately followed by app termination.
+ */
+export type LogSeverity = 'trace' | 'debug' | 'info' | 'warn' | 'error' | 'fatal';
+/**
+ * Value types accepted in a log event's `attributes` map. Strings, numbers,
+ * and booleans are stored as typed primitives; arrays and nested maps preserve
+ * their structure. Other JS values (functions, `Date`, `undefined`, etc.) are
+ * not supported and may be dropped by downstream consumers.
+ */
+export type LogAttributeValue = string | number | boolean | LogAttributeValue[] | {
+    [key: string]: LogAttributeValue;
+};
+/**
+ * A single log event collected during a session.
+ */
+export type LogRecord = {
+    /**
+     * ISO 8601 timestamp of when the record was created.
+     */
+    timestamp: string;
+    /**
+     * Event name.
+     */
+    name: string;
+    /**
+     * Optional free-form message describing the event.
+     */
+    body?: string | null;
+    /**
+     * Custom attributes attached to the event. Each entry is preserved with its
+     * original value type — see `LogAttributeValue` for the supported shapes.
+     */
+    attributes?: Record<string, LogAttributeValue> | null;
+    /**
+     * Severity of the event.
+     */
+    severity: LogSeverity;
+};
+/**
+ * Optional configuration accepted by `logEvent`. The event name is passed as
+ * the first positional argument since it's required and the only field most
+ * callers set.
+ */
+export type LogEventOptions = {
+    /**
+     * Optional free-form message describing the event.
+     */
+    body?: string | null;
+    /**
+     * Custom attributes attached to the event. Each entry is preserved with its
+     * original value type — see `LogAttributeValue` for the supported shapes.
+     */
+    attributes?: Record<string, LogAttributeValue> | null;
+    /**
+     * Severity of the event.
+     *
+     * @default "info"
+     */
+    severity?: LogSeverity | null;
+};
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 export type CrashKind = 'badAccess' | 'fatalError' | 'divideByZero' | 'forceUnwrapNil' | 'arrayOutOfBounds' | 'objcException' | 'stackOverflow';
 type SessionBase = {
@@ -114,6 +185,7 @@ type SessionBase = {
     startDate: string;
     endDate?: string | null;
     metrics: Metric[];
+    logs: LogRecord[];
 };
 export type MainSession = SessionBase & {
     type: 'main';
@@ -168,6 +240,17 @@ export type CrashReport = {
 export interface ExpoAppMetricsModuleType {
     markFirstRender(): void;
     markInteractive(attributes?: MetricAttributes): void;
+    /**
+     * Records a log event against the current main session. The event is
+     * persisted locally and dispatched on the next `dispatchEvents()` flush as an
+     * OpenTelemetry log record sent to the `/v1/logs` endpoint.
+     *
+     * Severity defaults to `"info"` when not provided.
+     *
+     * @param name Event name. Maps to the OpenTelemetry `event.name` attribute.
+     * @param options Optional body, attributes, and severity overrides.
+     */
+    logEvent(name: string, options?: LogEventOptions): void;
     getStoredEntries(): Promise<Metric[]>;
     clearStoredEntries(): Promise<void>;
     /**

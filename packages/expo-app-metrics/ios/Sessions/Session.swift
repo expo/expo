@@ -27,6 +27,11 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
    */
   public private(set) var metrics: [Metric] = []
 
+  /**
+   An array of log records collected during the session.
+   */
+  public private(set) var logs: [LogRecord] = []
+
   init(type: SessionType = .custom) {
     self.id = UUID().uuidString
     self.startDate = Date.now
@@ -111,10 +116,16 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
     try? AppMetrics.storage.commit()
   }
 
+  @AppMetricsActor
+  public func receiveLog(_ log: LogRecord) {
+    self.logs.append(log)
+    try? AppMetrics.storage.commit()
+  }
+
   // MARK: - Codable
 
   private enum CodingKeys: String, CodingKey {
-    case id, type, startDate, endDate, metrics
+    case id, type, startDate, endDate, metrics, logs
   }
 
   public required init(from decoder: any Decoder) throws {
@@ -124,5 +135,6 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
     startDate = try values.decode(Date.self, forKey: .startDate)
     endDate = try values.decodeIfPresent(Date.self, forKey: .endDate)
     metrics = try values.decodeIfPresent([Metric].self, forKey: .metrics) ?? []
+    logs = try values.decodeIfPresent([LogRecord].self, forKey: .logs) ?? []
   }
 }
