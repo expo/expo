@@ -148,6 +148,66 @@ PODS:
     - ExpoModulesCore
   - ExpoAppleAuthentication (55.0.13):
     - ExpoModulesCore
+  - ExpoAppMetrics (0.2.0):
+    - boost
+    - DoubleConversion
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - ExpoAppMetrics/Tests (0.2.0):
+    - boost
+    - DoubleConversion
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - ExpoAsset (55.0.16):
     - ExpoModulesCore
   - ExpoAudio (55.0.14):
@@ -338,6 +398,68 @@ PODS:
   - ExpoNotifications/Tests (55.0.21):
     - ExpoModulesCore
     - ExpoModulesTestCore
+  - ExpoObserve (0.2.0):
+    - boost
+    - DoubleConversion
+    - EASClient
+    - ExpoAppMetrics
+    - ExpoModulesCore
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - ExpoObserve/Tests (0.2.0):
+    - boost
+    - DoubleConversion
+    - EASClient
+    - ExpoAppMetrics
+    - ExpoModulesCore
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - ExpoPrint (55.0.13):
     - ExpoModulesCore
   - ExpoRouter (55.0.13):
@@ -4118,6 +4240,8 @@ DEPENDENCIES:
   - Expo/Tests (from `../../../packages/expo`)
   - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
+  - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
+  - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -4167,6 +4291,8 @@ DEPENDENCIES:
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
+  - ExpoObserve (from `../../../packages/expo-observe/ios`)
+  - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
@@ -4370,6 +4496,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-age-range/ios"
   ExpoAppleAuthentication:
     :path: "../../../packages/expo-apple-authentication/ios"
+  ExpoAppMetrics:
+    :path: "../../../packages/expo-app-metrics/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
   ExpoAudio:
@@ -4454,6 +4582,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-network/ios"
   ExpoNotifications:
     :path: "../../../packages/expo-notifications/ios"
+  ExpoObserve:
+    :path: "../../../packages/expo-observe/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
   ExpoRouter:
@@ -4706,6 +4836,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
+  ExpoAppMetrics: d22f5d499cb19cfc2502d40db988e6850d2363b6
   ExpoAsset: e5a93c1082e763fb7b59a0b3a16c38224ba07f8a
   ExpoAudio: bb9b02133e7ed48b18a58a5fad9a7a90289fa94d
   ExpoBackgroundFetch: 31cdc1b7018965e12960e0abc8041f968e725428
@@ -4748,6 +4879,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: 15b132dcc38f95c14ba445efc336c806d48884a2
   ExpoNetwork: 2b9fa25a6cbb1cce2e31863c88cc8c5ab883898b
   ExpoNotifications: 8f7d570f885f369a4a53dc722f92fbde1f69251a
+  ExpoObserve: 1ed8896a38a0a9bad3a919b19ebaa25f329b406a
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
   ExpoRouter: 73e97e4468c4435576be4c4b72ff4b5276854a1a
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
