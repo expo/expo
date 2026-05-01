@@ -46,6 +46,7 @@ export function getTestModules() {
     require('./tests/JSBlockScoping'),
     require('./tests/JSPrivateMethods'),
     require('./tests/JSPrivateProperties'),
+    require('./tests/JSReactJSX'),
   ];
 
   // Expo core modules should run everywhere
