@@ -1,0 +1,48 @@
+{
+  "name": "RideBidZ Dev Environment",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+
+  "features": {
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "ms-azuretools.vscode-docker",
+        "bradlc.vscode-tailwindcss",
+        "msjsdiag.vscode-react-native",
+        "expo.vscode-expo-tools"
+      ]
+    }
+  },
+
+  "forwardPorts": [3000, 5173, 8080, 19000, 19001, 19002],
+  "portsAttributes": {
+    "3000": { "label": "Backend API" },
+    "5173": { "label": "Frontend (Vite)" },
+    "19000": { "label": "Expo Dev Tools" }
+  },
+
+  "postCreateCommand": "npm install -g expo-cli && npm install",
+
+  "remoteEnv": {
+    "NODE_ENV": "development"
+  },
+
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached"
+  ],
+
+  "workspaceFolder": "/workspace",
+
+  "runArgs": ["--init"],
+
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  }
+}
