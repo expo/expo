@@ -211,6 +211,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Swipe Actions',
+    route: 'ui/swipe-actions',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SwipeActionsScreen'));
+    },
+  },
+  {
     name: 'Animation Modifier',
     route: 'ui/animation-modifier',
     options: {},
