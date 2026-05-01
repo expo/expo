@@ -105,7 +105,13 @@
             "CoreGraphics",
             "CoreMedia",
             "SwiftUI"
-          ]
+          ],
+          "swiftSettings": {
+            "enableUpcomingFeatures": [
+              "NonisolatedNonsendingByDefault",
+              "InferIsolatedConformances"
+            ]
+          }
         }
       ]
     }

@@ -461,6 +461,19 @@
                     "type": "boolean",
                     "description": "Whether to expose headers as public module headers. Set to false to make headers private/internal, which prevents Clang from building a module from them. Default is true.",
                     "default": true
+                },
+                "swiftSettings": {
+                    "type": "object",
+                    "description": "Swift-specific compiler settings, mirrored from SwiftPM's SwiftSetting API.",
+                    "properties": {
+                        "enableUpcomingFeatures": {
+                            "type": "array",
+                            "description": "Names of upcoming Swift features to enable (passed to .enableUpcomingFeature in Package.swift).",
+                            "items": { "type": "string" },
+                            "default": [ ]
+                        }
+                    },
+                    "additionalProperties": false
                 }
             },
             "required": [ "type", "name", "path" ],

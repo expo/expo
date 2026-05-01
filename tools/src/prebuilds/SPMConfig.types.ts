@@ -129,11 +129,21 @@ export interface ObjcTarget extends SourceTarget {
 }
 
 /**
+ * Swift-specific build settings, mirrored from SwiftPM's `SwiftSetting` API.
+ */
+export interface SwiftSettings {
+  /** Names of upcoming Swift features to enable (passed to `.enableUpcomingFeature`). */
+  enableUpcomingFeatures?: string[];
+}
+
+/**
  * A Swift source target
  */
 export interface SwiftTarget extends SourceTarget {
   /** Target type identifier */
   type: 'swift';
+  /** Swift-specific compiler settings, mirrored from SwiftPM's `SwiftSetting` API. */
+  swiftSettings?: SwiftSettings;
 }
 
 /**
