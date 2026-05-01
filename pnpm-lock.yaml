@@ -19,6 +19,9 @@ patchedDependencies:
   '@react-native-community/netinfo':
     hash: ced0cb79848978ecc3e780a4d812d948684346cce85aa5d06f6b91a11e10ad5b
     path: patches/@react-native-community+netinfo.patch
+  '@react-native/babel-preset':
+    hash: b2a08010de9c014b158d4b32ef3639bfc65f175bb2f34405b1d815e6c6d410df
+    path: patches/@react-native__babel-preset.patch
   '@react-native/dev-middleware':
     hash: 563dd3c12ac9064f72bebd975abb206061af92d430d10341a2fce54810b5128f
     path: patches/@react-native+dev-middleware.patch
@@ -2980,7 +2983,7 @@ importers:
         version: 7.29.2
       '@react-native/babel-preset':
         specifier: 0.85.2
-        version: 0.85.2(@babel/core@7.29.0)
+        version: 0.85.2(patch_hash=b2a08010de9c014b158d4b32ef3639bfc65f175bb2f34405b1d815e6c6d410df)(@babel/core@7.29.0)
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
@@ -18802,7 +18805,7 @@ snapshots:
       - '@babel/core'
       - supports-color
 
-  '@react-native/babel-preset@0.85.2(@babel/core@7.29.0)':
+  '@react-native/babel-preset@0.85.2(patch_hash=b2a08010de9c014b158d4b32ef3639bfc65f175bb2f34405b1d815e6c6d410df)(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-proposal-export-default-from': 7.27.1(@babel/core@7.29.0)
@@ -18914,7 +18917,7 @@ snapshots:
   '@react-native/metro-babel-transformer@0.85.2(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
-      '@react-native/babel-preset': 0.85.2(@babel/core@7.29.0)
+      '@react-native/babel-preset': 0.85.2(patch_hash=b2a08010de9c014b158d4b32ef3639bfc65f175bb2f34405b1d815e6c6d410df)(@babel/core@7.29.0)
       hermes-parser: 0.33.3
       nullthrows: 1.1.1
     transitivePeerDependencies:

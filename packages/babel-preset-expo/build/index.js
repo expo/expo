@@ -32,7 +32,6 @@ function babelPresetExpo(api, options = {}) {
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
-    const isHermesV1 = api.caller(common_1.getIsHermesV1);
     const isDomComponent = api.caller(common_1.getIsDomComponent);
     const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
@@ -128,9 +127,6 @@ function babelPresetExpo(api, options = {}) {
         // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
         // JSX is used in a function body. This is technically not required in production, but we
         // should retain the same behavior since it's hard to debug the differences.
-        if (!isHermesV1) {
-            extraPlugins.push(require('@babel/plugin-transform-parameters'));
-        }
         extraPlugins.push(
         // Add support for class static blocks.
         [require('@babel/plugin-transform-class-static-block'), { loose: true }]);
@@ -308,33 +304,49 @@ function babelPresetExpo(api, options = {}) {
             // React 17 automatic JSX transformations.
             // The only known issue is the plugin `@babel/plugin-transform-react-display-name` will be run twice,
             // once in the Metro plugin, and another time here.
-            [
-                require('@babel/preset-react'),
-                {
-                    development: isDev,
-                    // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-                    runtime: platformOptions?.jsxRuntime || 'automatic',
-                    ...(platformOptions &&
-                        platformOptions.jsxRuntime !== 'classic' && {
-                        importSource: (platformOptions && platformOptions.jsxImportSource) || 'react',
-                    }),
-                    // NOTE: Unexposed props:
-                    // pragma?: string;
-                    // pragmaFrag?: string;
-                    // pure?: string;
-                    // throwIfNamespace?: boolean;
-                    // useBuiltIns?: boolean;
-                    // useSpread?: boolean;
-                },
-            ],
+            (() => {
+                const runtime = platformOptions?.jsxRuntime || 'automatic';
+                return [
+                    require('@babel/preset-react'),
+                    {
+                        // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
+                        runtime,
+                        ...(platformOptions && runtime !== 'classic' && {
+                            importSource: (platformOptions && platformOptions.jsxImportSource) || 'react',
+                        }),
+                        pure: isProduction,
+                        // NOTE(@kitten): Adding extra dev info to JSX is redundant and outdated as of React 19.2
+                        development: isDev && runtime === 'classic',
+                        // NOTE(@kitten): Redundant with `runtime: 'automatic'` but the desirable defaults
+                        useBuiltIns: true,
+                        useSpread: true,
+                    },
+                ];
+            })(),
         ],
         plugins: [
             ...extraPlugins,
             // TODO: Remove
-            platformOptions.decorators !== false && [
-                require('@babel/plugin-proposal-decorators'),
-                platformOptions.decorators ?? { legacy: true },
-            ],
+            platformOptions.decorators !== false &&
+                (() => {
+                    const decorators = require('@babel/plugin-proposal-decorators').default;
+                    const options = platformOptions.decorators ?? { legacy: true };
+                    return [
+                        (api, opts, dirname) => {
+                            const { visitor, ...plugin } = decorators(api, opts, dirname);
+                            const wrapped = {};
+                            for (const [key, fn] of Object.entries(visitor)) {
+                                wrapped[key] = function (path, state) {
+                                    if ((state._skipDecorators ??= !/^\s*@\w/m.test(state.file.code)))
+                                        return;
+                                    return fn.call(this, path, state);
+                                };
+                            }
+                            return { ...plugin, visitor: wrapped };
+                        },
+                        options,
+                    ];
+                })(),
             // Automatically add worklets or reanimated plugin when package is installed.
             (() => {
                 if (platformOptions.worklets !== false && platformOptions.reanimated !== false) {

@@ -1,0 +1,129 @@
+diff --git a/src/configs/main.js b/src/configs/main.js
+index ad3dfe4628035ac99447e5364275447c5026bee4..62f97390055462b000a441b2f16c056576c19ce7 100644
+--- a/src/configs/main.js
++++ b/src/configs/main.js
+@@ -112,69 +112,76 @@ const getPreset = (src, options, babel) => {
+   }
+ 
+   if (hasClass && !preserveClasses) {
+-    extraPlugins.push([require('@babel/plugin-transform-classes')]);
++    //extraPlugins.push([require('@babel/plugin-transform-classes')]);
+   }
+ 
++  /*
+   extraPlugins.push([
+     require('@babel/plugin-transform-named-capturing-groups-regex'),
+   ]);
++  */
+   // Needed for regenerator
++  /*
+   if (enableRegenerator) {
+     extraPlugins.push([
+       require('@babel/plugin-transform-optional-catch-binding'),
+     ]);
+   }
++  */
+ 
++  /*
+   extraPlugins.push([
+     require('@babel/plugin-transform-destructuring'),
+     {useBuiltIns: true},
+   ]);
++  */
+   if (isNull || src.indexOf('async') !== -1) {
+     extraPlugins.push([
+       require('@babel/plugin-transform-async-generator-functions'),
+     ]);
+-    extraPlugins.push([require('@babel/plugin-transform-async-to-generator')]);
++    //extraPlugins.push([require('@babel/plugin-transform-async-to-generator')]);
+   }
+   if (
+     isNull ||
+     src.indexOf('React.createClass') !== -1 ||
+     src.indexOf('createReactClass') !== -1
+   ) {
+-    extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
++    //extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
+   }
+   // This is also needed for regenerator
+   if (enableRegenerator && (isNull || src.indexOf('?.') !== -1)) {
++    /*
+     extraPlugins.push([
+       require('@babel/plugin-transform-optional-chaining'),
+       {loose: true},
+     ]);
++    */
+   }
+   // This is also needed for regenerator
+   if (enableRegenerator && (isNull || src.indexOf('??') !== -1)) {
++    /*
+     extraPlugins.push([
+       require('@babel/plugin-transform-nullish-coalescing-operator'),
+       {loose: true},
+     ]);
++    */
+   }
+ 
+   if (options && dev && !options.disableDeepImportWarnings) {
+     firstPartyPlugins.push([require('../plugin-warn-on-deep-imports.js')]);
+   }
+ 
+-  if (options && dev && !options.useTransformReactJSXExperimental) {
+-    extraPlugins.push([require('@babel/plugin-transform-react-jsx-source')]);
+-    extraPlugins.push([require('@babel/plugin-transform-react-jsx-self')]);
+-  }
+-
+   if (
+     enableRegenerator &&
+     (isNull || (src.indexOf('for') !== -1 && src.indexOf('of') !== -1))
+   ) {
+     // Needed for regenerator
++    /*
+     extraPlugins.push([
+       require('@babel/plugin-transform-for-of'),
+       {loose: true},
+     ]);
++    */
+   }
+ 
+   if (!options || options.enableBabelRuntime !== false) {
+@@ -187,10 +194,18 @@ const getPreset = (src, options, babel) => {
+         helpers: true,
+         regenerator: enableRegenerator,
+         ...(isVersion && {version: options.enableBabelRuntime}),
++        useESModules: options.disableImportExportTransform,
+       },
+     ]);
+   } else if (enableRegenerator) {
+-    extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
++    extraPlugins.push([
++      require('@babel/plugin-transform-regenerator'),
++      {
++        asyncGenerators: true,
++        generators: false,
++        async: false,
++      }
++    ]);
+   }
+ 
+   return {
+@@ -217,15 +232,17 @@ const getPreset = (src, options, babel) => {
+           ...(preserveClasses
+             ? []
+             : [[require('@babel/plugin-transform-class-properties'), {loose}]]),
+-          [require('@babel/plugin-transform-private-methods'), {loose}],
++          //[require('@babel/plugin-transform-private-methods'), {loose}],
++          /*
+           [
+             require('@babel/plugin-transform-private-property-in-object'),
+             {loose},
+           ],
++          */
+           [require('@babel/plugin-syntax-dynamic-import')],
+           [require('@babel/plugin-syntax-export-default-from')],
+           ...passthroughSyntaxPlugins,
+-          [require('@babel/plugin-transform-unicode-regex')],
++          //[require('@babel/plugin-transform-unicode-regex')],
+         ],
+       },
+       {

@@ -21,6 +21,14 @@ linkWorkspacePackages: deep
 
 loglevel: info
 
+minimumReleaseAge: 1440
+
+minimumReleaseAgeExclude:
+  - '@expo/*'
+  - '@react-native/*'
+  - 'react-native'
+  - multitars
+
 onlyBuiltDependencies:
   - '@shopify/react-native-skia'
   - better-sqlite3
@@ -30,6 +38,7 @@ onlyBuiltDependencies:
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
+  '@react-native/babel-preset': patches/@react-native__babel-preset.patch
   '@react-native/dev-middleware': patches/@react-native+dev-middleware.patch
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-view-shot: patches/react-native-view-shot.patch
@@ -37,11 +46,3 @@ patchedDependencies:
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 
 preferWorkspacePackages: true
-
-minimumReleaseAge: 1440
-
-minimumReleaseAgeExclude:
-  - '@expo/*'
-  - '@react-native/*'
-  - 'react-native'
-  - multitars
