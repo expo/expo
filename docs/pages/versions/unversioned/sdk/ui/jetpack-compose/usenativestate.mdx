@@ -3,13 +3,13 @@ title: useNativeState
 description: A React hook that creates observable state shared between JavaScript and native Jetpack Compose views.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui/src/State/useNativeState.ts'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`useNativeState` returns an `ObservableState` that maps to a Compose [`MutableState`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/MutableState) on the native side, so reads and writes to `.value` are tracked directly by Compose without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
+`useNativeState` returns an [`ObservableState`](#observablestate) that maps to a Compose [`MutableState`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/MutableState) on the native side, so reads and writes to `.value` are tracked directly by Compose without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
 
 ## Installation
 
