@@ -40,6 +40,7 @@ export function getTestModules() {
   const modules: Module[] = [
     // Sanity
     require('./tests/Basic'),
+    require('./tests/JSDestructuring'),
   ];
 
   // Expo core modules should run everywhere
