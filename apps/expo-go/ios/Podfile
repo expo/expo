@@ -56,7 +56,6 @@ target 'Expo Go' do
       'expo-network-addons',
       'expo-insights',
       'expo-splash-screen',
-      '@expo/ui',
       '@expo/app-integrity',
       'expo-brownfield',
       'expo-widgets'

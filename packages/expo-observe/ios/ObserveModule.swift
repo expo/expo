@@ -12,6 +12,11 @@ internal struct Config: Record {
   @Field var sampleRate: Double?
 }
 
+internal struct BundleDefaults: Record {
+  @Field var environment: String = ""
+  @Field var isJsDev: Bool = false
+}
+
 public final class ObserveModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoObserve")
@@ -42,9 +47,26 @@ public final class ObserveModule: Module {
             sampleRate: config.sampleRate
           )
         )
-        if let environment = config.environment {
-          AppMetrics.setEnvironment(environment)
+        let resolvedEnvironment = config.environment ?? ObserveUserDefaults.bundleDefaults?.environment
+        if let resolvedEnvironment {
+          AppMetrics.setEnvironment(resolvedEnvironment)
         }
+      }
+    }
+
+    Function("setBundleDefaults") { (defaults: BundleDefaults) in
+      guard !defaults.environment.isEmpty else {
+        observeLogger.warn(
+          "[EAS Observe] setBundleDefaults received empty environment; skipping. " +
+          "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
+        )
+        return
+      }
+      AppMetricsActor.isolated {
+        ObserveUserDefaults.setBundleDefaults(
+          PersistedBundleDefaults(environment: defaults.environment, isJsDev: defaults.isJsDev)
+        )
+        AppMetrics.setEnvironment(defaults.environment)
       }
     }
   }

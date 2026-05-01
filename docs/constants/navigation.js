@@ -395,6 +395,7 @@ export const general = [
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
         makePage('guides/expo-ui-swift-ui/extending.mdx'),
+        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),

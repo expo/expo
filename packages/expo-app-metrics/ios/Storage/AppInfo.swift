@@ -10,18 +10,35 @@ public struct AppInfo: Codable, Equatable, Sendable {
   public let appName: String?
   public let appVersion: String?
   public let buildNumber: String?
-  public let updateId: String?
+  public let updatesInfo: UpdatesInfo?
   public let easBuildId: String?
   public let clientVersion: String
   public let reactNativeVersion: String
   public let expoSdkVersion: String
 
-  public init(appId: String?, appName: String?, appVersion: String?, buildNumber: String?, updateId: String?) {
+  public struct UpdatesInfo: Codable, Equatable, Sendable {
+    public let updateId: String?
+    public let runtimeVersion: String?
+    public let requestHeaders: [String: String]?
+    public var channel: String? {
+      get {
+        return requestHeaders?["expo-channel-name"]
+      }
+    }
+  }
+
+  public init(
+    appId: String?,
+    appName: String?,
+    appVersion: String?,
+    buildNumber: String?,
+    updatesInfo: UpdatesInfo?,
+  ) {
     self.appId = appId
     self.appName = appName
     self.appVersion = appVersion
     self.buildNumber = buildNumber
-    self.updateId = updateId
+    self.updatesInfo = updatesInfo
     self.easBuildId = AppMetricsVersions.easBuildId
     self.clientVersion = AppMetricsVersions.clientVersion
     self.reactNativeVersion = AppMetricsVersions.reactNativeVersion
@@ -31,27 +48,15 @@ public struct AppInfo: Codable, Equatable, Sendable {
   public nonisolated(unsafe) static var current: AppInfo = {
     let bundle = Bundle.main
     let infoPlist = bundle.infoDictionary ?? [:]
+    let updatesInfo = UpdatesMonitoring.getUpdatesMetricsInfo()
 
     return AppInfo(
       appId: bundle.bundleIdentifier,
       appName: (infoPlist["CFBundleDisplayName"] ?? infoPlist["CFBundleName"]) as? String,
       appVersion: infoPlist["CFBundleShortVersionString"] as? String,
       buildNumber: infoPlist["CFBundleVersion"] as? String,
-      updateId: getLaunchedUpdateId()
+      updatesInfo: UpdatesMonitoring.getUpdatesMetricsInfo()
     )
   }()
 
-  public static func getLaunchedUpdateId() -> String? {
-    guard let updatesController = UpdatesControllerRegistry.sharedInstance.controller else {
-      return nil
-    }
-    let launchedUpdateId = updatesController.launchedUpdateId
-    let embeddedUpdateId = updatesController.embeddedUpdateId
-
-    // Ignore embedded launches – they are not available on the website anyway.
-    if launchedUpdateId == embeddedUpdateId {
-      return nil
-    }
-    return launchedUpdateId?.uuidString.lowercased()
-  }
 }

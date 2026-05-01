@@ -10,8 +10,11 @@ import expo.modules.kotlin.types.OptimizedRecord
 @OptimizedRecord
 class PaddingValuesRecord : Record {
   @Field val start: Float? = null
+
   @Field val top: Float? = null
+
   @Field val end: Float? = null
+
   @Field val bottom: Float? = null
 
   fun toPaddingValues(): PaddingValues {

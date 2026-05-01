@@ -11,8 +11,12 @@ struct OpenTelemetryTests {
     appIdentifier: "dev.expo.observe.demo",
     appVersion: "1.0.0",
     appBuildNumber: "1",
-    appUpdateId: "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
     appEasBuildId: nil,
+    appUpdatesInfo: AppInfo.UpdatesInfo(
+      updateId: "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+      runtimeVersion: "1.0.0",
+      requestHeaders: ["expo-channel-name": "production"]
+    ),
     deviceName: "iPhone (Simulator)",
     deviceModel: "iPhone18,1",
     deviceOs: "iOS",
@@ -133,11 +137,45 @@ struct OpenTelemetryTests {
     #expect(attrs["telemetry.sdk.language"] == "swift")
     #expect(attrs["expo.app.name"] == "Observe")
     #expect(attrs["expo.app.build_number"] == "1")
+    // Backward-compat key
     #expect(attrs["expo.app.update_id"] == "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9")
+    // New keys
+    #expect(attrs["expo.app.updates.id"] == "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9")
+    #expect(attrs["expo.app.updates.runtime_version"] == "1.0.0")
+    #expect(attrs["expo.app.updates.channel"] == "production")
     #expect(attrs["expo.sdk.version"] == "55.0.0")
     #expect(attrs["expo.react_native.version"] == "0.83.1")
     #expect(attrs["expo.eas_client.id"] == testEasClientId)
     #expect(attrs["expo.eas_build.id"] == nil)
+  }
+
+  @Test
+  func `toOTMetadata excludes updates attributes when updatesInfo is nil`() {
+    let metadataWithoutUpdates = Event.Metadata(
+      appName: "Observe",
+      appIdentifier: "dev.expo.observe.demo",
+      appVersion: "1.0.0",
+      appBuildNumber: "1",
+      appEasBuildId: nil,
+      appUpdatesInfo: nil,
+      deviceName: "iPhone (Simulator)",
+      deviceModel: "iPhone18,1",
+      deviceOs: "iOS",
+      deviceOsVersion: "26.2",
+      reactNativeVersion: "0.83.1",
+      expoSdkVersion: "55.0.0",
+      clientVersion: "0.0.8",
+      languageTag: "en-US",
+      environment: nil
+    )
+    let event = Event(metadata: metadataWithoutUpdates, metrics: [])
+    let metadata = event.toOTMetadata(testEasClientId)
+    let keys = metadata.attributes.map { $0.key }
+
+    #expect(keys.contains("expo.app.update_id") == false)
+    #expect(keys.contains("expo.app.updates.id") == false)
+    #expect(keys.contains("expo.app.updates.runtime_version") == false)
+    #expect(keys.contains("expo.app.updates.channel") == false)
   }
 
   // MARK: - Full OTEvent

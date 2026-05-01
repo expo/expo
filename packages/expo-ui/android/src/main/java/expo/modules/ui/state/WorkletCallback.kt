@@ -14,12 +14,12 @@ class WorkletCallback : SharedObject() {
 
   fun invoke(vararg arguments: Any?) {
     val worklet = worklet ?: run {
-        Log.w("ExpoUI", "WorkletCallback.invoke: worklet is nil, the callback will not run.")
-        return
+      Log.w("ExpoUI", "WorkletCallback.invoke: worklet is nil, the callback will not run.")
+      return
     }
     val runtime = appContext?.uiRuntime ?: run {
-        Log.w("ExpoUI", "WorkletCallback.invoke: UI worklet runtime is not available, the callback will not run.")
-        return
+      Log.w("ExpoUI", "WorkletCallback.invoke: UI worklet runtime is not available, the callback will not run.")
+      return
     }
     worklet.execute(runtime, *arguments)
   }

@@ -3,7 +3,6 @@
   "version": "55.0.0",
   "description": "The JavaScript Interface for Expo Modules",
   "main": "index.js",
-  "private": true,
   "sideEffects": [],
   "exports": {
     "./package.json": "./package.json",

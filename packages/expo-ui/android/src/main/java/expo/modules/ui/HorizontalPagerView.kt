@@ -61,8 +61,12 @@ fun FunctionalComposableScope.HorizontalPagerContent(
   val pageCountState = remember { mutableIntStateOf(view.size) }
   DisposableEffect(view) {
     view.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
-      override fun onChildViewAdded(parent: View?, child: View?) { pageCountState.intValue = view.size }
-      override fun onChildViewRemoved(parent: View?, child: View?) { pageCountState.intValue = view.size }
+      override fun onChildViewAdded(parent: View?, child: View?) {
+        pageCountState.intValue = view.size
+      }
+      override fun onChildViewRemoved(parent: View?, child: View?) {
+        pageCountState.intValue = view.size
+      }
     })
     pageCountState.intValue = view.size
     onDispose { view.setOnHierarchyChangeListener(null) }
