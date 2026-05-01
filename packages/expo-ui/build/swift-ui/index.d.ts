@@ -32,6 +32,7 @@ export * from './ShareLink';
 export * from './Slider';
 export * from './Spacer';
 export * from './Stepper';
+export * from './SwipeActions';
 export * from './Text';
 export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
