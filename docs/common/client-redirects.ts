@@ -36,6 +36,16 @@ export function getRedirectPath(redirectPath: string): string {
     }
   }
 
+  // Catch path-prefix renames that the static `_redirects` rules also handle
+  // at the Cloudflare edge. This branch backstops in-app Next.js client
+  // navigation (e.g. an MDX link to a stale path), which never round-trips
+  // through the edge and would otherwise hit the 404 page.
+  for (const { pattern, replacement } of WILDCARD_RENAMES) {
+    if (pattern.test(redirectPath)) {
+      return redirectPath.replace(pattern, replacement);
+    }
+  }
+
   // Check if the version is documented, replace it with latest if not
   if (!isVersionDocumented(redirectPath)) {
     redirectPath = replaceVersionWithLatest(redirectPath);
@@ -134,6 +144,17 @@ function removeVersionFromPath(path: string) {
 function endsInNull(path: string) {
   return path.endsWith('/null');
 }
+
+// Path-prefix renames. Mirrors the catch-all rules in `public/_redirects` for
+// `/eas/<category>/**` paths that were never canonical. Kept in sync so the
+// client-side fallback handles in-app Next.js navigation that never reaches
+// the edge. See ENG-18522.
+const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
+  { pattern: /^\/eas\/build\/(.*)$/, replacement: '/build/$1' },
+  { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },
+  { pattern: /^\/eas\/update\/(.*)$/, replacement: '/eas-update/$1' },
+  { pattern: /^\/eas\/insights\/(.*)$/, replacement: '/eas-insights/$1' },
+];
 
 // Simple remapping of renamed pages, similar to public/_redirects but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
