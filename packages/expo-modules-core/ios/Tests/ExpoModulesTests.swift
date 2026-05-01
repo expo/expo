@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("ExpoModules")
+@JavaScriptActor
 struct ExpoModulesTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -62,14 +63,27 @@ struct ExpoModulesTests {
     let nativeModule = try runtime.eval("expo.modules.\(testModuleName)")
     #expect(nativeModule.isUndefined() == false)
     #expect(nativeModule.isObject() == true)
-    #expect(nativeModule.getRaw() != nil)
+  }
+
+  @Test
+  func `native module is an instance of expo.NativeModule`() throws {
+    let nativeModule = try runtime
+      .global()
+      .getPropertyAsObject("expo")
+      .getPropertyAsObject("modules")
+      .getPropertyAsObject(testModuleName)
+    let nativeModuleClass = try runtime
+      .global()
+      .getPropertyAsObject("expo")
+      .getPropertyAsFunction("NativeModule")
+    #expect(nativeModule.instanceOf(nativeModuleClass) == true)
   }
 
   @Test
   func `has keys for registered modules`() throws {
     let registeredModuleNames = appContext.moduleRegistry.getModuleNames()
-    let keys = try runtime.eval("Object.keys(expo.modules)").asArray().compactMap {
-      return try! $0?.asString()
+    let keys = try runtime.eval("Object.keys(expo.modules)").asArray().map {
+      return try $0.asString()
     }
     for moduleName in registeredModuleNames {
       #expect(keys.contains(moduleName))
@@ -80,11 +94,9 @@ struct ExpoModulesTests {
 
   @Test
   func `exposes constants`() throws {
-    let dict = try runtime.eval("expo.modules.TestModule").asDict()
-
-    for (key, value) in dict {
-      #expect(value as! NSObject === dict[key] as! NSObject)
-    }
+    let module = try runtime.eval("expo.modules.TestModule")
+    #expect(try module.getObject().getProperty("expo").asString() == "is cool")
+    #expect(try module.getObject().getProperty("sdk").asInt() == 45)
   }
 
   @Test

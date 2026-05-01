@@ -1,15 +1,4 @@
-import type { UnloadFontOptions } from './Font.types';
-export type ServerFontResourceDescriptor = {
-    type: 'style';
-    css: string;
-    id: string;
-} | {
-    type: 'link';
-    as: 'font';
-    crossOrigin?: string;
-    href: string;
-    rel: 'preload';
-};
+import type { ServerFontResourceDescriptor, UnloadFontOptions } from './Font.types';
 export type ExpoFontLoaderModule = {
     getLoadedFonts: () => string[];
     loadAsync: (fontFamilyName: string, localUriOrWebAsset: any) => Promise<void>;

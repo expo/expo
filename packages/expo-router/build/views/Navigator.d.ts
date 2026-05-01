@@ -46,7 +46,7 @@ export declare function Slot(props: Omit<NavigatorProps<any>, 'children'>): impo
 /**
  * Render the current navigator content.
  */
-declare function NavigatorSlot(): React.JSX.Element;
+declare function NavigatorSlot(): React.JSX.Element | null;
 /**
  * The default navigator for the app when no root _layout is provided.
  */

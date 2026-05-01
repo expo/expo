@@ -6,6 +6,7 @@ import {
   Icon,
   Text as ComposeText,
   TextField,
+  useNativeState,
 } from '@expo/ui/jetpack-compose';
 import {
   animated,
@@ -51,14 +52,9 @@ function TextInputAnchor({
   expanded: boolean;
   enabled?: boolean;
 }) {
+  const labelState = useNativeState(value);
   return (
-    // key={value} forces remount so defaultValue updates the displayed text
-    <TextField
-      defaultValue={value}
-      key={value}
-      readOnly
-      enabled={enabled}
-      modifiers={[menuAnchor()]}>
+    <TextField value={labelState} readOnly enabled={enabled} modifiers={[menuAnchor()]}>
       <DropdownArrow expanded={expanded} />
     </TextField>
   );

@@ -36,7 +36,7 @@ export default function CellularScreen() {
         mobileNetworkCode: await Cellular.getMobileNetworkCodeAsync(),
         generation,
       });
-    } catch (error) {
+    } catch (error: any) {
       alert(error.message);
     }
   };

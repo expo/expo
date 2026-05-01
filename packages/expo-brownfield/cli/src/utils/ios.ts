@@ -5,6 +5,7 @@ import path from 'node:path';
 import { runCommand } from './commands';
 import { XCFramework } from './constants';
 import CLIError from './error';
+import { ensureCorrectFlavor, enumerateAllPrebuildModules } from './precompiled';
 import { withSpinner } from './spinner';
 import type { IosConfig } from './types';
 
@@ -88,6 +89,36 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
       console.warn(
         `${xcframework.name} not found in source path: ${xcframework.path}. Assuming it's built from sources`
       );
+    }
+  }
+
+  if (config.usePrebuilds) {
+    // Single source of truth: enumerates all three layers (pod → bundled-npm → shared
+    // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
+    // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
+    const modules = enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration);
+
+    // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
+    // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
+    // unpack the same tarball repeatedly. SPM-dep entries (mainProduct === name, no artifacts/)
+    // skip reconciliation entirely inside ensureCorrectFlavor.
+    const reconciledPods = new Set<string>();
+    for (const module of modules) {
+      if (!reconciledPods.has(module.podDir)) {
+        reconciledPods.add(module.podDir);
+        await ensureCorrectFlavor(module, config.buildConfiguration, { verbose: config.verbose });
+      }
+      await withSpinner({
+        operation: async () =>
+          fs.promises.cp(module.xcframeworkPath, path.join(dest, `${module.name}.xcframework`), {
+            force: true,
+            recursive: true,
+          }),
+        loaderMessage: `Copying ${module.name} to the artifacts directory...`,
+        successMessage: `Copying ${module.name} to the artifacts directory succeeded`,
+        errorMessage: `Copying ${module.name} to the artifacts directory failed`,
+        verbose: config.verbose,
+      });
     }
   }
 };
@@ -211,18 +242,41 @@ export const findWorkspace = (dryRun: boolean): string | undefined => {
   return;
 };
 
-// TODO(pmleczek): Add support for prebuilt RN frameworks in future PR
 export const generatePackageMetadataFile = async (config: IosConfig, packagePath: string) => {
   if (config.output === 'frameworks') {
     return;
   }
 
   const prebuiltFrameworks = fs.existsSync(XCFramework.React.path);
-  const xcframeworks = [
+  const baseFrameworks = [
     { name: config.scheme, targets: [config.scheme] },
     { name: 'hermesvm', targets: ['hermesvm'] },
     ...(prebuiltFrameworks ? [XCFramework.React, XCFramework.ReactDependencies] : []),
   ];
+
+  // Use the same enumeration + completeness check that `copyXCFrameworks` runs, so every
+  // xcframework that lands on disk is also declared as a `.binaryTarget` here (and vice-versa).
+  // The check fails fast — Package.swift never gets written if a declared SPM dep is missing.
+  const precompiledModules = config.usePrebuilds
+    ? enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration).map(({ name }) => ({
+        name,
+        targets: [name],
+      }))
+    : [];
+
+  const xcframeworks = [...baseFrameworks, ...precompiledModules];
+
+  // With prebuilds the module graph is large; expose a single aggregate library so consumers
+  // `import <PackageName>` once and Xcode links every underlying binary target automatically.
+  // Without prebuilds keep one `.library` per framework for backwards compatibility.
+  const products = config.usePrebuilds
+    ? [
+        libraryProduct(
+          config.output.packageName,
+          xcframeworks.map(({ name }) => name)
+        ),
+      ]
+    : xcframeworks.map(({ name, targets }) => libraryProduct(name, targets));
 
   const contents = `// swift-tools-version:5.9
 import PackageDescription
@@ -231,7 +285,7 @@ let package = Package(
     name: "${config.output.packageName}",
     platforms: [${(await getSupportedPlatforms(config)).join(',')}],
     products: [
-${xcframeworks.map(({ name, targets }) => libraryProduct(name, targets)).join('\n')}
+${products.join('\n')}
     ],
     targets: [
 ${xcframeworks.map(({ name }) => binaryTarget(name)).join('\n')}
@@ -302,6 +356,7 @@ export const printIosConfig = (config: IosConfig) => {
   if (config.output !== 'frameworks') {
     console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
   }
+  console.log(` - Bundle precompiled modules: ${chalk.blue(config.usePrebuilds)}`);
 
   console.log();
 };

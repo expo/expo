@@ -7,7 +7,6 @@
 
 import './location/install';
 
-// @ts-expect-error: Direct self-reimport (broken due to resolution issue; missing package.json:exports)
 import '@expo/metro-runtime/rsc/runtime';
 
 if (__DEV__) {

@@ -12,23 +12,23 @@ This guide outlines how to submit your app to the Google Play Store from your co
 
 ## Submitting your app from your computer
 
-<Prerequisites numberOfRequirements={7}>
-  <Requirement number={1} title="Sign up for a Google Play Developer account">
+<Prerequisites>
+  <Requirement title="Sign up for a Google Play Developer account">
     A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
-  <Requirement number={2} title="Create an app on Google Play Console">
+  <Requirement title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement number={3} title="Create a Google Service Account">
+  <Requirement title="Create a Google Service Account">
     EAS requires you to upload and configure a Google Service Account Key to submit your Android app to the Google Play Store. You can create one with the [uploading a Google Service Account Key for Play Store submissions with EAS](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
   </Requirement>
-  <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
 
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
   </Requirement>
-  <Requirement number={5} title="Include a package name in app.json">
+  <Requirement title="Include a package name in app.json">
     Include your app's package name in **app.json**:
 
     ```json app.json
@@ -40,7 +40,7 @@ This guide outlines how to submit your app to the Google Play Store from your co
     ```
 
   </Requirement>
-  <Requirement number={6} title="Build a production app">
+  <Requirement title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
 
     <Terminal cmd={['$ eas build --platform android --profile production']} />
@@ -48,7 +48,7 @@ This guide outlines how to submit your app to the Google Play Store from your co
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
 
   </Requirement>
-  <Requirement number={7} title="Upload your app manually at least once">
+  <Requirement title="Upload your app manually at least once">
     You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
 
     Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.
@@ -72,23 +72,23 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
 
 ## Submitting your app using CI/CD services
 
-<Prerequisites numberOfRequirements={8}>
-  <Requirement number={1} title="Sign up for a Google Play Developer account">
+<Prerequisites>
+  <Requirement title="Sign up for a Google Play Developer account">
     A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
-  <Requirement number={2} title="Create an app on Google Play Console">
+  <Requirement title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement number={3} title="Create a Google Service Account">
+  <Requirement title="Create a Google Service Account">
     EAS requires you to upload and configure a Google Service Account Key to submit your Android app to the Google Play Store. You can create one with the [uploading a Google Service Account Key for Play Store submissions with EAS](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
   </Requirement>
-  <Requirement number={4} title="Install EAS CLI and authenticate with your Expo account">
+  <Requirement title="Install EAS CLI and authenticate with your Expo account">
     Install EAS CLI and login with your Expo account:
 
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
 
   </Requirement>
-  <Requirement number={5} title="Include a package name in app.json">
+  <Requirement title="Include a package name in app.json">
     Include your app's package name in **app.json**:
 
     ```json app.json
@@ -100,7 +100,7 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
     ```
 
   </Requirement>
-  <Requirement number={6} title="Upload your Google Service Account key to EAS dashboard">
+  <Requirement title="Upload your Google Service Account key to EAS dashboard">
     Then, you need to upload your Google Service Account key to EAS dashboard under project's credentials.
     <Tabs>
     <Tab label="EAS dashboard">
@@ -131,7 +131,7 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
     </Tabs>
 
   </Requirement>
-  <Requirement number={7} title="Build a production app">
+  <Requirement title="Build a production app">
     You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
 
     <Terminal cmd={['$ eas build --platform android --profile production']} />
@@ -139,7 +139,7 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
     Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
 
   </Requirement>
-  <Requirement number={8} title="Upload your app manually at least once">
+  <Requirement title="Upload your app manually at least once">
     You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
 
     Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.

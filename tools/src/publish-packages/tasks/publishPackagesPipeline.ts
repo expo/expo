@@ -2,6 +2,7 @@ import chalk from 'chalk';
 
 import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { addTemplateTarball } from './addTemplateTarball';
+import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
@@ -45,7 +46,11 @@ const cleanWorkingTree = new Task<TaskArgs>(
         // JSON files are automatically added to the index after previous tasks.
         await Git.checkoutAsync({
           ref: 'HEAD',
-          paths: ['packages/**/expo-module.config.json'],
+          paths: [
+            'apps/bare-expo/package.json',
+            'packages/**/expo-module.config.json',
+            'pnpm-lock.yaml',
+          ],
         });
         // Remove local repositories.
         await Git.cleanAsync({
@@ -55,9 +60,9 @@ const cleanWorkingTree = new Task<TaskArgs>(
         });
         // Remove tarballs.
         await Git.cleanAsync({
-          recursive: false,
+          recursive: true,
           force: true,
-          paths: ['packages/**/*.tgz', 'templates/**/*.tgz'],
+          paths: ['packages/**/*.tgz', 'packages/**/prebuilds/**', 'templates/**/*.tgz'],
         });
       },
       'Cleaned up the working tree'
@@ -89,6 +94,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       commitStagedChanges,
       pushCommittedChanges,
       publishAndroidArtifacts,
+      bundleIOSPrebuilds,
       publishPackages,
       updateVersionsEndpoint,
       grantTeamAccessToPackages,

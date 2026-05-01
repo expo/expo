@@ -219,7 +219,11 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
       for propertyName in object.getPropertyNames() {
         let property = object.getProperty(propertyName)
-        result[propertyName] = property.getAny()
+        // Undefined property values are dropped so the resulting dictionary only
+        // carries keys that were actually assigned a value on the JS side.
+        if !property.isUndefined() {
+          result[propertyName] = property.getAny()
+        }
       }
       return result
     }

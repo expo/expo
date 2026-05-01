@@ -23,6 +23,7 @@ internal val isDynamicColorSupported: Boolean = Build.VERSION.SDK_INT >= Build.V
 
 internal class MaterialColorsOptions : Record {
   @Field val scheme: ExpoColorScheme? = null
+
   @Field val seedColor: android.graphics.Color? = null
 }
 

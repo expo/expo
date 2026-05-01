@@ -247,6 +247,16 @@ struct ConvertiblesTests {
     }
 
     @Test
+    @JavaScriptActor
+    func `converts from JS array and object through the value converter`() throws {
+      let arrayValue = try appContext.runtime.eval("[4, 3]")
+      let objectValue = try appContext.runtime.eval("({ width: 4, height: 3 })")
+
+      #expect(try appContext.converter.toNative(arrayValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
+      #expect(try appContext.converter.toNative(objectValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
+    }
+
+    @Test
     func `throws when array size is unexpected`() {
       #expect(throws: Conversions.ConvertingException<CGSize>.self) {
         try CGSize.convert(from: [], appContext: appContext)

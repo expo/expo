@@ -142,6 +142,9 @@ class UpdatesDevLauncherController(
   override val updateUrl: Uri?
     get() = updatesConfiguration?.updateUrl
 
+  override val requestHeaders: Map<String, String>?
+    get() = updatesConfiguration?.requestHeaders
+
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     return DisabledUpdatesStateChangeSubscription()
   }

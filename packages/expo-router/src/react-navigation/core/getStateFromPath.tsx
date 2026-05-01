@@ -257,10 +257,10 @@ function getSortedNormalizedConfigs(
 
         const aWildCard = a.segments[i] === '*';
         const bWildCard = b.segments[i] === '*';
-        const aParam = a.segments[i].startsWith(':');
-        const bParam = b.segments[i].startsWith(':');
-        const aRegex = aParam && a.segments[i].includes('(');
-        const bRegex = bParam && b.segments[i].includes('(');
+        const aParam = a.segments[i]!.startsWith(':');
+        const bParam = b.segments[i]!.startsWith(':');
+        const aRegex = aParam && a.segments[i]!.includes('(');
+        const bRegex = bParam && b.segments[i]!.includes('(');
 
         // if both are wildcard or regex, we compare next component
         if ((aWildCard && bWildCard) || (aRegex && bRegex)) {
@@ -382,8 +382,8 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
                     }
 
                     const decoded = decodeURIComponent(value);
-                    const parsed = routeConfig.parse?.[key]
-                      ? routeConfig.parse[key](decoded)
+                    const parsed = routeConfig.parse?.[key!]
+                      ? routeConfig.parse[key!]!(decoded)
                       : decoded;
 
                     return [key, parsed];
@@ -589,7 +589,7 @@ const findInitialRoute = (
     if (parentScreens.length === config.parentScreens.length) {
       let sameParents = true;
       for (let i = 0; i < parentScreens.length; i++) {
-        if (parentScreens[i].localeCompare(config.parentScreens[i]) !== 0) {
+        if (parentScreens[i]!.localeCompare(config.parentScreens[i]!) !== 0) {
           sameParents = false;
           break;
         }
@@ -657,14 +657,14 @@ const createNestedStateObject = (
 
       const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
 
-      nestedState.routes[nestedStateIndex].state = createStateObject(
+      nestedState.routes[nestedStateIndex]!.state = createStateObject(
         initialRoute,
         route,
         routes.length === 0
       );
 
       if (routes.length > 0) {
-        nestedState = nestedState.routes[nestedStateIndex].state as InitialState;
+        nestedState = nestedState.routes[nestedStateIndex]!.state as InitialState;
       }
 
       parentScreens.push(route.name);
@@ -691,12 +691,15 @@ const parseQueryParams = (
   parseConfig?: Record<string, (value: string) => unknown>
 ) => {
   const query = path.split('?')[1];
-  const params: Record<string, unknown> = queryString.parse(query);
+  if (!query) {
+    return undefined;
+  }
 
+  const params: Record<string, unknown> = queryString.parse(query);
   if (parseConfig) {
     Object.keys(params).forEach((name) => {
       if (Object.hasOwnProperty.call(parseConfig, name) && typeof params[name] === 'string') {
-        params[name] = parseConfig[name](params[name]);
+        params[name] = parseConfig[name]!(params[name])!;
       }
     });
   }

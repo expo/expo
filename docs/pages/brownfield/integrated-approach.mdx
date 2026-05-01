@@ -6,6 +6,7 @@ description: A guide for adding Expo and React Native to existing native (brownf
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
@@ -17,16 +18,24 @@ This guide will walk you through the steps to add a React Native view into an ex
 
 > **info** Another popular technique is what we call the "isolated" approach, where your Expo app is packaged as a library and treated as a black box by the main existing application. See the [isolated approach guide](/brownfield/isolated-approach/) for details.
 
-## Prerequisites
-
-To integrate React Native into your existing application, you'll need to set up a JavaScript development environment. This includes installing Node.js to run Expo CLI and Yarn to manage the project's JavaScript dependencies.
-
-- [Node.js (LTS)](https://nodejs.org/en/): The runtime to execute JavaScript code and Expo CLI.
-- [Yarn](https://yarnpkg.com/): A package manager for installing and managing JavaScript dependencies.
-- <PlatformTag platform="ios" /> [CocoaPods](https://cocoapods.org/): one of the dependency
-  management system available for iOS. CocoaPods is a Ruby
-  [gem](https://en.wikipedia.org/wiki/RubyGems). You can install CocoaPods using the version of Ruby
-  that ships with the latest version of macOS.
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    Install [Node.js](https://nodejs.org/en/) to run JavaScript code and Expo CLI.
+  </Requirement>
+  <Requirement title="Yarn">
+    Install [Yarn](https://yarnpkg.com/) as a package manager for JavaScript dependencies.
+  </Requirement>
+  <Requirement
+    title={
+      <>
+        CocoaPods <PlatformTag platform="ios" />
+      </>
+    }>
+    Install [CocoaPods](https://cocoapods.org/), one of the dependency management systems for iOS.
+    CocoaPods is a Ruby [gem](https://en.wikipedia.org/wiki/RubyGems), and you can install it using
+    the version of Ruby that ships with the latest version of macOS.
+  </Requirement>
+</Prerequisites>
 
 Learn more from the [Set up environment guide](/get-started/set-up-your-environment/).
 

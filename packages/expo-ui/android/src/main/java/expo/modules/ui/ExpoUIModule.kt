@@ -142,10 +142,12 @@ class ExpoUIModule : Module() {
 
     ExpoUIView<ModalBottomSheetViewProps>("ModalBottomSheetView") {
       val hide by AsyncFunction()
+      val expand by AsyncFunction()
+      val partialExpand by AsyncFunction()
       val onDismissRequest by Event<Unit>()
 
       Content { props ->
-        ModalBottomSheetContent(props, hide) { onDismissRequest(Unit) }
+        ModalBottomSheetContent(props, hide, expand, partialExpand) { onDismissRequest(Unit) }
       }
     }
 
@@ -418,6 +420,23 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<HorizontalPagerProps>("HorizontalPagerView") {
+      val animateScrollToPage by AsyncFunction<Int>()
+      val scrollToPage by AsyncFunction<Int>()
+      val onCurrentPageChange by Event<HorizontalPagerCurrentPageChangeEvent>()
+      val onSettledPageChange by Event<HorizontalPagerSettledPageChangeEvent>()
+
+      Content { props ->
+        HorizontalPagerContent(
+          props,
+          animateScrollToPage,
+          scrollToPage,
+          { onCurrentPageChange(it) },
+          { onSettledPageChange(it) }
+        )
+      }
+    }
+
     ExpoUIView<HorizontalCenteredHeroCarouselProps>("HorizontalCenteredHeroCarouselView") {
       Content { props ->
         HorizontalCenteredHeroCarouselContent(props)
@@ -586,7 +605,7 @@ class ExpoUIModule : Module() {
       val setText by AsyncFunction<String>()
       val focus by AsyncFunction()
       val blur by AsyncFunction()
-      val onValueChange by Event<GenericEventPayload1<String>>()
+      val onValueChange by Event<TextFieldValuePayload>()
       val onFocusChanged by Event<GenericEventPayload1<Boolean>>()
       val onKeyboardAction by Event<KeyboardActionEvent>()
 

@@ -3,7 +3,7 @@
 /**
  The exception that needs some additional parameters to be best described.
  */
-open class GenericException<ParamType>: Exception, @unchecked Sendable {
+open class GenericException<ParamType: ~Copyable>: Exception, @unchecked Sendable {
   /**
    The additional parameter passed to the initializer.
    */
@@ -13,7 +13,7 @@ open class GenericException<ParamType>: Exception, @unchecked Sendable {
    The default initializer that takes a param and captures the place in the code where the exception was created.
    - Warning: Call it only with one argument! If you need to pass more parameters, use a tuple instead.
    */
-  public init(_ param: ParamType, file: String = #fileID, line: UInt = #line, function: String = #function) {
+  public init(_ param: consuming ParamType, file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.param = param
     super.init(file: file, line: line, function: function)
   }

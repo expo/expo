@@ -1,6 +1,6 @@
 import { Navigator, Slot } from './views/Navigator';
 export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, useLoaderData, } from './hooks';
-export { router, type Router } from './imperative-api';
+export { router, type ImperativeRouter } from './imperative-api';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
@@ -28,5 +28,4 @@ export { unstable_navigationEvents } from './navigationEvents';
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
  */
 export { Tabs } from './layouts/Tabs';
-export * from './react-navigation';
 //# sourceMappingURL=exports.d.ts.map

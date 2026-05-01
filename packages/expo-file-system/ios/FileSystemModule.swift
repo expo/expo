@@ -348,6 +348,44 @@ public final class FileSystemModule: Module {
         return try? directory.size
       }
     }
+
+    Class(FileSystemUploadTask.self) {
+      Constructor {
+        return FileSystemUploadTask()
+      }
+
+      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, file: FileSystemFile, options: UploadTaskOptions, promise: Promise) in
+        task.start(url: url, file: file, options: options, promise: promise)
+      }
+
+      Function("cancel") { (task: FileSystemUploadTask) in
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemDownloadTask.self) {
+      Constructor {
+        return FileSystemDownloadTask()
+      }
+
+      AsyncFunction("start") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) in
+        try to.validatePermission(.write)
+        task.start(url: url, to: to, options: options, promise: promise)
+      }
+
+      AsyncFunction("pause") { (task: FileSystemDownloadTask) -> [String: String?] in
+        return await task.pause()
+      }
+
+      AsyncFunction("resume") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) in
+        try to.validatePermission(.write)
+        task.resume(url: url, to: to, resumeData: resumeData, options: options, promise: promise)
+      }
+
+      Function("cancel") { (task: FileSystemDownloadTask) in
+        task.cancel()
+      }
+    }
   }
 
   private func getAppleSharedContainers() -> [String: String] {
@@ -363,4 +401,3 @@ public final class FileSystemModule: Module {
     return result
   }
 }
-

@@ -9,7 +9,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public var wrappedValue: Type
 
-  private let fieldType: AnyDynamicType = ~Type.self
+  internal let fieldType: AnyDynamicType = ~Type.self
 
   /**
    Field's key in the dictionary, which by default is a label of the wrapped property.
@@ -23,13 +23,6 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    Additional options of the field, such is if providing the value is required (`FieldOption.required`).
    */
   internal var options: Set<FieldOption> = Set()
-
-  /**
-   Whether the generic field type accepts `nil` values.
-   */
-  internal var isOptional: Bool {
-    return fieldType is DynamicOptionalType
-  }
 
   internal var isRequired: Bool {
     options.contains(.required)
@@ -76,16 +69,51 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    Sets the wrapped value with a value of `Any` type.
    */
   internal func set(_ newValue: Any?, appContext: AppContext) throws {
-    if newValue == nil && (!isOptional || isRequired) {
+    if newValue == nil && isRequired {
       throw FieldRequiredException(key!)
     }
     do {
-      if let value = try fieldType.cast(newValue, appContext: appContext) as? Type {
+      if let value = try castValue(newValue, appContext: appContext) {
         wrappedValue = value
+      } else if newValue == nil {
+        throw FieldRequiredException(key!)
       }
     } catch {
+      if newValue == nil {
+        throw FieldRequiredException(key!)
+      }
       throw FieldInvalidTypeException((fieldKey: key!, value: newValue, desiredType: Type.self)).causedBy(error)
     }
+  }
+
+  @JavaScriptActor
+  internal func set(jsValue: JavaScriptValue, appContext: AppContext) throws {
+    if jsValue.isNull() && isRequired {
+      throw FieldRequiredException(key!)
+    }
+    do {
+      if let value = try castValue(jsValue: jsValue, appContext: appContext) {
+        wrappedValue = value
+      } else if jsValue.isNull() {
+        throw FieldRequiredException(key!)
+      }
+    } catch {
+      if jsValue.isNull() {
+        throw FieldRequiredException(key!)
+      }
+      throw FieldInvalidTypeException((fieldKey: key!, value: jsValue, desiredType: Type.self)).causedBy(error)
+    }
+  }
+
+  internal func castValue(_ newValue: Any?, appContext: AppContext) throws -> Type? {
+    return try fieldType.cast(newValue, appContext: appContext) as? Type
+  }
+
+  @JavaScriptActor
+  internal func castValue(jsValue: JavaScriptValue, appContext: AppContext) throws -> Type? {
+    let rawValue = try fieldType.cast(jsValue: jsValue, appContext: appContext)
+    let convertedValue = try fieldType.cast(rawValue, appContext: appContext)
+    return convertedValue as? Type
   }
 }
 

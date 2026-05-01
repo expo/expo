@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import DeclaredAgeRange
 
-public class AgeRangeModule: Module {
+public class AgeRangeModule: Module, @unchecked Sendable {
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAgeRange")

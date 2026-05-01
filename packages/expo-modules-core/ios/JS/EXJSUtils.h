@@ -1,16 +1,18 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
+#import <Foundation/Foundation.h>
 
 NS_SWIFT_NAME(JSUtils)
 @interface EXJSUtils : NSObject
 
-+ (nonnull EXJavaScriptObject *)createNativeModuleObject:(nonnull EXJavaScriptRuntime *)runtime;
-
+/**
+ Emits an event with the given name and arguments on the specified JS object.
+ The runtimePointer is a raw pointer to `facebook::jsi::Runtime`.
+ The objectPointer is a raw pointer to `facebook::jsi::Value` representing the target JS object.
+ */
 + (void)emitEvent:(nonnull NSString *)eventName
-         toObject:(nonnull EXJavaScriptObject *)object
-    withArguments:(nonnull NSArray<id> *)arguments
-        inRuntime:(nonnull EXJavaScriptRuntime *)runtime;
+   runtimePointer:(nonnull void *)runtimePointer
+    objectPointer:(nonnull const void *)objectPointer
+    withArguments:(nonnull NSArray<id> *)arguments;
 
 @end

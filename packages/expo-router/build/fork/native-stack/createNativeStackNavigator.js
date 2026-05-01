@@ -117,9 +117,7 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
     const { registry, contextValue } = (0, composition_options_1.useCompositionRegistry)();
     const mergedDescriptors = React.useMemo(() => (0, composition_options_1.mergeOptions)(finalDescriptors, registry, computedState), [finalDescriptors, computedState, registry]);
     // END FORK
-    return (
-    // START FORK
-    (0, jsx_runtime_1.jsx)(descriptors_context_1.DescriptorsContext, { value: descriptors, children: (0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(composition_options_1.CompositionContext, { value: contextValue, children: (0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { ...rest, 
+    return ((0, jsx_runtime_1.jsx)(descriptors_context_1.DescriptorsContext, { value: descriptors, children: (0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(composition_options_1.CompositionContext, { value: contextValue, children: (0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { ...rest, 
                     // START FORK
                     state: computedState, navigation: navigationWrapper, descriptors: mergedDescriptors, 
                     // state={state}

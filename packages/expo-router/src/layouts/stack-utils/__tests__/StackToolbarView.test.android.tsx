@@ -102,7 +102,7 @@ describe('StackToolbarView component', () => {
       </ToolbarPlacementContext.Provider>
     );
 
-    expect(MockedAnimatedItemContainer.mock.calls[0][0]).toMatchObject({
+    expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
       visible: !hidden,
     });
     expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -129,7 +129,7 @@ describe('NativeToolbarView', () => {
       </NativeToolbarView>
     );
 
-    expect(MockedBox.mock.calls[0][0]).toMatchObject({
+    expect(MockedBox.mock.calls[0]![0]).toMatchObject({
       contentAlignment: 'center',
     });
     expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -143,7 +143,7 @@ describe('NativeToolbarView', () => {
       </NativeToolbarView>
     );
 
-    expect(MockedAnimatedItemContainer.mock.calls[0][0]).toMatchObject({
+    expect(MockedAnimatedItemContainer.mock.calls[0]![0]).toMatchObject({
       visible: false,
     });
     expect(consoleErrorSpy).not.toHaveBeenCalled();
@@ -157,7 +157,7 @@ describe('NativeToolbarView', () => {
       </NativeToolbarView>
     );
 
-    expect(MockedRNHostView.mock.calls[0][0]).toMatchObject({
+    expect(MockedRNHostView.mock.calls[0]![0]).toMatchObject({
       matchContents: true,
     });
     const hostView = screen.getByTestId('RNHostView');

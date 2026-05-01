@@ -1,6 +1,8 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "rootDir": "${configDir}",
+
     "lib": ["es2023"],
     "target": "es2022",
     "declarationMap": false,

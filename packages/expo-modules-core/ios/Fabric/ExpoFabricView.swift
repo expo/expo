@@ -144,7 +144,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
    Installs convenient event dispatchers for declared events, so the view can just invoke the block to dispatch the proper event.
    */
   private func installEventDispatchers() {
-    viewDefinition?.eventNames.forEach { eventName in
+    guard let viewDefinition else {
+      return
+    }
+    viewDefinition.eventNames.forEach { eventName in
       installEventDispatcher(forEvent: eventName, onView: self) { [weak self] (body: [String: Any]) in
         if let self = self {
           self.dispatchEvent(eventName, payload: body)

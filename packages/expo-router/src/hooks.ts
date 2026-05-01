@@ -7,7 +7,7 @@ import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { getRouteInfoFromState } from './global-state/getRouteInfoFromState';
 import { store, useRouteInfo } from './global-state/router-store';
-import type { Router } from './imperative-api';
+import type { ImperativeRouter } from './imperative-api';
 import { router } from './imperative-api';
 import { usePreviewInfo } from './link/preview/PreviewRouteContext';
 import { LoaderCacheContext } from './loaders/LoaderCache';
@@ -16,7 +16,7 @@ import { getLoaderData } from './loaders/getLoaderData';
 import { fetchLoader } from './loaders/utils';
 import type { NavigationProp, NavigationState } from './react-navigation/native';
 import { useNavigation, useStateForPath } from './react-navigation/native';
-import type { RouteParams, RouteSegments, UnknownOutputParams, Route } from './types';
+import type { RouteParams, RouteSegments, UnknownOutputParams, RoutePath } from './types';
 import { getSingularId } from './useScreens';
 
 export { useRouteInfo };
@@ -75,7 +75,7 @@ const displayWarningForProp = (prop: string) => {
 
 const createNOOPWithWarning = (prop: string) => () => displayWarningForProp(prop);
 
-const routerWithWarnings: Router = {
+const routerWithWarnings: ImperativeRouter = {
   back: createNOOPWithWarning('back'),
   canGoBack: () => {
     displayWarningForProp('canGoBack');
@@ -114,7 +114,7 @@ const routerWithWarnings: Router = {
  *}
  * ```
  */
-export function useRouter(): Router {
+export function useRouter(): ImperativeRouter {
   const { isPreview } = usePreviewInfo();
   if (isPreview) {
     return routerWithWarnings;
@@ -166,12 +166,12 @@ export function useUnstableGlobalHref(): string {
  * const [first, second] = useSegments<['settings'] | ['[user]'] | ['[user]', 'followers']>()
  * ```
  */
-export function useSegments<TSegments extends Route = Route>(): RouteSegments<TSegments>;
+export function useSegments<TSegments extends RoutePath = RoutePath>(): RouteSegments<TSegments>;
 
 /**
  *  @hidden
  */
-export function useSegments<TSegments extends RouteSegments<Route>>(): TSegments;
+export function useSegments<TSegments extends RouteSegments<RoutePath>>(): TSegments;
 export function useSegments() {
   return useRouteInfo().segments;
 }
@@ -207,7 +207,7 @@ export function useGlobalSearchParams<
 /**
  * @hidden
  */
-export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+export function useGlobalSearchParams<TRoute extends RoutePath>(): RouteParams<TRoute>;
 
 /**
  * Returns URL parameters for globally selected route, including dynamic path segments.
@@ -236,7 +236,7 @@ export function useGlobalSearchParams<TRoute extends Route>(): RouteParams<TRout
  * ```
  */
 export function useGlobalSearchParams<
-  TRoute extends Route,
+  TRoute extends RoutePath,
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useGlobalSearchParams() {
@@ -253,7 +253,7 @@ export function useLocalSearchParams<
 /**
  * @hidden
  */
-export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute>;
+export function useLocalSearchParams<TRoute extends RoutePath>(): RouteParams<TRoute>;
 
 /**
  * Returns the URL parameters for the contextually focused route. Useful for stacks where you may push a new screen
@@ -279,7 +279,7 @@ export function useLocalSearchParams<TRoute extends Route>(): RouteParams<TRoute
  * }
  */
 export function useLocalSearchParams<
-  TRoute extends Route,
+  TRoute extends RoutePath,
   TParams extends UnknownOutputParams = UnknownOutputParams,
 >(): RouteParams<TRoute> & TParams;
 export function useLocalSearchParams() {

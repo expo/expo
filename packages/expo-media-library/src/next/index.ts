@@ -1,10 +1,16 @@
-import type { PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
+import type {
+  EventSubscription,
+  PermissionHookOptions,
+  PermissionResponse,
+} from 'expo-modules-core';
 import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
+import type { MediaLibraryAssetsChangeEvent } from './MediaLibraryNext.types';
 import type { GranularPermission } from './types/GranularPermission';
-import type { MediaSubtype } from './types/MediaSubtype';
+import { MediaSubtype } from './types/MediaSubtype';
+import type { MediaTypeFilter } from './types/MediaTypeFilter';
 
 export * from './MediaLibraryNext.types';
 
@@ -129,3 +135,42 @@ export const usePermissions = createPermissionHook<
 });
 
 export type { PermissionHookOptions };
+
+/**
+ * Allows the user to update the assets that your app has access to.
+ * The system modal is only displayed if the user originally allowed only `limited` access to their
+ * media library, otherwise this method is a no-op.
+ * @param mediaTypes Limits the type(s) of media that the user will be granting access to. By default, a list that shows both photos and videos is presented.
+ *
+ * @return A promise that either rejects if the method is unavailable, or resolves to `void`.
+ * > __Note:__ This method doesn't inform you if the user changes which assets your app has access to.
+ * That information is only exposed by iOS, and to obtain it, you need to subscribe for updates to the user's media library using [`addListener()`](#medialibraryaddlistenerlistener).
+ * If `hasIncrementalChanges` is `false`, the user changed their permissions.
+ *
+ * @platform android 14+
+ * @platform ios
+ */
+export async function presentPermissionsPicker(mediaTypes?: MediaTypeFilter[]): Promise<void> {
+  return await ExpoMediaLibraryNext.presentPermissionsPicker(mediaTypes);
+}
+
+/**
+ * Subscribes for updates in user's media library.
+ * @param listener A callback that is fired when any assets have been inserted or deleted from the
+ * library. On Android it's invoked with an empty object. On iOS it's invoked with
+ * [`MediaLibraryAssetsChangeEvent`](#medialibraryassetschangeevent) object.
+ * @return An [`EventSubscription`](#eventsubscription) object that you can call `remove()` on when
+ * you would like to unsubscribe the listener.
+ */
+export function addListener(
+  listener: (event: MediaLibraryAssetsChangeEvent) => void
+): EventSubscription {
+  return ExpoMediaLibraryNext.addListener('mediaLibraryDidChange', listener);
+}
+
+/**
+ * Removes all listeners.
+ */
+export function removeAllListeners(): void {
+  ExpoMediaLibraryNext.removeAllListeners('mediaLibraryDidChange');
+}

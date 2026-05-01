@@ -1,71 +1,48 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
- The base class for any type of array buffer.
- ArrayBuffer objects are used to represent a generic, fixed-length raw binary data buffer.
+ Represents a fixed-length raw binary data buffer backed by a `JavaScriptArrayBuffer`.
+ Provides access to the underlying memory owned by the JavaScript runtime.
  */
-public class ArrayBuffer: AnyArrayBuffer {
-  let backingBuffer: RawArrayBuffer
+public final class ArrayBuffer: AnyArrayBuffer, @unchecked Sendable {
+  /**
+   The underlying JSI array buffer that manages the memory and JS runtime reference.
+   */
+  internal let backingBuffer: JavaScriptArrayBuffer
 
   /**
-   Initializes the array buffer with the given raw array buffer.
-
-   - Parameter RawArrayBuffer: The underlying raw buffer implementation
+   Initializes the array buffer with the given JSI array buffer.
    */
-  internal required init(_ RawArrayBuffer: RawArrayBuffer) {
-    self.backingBuffer = RawArrayBuffer
+  internal init(_ backingBuffer: consuming JavaScriptArrayBuffer) {
+    self.backingBuffer = backingBuffer
   }
 
   /**
    The length of the ArrayBuffer in bytes.
    Fixed at construction time and thus read only.
    */
-  public lazy var byteLength: Int = backingBuffer.getSize()
+  public lazy var byteLength: Int = backingBuffer.size
 
   /**
    The unsafe mutable raw pointer to the start of the array buffer.
    */
-  public lazy var rawPointer: UnsafeMutableRawPointer = backingBuffer.getUnsafeMutableRawPointer()
+  private lazy var rawPointer: UnsafeMutableRawPointer = UnsafeMutableRawPointer(backingBuffer.data())
 
-  /**
-   Creates a copy of this ArrayBuffer with its own allocated memory.
-
-   - Returns: A new NativeArrayBuffer containing a copy of this buffer's data
-   */
   public func copy() -> NativeArrayBuffer {
-    ArrayBuffer.copy(of: self)
+    return NativeArrayBuffer.copy(of: rawPointer, count: byteLength)
   }
 
-  /**
-   Wraps this ArrayBuffer in a Data instance without performing a copy.
-   The returned Data object shares the same memory as this ArrayBuffer.
-
-   - Note: Swift `Data` is a copy-on-write type. Mutating the data
-   doesn't guarantee to modify the array buffer's underlying memory.
-   */
   public var data: Data {
-    // Get a strong reference to prevent deallocation while Data object exists
-    let sharedPointer = backingBuffer.memoryStrongRef()
-
+    let retained = Unmanaged.passRetained(self)
     return Data(
       bytesNoCopy: rawPointer,
       count: byteLength,
-      deallocator: .custom({ _, _ in sharedPointer?.reset() }))
+      deallocator: .custom({ _, _ in retained.release() }))
   }
 
-  /**
-   Creates an NSMutableData object that shares the same memory as this ArrayBuffer.
-
-   - Returns: An NSMutableData object backed by this ArrayBuffer's memory
-   */
-  public func mutableData() -> NSMutableData {
-    // Get a strong reference to prevent deallocation while NSMutableData object exists
-    let sharedPointer = backingBuffer.memoryStrongRef()
-
-    return NSMutableData(
-      bytesNoCopy: rawPointer,
-      length: byteLength,
-      deallocator: { _, _ in sharedPointer?.reset() }
-    )
+  public func withUnsafeBytes<R>(_ body: (UnsafeRawBufferPointer) throws -> R) rethrows -> R {
+    return try body(UnsafeRawBufferPointer(start: rawPointer, count: byteLength))
   }
 }

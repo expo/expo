@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import Dispatch
+import ExpoModulesJSI
 
 /**
  Optimized asynchronous function definition.
@@ -34,6 +35,11 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
     return argsCount
   }
 
+  public var requiredArgumentsCount: Int {
+    // Optimized functions don't support optional arguments, so all args are required.
+    return argsCount
+  }
+
   public var takesOwner: Bool = false
 
   public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
@@ -44,11 +50,14 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
 
   @JavaScriptActor
   public func build(appContext: AppContext) throws -> JavaScriptObject {
-    return try appContext.runtime.createAsyncFunction(
-      name,
-      typeEncoding: typeEncoding,
-      argsCount: argsCount,
-      body: block
+    // TODO: Re-implement optimized async function registration using the new JSI API.
+    // The old implementation used NSInvocation with ObjC type encoding to bypass
+    // JavaScriptValue boxing for primitive types, dispatching to a background queue
+    // and returning a JS Promise. See OptimizedSyncFunctionDefinition for more context.
+    throw Exception(
+      name: "OptimizedFunctionUnavailable",
+      description: "OptimizedAsyncFunctionDefinition is not yet implemented with the new JSI API",
+      code: "ERR_OPTIMIZED_FUNCTION_UNAVAILABLE"
     )
   }
 

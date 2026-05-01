@@ -1,12 +1,15 @@
 import type { PermissionResponse } from 'expo-modules-core';
 import { NativeModule, requireNativeModule } from 'expo-modules-core';
 
-import type { GranularPermission } from './MediaLibraryNext.types';
-import type { Album } from './types/Album';
-import type { Asset } from './types/Asset';
-import type { Query } from './types/Query';
+import type { GranularPermission, MediaLibraryAssetsChangeEvent } from './MediaLibraryNext.types';
+import { Album } from './types/Album';
+import { Asset } from './types/Asset';
+import type { MediaTypeFilter } from './types/MediaTypeFilter';
+import { Query } from './types/Query';
 
-declare class ExpoMediaLibraryNextModule extends NativeModule {
+declare class ExpoMediaLibraryNextModule extends NativeModule<{
+  mediaLibraryDidChange: (event: MediaLibraryAssetsChangeEvent) => void;
+}> {
   Asset: typeof Asset;
   Album: typeof Album;
   Query: typeof Query;
@@ -19,6 +22,7 @@ declare class ExpoMediaLibraryNextModule extends NativeModule {
     writeOnly?: boolean,
     granularPermissions?: GranularPermission[]
   ): Promise<PermissionResponse>;
+  presentPermissionsPicker(mediaTypes?: MediaTypeFilter[]): Promise<void>;
 }
 
 export default requireNativeModule<ExpoMediaLibraryNextModule>('ExpoMediaLibraryNext');

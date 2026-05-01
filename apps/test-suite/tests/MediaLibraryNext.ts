@@ -6,6 +6,8 @@ import {
   Query,
   MediaType,
   AssetField,
+  addListener,
+  removeAllListeners,
 } from 'expo-media-library/next';
 import { Platform } from 'react-native';
 
@@ -300,6 +302,51 @@ export async function test(t) {
         t.expect(oldUri).not.toBe(await newAsset.getUri());
       }
       t.expect(assets.find((asset) => asset.id === newAsset.id)).not.toBe(null);
+    });
+
+    t.it('adds an array of assets to an existing album', async () => {
+      // given
+      const albumName = createAlbumName('add asset array');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+
+      const newAssets = await Promise.all([
+        Asset.create(pngFile.localUri),
+        Asset.create(mp4File.localUri),
+      ]);
+      const oldUris = await Promise.all(newAssets.map((asset) => asset.getUri()));
+      assetsContainer.push(...newAssets);
+
+      // when
+      await album.add(newAssets);
+
+      // then
+      const albumAssets = await album.getAssets();
+      t.expect(albumAssets.length).toBe(3);
+      for (const newAsset of newAssets) {
+        t.expect(albumAssets.find((asset) => asset.id === newAsset.id)).not.toBe(null);
+      }
+      if (Platform.OS === 'android') {
+        const newUris = await Promise.all(newAssets.map((asset) => asset.getUri()));
+        for (const oldUri of oldUris) {
+          t.expect(newUris.findIndex((uri) => uri === oldUri)).toBe(-1);
+        }
+      }
+    });
+
+    t.it('does nothing when adding an empty array to an album', async () => {
+      // given
+      const albumName = createAlbumName('add empty array');
+      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      albumsContainer.push(album);
+      assetsContainer.push(...(await album.getAssets()));
+
+      // when
+      await album.add([]);
+
+      // then
+      const assets = await album.getAssets();
+      t.expect(assets.length).toBe(1);
     });
   });
 
@@ -855,6 +902,66 @@ export async function test(t) {
       }
       t.expect(numberOfKeys).toBeGreaterThan(0);
       t.expect(exif).toBeDefined();
+    });
+  });
+
+  t.describe('Listeners', () => {
+    const WAIT_TIME = 2000;
+
+    function timeoutWrapper(fn: () => void, time: number) {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          fn();
+          resolve(null);
+        }, time);
+      });
+    }
+
+    t.it('addListener is called when asset is created', async () => {
+      const spy = t.jasmine.createSpy('addAsset spy', () => {});
+      const subscription = addListener(spy);
+      const asset = await Asset.create(pngFile.localUri);
+
+      t.expect(asset).not.toBeNull();
+      await timeoutWrapper(() => t.expect(spy).toHaveBeenCalled(), WAIT_TIME);
+
+      subscription.remove();
+      assetsContainer.push(asset);
+    });
+
+    t.it('removed listener is not called', async () => {
+      const spy = t.jasmine.createSpy('remove spy', () => {});
+      const subscription = addListener(spy);
+      subscription.remove();
+      const asset = await Asset.create(pngFile.localUri);
+
+      t.expect(asset).not.toBeNull();
+      await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), WAIT_TIME);
+
+      assetsContainer.push(asset);
+    });
+
+    t.it('addListener is called when asset is deleted', async () => {
+      const spy = t.jasmine.createSpy('deleteAsset spy', () => {});
+      const asset = await Asset.create(pngFile.localUri);
+      const subscription = addListener(spy);
+
+      t.expect(asset).not.toBeNull();
+      await Asset.delete([asset]);
+      await timeoutWrapper(() => t.expect(spy).toHaveBeenCalled(), WAIT_TIME);
+      subscription.remove();
+    });
+
+    t.it('removeAllListeners stops all listeners', async () => {
+      const spy = t.jasmine.createSpy('removeAll spy', () => {});
+      addListener(spy);
+      removeAllListeners();
+
+      const asset = await Asset.create(pngFile.localUri);
+      t.expect(asset).not.toBeNull();
+      await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), WAIT_TIME);
+
+      assetsContainer.push(asset);
     });
   });
 

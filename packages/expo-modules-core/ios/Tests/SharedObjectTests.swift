@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("SharedObject")
+@JavaScriptActor
 struct SharedObjectTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -122,7 +123,6 @@ struct SharedObjectTests {
   // MARK: - Native object
 
   @Test
-  @MainActor
   func `emits events`() throws {
     // Create the shared object
     let jsObject = try runtime

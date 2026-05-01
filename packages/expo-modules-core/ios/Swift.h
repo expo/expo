@@ -4,9 +4,6 @@
 // adding dependency imports here to prevent declarations not found errors.
 #import <ExpoModulesCore/EXDefines.h>
 
-#import <ExpoModulesJSI/EXJavaScriptObject.h>
-#import <ExpoModulesJSI/EXJavaScriptRuntime.h>
-
 // When using precompiled xcframeworks, the generated Swift header is named ProductName-Swift.h.
 // When building from source with use_frameworks!, it's available as ExpoModulesCore-Swift.h.
 #if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)

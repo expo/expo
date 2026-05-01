@@ -1,10 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 
+import os from 'os';
+
 import {
   createFakeProject,
   createTestPath,
   ensureFolderExists,
+  execute,
   executePassing,
   expectFileExists,
   expectFileNotExists,
@@ -555,5 +558,336 @@ describe('non-interactive defaults warning', () => {
     const packageJson = readJson(projectName, 'package.json');
     expect(packageJson.license).toBe('Apache-2.0');
     expect(packageJson.version).toBe('2.0.0');
+  });
+});
+
+describe('add-platform-support', () => {
+  const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
+
+  /**
+   * Creates a local module inside a fake Expo project using --local.
+   * Returns the absolute path to the created module directory.
+   */
+  async function createLocalModule(
+    projectPath: string,
+    slug: string,
+    platforms: string[],
+    features: string[] = []
+  ): Promise<string> {
+    const moduleName =
+      slug.charAt(0).toUpperCase() +
+      slug.slice(1).replace(/-./g, (m) => (m[1] ?? '').toUpperCase());
+    const args = [
+      '--local',
+      slug,
+      '--name',
+      moduleName,
+      '--package',
+      `expo.modules.${slug.replace(/-/g, '')}`,
+      '--platform',
+      ...platforms,
+      '--source',
+      localTemplatePath,
+    ];
+    if (features.length > 0) {
+      args.push('--features', ...features);
+    }
+    await executePassing(args, { cwd: projectPath });
+    return path.join(projectPath, 'modules', slug);
+  }
+
+  it('adds android support to an apple-only module with Function and AsyncFunction', async () => {
+    const project = createFakeProject('aps-fn-project');
+    const modulePath = await createLocalModule(project, 'aps-fn', ['apple'], [
+      'Function',
+      'AsyncFunction',
+    ]);
+
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'android',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expect(fs.existsSync(path.join(modulePath, 'android'))).toBe(true);
+
+    const config = JSON.parse(
+      fs.readFileSync(path.join(modulePath, 'expo-module.config.json'), 'utf-8')
+    );
+    expect(config.platforms).toContain('android');
+    expect(config.android).toBeDefined();
+
+    // Find the Kotlin module file and check it has the expected snippets
+    const pkgDir = path.join(
+      modulePath,
+      'android',
+      'src',
+      'main',
+      'java',
+      'expo',
+      'modules',
+      'apsfn'
+    );
+    const ktFiles = fs.readdirSync(pkgDir);
+    const moduleKt = ktFiles.find((f) => f.endsWith('Module.kt'))!;
+    const ktContent = fs.readFileSync(path.join(pkgDir, moduleKt), 'utf-8');
+    expect(ktContent).toContain('Function(');
+    expect(ktContent).toContain('AsyncFunction(');
+  });
+
+  it('adds apple support to an android-only module with View and ViewEvent', async () => {
+    const project = createFakeProject('aps-view-project');
+    const modulePath = await createLocalModule(project, 'aps-view', ['android'], [
+      'View',
+      'ViewEvent',
+    ]);
+
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'apple',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expect(fs.existsSync(path.join(modulePath, 'ios'))).toBe(true);
+
+    const config = JSON.parse(
+      fs.readFileSync(path.join(modulePath, 'expo-module.config.json'), 'utf-8')
+    );
+    expect(config.platforms).toContain('apple');
+    expect(config.apple).toBeDefined();
+
+    const swiftContent = fs.readFileSync(
+      path.join(modulePath, 'ios', 'ApsViewModule.swift'),
+      'utf-8'
+    );
+    expect(swiftContent).toContain('View(');
+  });
+
+  it('adds android support to an apple-only module with SharedObject', async () => {
+    const project = createFakeProject('aps-so-project');
+    const modulePath = await createLocalModule(project, 'aps-so', ['apple'], ['SharedObject']);
+
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'android',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expect(fs.existsSync(path.join(modulePath, 'android'))).toBe(true);
+
+    const config = JSON.parse(
+      fs.readFileSync(path.join(modulePath, 'expo-module.config.json'), 'utf-8')
+    );
+    expect(config.platforms).toContain('android');
+
+    const pkgDir = path.join(
+      modulePath,
+      'android',
+      'src',
+      'main',
+      'java',
+      'expo',
+      'modules',
+      'apsso'
+    );
+    const ktFiles = fs.readdirSync(pkgDir);
+    const soKt = ktFiles.find((f) => f.includes('SharedObject'));
+    expect(soKt).toBeDefined();
+  });
+
+  it('adds web support to an apple-only module and updates .web.ts from stub to implementation', async () => {
+    const project = createFakeProject('aps-web-project');
+    const modulePath = await createLocalModule(project, 'aps-web', ['apple'], ['Function']);
+
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'web',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const config = JSON.parse(
+      fs.readFileSync(path.join(modulePath, 'expo-module.config.json'), 'utf-8')
+    );
+    expect(config.platforms).toContain('web');
+
+    const webContent = fs.readFileSync(
+      path.join(modulePath, 'src', 'ApsWebModule.web.ts'),
+      'utf-8'
+    );
+    expect(webContent).not.toContain('not available on the web platform');
+  });
+
+  it('does not overwrite existing wrapper files when adding a native platform to a web-enabled module', async () => {
+    const project = createFakeProject('aps-preserve-project');
+    const modulePath = await createLocalModule(project, 'aps-preserve', ['apple', 'web'], ['View']);
+    const wrapperPath = path.join(modulePath, 'src', 'ApsPreserveView.tsx');
+    const webViewPath = path.join(modulePath, 'src', 'ApsPreserveView.web.tsx');
+    const wrapperSentinel = '// custom wrapper change';
+    const webViewSentinel = '// custom web view change';
+
+    fs.writeFileSync(wrapperPath, `${wrapperSentinel}\n`);
+    fs.writeFileSync(webViewPath, `${webViewSentinel}\n`);
+
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'android',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    expect(fs.readFileSync(wrapperPath, 'utf-8')).toBe(`${wrapperSentinel}\n`);
+    expect(fs.readFileSync(webViewPath, 'utf-8')).toBe(`${webViewSentinel}\n`);
+  });
+
+  it('uses the module source declaration as the public module name when no native implementation exists', async () => {
+    const project = createFakeProject('aps-name-fallback-project');
+    const modulePath = await createLocalModule(project, 'aps-name-fallback', ['web']);
+    const moduleTsPath = path.join(modulePath, 'src', 'ApsNameFallbackModule.ts');
+
+    fs.writeFileSync(
+      moduleTsPath,
+      `import { requireNativeModule } from 'expo';
+
+type NativeModuleShape = {
+  hello(): string;
+};
+
+export default requireNativeModule<NativeModuleShape>('ExpoImage');
+`,
+      'utf8'
+    );
+
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'apple',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const swiftContent = fs.readFileSync(
+      path.join(modulePath, 'ios', 'ApsNameFallbackModule.swift'),
+      'utf-8'
+    );
+    expect(swiftContent).toContain('Name("ExpoImage")');
+  });
+
+  it('aborts when the requested platform is already supported', async () => {
+    const project = createFakeProject('aps-conflict-project');
+    const modulePath = await createLocalModule(project, 'aps-conflict', ['apple', 'android']);
+
+    let thrownError: any;
+    try {
+      await execute([
+        'add-platform-support',
+        modulePath,
+        '--platform',
+        'android',
+        '--source',
+        localTemplatePath,
+      ]);
+    } catch (e) {
+      thrownError = e;
+    }
+    expect(thrownError?.status).not.toBe(0);
+    // android should not be duplicated in config
+    const config = JSON.parse(
+      fs.readFileSync(path.join(modulePath, 'expo-module.config.json'), 'utf-8')
+    );
+    expect(config.platforms.filter((p: string) => p === 'android')).toHaveLength(1);
+  });
+
+  it('aborts all-or-nothing when one of the requested platforms already exists', async () => {
+    const project = createFakeProject('aps-partial-project');
+    const modulePath = await createLocalModule(project, 'aps-partial', ['apple']);
+
+    let thrownError: any;
+    try {
+      await execute([
+        'add-platform-support',
+        modulePath,
+        '--platform',
+        'android',
+        'apple',
+        '--source',
+        localTemplatePath,
+      ]);
+    } catch (e) {
+      thrownError = e;
+    }
+    expect(thrownError?.status).not.toBe(0);
+    // android must NOT have been added (all-or-nothing)
+    expect(fs.existsSync(path.join(modulePath, 'android'))).toBe(false);
+  });
+
+  it('throws in non-interactive (CI) mode when --platform is not provided', async () => {
+    const project = createFakeProject('aps-noninteractive-project');
+    const modulePath = await createLocalModule(project, 'aps-ni', ['apple']);
+
+    let thrownError: any;
+    try {
+      // execute() already sets CI=1, so non-interactive mode is active
+      await execute([
+        'add-platform-support',
+        modulePath,
+        '--source',
+        localTemplatePath,
+      ]);
+    } catch (e) {
+      thrownError = e;
+    }
+    expect(thrownError?.status).not.toBe(0);
+  });
+
+  it('uses --features flag to override auto-detected features', async () => {
+    const project = createFakeProject('aps-features-flag-project');
+    // Module has Function + AsyncFunction in native source
+    const modulePath = await createLocalModule(project, 'aps-ff', ['apple'], [
+      'Function',
+      'AsyncFunction',
+    ]);
+
+    // But we override with just View when adding android
+    await executePassing([
+      'add-platform-support',
+      modulePath,
+      '--platform',
+      'android',
+      '--features',
+      'View',
+      '--source',
+      localTemplatePath,
+    ]);
+
+    const pkgDir = path.join(
+      modulePath,
+      'android',
+      'src',
+      'main',
+      'java',
+      'expo',
+      'modules',
+      'apsff'
+    );
+    const ktFiles = fs.readdirSync(pkgDir);
+    const moduleKt = ktFiles.find((f) => f.endsWith('Module.kt'))!;
+    const ktContent = fs.readFileSync(path.join(pkgDir, moduleKt), 'utf-8');
+    expect(ktContent).toContain('View(');
+    expect(ktContent).not.toContain('AsyncFunction(');
   });
 });

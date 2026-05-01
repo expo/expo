@@ -1,18 +1,16 @@
 import frontmatter from 'front-matter';
 import fs from 'node:fs';
 import path from 'node:path';
-import ts from 'typescript';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
 import { generateCrossLinksSection, toBlockquote } from './shared.js';
+import { buildTalksSections } from './transforms/talks-section.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
 const TITLE = 'Expo Documentation';
 const DESCRIPTION =
   'Expo is an open-source React Native framework for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The company behind Expo also offers Expo Application Services (EAS), which are deeply integrated cloud services for Expo and React Native apps.';
-const TALKS_TS_PATH = path.join(process.cwd(), 'public/static/talks.ts');
-const TALKS_JS_PATH = path.join(process.cwd(), 'scripts/generate-llms/talks.js');
 
 function generateItemMarkdown(item) {
   return `- [${item.title}](${item.url})${item.description ? `: ${item.description}` : ''}\n`;
@@ -171,84 +169,14 @@ function processSection(node) {
   return section;
 }
 
-function generateVideoUrl(videoId) {
-  return `https://www.youtube.com/watch?v=${videoId}`;
-}
-
-function processTalks(talks, type = 'video') {
-  return talks.map(talk => {
-    if (type === 'podcast' && talk.link) {
-      return {
-        title: talk.title,
-        url: talk.link,
-      };
-    }
-
-    return {
-      title: talk.title,
-      url: talk.videoId ? generateVideoUrl(talk.videoId) : '',
-    };
-  });
-}
-
-async function exportTalksData() {
-  const { TALKS, PODCASTS, LIVE_STREAMS, YOUTUBE_VIDEOS } = await import('./talks.js');
-  return {
-    title: 'Additional Resources',
-    description: 'Collection of talks, podcasts, and live streams from the Expo team',
-    sections: [
-      {
-        title: 'Conference Talks',
-        items: processTalks(TALKS),
-        groups: [],
-        sections: [],
-      },
-      {
-        title: 'Podcasts',
-        items: processTalks(PODCASTS, 'podcast'),
-        groups: [],
-        sections: [],
-      },
-      {
-        title: 'Live Streams',
-        items: processTalks(LIVE_STREAMS),
-        groups: [],
-        sections: [],
-      },
-      {
-        title: 'YouTube Tutorials',
-        items: processTalks(YOUTUBE_VIDEOS),
-        groups: [],
-        sections: [],
-      },
-    ],
-  };
-}
-
-function compileTalksFile() {
-  const inputFileContent = fs.readFileSync(TALKS_TS_PATH, 'utf8');
-  const outputFileContent = ts.transpileModule(inputFileContent, {
-    compilerOptions: {
-      target: ts.ScriptTarget.ESNext,
-      module: ts.ModuleKind.ESNext,
-      moduleResolution: ts.ModuleResolutionKind.Node10,
-    },
-  }).outputText;
-
-  fs.writeFileSync(TALKS_JS_PATH, outputFileContent, 'utf8');
-  console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully compiled talks.ts to talks.js`);
-}
-
 export async function generateLlmsTxt() {
   try {
-    compileTalksFile();
-
     const docSections = Object.values({ home, general, learn, eas, reference: reference.latest })
       .flat()
       .map(processSection)
       .filter(Boolean);
-    const talksData = await exportTalksData();
-    const allSections = [...docSections, ...talksData.sections];
+    const talksSections = await buildTalksSections();
+    const allSections = [...docSections, ...talksSections];
 
     await fs.promises.writeFile(
       path.join(process.cwd(), OUTPUT_DIRECTORY_NAME, OUTPUT_FILENAME_LLMS_TXT),

@@ -1,5 +1,6 @@
 import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
+import { type ObservableState } from '../../State/useNativeState';
 import type { ModifierConfig } from '../../types';
 /**
  * Can be used for imperatively setting text and focus on the `TextField` component.
@@ -85,11 +86,24 @@ export type TextFieldColors = {
     disabledSuffixColor?: ColorValue;
     errorSuffixColor?: ColorValue;
 };
+export type TextFieldValue = {
+    text: string;
+    selection: {
+        start: number;
+        end: number;
+    };
+};
+export type TextFieldValueLike = string | TextFieldValue;
 /** Shared props between `TextField` and `OutlinedTextField`. */
-type BaseTextFieldProps = {
+type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
     ref?: Ref<TextFieldRef>;
-    /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
-    defaultValue?: string;
+    /**
+     * An observable state that holds the current value. Create one with either:
+     * - `useNativeState('initial text')`.
+     * - `useNativeState<TextFieldValue>({ text: '', selection: { start: 0, end: 0 } })`
+     * If omitted, the field manages its own internal state.
+     */
+    value?: ObservableState<T>;
     /** If true, the text field will be focused automatically when mounted. @default false */
     autoFocus?: boolean;
     /** @default true */
@@ -104,8 +118,16 @@ type BaseTextFieldProps = {
     minLines?: number;
     keyboardOptions?: TextFieldKeyboardOptions;
     keyboardActions?: TextFieldKeyboardActions;
-    /** A callback triggered when user types text. */
-    onValueChange?: (value: string) => void;
+    /**
+     * Fires whenever the value changes. The callback receives the same shape as `value`:
+     * - `string` when `value` is a string observable (typing events only).
+     * - `TextFieldValue` when `value` is a TextFieldValue observable (every gesture:
+     *   typing, tap-to-place, drag, select-all, arrow keys).
+     *
+     * If marked with the `'worklet'` directive, runs synchronously on the UI thread;
+     * otherwise delivered asynchronously as a regular JS event.
+     */
+    onValueChange?: (value: T) => void;
     /** A callback triggered when the field gains or loses focus. */
     onFocusChanged?: (focused: boolean) => void;
     shape?: object;
@@ -113,16 +135,16 @@ type BaseTextFieldProps = {
     /** Slot children (e.g. `TextField.Label`, `TextField.Placeholder`). */
     children?: React.ReactNode;
 };
-export type TextFieldProps = BaseTextFieldProps & {
+export type TextFieldProps<T extends TextFieldValueLike = string> = BaseTextFieldProps<T> & {
     colors?: TextFieldColors;
 };
-export type OutlinedTextFieldProps = BaseTextFieldProps & {
+export type OutlinedTextFieldProps<T extends TextFieldValueLike = string> = BaseTextFieldProps<T> & {
     colors?: TextFieldColors;
 };
 /**
  * A Material3 `TextField`.
  */
-declare function TextFieldComponent(props: TextFieldProps): import("react/jsx-runtime").JSX.Element;
+declare function TextFieldComponent<T extends TextFieldValueLike = string>(props: TextFieldProps<T>): import("react/jsx-runtime").JSX.Element;
 declare namespace TextFieldComponent {
     var Label: (props: {
         children: React.ReactNode;
@@ -149,7 +171,7 @@ declare namespace TextFieldComponent {
 /**
  * A Material3 `OutlinedTextField` with a transparent background and border outline.
  */
-declare function OutlinedTextFieldComponent(props: OutlinedTextFieldProps): import("react/jsx-runtime").JSX.Element;
+declare function OutlinedTextFieldComponent<T extends TextFieldValueLike = string>(props: OutlinedTextFieldProps<T>): import("react/jsx-runtime").JSX.Element;
 declare namespace OutlinedTextFieldComponent {
     var Label: (props: {
         children: React.ReactNode;

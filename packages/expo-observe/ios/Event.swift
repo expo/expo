@@ -14,8 +14,8 @@ struct Event: Codable, Sendable {
     let appIdentifier: String?
     let appVersion: String?
     let appBuildNumber: String?
-    let appUpdateId: String?
     let appEasBuildId: String?
+    let appUpdatesInfo: AppInfo.UpdatesInfo?
 
     // DeviceInfo
     let deviceName: String
@@ -60,8 +60,8 @@ struct Event: Codable, Sendable {
         appIdentifier: app.appId,
         appVersion: app.appVersion,
         appBuildNumber: app.buildNumber,
-        appUpdateId: app.updateId,
         appEasBuildId: app.easBuildId,
+        appUpdatesInfo: app.updatesInfo,
 
         deviceName: device.modelName,
         deviceModel: device.modelIdentifier,

@@ -224,12 +224,7 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
             // When ts-expect-error is added, it affects all the props below it
             // So we keep any props that need it at the end
             // Otherwise invalid props may not be caught by TypeScript
-            shouldFreeze: shouldFreeze, children: (0, jsx_runtime_1.jsx)(useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider, { value: animatedHeaderHeight, children: (0, jsx_runtime_1.jsxs)(elements_1.HeaderHeightContext.Provider, { value: headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0), children: [headerBackground != null ? (
-                        /**
-                         * To show a custom header background, we render it at the top of the screen below the header
-                         * The header also needs to be positioned absolutely (with `translucent` style)
-                         */
-                        (0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
+            shouldFreeze: shouldFreeze, children: (0, jsx_runtime_1.jsx)(useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider, { value: animatedHeaderHeight, children: (0, jsx_runtime_1.jsxs)(elements_1.HeaderHeightContext.Provider, { value: headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0), children: [headerBackground != null ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
                                 styles.background,
                                 headerTransparent ? styles.translucent : null,
                                 { height: headerHeight },
@@ -253,7 +248,7 @@ function NativeStackView({ state, navigation, descriptors, describe }) {
         return acc;
     }, {});
     return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { style: styles.container, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
-                const descriptor = descriptors[route.key] ?? preloadedDescriptors[route.key];
+                const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key]);
                 const isFocused = state.index === index;
                 const isBelowFocused = state.index - 1 === index;
                 const previousKey = state.routes[index - 1]?.key;

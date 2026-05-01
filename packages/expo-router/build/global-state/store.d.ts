@@ -36,24 +36,24 @@ export declare const store: {
         index: number;
         routeNames: string[];
         history?: unknown[];
-        routes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+        routes: import("../react-navigation").NavigationRoute<import("../react-navigation").ParamListBase, string>[];
         type: string;
         stale: false;
     }>, "stale" | "routes">> & Readonly<{
         stale?: true;
-        routes: import("../react-navigation/native").PartialRoute<import("../react-navigation/native").Route<string, object | undefined>>[];
+        routes: import("../react-navigation").PartialRoute<import("../react-navigation").Route<string, object | undefined>>[];
     }> & {
         state?: Partial<Omit<Readonly<{
             key: string;
             index: number;
             routeNames: string[];
             history?: unknown[];
-            routes: import("../react-navigation/native").NavigationRoute<import("../react-navigation/native").ParamListBase, string>[];
+            routes: import("../react-navigation").NavigationRoute<import("../react-navigation").ParamListBase, string>[];
             type: string;
             stale: false;
         }>, "stale" | "routes">> & Readonly<{
             stale?: true;
-            routes: import("../react-navigation/native").PartialRoute<import("../react-navigation/native").Route<string, object | undefined>>[];
+            routes: import("../react-navigation").PartialRoute<import("../react-navigation").Route<string, object | undefined>>[];
         }> & /*elided*/ any;
     }) | undefined;
     readonly linking: ExpoLinkingOptions | undefined;

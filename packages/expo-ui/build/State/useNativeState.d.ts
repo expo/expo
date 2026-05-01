@@ -1,10 +1,13 @@
 import { type SharedObject } from 'expo-modules-core';
 /**
- * Observable state shared between JavaScript and native SwiftUI views.
+ * Observable state shared between JavaScript and native views (Jetpack Compose
+ * on Android and SwiftUI on iOS).
  */
 export type ObservableState<T> = SharedObject & {
     /**
-     * The current value. Read or write directly.
+     * The current value. Reads are safe from any thread; prefer writing from a worklet
+     * so the update runs on the native UI thread. Updating state from the JS thread
+     * might show a development warning.
      */
     value: T;
 };

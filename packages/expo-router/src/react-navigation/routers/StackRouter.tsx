@@ -173,7 +173,7 @@ export function StackRouter(options: StackRouterOptions) {
       const initialRouteName =
         options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
           ? options.initialRouteName
-          : routeNames[0];
+          : routeNames[0]!;
 
       return {
         stale: false,
@@ -233,7 +233,7 @@ export function StackRouter(options: StackRouterOptions) {
 
       if (routes.length === 0) {
         const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0];
+          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
 
         routes.push({
           key: `${initialRouteName}-${nanoid()}`,
@@ -262,7 +262,7 @@ export function StackRouter(options: StackRouterOptions) {
         const initialRouteName =
           options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
             ? options.initialRouteName
-            : routeNames[0];
+            : routeNames[0]!;
 
         routes.push({
           key: `${initialRouteName}-${nanoid()}`,
@@ -348,7 +348,7 @@ export function StackRouter(options: StackRouterOptions) {
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
           } else if (action.type === 'NAVIGATE') {
-            const currentRoute = state.routes[state.index];
+            const currentRoute = state.routes[state.index]!;
 
             // If the route matches the current one, then navigate to it
             if (action.payload.name === currentRoute.name) {
@@ -427,7 +427,7 @@ export function StackRouter(options: StackRouterOptions) {
             ...state,
             index: routes.length - 1,
             preloadedRoutes: state.preloadedRoutes.filter(
-              (route) => routes[routes.length - 1].key !== route.key
+              (route) => routes[routes.length - 1]!.key !== route.key
             ),
             routes,
           };
@@ -458,7 +458,7 @@ export function StackRouter(options: StackRouterOptions) {
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
-          } else if (state.routes[state.index].name === action.payload.name) {
+          } else if (state.routes[state.index]!.name === action.payload.name) {
             index = state.index;
           } else {
             index = state.routes.findLastIndex((route) => route.name === action.payload.name);
@@ -474,7 +474,7 @@ export function StackRouter(options: StackRouterOptions) {
             };
           }
 
-          const route = state.routes[index];
+          const route = state.routes[index]!;
 
           let params;
 
@@ -496,7 +496,7 @@ export function StackRouter(options: StackRouterOptions) {
             index,
             routes: [
               ...state.routes.slice(0, index),
-              params !== route.params ? { ...route, params } : state.routes[index],
+              params !== route.params ? { ...route, params } : state.routes[index]!,
             ],
           };
         }
@@ -558,11 +558,11 @@ export function StackRouter(options: StackRouterOptions) {
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
-          } else if (state.routes[currentIndex].name === action.payload.name) {
+          } else if (state.routes[currentIndex]!.name === action.payload.name) {
             index = currentIndex;
           } else {
             for (let i = currentIndex; i >= 0; i--) {
-              if (state.routes[i].name === action.payload.name) {
+              if (state.routes[i]!.name === action.payload.name) {
                 index = i;
                 break;
               }
@@ -591,7 +591,7 @@ export function StackRouter(options: StackRouterOptions) {
             };
           }
 
-          const route = state.routes[index];
+          const route = state.routes[index]!;
 
           let params;
 
@@ -613,7 +613,7 @@ export function StackRouter(options: StackRouterOptions) {
             index,
             routes: [
               ...state.routes.slice(0, index),
-              params !== route.params ? { ...route, params } : state.routes[index],
+              params !== route.params ? { ...route, params } : state.routes[index]!,
             ],
           };
         }

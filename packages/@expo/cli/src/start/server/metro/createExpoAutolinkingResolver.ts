@@ -39,7 +39,8 @@ const KNOWN_STICKY_DEPENDENCIES = [
 ];
 
 const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
-type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
+
+export type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
 const escapeDependencyName = (dependency: string) =>
   dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);

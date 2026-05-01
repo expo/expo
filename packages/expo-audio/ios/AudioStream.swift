@@ -171,11 +171,11 @@ class AudioStream: SharedObject {
     if encoding == .int16, let int16Data = buffer.int16ChannelData {
       let sampleCount = frameLength * channelCount
       let byteCount = sampleCount * MemoryLayout<Int16>.size
-      data = ArrayBuffer.copy(of: int16Data[0], count: byteCount)
+      data = NativeArrayBuffer.copy(of: int16Data[0], count: byteCount)
     } else if let floatData = buffer.floatChannelData {
       let sampleCount = frameLength * channelCount
       let byteCount = sampleCount * MemoryLayout<Float32>.size
-      data = ArrayBuffer.copy(of: floatData[0], count: byteCount)
+      data = NativeArrayBuffer.copy(of: floatData[0], count: byteCount)
     } else {
       return
     }

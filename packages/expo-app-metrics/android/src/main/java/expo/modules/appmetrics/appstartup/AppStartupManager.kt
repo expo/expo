@@ -203,22 +203,22 @@ object AppStartupManager {
     }
   }
 
-  fun markInteractive(routeName: String? = null) {
+  fun markInteractive(routeName: String? = null, params: Map<String, Any>? = null) {
     if (startupState != StartupState.LAUNCHING || hasRecordedInteractive) return
     hasRecordedInteractive = true
 
     val frameMetrics = frameMetricsRecorder.stop()
-    val params = if (frameMetrics.expectedFrames > 0) {
-      mapOf(
+    val mergedParams = if (frameMetrics.expectedFrames > 0) {
+      params.orEmpty() + mapOf(
         "frameRate.slowFrames" to frameMetrics.slowFrames,
         "frameRate.frozenFrames" to frameMetrics.frozenFrames,
         "frameRate.totalDelay" to frameMetrics.freezeTimeMs.toDouble() / 1000.0
       )
     } else {
-      null
+      params
     }
 
-    addMetricSinceLaunch(AppStartupMetric.TimeToInteractive, routeName, params)
+    addMetricSinceLaunch(AppStartupMetric.TimeToInteractive, routeName, mergedParams)
     startupState = StartupState.LAUNCHED
   }
 

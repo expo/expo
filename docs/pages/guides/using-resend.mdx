@@ -3,6 +3,7 @@ title: Using Resend
 description: Learn how to integrate Resend in your Expo and React Native app to programmatically send emails with Expo Router's API Routes.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
@@ -17,14 +18,21 @@ This guide demonstrates the **essential steps to integrate Resend with your Expo
   description="Integrate Resend with Expo Router API routes to send emails programmatically and deploy to EAS Hosting."
 />
 
-## Prerequisites
+---
 
-Before you get started, you need to have the following:
-
-- A project using [Expo Router](/router/installation/)
-- An [Expo account](https://expo.dev/signup) to deploy the API route using EAS Hosting
-- EAS CLI installed globally (`npm install -g eas-cli`)
-- A [Resend account](https://resend.com/)
+<Prerequisites>
+  <Requirement title="A project using Expo Router">
+    See [Expo Router installation](/router/installation/) if you don't have one yet.
+  </Requirement>
+  <Requirement title="An Expo account">
+    An [Expo account](https://expo.dev/signup) is required to deploy the API route using EAS
+    Hosting.
+  </Requirement>
+  <Requirement title="EAS CLI installed globally">
+    Install [EAS CLI](/eas/cli/) with `npm install -g eas-cli`.
+  </Requirement>
+  <Requirement title="A Resend account">Sign up at [resend.com](https://resend.com/).</Requirement>
+</Prerequisites>
 
 <Step label="1">
 

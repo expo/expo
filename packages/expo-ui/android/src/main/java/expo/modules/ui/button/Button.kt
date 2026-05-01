@@ -29,16 +29,22 @@ open class ButtonPressedEvent() : Record, Serializable
 @OptimizedRecord
 class ButtonColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val contentColor: Color? = null
+
   @Field val disabledContainerColor: Color? = null
+
   @Field val disabledContentColor: Color? = null
 }
 
 @OptimizedRecord
 class ContentPaddingRecord : Record {
   @Field val start: Double? = null
+
   @Field val top: Double? = null
+
   @Field val end: Double? = null
+
   @Field val bottom: Double? = null
 }
 

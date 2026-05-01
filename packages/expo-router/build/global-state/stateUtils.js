@@ -47,6 +47,7 @@ lookThroughAllTabs = false) {
     let actionStateRoute;
     const navigationRoutes = [];
     while (actionState && navigationState) {
+        // TODO(@kitten): Review invalid indexed access into undefined
         actionStateRoute = actionState.routes[actionState.routes.length - 1];
         const stateRoute = (() => {
             if (navigationState.type === 'tab' && lookThroughAllTabs) {
@@ -62,8 +63,8 @@ lookThroughAllTabs = false) {
             !childState ||
             !nextNavigationState ||
             (dynamicName &&
-                // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
-                actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
+                actionStateRoute.params?.[dynamicName.name] !==
+                    stateRoute.params?.[dynamicName.name]);
         if (didActionAndCurrentStateDiverge) {
             // If we are looking through all tabs, we need to add new tab id if this is the last route
             // Otherwise we wouldn't be able to change the tab

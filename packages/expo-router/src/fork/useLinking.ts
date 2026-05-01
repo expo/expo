@@ -36,8 +36,8 @@ const findMatchingState = <T extends NavigationState>(
   const aHistoryLength = a.history ? a.history.length : a.routes.length;
   const bHistoryLength = b.history ? b.history.length : b.routes.length;
 
-  const aRoute = a.routes[a.index];
-  const bRoute = b.routes[b.index];
+  const aRoute = a.routes[a.index]!;
+  const bRoute = b.routes[b.index]!;
 
   const aChildState = aRoute.state as T | undefined;
   const bChildState = bRoute.state as T | undefined;
