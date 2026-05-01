@@ -1,7 +1,7 @@
 import { type SharedObject } from 'expo-modules-core';
 /**
- * Observable state shared between JavaScript and native views (SwiftUI on iOS,
- * Jetpack Compose on Android).
+ * Observable state shared between JavaScript and native views (Jetpack Compose
+ * on Android and SwiftUI on iOS).
  */
 export type ObservableState<T> = SharedObject & {
     /**
