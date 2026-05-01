@@ -19,6 +19,10 @@
       "types": "./build/swift-ui/modifiers/index.d.ts",
       "default": "./src/swift-ui/modifiers/index.ts"
     },
+    "./swift-ui/lazy": {
+      "types": "./build/swift-ui/lazy/index.d.ts",
+      "default": "./src/swift-ui/lazy/index.ts"
+    },
     "./jetpack-compose": {
       "types": "./build/jetpack-compose/index.d.ts",
       "default": "./src/jetpack-compose/index.ts"

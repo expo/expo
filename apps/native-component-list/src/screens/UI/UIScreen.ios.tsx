@@ -163,6 +163,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'LazyList component',
+    route: 'ui/lazy-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyListScreen'));
+    },
+  },
+  {
     name: 'Section component',
     route: 'ui/section',
     options: {},
