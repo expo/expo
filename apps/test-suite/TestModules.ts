@@ -41,6 +41,7 @@ export function getTestModules() {
     // Sanity
     require('./tests/Basic'),
     require('./tests/JSDestructuring'),
+    require('./tests/JSBlockScoping'),
   ];
 
   // Expo core modules should run everywhere
