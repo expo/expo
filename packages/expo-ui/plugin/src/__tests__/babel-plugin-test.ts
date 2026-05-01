@@ -58,6 +58,36 @@ const HEART = ExpoIcon.select({ ios: 'heart.fill', android: 1 });
     `);
   });
 
+  it('should rewrite Icon.select reached through a namespace import', () => {
+    expect(
+      transform(`
+import * as ExpoUI from '@expo/ui';
+const HEART = ExpoUI.Icon.select({
+  ios: 'heart.fill',
+  android: import('@expo/material-symbols/favorite.xml'),
+});
+      `)
+    ).toMatchInlineSnapshot(`
+      "import * as ExpoUI from '@expo/ui';
+      const HEART = process.env.EXPO_OS === "ios" ? 'heart.fill' : process.env.EXPO_OS === "android" ? require('@expo/material-symbols/favorite.xml') : undefined;"
+    `);
+  });
+
+  it('should leave namespace Icon.select alone when the namespace points at another module', () => {
+    expect(
+      transform(`
+import * as Other from 'other-package';
+const HEART = Other.Icon.select({ ios: 'heart.fill', android: 1 });
+      `)
+    ).toMatchInlineSnapshot(`
+      "import * as Other from 'other-package';
+      const HEART = Other.Icon.select({
+        ios: 'heart.fill',
+        android: 1
+      });"
+    `);
+  });
+
   it('should leave Icon.select alone when Icon is imported from another module', () => {
     expect(
       transform(`
@@ -193,6 +223,42 @@ const STAR = Icon.select({
       )
     ).toMatchInlineSnapshot(`
       "import { Icon } from '@expo/ui';
+      const STAR = require('@expo/material-symbols/star.xml');"
+    `);
+  });
+
+  it('should emit only the iOS branch for namespace imports when platform is ios', () => {
+    expect(
+      transform(
+        `
+import * as ExpoUI from '@expo/ui';
+const STAR = ExpoUI.Icon.select({
+  ios: 'star.fill',
+  android: import('@expo/material-symbols/star.xml'),
+});
+      `,
+        'ios'
+      )
+    ).toMatchInlineSnapshot(`
+      "import * as ExpoUI from '@expo/ui';
+      const STAR = 'star.fill';"
+    `);
+  });
+
+  it('should emit only the Android branch for namespace imports when platform is android', () => {
+    expect(
+      transform(
+        `
+import * as ExpoUI from '@expo/ui';
+const STAR = ExpoUI.Icon.select({
+  ios: 'star.fill',
+  android: import('@expo/material-symbols/star.xml'),
+});
+      `,
+        'android'
+      )
+    ).toMatchInlineSnapshot(`
+      "import * as ExpoUI from '@expo/ui';
       const STAR = require('@expo/material-symbols/star.xml');"
     `);
   });

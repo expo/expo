@@ -7,7 +7,7 @@ import { transformToModifiers } from '../transformStyle';
 import type { IconName, IconProps, IconSelectSpec } from './types';
 
 function resolveAndroidSource(name: IconName): ImageSourcePropType | undefined {
-  if (name && typeof name === 'object' && 'ios' in name && 'android' in name) {
+  if (name && typeof name === 'object' && 'android' in name) {
     return name.android;
   }
   if (typeof name === 'string') {

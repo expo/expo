@@ -6,6 +6,10 @@ const ICON_IMPORT_SOURCE = '@expo/ui';
 function expoUiPlugin(api) {
     const { types: t } = api;
     const platform = api.caller((caller) => caller?.platform);
+    // The android value is only consumed when we emit the Android branch or the
+    // runtime ternary fallback. On iOS / web the value is discarded outright,
+    // so skip the `import('*.xml')` → `require('*.xml')` rewrite there.
+    const transformAndroidImport = platform !== 'ios' && platform !== 'web';
     return {
         name: 'expo-ui',
         visitor: {
@@ -16,46 +20,44 @@ function expoUiPlugin(api) {
             Program: {
                 enter(programPath, state) {
                     state.iconLocalNames = new Set();
+                    state.namespaceLocalNames = new Set();
                     for (const bodyPath of programPath.get('body')) {
                         if (!bodyPath.isImportDeclaration() ||
                             bodyPath.node.source.value !== ICON_IMPORT_SOURCE) {
                             continue;
                         }
                         for (const specifier of bodyPath.node.specifiers) {
-                            // Only named `Icon` imports. `import * as ExpoUI from '@expo/ui'`
-                            // followed by `ExpoUI.Icon.select(...)` would need MemberExpression
-                            // chain matching, which we don't support.
                             if (t.isImportSpecifier(specifier) &&
                                 t.isIdentifier(specifier.imported) &&
                                 specifier.imported.name === 'Icon') {
                                 state.iconLocalNames.add(specifier.local.name);
+                            }
+                            else if (t.isImportNamespaceSpecifier(specifier)) {
+                                // `import * as ExpoUI from '@expo/ui'` — match
+                                // `ExpoUI.Icon.select(...)` in the CallExpression visitor.
+                                state.namespaceLocalNames.add(specifier.local.name);
                             }
                         }
                     }
                 },
             },
             CallExpression(path, state) {
-                // Fast path: files that don't import Icon from @expo/ui pay only the
-                // cost of this branch on every call site in the file.
-                if (!state.iconLocalNames || state.iconLocalNames.size === 0) {
+                const iconLocals = state.iconLocalNames;
+                const namespaceLocals = state.namespaceLocalNames;
+                // Fast path: files that don't import anything from @expo/ui pay only
+                // the cost of this branch on every call site in the file.
+                if ((!iconLocals || iconLocals.size === 0) &&
+                    (!namespaceLocals || namespaceLocals.size === 0)) {
                     return;
                 }
-                // Match `<TrackedIconBinding>.select(...)`. Reject computed access
-                // (`Icon['select']`) — the static form is the documented API.
-                const callee = path.node.callee;
-                if (!t.isMemberExpression(callee) ||
-                    callee.computed ||
-                    !t.isIdentifier(callee.object) ||
-                    !state.iconLocalNames.has(callee.object.name) ||
-                    !t.isIdentifier(callee.property) ||
-                    callee.property.name !== 'select') {
+                if (!matchesIconSelectCallee(t, path.node.callee, iconLocals, namespaceLocals)) {
                     return;
                 }
                 // `extractIosAndroid` returns null for any argument that isn't a plain
                 // `{ ios, android }` object literal. `Icon.select(spec)` where `spec`
                 // is a variable reference, missing keys, spreads, etc. all fall here
                 // — the runtime fallback handles them.
-                const values = extractIosAndroid(t, path.node.arguments[0]);
+                const values = extractIosAndroid(t, path.node.arguments[0], transformAndroidImport);
                 if (!values) {
                     return;
                 }
@@ -86,17 +88,49 @@ function expoOsExpression(t) {
     return t.memberExpression(t.memberExpression(t.identifier('process'), t.identifier('env')), t.identifier('EXPO_OS'));
 }
 /**
+ * Matches the two supported callee shapes for `Icon.select(...)`:
+ *   - `<IconBinding>.select(...)`        — `import { Icon } from '@expo/ui'`
+ *   - `<NsBinding>.Icon.select(...)`     — `import * as ExpoUI from '@expo/ui'`
+ *
+ * Reject computed access (`Icon['select']`, `ExpoUI['Icon'].select`) — the
+ * static form is the documented API and is what we can statically reason about.
+ */
+function matchesIconSelectCallee(t, callee, iconLocals, namespaceLocals) {
+    if (!t.isMemberExpression(callee) ||
+        callee.computed ||
+        !t.isIdentifier(callee.property) ||
+        callee.property.name !== 'select') {
+        return false;
+    }
+    const object = callee.object;
+    // `Icon.select(...)`
+    if (t.isIdentifier(object) && iconLocals?.has(object.name)) {
+        return true;
+    }
+    // `ExpoUI.Icon.select(...)`
+    if (t.isMemberExpression(object) &&
+        !object.computed &&
+        t.isIdentifier(object.object) &&
+        namespaceLocals?.has(object.object.name) &&
+        t.isIdentifier(object.property) &&
+        object.property.name === 'Icon') {
+        return true;
+    }
+    return false;
+}
+/**
  * Single pass over the `Icon.select` argument that both extracts the `ios`
- * and `android` values and rewrites a literal-string `import('*.xml')` in
- * the `android` slot to a `require('*.xml')`. Returns `null` if the object
- * shape doesn't match the expected `{ ios, android }` form.
+ * and `android` values and (when `transformAndroidImport`) rewrites a
+ * literal-string `import('*.xml')` in the `android` slot to a
+ * `require('*.xml')`. Returns `null` if the object shape doesn't match the
+ * expected `{ ios, android }` form.
  *
  * Strict matching is intentional: a single unrecognized property (`web`,
  * spread, computed key, method shorthand, etc.) makes us bail rather than
  * guess the user's intent. The runtime `Icon.select` fallback still produces
  * a correct value for those cases — we just don't tree-shake them.
  */
-function extractIosAndroid(t, arg) {
+function extractIosAndroid(t, arg, transformAndroidImport) {
     if (!arg || !t.isObjectExpression(arg)) {
         return null;
     }
@@ -118,7 +152,7 @@ function extractIosAndroid(t, arg) {
         // An `import('foo.xml')` placed on `ios` would be nonsensical (iOS expects
         // an SF Symbol string, not an asset id) and is already a TS error.
         let value = property.value;
-        if (keyName === 'android' && isLiteralImportCall(t, value)) {
+        if (keyName === 'android' && transformAndroidImport && isLiteralImportCall(t, value)) {
             value = t.callExpression(t.identifier('require'), [value.arguments[0]]);
         }
         if (keyName === 'ios') {

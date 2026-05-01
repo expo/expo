@@ -4,11 +4,11 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type { IconProps, IconSelectSpec } from './types';
 
 /**
- * A platform-native icon. Renders an SF Symbol on iOS and an XML vector
- * drawable (typically from `@expo/material-symbols`) on Android.
+ * A platform-native icon. Renders an XML vector drawable (typically from
+ * `@expo/material-symbols`) on Android and an SF Symbol on iOS.
  *
- * @platform ios
  * @platform android
+ * @platform ios
  *
  * @example With `Icon.select`, hoisted (handy when the same icon is reused)
  * ```tsx
@@ -44,16 +44,16 @@ import type { IconProps, IconSelectSpec } from './types';
  * />
  * ```
  *
- * @example In a `.ios.tsx` file, pass an SF Symbol string directly
- * ```tsx
- * <Icon name="star.fill" size={24} />
- * ```
- *
  * @example In an `.android.tsx` file, import or `require()` an XML asset
  * ```tsx
  * import StarIcon from '@expo/material-symbols/star.xml';
  *
  * <Icon name={StarIcon} size={24} />
+ * ```
+ *
+ * @example In a `.ios.tsx` file, pass an SF Symbol string directly
+ * ```tsx
+ * <Icon name="star.fill" size={24} />
  * ```
  */
 export function Icon(_props: IconProps) {
@@ -61,8 +61,8 @@ export function Icon(_props: IconProps) {
 }
 
 /**
- * Picks the icon source for the current platform — `ios` on iOS, `android`
- * on Android.
+ * Picks the icon source for the current platform — `android` on Android,
+ * `ios` on iOS.
  *
  * Pair with `@expo/ui/babel-plugin` to strip the unused side per platform.
  *

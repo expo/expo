@@ -8,7 +8,7 @@ function resolveIosName(name: IconName): SFSymbol | undefined {
   if (typeof name === 'string') {
     return name as SFSymbol;
   }
-  if (name && typeof name === 'object' && 'ios' in name && 'android' in name) {
+  if (name && typeof name === 'object' && 'ios' in name) {
     return name.ios;
   }
   // Bare Android asset passed on iOS — nothing renderable. Returning undefined

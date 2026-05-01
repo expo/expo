@@ -26,6 +26,7 @@
 import type { ConfigAPI, PluginObj } from '@babel/core';
 type State = {
     iconLocalNames?: Set<string>;
+    namespaceLocalNames?: Set<string>;
 };
 export default function expoUiPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj<State>;
 export {};
