@@ -43,7 +43,7 @@ export default function WorkletPhoneMaskExample() {
         value={maskedPhone}
         keyboardOptions={{ keyboardType: 'phone' }}
         modifiers={[fillMaxWidth()]}
-        onValueChange={(v) => {
+        onValueChange={v => {
           'worklet';
           const digits = v.text.replace(/\D/g, '').slice(0, 10);
           let formatted: string;

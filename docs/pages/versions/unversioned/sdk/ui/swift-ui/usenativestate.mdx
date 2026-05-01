@@ -42,7 +42,7 @@ export default function WorkletPhoneMaskExample() {
         text={maskedPhone}
         placeholder="(555) 123-4567"
         modifiers={[keyboardType('phone-pad')]}
-        onTextChange={(v) => {
+        onTextChange={v => {
           'worklet';
           const digits = v.replace(/\D/g, '').slice(0, 10);
           let formatted: string;
