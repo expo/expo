@@ -6,7 +6,7 @@ import { worklets } from './optionalWorklets';
 const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
- * Observable state shared between JavaScript and native views (Jetpack Compose 
+ * Observable state shared between JavaScript and native views (Jetpack Compose
  * on Android and SwiftUI on iOS).
  */
 export type ObservableState<T> = SharedObject & {
