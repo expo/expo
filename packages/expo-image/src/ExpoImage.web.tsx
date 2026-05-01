@@ -8,6 +8,7 @@ import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
+import { resolveStyle } from './utils/resolveStyle';
 
 loadStyle();
 
@@ -169,7 +170,7 @@ export default function ExpoImage({
       ref={containerViewRef}
       // @ts-expect-error: TODO(@kitten): This is related to react-native-web presumably
       dataSet={{ expoimage: true }}
-      style={[{ overflow: 'hidden' }, style]}
+      style={[{ overflow: 'hidden' }, resolveStyle(style)]}
       {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
