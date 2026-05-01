@@ -39,17 +39,12 @@ internal struct SwipeActionsView: ExpoSwiftUI.View {
 #else
     if let child {
       let view: any View = child.childView
-      if #available(iOS 15.0, *) {
-        contentWithSwipeActions(AnyView(view))
-      } else {
-        AnyView(view)
-      }
+      contentWithSwipeActions(AnyView(view))
     }
 #endif
   }
 
   @ViewBuilder
-  @available(iOS 15.0, *)
   private func contentWithSwipeActions(_ content: AnyView) -> some View {
     let leading = actionSlot(for: .leading)
     let trailing = actionSlot(for: .trailing)
@@ -85,16 +80,15 @@ internal struct SwipeActionsView: ExpoSwiftUI.View {
   }
 
   private func parseActionSlot(_ slot: SlotView) -> SwipeActionsSlot? {
-    let parts = slot.props.name.split(separator: ":")
-    guard parts.count == 3,
-          parts[0] == "actions",
-          let edge = SwipeActionsEdge(rawValue: String(parts[1])) else {
+    guard slot.props.name == "actions",
+          let edgeName = slot.extra("edge", as: String.self),
+          let edge = SwipeActionsEdge(rawValue: edgeName) else {
       return nil
     }
 
     return SwipeActionsSlot(
       edge: edge,
-      allowsFullSwipe: parts[2] == "true",
+      allowsFullSwipe: slot.extra("allowsFullSwipe", as: Bool.self) ?? true,
       view: slot
     )
   }

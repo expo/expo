@@ -45,7 +45,11 @@ export function Actions({
   allowsFullSwipe = true,
   children,
 }: SwipeActionsGroupProps) {
-  return <Slot name={`actions:${edge}:${allowsFullSwipe ? 'true' : 'false'}`}>{children}</Slot>;
+  return (
+    <Slot name="actions" extraProps={{ edge, allowsFullSwipe }}>
+      {children}
+    </Slot>
+  );
 }
 
 /**
