@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.18.21 — 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
 ## 1.18.20 — 2026-04-28
 
 ### 💡 Others

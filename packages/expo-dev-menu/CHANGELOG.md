@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.25 — 2026-05-01
+
+### 🎉 New features
+
+- [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.24 — 2026-04-21
 
