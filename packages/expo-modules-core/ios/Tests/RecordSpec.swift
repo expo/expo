@@ -122,39 +122,32 @@ class RecordSpec: ExpoSpec {
         @Field var a: String? = nil
         @Field var b: String? = nil
         @Field var c: String? = nil
-        @Field var d: String? = nil
-        @Field var e: String? = nil
-        @Field var f: String? = nil
-        @Field var g: String? = nil
-        @Field var h: String? = nil
-        @Field var i: String? = nil
-        @Field var j: String? = nil
       }
 
-      let record = StressRecord(
-        a: "a", b: "b", c: "c", d: "d", e: "e",
-        f: "f", g: "g", h: "h", i: "i", j: "j"
-      )
-
-      let workers = 32
-      let iterations = 5_000
+      let record = StressRecord(a: "a", b: "b", c: "c")
+      let workers = 16
+      let iterations = 100
       let group = DispatchGroup()
+      let startGate = DispatchSemaphore(value: 0)
 
       for _ in 0..<workers {
         group.enter()
         DispatchQueue.global(qos: .userInitiated).async {
+          startGate.wait()
           for _ in 0..<iterations {
             _ = record.toDictionary()
           }
           group.leave()
         }
       }
+      // Release every worker so they collide on the first reflection.
+      for _ in 0..<workers { startGate.signal() }
       group.wait()
 
       let finalDict = record.toDictionary()
-      expect(finalDict.keys.count).to(equal(10))
+      expect(finalDict.keys.count).to(equal(3))
       expect(finalDict["a"] as? String).to(equal("a"))
-      expect(finalDict["j"] as? String).to(equal("j"))
+      expect(finalDict["c"] as? String).to(equal("c"))
     }
   }
 }
