@@ -16,16 +16,23 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    Sadly, property wrappers don't receive properties' label, so we must wait until it's assigned by `Record`.
    */
   internal var key: String? {
-    return options.first { $0.rawValue == FieldOption.keyed("").rawValue }?.key
+    return withOptions { options in
+      options.first { $0.rawValue == FieldOption.keyed("").rawValue }?.key
+    }
   }
 
   /**
    Additional options of the field, such is if providing the value is required (`FieldOption.required`).
+   Locked because `fieldsOf` lazily writes the keyed option while other threads may read. Access only via `withOptions`.
    */
-  internal var options: Set<FieldOption> = Set()
+  private let _options: Mutex<Set<FieldOption>>
+
+  internal func withOptions<T>(_ body: (inout Set<FieldOption>) -> T) -> T {
+    return _options.withLock { body(&$0) }
+  }
 
   internal var isRequired: Bool {
-    options.contains(.required)
+    withOptions { $0.contains(.required) }
   }
 
   /**
@@ -33,7 +40,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public init(wrappedValue: Type, _ options: FieldOption...) {
     self.wrappedValue = wrappedValue
-    self.options = Set(options)
+    self._options = Mutex(Set(options))
   }
 
   /**
@@ -42,7 +49,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public init(wrappedValue: Type, _ options: [FieldOption]) {
     self.wrappedValue = wrappedValue
-    self.options = Set(options)
+    self._options = Mutex(Set(options))
   }
 
   /**
@@ -51,11 +58,12 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public init(wrappedValue: Type = nil) where Type: ExpressibleByNilLiteral {
     self.wrappedValue = wrappedValue
+    self._options = Mutex(Set())
   }
 
   public init(wrappedValue: Type = nil, _ options: FieldOption...) where Type: ExpressibleByNilLiteral {
     self.wrappedValue = wrappedValue
-    self.options = Set(options)
+    self._options = Mutex(Set(options))
   }
 
   /**

@@ -132,9 +132,6 @@ internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
   return children
 }
 
-// Used in fieldsOf to write the label derived key to the field if key is missing
-private let fieldOptionsLock = Mutex<Void>(())
-
 /**
  Returns an array of fields found in record's mirror. If the field is missing the `key`,
  it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
@@ -143,12 +140,13 @@ private let fieldOptionsLock = Mutex<Void>(())
 internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
   let mirror = Mirror(reflecting: record)
   return allMirrorChildren(mirror).compactMap { (label: String?, value: Any) in
-    guard var field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
+    guard let field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
       return nil
     }
-    fieldOptionsLock.withLock { _ in
-      if field.key == nil {
-        field.options = field.options.union([.keyed(key)])
+    field.withOptions { options in
+      let alreadyKeyed = options.contains { $0.rawValue == FieldOption.keyed("").rawValue }
+      if !alreadyKeyed {
+        options.insert(.keyed(key))
       }
     }
     return field
