@@ -17,7 +17,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 ## Usage
 
-> **Note:** Using worklets requires [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) to be installed in your project. `useNativeState` itself works without them, but the synchronous UI-thread updates shown below depend on the worklet runtime.
+> **Note:** Using worklets requires installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) in your project. `useNativeState` itself works without them, but the synchronous UI-thread updates shown below depend on the worklet runtime.
 
 The example below masks a phone number as the user types. The formatting and the write to `maskedPhone.value` both happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
 
