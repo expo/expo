@@ -49,6 +49,7 @@ export function getTestModules() {
     require('./tests/JSReactJSX'),
     require('./tests/JSNamedGroupsRegexes'),
     require('./tests/JSUnicodeRegexes'),
+    require('./tests/JSNullishCoalescing'),
   ];
 
   // Expo core modules should run everywhere
