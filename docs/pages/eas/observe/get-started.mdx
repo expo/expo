@@ -174,8 +174,6 @@ export default AppMetricsRoot.wrap(App);
 
 > **info** `markInteractive()` can safely be called multiple times per session, but only the first call records the measurement. If your app has multiple entry screens (for example, an onboarding flow, login flow, or deep link targets), call `markInteractive` on **every one of these screens**. If you only place it on one screen, [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive) will not be recorded when the app opens via a deep link to a different screen.
 
-> **info** You can attach app-specific params (for example, user cohort or tenant) to the TTI event. See [Custom event params](/eas/observe/reference/metrics/#custom-event-params).
-
 </Step>
 
 <Step label="4">
@@ -186,7 +184,8 @@ After installing `expo-observe` and adding the instrumentation, create a new bui
 
 <Terminal cmd={['$ eas build']} />
 
-> **info** By default, metrics are not dispatched when `NODE_ENV=development`. To test your integration during development, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
+
+> **info** By default, metrics collected from debug builds are not dispatched. To test your integration in a debug build, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development).
 
 </Step>
 

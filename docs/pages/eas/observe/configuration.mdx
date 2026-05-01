@@ -42,7 +42,6 @@ await ExpoObserve.dispatchEvents();
 
 By default, every installation dispatches its metrics. For high-volume apps, you can sample a fraction of installations by setting `sampleRate` to a value between `0` and `1`:
 
-```js
 import ExpoObserve from 'expo-observe';
 
 // Dispatch metrics from ~25% of installations.
@@ -55,7 +54,7 @@ The sampling decision is **deterministic per installation**. Each installation i
 
 A few details worth knowing:
 
-- Values outside the `[0, 1]` range are clamped. `0` always drops; `1` always dispatches.
+- Values outside the `[0, 1]` range are clamped to the nearest edge. `0` always drops; `1` always dispatches.
 - Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
 - Sampling is independent of [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
 
@@ -63,7 +62,6 @@ A few details worth knowing:
 
 By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
-```js
 import ExpoObserve from 'expo-observe';
 
 ExpoObserve.configure({
@@ -73,7 +71,7 @@ ExpoObserve.configure({
 
 `dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
 
-> **warning** Enable this only when testing your Expo Observe integration. Development performance differs significantly from production, so collecting development metrics may distort the results shown in your dashboard.
+> **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 
