@@ -14,7 +14,7 @@ data class AppMetadata(
   val deviceName: String?,
   val expoSdkVersion: String,
   val reactNativeVersion: String,
-  val clientVersion: String?,
+  val clientVersion: String?
 )
 
 data class AppUpdatesInfo(

@@ -36,7 +36,7 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class TextFieldVariant(val value: String) : Enumerable {
   FILLED("filled"),
-  OUTLINED("outlined"),
+  OUTLINED("outlined")
 }
 
 @OptimizedRecord
@@ -44,7 +44,7 @@ data class TextFieldKeyboardOptionsRecord(
   @Field val capitalization: String? = null,
   @Field val autoCorrectEnabled: Boolean? = null,
   @Field val keyboardType: String? = null,
-  @Field val imeAction: String? = null,
+  @Field val imeAction: String? = null
 ) : Record
 
 @OptimizedRecord
@@ -101,22 +101,22 @@ data class TextFieldColorsRecord(
   @Field val focusedSuffixColor: Color? = null,
   @Field val unfocusedSuffixColor: Color? = null,
   @Field val disabledSuffixColor: Color? = null,
-  @Field val errorSuffixColor: Color? = null,
+  @Field val errorSuffixColor: Color? = null
 ) : Record
 
 data class KeyboardActionEvent(
   @Field val action: String,
-  @Field val value: String,
+  @Field val value: String
 ) : Record
 
 data class TextFieldSelectionPayload(
   @Field val start: Int,
-  @Field val end: Int,
+  @Field val end: Int
 ) : Record
 
 data class TextFieldValuePayload(
   @Field val text: String,
-  @Field val selection: TextFieldSelectionPayload,
+  @Field val selection: TextFieldSelectionPayload
 ) : Record
 
 // endregion Records
@@ -169,7 +169,7 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
     focusedSuffixColor = focusedSuffixColor.composeOrNull ?: defaults.focusedSuffixColor,
     unfocusedSuffixColor = unfocusedSuffixColor.composeOrNull ?: defaults.unfocusedSuffixColor,
     disabledSuffixColor = disabledSuffixColor.composeOrNull ?: defaults.disabledSuffixColor,
-    errorSuffixColor = errorSuffixColor.composeOrNull ?: defaults.errorSuffixColor,
+    errorSuffixColor = errorSuffixColor.composeOrNull ?: defaults.errorSuffixColor
   )
 }
 
@@ -192,7 +192,7 @@ data class TextFieldProps(
   val shape: ShapeRecord? = null,
   val colors: TextFieldColorsRecord? = null,
   val onValueChangeSync: WorkletCallback? = null,
-  val modifiers: ModifierList = emptyList(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 // endregion Props
@@ -317,12 +317,30 @@ fun FunctionalComposableScope.TextFieldContent(
   )
   val currentText = { state.value.extractText() }
   val keyboardActions = KeyboardActions(
-    onDone = { defaultKeyboardAction(ImeAction.Done); onKeyboardActionTriggered(KeyboardActionEvent("done", currentText())) },
-    onGo = { defaultKeyboardAction(ImeAction.Go); onKeyboardActionTriggered(KeyboardActionEvent("go", currentText())) },
-    onNext = { defaultKeyboardAction(ImeAction.Next); onKeyboardActionTriggered(KeyboardActionEvent("next", currentText())) },
-    onPrevious = { defaultKeyboardAction(ImeAction.Previous); onKeyboardActionTriggered(KeyboardActionEvent("previous", currentText())) },
-    onSearch = { defaultKeyboardAction(ImeAction.Search); onKeyboardActionTriggered(KeyboardActionEvent("search", currentText())) },
-    onSend = { defaultKeyboardAction(ImeAction.Send); onKeyboardActionTriggered(KeyboardActionEvent("send", currentText())) },
+    onDone = {
+      defaultKeyboardAction(ImeAction.Done)
+      onKeyboardActionTriggered(KeyboardActionEvent("done", currentText()))
+    },
+    onGo = {
+      defaultKeyboardAction(ImeAction.Go)
+      onKeyboardActionTriggered(KeyboardActionEvent("go", currentText()))
+    },
+    onNext = {
+      defaultKeyboardAction(ImeAction.Next)
+      onKeyboardActionTriggered(KeyboardActionEvent("next", currentText()))
+    },
+    onPrevious = {
+      defaultKeyboardAction(ImeAction.Previous)
+      onKeyboardActionTriggered(KeyboardActionEvent("previous", currentText()))
+    },
+    onSearch = {
+      defaultKeyboardAction(ImeAction.Search)
+      onKeyboardActionTriggered(KeyboardActionEvent("search", currentText()))
+    },
+    onSend = {
+      defaultKeyboardAction(ImeAction.Send)
+      onKeyboardActionTriggered(KeyboardActionEvent("send", currentText()))
+    }
   )
 
   // Lines
@@ -384,7 +402,7 @@ fun FunctionalComposableScope.TextFieldContent(
       isError = props.isError,
       keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
       singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-      shape = shape, colors = colors,
+      shape = shape, colors = colors
     )
   } else {
     TextField(
@@ -396,7 +414,7 @@ fun FunctionalComposableScope.TextFieldContent(
       isError = props.isError,
       keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
       singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-      shape = shape, colors = colors,
+      shape = shape, colors = colors
     )
   }
 }

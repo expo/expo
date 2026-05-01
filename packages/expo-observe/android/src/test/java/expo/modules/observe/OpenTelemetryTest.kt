@@ -165,10 +165,12 @@ class OpenTelemetryTest {
       category = "appStartup",
       name = "bundleLoadTime",
       value = 1.0,
-      customParams = JsonObject(mapOf(
-        "screen" to JsonPrimitive("dashboard"),
-        "variant" to JsonPrimitive("A")
-      ))
+      customParams = JsonObject(
+        mapOf(
+          "screen" to JsonPrimitive("dashboard"),
+          "variant" to JsonPrimitive("A")
+        )
+      )
     )
     val otMetric = metric.toOTMetric()
     val attrs = otMetric.gauge.dataPoints[0].attributes.associate { it.key to it.value.stringValue }

@@ -586,7 +586,7 @@ object ModifierRegistry {
       val params = recordFromMap<OnVisibilityChangedParams>(map)
       Modifier.onVisibilityChanged(
         minDurationMs = params.minDurationMs,
-        minFractionVisible = params.minFractionVisible,
+        minFractionVisible = params.minFractionVisible
       ) { isVisible ->
         eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
       }
