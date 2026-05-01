@@ -471,6 +471,12 @@
                             "description": "Names of upcoming Swift features to enable (passed to .enableUpcomingFeature in Package.swift).",
                             "items": { "type": "string" },
                             "default": [ ]
+                        },
+                        "unsafeFlags": {
+                            "type": "array",
+                            "description": "Raw compiler flags passed via .unsafeFlags() in Package.swift (e.g. '-no-verify-emitted-module-interface').",
+                            "items": { "type": "string" },
+                            "default": [ ]
                         }
                     },
                     "additionalProperties": false

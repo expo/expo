@@ -846,6 +846,11 @@ function buildSwiftSettings(
   for (const feature of target?.swiftSettings?.enableUpcomingFeatures ?? []) {
     settings.push(`.enableUpcomingFeature("${feature}")`);
   }
+  const userUnsafeFlags = target?.swiftSettings?.unsafeFlags ?? [];
+  if (userUnsafeFlags.length > 0) {
+    const quoted = userUnsafeFlags.map((f) => `"${f}"`).join(', ');
+    settings.push(`.unsafeFlags([${quoted}])`);
+  }
 
   // Common C++ flags (not path-dependent)
   // Note: -fcxx-modules is intentionally omitted (see buildCSettings comment).

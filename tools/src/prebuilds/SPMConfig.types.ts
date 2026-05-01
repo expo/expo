@@ -134,6 +134,8 @@ export interface ObjcTarget extends SourceTarget {
 export interface SwiftSettings {
   /** Names of upcoming Swift features to enable (passed to `.enableUpcomingFeature`). */
   enableUpcomingFeatures?: string[];
+  /** Raw compiler flags passed via `.unsafeFlags()`, e.g. `-no-verify-emitted-module-interface`. */
+  unsafeFlags?: string[];
 }
 
 /**
