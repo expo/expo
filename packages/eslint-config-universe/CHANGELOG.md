@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Disabled `import/no-named-as-default` in both core and TypeScript presets ([#45088](https://github.com/expo/expo/pull/45088) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

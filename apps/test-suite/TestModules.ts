@@ -40,6 +40,17 @@ export function getTestModules() {
   const modules: Module[] = [
     // Sanity
     require('./tests/Basic'),
+    require('./tests/JSDestructuring'),
+    require('./tests/JSAsync'),
+    require('./tests/JSAsyncGenerator'),
+    require('./tests/JSBlockScoping'),
+    require('./tests/JSPrivateMethods'),
+    require('./tests/JSPrivateProperties'),
+    require('./tests/JSReactJSX'),
+    require('./tests/JSNamedGroupsRegexes'),
+    require('./tests/JSUnicodeRegexes'),
+    require('./tests/JSNullishCoalescing'),
+    require('./tests/JSOptionalChaining'),
   ];
 
   // Expo core modules should run everywhere

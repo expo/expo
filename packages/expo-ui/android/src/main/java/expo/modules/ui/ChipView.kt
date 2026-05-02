@@ -28,44 +28,63 @@ open class ChipPressedEvent : Record, Serializable
 @OptimizedRecord
 class AssistChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val leadingIconContentColor: Color? = null
+
   @Field val trailingIconContentColor: Color? = null
 }
 
 @OptimizedRecord
 class FilterChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val iconColor: Color? = null
+
   @Field val selectedContainerColor: Color? = null
+
   @Field val selectedLabelColor: Color? = null
+
   @Field val selectedLeadingIconColor: Color? = null
+
   @Field val selectedTrailingIconColor: Color? = null
 }
 
 @OptimizedRecord
 class InputChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val leadingIconColor: Color? = null
+
   @Field val trailingIconColor: Color? = null
+
   @Field val selectedContainerColor: Color? = null
+
   @Field val selectedLabelColor: Color? = null
+
   @Field val selectedLeadingIconColor: Color? = null
+
   @Field val selectedTrailingIconColor: Color? = null
 }
 
 @OptimizedRecord
 class SuggestionChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val iconContentColor: Color? = null
 }
 
 @OptimizedRecord
 class ChipBorder : Record {
   @Field val width: Float = 1f
+
   @Field val color: Color? = null
 }
 
