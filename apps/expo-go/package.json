@@ -7,6 +7,7 @@
   "author": "Expo",
   "license": "MIT",
   "dependencies": {
+    "@expo/ui": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/datetimepicker": "^9.1.0",

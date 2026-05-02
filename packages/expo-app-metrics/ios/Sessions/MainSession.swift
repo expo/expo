@@ -47,7 +47,11 @@ public final class MainSession: Session, @unchecked Sendable {
    */
   @AppMetricsActor
   func storeCrashReport(_ crashReport: CrashReport) {
-    logger.warn("[AppMetrics] Received crash report:\n\(crashReport)")
+    if self.crashReport != nil {
+      logger.warn("[AppMetrics] Replacing existing crash report on session \(self.id)")
+    } else {
+      logger.warn("[AppMetrics] Received crash report:\n\(crashReport)")
+    }
     self.crashReport = crashReport
   }
 

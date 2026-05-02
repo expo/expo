@@ -53,6 +53,9 @@ export class FileSystemFile {
   async text(): Promise<any> {}
   async base64(): Promise<any> {}
   async bytes(): Promise<any> {}
+  watch(_callback: any, _options?: any): { remove: () => void } {
+    return { remove: () => {} };
+  }
 }
 
 export class FileSystemFileHandle {
@@ -79,6 +82,18 @@ export class FileSystemDirectory {
   listAsRecords(): any {}
   createFile(name: string, mimeType: string | null): any {}
   createDirectory(name: string): any {}
+  watch(_callback: any, _options?: any): { remove: () => void } {
+    return { remove: () => {} };
+  }
+}
+
+export class FileSystemWatcher {
+  constructor(_path: string, _options?: { debounce?: number; events?: string[] }) {}
+  addListener(_event: string, _callback: (data: any) => void): { remove: () => void } {
+    return { remove: () => {} };
+  }
+  start(): void {}
+  stop(): void {}
 }
 
 // SharedObject-based task classes.

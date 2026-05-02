@@ -12,16 +12,19 @@ import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import { InnerRoot, registerStaticRootComponent } from 'expo-router/internal/static';
 import React from 'react';
-import ReactDOMServer from 'react-dom/server.node';
+import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from './getRootComponent';
-import { PreloadedDataScript } from './html';
+import { resolveMetadata } from '../server/metadata';
 import { createDebug } from '../utils/debug';
 import {
   createInjectedCssElements,
   createInjectedScriptElements,
+  createLoaderDataScript,
+  getHydrationFlagScript,
   serializeHelmetToHtml,
 } from '../utils/html';
+import { createDocumentMetadataInjectionTransform } from '../utils/streams';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -41,6 +44,9 @@ export type GetStaticContentOptions = {
     /** Unique key for the route. Derived from the route's contextKey */
     key: string;
   };
+  metadata?: {
+    headTags: string;
+  } | null;
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
   assets?: {
@@ -49,10 +55,11 @@ export type GetStaticContentOptions = {
   };
 };
 
-export async function getStaticContent(
-  location: URL,
-  options?: GetStaticContentOptions
-): Promise<string> {
+/**
+ * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
+ * tree, resets server contexts, and computes loader data.
+ */
+function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
 
@@ -87,6 +94,18 @@ export async function getStaticContent(
       }
     : null;
 
+  return { headContext, element, getStyleElement, loadedData };
+}
+
+export async function getStaticContent(
+  location: URL,
+  options?: GetStaticContentOptions
+): Promise<string> {
+  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+    location,
+    options
+  );
+
   const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
       <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
@@ -102,14 +121,10 @@ export async function getStaticContent(
 
   const fonts = Font.getServerResources();
   debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-  // debug('Push static fonts:', fonts)
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
   if (loadedData) {
-    const loaderDataScript = ReactDOMServer.renderToStaticMarkup(
-      <PreloadedDataScript data={loadedData} />
-    );
-    output = output.replace('</head>', `${loaderDataScript}</head>`);
+    output = output.replace('</head>', `${createLoaderDataScript(loadedData)}</head>`);
   }
 
   // Inject hydration assets (JS/CSS bundles). Used in SSR mode
@@ -120,8 +135,11 @@ export async function getStaticContent(
     }
 
     if (options.assets.js.length > 0) {
-      const injectedJS = createInjectedScriptElements(options.assets.js);
-      output = output.replace('</body>', `${injectedJS}\n</body>`);
+      // In non-streaming mode, use deferred scripts in the body
+      output = output.replace(
+        '</body>',
+        `${createInjectedScriptElements(options.assets.js)}\n</body>`
+      );
     }
   }
 
@@ -142,5 +160,62 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
   return html;
 }
 
+/**
+ * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
+ * that emits the full HTML document with head injections applied.
+ *
+ * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
+ * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
+ * the client after hydration instead.
+ *
+ * @privateRemarks This function should be moved to a separate file
+ * (i.e. `renderStreamingContent.tsx`) as it doesn't belong with static rendering logic.
+ */
+export async function getStreamingContent(
+  location: URL,
+  options?: GetStaticContentOptions
+): Promise<ReadableStream<Uint8Array>> {
+  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
+    location,
+    options
+  );
+
+  const stream = await ReactDOMServer.renderToReadableStream(
+    <Head.Provider context={headContext}>
+      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
+    </Head.Provider>,
+    {
+      bootstrapScripts: options?.assets?.js,
+      signal: options?.request?.signal,
+    }
+  );
+
+  // Collect head injection content after the shell stream is ready.
+  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(headContext.helmet);
+  const fonts = Font.getServerResources();
+  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
+
+  const injectionParts: string[] = [];
+  if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
+  if (headTags) injectionParts.push(headTags);
+  injectionParts.push(getHydrationFlagScript());
+  if (css) injectionParts.push(css);
+  if (fonts.length > 0) injectionParts.push(fonts.join(''));
+  if (loadedData) injectionParts.push(createLoaderDataScript(loadedData));
+  if (options?.assets?.css && options.assets.css.length > 0) {
+    injectionParts.push(createInjectedCssElements(options.assets.css));
+  }
+
+  return stream.pipeThrough(
+    createDocumentMetadataInjectionTransform({
+      injectionParts,
+      htmlAttributes,
+      bodyAttributes,
+    })
+  );
+}
+
 // Re-export for use in server
+export { resolveMetadata };
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';

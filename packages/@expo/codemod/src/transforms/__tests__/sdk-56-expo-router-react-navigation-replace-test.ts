@@ -17,9 +17,9 @@ describe('basic replacements', () => {
     '@react-navigation/core',
     '@react-navigation/elements',
     '@react-navigation/routers',
-  ])('replaces %s with expo-router', (rnImport) => {
+  ])('replaces %s with expo-router/react-navigation', (rnImport) => {
     const output = run(`import { NavigationContainer } from '${rnImport}';`);
-    expect(output).toBe(`import { NavigationContainer } from "expo-router";`);
+    expect(output).toBe(`import { NavigationContainer } from "expo-router/react-navigation";`);
   });
 
   test('replaces @react-navigation/stack with expo-router/js-stack', () => {
@@ -43,7 +43,9 @@ describe('basic replacements', () => {
     const output = run(
       `import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';`
     );
-    expect(output).toBe(`import { useNavigation, useRoute, useFocusEffect } from "expo-router";`);
+    expect(output).toBe(
+      `import { useNavigation, useRoute, useFocusEffect } from "expo-router/react-navigation";`
+    );
   });
 
   test('replaces all four react-navigation packages in one file', () => {
@@ -54,7 +56,7 @@ describe('basic replacements', () => {
       `import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toContain(`import { NavigationContainer } from "expo-router"`);
+    expect(output).toContain(`import { NavigationContainer } from "expo-router/react-navigation"`);
     expect(output).toContain(`import { createStackNavigator } from "expo-router/js-stack"`);
     expect(output).toContain(`import { createBottomTabNavigator } from "expo-router/js-tabs"`);
     expect(output).toContain(
@@ -76,7 +78,7 @@ describe('basic replacements', () => {
       `import { createStackNavigator } from '@react-navigation/stack';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toContain(`import { NavigationContainer } from "expo-router"`);
+    expect(output).toContain(`import { NavigationContainer } from "expo-router/react-navigation"`);
     expect(output).toContain(`import { createStackNavigator } from "expo-router/js-stack"`);
     expect(output).toContain(`import React from 'react'`);
     expect(output).not.toContain(`@react-navigation`);
@@ -84,36 +86,41 @@ describe('basic replacements', () => {
 });
 
 describe('merging duplicate imports', () => {
-  test('merges duplicate expo-router imports after replacement', () => {
+  test('merges duplicate expo-router/react-navigation imports after replacement', () => {
     const input = [
       `import { NavigationContainer } from '@react-navigation/native';`,
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toBe(`import { NavigationContainer, useNavigation } from "expo-router";`);
+    expect(output).toBe(
+      `import { NavigationContainer, useNavigation } from "expo-router/react-navigation";`
+    );
   });
 
-  test('merges expo-router imports that come from different original packages', () => {
+  test('merges expo-router/react-navigation imports that come from different original packages', () => {
     const input = [
       `import { NavigationContainer } from '@react-navigation/native';`,
-      `import { useRoute } from "expo-router";`,
+      `import { useRoute } from '@react-navigation/elements';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toBe(`import { NavigationContainer, useRoute } from "expo-router";`);
+    expect(output).toBe(
+      `import { NavigationContainer, useRoute } from "expo-router/react-navigation";`
+    );
   });
 
-  test('merges @react-navigation/native with pre-existing expo-router import', () => {
+  test('preserves pre-existing expo-router import when migrating @react-navigation/native', () => {
     const input = [
       `import { Link, useRouter } from "expo-router";`,
       `import { NavigationContainer, useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toBe(
-      `import { Link, useRouter, NavigationContainer, useNavigation } from "expo-router";`
+    expect(output).toContain(`import { Link, useRouter } from "expo-router";`);
+    expect(output).toContain(
+      `import { NavigationContainer, useNavigation } from "expo-router/react-navigation";`
     );
   });
 
-  test('merges three separate @react-navigation/native imports into one expo-router import', () => {
+  test('merges three separate @react-navigation/native imports into one expo-router/react-navigation import', () => {
     const input = [
       `import { NavigationContainer } from '@react-navigation/native';`,
       `import { useNavigation } from '@react-navigation/native';`,
@@ -121,7 +128,7 @@ describe('merging duplicate imports', () => {
     ].join('\n');
     const output = run(input);
     expect(output).toBe(
-      `import { NavigationContainer, useNavigation, useRoute } from "expo-router";`
+      `import { NavigationContainer, useNavigation, useRoute } from "expo-router/react-navigation";`
     );
   });
 
@@ -131,7 +138,9 @@ describe('merging duplicate imports', () => {
       `import { useRoute as useR } from '@react-navigation/native';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toBe(`import { useNavigation as useNav, useRoute as useR } from "expo-router";`);
+    expect(output).toBe(
+      `import { useNavigation as useNav, useRoute as useR } from "expo-router/react-navigation";`
+    );
   });
 
   test('preserves identical aliased imports when merging', () => {
@@ -140,7 +149,9 @@ describe('merging duplicate imports', () => {
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = run(input);
-    expect(output).toBe(`import { useNavigation as useNav, useNavigation } from "expo-router";`);
+    expect(output).toBe(
+      `import { useNavigation as useNav, useNavigation } from "expo-router/react-navigation";`
+    );
   });
 
   test('complex real-world scenario with all package types and pre-existing expo-router', () => {
@@ -169,14 +180,20 @@ describe('merging duplicate imports', () => {
       `import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs"`
     );
 
-    // Single merged expo-router import, preserving the pre-existing single-quote style
-    const expoRouterImports = output.match(/from ['"]expo-router['"]/g);
-    expect(expoRouterImports).toHaveLength(1);
-    const expoLine = output.split('\n').find((l) => /from ['"]expo-router['"]/.test(l));
-    expect(expoLine).toContain('Link');
-    expect(expoLine).toContain('NavigationContainer');
-    expect(expoLine).toContain('useNavigation');
-    expect(expoLine).toContain('useRoute');
+    expect(output).toContain(
+      `import { NavigationContainer, useNavigation, useRoute } from "expo-router/react-navigation"`
+    );
+    expect(output).toContain(`import { createStackNavigator } from "expo-router/js-stack"`);
+    expect(output).toContain(`import { createBottomTabNavigator } from "expo-router/js-tabs"`);
+    expect(output).toContain(
+      `import { createMaterialTopTabNavigator } from "expo-router/js-top-tabs"`
+    );
+
+    // Other imports were unchanged
+    expect(output).toContain(`import React, { useEffect } from 'react';`);
+    expect(output).toContain(`import { View, Text } from 'react-native';`);
+    expect(output).toContain(`import { Link } from "expo-router";`);
+    expect(output).toContain(`import { SafeAreaView } from 'react-native-safe-area-context';`);
   });
 });
 
@@ -256,14 +273,14 @@ describe('unsupported import styles', () => {
     ].join('\n');
     const output = run(input);
     expect(output).toContain(`import React from 'react'`);
-    expect(output).toContain(`from "expo-router"`);
+    expect(output).toContain(`from "expo-router/react-navigation"`);
   });
 });
 
 describe('type imports', () => {
   test('replaces import type from @react-navigation/native', () => {
     const output = runTS(`import type { ScreenProps } from '@react-navigation/native';`);
-    expect(output).toBe(`import type { ScreenProps } from "expo-router";`);
+    expect(output).toBe(`import type { ScreenProps } from "expo-router/react-navigation";`);
   });
 
   test('replaces import type from @react-navigation/stack', () => {
@@ -273,7 +290,7 @@ describe('type imports', () => {
 
   test('replaces import { type ... } from @react-navigation/native', () => {
     const output = runTS(`import { type ScreenProps } from '@react-navigation/native';`);
-    expect(output).toBe(`import { type ScreenProps } from "expo-router";`);
+    expect(output).toBe(`import { type ScreenProps } from "expo-router/react-navigation";`);
   });
 
   test('replaces import { type ... } from @react-navigation/bottom-tabs', () => {
@@ -287,7 +304,9 @@ describe('type imports', () => {
     const output = runTS(
       `import { useNavigation, type NavigationProp } from '@react-navigation/native';`
     );
-    expect(output).toBe(`import { useNavigation, type NavigationProp } from "expo-router";`);
+    expect(output).toBe(
+      `import { useNavigation, type NavigationProp } from "expo-router/react-navigation";`
+    );
   });
 
   test('handles multiple type specifiers from react-navigation', () => {
@@ -295,7 +314,7 @@ describe('type imports', () => {
       `import type { NavigationProp, RouteProp, ParamListBase } from '@react-navigation/native';`
     );
     expect(output).toBe(
-      `import type { NavigationProp, RouteProp, ParamListBase } from "expo-router";`
+      `import type { NavigationProp, RouteProp, ParamListBase } from "expo-router/react-navigation";`
     );
   });
 
@@ -307,7 +326,7 @@ describe('type imports', () => {
     const output = runTS(input);
     expect(output).toBe(
       [
-        `import { useNavigation, type NavigationProp } from "expo-router";`,
+        `import { useNavigation, type NavigationProp } from "expo-router/react-navigation";`,
         `import { createStackNavigator, type StackScreenProps } from "expo-router/js-stack";`,
       ].join('\n')
     );
@@ -320,28 +339,32 @@ describe('type imports', () => {
     ].join('\n');
     const output = runTS(input);
     expect(output).toContain(`import type { FC } from 'react'`);
-    expect(output).toContain(`from "expo-router"`);
+    expect(output).toContain(`from "expo-router/react-navigation"`);
   });
 });
 
 describe('merging type and value imports', () => {
-  test('handles import type from expo-router with value import from react-navigation', () => {
+  test('handles import type from expo-router/react-navigation with value import from react-navigation', () => {
     const input = [
-      `import type { ScreenProps } from "expo-router";`,
+      `import type { ScreenProps } from "expo-router/react-navigation";`,
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
     // ScreenProps keeps its type modifier as an inline `type`, useNavigation stays as a value
-    expect(output).toBe(`import { type ScreenProps, useNavigation } from "expo-router";`);
+    expect(output).toBe(
+      `import { type ScreenProps, useNavigation } from "expo-router/react-navigation";`
+    );
   });
 
-  test('handles value import from expo-router with import type from react-navigation', () => {
+  test('handles value import from expo-router/react-navigation with import type from react-navigation', () => {
     const input = [
-      `import { useRouter } from "expo-router";`,
+      `import { useRouter } from "expo-router/react-navigation";`,
       `import type { NavigationProp } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { useRouter, type NavigationProp } from "expo-router";`);
+    expect(output).toBe(
+      `import { useRouter, type NavigationProp } from "expo-router/react-navigation";`
+    );
   });
 
   test('handles import type from react-navigation with value import from react-navigation', () => {
@@ -350,7 +373,9 @@ describe('merging type and value imports', () => {
       `import type { NavigationProp } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { useNavigation, type NavigationProp } from "expo-router";`);
+    expect(output).toBe(
+      `import { useNavigation, type NavigationProp } from "expo-router/react-navigation";`
+    );
   });
 
   test('handles import type from react-navigation (first) with value import from react-navigation', () => {
@@ -359,7 +384,9 @@ describe('merging type and value imports', () => {
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { type NavigationProp, useNavigation } from "expo-router";`);
+    expect(output).toBe(
+      `import { type NavigationProp, useNavigation } from "expo-router/react-navigation";`
+    );
   });
 
   test('merges import { type ... } with value import from react-navigation', () => {
@@ -368,42 +395,48 @@ describe('merging type and value imports', () => {
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { type NavigationProp, useNavigation } from "expo-router";`);
+    expect(output).toBe(
+      `import { type NavigationProp, useNavigation } from "expo-router/react-navigation";`
+    );
   });
 
   test('merges value import with import { type ... } from react-navigation', () => {
     const input = [
-      `import { useNavigation } from "expo-router";`,
+      `import { useNavigation } from "expo-router/react-navigation";`,
       `import { type NavigationProp } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { useNavigation, type NavigationProp } from "expo-router";`);
+    expect(output).toBe(
+      `import { useNavigation, type NavigationProp } from "expo-router/react-navigation";`
+    );
   });
 
-  test('merges import { type ... } from expo-router with value import from react-navigation', () => {
+  test('merges import { type ... } from expo-router/react-navigation with value import from react-navigation', () => {
     const input = [
-      `import { type Href } from "expo-router";`,
+      `import { type Href } from "expo-router/react-navigation";`,
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { type Href, useNavigation } from "expo-router";`);
+    expect(output).toBe(`import { type Href, useNavigation } from "expo-router/react-navigation";`);
   });
 
-  test('merges import type { ... } from expo-router with value import from react-navigation', () => {
+  test('merges import type { ... } from expo-router/react-navigation with value import from react-navigation', () => {
     const input = [
-      `import type { Href } from "expo-router";`,
+      `import type { Href } from "expo-router/react-navigation";`,
       `import { useNavigation } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { type Href, useNavigation } from "expo-router";`);
+    expect(output).toBe(`import { type Href, useNavigation } from "expo-router/react-navigation";`);
   });
 
-  test('merges value import from expo-router with import { type ... } from react-navigation', () => {
+  test('merges value import from expo-router/react-navigation with import { type ... } from react-navigation', () => {
     const input = [
-      `import { useRouter } from "expo-router";`,
+      `import { useRouter } from "expo-router/react-navigation";`,
       `import { type NavigationProp } from '@react-navigation/native';`,
     ].join('\n');
     const output = runTS(input);
-    expect(output).toBe(`import { useRouter, type NavigationProp } from "expo-router";`);
+    expect(output).toBe(
+      `import { useRouter, type NavigationProp } from "expo-router/react-navigation";`
+    );
   });
 });

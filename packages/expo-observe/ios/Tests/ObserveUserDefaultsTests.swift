@@ -88,4 +88,52 @@ struct ObserveUserDefaultsTests {
     ObserveUserDefaults.setConfig(PersistedConfig(dispatchInDebug: nil))
     #expect(ObserveUserDefaults.config?.dispatchInDebug == nil)
   }
+
+  // MARK: - PersistedBundleDefaults
+
+  @Test
+  func `bundleDefaults defaults to nil on fresh install`() {
+    #expect(ObserveUserDefaults.bundleDefaults == nil)
+  }
+
+  @Test
+  func `setBundleDefaults persists environment and isJsDev together`() {
+    ObserveUserDefaults.setBundleDefaults(
+      PersistedBundleDefaults(environment: "development", isJsDev: true)
+    )
+    #expect(ObserveUserDefaults.bundleDefaults?.environment == "development")
+    #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
+  }
+
+  @Test
+  func `setBundleDefaults overwrites previous record fully`() {
+    ObserveUserDefaults.setBundleDefaults(
+      PersistedBundleDefaults(environment: "development", isJsDev: true)
+    )
+    ObserveUserDefaults.setBundleDefaults(
+      PersistedBundleDefaults(environment: "production", isJsDev: false)
+    )
+    #expect(ObserveUserDefaults.bundleDefaults?.environment == "production")
+    #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == false)
+  }
+
+  @Test
+  func `setBundleDefaults does not affect PersistedConfig`() {
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: false, sampleRate: 0.5))
+    ObserveUserDefaults.setBundleDefaults(
+      PersistedBundleDefaults(environment: "production", isJsDev: false)
+    )
+    #expect(ObserveUserDefaults.config?.dispatchingEnabled == false)
+    #expect(ObserveUserDefaults.config?.sampleRate == 0.5)
+  }
+
+  @Test
+  func `setConfig does not affect bundleDefaults`() {
+    ObserveUserDefaults.setBundleDefaults(
+      PersistedBundleDefaults(environment: "development", isJsDev: true)
+    )
+    ObserveUserDefaults.setConfig(PersistedConfig(dispatchingEnabled: true))
+    #expect(ObserveUserDefaults.bundleDefaults?.environment == "development")
+    #expect(ObserveUserDefaults.bundleDefaults?.isJsDev == true)
+  }
 }

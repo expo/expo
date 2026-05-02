@@ -1,5 +1,6 @@
 import EASClient
 import ExpoAppMetrics
+import ExpoModulesCore
 
 @AppMetricsActor
 internal struct ObservabilityManager {
@@ -8,12 +9,6 @@ internal struct ObservabilityManager {
   private static var projectId: String? = nil
   private static var useOpenTelemetry = false
 
-  // Determined at compile time of the host app's binary.
-  #if DEBUG
-  private static let isDebugBuild: Bool = true
-  #else
-  private static let isDebugBuild: Bool = false
-  #endif
 
   /**
    Returns entries from AppMetrics storage that have not been dispatched yet.
@@ -44,11 +39,7 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      let config = ObserveUserDefaults.config
-      let dispatchingEnabled = config?.dispatchingEnabled ?? true
-      let dispatchInDebug = config?.dispatchInDebug ?? false
-      let shouldDispatch = dispatchingEnabled && isInSample() && (!isDebugBuild || dispatchInDebug)
-      if !shouldDispatch {
+      if !Self.shouldDispatch() {
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
       }
@@ -95,6 +86,23 @@ internal struct ObservabilityManager {
     } catch {
       observeLogger.warn("[EAS Observe] Dispatching the events has thrown an error: \(error)")
     }
+  }
+
+  // Static function extracted for testability
+  internal nonisolated static func shouldDispatch(
+    config: PersistedConfig?, isDev: Bool, isInSample: Bool
+  ) -> Bool {
+    let dispatchingEnabled = config?.dispatchingEnabled ?? true
+    let dispatchInDebug = config?.dispatchInDebug ?? false
+    return dispatchingEnabled && isInSample && (!isDev || dispatchInDebug)
+  }
+
+  private static func shouldDispatch() -> Bool {
+    let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
+    let isDev = EXAppDefines.APP_DEBUG || isJsDev
+    return Self.shouldDispatch(
+      config: ObserveUserDefaults.config, isDev: isDev, isInSample: isInSample()
+    )
   }
 
   internal nonisolated static func setEndpointUrl(_ urlString: String?, projectId: String) {

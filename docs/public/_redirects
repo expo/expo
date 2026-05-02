@@ -148,7 +148,6 @@
 
 # Redirects based on Sentry reports
 /push-notifications /push-notifications/overview 301
-/eas/submit /submit/introduction 301
 /development/tools/expo-dev-client /develop/development-builds/introduction 301
 /develop/user-interface/custom-fonts /develop/user-interface/fonts 301
 /workflow/snack /more/glossary-of-terms 301
@@ -367,6 +366,16 @@
 /versions/latest/sdk/ui/jetpack-compose/textinput /versions/latest/sdk/ui/jetpack-compose/textfield 301
 /versions/unversioned/sdk/ui/jetpack-compose/textinput /versions/unversioned/sdk/ui/jetpack-compose/textfield 301
 /versions/v55.0.0/sdk/ui/jetpack-compose/textinput /versions/v55.0.0/sdk/ui/jetpack-compose/textfield 301
+
+# EAS Build, Submit, Update, and Insights predate the /eas/* URL convention;
+/eas/build/* /build/:splat 301
+/eas/build /build/introduction 301
+/eas/submit/* /submit/:splat 301
+/eas/submit /submit/introduction 301
+/eas/update/* /eas-update/:splat 301
+/eas/update /eas-update/introduction 301
+/eas/insights/* /eas-insights/:splat 301
+/eas/insights /eas-insights/introduction 301
 
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.

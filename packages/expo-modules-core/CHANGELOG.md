@@ -22,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix random crash when concurrent access of the same `Record` on `Field.options`. The set is now guarded by a per-field lock and accessed through a single `withOptions` API. ([#45072](https://github.com/expo/expo/pull/45072) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed converting `Enumerable` function results to JS values. ([#45168](https://github.com/expo/expo/pull/45168) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed prebuild dependencies for `ExpoModulesJSI` ([#45124](https://github.com/expo/expo/pull/45124) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))

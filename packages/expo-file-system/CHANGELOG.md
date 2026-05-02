@@ -17,6 +17,7 @@
 - Add `onProgress` callback and `AbortSignal` support to `File.downloadFileAsync()`. ([#43053](https://github.com/expo/expo/pull/43053) by [@aleqsio](https://github.com/aleqsio))
 - Add `file.createUploadTask()` and `File.createDownloadTask()` APIs ([#44055](https://github.com/expo/expo/pull/44055) by [@barthap](https://github.com/barthap))
 - Add `File.upload()` with legacy-compatible upload semantics, progress callbacks, and `AbortSignal` support. ([#45033](https://github.com/expo/expo/pull/45033) by [@barthap](https://github.com/barthap))
+- Add support for watching file/directory events. ([#44986](https://github.com/expo/expo/pull/44986) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 

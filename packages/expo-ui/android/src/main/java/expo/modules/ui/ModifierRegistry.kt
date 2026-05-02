@@ -329,6 +329,14 @@ object ModifierRegistry {
   }
 
   /**
+   * Unregisters a previously registered modifier. Pair with `register` from
+   * `OnCreate` / `OnDestroy` to avoid leaking factories between module reloads.
+   */
+  fun unregister(type: String) {
+    modifierFactories.remove(type)
+  }
+
+  /**
    * Applies an array of modifier configs to build a Compose Modifier chain.
    */
   @Composable
@@ -578,7 +586,7 @@ object ModifierRegistry {
       val params = recordFromMap<OnVisibilityChangedParams>(map)
       Modifier.onVisibilityChanged(
         minDurationMs = params.minDurationMs,
-        minFractionVisible = params.minFractionVisible,
+        minFractionVisible = params.minFractionVisible
       ) { isVisible ->
         eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
       }
