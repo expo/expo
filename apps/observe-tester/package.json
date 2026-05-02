@@ -1,5 +1,5 @@
 {
-  "name": "observability",
+  "name": "observe-tester",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "private": true,
@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@expo/html-elements": "^0.13.7",
+    "@expo/styleguide-base": "^1.0.1",
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/native": "^7.1.33",
@@ -22,6 +23,7 @@
     "expo": "workspace:*",
     "expo-app-metrics": "workspace:*",
     "expo-build-properties": "workspace:*",
+    "expo-clipboard": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-eas-client": "workspace:*",

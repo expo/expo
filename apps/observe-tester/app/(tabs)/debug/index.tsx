@@ -1,11 +1,16 @@
+import AppMetrics from 'expo-app-metrics';
 import { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
+import { Button } from '@/components/Button';
+import { CrashReportsSection } from '@/components/CrashReportsSection';
+import { Divider } from '@/components/Divider';
+import { JSAnimation } from '@/components/JSAnimation';
 import { useRouterMetricsHelpers } from '@/router-metrics-integration';
-import { Button } from '../../../components/Button';
-import { JSAnimation } from '../../../components/JSAnimation';
+import { useTheme } from '@/utils/theme';
 
 export default function Debug() {
+  const theme = useTheme();
   const [showAnimation, setShowAnimation] = useState(false);
 
   const { markPageInteractive } = useRouterMetricsHelpers();
@@ -17,13 +22,18 @@ export default function Debug() {
   }, [markPageInteractive]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={{ backgroundColor: theme.background.screen }}
+      contentContainerStyle={styles.container}>
+      <CrashReportsSection />
+      {typeof AppMetrics.triggerCrash === 'function' ? <Divider /> : null}
       <Button
         title={showAnimation ? 'Hide JS Animation' : 'Show JS Animation'}
         onPress={() => setShowAnimation(!showAnimation)}
+        theme="secondary"
       />
       {showAnimation && <JSAnimation />}
-    </View>
+    </ScrollView>
   );
 }
 
