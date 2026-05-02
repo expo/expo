@@ -120,6 +120,14 @@ struct SharedObjectTests {
     #expect(try isReturningItself.asBool() == true)
   }
 
+  @Test
+  func `releases the native object when JS reference is garbage-collected`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval("(() => { new expo.modules.SharedObjectModule.SharedObjectExample() })()")
+    try runtime.eval("gc() && gc() && gc()")
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
   // MARK: - Native object
 
   @Test
