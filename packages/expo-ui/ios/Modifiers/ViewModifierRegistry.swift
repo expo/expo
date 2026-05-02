@@ -1000,7 +1000,7 @@ internal struct LineHeight: ViewModifier, Record {
   func body(content: Content) -> some View {
     if let value {
       if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
-        content.lineHeight(value)
+        content.lineHeight(.exact(points: value))
       } else {
         content
       }
