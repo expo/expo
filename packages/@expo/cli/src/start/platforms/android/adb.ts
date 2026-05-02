@@ -300,14 +300,26 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
  * @param device.pid a value like `emulator-5554` from `abd devices`
  */
 export async function getAdbNameForDeviceIdAsync(device: DeviceContext): Promise<string | null> {
-  const results = await getServer().runAsync(adbArgs(device.pid, 'emu', 'avd', 'name'));
+  try {
+    const results = await getServer().runAsync(adbArgs(device.pid, 'emu', 'avd', 'name'));
 
-  if (results.match(/could not connect to TCP port .*: Connection refused/)) {
-    // Can also occur when the emulator does not exist.
-    throw new CommandError('EMULATOR_NOT_FOUND', results);
+    // Some versions of ADB might return the error string instead of throwing an exception.
+    if (results.match(/could not connect to TCP port .*: Connection refused/)) {
+      // Fallback to PID for third-party emulators (like LDPlayer or BlueStacks) 
+      // that do not support the emulator console/telnet port.
+      return device.pid;
+    }
+
+    return sanitizeAdbDeviceName(results) ?? null;
+  } catch (error: any) {
+    // Handle cases where the command fails with a non-zero exit code due to connection refusal.
+    if (error.message?.match(/could not connect to TCP port .*: Connection refused/)) {
+      return device.pid;
+    }
+    
+    // Re-throw if the error is unrelated to telnet connection issues.
+    throw error;
   }
-
-  return sanitizeAdbDeviceName(results) ?? null;
 }
 
 export async function isDeviceBootedAsync({
