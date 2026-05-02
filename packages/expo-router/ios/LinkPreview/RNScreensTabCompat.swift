@@ -4,26 +4,31 @@ import UIKit
 /// we detect tab views by checking `responds(to:)` for expected selectors
 /// and read properties via KVC.
 enum RNScreensTabCompat {
-  private static let tabKeyName = "tabKey"
+  // RNScreens >= 4.25 uses `screenKey`; earlier versions used `tabKey`.
+  // Probe in declaration order; the first selector the view responds to wins.
+  private static let tabKeyNames = ["screenKey", "tabKey"]
   private static let controllerName = "controller"
   private static let reactViewControllerName = "reactViewController"
 
-  private static let tabKeySelector = NSSelectorFromString(tabKeyName)
   private static let controllerSelector = NSSelectorFromString(controllerName)
   private static let reactViewControllerSelector = NSSelectorFromString(reactViewControllerName)
 
   // MARK: - Type check
 
-  /// A view is a tab screen if it has a `tabKey` property — specific to RNScreens tab views.
+  /// A view is a tab screen if it exposes either `screenKey` (RNScreens ≥4.25) or `tabKey` (legacy).
   static func isTabScreen(_ view: UIView) -> Bool {
-    view.responds(to: tabKeySelector)
+    return tabKeyNames.contains { view.responds(to: NSSelectorFromString($0)) }
   }
 
   // MARK: - Property access via KVC
 
   static func tabKey(from view: UIView) -> String? {
-    guard view.responds(to: tabKeySelector) else { return nil }
-    return view.value(forKey: tabKeyName) as? String
+    for name in tabKeyNames {
+      if view.responds(to: NSSelectorFromString(name)) {
+        return view.value(forKey: name) as? String
+      }
+    }
+    return nil
   }
 
   /// Calls `reactViewController()` dynamically via `perform(_:)`, then returns `.tabBarController`.

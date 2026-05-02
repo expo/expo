@@ -5,9 +5,14 @@ import UIKit
 
 // MARK: - Mock views
 
-/// Mock tab screen: has @objc tabKey property, mimicking RNScreens tab screen views.
+/// Mock tab screen: has @objc tabKey property, mimicking legacy RNScreens (<4.25) tab screen views.
 private class MockTabScreenView: UIView {
   @objc var tabKey: String?
+}
+
+/// Mock tab screen with the new RNScreens (≥4.25) `screenKey` property.
+private class MockTabScreenViewWithScreenKey: UIView {
+  @objc var screenKey: String?
 }
 
 /// Mock tab host: has @objc controller property, mimicking RNScreens tab host views.
@@ -44,8 +49,14 @@ struct RNScreensTabCompatUnitTests {
   @MainActor
   struct IsTabScreen {
     @Test
-    func `detects mock tab screen`() {
+    func `detects mock tab screen with legacy tabKey`() {
       let tabScreen = MockTabScreenView()
+      #expect(RNScreensTabCompat.isTabScreen(tabScreen))
+    }
+
+    @Test
+    func `detects mock tab screen with screenKey`() {
+      let tabScreen = MockTabScreenViewWithScreenKey()
       #expect(RNScreensTabCompat.isTabScreen(tabScreen))
     }
 
@@ -66,9 +77,16 @@ struct RNScreensTabCompatUnitTests {
   @MainActor
   struct TabKey {
     @Test
-    func `reads value`() {
+    func `reads value from legacy tabKey`() {
       let tabScreen = MockTabScreenView()
       tabScreen.tabKey = "home"
+      #expect(RNScreensTabCompat.tabKey(from: tabScreen) == "home")
+    }
+
+    @Test
+    func `reads value from screenKey`() {
+      let tabScreen = MockTabScreenViewWithScreenKey()
+      tabScreen.screenKey = "home"
       #expect(RNScreensTabCompat.tabKey(from: tabScreen) == "home")
     }
 
@@ -187,7 +205,7 @@ struct RNScreensTabCompatUnitTests {
 struct RNScreensAPIContractTests {
 
   @Test
-  func `tab screen class responds to tabKey`() throws {
+  func `tab screen class responds to tabKey or screenKey`() throws {
     let cls = NSClassFromString("RNSTabsScreenComponentView")
       ?? NSClassFromString("RNSBottomTabsScreenComponentView")
     guard let cls else {
@@ -195,7 +213,12 @@ struct RNScreensAPIContractTests {
       return
     }
     let view = try #require((cls as? UIView.Type)?.init(), "Failed to instantiate tab screen class")
-    #expect(view.responds(to: NSSelectorFromString("tabKey")))
+    let respondsToEither = view.responds(to: NSSelectorFromString("screenKey"))
+      || view.responds(to: NSSelectorFromString("tabKey"))
+    #expect(
+      respondsToEither,
+      "Tab screen view must expose either `screenKey` (RNScreens ≥4.25) or `tabKey` (legacy)"
+    )
   }
 
   @Test
