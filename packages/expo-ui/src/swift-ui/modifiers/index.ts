@@ -884,6 +884,15 @@ export const textSelection = (value: boolean) => createModifier('textSelection',
  */
 export const lineSpacing = (value: number) => createModifier('lineSpacing', { value });
 /**
+ * Sets the total line height for text in this view.
+ * @param value - The line height in points.
+ * @platform ios 26.0+
+ * @platform macos 26.0+
+ * @platform tvos 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/lineheight(_:)).
+ */
+export const lineHeight = (value: number) => createModifier('lineHeight', { value });
+/**
  * Sets the line limit for text in the view.
  *
  * Four variants matching SwiftUI:
@@ -1321,6 +1330,7 @@ export type BuiltInModifier =
   | ReturnType<typeof multilineTextAlignment>
   | ReturnType<typeof textSelection>
   | ReturnType<typeof lineSpacing>
+  | ReturnType<typeof lineHeight>
   | ReturnType<typeof lineLimit>
   | ReturnType<typeof headerProminence>
   | ReturnType<typeof listRowInsets>

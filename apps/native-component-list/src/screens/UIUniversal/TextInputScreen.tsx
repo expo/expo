@@ -11,11 +11,11 @@ import {
 } from '@expo/ui';
 import { useRef, useState } from 'react';
 import { Platform } from 'react-native';
+import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 const italic = Platform.OS === 'ios' ? require('@expo/ui/swift-ui/modifiers').italic : null;
 const composeShadow =
   Platform.OS === 'android' ? require('@expo/ui/jetpack-compose/modifiers').shadow : null;
-import type { KeyboardTypeOptions, ReturnKeyTypeOptions } from 'react-native';
 
 const KEYBOARD_TYPES: KeyboardTypeOptions[] = [
   'default',
@@ -175,8 +175,8 @@ export default function TextInputScreen() {
             <Button
               label="Select 0–7"
               variant="outlined"
-              onPress={async () => {
-                await inputRef.current?.focus();
+              onPress={() => {
+                inputRef.current?.focus();
                 inputRef.current?.setSelection(0, 7);
               }}
             />

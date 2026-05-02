@@ -79,6 +79,8 @@ export function transformToModifiers(
     if (textStyle.color != null) mods.push(foregroundStyle(textStyle.color));
     if (textStyle.letterSpacing != null) mods.push(kerning(textStyle.letterSpacing));
     if (textStyle.lineHeight != null) {
+      // Approximation: SwiftUI's true `lineHeight(_:)` modifier exists only on iOS 26+.
+      // Users who need exact spacing on iOS 26+ can use `lineHeight()` via the `modifiers` prop.
       const baseFontSize = textStyle.fontSize ?? 17;
       mods.push(lineSpacing(Math.max(0, textStyle.lineHeight - baseFontSize)));
     }

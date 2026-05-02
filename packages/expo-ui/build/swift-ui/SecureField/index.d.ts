@@ -7,6 +7,8 @@ import type { CommonViewModifierProps } from '../types';
  */
 export type SecureFieldRef = {
     setText: (newText: string) => Promise<void>;
+    /** Clear the current text. */
+    clear: () => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
 };

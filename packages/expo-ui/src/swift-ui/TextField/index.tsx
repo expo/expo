@@ -128,8 +128,8 @@ export function TextField(props: TextFieldProps) {
       {...restProps}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      text={text ? getStateId(text) : undefined}
-      selection={selection ? getStateId(selection) : undefined}
+      text={getStateId(text)}
+      selection={getStateId(selection)}
       onTextChangeSync={getStateId(workletCallback)}
       onTextChange={
         !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined

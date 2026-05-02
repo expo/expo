@@ -92,7 +92,7 @@ export function TextInput({
       autoCorrect={autoCorrect}
       returnKeyType={returnKeyType}
       enterKeyHint={enterKeyHint}
-      cursorColor={typeof cursorColor === 'string' ? cursorColor : undefined}
+      cursorColor={cursorColor}
       style={[style, textStyle, textAlign && textAlign !== 'auto' ? { textAlign } : null]}
       onSubmitEditing={onSubmitEditing ? (e) => onSubmitEditing(e.nativeEvent.text) : undefined}
       onFocus={onFocus ? () => onFocus() : undefined}

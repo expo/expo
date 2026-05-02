@@ -44,6 +44,9 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("clear") { (view: SecureFieldView) in
+        view.clear()
+      }
       AsyncFunction("blur") { (view: SecureFieldView) in
         view.blur()
       }

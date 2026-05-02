@@ -38,7 +38,7 @@ export interface TextInputProps {
      */
     value?: ObservableState<string>;
     /**
-     * Called every time the text value changes. Receives the new string,
+     * Called every time the text value changes. Receives the new string.
      */
     onChangeText?: (text: string) => void;
     /**
@@ -180,7 +180,7 @@ export interface TextInputProps {
      *
      * Unlike RN's `onContentSizeChange`, this dispatches the *view*'s outer
      * geometry, including any padding/border applied via `style` or modifiers.
-     * If you use this for autogrow, account for that
+     * If you use this for autogrow, account for that.
      */
     onContentSizeChange?: (size: {
         width: number;

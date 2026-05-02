@@ -24,6 +24,10 @@ struct SecureFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
     props.text.value = text
   }
 
+  func clear() {
+    props.text.value = ""
+  }
+
   func focus() {
     textManager.isFocused = true
   }

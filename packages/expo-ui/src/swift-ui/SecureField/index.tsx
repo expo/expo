@@ -15,6 +15,8 @@ import type { CommonViewModifierProps } from '../types';
  */
 export type SecureFieldRef = {
   setText: (newText: string) => Promise<void>;
+  /** Clear the current text. */
+  clear: () => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
 };
@@ -85,7 +87,7 @@ export function SecureField(props: SecureFieldProps) {
       {...restProps}
       modifiers={modifiers}
       {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      text={text ? getStateId(text) : undefined}
+      text={getStateId(text)}
       onTextChangeSync={getStateId(workletCallback)}
       onTextChange={
         !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined

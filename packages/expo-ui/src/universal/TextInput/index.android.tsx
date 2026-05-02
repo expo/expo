@@ -106,8 +106,12 @@ export function TextInput({
   useImperativeHandle(
     ref,
     () => ({
-      focus: () => innerRef.current?.focus() ?? Promise.resolve(),
-      blur: () => innerRef.current?.blur() ?? Promise.resolve(),
+      focus: () => {
+        innerRef.current?.focus();
+      },
+      blur: () => {
+        innerRef.current?.blur();
+      },
       clear: () => {
         innerRef.current?.clear();
       },
@@ -115,7 +119,7 @@ export function TextInput({
       setSelection: (start: number, end: number) =>
         innerRef.current?.setSelection(start, end) ?? Promise.resolve(),
     }),
-    [state]
+    []
   );
 
   const handleFocusChanged = (focused: boolean) => {
@@ -199,7 +203,10 @@ export function TextInput({
       visualTransformation={secureTextEntry ? 'password' : undefined}
       textSelectionColors={
         selectionColor || selectionHandleColor
-          ? { handleColor: selectionHandleColor ?? selectionColor }
+          ? {
+              handleColor: selectionHandleColor ?? selectionColor,
+              backgroundColor: selectionColor,
+            }
           : undefined
       }
       keyboardOptions={keyboardOptions}

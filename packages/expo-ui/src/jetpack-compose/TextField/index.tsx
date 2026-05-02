@@ -300,8 +300,8 @@ function useTransformedProps<T extends TextFieldValueLike>(
     ...restProps,
     variant,
     children,
-    value: value ? getStateId(value as ObservableState<TextFieldValueLike>) : undefined,
-    selection: selection ? getStateId(selection) : undefined,
+    value: getStateId(value as ObservableState<TextFieldValueLike>),
+    selection: getStateId(selection),
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:
       !isWorklet && onValueChange

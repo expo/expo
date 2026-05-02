@@ -1,4 +1,11 @@
-import { SecureField, Text, TextField, type TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
+import {
+  SecureField,
+  type SecureFieldRef,
+  Text,
+  TextField,
+  type TextFieldRef,
+  useNativeState,
+} from '@expo/ui/swift-ui';
 import {
   autocorrectionDisabled,
   disabled as disabledMod,
@@ -95,27 +102,46 @@ export function TextInput({
   const fallback = useNativeState<string>(initialFallbackRef.current);
   const state = (value ?? fallback) as typeof fallback;
 
-  const innerRef = useRef<TextFieldRef>(null);
+  const textFieldRef = useRef<TextFieldRef>(null);
+  const secureFieldRef = useRef<SecureFieldRef>(null);
   const isFocusedRef = useRef(false);
   useImperativeHandle(
     ref,
     () => ({
-      focus: () => innerRef.current?.focus() ?? Promise.resolve(),
-      blur: () => innerRef.current?.blur() ?? Promise.resolve(),
+      focus: () => {
+        if (secureTextEntry) secureFieldRef.current?.focus();
+        else textFieldRef.current?.focus();
+      },
+      blur: () => {
+        if (secureTextEntry) secureFieldRef.current?.blur();
+        else textFieldRef.current?.blur();
+      },
       clear: () => {
-        innerRef.current?.clear();
+        if (secureTextEntry) secureFieldRef.current?.clear();
+        else textFieldRef.current?.clear();
       },
       isFocused: () => isFocusedRef.current,
-      setSelection: (start: number, end: number) =>
-        innerRef.current?.setSelection(start, end) ?? Promise.resolve(),
+      setSelection: (start: number, end: number) => {
+        if (secureTextEntry) {
+          if (__DEV__) {
+            console.warn(
+              "TextInput.setSelection() was ignored: SwiftUI's SecureField doesn't expose " +
+                'programmatic selection. Remove `secureTextEntry` if you need to apply ' +
+                'selection changes.'
+            );
+          }
+          return Promise.resolve();
+        }
+        return textFieldRef.current?.setSelection(start, end) ?? Promise.resolve();
+      },
     }),
-    [state]
+    [secureTextEntry]
   );
 
   const handleFocusChange = (focused: boolean) => {
     isFocusedRef.current = focused;
-    if (focused && selectTextOnFocus) {
-      innerRef.current?.setSelection(0, state.value.length);
+    if (focused && selectTextOnFocus && !secureTextEntry) {
+      textFieldRef.current?.setSelection(0, state.value.length);
     }
     if (focused) onFocus?.();
     else onBlur?.();
@@ -156,6 +182,7 @@ export function TextInput({
   if (secureTextEntry) {
     return (
       <SecureField
+        ref={secureFieldRef}
         text={state}
         placeholder={placeholder}
         autoFocus={autoFocus}
@@ -175,7 +202,7 @@ export function TextInput({
 
   return (
     <TextField
-      ref={innerRef}
+      ref={textFieldRef}
       text={state}
       placeholder={placeholder}
       autoFocus={autoFocus}
