@@ -596,7 +596,7 @@ object ModifierRegistry {
       val params = recordFromMap<OnVisibilityChangedParams>(map)
       Modifier.onVisibilityChanged(
         minDurationMs = params.minDurationMs,
-        minFractionVisible = params.minFractionVisible,
+        minFractionVisible = params.minFractionVisible
       ) { isVisible ->
         eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
       }
@@ -606,10 +606,13 @@ object ModifierRegistry {
       val density = LocalDensity.current
       Modifier.onSizeChanged { size ->
         with(density) {
-          eventDispatcher("onSizeChanged", mapOf(
-            "width" to size.width.toDp().value,
-            "height" to size.height.toDp().value
-          ))
+          eventDispatcher(
+            "onSizeChanged",
+            mapOf(
+              "width" to size.width.toDp().value,
+              "height" to size.height.toDp().value
+            )
+          )
         }
       }
     }
