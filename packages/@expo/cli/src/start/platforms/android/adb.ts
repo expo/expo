@@ -301,24 +301,15 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
  */
 export async function getAdbNameForDeviceIdAsync(device: DeviceContext): Promise<string | null> {
   try {
+    // Attempt to get the AVD name via the emulator console
     const results = await getServer().runAsync(adbArgs(device.pid, 'emu', 'avd', 'name'));
-
-    // Some versions of ADB might return the error string instead of throwing an exception.
-    if (results.match(/could not connect to TCP port .*: Connection refused/)) {
-      // Fallback to PID for third-party emulators (like LDPlayer or BlueStacks) 
-      // that do not support the emulator console/telnet port.
-      return device.pid;
-    }
-
     return sanitizeAdbDeviceName(results) ?? null;
   } catch (error: any) {
-    // Handle cases where the command fails with a non-zero exit code due to connection refusal.
-    if (error.message?.match(/could not connect to TCP port .*: Connection refused/)) {
-      return device.pid;
-    }
-    
-    // Re-throw if the error is unrelated to telnet connection issues.
-    throw error;
+    // If the 'emu' command fails (common on third-party emulators like LDPlayer 
+    // where the telnet port is not available or localized errors occur),
+    // we fallback to the device PID as the name to prevent a fatal crash.
+    debug(`Could not get AVD name for device ${device.pid}: ${error.message}`);
+    return device.pid;
   }
 }
 
