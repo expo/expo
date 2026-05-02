@@ -12,8 +12,9 @@
   "exports": {
     ".": {
       "types": "./build/index.d.ts",
-      "default": "./build/index.js"
+      "default": "./src/index.ts"
     },
+    "./rsc/runtime.js": "./rsc/runtime.js",
     "./rsc/runtime": "./rsc/runtime.js",
     "./package.json": "./package.json"
   },
