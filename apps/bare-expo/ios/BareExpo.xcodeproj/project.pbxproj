@@ -263,6 +263,9 @@
 				Base,
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
+			packageReferences = (
+				B07E3E252FA5EE03002CB39D /* XCLocalSwiftPackageReference "../../../packages/expo-modules-jsi/apple" */,
+			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -902,6 +905,13 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		B07E3E252FA5EE03002CB39D /* XCLocalSwiftPackageReference "../../../packages/expo-modules-jsi/apple" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../packages/expo-modules-jsi/apple";
+		};
+/* End XCLocalSwiftPackageReference section */
 	};
 	rootObject = 83CBB9F71A601CBA00E9B192 /* Project object */;
 }
