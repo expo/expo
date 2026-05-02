@@ -62,16 +62,20 @@ public struct OptimizedSyncFunctionDefinition: AnySyncFunctionDefinition, @unche
   }
 
   public func build(appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
-    // TODO: Re-implement optimized function registration using the new JSI API.
-    // The old implementation used NSInvocation with ObjC type encoding to bypass
-    // JavaScriptValue boxing for primitive types. This needs a new approach
-    // that works with Swift/C++ interop — either a C++ helper in ExpoModulesJSI-Cxx
-    // or a pure Swift solution using the type encoding to read jsi::Value args directly.
-    throw Exception(
-      name: "OptimizedFunctionUnavailable",
-      description: "OptimizedSyncFunctionDefinition is not yet implemented with the new JSI API",
-      code: "ERR_OPTIMIZED_FUNCTION_UNAVAILABLE"
-    )
+    var object = runtime.createObject()
+    runtime.withUnsafePointee { runtimePointer in
+      object.withUnsafeMutablePointee { objectPointer in
+        OptimizedFunctionUtils.createSyncFunction(
+          name: name,
+          intoObject: objectPointer,
+          runtimePointer: runtimePointer,
+          typeEncoding: typeEncoding,
+          argsCount: argsCount,
+          block: block
+        )
+      }
+    }
+    return object
   }
 
   // MARK: - Descriptor Factory

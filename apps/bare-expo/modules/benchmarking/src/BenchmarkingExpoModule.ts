@@ -8,10 +8,12 @@ export declare class SharedPoint extends SharedObject {
 
 declare class BenchmarkingExpoModule extends NativeModule {
   nothing(): void;
+  nothingOptimized(): void;
   nothingAsync(): Promise<void>;
   addNumbers(a: number, b: number): number;
   addNumbersOptimized(a: number, b: number): number;
   addStrings(a: string, b: string): string;
+  addStringsOptimized(a: string, b: string): string;
   foldArray(array: number[]): number;
   passthroughDict(point: { x: number; y: number }): { x: number; y: number };
   passthroughRecord(point: { x: number; y: number }): { x: number; y: number };
