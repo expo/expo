@@ -5,6 +5,7 @@ import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.toJsSession
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.TimeUtils
@@ -65,12 +66,21 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       OnCreate {
         sessionManager = SessionManager(context)
 
-        // Deactivate all sessions from previous app runs
+        appSessionId = sessionManager.createSessionId()
+
+        // Persist the session row eagerly so it's visible to readers
+        // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
+        // metrics arrive. Older app runs are deactivated in the same coroutine
+        // to keep the order well-defined.
         scope.launch {
           sessionManager.deactivateAllSessionsBefore(moduleCreationTimestamp)
+          sessionManager.startSessionWithIdAt(
+            sessionId = appSessionId,
+            timestamp = TimeUtils.getProcessStartTimestamp(),
+            metadata = metadata
+          )
         }
 
-        appSessionId = sessionManager.createSessionId()
         memoryMetricsManager = MemoryMetricsManager(
           context = context,
           sessionManager = sessionManager
@@ -93,6 +103,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }
+
+      AsyncFunction("getAllSessions") Coroutine { ->
+        sessionManager.getAllSessions().map { it.toJsSession() }
+      }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
         return@Coroutine memoryMetricsManager.takeMemorySnapshot(sessionId)
@@ -155,14 +169,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   // TODO(@lukmccall): Potential race condition - multiple coroutines could enter the block simultaneously, causing duplicates.
   internal suspend fun saveStartupMetricsIfNotSaved() {
     if (!didSaveStartupMetrics) {
-      // This function should be called, after all startup events are collected
-      // This seems to be the best place right now, because it will not slow down the app startup
-      sessionManager.startSessionWithIdAndMetricsAt(
-        id = appSessionId,
-        timestamp = TimeUtils.getProcessStartTimestamp(),
-        metrics = AppStartupManager.metrics,
-        metadata = metadata
-      )
+      // The session row is written eagerly in `OnCreate`, so we only need to
+      // attach the startup metrics here once they've been collected.
+      sessionManager.addMetrics(AppStartupManager.metrics, sessionId = appSessionId)
       didSaveStartupMetrics = true
     }
   }

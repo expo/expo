@@ -90,7 +90,10 @@ class SessionManager(
   }
 
   suspend fun stopSession(sessionId: String) {
-    database.sessionDao().updateActiveStatus(sessionId, isActive = false)
+    database.sessionDao().stopSessionAt(
+      sessionId,
+      endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
+    )
   }
 
   suspend fun addMetrics(

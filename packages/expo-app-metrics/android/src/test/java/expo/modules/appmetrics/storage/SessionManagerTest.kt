@@ -208,6 +208,21 @@ class SessionManagerTest {
     }
 
   @Test
+  fun `stopSession stamps endTimestamp`() =
+    runTest {
+      // Arrange
+      val sessionId = "test-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      sessionManager.stopSession(sessionId)
+
+      // Assert
+      val stopped = sessionManager.getAllSessions().single()
+      assertNotNull("endTimestamp should be set after stopSession", stopped.session.endTimestamp)
+    }
+
+  @Test
   fun `deactivateAllSessionsBefore deactivates old sessions only`() =
     runTest {
       // Arrange
@@ -223,6 +238,46 @@ class SessionManagerTest {
       val activeSessions = sessionManager.getAllActiveSessions()
       assertEquals(1, activeSessions.size)
       assertEquals(newSession, activeSessions[0].session.id)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore stamps endTimestamp on orphan sessions`() =
+    runTest {
+      // Arrange — a session left active across launches (force-killed process,
+      // OOM, etc.). On the next module create we deactivate it, and the cutoff
+      // timestamp is the heuristic end-time we record.
+      val orphan = "orphan-session"
+      sessionManager.startSessionWithIdAt(orphan, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      val cutoff = "2025-01-10T00:00:00.000Z"
+      sessionManager.deactivateAllSessionsBefore(cutoff)
+
+      // Assert
+      val deactivated = sessionManager.getAllSessions().single { it.session.id == orphan }
+      assertFalse(deactivated.session.isActive)
+      assertEquals(cutoff, deactivated.session.endTimestamp)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore preserves existing endTimestamps`() =
+    runTest {
+      // Arrange — a session that was properly stopped via stopSession should
+      // keep its real end time even if it predates the deactivate cutoff.
+      val cleanlyStopped = "clean-session"
+      sessionManager.startSessionWithIdAt(cleanlyStopped, "2025-01-01T00:00:00.000Z")
+      sessionManager.stopSession(cleanlyStopped)
+      val originalEnd = sessionManager.getAllSessions()
+        .single { it.session.id == cleanlyStopped }
+        .session.endTimestamp
+      assertNotNull("precondition: stopSession should have stamped endTimestamp", originalEnd)
+
+      // Act
+      sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
+
+      // Assert — the cleanly-stopped session keeps its original end time.
+      val preserved = sessionManager.getAllSessions().single { it.session.id == cleanlyStopped }
+      assertEquals(originalEnd, preserved.session.endTimestamp)
     }
 
   @Test

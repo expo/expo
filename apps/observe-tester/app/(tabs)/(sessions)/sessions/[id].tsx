@@ -22,10 +22,6 @@ export default function SessionDetail() {
 
   useFocusEffect(
     useCallback(() => {
-      if (Platform.OS !== 'ios') {
-        setLoaded(true);
-        return;
-      }
       AppMetrics.getAllSessions().then((sessions) => {
         setSession(sessions.find((s) => s.id === id) ?? null);
         setLoaded(true);

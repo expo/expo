@@ -26,7 +26,7 @@ object MetricsConstants {
 
 @Database(
   entities = [Metric::class, Session::class],
-  version = 13,
+  version = 14,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -62,6 +62,7 @@ abstract class MetricsDatabase : RoomDatabase() {
 data class Session(
   @PrimaryKey @Field val id: String,
   @Field val startTimestamp: String, // ISO 8601 date string
+  @Field val endTimestamp: String? = null, // ISO 8601 date string. `null` while the session is still active.
   @Field val isActive: Boolean = true,
   // Environment
   @Field val environment: String? = null,
@@ -147,13 +148,16 @@ interface SessionDao {
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getById(id: String): Session?
 
-  @Query("UPDATE sessions SET isActive = :isActive WHERE id = :id")
-  suspend fun updateActiveStatus(
+  @Query("UPDATE sessions SET isActive = 0, endTimestamp = :endTimestamp WHERE id = :id")
+  suspend fun stopSessionAt(
     id: String,
-    isActive: Boolean
+    endTimestamp: String
   )
 
-  @Query("UPDATE sessions SET isActive = 0 WHERE startTimestamp < :timestamp")
+  // Stamps stale sessions as ended at `:timestamp`. Used at module creation
+  // to clean up sessions left behind when the previous process died (force-quit,
+  // OOM kill, crash) without an `OnActivityDestroys` callback.
+  @Query("UPDATE sessions SET isActive = 0, endTimestamp = :timestamp WHERE startTimestamp < :timestamp AND endTimestamp IS NULL")
   suspend fun deactivateAllSessionsBefore(timestamp: String)
 
   @Query("UPDATE sessions SET environment = :environment WHERE id = :id")
