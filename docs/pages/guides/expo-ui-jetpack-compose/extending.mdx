@@ -5,20 +5,27 @@ description: Learn how to create custom Jetpack Compose components and modifiers
 platforms: ['android']
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
 This guide explains how to create custom Jetpack Compose components and modifiers that integrate seamlessly with Expo UI.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title={<><CODE>@expo/ui</CODE> installed</>}>
+    See [Building Jetpack Compose apps with Expo UI](/versions/latest/sdk/ui/jetpack-compose/) for more information.
 
-Before you begin, make sure you have:
+    <Terminal cmd={['$ npx expo install @expo/ui']} />
 
-- `@expo/ui` installed in your project. See [Building Jetpack Compose apps with Expo UI](/versions/latest/sdk/ui/jetpack-compose/) for more information.
-- A [development build](/develop/development-builds/introduction/) of your app (Expo UI is not available in Expo Go).
-- Basic familiarity with [Expo Modules API](/modules/overview/) and [Jetpack Compose](https://developer.android.com/jetpack/compose).
-
-<Terminal cmd={['$ npx expo install @expo/ui']} />
+  </Requirement>
+  <Requirement title="A development build of your app">
+    Expo UI is not available in Expo Go. Create a [development build](/develop/development-builds/introduction/) of your app.
+  </Requirement>
+  <Requirement title="Basic familiarity with Expo Modules API and Jetpack Compose">
+    Familiarity with [Expo Modules API](/modules/overview/) and [Jetpack Compose](https://developer.android.com/jetpack/compose).
+  </Requirement>
+</Prerequisites>
 
 ## Creating a custom component
 
