@@ -28,9 +28,7 @@ data class JsSession(
   @Field val startDate: String,
   @Field val endDate: String?,
   @Field val metrics: List<JsMetric>,
-  // Android doesn't collect log events yet; emitted as an empty list so
-  // consumers can rely on the same shape iOS produces.
-  @Field val logs: List<Any> = emptyList()
+  @Field val logs: List<JsLogRecord>
 ) : Record {
   companion object {
     fun fromSessionWithMetrics(value: SessionWithMetrics): JsSession =
@@ -39,7 +37,8 @@ data class JsSession(
         type = "main",
         startDate = value.session.startTimestamp,
         endDate = value.session.endTimestamp,
-        metrics = value.metrics.map { JsMetric.fromMetric(it) }
+        metrics = value.metrics.map { JsMetric.fromMetric(it) },
+        logs = value.logs.map { JsLogRecord.fromLogRecord(it) }
       )
   }
 }
@@ -67,6 +66,35 @@ data class JsMetric(
         routeName = metric.routeName,
         updateId = metric.updateId,
         params = decodeJsonObject(metric.params)
+      )
+  }
+}
+
+/**
+ * JS-facing shape of a log event. Mirrors the TypeScript `LogRecord` type and
+ * decodes the storage-only JSON `attributes` column into a typed map.
+ */
+data class JsLogRecord(
+  @Field val logId: String,
+  @Field val sessionId: String,
+  @Field val timestamp: String,
+  @Field val name: String,
+  @Field val body: String?,
+  @Field val severity: String,
+  @Field val attributes: Map<String, Any?>?,
+  @Field val droppedAttributesCount: Int
+) : Record {
+  companion object {
+    fun fromLogRecord(log: LogRecord): JsLogRecord =
+      JsLogRecord(
+        logId = log.logId,
+        sessionId = log.sessionId,
+        timestamp = log.timestamp,
+        name = log.name,
+        body = log.body,
+        severity = log.severity,
+        attributes = decodeJsonObject(log.attributes),
+        droppedAttributesCount = log.droppedAttributesCount
       )
   }
 }

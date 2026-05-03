@@ -3,25 +3,168 @@ package expo.modules.observe
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.utils.TimeUtils.timestampToDateNS
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonEncoder
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.boolean
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.doubleOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.longOrNull
 
 // MARK: -- Open Telemetry data classes
 
+/**
+ * Wire shape for the OTel `body` field on `LogRecord` — always carries a string.
+ * Kept distinct from `OTAnyValue.Str` because the body field on the log record
+ * is positional in OTLP (no `stringValue` wrapper key on the value side).
+ */
 @Serializable
 data class OTStringValue(
   val stringValue: String
 )
 
+/**
+ * Tagged union mirroring the OTLP `AnyValue` shape — encodes as a JSON object
+ * with exactly one of `stringValue` / `intValue` / `doubleValue` / `boolValue` /
+ * `arrayValue` / `kvlistValue`, depending on the variant.
+ *
+ * OTLP encodes 64-bit integers as JSON strings to avoid precision loss; we follow
+ * that convention so collectors that rely on the protobuf-JSON mapping accept the
+ * payload.
+ */
+@Serializable(with = OTAnyValueSerializer::class)
+sealed class OTAnyValue {
+  data class Str(val value: String) : OTAnyValue()
+  data class Int64(val value: Long) : OTAnyValue()
+  data class Dbl(val value: Double) : OTAnyValue()
+  data class Bln(val value: Boolean) : OTAnyValue()
+  data class Arr(val values: List<OTAnyValue>) : OTAnyValue()
+  data class KvList(val values: List<OTKeyValue>) : OTAnyValue()
+}
+
+/**
+ * Custom serializer that emits the OTLP-correct wire shape for `OTAnyValue`.
+ * Each variant becomes a single-key JSON object:
+ *   - Str   -> {"stringValue": "..."}
+ *   - Int64 -> {"intValue": "42"}        (string per OTLP int64 mapping)
+ *   - Dbl   -> {"doubleValue": 3.14}
+ *   - Bln   -> {"boolValue": true}
+ *   - Arr   -> {"arrayValue": {"values": [...]}}
+ *   - KvList -> {"kvlistValue": {"values": [{"key": "...", "value": ...}]}}
+ */
+internal object OTAnyValueSerializer : KSerializer<OTAnyValue> {
+  override val descriptor: SerialDescriptor =
+    buildClassSerialDescriptor("expo.modules.observe.OTAnyValue")
+
+  override fun serialize(encoder: Encoder, value: OTAnyValue) {
+    val jsonEncoder = encoder as? JsonEncoder
+      ?: error("OTAnyValue is only serializable to JSON (got ${encoder::class}).")
+
+    val element: JsonElement = when (value) {
+      is OTAnyValue.Str -> buildJsonObject { put("stringValue", JsonPrimitive(value.value)) }
+      is OTAnyValue.Int64 -> buildJsonObject { put("intValue", JsonPrimitive(value.value.toString())) }
+      is OTAnyValue.Dbl -> buildJsonObject { put("doubleValue", JsonPrimitive(value.value)) }
+      is OTAnyValue.Bln -> buildJsonObject { put("boolValue", JsonPrimitive(value.value)) }
+      is OTAnyValue.Arr -> buildJsonObject {
+        put(
+          "arrayValue",
+          buildJsonObject {
+            put(
+              "values",
+              jsonEncoder.json.encodeToJsonElement(
+                kotlinx.serialization.builtins.ListSerializer(OTAnyValueSerializer),
+                value.values
+              )
+            )
+          }
+        )
+      }
+      is OTAnyValue.KvList -> buildJsonObject {
+        put(
+          "kvlistValue",
+          buildJsonObject {
+            put(
+              "values",
+              jsonEncoder.json.encodeToJsonElement(
+                kotlinx.serialization.builtins.ListSerializer(OTKeyValue.serializer()),
+                value.values
+              )
+            )
+          }
+        )
+      }
+    }
+
+    jsonEncoder.encodeJsonElement(element)
+  }
+
+  override fun deserialize(decoder: Decoder): OTAnyValue {
+    val jsonDecoder = decoder as? JsonDecoder
+      ?: error("OTAnyValue is only deserializable from JSON (got ${decoder::class}).")
+    val obj = jsonDecoder.decodeJsonElement().jsonObject
+
+    obj["stringValue"]?.let {
+      return OTAnyValue.Str(it.jsonPrimitive.contentOrNull ?: "")
+    }
+    obj["intValue"]?.let {
+      val parsed = it.jsonPrimitive.contentOrNull?.toLongOrNull()
+        ?: it.jsonPrimitive.longOrNull
+        ?: error("OTAnyValue.intValue could not be parsed as Long: $it")
+      return OTAnyValue.Int64(parsed)
+    }
+    obj["doubleValue"]?.let {
+      return OTAnyValue.Dbl(it.jsonPrimitive.doubleOrNull ?: error("OTAnyValue.doubleValue not a number: $it"))
+    }
+    obj["boolValue"]?.let {
+      return OTAnyValue.Bln(it.jsonPrimitive.booleanOrNull ?: it.jsonPrimitive.boolean)
+    }
+    obj["arrayValue"]?.let { arr ->
+      val values = arr.jsonObject["values"]?.jsonArray
+        ?: error("OTAnyValue.arrayValue is missing `values`")
+      return OTAnyValue.Arr(values.map { jsonDecoder.json.decodeFromJsonElement(OTAnyValueSerializer, it) })
+    }
+    obj["kvlistValue"]?.let { kv ->
+      val values = kv.jsonObject["values"]?.jsonArray
+        ?: error("OTAnyValue.kvlistValue is missing `values`")
+      return OTAnyValue.KvList(values.map { jsonDecoder.json.decodeFromJsonElement(OTKeyValue.serializer(), it) })
+    }
+    error("OTAnyValue has no recognized variant: $obj")
+  }
+}
+
+/**
+ * Key/value pair used inside `kvlistValue` (and at the top level for span
+ * attributes). Same shape as `OTAttribute` but split out for the recursive case.
+ */
+@Serializable
+data class OTKeyValue(
+  val key: String,
+  val value: OTAnyValue
+)
+
 @Serializable
 data class OTAttribute(
   val key: String,
-  val value: OTStringValue
+  val value: OTAnyValue
 ) {
   companion object {
     fun of(key: String, rawValue: String) = OTAttribute(
       key = key,
-      value = OTStringValue(stringValue = rawValue)
+      value = OTAnyValue.Str(rawValue)
     )
   }
 }
@@ -65,7 +208,32 @@ data class OTScopeMetrics(
 @Serializable
 data class OTEvent(
   val resource: OTMetadata,
-  val scopeMetrics: List<OTScopeMetrics>
+  val scopeMetrics: List<OTScopeMetrics>,
+  val schemaUrl: String
+)
+
+@Serializable
+data class OTLogRecord(
+  val timeUnixNano: Long,
+  val observedTimeUnixNano: Long,
+  val severityNumber: Int,
+  val severityText: String,
+  val body: OTStringValue,
+  val attributes: List<OTAttribute>,
+  val droppedAttributesCount: Int? = null
+)
+
+@Serializable
+data class OTScopeLogs(
+  val scope: OTScope,
+  val logRecords: List<OTLogRecord>
+)
+
+@Serializable
+data class OTResourceLogs(
+  val resource: OTMetadata,
+  val scopeLogs: List<OTScopeLogs>,
+  val schemaUrl: String
 )
 
 // MARK: -- Request body for Open Telemetry events
@@ -81,6 +249,30 @@ data class OTRequestBody(
     return json.encodeToString(serializer(), this)
   }
 }
+
+@Serializable
+data class OTLogsRequestBody(
+  val resourceLogs: List<OTResourceLogs>
+) {
+  fun toJson(prettyPrint: Boolean = false): String {
+    val json = Json {
+      this.prettyPrint = prettyPrint
+    }
+    return json.encodeToString(serializer(), this)
+  }
+}
+
+/**
+ * OpenTelemetry Semantic Conventions schema URL referenced by the resource on
+ * every dispatched payload. Bumping this constant signals that our attribute
+ * names follow a newer revision of the conventions.
+ *
+ * Before bumping, audit the attribute keys we set in `toOTMetadata` and
+ * `toOTLogRecord` against the SemConv changelog at
+ * https://github.com/open-telemetry/semantic-conventions/blob/main/CHANGELOG.md
+ * — a renamed key would silently mismatch the declared schema otherwise.
+ */
+internal const val SEMCONV_SCHEMA_URL = "https://opentelemetry.io/schemas/1.27.0"
 
 // This must be kept in sync with the INTERNAL_TO_OTEL map in universe
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
@@ -199,6 +391,126 @@ fun Event.toOTEvent(easClientId: String): OTEvent {
         scope = OTScope(name = "expo-observe", version = BuildConfig.EXPO_OBSERVE_VERSION),
         metrics = metrics.map { it.toOTMetric() }
       )
-    )
+    ),
+    schemaUrl = SEMCONV_SCHEMA_URL
   )
+}
+
+/**
+ * Maps a caller-supplied JSON attribute object (values stored after the JSON
+ * roundtrip) to typed `OTAttribute`s. Returns the mapped attributes plus a
+ * count of entries that could not be represented (a value type we don't
+ * support, or a deeply unrepresentable nested structure) so callers can fold
+ * the count into the OTel `droppedAttributesCount`.
+ */
+internal fun otAttributesFromJsonObject(
+  obj: JsonObject
+): Pair<List<OTAttribute>, Int> {
+  val attributes = mutableListOf<OTAttribute>()
+  var droppedCount = 0
+  for ((key, element) in obj) {
+    val mapped = otAnyValueFromJsonElement(element)
+    if (mapped != null) {
+      attributes.add(OTAttribute(key = key, value = mapped))
+    } else {
+      droppedCount += 1
+    }
+  }
+  return attributes to droppedCount
+}
+
+/**
+ * Converts a `JsonElement` (the storage form of a caller attribute value) into
+ * a typed `OTAnyValue`. Returns `null` for `JsonNull` and for any element we
+ * cannot represent, so the caller can fold it into `droppedAttributesCount`.
+ */
+fun EASLogRecord.toOTLogRecord(): OTLogRecord {
+  val attributes = mutableListOf(
+    OTAttribute.of(key = "session.id", rawValue = sessionId),
+    OTAttribute.of(key = "event.name", rawValue = name)
+  )
+
+  var encodeTimeDrops = 0
+  this.attributes?.let { attrs ->
+    val (typed, dropped) = otAttributesFromJsonObject(attrs)
+    attributes.addAll(typed)
+    encodeTimeDrops = dropped
+  }
+
+  val totalDrops = droppedAttributesCount + encodeTimeDrops
+  val timeNs = timestampToDateNS(timestamp)
+  val severityNumber = severityNumberForRaw(severity)
+  return OTLogRecord(
+    timeUnixNano = timeNs,
+    observedTimeUnixNano = timeNs,
+    severityNumber = severityNumber,
+    severityText = severity.uppercase(),
+    body = OTStringValue(stringValue = body ?: ""),
+    attributes = attributes,
+    droppedAttributesCount = if (totalDrops > 0) totalDrops else null
+  )
+}
+
+fun Event.toOTResourceLogs(easClientId: String): OTResourceLogs {
+  return OTResourceLogs(
+    resource = toOTMetadata(easClientId),
+    scopeLogs = listOf(
+      OTScopeLogs(
+        scope = OTScope(name = "expo-observe", version = BuildConfig.EXPO_OBSERVE_VERSION),
+        logRecords = logs.map { it.toOTLogRecord() }
+      )
+    ),
+    schemaUrl = SEMCONV_SCHEMA_URL
+  )
+}
+
+/**
+ * Maps a stored severity rawValue (lowercase: `trace`, `debug`, …) to the
+ * matching OpenTelemetry severity number. Falls back to `INFO` (9) for
+ * unrecognized values so a future enum case isn't a hard failure.
+ */
+private fun severityNumberForRaw(raw: String): Int {
+  return when (raw) {
+    "trace" -> 1
+    "debug" -> 5
+    "info" -> 9
+    "warn" -> 13
+    "error" -> 17
+    "fatal" -> 21
+    else -> 9
+  }
+}
+
+internal fun otAnyValueFromJsonElement(element: JsonElement): OTAnyValue? {
+  if (element is kotlinx.serialization.json.JsonNull) {
+    return null
+  }
+  return when (element) {
+    is JsonPrimitive -> {
+      // Booleans first — JsonPrimitive.booleanOrNull only matches `true`/`false`,
+      // not numeric primitives, so order isn't strictly load-bearing, but matching
+      // the iOS ordering keeps the ports symmetric.
+      element.booleanOrNull?.let { return OTAnyValue.Bln(it) }
+      // `isString` distinguishes "42" (string) from 42 (number) since the JSON
+      // primitive representation is the same string-of-digits.
+      if (element.isString) {
+        return OTAnyValue.Str(element.content)
+      }
+      element.longOrNull?.let { return OTAnyValue.Int64(it) }
+      element.doubleOrNull?.let { return if (it.isFinite()) OTAnyValue.Dbl(it) else null }
+      null
+    }
+    is JsonObject -> {
+      val pairs = mutableListOf<OTKeyValue>()
+      for ((k, v) in element) {
+        val mapped = otAnyValueFromJsonElement(v) ?: return null
+        pairs.add(OTKeyValue(key = k, value = mapped))
+      }
+      OTAnyValue.KvList(pairs)
+    }
+    is kotlinx.serialization.json.JsonArray -> {
+      val mapped = element.map { otAnyValueFromJsonElement(it) ?: return null }
+      OTAnyValue.Arr(mapped)
+    }
+  }
 }

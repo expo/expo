@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import expo.modules.easclient.EASClientID
+import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -30,11 +31,13 @@ class ObservabilityManager(
     useOpenTelemetry = manifest.useOpenTelemetry
 
     val pendingMetricsManager = PendingMetricsManager(context)
+    val pendingLogsManager = PendingLogsManager(context)
 
     baseManager = BaseObservabilityManager(
       context = context,
       sessionManager = sessionManager,
       pendingMetricsManager = pendingMetricsManager,
+      pendingLogsManager = pendingLogsManager,
       projectId = projectId,
       baseUrl = baseUrl,
       isDebugBuild = BuildConfig.DEBUG,
@@ -44,10 +47,22 @@ class ObservabilityManager(
     sessionManager.addMetricsInsertListener { metricIds ->
       pendingMetricsManager.addPendingMetrics(metricIds)
     }
+    // Logs are only dispatched in OpenTelemetry mode (no legacy logs endpoint
+    // exists). Skip the pending-table tracking entirely on non-OTel installs
+    // so rows don't accumulate with no path to drain them.
+    if (useOpenTelemetry) {
+      sessionManager.addLogsInsertListener { logIds ->
+        pendingLogsManager.addPendingLogs(logIds)
+      }
+    }
   }
 
   suspend fun dispatchUnsentMetrics() {
     baseManager.dispatchUnsentMetrics()
+  }
+
+  suspend fun dispatchUnsentLogs() {
+    baseManager.dispatchUnsentLogs()
   }
 
   fun scheduleBackgroundDispatch() {
@@ -64,6 +79,7 @@ class BaseObservabilityManager(
   private val context: Context,
   private val sessionManager: SessionManager,
   private val pendingMetricsManager: PendingMetricsManager,
+  private val pendingLogsManager: PendingLogsManager,
   val projectId: String,
   val baseUrl: String,
   private val isDebugBuild: Boolean = false,
@@ -116,6 +132,50 @@ class BaseObservabilityManager(
     }
   }
 
+  /**
+   * Dispatches log events to `/v1/logs`. Independent from the metrics path —
+   * a logs failure doesn't affect the metrics pending table and vice versa.
+   * Logs are only sent in OpenTelemetry mode (the dispatcher short-circuits
+   * otherwise), so non-OTel installs accumulate nothing on this path.
+   */
+  suspend fun dispatchUnsentLogs() {
+    val pendingIds = pendingLogsManager.getAllPendingLogIds()
+    if (pendingIds.isEmpty()) {
+      return
+    }
+
+    if (!shouldDispatch()) {
+      pendingLogsManager.removePendingLogs(pendingIds)
+      return
+    }
+
+    val sessionsWithPendingLogs = sessionManager.getSessionsWithLogs(pendingIds)
+
+    // Clean up orphaned pending IDs (logs deleted from MetricsDatabase but still in pending table).
+    val resolvedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }.toSet()
+    val orphanedIds = pendingIds.filter { it !in resolvedLogIds }
+    if (orphanedIds.isNotEmpty()) {
+      pendingLogsManager.removePendingLogs(orphanedIds)
+    }
+
+    if (sessionsWithPendingLogs.isEmpty()) {
+      return
+    }
+
+    val events = sessionsWithPendingLogs.map { sessionWithLogs ->
+      Event(
+        metadata = Metadata.fromSessionMetadata(sessionWithLogs.session),
+        metrics = emptyList(),
+        logs = sessionWithLogs.logs.map { EASLogRecord.fromLogRecord(it) }
+      )
+    }
+
+    if (eventDispatcher.dispatchLogs(events)) {
+      val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
+      pendingLogsManager.removePendingLogs(dispatchedLogIds)
+    }
+  }
+
   private fun isInSample(): Boolean {
     val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
     val clamped = rate.coerceIn(0.0, 1.0)
@@ -136,7 +196,9 @@ class BaseObservabilityManager(
 
   suspend fun cleanup() {
     pendingMetricsManager.cleanupOldPendingMetrics()
+    pendingLogsManager.cleanupOldPendingLogs()
     // TODO(@ubax): Move sessionManager.cleanupOldSessions out of eas observe
     sessionManager.cleanupOldSessions()
+    sessionManager.cleanupOldLogs()
   }
 }

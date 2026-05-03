@@ -1,5 +1,6 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
 import kotlinx.serialization.Serializable
@@ -105,7 +106,36 @@ data class EASMetric(
 }
 
 @Serializable
+data class EASLogRecord(
+  val sessionId: String,
+  val timestamp: String,
+  val name: String,
+  val body: String? = null,
+  val severity: String,
+  val attributes: JsonObject? = null,
+  val droppedAttributesCount: Int = 0
+) {
+  companion object {
+    fun fromLogRecord(log: LogRecord): EASLogRecord =
+      EASLogRecord(
+        sessionId = log.sessionId,
+        timestamp = log.timestamp,
+        name = log.name,
+        body = log.body,
+        severity = log.severity,
+        // Stored as a JSON string; parse defensively, falling back to no
+        // attributes if the blob is somehow malformed.
+        attributes = log.attributes?.let {
+          runCatching { Json.decodeFromString<JsonObject>(it) }.getOrNull()
+        },
+        droppedAttributesCount = log.droppedAttributesCount
+      )
+  }
+}
+
+@Serializable
 data class Event(
   val metadata: Metadata,
-  val metrics: List<EASMetric>
+  val metrics: List<EASMetric>,
+  val logs: List<EASLogRecord> = emptyList()
 )

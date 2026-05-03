@@ -599,6 +599,32 @@ class SessionManagerTest {
       assertEquals(600, s2.metrics.size)
     }
 
+  @Test
+  fun `getSessionsWithMetrics yields empty logs from the chunked merger path`() =
+    runTest {
+      // Arrange — the chunked-merger branch in `getSessionsWithMetrics`
+      // constructs `SessionWithMetrics(...)` without passing logs and relies on
+      // the `= emptyList()` default. The session DOES have logs in storage,
+      // but the merger projects metrics-only. This test fails loudly if the
+      // default is removed or the merger ever needs to surface logs too.
+      val sessionId = "session-with-logs"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      val metricIds = (1..1100).map { "metric-$it" }
+      metricIds.chunked(500).forEach { chunk ->
+        database.metricDao().insertAll(chunk.map { createMetric(it, sessionId) })
+      }
+      // Also insert logs so an accidental relation-load would surface them.
+      database.logDao().insertAll(listOf(createLog("log-a", sessionId)))
+
+      // Act — 1100 IDs forces the chunked path
+      val result = sessionManager.getSessionsWithMetrics(metricIds)
+
+      // Assert
+      assertEquals(1, result.size)
+      assertEquals(emptyList<LogRecord>(), result[0].logs)
+    }
+
   // endregion
 
   // region Data Cleanup Tests
@@ -694,6 +720,56 @@ class SessionManagerTest {
       assertTrue("fresh stopped session should be preserved", remaining.contains(freshStoppedId))
     }
 
+  @Test
+  fun `getAllSessions populates the logs relation alongside metrics`() =
+    runTest {
+      // Arrange — exercises the Room `@Relation` for `LogRecord` end-to-end.
+      // Unit-level mapper tests construct `SessionWithMetrics` directly and
+      // never hit the DAO, so this is the only path that catches a schema or
+      // foreign-key misconfiguration.
+      val sessionId = "session-with-mixed-events"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(
+        listOf(
+          createMetric("metric-a", sessionId),
+          createMetric("metric-b", sessionId)
+        )
+      )
+      database.logDao().insertAll(
+        listOf(
+          createLog("log-a", sessionId, name = "auth.login_failed", severity = "warn"),
+          createLog("log-b", sessionId, name = "user.signed_in", severity = "info"),
+          createLog("log-c", sessionId, name = "cache.miss", severity = "debug")
+        )
+      )
+
+      // Act
+      val sessions = sessionManager.getAllSessions()
+
+      // Assert
+      val session = sessions.single { it.session.id == sessionId }
+      assertEquals(2, session.metrics.size)
+      assertEquals(3, session.logs.size)
+      assertEquals(setOf("log-a", "log-b", "log-c"), session.logs.map { it.logId }.toSet())
+    }
+
+  @Test
+  fun `getAllSessions yields an empty logs list when no logs exist for the session`() =
+    runTest {
+      // Arrange — a session with metrics but no logs. The relation should
+      // populate as an empty list, not null.
+      val sessionId = "session-no-logs"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(listOf(createMetric("metric-1", sessionId)))
+
+      // Act
+      val sessions = sessionManager.getAllSessions()
+
+      // Assert
+      val session = sessions.single { it.session.id == sessionId }
+      assertEquals(emptyList<LogRecord>(), session.logs)
+    }
+
   // endregion
 
   // region Helper Methods
@@ -714,6 +790,24 @@ class SessionManagerTest {
       value = value,
       routeName = null,
       params = null
+    )
+
+  private fun createLog(
+    logId: String,
+    sessionId: String,
+    name: String = "test.event",
+    severity: String = "info",
+    attributes: String? = null
+  ): LogRecord =
+    LogRecord(
+      logId = logId,
+      sessionId = sessionId,
+      timestamp = "2025-01-01T00:00:00.000Z",
+      name = name,
+      body = null,
+      severity = severity,
+      attributes = attributes,
+      droppedAttributesCount = 0
     )
 
   private fun createTestMetadata(

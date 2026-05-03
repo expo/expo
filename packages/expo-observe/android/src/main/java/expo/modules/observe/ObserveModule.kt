@@ -50,7 +50,10 @@ class ObserveModule : Module() {
         observabilityManager.scheduleBackgroundDispatch()
       }
 
-      AsyncFunction("dispatchEvents") Coroutine { -> observabilityManager.dispatchUnsentMetrics() }
+      AsyncFunction("dispatchEvents") Coroutine { ->
+        observabilityManager.dispatchUnsentMetrics()
+        observabilityManager.dispatchUnsentLogs()
+      }
 
       Function("configure") { config: Config ->
         ObservePreferences.setConfig(

@@ -476,3 +476,12 @@ class OpenTelemetryTest {
     assertEquals(testSessionId, sessionAttr["value"]!!.jsonObject["stringValue"]!!.jsonPrimitive.content)
   }
 }
+
+/**
+ * Test-only convenience for pulling the inner string out of an [OTAnyValue].
+ * Returns `null` for non-string variants — the metric tests in this file only
+ * produce string-valued attributes, so a null result is a real assertion
+ * failure.
+ */
+internal val OTAnyValue.stringValue: String?
+  get() = (this as? OTAnyValue.Str)?.value
