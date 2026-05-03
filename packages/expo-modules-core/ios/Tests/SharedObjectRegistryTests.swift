@@ -38,6 +38,28 @@ struct SharedObjectRegistryTests {
   }
 
   @Test
+  func `getNativeState recovers the SharedObjectNativeState wrapper`() throws {
+    let nativeObject = TestSharedObject()
+    let jsObject = try runtime.createObject()
+    registry.add(native: nativeObject, javaScript: jsObject)
+
+    let recovered = jsObject.getNativeState(as: SharedObjectNativeState.self)?.native
+    #expect(recovered === nativeObject)
+  }
+
+  @Test
+  func `native state holds the paired weak JS object after add`() throws {
+    let nativeObject = TestSharedObject()
+    let jsObject = try runtime.createObject()
+    registry.add(native: nativeObject, javaScript: jsObject)
+
+    // The native side carries a back-pointer to its native state, which holds a
+    // `JavaScriptWeakObject` to the JS counterpart. `lock()` should resolve.
+    let resolved = nativeObject.nativeState?.pairedWeakObject?.lock() != nil
+    #expect(resolved)
+  }
+
+  @Test
   func `unsetting native state triggers automatic delete`() throws {
     let nativeObject = TestSharedObject()
     let jsObject = try runtime.createObject()
