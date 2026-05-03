@@ -8,6 +8,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -138,16 +139,15 @@ Pass the `--package [name]` flag to bundle the build output as a self-contained 
 
 The flag accepts an optional name. If omitted, the package defaults to **\{TargetName\}Artifacts**. The resulting directory is a complete Swift Package with this layout:
 
-```txt
-artifacts/
-  MyAppPackage/
-    Package.swift
-    xcframeworks/
-      MyAppPackage.xcframework
-      hermesvm.xcframework
-      React.xcframework
-      ReactNativeDependencies.xcframework
-```
+<FileTree
+  files={[
+    ['artifacts/MyAppPackage/Package.swift', ''],
+    ['artifacts/MyAppPackage/xcframeworks/MyAppPackage.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/hermesvm.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/React.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/ReactNativeDependencies.xcframework', ''],
+  ]}
+/>
 
 </Tab>
 </Tabs>
