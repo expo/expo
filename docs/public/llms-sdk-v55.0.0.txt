@@ -1,6 +1,7 @@
 # Expo SDK Documentation
 
 > Documentation for Expo SDK libraries, app configuration files, Expo CLI, create-expo-app, and more.
+> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 <AgentInstructions>
 
@@ -23,8 +24,6 @@ description: A command-line tool to create a new Expo and React Native project.
 # create-expo-app
 
 A command-line tool to create a new Expo and React Native project.
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `create-expo-app` is a command-line tool to create and set up a new Expo and React Native project. This tool simplifies the initialization process by providing various templates to get started quickly without the need for manual configuration.
 
@@ -202,8 +201,6 @@ description: The Expo CLI is a command-line tool that is the primary interface b
 # Expo CLI
 
 The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools.
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
@@ -825,8 +822,6 @@ description: List of non-obvious terms used within the documentation, related to
 
 List of non-obvious terms used within the documentation, related to Expo or cross-platform development in general.
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 ### Android
 
 The mobile operating system that is sponsored by Google for use with **Android** devices.
@@ -1261,8 +1256,6 @@ description: Reference for the QR code generator at qr.expo.dev.
 
 Reference for the QR code generator at qr.expo.dev.
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 qr.expo.dev is a cloud function that generates Expo-branded QR codes. This function creates QR codes for [EAS Update](/eas-update/introduction), which are used to preview updates in [development builds](/develop/development-builds/introduction) and Expo Go.
 
 For example, if you and your team have a development build, and you'd like to load the latest update on a specific build's channel, you could go to the following endpoint to generate a QR code:
@@ -1385,8 +1378,6 @@ description: Learn about alpha, preview, beta, and stable release statuses and h
 
 Learn about alpha, preview, beta, and stable release statuses and how they affect feature stability when using Expo SDK and Expo Application Services (EAS).
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo uses different release statuses to indicate the stability and readiness of its tools and services. Understanding these statuses can help you make informed decisions about which features and versions to use in your projects.
 
 ## Alpha
@@ -1465,8 +1456,6 @@ description: Version 0
 
 Version 0
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Structured Field Values for HTTP, [IETF RFC 8941](https://tools.ietf.org/html/rfc8941), is a proposal to formalize header syntax and facilitate nested data.
 
 Since it is still a work in progress, Expo maintains a custom version that only implements the following subset of the protocol defined in [IETF RFC 8941](https://tools.ietf.org/html/rfc8941):
@@ -1486,8 +1475,6 @@ description: Version 1
 # Expo Updates v1
 
 Version 1
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 ## Introduction
 
@@ -1762,8 +1749,6 @@ description: A reference of available properties in Expo app config.
 # app.json / app.config.js
 
 A reference of available properties in Expo app config.
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 The following is a list of properties that are available for you under the `"expo"` key in **app.json** or **app.config.json**. These properties can be passed to the top level object of **app.config.js** or **app.config.ts**.
 
@@ -3187,8 +3172,6 @@ description: A reference for Babel configuration file.
 
 A reference for Babel configuration file.
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Babel is used as the JavaScript compiler to transform modern JavaScript (ES6+) into a version compatible with the JavaScript engine on mobile devices.
 
 Each new Expo project created using `npx create-expo-app` configures Babel automatically and uses [`babel-preset-expo`](https://github.com/expo/expo/tree/main/packages/babel-preset-expo) as the default preset. There is no need to create a **babel.config.js** file unless you need to customize the Babel configuration.
@@ -3234,8 +3217,6 @@ description: A reference of available configurations in Metro.
 # metro.config.js
 
 A reference of available configurations in Metro.
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro).
 
@@ -3915,8 +3896,6 @@ description: A reference for Expo-specific properties that can be used in the pa
 
 A reference for Expo-specific properties that can be used in the package.json file.
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 **package.json** is a JSON file that contains the metadata for a JavaScript project. This is a reference to Expo-specific properties that can be used in the **package.json** file.
 
 ## `install.exclude`
@@ -4000,8 +3979,6 @@ description: Access device and system functionality in your Expo and React Nativ
 # Expo SDK reference
 
 Access device and system functionality in your Expo and React Native apps using Expo SDK packages.
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 The Expo SDK is a collection of packages that provide access to device and system functionality such as camera, contacts, location, sensors, haptics, and more. Each package targets a specific feature and can be used independently. All packages work in any React Native app with the `expo` package installed.
 
@@ -4109,8 +4086,6 @@ platforms: ['android', 'ios*', 'web', 'expo-go']
 
 A library that provides access to the device's accelerometer sensor.
 Android, iOS (device only), Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `Accelerometer` from `expo-sensors` provides access to the device accelerometer sensor(s) and associated listeners to respond to changes in acceleration in three-dimensional space, meaning any movement or vibration.
 
@@ -4420,8 +4395,6 @@ isAlpha: true
 A library that provides access to age range information using Play Age Signals API on Android and Declared Age Range framework on iOS.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > **This library is currently in [alpha](/more/release-statuses#alpha) and will frequently experience breaking changes.**
 
 `expo-age-range` provides access to user age range information. It uses Google's [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api) on Android and Apple's [Declared Age Range framework](https://developer.apple.com/documentation/declaredagerange/) on iOS.
@@ -4601,8 +4574,6 @@ isAlpha: true
 
 A library that provides access to Google's Play Integrity API on Android and Apple's App Attest service on iOS.
 Android, iOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > **This library is currently in [alpha](/more/release-statuses#alpha) and will frequently experience breaking changes.**
 
@@ -4919,8 +4890,6 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 A library that provides Sign-in with Apple capability for iOS.
 iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-apple-authentication` provides Apple authentication for iOS. It does not yet support Android or web.
 
@@ -5501,8 +5470,6 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 A universal library that provides information about the native application's ID, app name, and build version at runtime.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-application` provides useful information about the native application's ID, app name, and build version at runtime.
 
 ## Installation
@@ -5749,8 +5716,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A universal library that allows downloading assets and using them with other libraries.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-asset` provides an interface to Expo's asset system. An asset is any file that lives alongside the source code of your app that the app needs at runtime. Examples include images, fonts, and sounds. Expo's asset system integrates with React Native's, so that you can refer to files with `require('path/to/file')`. This is how you refer to static image files in React Native for use in an `Image` component, for example. Check out React Native's [documentation on static image resources](https://reactnative.dev/docs/images#static-image-resources) for more information. This method of referring to static image resources works out of the box with Expo.
 
@@ -6036,8 +6001,6 @@ inExpoGo: true
 A library that provides an asynchronous, unencrypted, persistent, key-value storage API.
 Android, iOS, macOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Async Storage is asynchronous, unencrypted, persistent, key-value storage solution.
 
 ## Installation
@@ -6067,8 +6030,6 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 
 A library that provides an API to implement audio playback and recording in apps.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-audio` is a cross-platform audio library for accessing the native audio capabilities of the device.
 
@@ -8533,8 +8494,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 A universal library that provides an API to handle browser-based authentication.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `AuthSession` enables web browser-based authentication (for example, browser-based OAuth flows) in your app by utilizing [WebBrowser](/versions/latest/sdk/webbrowser) and [Crypto](/versions/latest/sdk/crypto). For implementation details, refer to this reference, and for usage, see the [Authentication](/guides/authentication) guide.
 
 > **Note:** `AuthSession` enables general-purpose OAuth and OpenID Connect browser-based auth workflows. Where available, we recommend using a library supplied by your identity provider, as it will handle implementation details specific to that provider. For example, use [`@react-native-google-signin/google-signin`](/guides/google-authentication) for Google authentication and [`react-native-fbsdk-next`](/guides/facebook-authentication) for Facebook. For more information, see [Authentication](/develop/authentication) overview.
@@ -10032,8 +9991,6 @@ isDeprecated: true
 A library that provides API for performing background fetch tasks.
 Android, iOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > **[Deprecated](/more/release-statuses#deprecated):** The `expo-background-fetch` library is being replaced by a new version in [`expo-background-task`](/versions/latest/sdk/background-task). `expo-background-fetch` is not receiving patches and will be removed in an upcoming release.
 
 `expo-background-fetch` provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](/versions/latest/sdk/task-manager) Native API under the hood.
@@ -10377,8 +10334,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that provides an API for running background tasks.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](/versions/latest/sdk/task-manager) Native API to run JavaScript tasks.
 
@@ -10799,8 +10754,6 @@ platforms: ['android', 'ios*', 'expo-go']
 A library that provides access to device's barometer sensor.
 Android, iOS (device only), Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `Barometer` from `expo-sensors` provides access to the device barometer sensor to respond to changes in air pressure, which is measured in hectopascals (`hPa`).
 
 ## Installation
@@ -11089,8 +11042,6 @@ platforms: ['android', 'ios*', 'web', 'expo-go']
 
 A library that provides battery information for the physical device, as well as corresponding event listeners.
 Android, iOS (device only), Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-battery` provides battery information for the physical device (such as battery level, whether or not the device is charging, and more) as well as corresponding event listeners.
 
@@ -11460,8 +11411,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 A web standards-compliant Blob implementation for React Native.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-blob` provides a web standards-compliant Blob implementation for React Native that offers superior performance and works consistently across all platforms. It is more reliable compared to the implementation exported from `react-native`, unlike Blob from `react-native`, which has limitations with the `slice()` method and other Web API features.
 
 ## Installation
@@ -11668,8 +11617,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A React component that blurs everything underneath the view.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A React component that blurs everything underneath the view. Common usage of this is for navigation bars, tab bars, and modals.
 
@@ -11990,8 +11937,6 @@ platforms: ['android', 'ios', 'expo-go']
 
 A library that provides access to an API for getting and setting the screen brightness.
 Android, iOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 An API to get and set screen brightness.
 
@@ -12363,8 +12308,6 @@ isNew: true
 
 Toolkit and APIs for integrating Expo into existing native applications.
 Android, iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-brownfield` is a toolkit for adding React Native views to existing native Android and iOS applications. It provides:
 
@@ -12779,8 +12722,6 @@ platforms: ['android', 'ios', 'tvos']
 A config plugin that allows customizing native build properties during prebuild.
 Android, iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-build-properties` is a [config plugin](/config-plugins/introduction) configuring the native build properties of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/continuous-native-generation).
 
 > This config plugin configures how [Prebuild command](/workflow/continuous-native-generation#usage) generates the native **android** and **ios** directories and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
@@ -13139,8 +13080,6 @@ platforms: ['ios*', 'android*']
 
 A library that provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 Android (device only), iOS (device only)
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > The `next` version of the Calendar API is included in the `expo-calendar` library. It can be used alongside the previous API, and offers a simplified, object oriented way of performing calendar operations.
 
@@ -15097,8 +15036,6 @@ platforms: ['android', 'ios', 'expo-go']
 A library that provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
 Additionally, it provides methods to launch the [system-provided calendar UI](/versions/latest/sdk/calendar#launching-system-provided-calendar-dialogs) to allow user view or edit events. On Android, these methods start the system calendar app using an Intent. On iOS, they present either [`EKEventViewController`](https://developer.apple.com/documentation/eventkitui/ekeventviewcontroller) or [`EKEventEditViewController`](https://developer.apple.com/documentation/eventkitui/ekeventeditviewcontroller) as a modal.
@@ -16594,8 +16531,6 @@ platforms: ['android*', 'ios*', 'web', 'expo-go']
 A React component that renders a preview for the device's front or back camera.
 Android (device only), iOS (device only), Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-camera` provides a React component that renders a preview of the device's front or back camera. The camera's parameters such as zoom, torch, and flash mode are adjustable. Using `CameraView`, you can take photos and record videos that are saved to the app's cache. The component is also capable of detecting bar codes appearing in the preview. Run the [example](/versions/latest/sdk/camera#usage) on your device to see all these features working together.
 
 ## Installation
@@ -17805,8 +17740,6 @@ inExpoGo: true
 A library that allows you to capture a React Native view and save it as an image.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Given a view, `captureRef` will essentially screenshot that view and return an image for you. This is very useful for things like signature pads, where the user draws something, and then you want to save an image from it.
 
 If you're interested in taking snapshots from the GLView, we recommend you use [GLView's takeSnapshotAsync](/versions/latest/sdk/gl-view#takesnapshotasyncoptions) instead.
@@ -17859,8 +17792,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 An API that provides information about the user's cellular service provider.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-cellular` provides information about the user's cellular service provider, such as its unique identifier, cellular connection type, and whether it allows VoIP calls on its network.
 
@@ -18122,8 +18053,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 A universal React component that provides basic checkbox functionality.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-checkbox` provides a basic `boolean` input element for all platforms.
 
 ## Installation
@@ -18280,8 +18209,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A universal library that allows getting and setting Clipboard content.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-clipboard` provides an interface for getting and setting Clipboard content on Android, iOS, and Web.
 
@@ -18863,8 +18790,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 An API that provides system information that remains constant throughout the lifetime of your app's installation.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-constants` provides system information that remains constant throughout the lifetime of your app's installation.
 
 ## Installation
@@ -19082,8 +19007,6 @@ isNew: true
 
 A library that provides access to the phone's system contacts.
 Android, iOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-contacts` provides access to the device's system contacts, allowing you to get contact information as well as add, edit, or remove contacts. On iOS, contacts have a multi-layered grouping system that you can also access through this API.
 
@@ -22221,8 +22144,6 @@ platforms: ['android', 'ios', 'expo-go']
 A library that provides access to the phone's system contacts.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-contacts` provides access to the device's system contacts, allowing you to get contact information as well as adding, editing, or removing contacts.
 
 On iOS, contacts have a multi-layered grouping system that you can also access through this API.
@@ -23652,8 +23573,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 A universal library for crypto operations.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-crypto` enables you to hash data in an equivalent manner to the Node.js core `crypto` API, and perform crypto operations such as AES encryption and decryption.
 
 ## Installation
@@ -24433,8 +24352,6 @@ inExpoGo: true
 A component that provides access to the system UI for date and time selection.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A component that provides access to the system UI for date and time selection.
 
 ## Installation
@@ -24464,8 +24381,6 @@ platforms: ['android', 'ios', 'tvos']
 
 A library that allows creating a development build and includes useful development tools.
 Android, iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-dev-client` adds various useful development tools to your debug builds:
 
@@ -24609,8 +24524,6 @@ isNew: true
 A library that provides a developer menu for debug builds.
 Android, iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 The `expo-dev-menu` can be used as a **standalone library** in any Expo project. It is especially useful in [brownfield apps](/versions/v55.0.0/sdk/brownfield) that don't need the full [`expo-dev-client`](/versions/v55.0.0/sdk/dev-client) launcher interface.
 
 `expo-dev-menu` provides a developer menu UI for React Native apps that includes:
@@ -24745,8 +24658,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A universal library provides access to system information about the physical device.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-device` provides access to system information about the physical device, such as its manufacturer and model.
 
@@ -25239,8 +25150,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 A library that provides access to a device's motion and orientation sensors.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `DeviceMotion` from `expo-sensors` provides access to the device motion and orientation sensors. All data is presented in terms of three axes that run through a device. According to portrait orientation: X runs from left to right, Y from bottom to top and Z perpendicularly through the screen from back to front.
 
 ## Installation
@@ -25557,8 +25466,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 A library that provides access to the system's UI for selecting documents from the available providers on the user's device.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-document-picker` provides access to the system's UI for selecting documents from the available providers on the user's device.
 
 ## Installation
@@ -25726,8 +25633,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 Set of common methods and types for Expo and related packages.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 ## Installation
 
@@ -26315,8 +26220,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that provides access to the local file system on the device.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > The `legacy` version of the FileSystem API is included in the `expo-file-system` library. It can be used alongside the modern API for backward compatibility reasons.
 
@@ -27439,8 +27342,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that provides access to the local file system on the device.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-file-system` provides access to files and directories stored on a device or bundled as assets into the native project. It also allows downloading files from the network.
 
@@ -28765,8 +28666,6 @@ platforms: ['node']
 A library to generate a fingerprint from a React Native project.
 Node
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `@expo/fingerprint` provides an API to generate a fingerprint (hash) of your project for use in determining compatibility between the native layer and JavaScript layer of your app. The hash calculation is configurable, but is by default derived from hashing app dependencies, custom native code, native project files, and configuration.
 
 ## Installation
@@ -29449,8 +29348,6 @@ inExpoGo: true
 A React Native component that provides a fast and performant way to render lists.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `@shopify/flash-list` is a "Fast and performant React Native list" component that is a drop-in replacement for React Native's `<FlatList>` component. It "recycles components under the hood to maximize performance."
 
 ## Installation
@@ -29480,8 +29377,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A library that allows loading fonts at runtime and using them in React Native components.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-font` allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](/develop/user-interface/fonts) guide.
 
@@ -29807,8 +29702,6 @@ inExpoGo: true
 A library that provides an API for handling complex gestures.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-gesture-handler` is a library for handling complex gestures. From its README:
 
 > This library provides an API that exposes mobile platform-specific native capabilities of touch and gesture handling and recognition. It allows for defining complex gesture handling and recognition logic that runs 100% in the native thread and is therefore deterministic.
@@ -29840,8 +29733,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides GLView that acts as an OpenGL ES render target and provides GLContext. Useful for rendering 2D and 3D graphics.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-gl` provides a `View` that acts as an OpenGL ES render target, useful for rendering 2D and 3D graphics. On mounting, an OpenGL ES context is created. Its drawing buffer is presented as the contents of the `View` every frame.
 
@@ -30320,8 +30211,6 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 React components that render a liquid glass effect using iOS's native UIVisualEffectView.
 iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > `GlassView` is only available on iOS 26 and above. It will fallback to regular `View` on unsupported platforms.
 
@@ -30835,8 +30724,6 @@ platforms: ['android', 'ios*', 'web', 'expo-go']
 A library that provides access to the device's gyroscope sensor.
 Android, iOS (device only), Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `Gyroscope` from `expo-sensors` provides access to the device's gyroscope sensor to respond to changes in rotation in three-dimensional space.
 
 ## Installation
@@ -31146,8 +31033,6 @@ platforms: ['android', 'ios', 'web']
 
 A library that provides access to the system's vibration effects on Android, the haptics engine on iOS, and the Web Vibration API on web.
 Android, iOS, Web
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-haptics` provides haptic (touch) feedback for:
 
@@ -31536,8 +31421,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A cross-platform and performant React component that loads and renders images.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-image` is a cross-platform React component that loads and renders images.
 
@@ -32667,8 +32550,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 A library that provides an API for image manipulation on the local file system.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-image-manipulator` provides an API to modify images stored on the local file system.
 
 ## Installation
@@ -33090,8 +32971,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-image-picker` provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
@@ -33920,8 +33799,6 @@ platforms: ['android', 'expo-go']
 
 A library that provides an API to launch Android intents.
 Android, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-intent-launcher` provides a way to launch Android intents. For example, you can use this API to open a specific settings screen.
 
@@ -34945,8 +34822,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 A React component that prevents the screen from sleeping when rendered.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-keep-awake` provides a React hook that prevents the screen from sleeping and a pair of functions to enable this behavior imperatively.
 
 ## Installation
@@ -35182,8 +35057,6 @@ inExpoGo: true
 A library that provides a Keyboard manager that works in an identical way on Android and iOS
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-keyboard-controller` offers additional functionality beyond the built-in React Native keyboard APIs, providing consistency across Android and iOS with minimal configuration and offering the native feel users expect.
 
 ## Installation
@@ -35266,8 +35139,6 @@ platforms: ['android', 'expo-go']
 
 A library that provides access to the device's light sensor.
 Android, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `LightSensor` from `expo-sensors` provides access to the device's light sensor to respond to illuminance changes.
 
@@ -35557,8 +35428,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 A universal React component that renders a gradient view.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-linear-gradient` provides a native React view that transitions between multiple colors in a linear direction.
 
 > React Native also provides `experimental_backgroundImage` (Android and iOS) and `backgroundImage` (Web) style properties on `View` component that support CSS gradient syntax such as [`linear-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/gradient/linear-gradient) and [`radial-gradient()`](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/gradient/radial-gradient). This can be an alternative for gradient backgrounds without adding an extra dependency. Since this is an experimental property, if you encounter any issues, please [report them to the React Native repository](https://github.com/facebook/react-native/issues).
@@ -35739,8 +35608,6 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 
 An API that provides methods to create and open deep links universally.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-linking` provides utilities for your app to interact with other installed apps using deep links. It also provides helper methods for constructing and parsing deep links into your app. This library is an extension of the React Native [`Linking`](https://reactnative.dev/docs/linking).
 
@@ -36065,8 +35932,6 @@ platforms: ['ios', 'expo-go']
 A library that allows displaying Live Photos on iOS.
 iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 ## Installation
 
 ```sh
@@ -36347,8 +36212,6 @@ platforms: ['android', 'ios', 'expo-go']
 A library that provides functionality for implementing the Fingerprint API (Android) or FaceID and TouchID (iOS) to authenticate the user with a face or fingerprint scan.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-local-authentication` allows you to use the Biometric Prompt (Android) or FaceID and TouchID (iOS) to authenticate the user with a fingerprint or face scan.
 
 ## Known limitation
@@ -36624,8 +36487,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A library that provides an interface for native user localization information.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-localization` allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device. Using a localization library such as [`lingui-js`](https://lingui.dev/introduction), [`react-i18next`](https://react.i18next.com/), [`react-intl`](https://formatjs.io/docs/getting-started/installation/), [`i18n-js`](https://github.com/fnando/i18n-js) or [`react-native-intlayer`](https://intlayer.org/doc/environment/react-native-and-expo) with `expo-localization` will enable you to create a very accessible experience for users.
 
@@ -36964,8 +36825,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides access to reading geolocation information, polling current location or subscribing location update events from the device.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
@@ -38085,8 +37944,6 @@ platforms: ['android', 'ios', 'expo-go']
 A library that provides access to the device's magnetometer sensor.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `Magnetometer` from `expo-sensors` provides access to the device magnetometer sensor(s) to respond to and measure the changes in the magnetic field measured in microtesla (`μT`).
 
 You can access the calibrated values with `Magnetometer` and uncalibrated raw values with `MagnetometerUncalibrated`.
@@ -38393,8 +38250,6 @@ platforms: ['android', 'ios*', 'web', 'expo-go']
 A library that provides functionality to compose and send emails with the system's specific UI.
 Android, iOS (device only), Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-mail-composer` allows you to compose and send emails quickly and easily using the OS UI. This module can't be used on iOS Simulators since you can't sign into a mail account on them.
 
 ## Installation
@@ -38527,8 +38382,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that provides types for Expo Manifests.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 ## Installation
 
@@ -38681,8 +38534,6 @@ inExpoGo: true
 A library that provides a Map component that uses Google Maps on Android and Apple Maps or Google Maps on iOS.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-maps` provides a Map component that uses Google Maps on Android and Apple Maps or Google Maps on iOS.
 
 No additional setup is required when testing your project using Expo Go. However, **to deploy the app binary on app stores** additional steps are required for Google Maps. For more information, see the [instructions below](/versions/latest/sdk/map-view#deploy-app-with-google-maps).
@@ -38828,8 +38679,6 @@ isAlpha: true
 
 A library that provides access to Google Maps on Android and Apple Maps on iOS.
 Android, iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > **This library is currently in [alpha](/more/release-statuses#alpha) and will frequently experience breaking changes.** It is not available in the Expo Go app – use [development builds](/develop/development-builds/introduction) to try it out.
 
@@ -40135,8 +39984,6 @@ inExpoGo: true
 A library that provides a masked view.
 Android, iOS, tvOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `@react-native-masked-view/masked-view` provides a masked view that only displays the pixels that overlap with the view rendered in its mask element.
 
 > You can only have one of either `@react-native-community/masked-view` (deprecated) or `@react-native-masked-view/masked-view` installed in your project at any given time. React Navigation v6 and later requires `@react-native-masked-view/masked-view`, so you should use that package instead if you are using the latest version of React Navigation.
@@ -40171,8 +40018,6 @@ isNew: true
 
 A library that provides access to the device's media library.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-media-library` provides access to the user's media library, allowing apps to read existing images and videos, as well as save new ones.
 
@@ -41069,8 +40914,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 A library that provides access to the device's media library.
 Android, iOS, tvOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-media-library` provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
 > Android allows full access to the media library (which is the purpose of this package) only for applications needing broad access to photos. See [Details on Google Play's Photo and Video Permissions policy](https://support.google.com/googleplay/android-developer/answer/14115180).
@@ -41962,8 +41805,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 A module that exposes MeshGradient view from SwiftUI to React Native.
 Android, iOS, tvOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 ## Installation
 
 ```sh
@@ -42094,8 +41935,6 @@ platforms: ['android', 'expo-go']
 
 A library that provides access to various interactions with the native navigation bar on Android.
 Android, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-navigation-bar` enables you to modify and observe the native navigation bar on Android devices. Due to some Android platform restrictions, parts of this API overlap with the `expo-status-bar` API.
 
@@ -42567,8 +42406,6 @@ inExpoGo: true
 A cross-platform API that provides access to network information.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `@react-native-community/netinfo` allows you to get information about connection type and connection quality.
 
 ## Installation
@@ -42650,8 +42487,6 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 
 A library that provides access to the device's network such as its IP address, MAC address, and airplane mode status.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-network` provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
 
@@ -42900,8 +42735,6 @@ platforms: ['android*', 'ios*']
 
 A library that provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 Android (device only), iOS (device only)
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-notifications` provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
@@ -45483,8 +45316,6 @@ platforms: ['android', 'ios', 'expo-go']
 A library that provides access to the device's pedometer sensor.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `Pedometer` from `expo-sensors` uses the system `hardware.Sensor` on Android and Core Motion on iOS to get the user's step count, and also allows you to subscribe to pedometer updates.
 
 ## Installation
@@ -45729,8 +45560,6 @@ inExpoGo: true
 A cross-platform component that provides access to the system UI for picking between several options.
 Android, iOS, macOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A component that provides access to the system UI for picking between several options.
 
 ## Installation
@@ -45760,8 +45589,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides printing functionality for Android and iOS (AirPrint).
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-print` provides an API for Android and iOS (AirPrint) printing functionality.
 
@@ -46082,8 +45909,6 @@ inExpoGo: true
 A library that provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started/) provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 
 > **Reanimated uses React Native APIs that are incompatible with "Remote JS Debugging" for JavaScriptCore**. To use a debugger with your app with `react-native-reanimated`, you'll need to use the [Hermes JavaScript engine](/guides/using-hermes) and the [JavaScript Inspector for Hermes](/guides/using-hermes#javascript-inspector-for-hermes).
@@ -46171,8 +45996,6 @@ platforms: ['android', 'ios']
 
 An Expo Router API for accessing platform-specific native colors.
 Android, iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 The Color API provides access to platform-specific native colors.
 
@@ -46806,8 +46629,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 A file-based routing library for React Native and web applications.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-router` is a routing library for React Native and web apps. It enables navigation management using a file-based routing system and provides native navigation components and is built on top of [React Navigation](https://reactnavigation.org/).
 
@@ -47585,8 +47406,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 An Expo Router API that provides Link, Redirect, preview, and zoom transition components.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 An Expo Router API that provides components for navigating between routes, including link, redirect, preview, and zoom transitions.
 
@@ -48465,8 +48284,6 @@ isBeta: true
 An Expo Router submodule that provides native tabs layout.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > Native tabs is a [beta](/more/release-statuses#beta) feature available in SDK 55 and later, and its API is subject to change.
 
 `expo-router/unstable-native-tabs` is a submodule of `expo-router` and exports components to build tab layouts using platform-native system tabs.
@@ -49176,8 +48993,6 @@ isNew: true
 An Expo Router submodule that provides native split view layout.
 iOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > SplitView is an [alpha](/more/release-statuses#alpha) API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes and is not ready for production usage yet.
 
 `expo-router/unstable-split-view` is a submodule of `expo-router` and exports components to build split view layouts using [platform-native system split views](https://developer.apple.com/design/human-interface-guidelines/split-views).
@@ -49615,8 +49430,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 An Expo Router API that provides Stack navigator, toolbar, and screen components.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 An Expo Router API that provides Stack navigator, toolbar, and screen components.
 
@@ -50984,8 +50797,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 An Expo Router submodule that provides headless tab components to create custom tab layouts.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-router/ui` is a submodule of `expo-router` library and exports components and hooks to build custom tab layouts, rather than using the default [React Navigation](https://reactnavigation.org/) navigators provided by `expo-router`.
 
 > See the [Expo Router](/versions/latest/sdk/router/index) reference for more information about the file-based routing library for native and web app.
@@ -51471,8 +51282,6 @@ inExpoGo: true
 A library with a flexible API for accessing the device's safe area inset information.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-safe-area-context` provides a flexible API for accessing device safe area inset information. This allows you to position your content appropriately around notches, status bars, home indicators, and other such device and operating system interface elements. It also provides a `SafeAreaView` component that you can use in place of `View` to automatically inset your views to account for safe areas.
 
 ## Installation
@@ -51676,8 +51485,6 @@ platforms: ['android', 'ios', 'expo-go']
 
 A library that allows you to protect screens in your app from being captured or recorded.
 Android, iOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-screen-capture` allows you to protect screens in your app from being captured or recorded, as well as be notified if a screenshot is taken while your app is foregrounded. The two most common reasons you may want to prevent screen capture are:
 
@@ -52075,8 +51882,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A universal library for managing a device's screen orientation.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](/versions/latest/sdk/devicemotion).
 
@@ -52536,8 +52341,6 @@ inExpoGo: true
 A library that provides native primitives to represent screens for better operating system behavior and screen optimizations.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-screens` provides native primitives to represent screens instead of plain `<View>` components To better take advantage of operating system behavior and optimizations around screens. This capability is used by library authors and is unlikely to be used directly by most app developers. It also provides the native components needed for React Navigation's [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator).
 
 ## Installation
@@ -52567,8 +52370,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that provides a way to encrypt and securely store key-value pairs locally on the device.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-secure-store` provides a way to encrypt and securely store key-value pairs locally on the device. Each Expo project has a separate storage system and has no access to the storage of other Expo projects.
 
@@ -52992,8 +52793,6 @@ inExpoGo: true
 A React Native library that provides a component to render UISegmentedControl from iOS.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 It's like a fancy radio button, or in Apple's words: "A horizontal control that consists of multiple segments, each segment functioning as a discrete button" ([source](https://developer.apple.com/documentation/uikit/uisegmentedcontrol)). This component renders to a [`UISegmentedControl`](https://developer.apple.com/documentation/uikit/uisegmentedcontrol) on iOS, and to faithful recreations of that control on Android and web (because no equivalent exists on those platforms' standard libraries).
 
 ## Installation
@@ -53023,8 +52822,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides access to a device's accelerometer, barometer, motion, gyroscope, light, magnetometer, and pedometer.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-sensors` provide various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 
@@ -53140,8 +52937,6 @@ platforms: ['server']
 
 Server-side API and runtime for Expo Router projects.
 Server
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-server` is a server-side API and runtime library for Expo Router. It provides helpers you can use in your Expo Router API routes or other server code, and contains adapters to run Expo Router server exports.
 
@@ -53476,8 +53271,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides functionality for sharing and receiving data from other apps.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-sharing` allows you to share files directly with other compatible applications and to receive compatible data shared from other apps.
 
@@ -53908,8 +53701,6 @@ inExpoGo: true
 A React Native library for creating graphics using Skia.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `@shopify/react-native-skia` brings the Skia Graphics Library to React Native. Skia serves as the graphics engine for Google Chrome and Chrome OS, Android, Flutter, Mozilla Firefox and Firefox OS, and many other products.
 
 ## Installation
@@ -53944,8 +53735,6 @@ inExpoGo: true
 A React Native component library that provides access to the system UI for a slider control.
 Android, iOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A component library that provides access to the system UI for a slider control, that allows users to pick among a range of values by dragging an anchor.
 
 ## Installation
@@ -53975,8 +53764,6 @@ platforms: ['android', 'ios', 'expo-go']
 
 A library that provides access to the system's UI/app for sending SMS messages.
 Android, iOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-sms` provides access to the system's UI/app for sending SMS messages.
 
@@ -54104,8 +53891,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides access to text-to-speech functionality.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-speech` provides an API that allows you to utilize Text-to-speech functionality in your app.
 
@@ -54319,8 +54104,6 @@ platforms: ['android', 'ios', 'tvos']
 
 A library that provides access to controlling the visibility behavior of native splash screen.
 Android, iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 The `SplashScreen` module from the `expo-splash-screen` library provides control over the native splash screen behavior. By default, the splash screen will automatically hide when your app is ready, but you can also manually control its visibility for advanced use cases.
 
@@ -54549,8 +54332,6 @@ platforms: ['android', 'ios', 'macos', 'tvos', 'web', 'expo-go']
 
 A library that provides access to a database that can be queried through a SQLite API.
 Android, iOS, macOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-sqlite` gives your app access to a database that can be queried through a SQLite API. The database is persisted across restarts of your app.
 
@@ -57021,8 +56802,6 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 A library that provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.
 Android, iOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, background color, hide it, make it translucent or opaque, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
 
 > **tvOS and web support**
@@ -57264,8 +57043,6 @@ platforms: ['android', 'ios', 'expo-go']
 A library that provides access to native APIs for in-app reviews.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-store-review` is a library that provides access to `ReviewManager` API on Android 5+ and `SKStoreReviewController` API on iOS. It allows you to ask the user to rate your app without leaving the app itself.
 
 ## Installation
@@ -57395,8 +57172,6 @@ inExpoGo: true
 A library that provides access to native APIs for integrating Stripe payments.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo includes support for [`@stripe/stripe-react-native`](https://github.com/stripe/stripe-react-native), which allows you to build delightful payment experiences in your native Android and iOS apps using React Native and Expo. This library provides powerful and customizable UI screens and elements that can be used out-of-the-box to collect your users' payment details.
 
 > Migrating from Expo's `expo-payments-stripe` module? [Learn more about how to transition to the new `@stripe/stripe-react-native` library](https://github.com/expo/fyi/blob/main/payments-migration-guide.md#how-to-migrate-from-expo-payments-stripe-to-the-new-stripestripe-react-native-library).
@@ -57516,8 +57291,6 @@ inExpoGo: true
 A library that allows using SVGs in your app.
 Android, iOS, macOS, tvOS, Web, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-svg` allows you to use SVGs in your app, with support for interactivity and animation.
 
 ## Installation
@@ -57580,8 +57353,6 @@ isBeta: true
 
 A library that allows access to native symbols.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > This library is currently in [beta](/more/release-statuses#beta) and subject to breaking changes.
 
@@ -57910,8 +57681,6 @@ platforms: ['android', 'ios', 'tvos', 'web']
 A library that allows interacting with system UI elements.
 Android, iOS, tvOS, Web
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `expo-system-ui` enables you to interact with UI elements that fall outside of the React tree. Specifically the root view background color, and locking the user interface style globally on Android.
 
 ## Installation
@@ -58031,8 +57800,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that provides support for tasks that can run in the background.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-task-manager` provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background. Some features of this library are used by other libraries under the hood. Here is a list of Expo SDK libraries that use `TaskManager`.
 
@@ -58325,8 +58092,6 @@ inExpoGo: true
 
 A set of third-party libraries which support for is included by default in Expo Go environment.
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 The Expo Go playground enables students and learners to quickly try out building native Android and iOS apps. It supports a curated list of third-party libraries that are community-driven, provide APIs for common app functionalities, and are tested with each Expo SDK release.
 
 The difference between libraries listed in this section, and any other third-party library is that the support for former is built-in in Expo Go environment. You may use any library of your choice with development builds.
@@ -58351,8 +58116,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library for tracking app users and managing tracking permissions.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A library for tracking app users and managing tracking permissions. Provides access to advertising identifiers and manages the required permissions for tracking. Examples of data used for tracking include email address, device ID, advertising ID, and more. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](/versions/latest/config/app#infoplist) to explain how the user will be tracked. Otherwise, your app will be rejected by Apple.
 
@@ -58647,8 +58410,6 @@ platforms: ['android', 'ios']
 
 A date and time picker compatible with @react-native-community/datetimepicker.
 Android, iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A `DateTimePicker` component with an API compatible with `@react-native-community/datetimepicker`. It uses Jetpack Compose on Android and SwiftUI on iOS, providing a modern Material 3 and SwiftUI appearance by default (the community module defaults to the older look on Android).
 
@@ -58996,8 +58757,6 @@ platforms: ['android', 'ios']
 Components and APIs that serve as drop-in replacements for popular React Native community libraries.
 Android, iOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 The following components provide API-compatible replacements for popular React Native community libraries, powered by `@expo/ui` native components (Jetpack Compose on Android and SwiftUI on iOS).
 
 -   **[DateTimePicker](/versions/latest/sdk/ui/drop-in-replacements/datetimepicker)**: Compatible with `@react-native-community/datetimepicker`
@@ -59017,8 +58776,6 @@ platforms: ['android', 'ios', 'web']
 
 A segmented control compatible with @react-native-segmented-control/segmented-control.
 Android, iOS, Web
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A `SegmentedControl` component with an API compatible with `@react-native-segmented-control/segmented-control`. It uses Jetpack Compose `SingleChoiceSegmentedButtonRow` on Android and SwiftUI `Picker` with segmented style on iOS.
 
@@ -59188,8 +58945,6 @@ platforms: ['android', 'ios', 'tvos']
 A set of components that allow you to build UIs directly with Jetpack Compose and SwiftUI from React.
 Android, iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `@expo/ui` is a set of native input components that allows you to build fully native interfaces with Jetpack Compose and SwiftUI. It aims to provide the commonly used features and components that a typical app will need.
 
 ## Available platforms
@@ -59219,8 +58974,6 @@ platforms: ['android']
 
 A Jetpack Compose AlertDialog component for displaying native alert dialogs.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI AlertDialog matches the official Jetpack Compose [AlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API. Content is provided via slot sub-components (`AlertDialog.Title`, `AlertDialog.Text`, `AlertDialog.ConfirmButton`, `AlertDialog.DismissButton`, `AlertDialog.Icon`) that map directly to Compose's slot parameters.
 
@@ -59465,8 +59218,6 @@ platforms: ['android']
 A Jetpack Compose BasicAlertDialog component for displaying dialogs with custom content.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI BasicAlertDialog matches the official Jetpack Compose [BasicAlertDialog](https://developer.android.com/develop/ui/compose/components/dialog) API and displays a minimal dialog that accepts custom children as its content, giving you full control over the dialog layout.
 
 ## Installation
@@ -59613,8 +59364,6 @@ platforms: ['android']
 
 A Jetpack Compose ModalBottomSheet component that presents content from the bottom of the screen.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI ModalBottomSheet matches the official Jetpack Compose [Bottom Sheet API](https://developer.android.com/develop/ui/compose/components/bottom-sheets) and displays content in a modal sheet that slides up from the bottom.
 
@@ -60102,8 +59851,6 @@ platforms: ['android']
 A Jetpack Compose Box component for stacking child elements.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Box matches the official Jetpack Compose [Box](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Box) API and stacks children on top of each other with configurable content alignment.
 
 ## Installation
@@ -60189,8 +59936,6 @@ platforms: ['android']
 
 Jetpack Compose Button components for displaying native Material3 buttons.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI provides five button components that match the official Jetpack Compose [Button API](https://developer.android.com/develop/ui/compose/components/button): `Button` (filled), `FilledTonalButton`, `OutlinedButton`, `ElevatedButton`, and `TextButton`. All variants share the same props and accept composable children for content.
 
@@ -60511,8 +60256,6 @@ platforms: ['android']
 A Jetpack Compose Card component for displaying content in a styled container.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Card matches the official Jetpack Compose [Card API](https://developer.android.com/develop/ui/compose/components/card) and displays content inside a styled surface container with optional elevation and outline.
 
 ## Installation
@@ -60757,8 +60500,6 @@ platforms: ['android']
 
 Jetpack Compose Carousel components for displaying scrollable collections of items.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI provides three carousel components matching the official Jetpack Compose [Carousel](https://developer.android.com/develop/ui/compose/components/carousel) API: `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel`.
 
@@ -61027,8 +60768,6 @@ platforms: ['android']
 A Jetpack Compose Checkbox component for selection controls.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Checkbox matches the official Jetpack Compose [Checkbox](https://developer.android.com/develop/ui/compose/components/checkbox) API.
 
 ## Installation
@@ -61294,8 +61033,6 @@ platforms: ['android']
 
 Jetpack Compose Chip components for displaying compact elements.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Chips match the official Jetpack Compose [Chip API](https://developer.android.com/develop/ui/compose/components/chip). Each chip type is a separate component: `AssistChip`, `FilterChip`, `InputChip`, and `SuggestionChip`.
 
@@ -61782,8 +61519,6 @@ platforms: ['android']
 A Jetpack Compose Column component for placing children vertically.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Column matches the official Jetpack Compose [Column](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Column) API and places children vertically with configurable arrangement and alignment.
 
 ## Installation
@@ -61890,8 +61625,6 @@ platforms: ['android']
 
 A Jetpack Compose DateTimePicker component for selecting dates and times.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI DateTimePicker matches the official Jetpack Compose [Date Picker](https://developer.android.com/develop/ui/compose/components/datepickers) and [Time Picker](https://developer.android.com/develop/ui/compose/components/time-pickers) APIs and supports date, time, and combined selection.
 
@@ -62296,8 +62029,6 @@ platforms: ['android']
 Jetpack Compose Divider components for creating visual separators.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI provides [`HorizontalDivider`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#HorizontalDivider\(androidx.compose.ui.Modifier,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color\)) and [`VerticalDivider`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#VerticalDivider\(androidx.compose.ui.Modifier,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color\)) matching the official Jetpack Compose Divider API.
 
 ## Installation
@@ -62425,8 +62156,6 @@ platforms: ['android']
 A Jetpack Compose DockedSearchBar component for displaying an inline search input.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI DockedSearchBar matches the official Jetpack Compose [SearchBar API](https://developer.android.com/develop/ui/compose/components/search-bar) and displays a search input that remains anchored in its parent layout rather than expanding to full screen.
 
 ## Installation
@@ -62548,8 +62277,6 @@ platforms: ['android']
 
 A Jetpack Compose DropdownMenu component for displaying dropdown menus.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI DropdownMenu matches the official Jetpack Compose [Menu API](https://developer.android.com/develop/ui/compose/components/menu) and displays a dropdown menu when a trigger element is pressed.
 
@@ -62711,8 +62438,6 @@ platforms: ['android']
 
 A Jetpack Compose ExposedDropdownMenuBox component for displaying a dropdown menu with a customizable anchor.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI `ExposedDropdownMenuBox` matches the official Jetpack Compose [`ExposedDropdownMenuBox`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-exposed-dropdown-menu-box.html). Use the `menuAnchor()` modifier on the anchor content (typically a read-only `TextField`) and `ExposedDropdownMenu` to wrap `DropdownMenuItem` children.
 
@@ -62919,8 +62644,6 @@ platforms: ['android']
 A Jetpack Compose FlowRow component for wrapping children horizontally.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI FlowRow matches the official Jetpack Compose [FlowRow](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#FlowRow) API and arranges children in a horizontal flow that wraps to the next line when it runs out of space.
 
 ## Installation
@@ -63013,8 +62736,6 @@ platforms: ['android']
 
 A Jetpack Compose HorizontalFloatingToolbar component for displaying a floating action bar.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI HorizontalFloatingToolbar matches the official Jetpack Compose [FloatingActionButton API](https://developer.android.com/develop/ui/compose/components/fab) and displays a horizontal toolbar that floats above content, containing action buttons.
 
@@ -63120,8 +62841,6 @@ platforms: ['android']
 
 A Jetpack Compose Host component for bridging React Native and Jetpack Compose.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 The `Host` component is the bridge between React Native and Jetpack Compose. Every Jetpack Compose component from `@expo/ui/jetpack-compose` must be wrapped in a `Host` to render correctly.
 
@@ -63265,8 +62984,6 @@ platforms: ['android']
 
 A Jetpack Compose Icon component for displaying icons.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 An icon component for rendering icons in Jetpack Compose. We recommend downloading icons as XML vector drawables from [Material Symbols](https://fonts.google.com/icons), which is the standard approach for Android development.
 
@@ -63486,8 +63203,6 @@ platforms: ['android']
 Jetpack Compose IconButton components for displaying native Material3 icon buttons.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI provides four icon button components that match the official Jetpack Compose [IconButton API](https://developer.android.com/develop/ui/compose/components/icon-button): `IconButton`, `FilledIconButton`, `FilledTonalIconButton`, and `OutlinedIconButton`. All variants share the same props and accept composable children for content.
 
 ## Installation
@@ -63681,8 +63396,6 @@ isAlpha: true
 Jetpack Compose components for building native Android interfaces with @expo/ui.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > **This library is currently in [alpha](/more/release-statuses#alpha) and will frequently experience breaking changes.** It is not available in the Expo Go app — use [development builds](/develop/development-builds/introduction) to try it out.
 
 The Jetpack Compose components in `@expo/ui/jetpack-compose` allow you to build fully native Android interfaces using Jetpack Compose from React Native.
@@ -63725,8 +63438,6 @@ platforms: ['android']
 
 A Jetpack Compose LazyColumn component for displaying scrollable lists.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A lazily-loaded vertical list component that only renders visible items for efficient scrolling. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/lists) for more information.
 
@@ -63903,8 +63614,6 @@ platforms: ['android']
 
 A Jetpack Compose ListItem component for displaying structured list entries.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI ListItem matches the official Jetpack Compose [`ListItem`](https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ListItem\(kotlin.Function0,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,androidx.compose.material3.ListItemColors,androidx.compose.ui.unit.Dp,androidx.compose.ui.unit.Dp\)) API for structured list entries with headline, supporting, overline, leading, and trailing content slots.
 
@@ -64101,8 +63810,6 @@ platforms: ['android']
 
 Jetpack Compose layout modifiers for @expo/ui components.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Jetpack Compose modifiers allow you to customize the layout, appearance, and behavior of UI components. Modifiers are the Compose equivalent of style properties — they control sizing, padding, backgrounds, interactions, and more.
 
@@ -65120,8 +64827,6 @@ platforms: ['android']
 Jetpack Compose progress indicator components for displaying operation status.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Progress Indicators match the official Jetpack Compose [Progress Indicator API](https://developer.android.com/develop/ui/compose/components/progress).
 
 ## Installation
@@ -65413,8 +65118,6 @@ platforms: ['android']
 A Jetpack Compose PullToRefreshBox component for pull-to-refresh interactions.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI PullToRefreshBox matches the official Jetpack Compose [PullToRefreshBox](https://developer.android.com/reference/kotlin/androidx/compose/material3/pulltorefresh/package-summary#PullToRefreshBox\(kotlin.Boolean,kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.material3.pulltorefresh.PullToRefreshState,androidx.compose.ui.Alignment,kotlin.Function1,kotlin.Function1\)) API. It wraps scrollable content and shows a refresh indicator when pulled.
 
 ## Installation
@@ -65593,8 +65296,6 @@ platforms: ['android']
 A Jetpack Compose RadioButton component for single-selection controls.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A radio button component for selecting a single option from a set. Maps to the official Jetpack Compose [RadioButton](https://developer.android.com/develop/ui/compose/components/radio-button) API.
 
 ## Installation
@@ -65728,8 +65429,6 @@ platforms: ['android']
 
 A component that enables React Native views inside Jetpack Compose.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A component that enables proper layout behavior when React Native views are rendered inside Jetpack Compose components. It syncs layout information from Jetpack Compose back to React Native's Yoga layout system by updating the shadow node size.
 
@@ -65997,8 +65696,6 @@ platforms: ['android']
 A Jetpack Compose Row component for placing children horizontally.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Row matches the official Jetpack Compose [Row](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Row) API and places children horizontally with configurable arrangement and alignment.
 
 ## Installation
@@ -66105,8 +65802,6 @@ platforms: ['android']
 
 A Jetpack Compose SearchBar component for search input functionality.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI SearchBar matches the official Jetpack Compose [Search](https://developer.android.com/develop/ui/compose/components/search-bar) API and provides a search input with support for placeholder text and expanded full-screen search.
 
@@ -66230,8 +65925,6 @@ platforms: ['android']
 
 Jetpack Compose Segmented Button components for single or multi-choice selection.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Segmented buttons let app users choose from a small set of options displayed side by side in a row. They map to the official Jetpack Compose [Segmented Button](https://developer.android.com/develop/ui/compose/components/segmented-button) API.
 
@@ -66544,8 +66237,6 @@ platforms: ['android']
 A Jetpack Compose Shape component for drawing geometric shapes.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Shape matches the official Jetpack Compose [Shapes](https://developer.android.com/develop/ui/compose/graphics/draw/shapes) API and provides a set of sub-components for drawing geometric shapes such as stars, circles, rectangles, pills, and polygons.
 
 ## Installation
@@ -66795,8 +66486,6 @@ platforms: ['android']
 
 A Jetpack Compose Slider component for selecting values from a range.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Slider matches the official Jetpack Compose [Slider API](https://developer.android.com/develop/ui/compose/components/slider) and allows selecting values from a bounded range.
 
@@ -67067,8 +66756,6 @@ platforms: ['android']
 A Jetpack Compose Spacer component for adding flexible space between elements.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Spacer matches the official Jetpack Compose [Spacer](https://developer.android.com/reference/kotlin/androidx/compose/foundation/layout/package-summary#Spacer) API and is used to add flexible or fixed-size space between elements in a layout.
 
 ## Installation
@@ -67173,8 +66860,6 @@ platforms: ['android']
 
 A Jetpack Compose Surface component for styled content containers.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Surface matches the official Jetpack Compose [Surface](https://developer.android.com/develop/ui/compose/designsystems/material3) API and provides a container that applies Material Design surface styling including color, elevation, and content color.
 
@@ -67430,8 +67115,6 @@ platforms: ['android']
 A Jetpack Compose Switch component for toggle controls.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.android.com/develop/ui/compose/components/switch) API.
 
 ## Installation
@@ -67635,8 +67318,6 @@ platforms: ['android']
 
 A Jetpack Compose Text component for displaying styled text.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Text matches the official Jetpack Compose [Text styling](https://developer.android.com/develop/ui/compose/text/style-text) API and displays text with Material 3 typography styles, custom fonts, and text formatting options.
 
@@ -68029,8 +67710,6 @@ platforms: ['android']
 
 Jetpack Compose TextField components for native Material3 text input.
 Android
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI provides two text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled) and `OutlinedTextField` (outlined border). Both variants share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text.
 
@@ -68442,8 +68121,6 @@ platforms: ['android']
 Jetpack Compose ToggleButton components for displaying native Material3 toggle buttons.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI provides four toggle button components that match the official Jetpack Compose Toggle Button API: [`ToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-toggle-button.html), [`IconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-icon-toggle-button.html), [`FilledIconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-filled-icon-toggle-button.html), and [`OutlinedIconToggleButton`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-outlined-icon-toggle-button.html).
 
 ## Installation
@@ -68689,8 +68366,6 @@ platforms: ['android']
 Jetpack Compose Tooltip components for displaying contextual information on long-press.
 Android
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip` compound components, which match [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) and [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich) respectively. Tooltips can be triggered by long-press or shown programmatically via `ref`.
 
 ## Installation
@@ -68923,8 +68598,6 @@ platforms: ['ios']
 A SwiftUI adaptive background view that provides a standard appearance based on the the widget's environment.
 iOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI AccessoryWidgetBackground matches the official SwiftUI [AccessoryWidgetBackground API](https://developer.apple.com/documentation/widgetkit/accessorywidgetbackground) and creates an adaptive background view that provides a standard appearance based on the the widget's environment.
 
 ## Installation
@@ -68976,8 +68649,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI BottomSheet component that presents content from the bottom of the screen.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI BottomSheet matches the official SwiftUI [sheet API](https://developer.apple.com/documentation/swiftui/view/sheet\(ispresented:ondismiss:content:\)) and presents content from the bottom of the screen.
 
@@ -69365,8 +69036,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI Button component for displaying native buttons.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Button matches the official SwiftUI [Button API](https://developer.apple.com/documentation/swiftui/button) and supports styling via the [`buttonStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#buttonstylestyle), [`controlSize`](/versions/latest/sdk/ui/swift-ui/modifiers#controlsizesize), and other modifiers.
 
 ## Installation
@@ -69678,8 +69347,6 @@ platforms: ['ios']
 A SwiftUI ColorPicker component for selecting colors.
 iOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI ColorPicker matches the official SwiftUI [ColorPicker API](https://developer.apple.com/documentation/swiftui/colorpicker) and allows app users to select colors from a palette.
 
 ## Installation
@@ -69803,8 +69470,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI ConfirmationDialog component for presenting confirmation prompts.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI ConfirmationDialog matches the official SwiftUI [confirmationDialog API](https://developer.apple.com/documentation/swiftui/view/confirmationdialog\(_:ispresented:titlevisibility:actions:message:\)) and presents an action sheet-style dialog with a title, actions, and an optional message.
 
@@ -70041,8 +69706,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI ContextMenu component for displaying context menus.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI ContextMenu matches the official SwiftUI [contextMenu API](https://developer.apple.com/documentation/swiftui/view/contextmenu\(menuitems:\)) and displays a menu when long-pressed. For single-tap menu interactions, use [`Menu`](/versions/latest/sdk/ui/swift-ui/menu) instead.
 
@@ -70307,8 +69970,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI ControlGroup component for grouping interactive controls.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI ControlGroup matches the official SwiftUI [ControlGroup API](https://developer.apple.com/documentation/swiftui/controlgroup). When placed inside a [`Menu`](/versions/latest/sdk/ui/swift-ui/menu), the children are rendered as a compact horizontal row of buttons.
 
 > **Note:** On tvOS, ControlGroup requires tvOS 17.0 or later.
@@ -70408,8 +70069,6 @@ platforms: ['ios']
 
 A SwiftUI DatePicker component for selecting dates and times.
 iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI DatePicker matches the official SwiftUI [DatePicker API](https://developer.apple.com/documentation/swiftui/datepicker) and supports styling via the [`datePickerStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#datepickerstylestyle) modifier.
 
@@ -70810,8 +70469,6 @@ platforms: ['ios']
 A SwiftUI DisclosureGroup component for displaying expandable content.
 iOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https://developer.apple.com/documentation/swiftui/disclosuregroup) and displays a disclosure indicator that reveals or hides content.
 
 ## Installation
@@ -70924,8 +70581,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI Divider component for creating visual separators.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Divider matches the official SwiftUI [Divider API](https://developer.apple.com/documentation/swiftui/divider) and creates a visual separator between content.
 
 ## Installation
@@ -71034,8 +70689,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Form component for collecting user input in a structured layout.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Form matches the official SwiftUI [Form API](https://developer.apple.com/documentation/swiftui/form). It provides a container for grouping controls used for data entry, such as in settings or inspection panes.
 
@@ -71224,8 +70877,6 @@ platforms: ['ios']
 
 A SwiftUI Gauge component for displaying progress with visual indicators.
 iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Gauge matches the official SwiftUI [Gauge API](https://developer.apple.com/documentation/swiftui/gauge) and supports styling via the [`gaugeStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#gaugestylestyle) modifier.
 
@@ -71438,8 +71089,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI Group component for grouping views without affecting layout.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Group matches the official SwiftUI [Group API](https://developer.apple.com/documentation/swiftui/group) and groups views together without introducing additional layout structure.
 
 ## Installation
@@ -71513,8 +71162,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Host component that enables SwiftUI components in React Native.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 A component that allows you to put the other `@expo/ui/swift-ui` components in React Native. It acts like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) for DOM, [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) for [`react-native-skia`](https://shopify.github.io/react-native-skia/), which underlying uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render the SwiftUI views in UIKit.
 
@@ -71737,8 +71384,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI HStack component for horizontal layouts.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI HStack matches the official SwiftUI [HStack API](https://developer.apple.com/documentation/swiftui/hstack) and arranges its children horizontally.
 
 ## Installation
@@ -71848,8 +71493,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Image component for displaying SF Symbols.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Image displays SF Symbols using the SwiftUI [Image API](https://developer.apple.com/documentation/swiftui/image). SF Symbols are a library of configurable symbols provided by Apple.
 
@@ -71999,8 +71642,6 @@ isBeta: true
 SwiftUI components for building native iOS interfaces with @expo/ui.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > **This library is currently in [beta](/more/release-statuses#beta) and subject to breaking changes.** It is not available in the Expo Go app — use [development builds](/develop/development-builds/introduction) to try it out.
 
 The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iOS interfaces using SwiftUI from React Native.
@@ -72051,8 +71692,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Label component for displaying text with an icon.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Label matches the official SwiftUI [Label API](https://developer.apple.com/documentation/swiftui/label) and displays a title alongside an icon.
 
@@ -72184,8 +71823,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI Link component for displaying clickable links.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Link matches the official SwiftUI [Link API](https://developer.apple.com/documentation/swiftui/link).
 
 ## Installation
@@ -72311,8 +71948,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI List component for displaying scrollable lists of items.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI List matches the official SwiftUI [List API](https://developer.apple.com/documentation/swiftui/list) and supports styling via the [`listStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#liststylestyle) modifier, various row/section modifiers, as well as selection, reordering, and editing capabilities.
 
@@ -72683,8 +72318,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI Menu component for displaying dropdown menus.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com/documentation/swiftui/menu) and supports styling via the [`buttonStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#buttonstylestyle) modifier. Menu opens on a single tap. For long-press interactions, use [`ContextMenu`](/versions/latest/sdk/ui/swift-ui/contextmenu) instead.
 
 > **Note:** On tvOS, Menu requires tvOS 17.0 or later.
@@ -73010,8 +72643,6 @@ platforms: ['ios', 'tvos']
 
 SwiftUI view modifiers for customizing component appearance and behavior.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 SwiftUI view modifiers that allow you to customize the appearance and behavior of UI components.
 
@@ -75416,8 +75047,6 @@ platforms: ['ios', 'tvos']
 A Namespace component that allows you create Namespaces in SwiftUI
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A Namespace component that allows you to create SwiftUI [Namespaces](https://developer.apple.com/documentation/swiftui/namespace) for coordinating animations and matched geometry effects between views.
 
 ## Installation
@@ -75670,8 +75299,6 @@ platforms: ['ios', 'tvOS']
 A SwiftUI Overlay component for layering content on top of another view.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Overlay matches the official SwiftUI [overlay](https://developer.apple.com/documentation/swiftui/view/overlay\(alignment:content:\)) modifier and provides a way to layer secondary content on top of a view, positioned with a specified alignment.
 
 ## Installation
@@ -75770,8 +75397,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Picker component for selecting options from a list.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Picker matches the official SwiftUI [Picker API](https://developer.apple.com/documentation/swiftui/picker) and supports all picker styles via the [`pickerStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#pickerstylestyle) modifier.
 
@@ -75968,8 +75593,6 @@ platforms: ['ios']
 
 A SwiftUI Popover component for displaying content in a floating overlay.
 iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Popover matches the official SwiftUI [Popover API](https://developer.apple.com/documentation/swiftui/view/popover\(ispresented:attachmentanchor:arrowedge:content:\)) and provides a way to present content in a floating overlay anchored to a trigger element.
 
@@ -76198,8 +75821,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI ProgressView component for displaying progress indicators.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI ProgressView matches the official SwiftUI [ProgressView API](https://developer.apple.com/documentation/swiftui/progressview) and supports styling via the [`progressViewStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#progressviewstylestyle) modifier.
 
 ## Installation
@@ -76406,8 +76027,6 @@ platforms: ['ios', 'tvos']
 A component that enables React Native views inside SwiftUI.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A component that enables proper layout behavior when React Native views are rendered inside SwiftUI components. It syncs layout information from SwiftUI back to React Native's Yoga layout system by updating the shadow node size.
 
 When React Native views are placed inside SwiftUI components like [`BottomSheet`](/versions/latest/sdk/ui/swift-ui/bottomsheet), [`Popover`](/versions/latest/sdk/ui/swift-ui/popover) or [`HStack`](/versions/latest/sdk/ui/swift-ui/hstack) and so on, the layout systems need to communicate. `RNHostView` bridges this gap:
@@ -76581,8 +76200,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI ScrollView component for scrollable content.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI ScrollView matches the official SwiftUI [ScrollView API](https://developer.apple.com/documentation/swiftui/scrollview) and provides a scrollable container for its children.
 
 ## Installation
@@ -76730,8 +76347,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Section component for grouping content within lists and forms.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Section matches the official SwiftUI [Section API](https://developer.apple.com/documentation/swiftui/section) and is used to group related content within [`List`](/versions/latest/sdk/ui/swift-ui/list), [`Form`](/versions/latest/sdk/ui/swift-ui/form) or [`Picker`](/versions/latest/sdk/ui/swift-ui/picker) components.
 
@@ -76975,8 +76590,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI SecureField component for password input.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI SecureField matches the official SwiftUI [SecureField API](https://developer.apple.com/documentation/swiftui/securefield) and provides a text field that masks user input for passwords and other sensitive text.
 
 ## Installation
@@ -77165,8 +76778,6 @@ platforms: ['ios']
 
 A SwiftUI Slider component for selecting values from a range.
 iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Slider matches the official SwiftUI [Slider API](https://developer.apple.com/documentation/swiftui/slider) and allows selecting values from a bounded range.
 
@@ -77369,8 +76980,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI Spacer component for flexible spacing.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI Spacer matches the official SwiftUI [Spacer API](https://developer.apple.com/documentation/swiftui/spacer) and expands to fill available space in a stack.
 
 ## Installation
@@ -77465,8 +77074,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Text component for displaying styled text with support for nested texts.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Text matches the official SwiftUI [Text API](https://developer.apple.com/documentation/swiftui/text).
 
@@ -77718,8 +77325,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI TextField component for text input.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI TextField matches the official SwiftUI [TextField API](https://developer.apple.com/documentation/swiftui/textfield) and supports single-line and multiline input, keyboard configuration, submit handling, and an imperative `ref` for programmatic control.
 
@@ -77986,8 +77591,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI TextField component for text input.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 A text field component that allows users to enter and edit text.
 
 ## Installation
@@ -78120,8 +77723,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI Toggle component for displaying native toggles.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI Toggle matches the official SwiftUI [Toggle API](https://developer.apple.com/documentation/swiftui/toggle) and supports styling via the [`toggleStyle`](/versions/latest/sdk/ui/swift-ui/modifiers#togglestylestyle) modifier.
 
@@ -78362,8 +77963,6 @@ platforms: ['ios', 'tvos']
 A SwiftUI VStack component for vertical layouts.
 iOS, tvOS
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 Expo UI VStack matches the official SwiftUI [VStack API](https://developer.apple.com/documentation/swiftui/vstack) and arranges its children vertically.
 
 ## Installation
@@ -78473,8 +78072,6 @@ platforms: ['ios', 'tvos']
 
 A SwiftUI ZStack component for overlapping layouts.
 iOS, tvOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 Expo UI ZStack matches the official SwiftUI [ZStack API](https://developer.apple.com/documentation/swiftui/zstack) and overlays its children on top of each other.
 
@@ -78597,8 +78194,6 @@ platforms: ['android', 'ios', 'tvos', 'expo-go']
 
 A library that enables your app to manage remote updates to your application code.
 Android, iOS, tvOS, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates.
 
@@ -79641,8 +79236,6 @@ isDeprecated: true
 A library that allows you to generate an image to serve as a thumbnail from a video file.
 Android, iOS, tvOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 > **[Deprecated](/more/release-statuses#deprecated):** Video Thumbnails library has been deprecated in favor of [`generateThumbnailsAsync`](/versions/latest/sdk/video#generatethumbnailsasynctimes-options) from [`expo-video`](/versions/latest/sdk/video). `expo-video-thumbnails` is not receiving patches and will be removed in SDK 56.
 
 `expo-video-thumbnails` allows you to generate an image to serve as a thumbnail from a video file.
@@ -79764,8 +79357,6 @@ platforms: ['android', 'ios', 'web', 'tvos', 'expo-go']
 
 A library that provides an API to implement video playback in apps.
 Android, iOS, tvOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-video` is a cross-platform, performant video component for React Native and Expo with Web support.
 
@@ -81374,8 +80965,6 @@ inExpoGo: true
 A component library that provides a carousel-like view to swipe through pages of content.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-pager-view` exposes a component that provides the layout and gestures to scroll between pages of content, like a carousel.
 
 ## Installation
@@ -81441,8 +81030,6 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 A library that provides access to the system's web browser and supports handling redirects.
 Android, iOS, Web, Included in Expo Go
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 `expo-web-browser` provides access to the system's web browser and supports handling redirects. On Android, it uses `ChromeCustomTabs` and on iOS, it uses `SFSafariViewController` or `ASWebAuthenticationSession`, depending on the method you call. As of iOS 11, `SFSafariViewController` no longer shares cookies with Safari, so if you are using `WebBrowser` for authentication you will want to use `WebBrowser.openAuthSessionAsync`, and if you just want to open a webpage (such as your app privacy policy), then use `WebBrowser.openBrowserAsync`.
 
@@ -81903,8 +81490,6 @@ inExpoGo: true
 A library that provides a WebView component.
 Android, iOS, Included in Expo Go
 
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
-
 `react-native-webview` provides a `WebView` component that renders web content in a native view.
 
 ## Installation
@@ -81983,8 +81568,6 @@ isAlpha: true
 
 A library to build iOS home screen widgets and Live Activities using Expo UI components.
 iOS
-
-> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.
 
 > This library is currently in [alpha](/more/release-statuses#alpha) and subject to breaking changes. It is not available in the Expo Go app, use [development builds](/develop/development-builds/introduction) to try it out.
 

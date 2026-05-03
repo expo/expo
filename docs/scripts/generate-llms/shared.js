@@ -44,8 +44,15 @@ const CONTENT_SEPARATOR = '\n\n---\n\n';
 
 const AGENT_INSTRUCTIONS_BLOCK_REGEX = /<AgentInstructions>[\S\s]*?<\/AgentInstructions>\n*/g;
 
+const DOC_INDEX_BLOCKQUOTE =
+  '> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.';
+
 export function stripAgentInstructions(content) {
   return content.replace(AGENT_INSTRUCTIONS_BLOCK_REGEX, '');
+}
+
+export function stripDocIndexBlockquote(content) {
+  return content.replaceAll(DOC_INDEX_BLOCKQUOTE + '\n\n', '');
 }
 
 export function toBlockquote(text) {
@@ -137,7 +144,7 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
       continue;
     }
 
-    const content = stripAgentInstructions(rawContent).trim();
+    const content = stripDocIndexBlockquote(stripAgentInstructions(rawContent)).trim();
     if (!content) {
       continue;
     }
@@ -166,7 +173,8 @@ export function generateCrossLinksSection(currentFilename) {
 }
 
 export function composeMarkdownDocument({ title, description, contentChunks, currentFilename }) {
-  let fullContent = `# ${title}\n\n${toBlockquote(description)}\n\n`;
+  let fullContent = `# ${title}\n\n${toBlockquote(description)}\n`;
+  fullContent += DOC_INDEX_BLOCKQUOTE + '\n\n';
   fullContent += buildAgentInstructions('<page-url>') + '\n';
 
   for (const content of contentChunks) {
