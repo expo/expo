@@ -201,6 +201,7 @@ exceptions:
   - '.*TLS.*'
   - '.*Transporter.*'
   - '.*TTF.*'
+  - '.*TTI.*'
   - '.*Turtle.*'
   - '.*TV.*'
   - '.*TypeScript.*'
@@ -310,3 +311,4 @@ exceptions:
   - MainActivity
   - HorizontalCenteredHeroCarousel
   - HorizontalUncontainedCarousel
+  - Serving Markdown to AI Agents
