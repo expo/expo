@@ -1,16 +1,12 @@
 import type { Metadata } from 'expo-server';
 import type { ReactNode } from 'react';
 
-import { renderMetadataHtml, renderMetadataTags } from './render';
+import { renderMetadataTags } from './render';
 import { resolveMetadata } from './resolve';
 import { isTitleTag } from './types';
 
 export function serializeMetadataToTags(metadata: Metadata) {
   return renderMetadataTags(resolveMetadata(metadata));
-}
-
-export function serializeMetadataToHtml(metadata: Metadata): string {
-  return renderMetadataHtml(renderMetadataTags(resolveMetadata(metadata)));
 }
 
 export function serializeMetadataToReact(metadata: Metadata): ReactNode[] {

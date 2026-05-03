@@ -3,7 +3,7 @@ import type { LoadedRoute } from 'expo-router/build/Route';
 import type { GenerateMetadataFunction, ImmutableRequest, Metadata } from 'expo-server';
 import type { ReactNode } from 'react';
 
-import { serializeMetadataToHtml, serializeMetadataToReact } from '../utils/metadata/serialize';
+import { serializeMetadataToReact } from '../utils/metadata/serialize';
 
 type ResolveMetadataOptions = {
   route: {
@@ -17,7 +17,6 @@ type ResolveMetadataOptions = {
 type ResolvedMetadata = {
   metadata: Metadata;
   headNodes: ReactNode[];
-  headTags: string;
 };
 
 function getGenerateMetadata(moduleExports: LoadedRoute): GenerateMetadataFunction | null {
@@ -48,6 +47,5 @@ export async function resolveMetadata(
   return {
     metadata,
     headNodes: serializeMetadataToReact(metadata),
-    headTags: serializeMetadataToHtml(metadata),
   };
 }

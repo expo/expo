@@ -1,4 +1,4 @@
-import { renderMetadataTag, pushLink, pushName, pushProperty } from './tag';
+import { pushLink, pushName, pushProperty } from './tag';
 import type {
   MetadataTag,
   ResolvedAlternates,
@@ -35,10 +35,6 @@ export function renderMetadataTags(resolved: ResolvedMetadata): MetadataTag[] {
   renderOther(tags, resolved.other);
 
   return tags;
-}
-
-export function renderMetadataHtml(tags: MetadataTag[]): string {
-  return tags.map(renderMetadataTag).join('');
 }
 
 function renderTitle(tags: MetadataTag[], title: string | undefined) {

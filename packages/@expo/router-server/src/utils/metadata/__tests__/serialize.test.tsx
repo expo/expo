@@ -1,28 +1,8 @@
-import {
-  serializeMetadataToHtml,
-  serializeMetadataToReact,
-  serializeMetadataToTags,
-} from '../serialize';
+import { serializeMetadataToReact, serializeMetadataToTags } from '../serialize';
 
 describe(serializeMetadataToTags, () => {
   it('returns empty array for empty metadata', () => {
     expect(serializeMetadataToTags({})).toEqual([]);
-  });
-});
-
-describe(serializeMetadataToHtml, () => {
-  it('returns empty string for empty metadata', () => {
-    expect(serializeMetadataToHtml({})).toBe('');
-  });
-
-  it('produces HTML from metadata end-to-end', () => {
-    const html = serializeMetadataToHtml({
-      title: 'Page',
-      description: 'A description',
-    });
-
-    expect(html).toContain('<title>Page</title>');
-    expect(html).toContain('<meta name="description" content="A description">');
   });
 });
 

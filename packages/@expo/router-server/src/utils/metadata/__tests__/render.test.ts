@@ -1,5 +1,5 @@
-import { renderMetadataHtml, renderMetadataTags } from '../render';
-import type { MetadataTag, ResolvedMetadata } from '../types';
+import { renderMetadataTags } from '../render';
+import type { ResolvedMetadata } from '../types';
 
 function metaName(name: string, content: string): MetadataTag {
   return { tagName: 'meta', attributes: { name, content } };
@@ -398,22 +398,5 @@ describe(renderMetadataTags, () => {
     );
 
     expect(tags).toContainEqual(metaName('theme-color', '#fff'));
-  });
-});
-
-describe(renderMetadataHtml, () => {
-  it('joins rendered tags into a single string', () => {
-    const tags: MetadataTag[] = [
-      { tagName: 'title', content: 'Page' },
-      { tagName: 'meta', attributes: { name: 'description', content: 'Desc' } },
-    ];
-
-    expect(renderMetadataHtml(tags)).toBe(
-      '<title>Page</title><meta name="description" content="Desc">'
-    );
-  });
-
-  it('returns empty string for empty array', () => {
-    expect(renderMetadataHtml([])).toBe('');
   });
 });

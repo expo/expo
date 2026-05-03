@@ -1,20 +1,4 @@
-import { isTitleTag, MetadataTag } from './types';
-
-export function renderMetadataTag(tag: MetadataTag): string {
-  if (isTitleTag(tag)) {
-    return `<title>${escapeHtmlTextNode(tag.content ?? '')}</title>`;
-  }
-
-  const attributes = tag.attributes
-    ? ' ' +
-      Object.entries(tag.attributes)
-        .filter(([, value]) => value != null && value !== '')
-        .map(([key, value]) => `${key}="${escapeHtmlAttributeValue(value)}"`)
-        .join(' ')
-    : '';
-
-  return `<${tag.tagName}${attributes}>`;
-}
+import { MetadataTag } from './types';
 
 export function pushName(tags: MetadataTag[], key: string, value: string | undefined) {
   pushMetaContent(tags, 'name', key, value);
@@ -37,18 +21,6 @@ export function pushLink(tags: MetadataTag[], attributes: Record<string, string 
     tagName: 'link',
     attributes: normalizedAttributes,
   });
-}
-
-function escapeHtmlAttributeValue(value: string): string {
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
-}
-
-function escapeHtmlTextNode(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
 function pushMetaContent(
