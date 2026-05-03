@@ -654,6 +654,45 @@ class SessionManagerTest {
       assertEquals(0, sessionManager.getAllSessions().size)
     }
 
+  @Test
+  fun `cleanupOldSessions removes inactive sessions older than the retention window`() =
+    runTest {
+      // Arrange — three sessions across the cutoff. We can't pick a static
+      // timestamp like the other tests because the retention window is computed
+      // from `now`, so we anchor against the current time.
+      val now = System.currentTimeMillis()
+      val retentionMs = MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS * 1000
+      val isoFormatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US)
+        .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+
+      val staleStoppedId = "stale-stopped"
+      val staleActiveId = "stale-active"
+      val freshStoppedId = "fresh-stopped"
+
+      val staleStart = isoFormatter.format(java.util.Date(now - retentionMs - 60_000))
+      val freshStart = isoFormatter.format(java.util.Date(now - 60_000))
+
+      sessionManager.startSessionWithIdAt(staleStoppedId, staleStart)
+      sessionManager.stopSession(staleStoppedId)
+
+      sessionManager.startSessionWithIdAt(staleActiveId, staleStart)
+      // Intentionally not stopped — simulates a long-running session.
+
+      sessionManager.startSessionWithIdAt(freshStoppedId, freshStart)
+      sessionManager.stopSession(freshStoppedId)
+
+      // Act
+      sessionManager.cleanupOldSessions()
+
+      // Assert — only the stopped, stale session is gone. The active stale
+      // session is preserved (we don't pull a session out from under a
+      // long-running process), and the fresh stopped session is preserved.
+      val remaining = sessionManager.getAllSessions().map { it.session.id }.toSet()
+      assertFalse("stale stopped session should be cleaned up", remaining.contains(staleStoppedId))
+      assertTrue("stale but active session should be preserved", remaining.contains(staleActiveId))
+      assertTrue("fresh stopped session should be preserved", remaining.contains(freshStoppedId))
+    }
+
   // endregion
 
   // region Helper Methods

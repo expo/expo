@@ -133,6 +133,18 @@ class SessionManager(
     database.metricDao().deleteMetricsOlderThan(cutoffTimestamp)
   }
 
+  /**
+   * Prunes sessions whose `startTimestamp` is older than the metric retention
+   * window. Sessions with no metrics at all (e.g. a launch that never recorded
+   * anything because the user quit immediately) wouldn't otherwise be reached
+   * by `cleanupOldMetrics` + cascade-delete, since there are no metrics to
+   * expire.
+   */
+  suspend fun cleanupOldSessions() {
+    val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
+    database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
+  }
+
   suspend fun updateEnvironmentForActiveSessions(environment: String) {
     database.sessionDao().updateEnvironmentForActiveSessions(environment)
   }

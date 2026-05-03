@@ -136,7 +136,8 @@ class BaseObservabilityManager(
 
   suspend fun cleanup() {
     pendingMetricsManager.cleanupOldPendingMetrics()
-    // TODO(@ubax): Move sessionManager.cleanupOldMetrics() out of eas observe
+    // TODO(@ubax): Move sessionManager.cleanupOld* calls out of eas observe
     sessionManager.cleanupOldMetrics()
+    sessionManager.cleanupOldSessions()
   }
 }

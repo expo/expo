@@ -160,6 +160,13 @@ interface SessionDao {
   @Query("UPDATE sessions SET isActive = 0, endTimestamp = :timestamp WHERE startTimestamp < :timestamp AND endTimestamp IS NULL")
   suspend fun deactivateAllSessionsBefore(timestamp: String)
 
+  // Drops sessions whose `startTimestamp` is older than the cutoff. Cascade
+  // deletes their metrics via the foreign-key relation. Live (`isActive = 1`)
+  // sessions are excluded so a long-running process doesn't lose its current
+  // session out from under it.
+  @Query("DELETE FROM sessions WHERE startTimestamp < :cutoffTimestamp AND isActive = 0")
+  suspend fun deleteSessionsOlderThan(cutoffTimestamp: String)
+
   @Query("UPDATE sessions SET environment = :environment WHERE id = :id")
   suspend fun updateEnvironment(
     id: String,
