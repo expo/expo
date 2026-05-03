@@ -11,7 +11,6 @@ type ResolveMetadataOptions = {
 type ResolvedMetadata = {
     metadata: Metadata;
     headNodes: ReactNode[];
-    headTags: string;
 };
 export declare function resolveMetadata(options: ResolveMetadataOptions): Promise<ResolvedMetadata | null>;
 export {};
