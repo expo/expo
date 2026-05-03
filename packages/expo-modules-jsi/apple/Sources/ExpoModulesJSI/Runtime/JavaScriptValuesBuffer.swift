@@ -44,6 +44,9 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
 
   deinit {
     if ownsMemory {
+      // Run the destructor for each `jsi::Value` so they release their strong refs to JS objects.
+      // Without this, calling host functions through this buffer leaks every JS-object argument.
+      bufferPointer.deinitialize()
       bufferPointer.deallocate()
     }
   }

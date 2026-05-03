@@ -202,7 +202,7 @@ class IntrospectableRecordConversionStrategy<T : Record>(
         PropertyDescriptor(
           key = propertyName,
           typeDescriptor = propertyTypeDescriptor,
-          setter = property.setter as (Any, Any?) -> Unit,
+          setter = property::set as (Any, Any?) -> Unit,
           typeConverter = converterProvider.obtainTypeConverter(propertyTypeDescriptor),
           isRequired = isRequired
         )

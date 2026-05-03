@@ -1314,11 +1314,14 @@ importers:
         specifier: ~19.2.0
         version: 19.2.14
 
-  apps/observability-tester:
+  apps/observe-tester:
     dependencies:
       '@expo/html-elements':
         specifier: ^0.13.7
         version: 0.13.8(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@expo/styleguide-base':
+        specifier: ^1.0.1
+        version: 1.0.1(react@19.2.3)
       '@expo/vector-icons':
         specifier: ^15.0.2
         version: 15.1.1(expo-font@packages+expo-font)(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -1340,6 +1343,9 @@ importers:
       expo-build-properties:
         specifier: workspace:*
         version: link:../../packages/expo-build-properties
+      expo-clipboard:
+        specifier: workspace:*
+        version: link:../../packages/expo-clipboard
       expo-constants:
         specifier: workspace:*
         version: link:../../packages/expo-constants

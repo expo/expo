@@ -1,8 +1,9 @@
-import { startLoggingRouterMetrics } from '@/router-metrics-integration';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import ExpoObserve, { AppMetricsRoot } from 'expo-observe';
 import { Stack } from 'expo-router';
 import { useColorScheme } from 'react-native';
+
+import { startLoggingRouterMetrics } from '@/router-metrics-integration';
 
 // Toggle to enable per screen router metrics logging
 const IS_ROUTER_INTEGRATION_ENABLED = false;
