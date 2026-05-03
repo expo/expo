@@ -262,7 +262,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(pointee.getString(jsiRuntime).utf16(jsiRuntime))
+    return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
   }
 
   /**
@@ -447,7 +447,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return String(pointee.toString(jsiRuntime).utf16(jsiRuntime))
+    return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
   }
 
   /**

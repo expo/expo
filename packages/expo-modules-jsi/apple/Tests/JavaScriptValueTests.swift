@@ -79,6 +79,53 @@ struct JavaScriptValueTests {
     #expect((JavaScriptValue.number(48) == JavaScriptValue.number(48)) == true)
   }
 
+  // MARK: - getString round-trip
+
+  @Test
+  func `getString returns ASCII unchanged`() throws {
+    let value = try runtime.eval("'hello world'")
+    #expect(value.getString() == "hello world")
+  }
+
+  @Test
+  func `getString returns empty string`() throws {
+    let value = try runtime.eval("''")
+    #expect(value.getString() == "")
+  }
+
+  @Test
+  func `getString returns BMP non-ASCII unchanged`() throws {
+    let value = try runtime.eval("'café — déjà vu'")
+    #expect(value.getString() == "café — déjà vu")
+  }
+
+  @Test
+  func `getString preserves non-BMP characters via surrogate pairs`() throws {
+    let value = try runtime.eval("'🎉🚀'")
+    let result = value.getString()
+    #expect(result == "🎉🚀")
+    #expect(result.unicodeScalars.count == 2)
+  }
+
+  @Test
+  func `getString handles mixed scripts`() throws {
+    let value = try runtime.eval("'Hello, 世界! Привет 🌍'")
+    #expect(value.getString() == "Hello, 世界! Привет 🌍")
+  }
+
+  @Test
+  func `getString handles long ASCII string`() throws {
+    let long = String(repeating: "x", count: 10_000)
+    let value = JavaScriptValue(runtime, long)
+    #expect(value.getString() == long)
+  }
+
+  @Test
+  func `getString handles string built with String(runtime, ...)`() {
+    let value = JavaScriptValue(runtime, "round-trip 🎉")
+    #expect(value.getString() == "round-trip 🎉")
+  }
+
   // MARK: - Type Checking Tests
 
   @Test
