@@ -401,9 +401,9 @@ PODS:
     - ExpoModulesCore
   - ExpoCalendar (55.0.14):
     - ExpoModulesCore
-  - ExpoCamera (55.0.16):
+  - ExpoCamera (55.0.17):
     - ExpoModulesCore
-  - ExpoCameraBarcodeScanning (55.0.16):
+  - ExpoCameraBarcodeScanning (55.0.17):
     - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
@@ -3960,8 +3960,8 @@ SPEC CHECKSUMS:
   ExpoBrightness: 80dc3bd175cb30c56075ec5d9dac18984bc9b688
   ExpoBrownfield: cc9ffdc3584cb0447e2c77fb3e7dc73eb2ea95ee
   ExpoCalendar: 8c535db6cc831ae56358501712566df056b40ad9
-  ExpoCamera: b1af7b587924c631de246608f4cddafa9c8ba767
-  ExpoCameraBarcodeScanning: 0fea7535c8a4528407c716c827692890bd1621b2
+  ExpoCamera: e0c3cc31cca60c3f1f6a4c8460ee58623bf2dad7
+  ExpoCameraBarcodeScanning: 42820ba81b382b8fb7c8ca92d57d0c372f8c92f3
   ExpoCellular: 109862658315190acad24b669408133ec2fe496f
   ExpoClipboard: 56f5dac55e9e19bb6f084ada68bfc634a36e9533
   ExpoContacts: 7756695714758162fd8c15bad4a0b7b1a11fd826
