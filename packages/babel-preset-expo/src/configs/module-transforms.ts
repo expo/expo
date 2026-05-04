@@ -12,7 +12,7 @@
  * (Babel applies presets in reverse order).
  */
 
-import type { PluginItem } from '@babel/core';
+import type { ConfigAPI, PluginItem } from '@babel/core';
 
 import { lazyImports as expoLazyImports } from './utils/expo-lazy-imports';
 import { lazyImports as rnLazyImports } from './utils/rn-lazy-imports';
@@ -23,7 +23,7 @@ type ModuleTransformOptions = {
   lazyImportExportTransform?: any;
 };
 
-module.exports = function (_babel: unknown, options: ModuleTransformOptions) {
+module.exports = function (_api: ConfigAPI, options: ModuleTransformOptions) {
   const plugins: PluginItem[] = [];
 
   // Runtime transform (no regenerator for hermes-v0)

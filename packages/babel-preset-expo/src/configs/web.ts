@@ -9,12 +9,12 @@
  * https://github.com/facebook/react-native/blob/2af1da42ff517232f1309efed7565fe9ddbbac77/packages/react-native-babel-preset/src/configs/main.js#L1
  */
 
-import type { PluginItem } from '@babel/core';
+import type { ConfigAPI, PluginItem } from '@babel/core';
 
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-module.exports = function (_babel: unknown) {
+module.exports = function (_api: ConfigAPI) {
   const extraPlugins: PluginItem[] = [];
 
   // NOTE: We also remove `@react-native/babel-plugin-codegen` since it doesn't seem needed on web.

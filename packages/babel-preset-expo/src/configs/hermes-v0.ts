@@ -10,7 +10,7 @@
  * https://github.com/facebook/react-native/blob/main/packages/react-native-babel-preset/src/configs/main.js
  */
 
-import type { PluginItem } from '@babel/core';
+import type { ConfigAPI, PluginItem } from '@babel/core';
 
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
@@ -28,7 +28,7 @@ function isFirstParty(fileName: string | undefined | null) {
   return !!fileName && !EXCLUDED_FIRST_PARTY_PATHS.some((regex) => regex.test(fileName));
 }
 
-module.exports = function (_babel: unknown, options: ConfigOptions) {
+module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
   const extraPlugins: PluginItem[] = [];
   const firstPartyPlugins: PluginItem[] = [];
 
