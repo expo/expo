@@ -201,10 +201,10 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   // Ensure the example exists after performing remapping and deprecation checks.
   await ensureExampleExists(resolvedExample);
 
-  // Log the status after aliases and deprecated examples are handled.
-  console.log(chalk`Creating an Expo project using the {cyan ${resolvedExample}} example.\n`);
-
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
+  console.log(
+    chalk`Creating {cyan ${path.basename(projectRoot)}} using the {cyan ${resolvedExample}} example.\n`
+  );
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
   // Setup telemetry attempt after a reasonable point.
