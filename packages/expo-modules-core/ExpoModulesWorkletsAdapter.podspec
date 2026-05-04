@@ -67,12 +67,25 @@ Pod::Spec.new do |s|
 
   react_native_worklets_dir_absolute = Pod::reactNativeWorkletsPath()
 
+  if react_native_worklets_dir_absolute.nil?
+    raise <<~MSG.strip
+      [ExpoModulesWorkletsAdapter] Could not locate the `react-native-worklets` package.
+
+      The adapter needs the worklets headers and sources to compile, but `require.resolve('react-native-worklets/package.json')` returned nothing from `#{__dir__}` or `#{ENV['PROJECT_ROOT'] || Pod::Config.instance.installation_root}`, and the `RNWorklets` Podfile dependency did not declare a `:path`.
+
+      Fix by either installing `react-native-worklets` so it resolves from your project root, or declaring `pod 'RNWorklets', :path => '<path-to-package>'` in your Podfile.
+    MSG
+  end
+
   pods_root = Pod::Config.instance.project_pods_root
   workletsPath = Pathname.new(react_native_worklets_dir_absolute).relative_path_from(pods_root).to_s
 
   header_search_paths.concat([
     "\"$(PODS_ROOT)/#{workletsPath}/apple\"",
     "\"$(PODS_ROOT)/#{workletsPath}/Common/cpp\"",
+    # Reach the private headers of `ExpoModulesWorklets` (e.g.
+    # `EXWorkletsProvider+Private.h`) from this companion pod.
+    '"$(PODS_ROOT)/Headers/Private/ExpoModulesWorklets"',
   ])
 
   s.pod_target_xcconfig = {

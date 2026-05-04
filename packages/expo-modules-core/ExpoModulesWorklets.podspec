@@ -30,4 +30,5 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
 
   s.source_files = 'ios/Worklets/**/*.{h,m,mm,swift,cpp}'
+  s.private_header_files = 'ios/Worklets/**/*+Private.h'
 end

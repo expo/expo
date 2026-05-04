@@ -2,6 +2,7 @@
 
 #import "ExpoWorkletsBridgeProvider.h"
 #import <ExpoModulesWorklets/EXJavaScriptSerializable.h>
+#import <ExpoModulesWorklets/EXWorkletsProvider+Private.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 
 #include <memory>

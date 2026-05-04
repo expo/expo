@@ -38,11 +38,13 @@ NS_SWIFT_NAME(WorkletsProvider)
 @end
 
 // The adapter pod registers its provider in `+load`; the main pod's runtime
-// APIs read it lazily and degrade gracefully when nil.
+// APIs read it lazily and degrade gracefully when nil. The setter is
+// declared in `EXWorkletsProvider+Private.h` so only the adapter can
+// publish a provider — preventing accidental clobbering from app code.
 NS_SWIFT_NAME(WorkletsProviderRegistry)
 @interface EXWorkletsProviderRegistry : NSObject
 
-@property (class, atomic, nullable) id<EXWorkletsProvider> shared;
+@property (class, atomic, readonly, nullable) id<EXWorkletsProvider> shared;
 
 @end
 
