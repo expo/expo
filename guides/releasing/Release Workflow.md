@@ -73,6 +73,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 
 **How:**
 
+- Make sure Xcode 26.4 is installed in `/Applications` (it can coexist with newer Xcodes). `et publish-packages` automatically points the iOS prebuild step at it via `DEVELOPER_DIR` regardless of which Xcode is active, and fails fast with a clear error if 26.4 isn't found. This pin matters because the npm-bundled iOS xcframeworks embed the producing Swift compiler version in their `.swiftinterface` headers, and Swift refuses to consume an interface produced by a newer compiler — publishing on a newer Xcode would break every EAS Build worker and consumer on an older one.
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
 - Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 
@@ -163,6 +164,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 **How:**
 
+- Make sure Xcode 26.4 is installed in `/Applications` (see [§0.6](#06-publish-next-packages) for why; `et publish-packages` will use it automatically).
 - From the main branch, run `et publish-packages` and publish all packages with changes.
 - From the main branch, run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 - If there are any packages for which a patch was cherry-picked to the release branch AND a new feature (requiring a minor version bump) was added on main in the meantime, you will need to publish a patch release of that package from the release branch which does not include the new feature.

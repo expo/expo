@@ -25,6 +25,8 @@ jobs:
     image: latest
     steps:
       - uses: eas/checkout
+      - name: Switch to Xcode 26.4
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.app
       - id: detect
         name: Detect changed packages
         outputs: [packages]
