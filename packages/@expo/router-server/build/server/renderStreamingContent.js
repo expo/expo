@@ -124,6 +124,12 @@ async function getStreamingContent(location, options) {
         bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
+        onError(error) {
+            if (options?.request?.signal.aborted) {
+                return;
+            }
+            console.error('SSR streaming render error:', error);
+        },
     });
 }
 var metadata_1 = require("./metadata");
