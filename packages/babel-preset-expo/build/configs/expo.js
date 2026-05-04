@@ -6,6 +6,7 @@ const expo_inline_manifest_plugin_1 = require("../plugins/expo-inline-manifest-p
 const expo_router_plugin_1 = require("../plugins/expo-router-plugin");
 const import_meta_transform_plugin_1 = require("../plugins/import-meta-transform-plugin");
 const inline_env_vars_1 = require("../plugins/inline-env-vars");
+const lazy_decorators_plugin_1 = require("../plugins/lazy-decorators-plugin");
 const restricted_react_api_plugin_1 = require("../plugins/restricted-react-api-plugin");
 const server_actions_plugin_1 = require("../plugins/server-actions-plugin");
 const server_data_loaders_plugin_1 = require("../plugins/server-data-loaders-plugin");
@@ -103,10 +104,7 @@ module.exports = function (api, options) {
     plugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(polyfillImportMeta === true));
     // TODO: Remove
     if (options.decorators !== false) {
-        plugins.push([
-            require('@babel/plugin-proposal-decorators'),
-            options.decorators ?? { legacy: true },
-        ]);
+        plugins.push([lazy_decorators_plugin_1.lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
     }
     // Automatically add worklets or reanimated plugin when package is installed.
     if (options.worklets !== false && options.reanimated !== false) {
