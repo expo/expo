@@ -39,6 +39,7 @@ try {
 
 const LANGUAGE_SAMPLES: {
   name: string;
+  presetOptions?: Record<string, unknown>;
   code: string;
   getCompiledCode: (props: { platform: string }) => string;
   hermesError?: RegExp;
@@ -115,6 +116,9 @@ const LANGUAGE_SAMPLES: {
   {
     name: `destructuring in catch statement (ES10)`,
     code: SAMPLE_CODE,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     getCompiledCode({ platform }) {
       if (platform === 'web') {
         return 'try{}catch({message}){}';
@@ -140,6 +144,9 @@ const LANGUAGE_SAMPLES: {
   {
     // https://babeljs.io/docs/babel-plugin-transform-private-methods
     name: `private-methods`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `class Counter {
         #foo() {}
 
@@ -148,12 +155,15 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
       }
-      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
+      return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");var Counter=(0,_createClass2.default)(function Counter(){(0,_classCallCheck2.default)(this,Counter);Object.defineProperty(this,_foo,{value:_foo2});});function _foo2(){}';
     },
   },
   {
     // https://babeljs.io/docs/babel-plugin-transform-private-property-in-object
     name: `private-property-in-object`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `class Foo {
         #bar = "bar";
 
@@ -165,7 +175,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has((0,_checkInRHS2.default)(obj));}}`;
       }
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has((0,_checkInRHS2.default)(obj));}}`;
+      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck"));var _createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass"));var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _bar=(0,_classPrivateFieldLooseKey2.default)("bar");var Foo=function(){function Foo(){(0,_classCallCheck2.default)(this,Foo);Object.defineProperty(this,_bar,{writable:true,value:"bar"});}return(0,_createClass2.default)(Foo,[{key:"test",value:function test(obj){return Object.prototype.hasOwnProperty.call((0,_checkInRHS2.default)(obj),_bar);}}]);}();`;
     },
   },
   {
@@ -186,7 +196,7 @@ const LANGUAGE_SAMPLES: {
       if (platform === 'web') {
         return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
       }
-      return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch(_unused){_C.y="unknown";}})();`;
+      return `var _staticBlock;class C{static#x=(_staticBlock=()=>{try{this.y=doSomethingWith(this.#x);}catch{this.y="unknown";}},42);}_staticBlock();`;
     },
   },
   // This isn't transformed but also should be handled since the current minimum iOS version is 13.4 and logical assignment operators are iOS +14.
@@ -234,19 +244,6 @@ const LANGUAGE_SAMPLES: {
     },
   },
   {
-    name: 'optional-catch-binding',
-    code: `try {
-        throw 0;
-      } catch {
-      }`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `try{throw 0;}catch{}`;
-      }
-      return `try{throw 0;}catch(_unused){}`;
-    },
-  },
-  {
     name: 'literals',
     code: `const d = 0b11; // binary integer literal
     const e = 0o7; // octal integer literal
@@ -278,6 +275,9 @@ const LANGUAGE_SAMPLES: {
   },
   {
     name: 'object-rest-spread',
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `var y = {};
     var x = 1;
     var k = { x, ...y };`,
@@ -286,30 +286,12 @@ const LANGUAGE_SAMPLES: {
     },
   },
   {
-    name: 'optional-chaining',
-    code: `var m = {}?.x;`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `var m={}?.x;`;
-      }
-      return `var _ref;var m=(_ref={})==null?void 0:_ref.x;`;
-    },
-  },
-  {
-    name: 'nullish-coalescing-operator',
-    code: `var obj2 = {};
-    var foo = obj2.foo ?? "default";`,
-    getCompiledCode({ platform }) {
-      if (platform === 'web') {
-        return `var obj2={};var foo=obj2.foo??"default";`;
-      }
-      return `var _obj2$foo;var obj2={};var foo=(_obj2$foo=obj2.foo)!=null?_obj2$foo:"default";`;
-    },
-  },
-  {
     // https://babeljs.io/docs/babel-plugin-transform-async-to-generator
     // Hermes says this isn't supported but it appears to work when compiled.
     name: `async/await`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `async function foo() {
         await bar();
       }`,
@@ -324,6 +306,9 @@ const LANGUAGE_SAMPLES: {
     // https://babeljs.io/docs/babel-plugin-transform-named-capturing-groups-regex
     // Hermes says this isn't supported but it appears to work when compiled.
     name: `named-capturing-groups-regex`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `var re = /(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/;
     console.log(re.exec("1999-02-29").groups.year);`,
     getCompiledCode({ platform }) {
@@ -338,6 +323,9 @@ const LANGUAGE_SAMPLES: {
     // https://babeljs.io/docs/babel-plugin-transform-unicode-regex
     // Hermes doesn't claim that this doesn't work but it is in the upstream transform.
     name: `unicode-regex`,
+    presetOptions: {
+      unstable_transformProfile: 'hermes-v0',
+    },
     code: `var string = "foo🥓bar";
     var match = string.match(/foo(.)bar/u);`,
     getCompiledCode({ platform }) {
@@ -375,7 +363,7 @@ LANGUAGE_SAMPLES.forEach((sample) => {
       it(`babel-preset-expo ensures Hermes compiles (platform: ${platform})`, async () => {
         const options = {
           babelrc: false,
-          presets: [preset],
+          presets: [[preset, sample.presetOptions ?? {}]],
           filename: '/unknown',
           sourceMaps: true,
           caller: getCaller({ name: 'metro', platform, isDev: true, engine: 'hermes' }),
