@@ -131,7 +131,7 @@ export async function getStreamingContent(
       ...(headCssNodes ?? []),
       ...(inlineCssNodes ?? []),
     ],
-    bodyNodes: [<FontResources />],
+    bodyNodes: [<FontResources key="font-resources" />],
   };
 
   return await ReactDOMServer.renderToReadableStream(
