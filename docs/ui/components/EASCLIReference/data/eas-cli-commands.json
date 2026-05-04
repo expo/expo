@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-04-23T19:49:08.793Z",
-    "cliVersion": "18.8.1"
+    "fetchedAt": "2026-04-30T11:04:31.013Z",
+    "cliVersion": "18.9.1"
   },
-  "totalCommands": 104,
+  "totalCommands": 107,
   "commands": [
     {
       "command": "eas account:login",
@@ -88,8 +88,8 @@
     },
     {
       "command": "eas build:download",
-      "description": "download simulator/emulator builds for a given fingerprint hash",
-      "usage": "USAGE\n  $ eas build:download --fingerprint <value> [-p ios|android] [--dev-client] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>    <options: ios|android>\n      --[no-]dev-client      Filter only dev-client builds.\n      --fingerprint=<value>  (required) Fingerprint hash of the build to download\n      --json                 Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive      Run the command in non-interactive mode.\n\nDESCRIPTION\n  download simulator/emulator builds for a given fingerprint hash"
+      "description": "download a simulator/emulator build by build ID or fingerprint hash",
+      "usage": "USAGE\n  $ eas build:download [--build-id <value> | --fingerprint <value> | -p ios|android | --dev-client]\n    [--all-artifacts] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>    <options: ios|android>\n      --all-artifacts        Download all available build artifacts (build artifacts archive, Xcode logs, etc.) in\n                             addition to the application archive. Without this flag, only the application archive is\n                             downloaded and the command errors if it is missing.\n      --build-id=<value>     ID of the build to download. Mutually exclusive with --fingerprint, --platform, and\n                             --dev-client; the platform is derived from the build itself.\n      --[no-]dev-client      Filter only dev-client builds.\n      --fingerprint=<value>  Fingerprint hash of the build to download\n      --json                 Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive      Run the command in non-interactive mode.\n\nDESCRIPTION\n  download a simulator/emulator build by build ID or fingerprint hash"
     },
     {
       "command": "eas build:inspect",
@@ -315,6 +315,21 @@
       "command": "eas init:onboarding [TARGET_PROJECT_DIRECTORY]",
       "description": "continue onboarding process started on the https://expo.new website.",
       "usage": "USAGE\n  $ eas init:onboarding [TARGET_PROJECT_DIRECTORY]\n\nDESCRIPTION\n  continue onboarding process started on the https://expo.new website.\n\nALIASES\n  $ eas init:onboarding\n  $ eas onboarding"
+    },
+    {
+      "command": "eas integrations:asc:connect",
+      "description": "connect a project to an App Store Connect app",
+      "usage": "USAGE\n  $ eas integrations:asc:connect [--api-key-id <value>] [--asc-app-id <value>] [--bundle-id <value>] [--json]\n    [--non-interactive]\n\nFLAGS\n  --api-key-id=<value>  Apple App Store Connect API Key ID\n  --asc-app-id=<value>  App Store Connect app identifier\n  --bundle-id=<value>   Filter discovered apps by bundle identifier\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n\nDESCRIPTION\n  connect a project to an App Store Connect app"
+    },
+    {
+      "command": "eas integrations:asc:disconnect",
+      "description": "disconnect the current project from its App Store Connect app",
+      "usage": "USAGE\n  $ eas integrations:asc:disconnect [--yes] [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n  --yes              Skip confirmation prompt\n\nDESCRIPTION\n  disconnect the current project from its App Store Connect app"
+    },
+    {
+      "command": "eas integrations:asc:status",
+      "description": "show the App Store Connect app link status for the current project",
+      "usage": "USAGE\n  $ eas integrations:asc:status [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  show the App Store Connect app link status for the current project"
     },
     {
       "command": "eas login",

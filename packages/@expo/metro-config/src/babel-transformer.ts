@@ -13,8 +13,6 @@ import assert from 'node:assert';
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
 import { transformSync } from './transformSync';
-import { getPkgVersionFromPath } from './utils/getPkgVersion';
-import { transitiveResolveFrom } from './utils/transitiveResolveFrom';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
   babelRuntimeVersion?: string;
@@ -35,7 +33,6 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   projectRoot: string;
   /** When true, indicates this bundle should contain only the loader export */
   isLoaderBundle?: boolean;
-  isHermesV1?: boolean;
   /** When true, indicates this file is part of a DOM component bundle */
   isDomComponent?: boolean;
 };
@@ -62,20 +59,6 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 const memoizeWarning = memoize((message: string) => {
   debug(message);
 });
-
-function getIsHermesV1(projectRoot: string): boolean {
-  const hermesCompilerPackageJsonPath = transitiveResolveFrom(projectRoot, [
-    'react-native/package.json',
-    'hermes-compiler/package.json',
-  ]);
-  if (!hermesCompilerPackageJsonPath) {
-    return true;
-  }
-  const hermesVersion = getPkgVersionFromPath(hermesCompilerPackageJsonPath);
-  // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
-  const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
-  return !isLegacyHermes;
-}
 
 function getBabelCaller({
   filename,
@@ -129,8 +112,6 @@ function getBabelCaller({
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: stringOrUndefined(options.customTransformOptions?.engine),
-    // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
-    isHermesV1: getIsHermesV1(options.projectRoot),
 
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,

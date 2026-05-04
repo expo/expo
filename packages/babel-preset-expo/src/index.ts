@@ -10,7 +10,6 @@ import {
   getIsDev,
   getIsDomComponent,
   getIsFastRefreshEnabled,
-  getIsHermesV1,
   getIsNodeModule,
   getIsProd,
   getIsReactServer,
@@ -41,6 +40,12 @@ type BabelPresetExpoPlatformOptions = {
    * using `react-native-worklets` or Reanimated 4. @default `true`
    */
   worklets?: boolean;
+  /** Enable or disable adding the `@expo/ui` Babel plugin when `@expo/ui` is
+   * installed. The plugin rewrites `Icon.select({ ios, android })` to the
+   * active platform's value (read from the babel caller) so per-platform
+   * bundles only carry their own branch. @default `true`
+   */
+  expoUi?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -110,7 +115,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
-  const isHermesV1 = api.caller(getIsHermesV1);
   const isDomComponent = api.caller(getIsDomComponent);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
@@ -220,13 +224,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       { loose: true, useBuiltIns: true },
     ]);
   } else if (!isModernEngine) {
-    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-    // JSX is used in a function body. This is technically not required in production, but we
-    // should retain the same behavior since it's hard to debug the differences.
-    if (!isHermesV1) {
-      extraPlugins.push(require('@babel/plugin-transform-parameters'));
-    }
-
     extraPlugins.push(
       // Add support for class static blocks.
       [require('@babel/plugin-transform-class-static-block'), { loose: true }]
@@ -483,14 +480,24 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
             return [require(workletsPlugin)];
           }
         }
-
         if (platformOptions.reanimated !== false) {
           const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
           if (reanimatedPlugin) {
             return [require(reanimatedPlugin)];
           }
         }
+        return null;
+      })(),
 
+      // Automatically add the `@expo/ui` plugin when the package is installed.
+      // Independent of reanimated/worklets — must live in its own IIFE so the
+      // earlier fallback chain doesn't short-circuit before reaching it.
+      ((): PluginItem | null => {
+        if (platformOptions.expoUi === false) return null;
+        const plugin = resolveModule(api, '@expo/ui/babel-plugin');
+        if (plugin) {
+          return [require(plugin)];
+        }
         return null;
       })(),
     ].filter((x): x is PluginItem => !!x),

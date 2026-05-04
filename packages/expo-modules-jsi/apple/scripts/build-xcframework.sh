@@ -216,8 +216,16 @@ assemble_xcframework() {
 
 # --- Main ---
 
+# PODS_ROOT is set by the CocoaPods build phase; fall back to bare-expo's
+# Pods (via direnv's EXPO_ROOT_DIR, with a script-relative computation as a
+# last resort) so manual / npm-script invocations also work.
 if [[ -z "${PODS_ROOT:-}" ]]; then
-  log "error: PODS_ROOT is not set. Run this script as a CocoaPods build phase or set PODS_ROOT manually."
+  : "${EXPO_ROOT_DIR:=$(cd "${PACKAGE_DIR}/../../.." && pwd)}"
+  PODS_ROOT="${EXPO_ROOT_DIR}/apps/bare-expo/ios/Pods"
+fi
+if [[ ! -d "$PODS_ROOT" ]]; then
+  log "error: PODS_ROOT does not exist: $PODS_ROOT"
+  log "       Run \`pod install\` in apps/bare-expo/ios first, or set PODS_ROOT explicitly."
   exit 1
 fi
 
@@ -232,22 +240,9 @@ if [[ -f "${PODS_ROOT}/Local Podspecs/React-Core.podspec.json" ]]; then
   SOURCE_FILES+=("${PODS_ROOT}/Local Podspecs/React-Core.podspec.json")
 fi
 
-# Generate the module map for the `jsi` Clang module. The umbrella header is
-# referenced by absolute path so this works regardless of where Pods lives.
-# The same Pods/Headers/Public/React-jsi/jsi/jsi.h path exists in both prebuilt
-# and source-built React Native layouts. Stored outside `.build/` so we can
-# wipe SwiftPM state freely without losing this file.
-GENERATED_DIR="${PACKAGE_DIR}/.generated"
-GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
-mkdir -p "$GENERATED_DIR"
-cat > "$GENERATED_MODULE_MAP" <<EOF
-module jsi {
-  umbrella header "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
-
-  export *
-  module * { export * }
-}
-EOF
+# Generate the module map for the `jsi` Clang module.
+env PODS_ROOT="$PODS_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then

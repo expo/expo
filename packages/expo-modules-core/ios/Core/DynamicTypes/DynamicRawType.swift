@@ -17,6 +17,10 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     return type is Self
   }
 
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    return try cast(jsValue.getAny(), appContext: appContext)
+  }
+
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     if let value = value as? InnerType {
       return value

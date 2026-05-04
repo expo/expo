@@ -1,6 +1,10 @@
-import type { MetadataTag } from './types';
+import { isTitleTag, MetadataTag } from './types';
 
 export function renderMetadataTag(tag: MetadataTag): string {
+  if (isTitleTag(tag)) {
+    return `<title>${escapeHtmlTextNode(tag.content ?? '')}</title>`;
+  }
+
   const attributes = tag.attributes
     ? ' ' +
       Object.entries(tag.attributes)
@@ -8,10 +12,6 @@ export function renderMetadataTag(tag: MetadataTag): string {
         .map(([key, value]) => `${key}="${escapeHtmlAttributeValue(value)}"`)
         .join(' ')
     : '';
-
-  if (tag.tagName === 'title') {
-    return `<title>${escapeHtmlTextNode(tag.content ?? '')}</title>`;
-  }
 
   return `<${tag.tagName}${attributes}>`;
 }

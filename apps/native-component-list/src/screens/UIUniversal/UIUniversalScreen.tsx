@@ -96,13 +96,20 @@ export const UIUniversalScreens = [
     },
   },
   {
+    name: `${SCREEN_NAME_PREFIX}Icon`,
+    route: 'ui-universal/icon',
+    options: { title: 'Icon' },
+    getComponent() {
+      return optionalRequire(() => require('./IconScreen'));
+    },
+  },
+  {
     name: `${SCREEN_NAME_PREFIX}TextInput`,
     route: 'ui-universal/text-input',
     options: { title: 'TextInput' },
     getComponent() {
       return optionalRequire(() => require('./TextInputScreen'));
-    },
-  },
+  }
 ];
 
 function stripPrefix(elements: ListElement[]): ListElement[] {

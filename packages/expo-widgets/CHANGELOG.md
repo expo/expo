@@ -18,6 +18,7 @@
 - Add support for `Link` view from `@expo/ui`. ([#43985](https://github.com/expo/expo/pull/43985) by [@jakex7](https://github.com/jakex7))
 - Support `PlatformColor`. ([#44193](https://github.com/expo/expo/pull/44193) by [@jakex7](https://github.com/jakex7))
 - [plugin] Make incremental prebuilds work ([#45157](https://github.com/expo/expo/pull/45157) by [@jakex7](https://github.com/jakex7))
+- [android] Add stub methods. ([#45335](https://github.com/expo/expo/pull/45335) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

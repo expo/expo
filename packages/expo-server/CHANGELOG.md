@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+
 ## 55.0.5 — 2026-02-25
 
 ### 🐛 Bug fixes

@@ -9,6 +9,7 @@ public final class CalendarNextModule: Module {
     return CalendarModule.sharedEventStore
   }
   private var calendarDialogDelegate: CalendarDialogDelegate?
+  private var calendarPickerDelegate: CalendarPickerDelegate?
   private var calendarPermissions: ExpoCalendarPermissions?
 
   // swiftlint:disable:next function_body_length cyclomatic_complexity
@@ -57,6 +58,29 @@ public final class CalendarNextModule: Module {
       return ExpoCalendar(calendar: calendar)
     }
 
+    AsyncFunction("presentPicker") { (promise: Promise) in
+      guard let currentVc = appContext?.utilities?.currentViewController() else {
+        throw MissingCurrentViewControllerException()
+      }
+
+      let calendarChooser = EKCalendarChooser(
+        selectionStyle: .single,
+        displayStyle: .writableCalendarsOnly,
+        eventStore: eventStore
+      )
+      let pickerDelegate = CalendarPickerDelegate(
+        promise: promise,
+        onComplete: { [weak self] in
+          self?.calendarPickerDelegate = nil
+        })
+      calendarChooser.delegate = pickerDelegate
+      calendarChooser.showsDoneButton = true
+      calendarChooser.showsCancelButton = true
+
+      calendarPickerDelegate = pickerDelegate
+      currentVc.present(UINavigationController(rootViewController: calendarChooser), animated: true)
+    }.runOnQueue(.main)
+
     AsyncFunction("createCalendar") { (calendarRecord: CalendarRecordNext) throws -> ExpoCalendar in
       let calendar: EKCalendar
       switch calendarRecord.entityType {
@@ -97,10 +121,8 @@ public final class CalendarNextModule: Module {
       promise: Promise) throws in
       try calendarPermissions?.checkCalendarPermissions()
 
-      guard let startDate = parse(date: startDateStr),
-        let endDate = parse(date: endDateStr) else {
-        throw InvalidDateFormatException()
-      }
+      let startDate = try requireDate(from: startDateStr)
+      let endDate = try requireDate(from: endDateStr)
 
       var eventCalendars = [EKCalendar]()
       if !calendarIds.isEmpty {
@@ -242,13 +264,8 @@ public final class CalendarNextModule: Module {
         endDateStr: Either<String, Double>,
         promise: Promise) throws in
         try calendarPermissions?.checkCalendarPermissions()
-
-        guard let startDate = parse(date: startDateStr),
-          let endDate = parse(date: endDateStr)
-        else {
-          throw InvalidDateFormatException()
-        }
-
+        let startDate = try requireDate(from: startDateStr)
+        let endDate = try requireDate(from: endDateStr)
         promise.resolve(try expoCalendar.listEvents(startDate: startDate, endDate: endDate))
       }
 
@@ -264,17 +281,11 @@ public final class CalendarNextModule: Module {
         var endDate: Date?
 
         if let startDateStr = startDateStr {
-          guard let parsedStartDate = parse(date: startDateStr) else {
-            throw InvalidDateFormatException()
-          }
-          startDate = parsedStartDate
+          startDate = try requireDate(from: startDateStr)
         }
 
         if let endDateStr = endDateStr {
-          guard let parsedEndDate = parse(date: endDateStr) else {
-            throw InvalidDateFormatException()
-          }
-          endDate = parsedEndDate
+          endDate = try requireDate(from: endDateStr)
         }
 
         return calendar.listReminders(startDate: startDate, endDate: endDate, status: status, promise: promise)
@@ -324,6 +335,34 @@ public final class CalendarNextModule: Module {
         try eventStore.save(reminder, commit: true)
         return expoReminder
       }
+
+      AsyncFunction("addEventWithForm") { (expoCalendar: ExpoCalendar, options: AddEventWithFormOptions?, promise: Promise) in
+        let event = EKEvent(eventStore: eventStore)
+        event.calendar = expoCalendar.calendar
+        if let options {
+          event.title = options.title
+          event.notes = options.notes
+          event.location = options.location
+          if let startDate = options.startDate {
+            event.startDate = try requireDate(from: startDate)
+          }
+          if let endDate = options.endDate {
+            event.endDate = try requireDate(from: endDate)
+          }
+          if let allDay = options.allDay {
+            event.isAllDay = allDay
+          }
+          if let alarms = options.alarms {
+            event.alarms = createCalendarEventAlarms(alarms: alarms)
+          }
+          if let rule = options.recurrenceRule, let newRule = createRecurrenceRule(rule: rule) {
+            event.recurrenceRules = [newRule]
+          }
+          if let urlString = options.url { event.url = URL(string: urlString) }
+        }
+
+        try presentEventEditViewController(event: event, promise: promise)
+      }.runOnQueue(.main)
 
       AsyncFunction("update") { (expoCalendar: ExpoCalendar, calendarRecord: CalendarRecordNext) throws in
         try calendarPermissions?.checkCalendarPermissions()
@@ -438,7 +477,7 @@ public final class CalendarNextModule: Module {
         }
 
         guard let currentVc = appContext?.utilities?.currentViewController() else {
-          throw Exception()
+          throw MissingCurrentViewControllerException()
         }
 
         let controller = EKEventViewController()
@@ -611,7 +650,7 @@ public final class CalendarNextModule: Module {
 
   private func presentEventEditViewController(event: EKEvent, promise: Promise) throws {
     guard let currentVc = appContext?.utilities?.currentViewController() else {
-      throw Exception()
+      throw MissingCurrentViewControllerException()
     }
 
     let controller = EditEventViewController(

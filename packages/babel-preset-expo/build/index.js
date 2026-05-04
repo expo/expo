@@ -33,7 +33,6 @@ function babelPresetExpo(api, options = {}) {
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
-    const isHermesV1 = api.caller(common_1.getIsHermesV1);
     const isDomComponent = api.caller(common_1.getIsDomComponent);
     const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
@@ -126,12 +125,6 @@ function babelPresetExpo(api, options = {}) {
         ]);
     }
     else if (!isModernEngine) {
-        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-        // JSX is used in a function body. This is technically not required in production, but we
-        // should retain the same behavior since it's hard to debug the differences.
-        if (!isHermesV1) {
-            extraPlugins.push(require('@babel/plugin-transform-parameters'));
-        }
         extraPlugins.push(
         // Add support for class static blocks.
         [require('@babel/plugin-transform-class-static-block'), { loose: true }]);
@@ -350,6 +343,18 @@ function babelPresetExpo(api, options = {}) {
                     if (reanimatedPlugin) {
                         return [require(reanimatedPlugin)];
                     }
+                }
+                return null;
+            })(),
+            // Automatically add the `@expo/ui` plugin when the package is installed.
+            // Independent of reanimated/worklets — must live in its own IIFE so the
+            // earlier fallback chain doesn't short-circuit before reaching it.
+            (() => {
+                if (platformOptions.expoUi === false)
+                    return null;
+                const plugin = (0, resolveModule_1.resolveModule)(api, '@expo/ui/babel-plugin');
+                if (plugin) {
+                    return [require(plugin)];
                 }
                 return null;
             })(),

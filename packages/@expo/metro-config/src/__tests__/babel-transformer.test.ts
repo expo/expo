@@ -67,7 +67,6 @@ it(`passes the environment as isServer to the babel preset`, () => {
       isDev: true,
       bundler: 'metro',
       engine: undefined,
-      isHermesV1: true,
       name: 'metro',
       platform: 'ios',
       baseUrl: '',
@@ -150,112 +149,5 @@ it(`passes the environment as isReactServer to the babel preset`, () => {
     presets: [expect.anything()],
     plugins: [],
     sourceType: 'unambiguous',
-  });
-});
-
-describe('isHermesV1 detection', () => {
-  const fixture = `export default function App() { return <div>Hello</div> }`;
-
-  const transformOptions = {
-    globalPrefix: '',
-    enableBabelRuntime: true,
-    enableBabelRCLookup: true,
-    dev: true,
-    projectRoot: '/',
-    inlineRequires: false as any,
-    minify: false,
-    platform: 'ios' as const,
-    publicPath: '/',
-    customTransformOptions: Object.create({}),
-  };
-
-  function setupTransformerWithHermesVersion(version: string | null) {
-    jest.resetModules();
-    jest.doMock('../utils/transitiveResolveFrom', () => ({
-      transitiveResolveFrom: (projectRoot: string, moduleIds: string[]) => {
-        if (moduleIds.includes('hermes-compiler/package.json')) {
-          return version ? '/dummy/node_modules/hermes-compiler/package.json' : null;
-        }
-        return null;
-      },
-    }));
-    jest.doMock('../utils/getPkgVersion', () => ({
-      ...jest.requireActual('../utils/getPkgVersion'),
-      getPkgVersionFromPath: (packageJsonPath: string) => {
-        if (packageJsonPath.endsWith('hermes-compiler/package.json')) return version;
-        return null;
-      },
-    }));
-    jest.doMock('../babel-core', () => {
-      const actual = jest.requireActual('../babel-core');
-      return {
-        ...actual,
-        transformSync: jest.fn((...args: any[]) => actual.transformSync(...args)),
-      };
-    });
-    return {
-      babel: require('../babel-core') as typeof babel,
-      transformer: require('../babel-transformer') as BabelTransformer,
-    };
-  }
-
-  it('sets isHermesV1 to true when hermes-compiler version starts with 250829098', () => {
-    vol.fromJSON({}, '/');
-    const { babel: localBabel, transformer: localTransformer } =
-      setupTransformerWithHermesVersion('250829098.0.4');
-
-    localTransformer.transform({
-      filename: 'foo.js',
-      options: transformOptions,
-      src: fixture,
-      plugins: [],
-    });
-
-    expect(localBabel.transformSync).toHaveBeenCalledWith(
-      fixture,
-      expect.objectContaining({
-        caller: expect.objectContaining({ isHermesV1: true }),
-      })
-    );
-  });
-
-  it('sets isHermesV1 to false when hermes-compiler version is non-V1', () => {
-    vol.fromJSON({}, '/');
-    const { babel: localBabel, transformer: localTransformer } =
-      setupTransformerWithHermesVersion('0.15.0');
-
-    localTransformer.transform({
-      filename: 'foo.js',
-      options: transformOptions,
-      src: fixture,
-      plugins: [],
-    });
-
-    expect(localBabel.transformSync).toHaveBeenCalledWith(
-      fixture,
-      expect.objectContaining({
-        caller: expect.objectContaining({ isHermesV1: false }),
-      })
-    );
-  });
-
-  it('sets isHermesV1 to true when hermes-compiler is not installed', () => {
-    vol.fromJSON({}, '/');
-    const { babel: localBabel, transformer: localTransformer } =
-      setupTransformerWithHermesVersion(null);
-
-    localTransformer.transform({
-      filename: 'foo.js',
-      options: transformOptions,
-      src: fixture,
-      plugins: [],
-    });
-
-    expect(localBabel.transformSync).toHaveBeenCalledWith(
-      fixture,
-      expect.objectContaining({
-        caller: expect.objectContaining({ isHermesV1: true }),
-      })
-    );
   });
 });

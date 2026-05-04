@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react';
+
 import { type ImmutableRequest } from './ImmutableRequest';
-import type { AssetInfo, GetStaticContentOptions } from './manifest';
+import type { AssetInfo, GetStreamingContentOptions } from './manifest';
 import type { Metadata } from './metadata';
 
 export interface MatchedRouteMetadata {
@@ -9,7 +11,7 @@ export interface MatchedRouteMetadata {
 
 export interface ResolvedMetadata {
   metadata: Metadata;
-  headTags: string;
+  headNodes: ReactNode[];
 }
 
 export interface ResolveMetadataOptions {
@@ -21,14 +23,14 @@ export interface ResolveMetadataOptions {
 /**
  * The SSR render module exported from `_expo/server/render.js`.
  *
- * {@link import('@expo/router-server/src/static/renderStaticContent')}
+ * {@link import('@expo/router-server/src/static/renderStreamingContent')}
  */
 export interface ServerRenderModule {
   resolveMetadata?(options: ResolveMetadataOptions): Promise<ResolvedMetadata | null>;
-  /** {@link import('@expo/router-server/src/static/renderStaticContent').getStreamingContent} */
+  /** {@type import('@expo/router-server/src/static/renderStreamingContent').getStreamingContent} */
   getStreamingContent(
     location: URL,
-    options?: GetStaticContentOptions
+    options?: GetStreamingContentOptions
   ): Promise<ReadableStream<Uint8Array>>;
 }
 

@@ -9,6 +9,7 @@ export * from './Slider';
 export * from './Checkbox';
 export * from './BottomSheet';
 export * from './FieldGroup';
+export * from './Icon';
 export * from './Spacer';
 export * from './State';
 export * from './TextInput';
