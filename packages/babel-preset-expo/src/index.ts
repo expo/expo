@@ -171,9 +171,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       (() => {
         const presetOpts = {
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
-          isDomComponent,
           dev: isDev,
         };
+
+        if (isDomComponent) {
+          return [require('./configs/webview'), presetOpts];
+        }
 
         if (isModernEngine) {
           return [require('./configs/web'), presetOpts];

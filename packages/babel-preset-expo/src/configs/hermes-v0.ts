@@ -16,9 +16,7 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 const loose = true;
 
 type ConfigOptions = {
-  enableBabelRuntime?: string | false;
   disableDeepImportWarnings?: boolean;
-  isDomComponent?: boolean;
   dev?: boolean;
 };
 
@@ -79,19 +77,6 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
       {
         plugins: extraPlugins,
       },
-      ...(options.isDomComponent
-        ? [
-            {
-              plugins: [
-                // These plugins are required to support the older JavaScript environment of Android factory WebViews.
-                // For example Android 9 and Chromium 66.
-                [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
-                [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
-                [require('@babel/plugin-transform-logical-assignment-operators'), { loose: true }],
-              ] as PluginItem[],
-            },
-          ]
-        : []),
     ],
   };
 };
