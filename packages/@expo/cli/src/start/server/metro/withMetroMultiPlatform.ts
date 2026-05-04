@@ -691,17 +691,27 @@ export function withExtendedResolver(
         }
       }
 
-      if (!env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK) {
+      if (
+        !env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK ||
+        !env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_REWRITE
+      ) {
         // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
         if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
           const filePath = context.originModulePath;
-          if (!filePath.includes('node_modules')) {
+          const isInNodeModules = filePath.includes('node_modules');
+          if (!env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK && !isInNodeModules) {
             // TODO(@ubax): Add link to migration guide, once it is published
             throw new Error(
               'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see [MIGRATION_GUIDE_URL]. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
             );
           }
-          if (moduleName === '@react-navigation/core') {
+
+          // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
+          if (
+            !env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_REWRITE &&
+            isInNodeModules &&
+            moduleName === '@react-navigation/core'
+          ) {
             // We already checked if expo-router resolves
             return doResolve('expo-router');
           }
