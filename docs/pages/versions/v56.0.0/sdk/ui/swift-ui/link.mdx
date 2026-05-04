@@ -1,0 +1,61 @@
+---
+title: Link
+description: A SwiftUI Link component for displaying clickable links.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Link matches the official SwiftUI [Link API](https://developer.apple.com/documentation/swiftui/link).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic link
+
+```tsx BasicLinkExample.tsx
+import { Host, Link } from '@expo/ui/swift-ui';
+
+export default function BasicLinkExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Link label="Visit Expo" destination="https://expo.dev" />
+    </Host>
+  );
+}
+```
+
+### Custom label content
+
+You can pass custom components as `children` for more complex link label content.
+
+```tsx CustomContentExample.tsx
+import { Host, Link, VStack, Image, Text } from '@expo/ui/swift-ui';
+
+export default function CustomContentExample() {
+  return (
+    <Host matchContents>
+      <Link destination="https://expo.dev">
+        <VStack spacing={4}>
+          <Image systemName="link" />
+          <Text>Expo</Text>
+        </VStack>
+      </Link>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Link } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/link" apiName="Link" />

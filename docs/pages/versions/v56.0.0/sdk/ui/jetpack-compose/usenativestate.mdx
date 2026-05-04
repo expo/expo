@@ -1,0 +1,81 @@
+---
+title: useNativeState
+description: A React hook that creates observable state shared between JavaScript and native Jetpack Compose views.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui/src/State/useNativeState.ts'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+`useNativeState` returns an [`ObservableState`](#observablestate) that maps to a Compose [`MutableState`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/MutableState) on the native side, so reads and writes to `.value` are tracked directly by Compose without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+> **Note:** Using worklets requires installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) in your project. `useNativeState` itself works without them, but the synchronous UI-thread updates shown below depend on the worklet runtime.
+
+The example below masks a phone number as the user types. The formatting and the write to `maskedPhone.value` both happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
+
+```tsx WorkletPhoneMaskExample.tsx
+import {
+  Host,
+  TextField,
+  TextFieldValue,
+  Text as ComposeText,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function WorkletPhoneMaskExample() {
+  const maskedPhone = useNativeState<TextFieldValue>({
+    text: '',
+    selection: { start: 0, end: 0 },
+  });
+
+  return (
+    <Host matchContents>
+      <TextField
+        value={maskedPhone}
+        keyboardOptions={{ keyboardType: 'phone' }}
+        modifiers={[fillMaxWidth()]}
+        onValueChange={v => {
+          'worklet';
+          const digits = v.text.replace(/\D/g, '').slice(0, 10);
+          let formatted: string;
+          if (digits.length === 0) {
+            formatted = '';
+          } else if (digits.length <= 3) {
+            formatted = digits;
+          } else if (digits.length <= 6) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+          } else {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+          }
+          if (formatted !== v.text) {
+            maskedPhone.value = {
+              text: formatted,
+              selection: { start: formatted.length, end: formatted.length },
+            };
+          }
+        }}>
+        <TextField.Placeholder>
+          <ComposeText>(555) 123-4567</ComposeText>
+        </TextField.Placeholder>
+      </TextField>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { useNativeState } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/usenativestate" apiName="useNativeState" />
