@@ -57,6 +57,7 @@ export default function minifyPlatformSelectPlugin({
   }
 
   return {
+    name: 'expo-minify-platform-select',
     visitor: {
       CallExpression(path, state) {
         const node = path.node;
