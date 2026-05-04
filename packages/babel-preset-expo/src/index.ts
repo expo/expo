@@ -1,7 +1,6 @@
-import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
+import type { ConfigAPI, TransformOptions } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
-import { reactClientReferencesPlugin } from './plugins/client-module-proxy-plugin';
 import {
   getBabelRuntimeVersion,
   getBaseUrl,
@@ -17,21 +16,10 @@ import {
   getReactCompiler,
   getMetroSourceType,
 } from './common';
-import { environmentRestrictedImportsPlugin } from './plugins/environment-restricted-imports';
-import { expoInlineManifestPlugin } from './plugins/expo-inline-manifest-plugin';
-import { expoRouterBabelPlugin } from './plugins/expo-router-plugin';
-import { expoImportMetaTransformPluginFactory } from './plugins/import-meta-transform-plugin';
-import { expoInlineEnvVars } from './plugins/inline-env-vars';
-import { lazyImports } from './lazyImports';
-import { environmentRestrictedReactAPIsPlugin } from './plugins/restricted-react-api-plugin';
-import { reactServerActionsPlugin } from './plugins/server-actions-plugin';
-import { serverDataLoadersPlugin } from './plugins/server-data-loaders-plugin';
-import { serverMetadataPlugin } from './plugins/server-metadata-plugin';
-import { expoUseDomDirectivePlugin } from './plugins/use-dom-directive-plugin';
-import { hasModule, resolveModule } from './utils/resolveModule';
-import { widgetsPlugin } from './plugins/widgets-plugin';
+import { getConfig as getFlowConfig } from './configs/flow';
+import { syntaxPlugins } from './configs/syntax';
 
-type BabelPresetExpoPlatformOptions = {
+interface BabelPresetExpoPlatformOptions {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
   decorators?: false | { legacy?: boolean; version?: number };
   /** Enable or disable adding the Reanimated plugin by default. @default `true` */
@@ -79,14 +67,14 @@ type BabelPresetExpoPlatformOptions = {
    * @default `true`
    */
   transformImportMeta?: boolean;
-};
+}
 
-export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
+export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
   /** Web-specific settings. */
   web?: BabelPresetExpoPlatformOptions;
   /** Native-specific settings. */
   native?: BabelPresetExpoPlatformOptions;
-};
+}
 
 function getOptions(
   options: BabelPresetExpoOptions,
@@ -157,180 +145,24 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
   }
 
-  // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
-  // `@react-native/babel-preset` will handle it.
-  const lazyImportsOption = platformOptions?.lazyImports;
-
-  const extraPlugins: PluginItem[] = [];
-
-  // Add compiler as soon as possible to prevent other plugins from modifying the code.
-  if (
-    isReactCompilerEnabled &&
-    // Don't run compiler on node modules, it can only safely be run on the user's code.
-    !isNodeModule &&
-    // Only run for client code. It's unclear if compiler has any benefits for React Server Components.
-    // NOTE: We might want to allow running it to prevent hydration errors.
-    !isServerEnv &&
-    // Give users the ability to opt-out of the feature, per-platform.
-    platformOptions['react-compiler'] !== false
-  ) {
-    const reactCompilerOptions = platformOptions['react-compiler'];
-    const reactCompilerOptOutDirectives = new Set([
-      // We need to opt-out for our widgets, since they're stringified functions that output Swift UI JSX
-      'widget',
-      // We need to manually include the default opt-out directives, since they get overridden
-      // See:
-      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L48C1-L48C77
-      // - https://github.com/facebook/react/blob/e0cc720/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Program.ts#L69-L86
-      'use no memo',
-      'use no forget',
-      // Add the user's override but preserve defaults above to avoid the pitfall of them being removed
-      ...(reactCompilerOptions?.customOptOutDirectives ?? []),
-    ]);
-
-    extraPlugins.push([
-      require('babel-plugin-react-compiler'),
-      {
-        target: '19',
-        environment: {
-          enableResetCacheOnSourceFileChanges: !isProduction,
-          ...(platformOptions['react-compiler']?.environment ?? {}),
-        },
-        panicThreshold: isDev ? undefined : 'NONE',
-        ...reactCompilerOptions,
-        // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
-        customOptOutDirectives: [...reactCompilerOptOutDirectives],
-      },
-    ]);
-  }
-
-  if (engine !== 'hermes') {
-    // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
-    // getters and setters in spread objects. We need to add this plugin ourself without that option.
-    // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
-    extraPlugins.push([
-      require('@babel/plugin-transform-object-rest-spread'),
-      // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
-      { loose: true, useBuiltIns: true },
-    ]);
-  } else if (!isModernEngine) {
-    extraPlugins.push(
-      // Add support for class static blocks.
-      [require('@babel/plugin-transform-class-static-block'), { loose: true }]
-    );
-  }
-
-  const inlines: Record<string, null | boolean | string> = {
-    'process.env.EXPO_OS': platform,
-    // 'typeof document': isServerEnv ? 'undefined' : 'object',
-    'process.env.EXPO_SERVER': !!isServerEnv,
-  };
-
-  // `typeof window` is left in place for native + client environments.
-  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
-  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
-  const minifyTypeofWindow = platformOptions.minifyTypeofWindow ?? isServerEnv;
-  if (minifyTypeofWindow !== false) {
-    // This nets out slightly faster in development when considering the cost of bundling server dependencies.
-    inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
-  }
-
-  if (isProduction) {
-    inlines['process.env.NODE_ENV'] = 'production';
-    inlines['__DEV__'] = false;
-    inlines['Platform.OS'] = platform;
-  }
-
-  if (process.env.NODE_ENV !== 'test') {
-    inlines['process.env.EXPO_BASE_URL'] = baseUrl;
-  }
-
-  extraPlugins.push([require('./plugins/define-plugin'), inlines]);
-
-  if (isProduction) {
-    // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
-    // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
-    extraPlugins.push([
-      require('./plugins/minify-platform-select-plugin'),
-      {
-        platform,
-      },
-    ]);
-  }
-
-  // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
-  // Webpack uses DefinePlugin for environment variables.
-  // Development uses an uncached serializer.
-  // Servers read from the environment.
-  // Users who disable the feature may be using a different babel plugin.
-  if (inlineEnvironmentVariables) {
-    extraPlugins.push(expoInlineEnvVars);
-  }
-
-  if (platform === 'web') {
-    extraPlugins.push(require('babel-plugin-react-native-web'));
-  }
-  // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
-  if (bundler !== 'webpack') {
-    extraPlugins.push(expoInlineManifestPlugin);
-  }
-
-  if (hasModule(api, 'expo-router/package.json')) {
-    extraPlugins.push(expoRouterBabelPlugin);
-    extraPlugins.push(serverMetadataPlugin);
-    // Process `loader()` functions for client, loader and server bundles (excluding RSC)
-    // - Client bundles: Remove loader exports, they run on server only
-    // - Server bundles: Keep loader exports (needed for SSG)
-    // - Loader-only bundles: Keep only loader exports, remove everything else
-    if (!isReactServer) {
-      extraPlugins.push(serverDataLoadersPlugin);
-    }
-  }
-
-  extraPlugins.push(reactClientReferencesPlugin);
-
-  // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
-  // users who are bundling using the client-only system.
-  if (isReactServer) {
-    extraPlugins.push(reactServerActionsPlugin);
-    extraPlugins.push(environmentRestrictedReactAPIsPlugin);
-  } else {
-    // DOM components must run after "use client" and only in client environments.
-    extraPlugins.push(expoUseDomDirectivePlugin);
-  }
-
-  // This plugin is fine to run whenever as the server-only imports were introduced as part of RSC and shouldn't be used in any client code.
-  extraPlugins.push(environmentRestrictedImportsPlugin);
-
-  // Transform widget component JSX expressions to capture widget components for native-side evaluation.
-  // This enables the native side to re-evaluate widget components with updated props without re-sending the entire layout.
-  if (hasModule(api, 'expo-widgets/package.json')) {
-    extraPlugins.push(widgetsPlugin);
-  }
-
-  if (
-    platformOptions.enableReactFastRefresh ||
-    (isFastRefreshEnabled && platformOptions.enableReactFastRefresh !== false)
-  ) {
-    extraPlugins.push([
-      require('react-refresh/babel'),
-      {
-        // We perform the env check to enable `isFastRefreshEnabled`, unless the plugin is force-enabled
-        skipEnvCheck: platformOptions.enableReactFastRefresh !== true,
-      },
-    ]);
-  }
-
-  if (platformOptions.disableImportExportTransform) {
-    extraPlugins.push([require('./plugins/detect-dynamic-exports').detectDynamicExports]);
-  }
-
-  const polyfillImportMeta = platformOptions.transformImportMeta !== false;
-
-  extraPlugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
-
+  // Compute config fragments from helper modules to compose into the presets below.
+  const flowFragment = getFlowConfig({});
   return {
+    // Top-level plugins/overrides run before sub-preset plugins.
+    // Flow plugins must run before class-properties in the env configs.
+    overrides: flowFragment.overrides,
+    plugins: [...syntaxPlugins, ...flowFragment.plugins],
     presets: [
+      // Module transforms (CommonJS) preset is first so it runs last (Babel reverses preset order).
+      // This ensures import/export transforms run after all other plugins have processed the code.
+      ...(platformOptions.disableImportExportTransform
+        ? []
+        : [
+            [
+              require('./configs/module-transforms'),
+              { lazyImportExportTransform: platformOptions.lazyImports },
+            ],
+          ]),
       (() => {
         const presetOpts = {
           // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
@@ -340,149 +172,60 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
             platformOptions.enableBabelRuntime === true
               ? getBabelRuntimeVersion()
               : platformOptions.enableBabelRuntime,
-          // This reduces the amount of transforms required, as Hermes supports many modern language features.
-          unstable_transformProfile: platformOptions.unstable_transformProfile,
-          // Set true to disable `@babel/plugin-transform-react-jsx` and
-          // the deprecated packages `@babel/plugin-transform-react-jsx-self`, and `@babel/plugin-transform-react-jsx-source`.
-          //
-          // Otherwise, you'll sometime get errors like the following (starting in Expo SDK 43, React Native 64, React 17):
-          //
-          // TransformError App.js: /path/to/App.js: Duplicate __self prop found. You are most likely using the deprecated transform-react-jsx-self Babel plugin.
-          // Both __source and __self are automatically set when using the automatic jsxRuntime. Remove transform-react-jsx-source and transform-react-jsx-self from your Babel config.
-          useTransformReactJSXExperimental: true,
-          // This will never be used regardless because `useTransformReactJSXExperimental` is set to `true`.
-          // https://github.com/facebook/react-native/blob/a4a8695cec640e5cf12be36a0c871115fbce9c87/packages/react-native-babel-preset/src/configs/main.js#L151
-          withDevTools: false,
 
-          disableImportExportTransform: platformOptions.disableImportExportTransform,
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
-          lazyImportExportTransform:
-            lazyImportsOption === true
-              ? (importModuleSpecifier: string) => {
-                  // Do not lazy-initialize packages that are local imports (similar to `lazy: true`
-                  // behavior) or are in the blacklist.
-                  return !(
-                    importModuleSpecifier.includes('./') || lazyImports.has(importModuleSpecifier)
-                  );
-                }
-              : // Pass the option directly to `@react-native/babel-preset`, which in turn
-                // passes it to `babel-plugin-transform-modules-commonjs`
-                lazyImportsOption,
 
+          isDomComponent,
           dev: isDev,
         };
 
         if (isModernEngine) {
-          return [require('./web-preset'), presetOpts];
+          return [require('./configs/web'), presetOpts];
         }
-        // We use `require` here instead of directly using the package name because we want to
-        // specifically use the `@react-native/babel-preset` installed by this package (ex:
-        // `babel-preset-expo/node_modules/`). This way the preset will not change unintentionally.
-        // Reference: https://github.com/expo/expo/pull/4685#discussion_r307143920
-        const { getPreset } = require('@react-native/babel-preset');
 
-        // We need to customize the `@react-native/babel-preset` to ensure that the `@babel/plugin-transform-export-namespace-from`
-        // plugin is run after the TypeScript plugins. This is normally handled by the combination of standard `@babel/preset-env` and `@babel/preset-typescript` but React Native
-        // doesn't do that and we can't rely on Hermes spec compliance enough to use standard presets.
-        const babelPresetReactNativeEnv = getPreset(null, presetOpts);
+        // Select the hermes config based on `unstable_transformProfile`, which is derived from
+        // the caller's `engine` property or overridden by the user.
+        const useHermesV1Config =
+          platformOptions.unstable_transformProfile === 'hermes-stable' ||
+          platformOptions.unstable_transformProfile === 'hermes-canary';
 
-        babelPresetReactNativeEnv.overrides.push({
-          plugins: [
-            // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
-            // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
-            // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
-            require('./plugins/babel-plugin-transform-export-namespace-from'),
-
-            ...(isDomComponent
-              ? [
-                  // These plugins are required to support the older JavaScript environment of Android factory WebViews.
-                  // For example Android 9 and Chromium 66.
-
-                  // callsite: https://github.com/expo/expo/blob/fa2c26e39549edc144657c50a189271ca56d1ab9/packages/%40expo/log-box/src/LogBox.ts#L88
-                  [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
-
-                  // callsite: https://github.com/facebook/metro/blob/7446b90ea53fa0173256da690a01df12e67b0deb/packages/metro-runtime/src/polyfills/require.js#L97
-                  [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
-
-                  // callsite: https://github.com/expo/expo/blob/fa2c26e39549edc144657c50a189271ca56d1ab9/packages/%40expo/log-box/src/Data/LogBoxData.tsx#L404
-                  [
-                    require('@babel/plugin-transform-logical-assignment-operators'),
-                    { loose: true },
-                  ],
-                ]
-              : []),
-          ],
-        });
-
-        return babelPresetReactNativeEnv;
+        if (useHermesV1Config) {
+          return [require('./configs/hermes-v1'), presetOpts];
+        }
+        return [require('./configs/hermes-v0'), presetOpts];
       })(),
 
-      // React support with similar options to Metro.
-      // We override this logic outside of the metro preset so we can add support for
-      // React 17 automatic JSX transformations.
-      // The only known issue is the plugin `@babel/plugin-transform-react-display-name` will be run twice,
-      // once in the Metro plugin, and another time here.
+      // Expo-specific plugins and React JSX/compiler/refresh support.
       [
-        require('@babel/preset-react'),
+        require('./configs/expo'),
         {
-          development: isDev,
-
-          // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-          runtime: platformOptions?.jsxRuntime || 'automatic',
-          ...(platformOptions &&
-            platformOptions.jsxRuntime !== 'classic' && {
-              importSource: (platformOptions && platformOptions.jsxImportSource) || 'react',
-            }),
-
-          // NOTE: Unexposed props:
-
-          // pragma?: string;
-          // pragmaFrag?: string;
-          // pure?: string;
-          // throwIfNamespace?: boolean;
-          // useBuiltIns?: boolean;
-          // useSpread?: boolean;
+          platform,
+          engine,
+          isDev,
+          isProduction,
+          isServerEnv,
+          isReactServer,
+          isNodeModule,
+          isFastRefreshEnabled,
+          isReactCompilerEnabled,
+          isModernEngine,
+          baseUrl,
+          bundler,
+          inlineEnvironmentVariables,
+          decorators: platformOptions.decorators,
+          reanimated: platformOptions.reanimated,
+          worklets: platformOptions.worklets,
+          expoUi: platformOptions.expoUi,
+          reactCompiler: platformOptions['react-compiler'],
+          enableReactFastRefresh: platformOptions.enableReactFastRefresh,
+          minifyTypeofWindow: platformOptions.minifyTypeofWindow,
+          transformImportMeta: platformOptions.transformImportMeta,
+          disableImportExportTransform: platformOptions.disableImportExportTransform,
+          jsxRuntime: platformOptions.jsxRuntime,
+          jsxImportSource: platformOptions.jsxImportSource,
         },
       ],
     ],
-
-    plugins: [
-      ...extraPlugins,
-      // TODO: Remove
-      platformOptions.decorators !== false && [
-        require('@babel/plugin-proposal-decorators'),
-        platformOptions.decorators ?? { legacy: true },
-      ],
-
-      // Automatically add worklets or reanimated plugin when package is installed.
-      ((): PluginItem | null => {
-        if (platformOptions.worklets !== false && platformOptions.reanimated !== false) {
-          const workletsPlugin = resolveModule(api, 'react-native-worklets/plugin');
-          if (workletsPlugin) {
-            return [require(workletsPlugin)];
-          }
-        }
-        if (platformOptions.reanimated !== false) {
-          const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
-          if (reanimatedPlugin) {
-            return [require(reanimatedPlugin)];
-          }
-        }
-        return null;
-      })(),
-
-      // Automatically add the `@expo/ui` plugin when the package is installed.
-      // Independent of reanimated/worklets — must live in its own IIFE so the
-      // earlier fallback chain doesn't short-circuit before reaching it.
-      ((): PluginItem | null => {
-        if (platformOptions.expoUi === false) return null;
-        const plugin = resolveModule(api, '@expo/ui/babel-plugin');
-        if (plugin) {
-          return [require(plugin)];
-        }
-        return null;
-      })(),
-    ].filter((x): x is PluginItem => !!x),
   };
 }
 

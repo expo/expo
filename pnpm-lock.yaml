@@ -2920,17 +2920,47 @@ importers:
       '@babel/plugin-proposal-export-default-from':
         specifier: ^7.24.7
         version: 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-syntax-dynamic-import':
+        specifier: ^7.8.3
+        version: 7.8.3(@babel/core@7.29.0)
       '@babel/plugin-syntax-export-default-from':
         specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-syntax-nullish-coalescing-operator':
+        specifier: ^7.8.3
+        version: 7.8.3(@babel/core@7.29.0)
+      '@babel/plugin-syntax-optional-chaining':
+        specifier: ^7.8.3
+        version: 7.8.3(@babel/core@7.29.0)
+      '@babel/plugin-transform-async-generator-functions':
+        specifier: ^7.25.4
+        version: 7.29.0(@babel/core@7.29.0)
+      '@babel/plugin-transform-async-to-generator':
+        specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-block-scoping':
+        specifier: ^7.25.0
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-class-properties':
+        specifier: ^7.25.4
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-class-static-block':
         specifier: ^7.27.1
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-classes':
+        specifier: ^7.25.4
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-destructuring':
+        specifier: ^7.24.8
+        version: 7.28.5(@babel/core@7.29.0)
       '@babel/plugin-transform-export-namespace-from':
         specifier: ^7.25.9
         version: 7.27.1(@babel/core@7.29.0)
       '@babel/plugin-transform-flow-strip-types':
         specifier: ^7.25.2
+        version: 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-for-of':
+        specifier: ^7.24.7
         version: 7.27.1(@babel/core@7.29.0)
       '@babel/plugin-transform-logical-assignment-operators':
         specifier: ^7.24.7
@@ -2938,10 +2968,16 @@ importers:
       '@babel/plugin-transform-modules-commonjs':
         specifier: ^7.24.8
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-named-capturing-groups-regex':
+        specifier: ^7.24.7
+        version: 7.29.0(@babel/core@7.29.0)
       '@babel/plugin-transform-nullish-coalescing-operator':
         specifier: ^7.24.7
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-object-rest-spread':
+        specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-optional-catch-binding':
         specifier: ^7.24.7
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-optional-chaining':
@@ -2956,9 +2992,21 @@ importers:
       '@babel/plugin-transform-private-property-in-object':
         specifier: ^7.24.7
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-display-name':
+        specifier: ^7.24.7
+        version: 7.28.0(@babel/core@7.29.0)
+      '@babel/plugin-transform-regenerator':
+        specifier: ^7.24.7
+        version: 7.29.0(@babel/core@7.29.0)
       '@babel/plugin-transform-runtime':
         specifier: ^7.24.7
         version: 7.29.0(@babel/core@7.29.0)
+      '@babel/plugin-transform-typescript':
+        specifier: ^7.25.2
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-unicode-regex':
+        specifier: ^7.24.7
+        version: 7.27.1(@babel/core@7.29.0)
       '@babel/preset-react':
         specifier: ^7.22.15
         version: 7.28.5(@babel/core@7.29.0)
@@ -2968,7 +3016,7 @@ importers:
       '@babel/runtime':
         specifier: ^7.20.0
         version: 7.29.2
-      '@react-native/babel-preset':
+      '@react-native/babel-plugin-codegen':
         specifier: 0.85.2
         version: 0.85.2(@babel/core@7.29.0)
       babel-plugin-react-compiler:

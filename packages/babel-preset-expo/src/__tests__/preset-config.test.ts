@@ -51,6 +51,13 @@ describe('plugin list snapshots', () => {
     const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: true });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
@@ -69,31 +76,25 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx/development",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-block-scoping",
         "transform-class-properties",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-dynamic-import",
-        "syntax-export-default-from",
-        "syntax-nullish-coalescing-operator",
-        "syntax-optional-chaining",
         "transform-unicode-regex",
         "transform-typescript",
         "warn-on-deep-imports",
-        "base$0$0.overrides[5]$0",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
+        "base$0$1.overrides[4]$0",
         "transform-classes",
         "transform-named-capturing-groups-regex",
         "transform-destructuring",
         "transform-async-generator-functions",
         "transform-async-to-generator",
+        "transform-parameters",
         "transform-react-display-name",
         "transform-runtime",
         "transform-export-namespace-from",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -107,6 +108,13 @@ describe('plugin list snapshots', () => {
     });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-class-static-block",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
@@ -125,22 +133,13 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx/development",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-block-scoping",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-dynamic-import",
-        "syntax-export-default-from",
-        "syntax-nullish-coalescing-operator",
-        "syntax-optional-chaining",
         "transform-unicode-regex",
         "transform-typescript",
         "warn-on-deep-imports",
-        "base$0$0.overrides[5]$0",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
+        "base$0$1.overrides[4]$0",
         "transform-named-capturing-groups-regex",
         "transform-optional-catch-binding",
         "transform-destructuring",
@@ -152,6 +151,8 @@ describe('plugin list snapshots', () => {
         "transform-for-of",
         "transform-runtime",
         "transform-export-namespace-from",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -165,6 +166,13 @@ describe('plugin list snapshots', () => {
     });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-class-static-block",
         "expo-define-globals",
         "expo-minify-platform-select",
@@ -184,21 +192,12 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-block-scoping",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-dynamic-import",
-        "syntax-export-default-from",
-        "syntax-nullish-coalescing-operator",
-        "syntax-optional-chaining",
         "transform-unicode-regex",
         "transform-typescript",
-        "base$0$0.overrides[5]$0",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
+        "base$0$1.overrides[4]$0",
         "transform-named-capturing-groups-regex",
         "transform-destructuring",
         "transform-async-generator-functions",
@@ -206,6 +205,8 @@ describe('plugin list snapshots', () => {
         "transform-react-display-name",
         "transform-runtime",
         "transform-export-namespace-from",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -214,6 +215,13 @@ describe('plugin list snapshots', () => {
     const keys = getPluginKeys({ name: 'metro', platform: 'web', isDev: true });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
@@ -233,18 +241,14 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx/development",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-export-default-from",
         "transform-export-namespace-from",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
         "transform-runtime",
         "transform-typescript",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -253,6 +257,13 @@ describe('plugin list snapshots', () => {
     const keys = getPluginKeys({ name: 'metro', platform: 'web', isDev: false });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-object-rest-spread",
         "expo-define-globals",
         "expo-minify-platform-select",
@@ -273,18 +284,14 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-export-default-from",
         "transform-export-namespace-from",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
         "transform-runtime",
         "transform-typescript",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -298,6 +305,13 @@ describe('plugin list snapshots', () => {
     });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-manifest-plugin",
@@ -315,18 +329,14 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx/development",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-export-default-from",
         "transform-export-namespace-from",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
         "transform-runtime",
         "transform-typescript",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -340,6 +350,13 @@ describe('plugin list snapshots', () => {
     });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
@@ -359,18 +376,14 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx/development",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-export-default-from",
         "transform-export-namespace-from",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
         "transform-runtime",
         "transform-typescript",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -384,6 +397,13 @@ describe('plugin list snapshots', () => {
     });
     expect(keys).toMatchInlineSnapshot(`
       [
+        "syntax-hermes-parser",
+        "syntax-export-default-from",
+        "syntax-dynamic-import",
+        "syntax-nullish-coalescing-operator",
+        "syntax-optional-chaining",
+        "transform-flow-enums",
+        "transform-flow-strip-types",
         "transform-object-rest-spread",
         "expo-define-globals",
         "expo-inline-or-reference-env-vars",
@@ -403,34 +423,28 @@ describe('plugin list snapshots', () => {
         "transform-react-jsx/development",
         "transform-react-display-name",
         "transform-react-pure-annotations",
-        "transform-flow-strip-types",
-        "syntax-hermes-parser",
-        "transform-flow-enums",
         "transform-block-scoping",
         "transform-class-properties",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "syntax-dynamic-import",
-        "syntax-export-default-from",
-        "syntax-nullish-coalescing-operator",
-        "syntax-optional-chaining",
         "transform-unicode-regex",
         "transform-typescript",
         "warn-on-deep-imports",
-        "base$0$0.overrides[5]$0",
-        "proposal-export-default-from",
-        "transform-modules-commonjs",
+        "base$0$1.overrides[4]$0",
         "transform-classes",
         "transform-named-capturing-groups-regex",
         "transform-destructuring",
         "transform-async-generator-functions",
         "transform-async-to-generator",
+        "transform-parameters",
         "transform-react-display-name",
         "transform-runtime",
         "transform-export-namespace-from",
         "transform-optional-chaining",
         "transform-nullish-coalescing-operator",
         "transform-logical-assignment-operators",
+        "proposal-export-default-from",
+        "transform-modules-commonjs",
       ]
     `);
   });
@@ -558,19 +572,13 @@ describe('engine-driven plugins', () => {
     expect(keys).not.toContain('transform-object-rest-spread');
   });
 
-  it('adds transform-parameters for hermes without isHermesV1', () => {
-    const keys = getPluginKeys({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true });
+  it('adds transform-parameters for default engine (hermes-v0)', () => {
+    const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: true });
     expect(keys).toContain('transform-parameters');
   });
 
-  it('does not add transform-parameters when isHermesV1 is true', () => {
-    const keys = getPluginKeys({
-      name: 'metro',
-      engine: 'hermes',
-      platform: 'ios',
-      isDev: true,
-      isHermesV1: true,
-    });
+  it('does not add transform-parameters for hermes engine (hermes-v1)', () => {
+    const keys = getPluginKeys({ name: 'metro', engine: 'hermes', platform: 'ios', isDev: true });
     expect(keys).not.toContain('transform-parameters');
   });
 
