@@ -121,6 +121,12 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
         const newDetails = { ...details, color: color || undefined };
         return await super.update(newDetails);
     }
+    async addEventWithForm(options) {
+        if (!super.addEventWithForm) {
+            throw new UnavailabilityError('ExpoCalendar', 'addEventWithForm');
+        }
+        return super.addEventWithForm(options && stringifyDateValues(options));
+    }
     static async get(calendarId) {
         const calendar = await InternalExpoCalendar.getCalendarById(calendarId);
         Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
@@ -168,6 +174,21 @@ export async function createCalendar(details = {}) {
     const createdCalendar = await InternalExpoCalendar.createCalendar(newDetails);
     Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
     return createdCalendar;
+}
+/**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+ * @platform ios
+ */
+export async function presentPicker() {
+    if (!InternalExpoCalendar.presentPicker) {
+        throw new UnavailabilityError('Calendar', 'presentPicker');
+    }
+    const calendar = await InternalExpoCalendar.presentPicker();
+    if (calendar) {
+        Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+    }
+    return calendar;
 }
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.

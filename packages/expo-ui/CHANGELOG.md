@@ -36,6 +36,7 @@
 
 ### 🎉 New features
 
+- [universal] Added `TextInput` component that mirrors RN's `TextInput` API but routes to SwiftUI on iOS, Compose on Android, and RN's `TextInput` on web. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
 - [compose] Exposed extension utilities for third-party modules: `ModifierRegistry.unregister`, and re-exported `createModifier` / `createModifierWithEventListener` / `createViewModifierEventListener` from `@expo/ui/jetpack-compose/modifiers`. Exported `PrimitiveBaseProps` from `@expo/ui/jetpack-compose`. ([#45122](https://github.com/expo/expo/pull/45122) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `colors` prop to `HorizontalFloatingToolbar` to override the variant's default toolbar and FAB container/content colors. ([#45244](https://github.com/expo/expo/pull/45244) by [@Ubax](https://github.com/Ubax))
 - [android] Added `HorizontalPager` component wrapping Compose's `HorizontalPager`. ([#45163](https://github.com/expo/expo/pull/45163) by [@vonovak](https://github.com/vonovak))
@@ -90,6 +91,7 @@
 - [jetpack-compose] Added Material 3 dynamic colors support. ([#44896](https://github.com/expo/expo/pull/44896) by [@kudo](https://github.com/kudo))
 - Added universal `FieldGroup` and `Spacer`. ([#44814](https://github.com/expo/expo/pull/44814) by [@kudo](https://github.com/kudo))
 - Added `@expo/ui/community/bottom-sheet` as drop-in replacement for `@gorhom/bottom-sheet`. ([#44683](https://github.com/expo/expo/pull/44683) by [@kudo](https://github.com/kudo))
+- Added universal `Icon` components for Android and iOS. ([#45217](https://github.com/expo/expo/pull/45217) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
@@ -121,6 +123,7 @@
 - [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
 - [jetpack-compose] Added `expand` and `partialExpand` to `ModalBottomSheet`. ([#44682](https://github.com/expo/expo/pull/44682) by [@kudo](https://github.com/kudo))
 - Removed iOS universal `Host` workaround. ([#45173](https://github.com/expo/expo/pull/45173) by [@kudo](https://github.com/kudo))
+- [iOS] Unblocked precompiled-xcframework distribution via the runtime worklets provider. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.1 — 2026-02-25
 

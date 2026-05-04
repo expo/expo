@@ -8,6 +8,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -130,6 +131,24 @@ When the build process is completed, the output is placed in the **./artifacts**
 
 See the [`expo-brownfield` API reference](/versions/v55.0.0/sdk/brownfield/) for more details on build options, such as building only debug or release, specifying a custom output directory, and more.
 
+### Ship the artifacts as a Swift Package
+
+Pass the `--package [name]` flag to bundle the build output as a self-contained Swift Package instead of separate **.xcframework** directories. You can then add it to your host app as a local dependency in Xcode rather than manually dragging frameworks into the project.
+
+<Terminal cmd={['$ npx expo-brownfield build:ios --release --package MyAppPackage']} />
+
+The flag accepts an optional name. If omitted, the package defaults to **\{TargetName\}Artifacts**. The resulting directory is a complete Swift Package with this layout:
+
+<FileTree
+  files={[
+    ['artifacts/MyAppPackage/Package.swift', ''],
+    ['artifacts/MyAppPackage/xcframeworks/MyAppPackage.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/hermesvm.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/React.xcframework', ''],
+    ['artifacts/MyAppPackage/xcframeworks/ReactNativeDependencies.xcframework', ''],
+  ]}
+/>
+
 </Tab>
 </Tabs>
 
@@ -220,7 +239,12 @@ startActivity(Intent(this, ExpoActivity::class.java))
 <Tab label="iOS">
 
 <Step label="1">
-#### Add XCFrameworks to your project
+#### Add the artifacts to your project
+
+The integration steps depend on whether you built XCFrameworks or a Swift Package.
+
+<Tabs>
+<Tab label="XCFrameworks (default)">
 
 Drag both XCFramework files (\{TargetName\}**.xcframework** and **hermesvm.xcframework**) into your Xcode project navigator. In the dialog that appears:
 
@@ -232,6 +256,16 @@ Drag both XCFramework files (\{TargetName\}**.xcframework** and **hermesvm.xcfra
 Then, in your target's **General** tab under **Frameworks, Libraries, and Embedded Content**, ensure both frameworks are set to **Embed & Sign**.
 
 {/* vale on */}
+
+</Tab>
+<Tab label="Swift Package">
+
+When `build:ios` produces a Swift Package (for example, **./artifacts/MyAppPackage-release**), add it to your host app as a local dependency in Xcode and select the package directory. Xcode automatically links the bundled **.xcframework** files through the aggregate library product.
+
+To support both `--debug` and `--release`, point your host app at the matching package for each build configuration.
+
+</Tab>
+</Tabs>
 
 </Step>
 

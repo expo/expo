@@ -5,7 +5,8 @@ class ExpoAppMetricsModule extends NativeModule {
         throw new Error('Method not implemented.');
     }
     async markFirstRender() { }
-    async markInteractive(_attributes) { }
+    async markInteractive(attributes) { }
+    logEvent(name, options) { }
     async getStoredEntries() {
         return [];
     }

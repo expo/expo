@@ -3,15 +3,15 @@
 package expo.modules.kotlin.objects
 
 import com.facebook.react.bridge.Arguments
+import expo.modules.kotlin.EnumToStringConverter
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
 import expo.modules.kotlin.convertToString
 import expo.modules.kotlin.events.EventsDefinition
-import expo.modules.kotlin.fastPrimaryConstructor
-import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
+import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.FunctionBuilder
 import expo.modules.kotlin.functions.SyncFunctionComponent
@@ -25,7 +25,6 @@ import expo.modules.kotlin.types.TypeConverterProvider
 import expo.modules.kotlin.types.enforceType
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.types.toReturnType
-import kotlin.reflect.full.declaredMemberProperties
 
 /**
  * Base class for other definitions representing an object, such as `ModuleDefinition`.
@@ -448,27 +447,14 @@ open class ObjectDefinitionBuilder(
     eventsDefinition = EventsDefinition(events)
   }
 
-  @Deprecated("Use Events(vararg String) or Events(Array<String>) instead. This version can cause app startup performance issues.")
   inline fun <reified T> Events() where T : Enumerable, T : Enum<T> {
-    val primaryConstructor = T::class.fastPrimaryConstructor
-    val events = if (primaryConstructor?.parameters?.size == 1) {
-      val parameterName = primaryConstructor.parameters.first().name
+    val enumClass = T::class.java
+    val converter = EnumToStringConverter(enumClass)
+    val events = enumValues<T>()
+      .map { converter.convert(it) }
+      .toTypedArray()
 
-      val parameterProperty = T::class
-        .declaredMemberProperties
-        .find { it.name == parameterName }
-      requireNotNull(parameterProperty) { "Cannot find a property for $parameterName parameter" }
-      require(parameterProperty.returnType.classifier == String::class) { "The enum parameter has to be a string." }
-      enumValues<T>().map {
-        parameterProperty.get(it) as String
-      }
-    } else {
-      enumValues<T>().map {
-        it.name
-      }
-    }
-
-    eventsDefinition = EventsDefinition(events.toTypedArray())
+    eventsDefinition = EventsDefinition(events)
   }
 
   /**

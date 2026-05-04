@@ -39,7 +39,7 @@
     "@expo/config": "workspace:*",
     "@expo/env": "workspace:*",
     "@expo/json-file": "workspace:*",
-    "@expo/metro": "56.0.0-rc.1",
+    "@expo/metro": "56.0.0-rc.2",
     "@expo/schemer": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
     "@types/debug": "^4.1.8",

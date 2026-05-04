@@ -5,6 +5,10 @@ class ExpoGoCalendarNextStub {
     constructor() {
       throw new Error('`ExpoCalendar` is not yet available in the Expo Go managed workflow.');
     }
+
+    addEventWithForm() {
+      throw new Error('Calendar@next functionality is not available in Expo Go');
+    }
   };
   static readonly ExpoCalendarEvent = class ExpoCalendarEvent {
     constructor() {
@@ -41,6 +45,10 @@ class ExpoGoCalendarNextStub {
   }
 
   async listEvents(): Promise<void> {
+    throw new Error('Calendar@next functionality is not available in Expo Go');
+  }
+
+  async presentPicker(): Promise<void> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 

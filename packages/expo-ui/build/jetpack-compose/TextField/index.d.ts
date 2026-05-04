@@ -1,14 +1,20 @@
 import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
-import { type ObservableState } from '../../State/useNativeState';
+import type { ObservableState } from '../../State/useNativeState';
 import type { ModifierConfig } from '../../types';
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
+    /** Clear the current text. */
+    clear: () => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
+    /**
+     * Programmatically set the selection range.
+     */
+    setSelection: (start: number, end: number) => Promise<void>;
 };
 export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
 export type TextFieldKeyboardType = 'text' | 'number' | 'email' | 'phone' | 'decimal' | 'password' | 'ascii' | 'uri' | 'numberPassword';
@@ -116,6 +122,53 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
     singleLine?: boolean;
     maxLines?: number;
     minLines?: number;
+    /**
+     * Display-time text transformation. `'password'` masks every character;
+     * `'none'` (default) leaves the buffer as-is.
+     */
+    visualTransformation?: 'password' | 'none';
+    /**
+     * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+     * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+     * `backgroundColor` is the highlighted-text background (typically the same
+     * tint at lower alpha so the underlying text stays readable).
+     */
+    textSelectionColors?: {
+        handleColor?: ColorValue;
+        backgroundColor?: ColorValue;
+    };
+    /**
+     * Observable state the field writes the current selection to.
+     * Create with `useNativeState({ start: 0, end: 0 })`.
+     * Use `ref.setSelection(start, end)` to set programmatically.
+     * @internal
+     */
+    selection?: ObservableState<{
+        start: number;
+        end: number;
+    }>;
+    /** Maximum number of characters allowed. Truncates natively as the user types. */
+    maxLength?: number;
+    /**
+     * Called when the selection range changes.
+     * @internal
+     */
+    onSelectionChange?: (selection: {
+        start: number;
+        end: number;
+    }) => void;
+    /**
+     * Text styling for the field's content. Maps to Compose's `TextStyle`.
+     */
+    textStyle?: {
+        textAlign?: 'left' | 'right' | 'center' | 'justify';
+        color?: ColorValue;
+        fontSize?: number;
+        fontFamily?: string;
+        fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
+        lineHeight?: number;
+        letterSpacing?: number;
+    };
     keyboardOptions?: TextFieldKeyboardOptions;
     keyboardActions?: TextFieldKeyboardActions;
     /**

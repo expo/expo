@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
+import { AddEventWithFormOptions, ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
 import React, { useState, useEffect } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -229,8 +229,8 @@ const EventsScreen = ({ route }: Props) => {
         <Button
           onPress={async () => {
             const { calendar } = route.params!;
-            const newEvent = prepareEvent(calendar.id);
-            const result = calendar.createEvent(newEvent);
+            const newEvent = prepareEvent(calendar.id, true);
+            const result = await calendar.addEventWithForm(newEvent as AddEventWithFormOptions);
             setTimeout(() => {
               Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {
                 cancelable: true,

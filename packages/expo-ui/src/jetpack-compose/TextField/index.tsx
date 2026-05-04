@@ -3,7 +3,7 @@ import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { worklets } from '../../State/optionalWorklets';
-import { type ObservableState, useNativeState } from '../../State/useNativeState';
+import type { ObservableState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ModifierConfig, ViewEvent } from '../../types';
@@ -13,12 +13,18 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 // region Types
 
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
+  /** Clear the current text. */
+  clear: () => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
+  /**
+   * Programmatically set the selection range.
+   */
+  setSelection: (start: number, end: number) => Promise<void>;
 };
 
 export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
@@ -149,6 +155,63 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
   singleLine?: boolean;
   maxLines?: number;
   minLines?: number;
+  /**
+   * Display-time text transformation. `'password'` masks every character;
+   * `'none'` (default) leaves the buffer as-is.
+   */
+  visualTransformation?: 'password' | 'none';
+
+  /**
+   * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+   * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+   * `backgroundColor` is the highlighted-text background (typically the same
+   * tint at lower alpha so the underlying text stays readable).
+   */
+  textSelectionColors?: {
+    handleColor?: ColorValue;
+    backgroundColor?: ColorValue;
+  };
+
+  /**
+   * Observable state the field writes the current selection to.
+   * Create with `useNativeState({ start: 0, end: 0 })`.
+   * Use `ref.setSelection(start, end)` to set programmatically.
+   * @internal
+   */
+  selection?: ObservableState<{ start: number; end: number }>;
+
+  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  maxLength?: number;
+
+  /**
+   * Called when the selection range changes.
+   * @internal
+   */
+  onSelectionChange?: (selection: { start: number; end: number }) => void;
+
+  /**
+   * Text styling for the field's content. Maps to Compose's `TextStyle`.
+   */
+  textStyle?: {
+    textAlign?: 'left' | 'right' | 'center' | 'justify';
+    color?: ColorValue;
+    fontSize?: number;
+    fontFamily?: string;
+    fontWeight?:
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900'
+      | 'normal'
+      | 'bold';
+    lineHeight?: number;
+    letterSpacing?: number;
+  };
   keyboardOptions?: TextFieldKeyboardOptions;
   keyboardActions?: TextFieldKeyboardActions;
   /**
@@ -184,16 +247,25 @@ export type OutlinedTextFieldProps<T extends TextFieldValueLike = string> =
 
 type NativeTextFieldProps = Omit<
   BaseTextFieldProps,
-  'value' | 'onValueChange' | 'onFocusChanged' | 'keyboardActions' | 'children' | 'shape'
+  | 'value'
+  | 'selection'
+  | 'onValueChange'
+  | 'onFocusChanged'
+  | 'onSelectionChange'
+  | 'keyboardActions'
+  | 'children'
+  | 'shape'
 > & {
   variant: 'filled' | 'outlined';
   colors?: TextFieldColors;
   shape?: object;
   children?: React.ReactNode;
   value?: number | null;
+  selection?: number | null;
   onValueChangeSync?: number | null;
 } & ViewEvent<'onValueChange', TextFieldValue> &
   ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSelectionChange', { start: number; end: number }> &
   ViewEvent<'onKeyboardAction', { action: string; value: string }>;
 
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
@@ -207,19 +279,17 @@ function useTransformedProps<T extends TextFieldValueLike>(
 ): NativeTextFieldProps {
   const {
     value,
+    selection,
     modifiers,
     children,
     keyboardActions,
     onValueChange,
     onFocusChanged,
+    onSelectionChange,
     ...restProps
   } = props;
 
-  const internalValue = useNativeState<string>('');
-  const state: ObservableState<TextFieldValueLike> =
-    (value as ObservableState<TextFieldValueLike> | undefined) ?? internalValue;
-
-  const isStringMode = typeof state.value === 'string';
+  const isStringMode = !value || typeof value.value === 'string';
 
   const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
   const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
@@ -230,7 +300,8 @@ function useTransformedProps<T extends TextFieldValueLike>(
     ...restProps,
     variant,
     children,
-    value: getStateId(state),
+    value: getStateId(value as ObservableState<TextFieldValueLike>),
+    selection: getStateId(selection),
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:
       !isWorklet && onValueChange
@@ -240,6 +311,9 @@ function useTransformedProps<T extends TextFieldValueLike>(
           }
         : undefined,
     onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onSelectionChange: onSelectionChange
+      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+      : undefined,
     onKeyboardAction: keyboardActions
       ? (event) => {
           const { action, value } = event.nativeEvent;

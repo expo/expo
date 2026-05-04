@@ -4,6 +4,9 @@ type HistoryRecord = {
     state: NavigationState;
     path: string;
 };
+/**
+ * @deprecated Will be removed in a future SDK.
+ */
 export declare function createMemoryHistory(): {
     readonly index: number;
     get(index: number): HistoryRecord | undefined;

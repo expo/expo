@@ -7,8 +7,8 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.records.formatters.ValueOrSkip
 import java.io.File
 import java.net.URI
@@ -25,8 +25,9 @@ fun Record.toJSValueExperimental(): Map<String, Any?> {
 
   javaClass
     .kotlin
-    .memberProperties.map { property ->
-      val fieldInformation = property.findAnnotation<Field>() ?: return@map
+    .memberProperties
+    .forEach { property ->
+      val fieldInformation = property.findAnnotation<Field>() ?: return@forEach
       val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
 
       property.isAccessible = true
@@ -46,8 +47,8 @@ fun FormattedRecord<*>.toJSValueExperimental(): Map<String, Any?> {
     .javaClass
     .kotlin
     .memberProperties
-    .map { property ->
-      val fieldInformation = property.findAnnotation<Field>() ?: return@map
+    .forEach { property ->
+      val fieldInformation = property.findAnnotation<Field>() ?: return@forEach
       val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
 
       property.isAccessible = true
@@ -60,7 +61,7 @@ fun FormattedRecord<*>.toJSValueExperimental(): Map<String, Any?> {
       val unwrappedValue = if (value is ValueOrSkip<*>) {
         when (value) {
           is ValueOrSkip.Value<*> -> value.value
-          ValueOrSkip.Skip -> return@map
+          ValueOrSkip.Skip -> return@forEach
         }
       } else {
         value

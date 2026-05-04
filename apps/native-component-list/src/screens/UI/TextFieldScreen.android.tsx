@@ -33,6 +33,11 @@ export default function TextFieldScreen() {
     selection: { start: 0, end: 0 },
   });
 
+  const imperativeText = useNativeState('Select me!');
+  const imperativeSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
+  const imperativeRef = React.useRef<TextFieldRef>(null);
+  const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState({ start: 0, end: 0 });
+
   const [outlined, setOutlined] = React.useState(false);
   const [enabled, setEnabled] = React.useState(true);
   const [readOnly, setReadOnly] = React.useState(false);
@@ -176,6 +181,38 @@ export default function TextFieldScreen() {
             <ComposeText style={{ typography: 'bodySmall' }}>
               Formats on the UI thread — no flicker between typed and masked value.
             </ComposeText>
+          </Column>
+        </Card>
+
+        {/* Imperative Selection */}
+        <Card modifiers={cardModifiers}>
+          <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
+            <ComposeText style={{ typography: 'labelLarge' }}>Imperative Selection</ComposeText>
+            <TextField
+              ref={imperativeRef}
+              value={imperativeText}
+              selection={imperativeSelection}
+              onSelectionChange={setImperativeSelDisplay}
+              modifiers={[fillMaxWidth()]}>
+              <TextField.Placeholder>
+                <ComposeText>Type something...</ComposeText>
+              </TextField.Placeholder>
+            </TextField>
+            <ComposeText style={{ typography: 'bodySmall' }}>
+              {`Selection: ${imperativeSelDisplay.start}–${imperativeSelDisplay.end}`}
+            </ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 8 }}>
+              <Button onClick={() => imperativeRef.current?.setSelection(0, 7)}>
+                <ComposeText>Select 0–7</ComposeText>
+              </Button>
+              <Button
+                onClick={() => {
+                  const len = imperativeText.value.length;
+                  imperativeRef.current?.setSelection(len, len);
+                }}>
+                <ComposeText>Cursor to end</ComposeText>
+              </Button>
+            </Row>
           </Column>
         </Card>
 

@@ -994,6 +994,22 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal struct LineHeight: ViewModifier, Record {
+  @Field var value: CGFloat?
+
+  func body(content: Content) -> some View {
+    if let value {
+      if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+        content.lineHeight(.exact(points: value))
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1623,6 +1639,10 @@ extension ViewModifierRegistry {
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("onGeometryChange") { params, appContext, eventDispatcher in
+      return try OnGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("refreshable") { params, appContext, eventDispatcher in
       return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
@@ -1769,6 +1789,10 @@ extension ViewModifierRegistry {
 
     register("lineSpacing") { params, appContext, _ in
       return try LineSpacing(from: params, appContext: appContext)
+    }
+
+    register("lineHeight") { params, appContext, _ in
+      return try LineHeight(from: params, appContext: appContext)
     }
 
     register("lineLimit") { params, appContext, _ in

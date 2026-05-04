@@ -8,6 +8,7 @@ import { Chevron } from '@/components/Chevron';
 import { CrashReportPanel } from '@/components/CrashReportPanel';
 import { Divider } from '@/components/Divider';
 import { JSONView } from '@/components/JSONView';
+import { LogsPanel } from '@/components/LogsPanel';
 import { MetricsPanel } from '@/components/MetricsPanel';
 import { SessionHeader } from '@/components/SessionHeader';
 import { useTheme } from '@/utils/theme';
@@ -59,6 +60,9 @@ export default function SessionDetail() {
           ) : null}
           <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Metrics</Text>
           <MetricsPanel metrics={session.metrics} />
+          <Divider style={styles.divider} />
+          <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Log events</Text>
+          <LogsPanel logs={session.logs} />
           <Divider style={styles.divider} />
           <Pressable
             onPress={() => setShowRawJson((v) => !v)}

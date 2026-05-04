@@ -21,13 +21,13 @@ import expo.modules.kotlin.types.TypeConverterProviderImpl
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.descriptors.toRawTypeDescriptor
 import expo.modules.kotlin.types.descriptors.toTypeDescriptor
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import io.github.lukmccall.pika.PIntrospectionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 import kotlin.reflect.jvm.javaField
-import kotlin.reflect.typeOf
 
 abstract class RecordConversionStrategy<T : Record>(
   protected val converterProvider: TypeConverterProvider,
@@ -331,7 +331,7 @@ internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: Recor
 }
 
 inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>): T {
-  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeOf<T>().toTypeDescriptor())
+  val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   @Suppress("UNCHECKED_CAST")
   return recordFromMap(map, converter as RecordTypeConverter<T>)
 }

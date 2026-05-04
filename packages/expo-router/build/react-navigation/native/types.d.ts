@@ -28,6 +28,10 @@ interface NativeTheme {
     };
 }
 export type Theme = NativeTheme;
+/**
+ * @deprecated Use the `I18nManager` API from `react-native` to read locale direction.
+ * Will be removed in a future SDK.
+ */
 export type LocaleDirection = 'ltr' | 'rtl';
 export type LinkingOptions<ParamList extends object> = {
     /**
@@ -149,10 +153,16 @@ export type LinkingOptions<ParamList extends object> = {
      */
     getActionFromState?: typeof getActionFromStateDefault;
 };
+/**
+ * @deprecated Will be removed in a future SDK.
+ */
 export type DocumentTitleOptions = {
     enabled?: boolean;
     formatter?: (options: Record<string, any> | undefined, route: Route<string> | undefined) => string;
 };
+/**
+ * @deprecated Will be removed in a future SDK.
+ */
 export type ServerContainerRef = {
     getCurrentOptions(): Record<string, any> | undefined;
 };

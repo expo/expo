@@ -87,7 +87,7 @@ public final class MetricsStorage: Sendable {
     let expirationDate = Calendar.current.date(byAdding: .day, value: -daysToExpiration, to: Date.now) ?? Date.distantPast
 
     return getAllEntries().filter { entry in
-      return entry.metricsCount > 0 && entry.date >= expirationDate
+      return (entry.metricsCount > 0 || entry.logsCount > 0) && entry.date >= expirationDate
     }
   }
 
@@ -114,6 +114,10 @@ public final class MetricsStorage: Sendable {
 
     public var metricsCount: Int {
       return sessions.reduce(0) { $0 + $1.metrics.count }
+    }
+
+    public var logsCount: Int {
+      return sessions.reduce(0) { $0 + $1.logs.count }
     }
 
     // MARK: - Codable

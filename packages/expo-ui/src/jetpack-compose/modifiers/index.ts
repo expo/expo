@@ -347,6 +347,15 @@ export const onVisibilityChanged = (
     }
   );
 
+/**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export const onSizeChanged = (handler: (size: { width: number; height: number }) => void) =>
+  createModifierWithEventListener('onSizeChanged', (size: { width: number; height: number }) =>
+    handler(size)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================
@@ -356,6 +365,11 @@ export const onVisibilityChanged = (
  * @param tag - Test ID string.
  */
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
+
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes
