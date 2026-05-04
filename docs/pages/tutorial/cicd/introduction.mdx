@@ -94,15 +94,15 @@ Depending on the change, we use one service or the other. EAS Workflows wires th
 
 This tutorial is a hands-on experience. To make progress, we need an existing Expo project that uses [Continuous Native Generation](/workflow/continuous-native-generation/) to follow along and set it up on our machine and EAS with the following requirements:
 
-<Prerequisites numberOfRequirements={7}>
+<Prerequisites>
 
-<Requirement number={1} title="An Expo account">
+<Requirement title="An Expo account">
 
 We will need to [sign up](https://expo.dev/signup) for an Expo account.
 
 </Requirement>
 
-<Requirement number={2} title="Install EAS CLI and log in">
+<Requirement title="Install EAS CLI and log in">
 
 To install EAS CLI, run the following command:
 
@@ -121,7 +121,7 @@ Then, run the following login command to authenticate EAS CLI with the Expo acco
 
 </Requirement>
 
-<Requirement number={3} title="Create an Expo project">
+<Requirement title="Create an Expo project">
 
 To create a new Expo project, run the following command:
 
@@ -138,7 +138,7 @@ Creating a new project with `create-expo-app` will set up a project without nati
 
 </Requirement>
 
-<Requirement number={4} title="Initialize EAS in the project">
+<Requirement title="Initialize EAS in the project">
 
 To initialize EAS in our project, run the following command:
 
@@ -148,7 +148,7 @@ This generates an **eas.json** file in the root of our project and creates an EA
 
 </Requirement>
 
-<Requirement number={5} title="EAS Update configured">
+<Requirement title="EAS Update configured">
 
 To configure EAS Update, install the `expo-updates` library:
 
@@ -163,7 +163,7 @@ To configure EAS Update, install the `expo-updates` library:
 
 </Requirement>
 
-<Requirement number={6} title="EAS Build configured">
+<Requirement title="EAS Build configured">
 
 > **important** We need EAS Build to trigger builds for each profile at least once for both Android and iOS. This is required because EAS CLI needs to create/manage credentials on EAS. When we run each command below, EAS CLI will prompt us to generate credentials.
 
@@ -186,7 +186,7 @@ Since we have already configured EAS Update, each build profile will be linked t
 
 </Requirement>
 
-<Requirement number={7} title="GitHub repository linked with EAS dashboard">
+<Requirement title="GitHub repository linked with EAS dashboard">
 
 We will need a GitHub repository for the project. We can create a new repository or use an existing one. The repository should be linked to the local Expo project and pushed to GitHub.
 
@@ -198,7 +198,7 @@ Then, link the GitHub repository to EAS dashboard:
 
 </Requirement>
 
-<Requirement number={8} title="Store submission credentials for EAS Submit (optional)">
+<Requirement title="Store submission credentials for EAS Submit (optional)">
 
 Only needed if we add automated app store submission as an adaptation after Chapter 5. See the [Google Play Store](/submit/android/) and [Apple App Store](/submit/ios/) guides for instructions on how to configure credentials for EAS Submit.
 
