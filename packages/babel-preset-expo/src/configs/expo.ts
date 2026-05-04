@@ -21,8 +21,8 @@ import { reactServerActionsPlugin } from '../plugins/server-actions-plugin';
 import { serverDataLoadersPlugin } from '../plugins/server-data-loaders-plugin';
 import { serverMetadataPlugin } from '../plugins/server-metadata-plugin';
 import { expoUseDomDirectivePlugin } from '../plugins/use-dom-directive-plugin';
-import { hasModule, resolveModule } from '../utils/resolveModule';
 import { widgetsPlugin } from '../plugins/widgets-plugin';
+import { hasModule, resolveModule } from '../utils/resolveModule';
 
 type ExpoConfigOptions = {
   platform?: string;

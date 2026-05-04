@@ -87,10 +87,7 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
                 // For example Android 9 and Chromium 66.
                 [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
                 [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
-                [
-                  require('@babel/plugin-transform-logical-assignment-operators'),
-                  { loose: true },
-                ],
+                [require('@babel/plugin-transform-logical-assignment-operators'), { loose: true }],
               ] as PluginItem[],
             },
           ]

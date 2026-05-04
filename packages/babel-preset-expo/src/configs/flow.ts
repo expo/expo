@@ -17,11 +17,11 @@ import type { PluginItem } from '@babel/core';
  */
 export function getConfig(options: { disableFlowStripTypesTransform?: boolean }) {
   return {
-    overrides: (
-      options.disableFlowStripTypesTransform
-        ? []
-        : [{ plugins: [require('@babel/plugin-transform-flow-strip-types')] as PluginItem[] }]
-    ) as { plugins: PluginItem[] }[],
+    overrides: (options.disableFlowStripTypesTransform
+      ? []
+      : [{ plugins: [require('@babel/plugin-transform-flow-strip-types')] as PluginItem[] }]) as {
+      plugins: PluginItem[];
+    }[],
     plugins: [[require('babel-plugin-transform-flow-enums')]] as PluginItem[],
   };
 }

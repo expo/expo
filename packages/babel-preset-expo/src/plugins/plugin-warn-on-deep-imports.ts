@@ -92,7 +92,11 @@ export default ({ types: t }: ConfigAPI & typeof import('@babel/core')): PluginO
     ExportNamedDeclaration(path, state) {
       const source = path.node.source;
 
-      if (source && isDeepReactNativeImport(source.value) && !isInitializeCoreImport(source.value)) {
+      if (
+        source &&
+        isDeepReactNativeImport(source.value) &&
+        !isInitializeCoreImport(source.value)
+      ) {
         const loc = path.node.loc;
         (state as any).export.push({ source: source.value, loc });
       }

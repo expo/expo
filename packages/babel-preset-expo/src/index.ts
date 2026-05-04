@@ -143,9 +143,8 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
   // Set to `false` to disable `@babel/plugin-transform-runtime`
-  const enableBabelRuntime = 
-    platformOptions.enableBabelRuntime == null ||
-    platformOptions.enableBabelRuntime === true
+  const enableBabelRuntime =
+    platformOptions.enableBabelRuntime == null || platformOptions.enableBabelRuntime === true
       ? api.caller(getBabelRuntimeVersion)
       : platformOptions.enableBabelRuntime;
 

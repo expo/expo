@@ -14,9 +14,7 @@ import type { PluginItem } from '@babel/core';
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-type ConfigOptions = {};
-
-module.exports = function (_babel: unknown, _options: ConfigOptions) {
+module.exports = function (_babel: unknown) {
   const extraPlugins: PluginItem[] = [];
 
   // NOTE: We also remove `@react-native/babel-plugin-codegen` since it doesn't seem needed on web.
