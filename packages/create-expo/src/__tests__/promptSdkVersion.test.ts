@@ -159,25 +159,58 @@ describe(applySdkVersionToTemplateAsync, () => {
     );
   });
 
-  it('prints a "Creating … Alternatively" lead-in with --template/--example before the prompt', async () => {
+  it('prints a "Creating …" line and a Tip stanza after the SDK is picked', async () => {
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     mockPrompts.mockResolvedValueOnce({ answer: 55 });
     await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
     const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
-    expect(output).toMatch(/Creating a project using the .*default.* template\. Alternatively:/);
+    expect(output).toMatch(/Creating a project using the .*default.* template\./);
+    expect(output).toMatch(/Tip:/);
     expect(output).toMatch(/--template/);
     expect(output).toMatch(/--example/);
     logSpy.mockRestore();
   });
 
-  it('logs the resolved template in non-interactive mode', async () => {
+  it('uses the project name in the lead-in when provided', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    mockPrompts.mockResolvedValueOnce({ answer: 55 });
+    await applySdkVersionToTemplateAsync('expo-template-default', {
+      yes: false,
+      projectName: 'my-app',
+    });
+    const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
+    expect(output).toMatch(/Creating .*my-app.* using the .*default.* template/);
+    logSpy.mockRestore();
+  });
+
+  it('hides the alternatives stanza when showAlternatives is false', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    mockPrompts.mockResolvedValueOnce({ answer: 55 });
+    await applySdkVersionToTemplateAsync('expo-template-tabs', {
+      yes: false,
+      showAlternatives: false,
+    });
+    const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
+    expect(output).toMatch(/Creating a project using the .*tabs.* template\./);
+    expect(output).not.toMatch(/Tip:/);
+    expect(output).not.toMatch(/--template/);
+    expect(output).not.toMatch(/--example/);
+    logSpy.mockRestore();
+  });
+
+  it('logs the resolved template with the project name in non-interactive mode', async () => {
     process.env.CI = 'true';
     const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
-    await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
+    await applySdkVersionToTemplateAsync('expo-template-default', {
+      yes: false,
+      projectName: 'my-app',
+    });
     const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
-    expect(output).toMatch(/Creating an Expo project using the .*expo-template-default@sdk-55/);
+    expect(output).toMatch(/Creating .*my-app.* using the .*expo-template-default@sdk-55/);
     logSpy.mockRestore();
   });
 

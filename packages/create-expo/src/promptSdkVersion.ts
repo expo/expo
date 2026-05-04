@@ -77,26 +77,30 @@ function parseSdkMajor(version: string | undefined): number | null {
  */
 export async function applySdkVersionToTemplateAsync(
   template: string,
-  { yes }: { yes: boolean }
+  {
+    yes,
+    showAlternatives = true,
+    projectName,
+  }: { yes: boolean; showAlternatives?: boolean; projectName?: string }
 ): Promise<string> {
   if (env.EXPO_BETA) {
-    logCreatingProject(template);
+    logCreatingProject(template, projectName);
     return template;
   }
 
   const [name, tag] = splitNpmNameAndTag(template);
   if (tag) {
-    logCreatingProject(template);
+    logCreatingProject(template, projectName);
     return template;
   }
   if (!isKnownExpoTemplate(name)) {
-    logCreatingProject(template);
+    logCreatingProject(template, projectName);
     return template;
   }
 
   const versions = await fetchSdkVersionsAsync();
   if (!versions) {
-    logCreatingProject(template);
+    logCreatingProject(template, projectName);
     return template;
   }
 
@@ -105,21 +109,22 @@ export async function applySdkVersionToTemplateAsync(
   // in the App Store / Play Store version of Expo Go.
   if (yes || env.CI || !process.stdin.isTTY) {
     const pinned = `${name}@sdk-${versions.latest}`;
-    logCreatingProject(pinned);
+    logCreatingProject(pinned, projectName);
     return pinned;
   }
 
-  const selectedSdk = await promptSdkVersionAsync(versions, name);
+  const selectedSdk = await promptSdkVersionAsync(versions, name, showAlternatives, projectName);
   if (selectedSdk == null) {
-    logCreatingProject(template);
+    logCreatingProject(template, projectName);
     return template;
   }
 
   return `${name}@sdk-${selectedSdk}`;
 }
 
-function logCreatingProject(template: string): void {
-  console.log(chalk`Creating an Expo project using the {cyan ${template}} template.\n`);
+function logCreatingProject(template: string, projectName: string | undefined): void {
+  const subject = projectName ? chalk.cyan(projectName) : 'a project';
+  console.log(chalk`Creating ${subject} using the {cyan ${template}} template.\n`);
 }
 
 function isKnownExpoTemplate(name: string): boolean {
@@ -132,22 +137,11 @@ function isKnownExpoTemplate(name: string): boolean {
 
 async function promptSdkVersionAsync(
   versions: SdkVersionsSummary,
-  templateName: string
+  templateName: string,
+  showAlternatives: boolean,
+  projectName: string | undefined
 ): Promise<number | null> {
   const { latest, expoGoCompatible, available } = versions;
-
-  const friendly = templateName.replace(/^expo-template-/, '');
-  const cmd = formatSelfCommand();
-  console.log(
-    chalk`Creating a project using the {cyan ${friendly}} template. Alternatively:`
-  );
-  console.log(
-    `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--template')}  ${chalk.gray('to pick from other templates')}`
-  );
-  console.log(
-    `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--example')}   ${chalk.gray('to explore examples')}`
-  );
-  console.log();
 
   const choices: prompts.Choice[] = [
     {
@@ -180,25 +174,43 @@ async function promptSdkVersionAsync(
     process.exit(1);
   }
 
+  let resolved: number;
   if (answer !== 'other') {
-    return answer as number;
+    resolved = answer as number;
+  } else {
+    const { sdkAnswer } = await prompts({
+      type: 'select',
+      name: 'sdkAnswer',
+      message: 'Select an SDK version:',
+      choices: available.slice(0, 4).map((sdk) => ({
+        title: `SDK ${sdk}`,
+        value: sdk,
+      })),
+    });
+
+    if (sdkAnswer == null) {
+      Log.log();
+      Log.log(chalk`Specify the SDK version, example: {cyan --template default@${latest}}`);
+      process.exit(1);
+    }
+    resolved = sdkAnswer as number;
   }
 
-  const { sdkAnswer } = await prompts({
-    type: 'select',
-    name: 'sdkAnswer',
-    message: 'Select an SDK version:',
-    choices: available.slice(0, 4).map((sdk) => ({
-      title: `SDK ${sdk}`,
-      value: sdk,
-    })),
-  });
-
-  if (sdkAnswer == null) {
-    Log.log();
-    Log.log(chalk`Specify the SDK version, example: {cyan --template default@${latest}}`);
-    process.exit(1);
+  const friendly = templateName.replace(/^expo-template-/, '');
+  const subject = projectName ? chalk.cyan(projectName) : 'a project';
+  console.log(chalk`Creating ${subject} using the {cyan ${friendly}} template.`);
+  if (showAlternatives) {
+    const cmd = formatSelfCommand();
+    console.log();
+    console.log(chalk.gray('Tip:'));
+    console.log(
+      `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--template')}  ${chalk.gray('to pick from other templates')}`
+    );
+    console.log(
+      `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--example')}   ${chalk.gray('to explore examples')}`
+    );
   }
+  console.log();
 
-  return sdkAnswer as number;
+  return resolved;
 }

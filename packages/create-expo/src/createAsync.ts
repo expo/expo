@@ -102,12 +102,17 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     resolvedTemplate = props.template ?? null;
   }
 
+  const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
+
   resolvedTemplate = await applySdkVersionToTemplateAsync(
     resolvedTemplate ?? 'expo-template-default',
-    { yes: props.yes }
+    {
+      yes: props.yes,
+      showAlternatives: !props.template,
+      projectName: path.basename(projectRoot),
+    }
   );
 
-  const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
   // Setup telemetry attempt after a reasonable point.
