@@ -87,7 +87,6 @@
         "expo-haptics",
         "expo-image-manipulator",
         "expo-image-picker",
-        "expo-linear-gradient",
         "expo-live-photo",
         "expo-local-authentication",
         "expo-location",

@@ -81,30 +81,10 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
  */
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
- * A point in a normalized [0, 1] coordinate space, used to define gradient start and end positions.
+ * Sets the background color.
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
  */
-export type GradientPoint = {
-    x: number;
-    y: number;
-};
-/**
- * A brush describes how a region is painted. Mirrors Compose's `Brush` shapes
- * (currently supports `Brush.linearGradient`).
- */
-export type Brush = {
-    type: 'linearGradient';
-    /** Array of color strings (hex, e.g., '#FF0000'). At least 2 entries. */
-    colors: ColorValue[];
-    /** Start point in normalized [0, 1] coordinates. @default { x: 0, y: 0 } */
-    startPoint?: GradientPoint;
-    /** End point in normalized [0, 1] coordinates. @default { x: 1, y: 1 } */
-    endPoint?: GradientPoint;
-};
-/**
- * Sets the background color or brush.
- * @param value - A color string (hex, e.g., '#FF0000') or a `Brush` (e.g., `{ type: 'linearGradient', ... }`).
- */
-export declare function background(value: ColorValue | Brush): import("./createModifier").ModifierConfig;
+export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
 /**
  * Adds a border around the view.
  * @param borderWidth - Border width in dp.
