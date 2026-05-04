@@ -204,7 +204,7 @@ async function promptSdkVersionAsync(
       `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--template')}  ${chalk.gray('to pick from other templates')}`
     );
     console.log(
-      `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--example')}   ${chalk.gray('to explore examples')}`
+      `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--example')}   ${chalk.gray('to explore')} ${chalk.gray.underline('https://github.com/expo/examples')}`
     );
   }
   console.log();
