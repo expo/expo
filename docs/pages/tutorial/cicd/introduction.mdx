@@ -14,7 +14,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 By the end of this tutorial, every push to our Expo project builds, tests, or ships automatically. The service that makes this possible is [EAS Workflows](/eas/workflows/introduction/), a Continuous Integration (CI)/Continuous Delivery (CD) service from Expo Application Services (EAS) for Expo and React Native apps.
 
-An EAS Workflow is a [YAML](https://en.wikipedia.org/wiki/YAML) file that lives in **.eas/workflows/** at the root of our project. Here is a complete example that builds an Android development build on every push to the `main` branch in a GitHub repository:
+An EAS Workflow is defined in a [YAML](https://en.wikipedia.org/wiki/YAML) file that lives in **.eas/workflows/** at the root of our project. Here is a complete example that builds an Android development build on every push to the `main` branch in a GitHub repository:
 
 ```yaml .eas/workflows/build.yml
 name: Build Android
@@ -35,9 +35,9 @@ That is the entire file. EAS handles the environment, compiles the native code, 
 
 ## What is EAS Workflows and why use it?
 
-**EAS Workflows** runs Android, iOS, and web builds, publishes OTA updates, submits to app stores, and runs E2E tests with Maestro, all from YAML files in our GitHub repository. Jobs run in a managed cloud environment, which means no build server setup on our end.
+**EAS Workflows** is a CI/CD platform optimised for building, testing and deploying React Native and Expo proejects. It runs Android, iOS, and web builds, publishes OTA updates, submits to app stores, and runs E2E tests with Maestro, all from YAML files in our GitHub repository. Jobs run in a managed cloud environment, which means no build server setup on our end.
 
-Our team triggers workflows from GitHub events (push, pull request, tags, or labels), from schedules (cron), or manually using [EAS CLI](/eas/cli/).
+Workflows may be triggered from GitHub events (push, pull request, tags, or labels), from schedules (cron), or manually using [EAS CLI](/eas/cli/).
 
 ## Topics covered
 
