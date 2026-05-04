@@ -338,6 +338,10 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (55.0.8):
     - ExpoModulesCore
+  - ExpoUI (55.0.1):
+    - ExpoModulesCore
+    - ExpoModulesWorklets
+    - React-RCTFabric
   - ExpoVideo (55.0.9):
     - ExpoModulesCore
   - ExpoVideoThumbnails (55.0.9):
@@ -3634,7 +3638,7 @@ PODS:
     - RNWorklets
     - SocketRocket
     - Yoga
-  - RNScreens (4.24.0):
+  - RNScreens (4.25.0-beta.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3661,10 +3665,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNScreens/common (= 4.24.0)
+    - RNScreens/common (= 4.25.0-beta.1)
     - SocketRocket
     - Yoga
-  - RNScreens/common (4.24.0):
+  - RNScreens/common (4.25.0-beta.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3750,7 +3754,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.8.1):
+  - RNWorklets (0.8.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3778,11 +3782,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/apple (= 0.8.1)
-    - RNWorklets/common (= 0.8.1)
+    - RNWorklets/apple (= 0.8.2)
+    - RNWorklets/common (= 0.8.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/apple (0.8.1):
+  - RNWorklets/apple (0.8.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -3812,7 +3816,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets/common (0.8.1):
+  - RNWorklets/common (0.8.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4069,6 +4073,7 @@ DEPENDENCIES:
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
   - ExpoTaskManager/Tests (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
+  - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -4359,6 +4364,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-task-manager/ios"
   ExpoTrackingTransparency:
     :path: "../../../packages/expo-tracking-transparency/ios"
+  ExpoUI:
+    :path: "../../../packages/expo-ui/ios"
   ExpoVideo:
     :path: "../../../packages/expo-video/ios"
   ExpoVideoThumbnails:
@@ -4615,7 +4622,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: d39abb48e55d828ac2abd4800e226244bcdb6447
   ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
-  ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe
+  ExpoModulesWorklets: 8a4fbb101cf7d6f6a046560167938425679b5141
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
   ExpoPrint: 884afdcfe9adea0d36f121353652d0cfa7963deb
@@ -4633,6 +4640,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 45304f7673a470749a0fc099b09ba0a23d1a89c2
   ExpoTaskManager: a06f59b8f5777b647a1707b3d21f5e9717cd157d
   ExpoTrackingTransparency: a980b930c8e2affc688dd93940dc5b88f55c875b
+  ExpoUI: e6e61b9aa1424349659c6cb1165adee716a89b69
   ExpoVideo: eca730ba53ec45c2a188aa9dbfe11f7f809d66a1
   ExpoVideoThumbnails: 2340f0b7f599c9ce6ba49a885f783de919cf4dd3
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
@@ -4752,9 +4760,9 @@ SPEC CHECKSUMS:
   RNDateTimePicker: 73ffdd45f0ce1d00ff981031679a05206e619fdc
   RNGestureHandler: f0d7f370292ab1ff422eac5a6cbae6feef14bb98
   RNReanimated: 7a13e1d8ccabef6780dce63cfd66999a63233497
-  RNScreens: 7f643ee0fd1407dc5085c7795460bd93da113b8f
+  RNScreens: 16bd039e76f91145275890a1e1cf848b98c1da7a
   RNSVG: c9d7c940ad9655eba72c5b9ca7b017c95bb58083
-  RNWorklets: 67e8351cb9accf602a4c7fe62b3d2cd1967aa61e
+  RNWorklets: ebd0e078251c5621abec3f4a72b0c7b423ba04c9
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c

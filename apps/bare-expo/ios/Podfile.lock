@@ -3123,7 +3123,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.8.1):
+  - RNWorklets (0.8.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3146,10 +3146,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/apple (= 0.8.1)
-    - RNWorklets/common (= 0.8.1)
+    - RNWorklets/apple (= 0.8.2)
+    - RNWorklets/common (= 0.8.2)
     - Yoga
-  - RNWorklets/apple (0.8.1):
+  - RNWorklets/apple (0.8.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3173,7 +3173,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets/common (0.8.1):
+  - RNWorklets/common (0.8.2):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3971,7 +3971,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 0b10a40c52e82e182c70dbfc12001ec30ba74cbd
   ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
-  ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe
+  ExpoModulesWorklets: 8a4fbb101cf7d6f6a046560167938425679b5141
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
   ExpoObserve: d5a52bd0670d1b2bc24a1d59cf9322f3c843a045
@@ -4096,7 +4096,7 @@ SPEC CHECKSUMS:
   RNReanimated: c51bd6bd2ff1ef0140d6056ff496e6089432d00c
   RNScreens: c476f5f41b7c4ddce3e73f838c23d40c5e33384c
   RNSVG: 04044c3abcf177fd674a1a3d13097efa1adebcbe
-  RNWorklets: c586254b36d144ad5ae62b82686de1b6a066949f
+  RNWorklets: d9896339099636c33f36826cfa7671adeabafecd
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
