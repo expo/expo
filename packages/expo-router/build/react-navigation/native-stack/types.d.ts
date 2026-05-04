@@ -110,7 +110,16 @@ export type NativeStackHeaderLeftProps = NativeStackHeaderBackProps;
  * @deprecated Use `NativeStackHeaderItemProps` instead.
  */
 export type NativeStackHeaderRightProps = NativeStackHeaderItemProps;
-export type NativeStackNavigationOptions = {
+export type NativeStackModalPresentation = 'modal' | 'transparentModal' | 'containedModal' | 'containedTransparentModal' | 'fullScreenModal' | 'pageSheet';
+export type NativeStackSheetPresentation = 'formSheet';
+/**
+ * Every supported value of `presentation` on a native stack screen.
+ */
+export type NativeStackPresentation = 'card' | NativeStackModalPresentation | NativeStackSheetPresentation;
+/**
+ * Options shared by every stack presentation.
+ */
+export interface CommonNativeStackNavigationOptions {
     /**
      * String that can be displayed in the header as a fallback for `headerTitle`.
      */
@@ -486,41 +495,6 @@ export type NativeStackNavigationOptions = {
      */
     contentStyle?: StyleProp<ViewStyle>;
     /**
-     * Whether the gesture to dismiss should use animation provided to `animation` prop. Defaults to `false`.
-     *
-     * Doesn't affect the behavior of screens presented modally.
-     *
-     * @platform ios
-     */
-    animationMatchesGesture?: boolean;
-    /**
-     * Whether the gesture to dismiss should work on the whole screen. The behavior depends on iOS version.
-     *
-     * On iOS 18 and below:
-     * `false` by default. If enabled, swipe gesture will use `simple_push` transition animation by default. It can be changed
-     * with `animation` & `animationMatchesGesture` props, but default iOS swipe animation is not achievable.
-     *
-     * On iOS 26 and up:
-     * `true` by default to match new native behavior. You can still customize it with `animation` & `animationMatchesGesture` props.
-     *
-     * Doesn't affect the behavior of screens presented modally.
-     *
-     * @platform ios
-     */
-    fullScreenGestureEnabled?: boolean;
-    /**
-     * iOS 18 and below. Controls whether the full screen dismiss gesture has shadow under view during transition.
-     * The gesture uses custom transition and thus doesn't have a shadow by default. When enabled, a custom shadow view
-     * is added during the transition which tries to mimic the default iOS shadow. Defaults to `true`.
-     *
-     * This does not affect the behavior of transitions that don't use gestures, enabled by `fullScreenGestureEnabled` prop.
-     *
-     * @deprecated since iOS 26.
-     *
-     * @platform ios
-     */
-    fullScreenGestureShadowEnabled?: boolean;
-    /**
      * Whether you can use gestures to dismiss this screen. Defaults to `true`.
      *
      * Only supported on iOS.
@@ -580,21 +554,108 @@ export type NativeStackNavigationOptions = {
      */
     animationDuration?: number;
     /**
-     * How should the screen be presented.
+     * The display orientation to use for the screen.
      *
      * Supported values:
-     * - "card": the new screen will be pushed onto a stack, which means the default animation will be slide from the side on iOS, the animation on Android will vary depending on the OS version and theme.
-     * - "modal": the new screen will be presented modally. this also allows for a nested stack to be rendered inside the screen.
-     * - "transparentModal": the new screen will be presented modally, but in addition, the previous screen will stay so that the content below can still be seen if the screen has translucent background.
-     * - "containedModal": will use "UIModalPresentationCurrentContext" modal style on iOS and will fallback to "modal" on Android.
-     * - "containedTransparentModal": will use "UIModalPresentationOverCurrentContext" modal style on iOS and will fallback to "transparentModal" on Android.
-     * - "fullScreenModal": will use "UIModalPresentationFullScreen" modal style on iOS and will fallback to "modal" on Android.
-     * - "formSheet": will use "UIModalPresentationFormSheet" modal style on iOS and will fallback to "modal" on Android.
-     * - "pageSheet": will use "UIModalPresentationPageSheet" modal style on iOS and will fallback to "modal" on Android.
+     * - "default" - resolves to "all" without "portrait_down" on iOS. On Android, this lets the system decide the best orientation.
+     * - "all": all orientations are permitted.
+     * - "portrait": portrait orientations are permitted.
+     * - "portrait_up": right-side portrait orientation is permitted.
+     * - "portrait_down": upside-down portrait orientation is permitted.
+     * - "landscape": landscape orientations are permitted.
+     * - "landscape_left": landscape-left orientation is permitted.
+     * - "landscape_right": landscape-right orientation is permitted.
      *
      * Only supported on iOS and Android.
      */
-    presentation?: Exclude<ScreenProps['stackPresentation'], 'push'> | 'card';
+    orientation?: ScreenProps['screenOrientation'];
+    /**
+     * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
+     * Defaults to `true` when `enableFreeze()` is run at the top of the application.
+     * Requires `react-native-screens` version >=3.16.0.
+     *
+     * Only supported on iOS and Android.
+     */
+    freezeOnBlur?: boolean;
+    /**
+     * Configures the scroll edge effect for the _content ScrollView_ (the ScrollView that is present in first descendants chain of the Screen).
+     * Depending on values set, it will blur the scrolling content below certain UI elements (header items, search bar)
+     * for the specified edge of the ScrollView.
+     *
+     * When set in nested containers, i.e. Native Stack inside Native Bottom Tabs, or the other way around,
+     * the ScrollView will use only the innermost one's config.
+     *
+     * **Note:** Using both `headerBlurEffect` and `scrollEdgeEffects` (>= iOS 26) simultaneously may cause overlapping effects.
+     *
+     * Edge effects can be configured for each edge separately. The following values are currently supported:
+     *
+     * - `automatic` - the automatic scroll edge effect style,
+     * - `hard` - a scroll edge effect with a hard cutoff and dividing line,
+     * - `soft` - a soft-edged scroll edge effect,
+     * - `hidden` - no scroll edge effect.
+     *
+     * Defaults to `automatic` for each edge.
+     *
+     * @platform ios
+     *
+     * @supported iOS 26 or higher
+     */
+    scrollEdgeEffects?: {
+        bottom?: ScrollEdgeEffect;
+        left?: ScrollEdgeEffect;
+        right?: ScrollEdgeEffect;
+        top?: ScrollEdgeEffect;
+    };
+}
+/**
+ * Options that only apply when `presentation` is `'card'` (or omitted, which
+ * defaults to card).
+ *
+ * @hideType
+ */
+export interface NativeStackCardSpecificOptions {
+    /**
+     * Whether the gesture to dismiss should use animation provided to `animation` prop. Defaults to `false`.
+     *
+     * Doesn't affect the behavior of screens presented modally.
+     *
+     * @platform ios
+     */
+    animationMatchesGesture?: boolean;
+    /**
+     * Whether the gesture to dismiss should work on the whole screen. The behavior depends on iOS version.
+     *
+     * On iOS 18 and below:
+     * `false` by default. If enabled, swipe gesture will use `simple_push` transition animation by default. It can be changed
+     * with `animation` & `animationMatchesGesture` props, but default iOS swipe animation is not achievable.
+     *
+     * On iOS 26 and up:
+     * `true` by default to match new native behavior. You can still customize it with `animation` & `animationMatchesGesture` props.
+     *
+     * Doesn't affect the behavior of screens presented modally.
+     *
+     * @platform ios
+     */
+    fullScreenGestureEnabled?: boolean;
+    /**
+     * iOS 18 and below. Controls whether the full screen dismiss gesture has shadow under view during transition.
+     * The gesture uses custom transition and thus doesn't have a shadow by default. When enabled, a custom shadow view
+     * is added during the transition which tries to mimic the default iOS shadow. Defaults to `true`.
+     *
+     * This does not affect the behavior of transitions that don't use gestures, enabled by `fullScreenGestureEnabled` prop.
+     *
+     * @deprecated since iOS 26.
+     *
+     * @platform ios
+     */
+    fullScreenGestureShadowEnabled?: boolean;
+}
+/**
+ * Options that only apply when `presentation` is `'formSheet'`.
+ *
+ * @hideType
+ */
+export interface NativeStackSheetSpecificOptions {
     /**
      * Describes heights where a sheet can rest.
      * Works only when `presentation` is set to `formSheet`.
@@ -715,59 +776,6 @@ export type NativeStackNavigationOptions = {
      */
     sheetResizeAnimationEnabled?: boolean;
     /**
-     * The display orientation to use for the screen.
-     *
-     * Supported values:
-     * - "default" - resolves to "all" without "portrait_down" on iOS. On Android, this lets the system decide the best orientation.
-     * - "all": all orientations are permitted.
-     * - "portrait": portrait orientations are permitted.
-     * - "portrait_up": right-side portrait orientation is permitted.
-     * - "portrait_down": upside-down portrait orientation is permitted.
-     * - "landscape": landscape orientations are permitted.
-     * - "landscape_left": landscape-left orientation is permitted.
-     * - "landscape_right": landscape-right orientation is permitted.
-     *
-     * Only supported on iOS and Android.
-     */
-    orientation?: ScreenProps['screenOrientation'];
-    /**
-     * Whether inactive screens should be suspended from re-rendering. Defaults to `false`.
-     * Defaults to `true` when `enableFreeze()` is run at the top of the application.
-     * Requires `react-native-screens` version >=3.16.0.
-     *
-     * Only supported on iOS and Android.
-     */
-    freezeOnBlur?: boolean;
-    /**
-     * Configures the scroll edge effect for the _content ScrollView_ (the ScrollView that is present in first descendants chain of the Screen).
-     * Depending on values set, it will blur the scrolling content below certain UI elements (header items, search bar)
-     * for the specified edge of the ScrollView.
-     *
-     * When set in nested containers, i.e. Native Stack inside Native Bottom Tabs, or the other way around,
-     * the ScrollView will use only the innermost one's config.
-     *
-     * **Note:** Using both `headerBlurEffect` and `scrollEdgeEffects` (>= iOS 26) simultaneously may cause overlapping effects.
-     *
-     * Edge effects can be configured for each edge separately. The following values are currently supported:
-     *
-     * - `automatic` - the automatic scroll edge effect style,
-     * - `hard` - a scroll edge effect with a hard cutoff and dividing line,
-     * - `soft` - a soft-edged scroll edge effect,
-     * - `hidden` - no scroll edge effect.
-     *
-     * Defaults to `automatic` for each edge.
-     *
-     * @platform ios
-     *
-     * @supported iOS 26 or higher
-     */
-    scrollEdgeEffects?: {
-        bottom?: ScrollEdgeEffect;
-        left?: ScrollEdgeEffect;
-        right?: ScrollEdgeEffect;
-        top?: ScrollEdgeEffect;
-    };
-    /**
      * Footer component that can be used alongside formSheet stack presentation style.
      *
      * This option is provided, because due to implementation details it might be problematic
@@ -780,7 +788,80 @@ export type NativeStackNavigationOptions = {
      * @platform android
      */
     unstable_sheetFooter?: () => React.ReactNode;
-};
+}
+/**
+ * Stack navigation options for screens presented as a card. This is the default
+ * presentation when none is specified.
+ *
+ * Includes the gesture-related options that the native side ignores on modal
+ * and sheet screens.
+ */
+export interface CardNativeStackNavigationOptions extends CommonNativeStackNavigationOptions, NativeStackCardSpecificOptions {
+    /**
+     * The new screen will be pushed onto a stack, which means the default animation will be slide from
+     * the side on iOS; the animation on Android will vary depending on the OS version and theme.
+     *
+     * Omitting `presentation` is equivalent to passing `'card'`.
+     *
+     * Only supported on iOS and Android.
+     */
+    presentation?: 'card';
+}
+/**
+ * Stack navigation options for screens presented modally — `'modal'`,
+ * `'transparentModal'`, `'containedModal'`, `'containedTransparentModal'`,
+ * `'fullScreenModal'`, and `'pageSheet'`. They share a bucket because none of
+ * them accept the formSheet-specific options.
+ */
+export interface ModalNativeStackNavigationOptions extends CommonNativeStackNavigationOptions {
+    /**
+     * How the modal should be presented.
+     *
+     * Supported values:
+     * - "modal": the new screen will be presented modally. this also allows for a nested stack to be rendered inside the screen.
+     * - "transparentModal": the new screen will be presented modally, but in addition, the previous screen will stay so that the content below can still be seen if the screen has translucent background.
+     * - "containedModal": will use "UIModalPresentationCurrentContext" modal style on iOS and will fallback to "modal" on Android.
+     * - "containedTransparentModal": will use "UIModalPresentationOverCurrentContext" modal style on iOS and will fallback to "transparentModal" on Android.
+     * - "fullScreenModal": will use "UIModalPresentationFullScreen" modal style on iOS and will fallback to "modal" on Android.
+     * - "pageSheet": will use "UIModalPresentationPageSheet" modal style on iOS and will fallback to "modal" on Android. Use `'formSheet'` if you need detent / corner-radius customization.
+     *
+     * Only supported on iOS and Android.
+     */
+    presentation: NativeStackModalPresentation;
+}
+/**
+ * Stack navigation options for screens presented as a `'formSheet'`. On iOS
+ * this maps to `UIModalPresentationFormSheet` driven by the configured
+ * `sheetPresentationController` (detents, corner radius, grabber, …). On
+ * Android it falls back to `BottomSheetBehaviour`.
+ */
+export interface SheetNativeStackNavigationOptions extends CommonNativeStackNavigationOptions, NativeStackSheetSpecificOptions {
+    /**
+     * `'formSheet'` — `UIModalPresentationFormSheet` on iOS, BottomSheet on
+     * Android. Pair with the `sheet*` options to customize detents and chrome.
+     *
+     * Only supported on iOS and Android.
+     */
+    presentation: NativeStackSheetPresentation;
+}
+/**
+ * Discriminated union of native stack navigation options keyed on
+ * `presentation`.
+ */
+export type NativeStackNavigationOptions = CardNativeStackNavigationOptions | ModalNativeStackNavigationOptions | SheetNativeStackNavigationOptions;
+/**
+ * Flat shape of {@link NativeStackNavigationOptions} for code that consumes
+ * resolved options (descriptors, internal merges, the native view) and needs to
+ * read every possible field without narrowing through the discriminator.
+ *
+ * Do not use this as the input type for `Stack.Screen` `options` or
+ * `<Stack screenOptions>`
+ *
+ * @internal
+ */
+export interface FlatNativeStackNavigationOptions extends CommonNativeStackNavigationOptions, NativeStackCardSpecificOptions, NativeStackSheetSpecificOptions {
+    presentation?: NativeStackPresentation;
+}
 type PlatformIconShared = {
     /**
      * - `image` - Use a local image as the icon.

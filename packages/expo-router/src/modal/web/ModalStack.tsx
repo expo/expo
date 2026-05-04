@@ -9,7 +9,7 @@ import {
   findLastNonModalIndex,
   isTransparentModalPresentation,
 } from './utils';
-import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { FlatExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
 import type {
   EventArg,
@@ -134,7 +134,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
             <ModalComponent
               key={route.key}
               routeKey={route.key}
-              options={descriptors[route.key]!.options as ExtendedStackNavigationOptions}
+              options={descriptors[route.key]!.options as FlatExtendedStackNavigationOptions}
               renderScreen={descriptors[route.key]!.render}
               onDismiss={dismiss}
               dismissible={isRemovePrevented ? false : undefined}

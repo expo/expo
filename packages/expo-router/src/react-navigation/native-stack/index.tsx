@@ -17,6 +17,11 @@ export { useAnimatedHeaderHeight } from './utils/useAnimatedHeaderHeight';
  * Types
  */
 export type {
+  CardNativeStackNavigationOptions,
+  CommonNativeStackNavigationOptions,
+  FlatNativeStackNavigationOptions,
+  ModalNativeStackNavigationOptions,
+  NativeStackCardSpecificOptions,
   NativeStackHeaderBackProps,
   NativeStackHeaderItem,
   NativeStackHeaderItemButton,
@@ -29,10 +34,15 @@ export type {
   NativeStackHeaderLeftProps,
   NativeStackHeaderProps,
   NativeStackHeaderRightProps,
+  NativeStackModalPresentation,
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
   NativeStackOptionsArgs,
+  NativeStackPresentation,
   NativeStackScreenProps,
+  NativeStackSheetPresentation,
+  NativeStackSheetSpecificOptions,
+  SheetNativeStackNavigationOptions,
 } from './types';

@@ -3,7 +3,7 @@ import React from 'react';
 import { Drawer } from 'vaul';
 
 import modalStyles from './modalStyles';
-import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { FlatExtendedStackNavigationOptions } from '../../layouts/StackClient';
 
 function TransparentModalStackRouteDrawer({
   routeKey,
@@ -13,7 +13,7 @@ function TransparentModalStackRouteDrawer({
   onDismiss,
 }: {
   routeKey: string;
-  options: ExtendedStackNavigationOptions;
+  options: FlatExtendedStackNavigationOptions;
   renderScreen: () => React.ReactNode;
   onDismiss: () => void;
   dismissible?: boolean;

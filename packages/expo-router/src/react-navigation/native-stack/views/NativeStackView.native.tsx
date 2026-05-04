@@ -20,6 +20,7 @@ import {
   useFrameSize,
 } from '../../elements';
 import type {
+  FlatNativeStackNavigationOptions,
   NativeStackDescriptor,
   NativeStackDescriptorMap,
   NativeStackNavigationHelpers,
@@ -87,7 +88,11 @@ const SceneView = ({
   onGestureCancel,
   onSheetDetentChanged,
 }: SceneViewProps) => {
-  const { route, navigation, options, render } = descriptor;
+  const { route, navigation, render } = descriptor;
+  // Discriminated-union narrowing would force every read here to walk the
+  // presentation tree; treat the descriptor's options as the flat resolved
+  // shape so the native view can read every field uniformly.
+  const options: FlatNativeStackNavigationOptions = descriptor.options;
 
   let {
     animation,

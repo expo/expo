@@ -55,7 +55,11 @@ function isFabric() {
 }
 const useNativeDriver = react_native_1.Platform.OS !== 'web';
 const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescriptor, nextDescriptor, isPresentationModal, isPreloaded, onWillDisappear, onWillAppear, onAppear, onDisappear, onDismissed, onHeaderBackButtonClicked, onNativeDismissCancelled, onGestureCancel, onSheetDetentChanged, }) => {
-    const { route, navigation, options, render } = descriptor;
+    const { route, navigation, render } = descriptor;
+    // Discriminated-union narrowing would force every read here to walk the
+    // presentation tree; treat the descriptor's options as the flat resolved
+    // shape so the native view can read every field uniformly.
+    const options = descriptor.options;
     let { animation, animationMatchesGesture, presentation = isPresentationModal ? 'modal' : 'card', fullScreenGestureEnabled, } = options;
     const { animationDuration, animationTypeForReplace = 'push', fullScreenGestureShadowEnabled = true, gestureEnabled, gestureDirection = presentation === 'card' ? 'horizontal' : 'vertical', gestureResponseDistance, header, headerBackButtonMenuEnabled, headerShown, headerBackground, headerTransparent, autoHideHomeIndicator, keyboardHandlingEnabled, navigationBarColor, navigationBarTranslucent, navigationBarHidden, orientation, sheetAllowedDetents = [1.0], sheetLargestUndimmedDetentIndex = -1, sheetGrabberVisible = false, sheetCornerRadius = -1.0, sheetElevation = 24, sheetExpandsWhenScrolledToEdge = true, sheetInitialDetentIndex = 0, sheetShouldOverflowTopInset = false, sheetResizeAnimationEnabled = true, statusBarAnimation, statusBarHidden, statusBarStyle, statusBarTranslucent, statusBarBackgroundColor, unstable_sheetFooter, scrollEdgeEffects, freezeOnBlur, contentStyle, } = options;
     if (gestureDirection === 'vertical' && react_native_1.Platform.OS === 'ios') {

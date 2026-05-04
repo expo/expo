@@ -1,9 +1,9 @@
 import React from 'react';
 import type { ColorValue } from 'react-native';
-import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { FlatExtendedStackNavigationOptions } from '../../layouts/StackClient';
 declare function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, onDismiss, themeColors, }: {
     routeKey: string;
-    options: ExtendedStackNavigationOptions;
+    options: FlatExtendedStackNavigationOptions;
     renderScreen: () => React.ReactNode;
     onDismiss: () => void;
     themeColors: {

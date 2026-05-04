@@ -38,7 +38,7 @@ function makeDescriptors(
   options: Record<string, unknown> = {}
 ): NativeStackDescriptorMap {
   return {
-    [routeKey]: { options } as NativeStackDescriptor,
+    [routeKey]: { options } as unknown as NativeStackDescriptor,
   };
 }
 

@@ -6,7 +6,7 @@ import { Drawer } from 'vaul';
 import modalStyles from './modalStyles';
 import type { CSSWithVars } from './types';
 import { useIsDesktop } from './utils';
-import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { FlatExtendedStackNavigationOptions } from '../../layouts/StackClient';
 
 function ModalStackRouteDrawer({
   routeKey,
@@ -17,7 +17,7 @@ function ModalStackRouteDrawer({
   themeColors,
 }: {
   routeKey: string;
-  options: ExtendedStackNavigationOptions;
+  options: FlatExtendedStackNavigationOptions;
   renderScreen: () => React.ReactNode;
   onDismiss: () => void;
   themeColors: { card: ColorValue; background: ColorValue };

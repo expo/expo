@@ -40,6 +40,7 @@ import {
   type RouteProp,
 } from '../react-navigation/native';
 import type {
+  FlatNativeStackNavigationOptions,
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../react-navigation/native-stack';
@@ -51,10 +52,11 @@ type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
 
 /**
- * We extend NativeStackNavigationOptions with our custom props
- * to allow for several extra props to be used on web, like modalWidth
+ * Extra options that Expo Router layers on top of the native stack options for
+ * the web modal. Defined separately so the discriminated union of presentations
+ * stays the source of truth for everything else.
  */
-export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+export interface WebStackNavigationOptions {
   webModalStyle?: {
     /**
      * Override the width of the modal (px or percentage). Only applies on web platform.
@@ -92,7 +94,29 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
      */
     shadow?: string;
   };
-};
+}
+
+/**
+ * We extend NativeStackNavigationOptions with our custom props
+ * to allow for several extra props to be used on web, like modalWidth.
+ *
+ * This is the **input** type (a discriminated union over `presentation`) — pass
+ * it to `<Stack screenOptions>` and `Stack.Screen` `options`. For internal code
+ * consuming a resolved descriptor, use {@link FlatExtendedStackNavigationOptions}.
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions &
+  WebStackNavigationOptions;
+
+/**
+ * Flattened companion to {@link ExtendedStackNavigationOptions}. Use this for
+ * internal code that reads resolved descriptor options and needs every
+ * presentation-specific field (sheet detents, gesture overrides) without
+ * narrowing through the `presentation` discriminator.
+ *
+ * @internal
+ */
+export type FlatExtendedStackNavigationOptions = FlatNativeStackNavigationOptions &
+  WebStackNavigationOptions;
 
 const RNStack = withLayoutContext<
   ExtendedStackNavigationOptions,
