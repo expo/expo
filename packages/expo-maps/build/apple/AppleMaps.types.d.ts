@@ -453,6 +453,7 @@ export type AppleMapsViewProps = {
     onCircleClick?: (event: AppleMapsCircle) => void;
     /**
      * Lambda invoked when the map was moved by the user.
+     * Also runs once on initial mount with the starting viewport.
      */
     onCameraMove?: (event: {
         coordinates: Coordinates;

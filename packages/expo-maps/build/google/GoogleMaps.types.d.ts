@@ -413,12 +413,22 @@ export type GoogleMapsViewProps = {
     onCircleClick?: (event: GoogleMapsCircle) => void;
     /**
      * Lambda invoked when the map was moved by the user.
+     * Also runs once on initial mount with the starting viewport.
      */
     onCameraMove?: (event: {
         coordinates: Coordinates;
         zoom: number;
         tilt: number;
         bearing: number;
+        /**
+         * The north-south span of the visible region in degrees of latitude.
+         */
+        latitudeDelta: number;
+        /**
+         * The east-west span of the visible region in degrees of longitude.
+         * Always positive, including when the visible region crosses the antimeridian (±180°).
+         */
+        longitudeDelta: number;
     }) => void;
 };
 /**
