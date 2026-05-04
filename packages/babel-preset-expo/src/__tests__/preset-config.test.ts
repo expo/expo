@@ -76,9 +76,7 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
-        "transform-react-jsx/development",
-        "transform-react-display-name",
-        "transform-react-pure-annotations",
+        "transform-react-jsx",
         "transform-block-scoping",
         "transform-class-properties",
         "transform-class-static-block",
@@ -133,9 +131,7 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
-        "transform-react-jsx/development",
-        "transform-react-display-name",
-        "transform-react-pure-annotations",
+        "transform-react-jsx",
         "transform-block-scoping",
         "transform-class-static-block",
         "transform-async-generator-functions",
@@ -181,7 +177,6 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "transform-react-jsx",
-        "transform-react-display-name",
         "transform-react-pure-annotations",
         "transform-block-scoping",
         "transform-class-static-block",
@@ -223,9 +218,7 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
-        "transform-react-jsx/development",
-        "transform-react-display-name",
-        "transform-react-pure-annotations",
+        "transform-react-jsx",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
@@ -267,7 +260,6 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "transform-react-jsx",
-        "transform-react-display-name",
         "transform-react-pure-annotations",
         "transform-class-static-block",
         "transform-private-methods",
@@ -312,9 +304,7 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
-        "transform-react-jsx/development",
-        "transform-react-display-name",
-        "transform-react-pure-annotations",
+        "transform-react-jsx",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
@@ -360,9 +350,7 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
-        "transform-react-jsx/development",
-        "transform-react-display-name",
-        "transform-react-pure-annotations",
+        "transform-react-jsx",
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
@@ -409,9 +397,7 @@ describe('plugin list snapshots', () => {
         "worklets",
         "expo-ui",
         "warn-on-deep-imports",
-        "transform-react-jsx/development",
-        "transform-react-display-name",
-        "transform-react-pure-annotations",
+        "transform-react-jsx",
         "transform-block-scoping",
         "transform-class-properties",
         "transform-class-static-block",
@@ -673,15 +659,18 @@ describe('server environment', () => {
   });
 });
 
-describe('production mode', () => {
+describe('jsx', () => {
   it('uses production jsx transform', () => {
     const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: false });
     expect(keys).toContain('transform-react-jsx');
     expect(keys).not.toContain('transform-react-jsx/development');
   });
 
-  it('uses development jsx transform in dev', () => {
-    const keys = getPluginKeys({ name: 'metro', platform: 'ios', isDev: true });
+  it('uses development jsx transform in dev with classic runtime', () => {
+    const keys = getPluginKeys(
+      { name: 'metro', platform: 'ios', isDev: true },
+      { jsxRuntime: 'classic' }
+    );
     expect(keys).toContain('transform-react-jsx/development');
   });
 });

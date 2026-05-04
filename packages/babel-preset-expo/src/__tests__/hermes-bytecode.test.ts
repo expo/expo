@@ -68,9 +68,9 @@ const LANGUAGE_SAMPLES: {
     code: `const value = (<div />)`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return `var _jsxDevRuntime=require("react/jsx-dev-runtime");var _jsxFileName="/unknown";const value=(0,_jsxDevRuntime.jsxDEV)("div",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
+        return `var _jsxRuntime=require("react/jsx-runtime");const value=(0,_jsxRuntime.jsx)("div",{});`;
       }
-      return `var _jsxDevRuntime=require("react/jsx-dev-runtime");var _jsxFileName="/unknown";var value=(0,_jsxDevRuntime.jsxDEV)("div",{},void 0,false,{fileName:_jsxFileName,lineNumber:1,columnNumber:16},this);`;
+      return `var _jsxRuntime=require("react/jsx-runtime");var value=(0,_jsxRuntime.jsx)("div",{});`;
     },
     hermesError: /possible JSX: pass -parse-jsx to parse/,
   },
