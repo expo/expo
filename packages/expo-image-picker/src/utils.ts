@@ -1,5 +1,6 @@
 // @hidden
-import { ImagePickerOptions, MediaType, MediaTypeOptions } from './ImagePicker.types';
+import type { ImagePickerOptions, MediaType } from './ImagePicker.types';
+import { MediaTypeOptions } from './ImagePicker.types';
 
 export function parseMediaTypes(
   mediaTypes: MediaTypeOptions | MediaType | MediaType[]

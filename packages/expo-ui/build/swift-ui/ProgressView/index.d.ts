@@ -26,5 +26,5 @@ export type ProgressViewProps = {
 /**
  * Renders a SwiftUI `ProgressView` component.
  */
-export declare function ProgressView(props: ProgressViewProps): import("react").JSX.Element;
+export declare function ProgressView(props: ProgressViewProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

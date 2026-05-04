@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
 import { FaviconMiddleware } from '../FaviconMiddleware';
-import { ServerRequest, ServerResponse } from '../server.types';
+import type { ServerRequest, ServerResponse } from '../server.types';
 
 const asRequest = (req: Partial<ServerRequest>) => req as ServerRequest;
 

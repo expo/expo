@@ -1,10 +1,15 @@
 package expo.modules.observe
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
+import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
@@ -27,7 +32,6 @@ class ObservabilityBackgroundWorker(
   private val observabilityManager: BaseObservabilityManager? = run {
     val projectId = inputData.getString("projectId")
     val baseUrl = inputData.getString("baseUrl")
-    val enableInDebug = inputData.getBoolean("enableInDebug", false)
     val useOpenTelemetry = inputData.getBoolean("useOpenTelemetry", false)
 
     if (projectId == null || baseUrl == null) {
@@ -46,9 +50,24 @@ class ObservabilityBackgroundWorker(
       sessionManager = sessionManager,
       pendingMetricsManager = pendingMetricsManager,
       baseUrl = baseUrl,
-      enableInDebug = enableInDebug,
+      isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
     )
+  }
+
+  override suspend fun getForegroundInfo(): ForegroundInfo {
+    val channelId = "expo-observe-background"
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      val channel = NotificationChannel(channelId, "Metrics dispatch", NotificationManager.IMPORTANCE_LOW)
+      val manager = applicationContext.getSystemService(NotificationManager::class.java)
+      manager.createNotificationChannel(channel)
+    }
+    val notification = NotificationCompat.Builder(applicationContext, channelId)
+      .setSmallIcon(android.R.drawable.ic_popup_sync)
+      .setContentTitle("Sending metrics")
+      .setPriority(NotificationCompat.PRIORITY_LOW)
+      .build()
+    return ForegroundInfo(WORK_NAME.hashCode(), notification)
   }
 
   override suspend fun doWork(): Result {
@@ -78,7 +97,6 @@ class ObservabilityBackgroundWorker(
       context: Context,
       projectId: String,
       baseUrl: String,
-      enableInDebug: Boolean = false,
       useOpenTelemetry: Boolean = false
     ) {
       val constraints = Constraints
@@ -89,7 +107,6 @@ class ObservabilityBackgroundWorker(
       val data = workDataOf(
         Pair("projectId", projectId),
         Pair("baseUrl", baseUrl),
-        Pair("enableInDebug", enableInDebug),
         Pair("useOpenTelemetry", useOpenTelemetry)
       )
 

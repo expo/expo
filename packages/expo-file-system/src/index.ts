@@ -1,16 +1,20 @@
 export * from './FileSystem';
 
 export {
+  DEFAULT_DEBOUNCE_MS,
   type FileCreateOptions,
   type DirectoryCreateOptions,
   type FileHandle,
   type FileInfo,
+  type FileWriteOptions,
   type InfoOptions,
   type PathInfo,
   type DirectoryInfo,
   type DownloadOptions,
   type DownloadProgress,
   FileMode,
+  EncodingType,
+  UploadType,
   type PickFileOptions,
   type PickSingleFileOptions,
   type PickMultipleFilesOptions,
@@ -20,6 +24,18 @@ export {
   type PickMultipleFilesResult,
   type PickMultipleFilesSuccessResult,
   type PickFileCanceledResult,
+  type UploadOptions,
+  type UploadProgress,
+  type UploadResult,
+  type DownloadTaskOptions,
+  type NetworkTaskSessionType,
+  type DownloadPauseState,
+  type UploadTaskState,
+  type DownloadTaskState,
+  type WatchEventType,
+  type WatchEvent,
+  type WatchOptions,
+  type WatchSubscription,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

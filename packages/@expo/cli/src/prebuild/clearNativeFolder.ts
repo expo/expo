@@ -1,4 +1,5 @@
-import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
+import type { ModPlatform } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
 import chalk from 'chalk';
 import { isNativeModuleAsync } from 'expo/internal/unstable-autolinking-exports';
 import fs from 'fs';

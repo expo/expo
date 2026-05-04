@@ -1,6 +1,7 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { PermissionStatus } from 'expo-modules-core';
 
-import { EntityTypes, Source } from '../Calendar';
+import type { EntityTypes, Source } from '../Calendar';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,
@@ -56,6 +57,10 @@ export default {
   },
 
   async getCalendarById(calendarId: string): Promise<ExpoCalendar> {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async presentPicker(): Promise<ExpoCalendar | null> {
     throw new Error('Calendar API is not available on web');
   },
 

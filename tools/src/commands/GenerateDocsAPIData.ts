@@ -24,7 +24,7 @@ const MINIFY_JSON = true;
 const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
-  'expo-ui/datetime-picker': ['datetime-picker/index.tsx', 'expo-ui'],
+  'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
 
   // Swift UI
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
@@ -65,6 +65,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
   'expo-ui/swift-ui/vstack': ['swift-ui/VStack/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/zstack': ['swift-ui/ZStack/index.tsx', 'expo-ui'],
 
@@ -81,6 +82,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/card': ['jetpack-compose/Card/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/carousel': ['jetpack-compose/Carousel/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/chip': ['jetpack-compose/Chip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/colors': ['jetpack-compose/colors.ts', 'expo-ui'],
   'expo-ui/jetpack-compose/dropdownmenu': ['jetpack-compose/DropdownMenu/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/exposeddropdownmenubox': [
     'jetpack-compose/ExposedDropdownMenuBox/index.tsx',
@@ -134,6 +136,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/textfield': ['jetpack-compose/TextField/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {

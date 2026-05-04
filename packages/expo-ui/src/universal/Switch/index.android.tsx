@@ -22,3 +22,5 @@ export function Switch({ value, onValueChange, label, disabled, testID, modifier
     </Row>
   );
 }
+
+export * from './types';

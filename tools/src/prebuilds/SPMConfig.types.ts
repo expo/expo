@@ -196,7 +196,20 @@ export type BuildPlatform =
 /**
  * Product platforms to emit to Package.swift
  */
-export type ProductPlatform = 'iOS(.v15)' | 'macOS(.v11)' | 'tvOS(.v15)' | 'macCatalyst(.v15)';
+export type ProductPlatform =
+  | 'iOS(.v15)'
+  | 'iOS(.v16)'
+  | 'macOS(.v11)'
+  | 'tvOS(.v15)'
+  | 'macCatalyst(.v15)';
+
+/** Escape hatch: have a package-owned script produce the xcframework instead of the SPM generator. */
+export interface CustomBuild {
+  /** Path to the build script, relative to the package root. */
+  script: string;
+  /** Path to the xcframework the script produces, relative to the package root. */
+  output: string;
+}
 
 /**
  * A Swift Package product definition
@@ -207,6 +220,8 @@ export interface SPMProduct {
   name: string;
   /** The CocoaPods pod name for this product. Must match the name in the corresponding .podspec file. */
   podName: string;
+  /** When set, the product is built by an external script rather than the SPM generator. */
+  customBuild?: CustomBuild;
   /** The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen. */
   codegenName?: string;
   /** Supported platforms for this product */

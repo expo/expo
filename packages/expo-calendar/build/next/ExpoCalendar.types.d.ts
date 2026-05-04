@@ -1,5 +1,5 @@
-import { AttendeeRole, AttendeeStatus, AttendeeType, Source, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, EventStatus, Organizer, ReminderStatus, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod, OpenEventDialogResult, Attendee } from '../Calendar';
-import { RecurrenceRule } from './types/RecurrenceRule';
+import type { AttendeeRole, AttendeeStatus, AttendeeType, Source, RecurringEventOptions, CalendarType, Availability, EntityTypes, Alarm, EventStatus, Organizer, ReminderStatus, CalendarDialogParams, DialogEventResult, OpenEventPresentationOptions, PresentationOptions, EventAccessLevel, CalendarAccessLevel, AlarmMethod, OpenEventDialogResult, Attendee } from '../Calendar';
+import type { RecurrenceRule } from './types/RecurrenceRule';
 export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & PresentationOptions;
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
@@ -34,7 +34,7 @@ export declare class ExpoCalendar {
     /**
      * Color used to display this calendar's events.
      */
-    color: string;
+    color?: string;
     /**
      * Whether the calendar is used in the Calendar or Reminders OS app.
      * @platform ios

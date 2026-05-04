@@ -1,10 +1,10 @@
 {
   "name": "expo-app-metrics",
-  "version": "0.1.1",
+  "title": "Expo App Metrics",
+  "version": "0.1.7",
   "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
-  "private": true,
   "sideEffects": false,
   "scripts": {
     "build": "expo-module build",

@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { type ColorValue } from 'react-native';
 
 import { type ModifierConfig } from '../../types';

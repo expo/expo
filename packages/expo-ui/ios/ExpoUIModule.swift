@@ -1,7 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import ExpoModulesWorklets
 
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
@@ -17,13 +16,7 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Observable State
 
-    Class(WorkletCallback.self) {
-      Constructor { (worklet: Worklet) -> WorkletCallback in
-        let callback = WorkletCallback()
-        callback.worklet = worklet
-        return callback
-      }
-    }
+    makeWorkletCallbackClass()
 
     Class(ObservableState.self) {
       Constructor { (initial: [String: Any]) -> ObservableState in
@@ -142,9 +135,12 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(OverlayView.self)
+    ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)
+    ExpoUIView(TabView.self)
+    ExpoUIView(Tab.self)
 
     // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
     ExpoUIView(SyncToggleView.self)

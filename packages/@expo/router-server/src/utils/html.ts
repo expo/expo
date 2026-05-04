@@ -65,6 +65,18 @@ export function getHydrationFlagScript(): string {
   return `<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>`;
 }
 
+/**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
+ * with the given data, safely embedded as JSON.
+ *
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
+ */
+export function createLoaderDataScript(data: Record<string, unknown>): string {
+  const safeJson = escapeUnsafeCharacters(JSON.stringify(data));
+  return `<script id="expo-router-data">globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});</script>`;
+}
+
 const HELMET_HEAD_KEYS = ['title', 'priority', 'meta', 'link', 'script', 'style'] as const;
 
 /**

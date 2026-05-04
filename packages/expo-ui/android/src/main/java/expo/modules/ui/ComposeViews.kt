@@ -24,6 +24,7 @@ import expo.modules.ui.convertibles.VerticalAlignment
 import expo.modules.ui.convertibles.ContentAlignment
 import expo.modules.ui.convertibles.VerticalArrangement
 import expo.modules.ui.convertibles.toComposeArrangement
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class FloatingToolbarExitAlwaysScrollBehavior(val value: String) : Enumerable {
   TOP("top"),
@@ -41,6 +42,7 @@ enum class FloatingToolbarExitAlwaysScrollBehavior(val value: String) : Enumerab
   }
 }
 
+@OptimizedComposeProps
 data class LayoutProps(
   val horizontalArrangement: HorizontalArrangement? = null,
   val verticalArrangement: VerticalArrangement? = null,

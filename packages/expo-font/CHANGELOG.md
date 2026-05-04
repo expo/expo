@@ -9,10 +9,15 @@
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- Add structured server resource descriptors for streaming SSR ([#44927](https://github.com/expo/expo/pull/44927) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
+- Align `ServerFontResourceDescriptor.crossOrigin` type with React ([#45115](https://github.com/expo/expo/pull/45115) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Export `ServerFontResourceDescriptor` type for external usage ([#45116](https://github.com/expo/expo/pull/45116) by [@hassankhan](https://github.com/hassankhan))
 
 ## 55.0.4 — 2026-02-16
 

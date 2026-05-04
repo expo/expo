@@ -1,7 +1,7 @@
 import { isRunningInExpoGo } from 'expo';
 import { createPermissionHook, Platform } from 'expo-modules-core';
 import ExpoLocation from './ExpoLocation';
-import { LocationAccuracy, } from './Location.types';
+import { LocationAccuracy } from './Location.types';
 import { LocationSubscriber, HeadingSubscriber, LocationErrorSubscriber, } from './LocationSubscribers';
 // Flag for warning about background services not being available in Expo Go
 let warnAboutExpoGoDisplayed = false;

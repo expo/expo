@@ -32,7 +32,7 @@ export interface RequestHandlerParams {
     beforeAPIResponse?: BeforeResponseCallback;
 }
 export interface RequestHandlerInput {
-    getHtml(request: Request, route: Route): Promise<string | Response | null>;
+    getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
     getRoutesManifest(): Promise<Manifest | null>;
     getApiRoute(route: Route): Promise<any>;
     getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;

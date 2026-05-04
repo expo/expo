@@ -1,6 +1,6 @@
 import { requireNativeView } from 'expo';
 
-import { ExpoModifier } from '../../types';
+import type { ExpoModifier } from '../../types';
 import { type ContentPadding } from '../LazyColumn';
 import { createViewModifierEventListener } from '../modifiers/utils';
 

@@ -3,13 +3,15 @@ title: DateTimePicker
 description: A Jetpack Compose DateTimePicker component for selecting dates and times.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 Expo UI DateTimePicker matches the official Jetpack Compose [Date Picker](https://developer.android.com/develop/ui/compose/components/datepickers) and [Time Picker](https://developer.android.com/develop/ui/compose/components/time-pickers) APIs and supports date, time, and combined selection.
+
+> **Note:** The date variants render Material's calendar grid and input field, both of which scroll horizontally internally. The parent `Host` must provide a finite width on the horizontal axis, use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width). See [Match contents in Host reference](host/#match-contents) for details.
 
 ## Installation
 
@@ -27,7 +29,7 @@ export default function DatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
           setSelectedDate(date);
@@ -51,7 +53,7 @@ export default function TimePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
           setSelectedDate(date);
@@ -77,7 +79,7 @@ export default function InputVariantExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   return (
-    <Host matchContents>
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
           setSelectedDate(date);

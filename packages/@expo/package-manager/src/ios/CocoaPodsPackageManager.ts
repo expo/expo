@@ -1,7 +1,8 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 
@@ -363,21 +364,6 @@ export class CocoaPodsPackageManager {
 
   async uninstallAsync() {
     throw new Error('Unimplemented');
-  }
-
-  // Private
-  private async podRepoUpdateAsync(): Promise<void> {
-    try {
-      await this._runAsync(['repo', 'update']);
-    } catch (error: any) {
-      error.message = error.message || (error.stderr ?? error.stdout);
-
-      throw new CocoaPodsError(
-        'The command `pod install --repo-update` failed',
-        'COMMAND_FAILED',
-        error
-      );
-    }
   }
 
   // Exposed for testing

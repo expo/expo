@@ -15,6 +15,7 @@
 - [Android] Add NDS service discovery.
 - [plugin] Add option to disable tools button by default. ([#44251](https://github.com/expo/expo/pull/44251) by [@alanjhughes](https://github.com/alanjhughes))
 - Support loading embedded bundles. ([#44396](https://github.com/expo/expo/pull/44396) by [@alanjhughes](https://github.com/alanjhughes))
+- [plugin] Add `skipOnboarding` and `showMenuAtLaunch` options to set menu's onboarding and auto-launch defaults, useful for E2E and CI builds. ([#45167](https://github.com/expo/expo/pull/45167) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -28,9 +29,11 @@
 - [iOS] Fix react-native version resolution in podspec ([#44178](https://github.com/expo/expo/pull/44178) by [@kitten](https://github.com/kitten))
 - [macOS] Fix LocalNetworkPermissionView max height ([#44745](https://github.com/expo/expo/pull/44745) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Use `OkHttpClientProvider` instead of bare `OkHttpClient` so custom interceptors are applied. ([#44798](https://github.com/expo/expo/pull/44798) by [@fabriziocucci](https://github.com/fabriziocucci))
+- [iOS] Fix safe area insets not being applied on settings screen. ([#45074](https://github.com/expo/expo/pull/45074) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
+- Improved URL input in the launcher home screen. ([#44886](https://github.com/expo/expo/pull/44886) by [@vonovak](https://github.com/vonovak))
 - Align dev launcher labels across iOS and Android. ([#44720](https://github.com/expo/expo/pull/44720) by [@vonovak](https://github.com/vonovak))
 - Removed `DevLauncherExpoActivityConfigurator`. System bars configuration is now handled by the `expo-status-bar` and `expo-navigation-bar` modules. ([#44469](https://github.com/expo/expo/pull/44469) by [@zoontek](https://github.com/zoontek))
 - Enforce transparent status bar and navigation bar on Android, remove unused `backgroundColor` / `translucent` options handling. ([#43518](https://github.com/expo/expo/pull/43518) by [@zoontek](https://github.com/zoontek))

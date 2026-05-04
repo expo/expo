@@ -3,7 +3,6 @@
   "version": "55.0.0",
   "description": "The JavaScript Interface for Expo Modules",
   "main": "index.js",
-  "private": true,
   "sideEffects": [],
   "exports": {
     "./package.json": "./package.json",
@@ -11,7 +10,10 @@
       "default": "./index.js"
     }
   },
-  "scripts": {},
+  "scripts": {
+    "build": "apple/scripts/build-xcframework.sh",
+    "test": "apple/scripts/test.sh"
+  },
   "keywords": [
     "expo",
     "modules",

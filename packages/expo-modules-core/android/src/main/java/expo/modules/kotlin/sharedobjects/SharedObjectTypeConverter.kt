@@ -42,7 +42,8 @@ class SharedRefTypeConverter<T : SharedRef<*>>(
   private val sharedObjectTypeConverter = SharedObjectTypeConverter<T>(typeDescriptor)
 
   val sharedRefType: KType? by lazy {
-    var currentClass: KClass<*>? = typeDescriptor.kClass
+    // TODO(@lukmccall): Remove KType and KClass usage
+    var currentClass: KClass<*>? = typeDescriptor.jClass.kotlin
     var currentType: KType? = typeDescriptor.kType
     while (currentClass != null) {
       if (currentClass == SharedRef::class) {

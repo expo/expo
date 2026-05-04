@@ -6,9 +6,9 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import url from 'url';
 
-import { type PlatformMetadata } from './createMetadataJson';
+import type { PlatformMetadata } from './createMetadataJson';
 import { type BundleOutput, type ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
-import { type MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import type { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import {
   getDomComponentHtml,

@@ -25,5 +25,5 @@ export interface ControlGroupProps extends CommonViewModifierProps {
      */
     children: ReactNode;
 }
-export declare function ControlGroup(props: ControlGroupProps): import("react").JSX.Element;
+export declare function ControlGroup(props: ControlGroupProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -13,7 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.size
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class BadgeProps(
   val containerColor: Color? = null,
   val contentColor: Color? = null,

@@ -29,12 +29,12 @@
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "dependencies": {
+    "@expo/config-plugins": "workspace:~55.0.6"
+  },
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*"
-  },
-  "peerDependencies": {
-    "expo": "workspace:*"
   }
 }

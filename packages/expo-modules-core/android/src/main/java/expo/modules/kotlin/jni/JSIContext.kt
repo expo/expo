@@ -85,7 +85,7 @@ class JSIContext @DoNotStrip internal constructor(
     val classDefinition = appContext.registry
       .asSequence()
       .flatMap { it.definition.classData }
-      .firstOrNull { it.constructor.ownerType?.kClass?.java == nativeClass }
+      .firstOrNull { it.constructor.ownerType?.jClass == nativeClass }
       ?: return null
 
     val decorator = JSDecoratorsBridgingObject(runtime.deallocator)

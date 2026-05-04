@@ -13,6 +13,6 @@ type Props = {
     style?: Animated.WithAnimatedValue<StyleProp<ViewStyle>>;
     children: React.ReactNode;
 };
-export declare function Screen(props: Props): React.JSX.Element;
+export declare function Screen(props: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=Screen.d.ts.map

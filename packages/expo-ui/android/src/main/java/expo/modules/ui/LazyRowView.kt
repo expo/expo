@@ -21,7 +21,9 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.ui.convertibles.HorizontalArrangement
 import expo.modules.ui.convertibles.VerticalAlignment
 import expo.modules.ui.convertibles.toComposeArrangement
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class LazyRowProps(
   val horizontalArrangement: MutableState<HorizontalArrangement?> = mutableStateOf(null),
   val verticalAlignment: MutableState<VerticalAlignment?> = mutableStateOf(null),

@@ -86,11 +86,15 @@ An abstract concept that describes the process of generating native projects fro
 
 ### create-expo-app
 
-A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed. See [`create-expo-app` reference](/more/create-expo/) for more information.
+A standalone command-line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed. See [`create-expo-app` reference](/more/create-expo/) for more information.
+
+### create-expo-module
+
+A standalone command line tool (CLI) for creating Expo modules and adding platform support to existing modules. See [`create-expo-module` reference](/more/create-expo-module/) for more information.
 
 ### create-react-native-app
 
-A standalone command line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed and the native code generated. This CLI also enables the use of bootstrapping from an example project in [expo/examples](https://github.com/expo/examples).
+A standalone command-line tool (CLI) for bootstrapping new React Native apps with the `expo` package installed and the native code generated. This CLI also enables the use of bootstrapping from an example project in [expo/examples](https://github.com/expo/examples).
 
 This package can be used by running any of the following commands:
 
@@ -118,26 +122,42 @@ A development server (or dev server) is a server that is started locally, usuall
 
 The development server is typically hosted on `http://localhost:8081`. It hosts a [manifest](#manifest) from `/` which the client uses to request the JavaScript bundle from the bundler.
 
-### EAS
+### Expo Application Services (EAS)
 
-[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction), [EAS Submit](/submit/introduction) and [EAS Update](/eas-update/introduction).
+[Expo Application Services (EAS)](/eas) are deeply integrated cloud services for Expo and React Native apps, such as [EAS Build](/build/introduction/), [EAS Submit](/submit/introduction/), [EAS Update](/eas-update/introduction/), [EAS Metadata](/eas/metadata/), [EAS Insights](/eas-insights/introduction/), [EAS Hosting](/eas/hosting/introduction/), and [EAS Workflows](/eas/workflows/introduction/).
+
+### EAS Build
+
+[EAS Build](/build/introduction/) is a cloud service from [EAS](#expo-application-services-eas) for building Android and iOS binaries for Expo and React Native apps. EAS Build can be used to build [development builds](#development-build) and [standalone apps](#standalone-app).
 
 ### EAS CLI
 
-The command-line tool for working with EAS. {/* Pending creation of eas-cli [Read more](/eas-cli). */}
+The command-line tool for working with EAS. For more information, see [EAS CLI](/eas/cli/) reference.
 
 ### EAS Config
 
 The **eas.json** file used to configure [EAS CLI](#eas-cli). For more information, see [Configuring EAS Build with eas.json](/build/eas-json/).
 
+### EAS Hosting
+
+[EAS Hosting](/eas/hosting/introduction/) is a cloud service from [EAS](#expo-application-services-eas) for quickly deploying web projects built using [Expo Router](#expo-router) and [React Native Web](#react-native-web).
+
+### EAS Insights
+
+[EAS Insights](/eas-insights/introduction/) is a cloud service from [EAS](#expo-application-services-eas) that provides usage, performance, and reach information for an Expo project. It uses the `expo-insights` library to send events to EAS Insights from the app.
+
 ### EAS Metadata
 
-A command-line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process. For more information, see [EAS Metadata](/eas/metadata).
+A command-line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process. For more information, see [EAS Metadata](/eas/metadata/).
 
 ### EAS Update
 
-1. The cloud hosting service [EAS Update](/eas-update/introduction/) that is used for OTA Updates.
+1. The cloud hosting service [EAS Update](/eas-update/introduction/) from [EAS](#expo-application-services-eas) that is used for OTA Updates.
 2. The CLI command `eas update` from [EAS CLI](#eas-cli) used to publish static files to the cloud hosting service.
+
+### EAS Workflows
+
+[EAS Workflows](/eas/workflows/introduction/) is a CI/CD service from [EAS](#expo-application-services-eas) that lets teams automate repeated tasks such as building Android and iOS binaries, publishing over-the-air updates, submitting to app stores, running E2E tests with Maestro, and deploying web apps to [EAS Hosting](/eas/hosting/introduction/). Workflows are configured in YAML files under the **.eas/workflows** directory.
 
 ### Emulator
 
@@ -151,6 +171,10 @@ The entry point usually refers to the initial JavaScript file used to load an ap
 
 A synonym for an app that usually implies something more single-use and smaller in scope, sometimes artistic and whimsical.
 
+### Expo Atlas
+
+[Expo Atlas](/atlas/introduction/) is a tool for visualizing JavaScript bundles. It is used to inspect bundle size and identify which libraries contribute to the production bundle.
+
 ### Expo Autolinking
 
 The original [Autolinking](#autolinking) system is designed for projects using `expo-modules-core`. This system links modules based on the existence of an **expo-module.config.json** in the library's root directory.
@@ -163,9 +187,17 @@ The command-line tool for working with Expo. This term now refers to the [Local 
 
 The former name for the [Expo Go](#expo-go) app.
 
+### Expo Doctor
+
+[Expo Doctor](/develop/tools/#expo-doctor) is a command-line tool used to diagnose issues in your Expo project. To use it, run `npx expo doctor` from your project's directory.
+
 ### Expo export
 
 Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command is used to bundle the app's JavaScript and assets, and then export them into a static directory that can be uploaded to a hosting service like [EAS Update](#eas-update), and embedded in a [native runtime](#native-runtime) for offline use.
+
+### Expo Fingerprint
+
+[`@expo/fingerprint`](/versions/latest/sdk/fingerprint/) library that hashes the files and configuration that determine a project's native build (app dependencies, custom native code, native project files, and config). The hash represents native layer state, so tools can tell whether a TypeScript/JavaScript bundle is compatible with a given build without rebuilding. Primarily used for EAS Update's fingerprint runtime version policy and EAS Workflows for CI/CD automation.
 
 ### Expo Go
 
@@ -177,9 +209,25 @@ Due to its limitations (such as the inability to include custom native code), it
 
 Refers to the command `npx expo install` from [Expo CLI](#expo-cli). This command is used to install npm packages containing [native modules](#native-module) that work with the currently installed version of `expo` in the project. Not all packages are supported. This command wraps the globally installed [package managers](#package-manager).
 
+### Expo MCP server
+
+[Expo MCP (Model Context Protocol) server](/eas/ai/mcp/) is a remote server hosted by Expo that integrates with AI-assisted tools such as Claude Code, Cursor, VS Code, and others. It enables them to interact directly with your Expo projects.
+
 ### Expo Module Config
 
 A file named **expo-module.config.json** that lives in the root directory of a [native module](#native-module). For more information, see [Module Config](/modules/module-config/).
+
+### Expo Modules API
+
+[Expo Modules API](/modules/module-api/) is a cross-platform API for writing native modules in Kotlin and Swift to add new capabilities to your apps. This API is provided by the library `expo-modules-core` which is included in the `expo` package.
+
+### Expo Orbit
+
+[Expo Orbit](/build/orbit/) is an application for macOS, Windows, and Linux that enables faster installation and launching of builds or updates from EAS, local files, or Snack projects, on devices or emulators/simulators.
+
+### Expo Router
+
+[Expo Router](/router/introduction/) is a file-based router for React Native and web applications. It allows you to manage navigation between screens in your app, allowing users to move seamlessly between different parts of your app's UI, using the same components on multiple platforms (Android, iOS, and web).
 
 ### Expo SDK
 
@@ -199,17 +247,9 @@ Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command 
 
 The React Native rendering system which is used to create and manage native views. For more information, see [Fabric Renderer](https://reactnative.dev/architecture/fabric-renderer).
 
-### Flipper
-
-A mobile app debugger used internally at Meta. It was previously recommended for use with React Native, but the integration is now deprecated and no longer supported by the React Native team [(RFC-0641)](https://github.com/react-native-community/discussions-and-proposals/blob/main/proposals/0641-decoupling-flipper-from-react-native-core.md).
-
 ### FYI
 
 Sometimes referred to as **Expo FYI**, is a collection of tailored solutions to complex issues that live at [expo.fyi](https://expo.fyi/). FYI links are utilized throughout Expo's developer tooling to help provide a better developer experience to users.
-
-### Global Expo CLI
-
-The package `expo-cli` was installed globally on the user's machine and used across all projects. This CLI was introduced in SDK 30 (2018), and deprecated in favor of the [Local Expo CLI](#local-expo-cli) in SDK 46 (2022).
 
 ### Gradle
 

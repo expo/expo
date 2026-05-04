@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import {
+import type {
   EnvValue,
   LocalDirectoryPublication,
   Publication,

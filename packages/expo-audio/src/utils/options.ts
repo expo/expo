@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import {
+import type {
   RecordingOptions,
   RecordingOptionsAndroid,
   RecordingOptionsIos,

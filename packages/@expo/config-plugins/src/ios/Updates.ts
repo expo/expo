@@ -1,12 +1,12 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
 import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-import { ExpoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ExpoPlist } from './IosConfig.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import { withPlugins } from '../plugins/withPlugins';
+import type { ExpoConfigUpdates } from '../utils/Updates';
 import {
-  ExpoConfigUpdates,
   getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,

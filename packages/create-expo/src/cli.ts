@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { Spec } from 'arg';
+import type { Spec } from 'arg';
 import chalk from 'chalk';
 
 import { CLI_NAME } from './cmd';

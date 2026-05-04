@@ -1,6 +1,6 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { createCalendar, ExpoCalendar, getCalendars } from 'expo-calendar/next';
+import { createCalendar, ExpoCalendar, getCalendars, presentPicker } from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -121,7 +121,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       const calendar = await createCalendar(newCalendar);
       Alert.alert('Calendar saved successfully with id: ' + calendar.id);
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -134,7 +134,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       calendar.update(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -152,7 +152,7 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
             calendar.delete();
             Alert.alert('Calendar deleted successfully');
             findCalendars();
-          } catch (e) {
+          } catch (e: any) {
             Alert.alert('Calendar not deleted successfully', e.message);
           }
         },
@@ -163,7 +163,17 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
   if (calendars.length) {
     return (
       <ScrollView style={styles.container}>
-        <Button onPress={addCalendar} title="Add New Calendar" />
+        <Button onPress={addCalendar} title="Add New Calendar" style={styles.topButton} />
+        {Platform.OS === 'ios' && (
+          <Button
+            onPress={async () => {
+              const picked = await presentPicker();
+              Alert.alert(picked ? `Picked: ${picked.title}` : 'Cancelled');
+            }}
+            title="Present Picker"
+            style={styles.topButton}
+          />
+        )}
         {calendars.map((calendar) => (
           <CalendarRow
             calendar={calendar}
@@ -201,5 +211,8 @@ const styles = StyleSheet.create({
   },
   calendarRow: {
     marginBottom: 12,
+  },
+  topButton: {
+    marginBottom: 8,
   },
 });

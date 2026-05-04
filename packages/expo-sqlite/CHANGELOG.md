@@ -16,6 +16,7 @@
 
 ### 💡 Others
 
+- [iOS] Updated sync function signatures (`runSync`, `applyChangesetSync`, `invertChangesetSync`) to accept `any AnyArrayBuffer` in place of the removed `JavaScriptArrayBuffer`. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
 - Session changesets now use native `ArrayBuffer`s. ([#42638](https://github.com/expo/expo/pull/42638) by [@barthap](https://github.com/barthap))
 - Statement bind params now use native `ArrayBuffer`s for blob columns. ([#42639](https://github.com/expo/expo/pull/42639) by [@barthap](https://github.com/barthap))
 - [Android] Returned blob columns now use native `ArrayBuffer`s. ([#42640](https://github.com/expo/expo/pull/42640) by [@barthap](https://github.com/barthap))

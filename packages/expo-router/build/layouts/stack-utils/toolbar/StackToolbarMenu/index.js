@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarMenuAction = exports.StackToolbarMenu = void 0;
 exports.convertStackToolbarMenuPropsToRNHeaderItem = convertStackToolbarMenuPropsToRNHeaderItem;
 exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMenuActionPropsToRNHeaderItem;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const native_1 = require("./native");
 const children_1 = require("../../../../utils/children");
@@ -87,7 +88,7 @@ const StackToolbarMenu = (props) => {
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<native_1.NativeToolbarMenu {...props} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarMenu, { ...props, icon: icon, source: source, xcassetName: xcassetName, image: props.image, imageRenderingMode: imageRenderingMode, label: computedLabel, title: computedMenuTitle, children: validChildren }));
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
@@ -201,7 +202,7 @@ const StackToolbarMenuAction = (props) => {
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
     const source = typeof props.icon !== 'string' ? props.icon : undefined;
-    return (<native_1.NativeToolbarMenuAction {...props} icon={icon} source={source} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarMenuAction, { ...props, icon: icon, source: source, image: props.image, imageRenderingMode: props.iconRenderingMode }));
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {

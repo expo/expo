@@ -71,5 +71,6 @@ const defaultPermissionsResponse = {
     canAskAgain: true,
     status: PermissionStatus.GRANTED,
 };
-export { PermissionStatus, };
+// TODO(@kitten): Remove re-exports from EMC
+export { PermissionStatus, } from 'expo-modules-core';
 //# sourceMappingURL=Pedometer.js.map

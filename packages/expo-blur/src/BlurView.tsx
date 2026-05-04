@@ -5,7 +5,7 @@
 import React from 'react';
 import { View, StyleSheet, findNodeHandle, Platform } from 'react-native';
 
-import { BlurMethod, BlurViewProps } from './BlurView.types';
+import type { BlurMethod, BlurViewProps } from './BlurView.types';
 import { NativeBlurView } from './NativeBlurModule';
 
 type BlurViewState = {

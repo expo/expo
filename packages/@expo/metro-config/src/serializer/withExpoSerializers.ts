@@ -18,8 +18,9 @@ import {
 } from './environmentVariableSerializerPlugin';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
-import { SerialAsset } from './serializerAssets';
 import { env } from '../env';
+
+export type { SerialAsset } from './serializerAssets';
 
 // Lazy-loaded to avoid pulling in metro-source-map and @babel/traverse at startup (~100ms savings)
 let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
@@ -436,5 +437,3 @@ function getLoaderPaths(dependencies: ReadOnlyDependencies) {
   }
   return loaderPaths;
 }
-
-export { SerialAsset };

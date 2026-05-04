@@ -82,8 +82,9 @@ jobs:
         uses: ./.github/actions/detect-platform-change
         with:
           android-paths: >-
-            "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-core/expo-module-gradle-plugin/**",
+            "packages/**/{settings,build}.gradle",
+            "packages/expo-modules-core/**/android/**",
             "packages/expo-modules-autolinking/**/android/**",
             "packages/expo/**/android/**",
             "packages/expo-constants/**/android/**",
@@ -92,7 +93,6 @@ jobs:
             "packages/expo-haptics/**/android/**",
             "packages/expo-image/**/android/**",
             "packages/expo-keep-awake/**/android/**",
-            "packages/expo-linear-gradient/**/android/**",
             "packages/expo-localization/**/android/**",
             "packages/expo-sqlite/**/android/**",
             "packages/expo-video/**/android/**",
@@ -108,7 +108,6 @@ jobs:
             "packages/expo-haptics/**/ios/**",
             "packages/expo-image/**/ios/**",
             "packages/expo-keep-awake/**/ios/**",
-            "packages/expo-linear-gradient/**/ios/**",
             "packages/expo-localization/**/ios/**",
             "packages/expo-sqlite/**/ios/**",
             "packages/expo-video/**/ios/**",
@@ -129,7 +128,6 @@ jobs:
             "packages/expo-haptics/**",
             "packages/expo-image/**",
             "packages/expo-keep-awake/**",
-            "packages/expo-linear-gradient/**",
             "packages/expo-localization/**",
             "packages/expo-sqlite/**",
             "packages/expo-video/**",

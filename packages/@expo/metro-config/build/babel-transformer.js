@@ -103,6 +103,7 @@ function getBabelCaller({ filename, options, }) {
         isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
             ? true
             : undefined,
+        isDomComponent: options.customTransformOptions?.dom != null ? true : undefined,
         // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
         // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
         // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
@@ -117,6 +118,7 @@ const transform = ({ filename, src, options,
 plugins, }) => {
     const OLD_BABEL_ENV = process.env.BABEL_ENV;
     process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
+    const { enableBabelRCLookup = true } = options;
     try {
         const babelConfig = {
             // ES modules require sourceType='module' but OSS may not always want that
@@ -135,7 +137,8 @@ plugins, }) => {
             highlightCode: true,
             // Load the project babel config file.
             ...(0, loadBabelConfig_1.loadBabelConfig)(options),
-            babelrc: typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+            babelrc: enableBabelRCLookup,
+            ...(enableBabelRCLookup === false && { configFile: false }),
             plugins,
             // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
             // This compensates for the lack of a format plugin system in Metro. Users can modify the

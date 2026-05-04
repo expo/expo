@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Screens from './MainNavigators';
 import createTabNavigator from './createTabNavigator';
-import { Colors } from '../constants';
+import { useTheme } from '../../../common/ThemeProvider';
 
 const Tab = createTabNavigator();
 
@@ -14,6 +14,7 @@ const Drawer = createDrawerNavigator();
 export default function MainTabbedNavigator(props: any) {
   const { width } = useWindowDimensions();
   const { left } = useSafeAreaInsets();
+  const { theme } = useTheme();
   const isMobile = width <= 640;
   const isTablet = !isMobile && width <= 960;
   const isLargeScreen = !isTablet && !isMobile;
@@ -30,21 +31,21 @@ export default function MainTabbedNavigator(props: any) {
         // or material-bottom-tabs navigator
         // material-bottom-tabs props
         shifting
-        activeTintColor={Colors.tabIconSelected}
-        inactiveTintColor={Colors.tabIconDefault}
+        activeTintColor={theme.icon.info}
+        inactiveTintColor={theme.icon.default}
         barStyle={{
-          backgroundColor: Colors.tabBar,
+          backgroundColor: theme.background.default,
           borderTopWidth: StyleSheet.hairlineWidth,
-          borderTopColor: Colors.tabIconDefault,
+          borderTopColor: theme.border.secondary,
         }}
         // bottom-tabs props
         screenOptions={{
           headerShown: false,
-          tabBarActiveTintColor: Colors.tabIconSelected,
-          tabBarInactiveTintColor: Colors.tabIconDefault,
+          tabBarActiveTintColor: theme.icon.info,
+          tabBarInactiveTintColor: theme.icon.default,
           tabBarStyle: [
             {
-              backgroundColor: Colors.tabBar,
+              backgroundColor: theme.background.default,
             },
           ],
         }}>

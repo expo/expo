@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
@@ -104,11 +104,6 @@ export function printUsage(
   } else {
     printPrefix({ short: false });
   }
-}
-
-interface LogCommandsOutput {
-  lines: number;
-  print(): void;
 }
 
 function logCommandsTable(

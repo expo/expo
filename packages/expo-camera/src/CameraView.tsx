@@ -1,7 +1,7 @@
 import { Platform, UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import { Component, createRef } from 'react';
 
-import {
+import type {
   CameraCapturedPicture,
   CameraOrientation,
   CameraPictureOptions,
@@ -15,7 +15,7 @@ import {
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
-import { PictureRef } from './PictureRef';
+import type { PictureRef } from './PictureRef';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 
 const EventThrottleMs = 500;

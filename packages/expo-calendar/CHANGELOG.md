@@ -13,9 +13,11 @@
 ### 🐛 Bug fixes
 
 - Fixed `NumberFormatException` crash on Android when calendar/event IDs exceed `Integer.MAX_VALUE`. ([#43344](https://github.com/expo/expo/pull/43344) by [@olivier-bouillet](https://github.com/olivier-bouillet))
+- [iOS] Fix `deleteEventAsync` deleting wrong recurring event instance when `instanceStartDate` is provided. ([#40172](https://github.com/expo/expo/pull/40172) by [@marcelogdeandrade](https://github.com/marcelogdeandrade))
 
 ### 💡 Others
 
+- [iOS][next] Add `presentPicker()` ([#44965](https://github.com/expo/expo/pull/44965) by [@Wenszel](https://github.com/Wenszel))
 - [next] Refactor Calendar@Next ([#43434](https://github.com/expo/expo/pull/43434) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - Use `export type` for type-only re-exports to fix TS1205 with `isolatedModules`. ([#44205](https://github.com/expo/expo/pull/44205) by [@hknakn](https://github.com/hknakn))

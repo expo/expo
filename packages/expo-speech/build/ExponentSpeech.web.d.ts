@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import { SpeechOptions, WebVoice } from './Speech.types';
+import type { SpeechOptions, WebVoice } from './Speech.types';
 type ExpoSpeechEvents = {
     'Exponent.speakingStarted': (params: {
         id: string;

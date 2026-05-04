@@ -3,7 +3,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { joinWithCommasAnd } from '../utils/strings';
 
 /**

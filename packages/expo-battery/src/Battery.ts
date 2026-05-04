@@ -1,12 +1,12 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import {
-  BatteryLevelEvent,
+  type BatteryLevelEvent,
   BatteryState,
-  BatteryStateEvent,
-  PowerModeEvent,
-  PowerState,
+  type BatteryStateEvent,
+  type PowerModeEvent,
+  type PowerState,
 } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 
@@ -44,7 +44,7 @@ export async function getBatteryLevelAsync(): Promise<number> {
 /**
  * Tells the battery's current state. On web, this always returns `BatteryState.UNKNOWN`.
  * @return Returns a `Promise` which fulfills with a [`Battery.BatteryState`](#batterystate) enum
- * value for whether the device is any of the four states.
+ * value for whether the device is any of the five states.
  * @example
  * ```ts
  * await Battery.getBatteryStateAsync();
@@ -154,7 +154,7 @@ export function addBatteryLevelListener(
 // @needsAudit
 /**
  * Subscribe to the battery state change updates to receive an object with a [`Battery.BatteryState`](#batterystate)
- * enum value for whether the device is any of the four states.
+ * enum value for whether the device is any of the five states.
  *
  * On web, the event never fires.
  * @param listener A callback that is invoked when battery state changes. The callback is provided a
@@ -286,10 +286,12 @@ export function usePowerState(): PowerState {
 }
 
 export {
-  BatteryLevelEvent,
+  type BatteryLevelEvent,
   BatteryState,
-  BatteryStateEvent,
-  PowerModeEvent,
-  PowerState,
-  EventSubscription as Subscription,
-};
+  type BatteryStateEvent,
+  type PowerModeEvent,
+  type PowerState,
+} from './Battery.types';
+
+// TODO(@kitten): Remove re-exports from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';

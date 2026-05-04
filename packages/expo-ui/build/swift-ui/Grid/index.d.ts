@@ -18,7 +18,7 @@ export type GridProps = {
 /**
  * Grid component uses the native [Grid](https://developer.apple.com/documentation/swiftui/grid) component.
  */
-export declare function Grid(props: GridProps): React.JSX.Element;
+export declare function Grid(props: GridProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace Grid {
     var Row: React.FC<{
         children: React.ReactNode;

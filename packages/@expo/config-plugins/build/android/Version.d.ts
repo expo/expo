@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '../Plugin.types';
 export declare const withVersion: ConfigPlugin;
 /** Sets a numeric version for a value in the project.gradle buildscript.ext object to be at least the provided props.minVersion, if the existing value is greater then no change will be made. */
 export declare const withBuildScriptExtMinimumVersion: ConfigPlugin<{

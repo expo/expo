@@ -1,3 +1,4 @@
+import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
 import React, { useEffect } from 'react';
 import AppMetrics from './module';
 /**
@@ -9,16 +10,14 @@ export function AppMetricsRoot({ children }) {
     useEffect(() => {
         AppMetrics.markFirstRender();
     }, []);
-    return <>{children}</>;
+    return _jsx(_Fragment, { children: children });
 }
 /**
  * Wraps a component with `AppMetricsRoot`.
  * Usage: `AppMetricsRoot.wrap(App);`
  */
 AppMetricsRoot.wrap = function wrap(Component) {
-    const Wrapped = (props) => (<AppMetricsRoot>
-      <Component {...props}/>
-    </AppMetricsRoot>);
+    const Wrapped = (props) => (_jsx(AppMetricsRoot, { children: _jsx(Component, { ...props }) }));
     Wrapped.displayName = `AppMetricsRoot(${Component.displayName || Component.name || 'Component'})`;
     return Wrapped;
 };

@@ -30,3 +30,5 @@ export function Slider({
     />
   );
 }
+
+export * from './types';

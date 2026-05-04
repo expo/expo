@@ -10,7 +10,8 @@ import fs from 'fs';
 import path from 'path';
 
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
-import { createBundleUrlPath, ExpoMetroOptions } from './middleware/metroOptions';
+import type { ExpoMetroOptions } from './middleware/metroOptions';
+import { createBundleUrlPath } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';

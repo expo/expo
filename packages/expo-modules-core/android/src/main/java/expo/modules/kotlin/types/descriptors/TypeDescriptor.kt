@@ -1,20 +1,24 @@
 package expo.modules.kotlin.types.descriptors
 
+import io.github.lukmccall.pika.PIntrospectionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 
 sealed interface RawTypeDescriptor {
-  val kClass: KClass<*>
+  val jClass: Class<*>
   val isNullable: Boolean
+  val introspection: PIntrospectionData<*>?
 
   data class Simple(
-    override val kClass: KClass<*>,
-    override val isNullable: Boolean
+    override val jClass: Class<*>,
+    override val isNullable: Boolean,
+    override val introspection: PIntrospectionData<*>?
   ) : RawTypeDescriptor
 
   data class Parameterized(
-    override val kClass: KClass<*>,
+    override val jClass: Class<*>,
     override val isNullable: Boolean,
+    override val introspection: PIntrospectionData<*>?,
     val params: List<RawTypeDescriptor>
   ) : RawTypeDescriptor
 }
@@ -35,8 +39,8 @@ class TypeDescriptor(
   inline val isNullable: Boolean
     get() = typeInfo.isNullable
 
-  inline val kClass: KClass<*>
-    get() = typeInfo.kClass
+  inline val jClass: Class<*>
+    get() = typeInfo.jClass
 
   inline val params: List<TypeDescriptor>
     get() = when (typeInfo) {
@@ -55,7 +59,7 @@ class TypeDescriptor(
     } else {
       ""
     }
-    return "$kClass$paramsString${if (isNullable) "?" else ""}"
+    return "$jClass$paramsString${if (isNullable) "?" else ""}"
   }
 }
 
@@ -69,9 +73,9 @@ fun KType.toTypeDescriptor(): TypeDescriptor {
   }
 
   val rawTypeDescriptor = if (params.isEmpty()) {
-    RawTypeDescriptor.Simple(classifier, isNullable)
+    RawTypeDescriptor.Simple(classifier.java, isNullable, null)
   } else {
-    RawTypeDescriptor.Parameterized(classifier, isNullable, params.map { it.typeInfo })
+    RawTypeDescriptor.Parameterized(classifier.java, isNullable, null, params.map { it.typeInfo })
   }
 
   return TypeDescriptor(

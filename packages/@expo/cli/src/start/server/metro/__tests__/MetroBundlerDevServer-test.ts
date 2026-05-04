@@ -1,12 +1,13 @@
 import { getConfig } from '@expo/config';
+import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { vol } from 'memfs';
 
-import { BundlerStartOptions } from '../../BundlerDevServer';
+import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 import { warnInvalidWebOutput } from '../router';
-import { FileChangeEvent, observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
+import { observeAnyFileChanges } from '../waitForMetroToObserveTypeScriptFile';
 
 jest.mock('../waitForMetroToObserveTypeScriptFile', () => ({
   observeAnyFileChanges: jest.fn(),
@@ -110,7 +111,7 @@ describe('API Route output warning', () => {
     });
   }
   async function setupDevServer() {
-    let pCallback: ((events: FileChangeEvent[]) => void | Promise<void>) | null = null;
+    let pCallback: ((events: ChangeEvent) => void | Promise<void>) | null = null;
     jest
       .mocked(observeAnyFileChanges)
       .mockClear()
@@ -131,62 +132,77 @@ describe('API Route output warning', () => {
   it(`warns when output is not server and an API route is created`, async () => {
     mockMetroStatic();
     const callback = await setupDevServer();
-    callback([
-      {
-        filePath: '/app/foo+api.ts',
-        type: 'change',
-        metadata: { type: 'f' },
+    callback({
+      changes: {
+        addedDirectories: [],
+        removedDirectories: [],
+        addedFiles: [['/app/foo+api.ts', { isSymlink: false }]],
+        modifiedFiles: [],
+        removedFiles: [],
       },
-    ]);
+      rootDir: '/',
+    });
     expect(warnInvalidWebOutput).toHaveBeenCalled();
   });
 
   it(`does not warn about invalid output when API route is being deleted`, async () => {
     mockMetroStatic();
     const callback = await setupDevServer();
-    callback([
-      {
-        filePath: '/app/foo+api.ts',
-        type: 'change',
-        metadata: { type: 'd' },
+    callback({
+      changes: {
+        addedDirectories: [],
+        removedDirectories: [],
+        addedFiles: [],
+        modifiedFiles: [],
+        removedFiles: [['/app/foo+api.ts', { isSymlink: false }]],
       },
-    ]);
+      rootDir: '/',
+    });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
 
-    // Sanity to ensure test works.
-    callback([
-      {
-        filePath: '/app/foo+api.ts',
-        type: 'change',
-        metadata: { type: 'l' },
+    // Sanity to ensure test works — adding an API route should warn.
+    callback({
+      changes: {
+        addedDirectories: [],
+        removedDirectories: [],
+        addedFiles: [['/app/foo+api.ts', { isSymlink: false }]],
+        modifiedFiles: [],
+        removedFiles: [],
       },
-    ]);
+      rootDir: '/',
+    });
     expect(warnInvalidWebOutput).toHaveBeenCalled();
   });
 
   it(`does not warn about invalid output when file is not a valid API route`, async () => {
     mockMetroStatic();
     const callback = await setupDevServer();
-    callback([
-      {
-        filePath: '/app/foo.ts',
-        type: 'change',
-        metadata: { type: 'l' },
+    callback({
+      changes: {
+        addedDirectories: [],
+        removedDirectories: [],
+        addedFiles: [['/app/foo.ts', { isSymlink: false }]],
+        modifiedFiles: [],
+        removedFiles: [],
       },
-    ]);
+      rootDir: '/',
+    });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
   });
 
   it(`does not warn about invalid output when file is outside of routes directory`, async () => {
     mockMetroStatic();
     const callback = await setupDevServer();
-    callback([
-      {
-        filePath: '/other/foo+api.js',
-        type: 'change',
-        metadata: { type: 'l' },
+    callback({
+      changes: {
+        addedDirectories: [],
+        removedDirectories: [],
+        addedFiles: [['/other/foo+api.js', { isSymlink: false }]],
+        modifiedFiles: [],
+        removedFiles: [],
       },
-    ]);
+      rootDir: '/',
+    });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
   });
 });

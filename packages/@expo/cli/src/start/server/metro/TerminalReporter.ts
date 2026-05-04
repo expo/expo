@@ -6,7 +6,7 @@ import type { WatcherStatus } from '@expo/metro/metro-file-map';
 import chalk from 'chalk';
 import util from 'util';
 
-import {
+import type {
   BundleDetails,
   BundleProgressUpdate,
   TerminalReportableEvent,

@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 public protocol AnySharedObject: AnyArgument, AnyObject {
   var sharedObjectId: SharedObjectId { get }
 }
@@ -52,6 +54,13 @@ open class SharedObject: AnySharedObject {
   }
 
   /**
+   Returns the JavaScript value associated with the native shared object.
+   */
+  public func getJavaScriptValue() -> JavaScriptValue? {
+    return appContext?.sharedObjectRegistry.toJavaScriptValue(self)
+  }
+
+  /**
    Returns the JavaScript shared object associated with the native shared object.
    */
   public func getJavaScriptObject() -> JavaScriptObject? {
@@ -82,7 +91,7 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
 
     // Schedule the event to be asynchronously emitted from the runtime's thread
     runtime.schedule { [weak self, weak appContext] in
-      guard let appContext, let runtime = try? appContext.runtime, let jsObject = self?.getJavaScriptObject() else {
+      guard let appContext, let runtime = try? appContext.runtime, let jsValue = self?.getJavaScriptValue() else {
         log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS object is no longer associated with the native instance")
         return
       }
@@ -92,7 +101,11 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
         return Conversions.convertFunctionResult(argument, appContext: appContext, dynamicType: dynamicType)
       }
 
-      JSUtils.emitEvent(event, to: jsObject, withArguments: arguments, in: runtime)
+      runtime.withUnsafePointee { runtimePtr in
+        jsValue.withUnsafePointee { objectPtr in
+          JSUtils.emitEvent(event, runtimePointer: runtimePtr, objectPointer: objectPtr, withArguments: arguments)
+        }
+      }
     }
   }
   #else // swift(>=5.9)

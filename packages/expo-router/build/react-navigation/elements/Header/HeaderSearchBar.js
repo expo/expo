@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HeaderSearchBar = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const clear_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/clear-icon.png"));
@@ -134,48 +135,32 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
         return null;
     }
     const textColor = tintColor ?? colors.text;
-    return (<react_native_1.Animated.View pointerEvents={visible ? 'auto' : 'none'} aria-live="polite" aria-hidden={!visible} style={[styles.container, { opacity: visibleAnim }, style]}>
-      <react_native_1.View style={styles.searchbarContainer}>
-        <HeaderIcon_1.HeaderIcon source={search_icon_png_1.default} tintColor={textColor} style={styles.inputSearchIcon}/>
-        <react_native_1.TextInput {...rest} ref={inputRef} onChange={onChangeText} onChangeText={setValue} autoFocus={autoFocus} autoCapitalize={autoCapitalize === 'systemDefault' ? undefined : autoCapitalize} inputMode={INPUT_TYPE_TO_MODE[inputType ?? 'text']} enterKeyHint={enterKeyHint} placeholder={placeholder} placeholderTextColor={(0, color_1.Color)(textColor)?.alpha(0.5).string()} cursorColor={colors.primary} selectionHandleColor={colors.primary} selectionColor={(0, color_1.Color)(colors.primary)?.alpha(0.3).string()} style={[
-            fonts.regular,
-            styles.searchbar,
-            {
-                backgroundColor: react_native_1.Platform.select({
-                    ios: dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-                    default: 'transparent',
-                }),
-                color: textColor,
-                borderBottomColor: (0, color_1.Color)(textColor)?.alpha(0.2).string() ??
-                    (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
-            },
-        ]}/>
-        {react_native_1.Platform.OS === 'ios' ? (<PlatformPressable_1.PlatformPressable onPress={onClear} style={[
-                {
-                    opacity: clearVisibleAnim,
-                    transform: [{ scale: clearVisibleAnim }],
-                },
-                styles.clearButton,
-            ]}>
-            <react_native_1.Image source={clear_icon_png_1.default} resizeMode="contain" tintColor={textColor} style={styles.clearIcon}/>
-          </PlatformPressable_1.PlatformPressable>) : null}
-      </react_native_1.View>
-      {react_native_1.Platform.OS !== 'ios' ? (<HeaderButton_1.HeaderButton onPress={() => {
-                if (value) {
-                    onClear();
-                }
-                else {
-                    onClose();
-                }
-            }} style={styles.closeButton}>
-          <HeaderIcon_1.HeaderIcon source={close_icon_png_1.default} tintColor={textColor}/>
-        </HeaderButton_1.HeaderButton>) : null}
-      {react_native_1.Platform.OS === 'ios' ? (<PlatformPressable_1.PlatformPressable onPress={cancelSearch} style={styles.cancelButton}>
-          <Text_1.Text style={[fonts.regular, { color: tintColor ?? colors.primary }, styles.cancelText]}>
-            {cancelButtonText}
-          </Text_1.Text>
-        </PlatformPressable_1.PlatformPressable>) : null}
-    </react_native_1.Animated.View>);
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: visible ? 'auto' : 'none', "aria-live": "polite", "aria-hidden": !visible, style: [styles.container, { opacity: visibleAnim }, style], children: [(0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.searchbarContainer, children: [(0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: search_icon_png_1.default, tintColor: textColor, style: styles.inputSearchIcon }), (0, jsx_runtime_1.jsx)(react_native_1.TextInput, { ...rest, ref: inputRef, onChange: onChangeText, onChangeText: setValue, autoFocus: autoFocus, autoCapitalize: autoCapitalize === 'systemDefault' ? undefined : autoCapitalize, inputMode: INPUT_TYPE_TO_MODE[inputType ?? 'text'], enterKeyHint: enterKeyHint, placeholder: placeholder, placeholderTextColor: (0, color_1.Color)(textColor)?.alpha(0.5).string(), cursorColor: colors.primary, selectionHandleColor: colors.primary, selectionColor: (0, color_1.Color)(colors.primary)?.alpha(0.3).string(), style: [
+                            fonts.regular,
+                            styles.searchbar,
+                            {
+                                backgroundColor: react_native_1.Platform.select({
+                                    ios: dark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                                    default: 'transparent',
+                                }),
+                                color: textColor,
+                                borderBottomColor: (0, color_1.Color)(textColor)?.alpha(0.2).string() ??
+                                    (dark ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.2)'),
+                            },
+                        ] }), react_native_1.Platform.OS === 'ios' ? ((0, jsx_runtime_1.jsx)(PlatformPressable_1.PlatformPressable, { onPress: onClear, style: [
+                            {
+                                opacity: clearVisibleAnim,
+                                transform: [{ scale: clearVisibleAnim }],
+                            },
+                            styles.clearButton,
+                        ], children: (0, jsx_runtime_1.jsx)(react_native_1.Image, { source: clear_icon_png_1.default, resizeMode: "contain", tintColor: textColor, style: styles.clearIcon }) })) : null] }), react_native_1.Platform.OS !== 'ios' ? ((0, jsx_runtime_1.jsx)(HeaderButton_1.HeaderButton, { onPress: () => {
+                    if (value) {
+                        onClear();
+                    }
+                    else {
+                        onClose();
+                    }
+                }, style: styles.closeButton, children: (0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: close_icon_png_1.default, tintColor: textColor }) })) : null, react_native_1.Platform.OS === 'ios' ? ((0, jsx_runtime_1.jsx)(PlatformPressable_1.PlatformPressable, { onPress: cancelSearch, style: styles.cancelButton, children: (0, jsx_runtime_1.jsx)(Text_1.Text, { style: [fonts.regular, { color: tintColor ?? colors.primary }, styles.cancelText], children: cancelButtonText }) })) : null] }));
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

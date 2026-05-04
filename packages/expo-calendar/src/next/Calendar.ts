@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
-import {
+import type {
   Calendar,
   Attendee,
   DialogEventResult,
@@ -14,7 +14,7 @@ import {
 } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
-import {
+import type {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
@@ -231,6 +231,22 @@ export async function createCalendar(details: Partial<Calendar> = {}): Promise<E
   const createdCalendar = await InternalExpoCalendar.createCalendar(newDetails);
   Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
+}
+
+/**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+ * @platform ios
+ */
+export async function presentPicker(): Promise<ExpoCalendar | null> {
+  if (!InternalExpoCalendar.presentPicker) {
+    throw new UnavailabilityError('Calendar', 'presentPicker');
+  }
+  const calendar = await InternalExpoCalendar.presentPicker();
+  if (calendar) {
+    Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+  }
+  return calendar;
 }
 
 /**

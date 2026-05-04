@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(keep-awake): catch activation promise rejection on Android ([#45006](https://github.com/expo/expo/pull/45006) by [@cortinico](https://github.com/cortinico))
+
 ### 💡 Others
 
 ## 55.0.4 — 2026-02-20

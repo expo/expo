@@ -37,6 +37,13 @@ extension URL: Convertible {
     // If it still fails to create the URL object, the string possibly contains characters that must be explicitly percent-encoded beforehand.
     throw UrlContainsInvalidCharactersException()
   }
+
+  public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
+    if let url = result as? URL {
+      return url.absoluteString
+    }
+    return result
+  }
 }
 
 internal class UrlContainsInvalidCharactersException: Exception {

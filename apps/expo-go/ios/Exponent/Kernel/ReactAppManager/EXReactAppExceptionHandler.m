@@ -72,16 +72,11 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
                                stack:(nullable NSArray *)stack
                          exceptionId:(NSNumber *)exceptionId
 {
-  RCTRedBox *redbox = (RCTRedBox *)[[[self _hostForRecord] moduleRegistry] moduleForName:"RedBox"];
+  RCTRedBox *redbox = (RCTRedBox *)[_appRecord.appManager.reactModuleRegistry moduleForName:"RedBox"];
   [redbox updateErrorMessage:message withStack:stack];
 }
 
 #pragma mark - internal
-
-- (id)_hostForRecord
-{
-  return _appRecord.appManager.reactHost;
-}
 
 - (BOOL)_isProdHome
 {

@@ -1,14 +1,14 @@
 'use client';
 
-import React, { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
-import {
-  createMaterialTopTabNavigator,
+import type {
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
 } from '../react-navigation/material-top-tabs';
-import { ParamListBase, TabNavigationState } from '../react-navigation/native';
+import { createMaterialTopTabNavigator } from '../react-navigation/material-top-tabs';
+import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 

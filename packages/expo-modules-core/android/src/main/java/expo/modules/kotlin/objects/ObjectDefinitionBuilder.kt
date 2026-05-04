@@ -448,6 +448,7 @@ open class ObjectDefinitionBuilder(
     eventsDefinition = EventsDefinition(events)
   }
 
+  @Deprecated("Use Events(vararg String) or Events(Array<String>) instead. This version can cause app startup performance issues.")
   inline fun <reified T> Events() where T : Enumerable, T : Enum<T> {
     val primaryConstructor = T::class.fastPrimaryConstructor
     val events = if (primaryConstructor?.parameters?.size == 1) {

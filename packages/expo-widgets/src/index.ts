@@ -1,5 +1,5 @@
 export * from './Widgets';
-export {
+export type {
   ExpoWidgetsEvents,
   LevelOfDetail,
   LiveActivityComponent,

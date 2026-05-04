@@ -56,12 +56,8 @@ class EmbeddedManifestSpec : ExpoSpec {
         expect(manifest.isUsingDeveloperTool()) == false
         expect(manifest.userInterfaceStyle()).to(beNil())
         expect(manifest.iosOrRootBackgroundColor()).to(beNil())
-        expect(manifest.iosSplashBackgroundColor()).to(beNil())
-        expect(manifest.iosSplashImageUrl()).to(beNil())
-        expect(manifest.iosSplashImageResizeMode()).to(beNil())
         expect(manifest.iosGoogleServicesFile()).to(beNil())
         expect(manifest.supportsRTL()) == false
-        expect(manifest.jsEngine()) == "hermes"
       }
     }
   }

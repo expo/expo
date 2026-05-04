@@ -5,7 +5,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { getExpoConfigLoaderPath } from './ExpoConfigLoader';
-import { type NormalizedOptions } from './Fingerprint.types';
+import type { NormalizedOptions } from './Fingerprint.types';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
 
 /**

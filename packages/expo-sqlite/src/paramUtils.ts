@@ -1,10 +1,10 @@
-import {
+import type {
   SQLiteBindBlobParams,
   SQLiteBindParams,
   SQLiteBindPrimitiveParams,
   SQLiteBindValue,
-  type SQLiteColumnNames,
-  type SQLiteColumnValues,
+  SQLiteColumnNames,
+  SQLiteColumnValues,
 } from './NativeStatement';
 
 /**

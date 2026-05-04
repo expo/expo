@@ -9,8 +9,6 @@
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import assert from 'node:assert';
-import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import type { TransformOptions } from './babel-core';
 import { loadBabelConfig } from './loadBabelConfig';
@@ -38,6 +36,8 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   /** When true, indicates this bundle should contain only the loader export */
   isLoaderBundle?: boolean;
   isHermesV1?: boolean;
+  /** When true, indicates this file is part of a DOM component bundle */
+  isDomComponent?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -164,6 +164,8 @@ function getBabelCaller({
       ? true
       : undefined,
 
+    isDomComponent: options.customTransformOptions?.dom != null ? true : undefined,
+
     // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
     // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
     // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
@@ -185,6 +187,8 @@ const transform: BabelTransformer['transform'] = ({
 }: BabelTransformerArgs): ReturnType<BabelTransformer['transform']> => {
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
+
+  const { enableBabelRCLookup = true } = options;
 
   try {
     const babelConfig: TransformOptions = {
@@ -208,8 +212,8 @@ const transform: BabelTransformer['transform'] = ({
       // Load the project babel config file.
       ...loadBabelConfig(options),
 
-      babelrc:
-        typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+      babelrc: enableBabelRCLookup,
+      ...(enableBabelRCLookup === false && { configFile: false }),
 
       plugins,
 

@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.scanDependenciesRecursively = scanDependenciesRecursively;
 const node_module_1 = __importDefault(require("node:module"));
+const types_1 = require("./types");
 const utils_1 = require("./utils");
 const concurrency_1 = require("../concurrency");
 const utils_2 = require("../utils");
@@ -43,13 +44,17 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
         Object.assign(dependencies, packageJson.devDependencies);
     }
     if (packageJson.peerDependencies != null && typeof packageJson.peerDependencies === 'object') {
+        const peerDependenciesMeta = packageJson.peerDependenciesMeta != null &&
+            typeof packageJson.peerDependenciesMeta === 'object'
+            ? packageJson.peerDependenciesMeta
+            : undefined;
         for (const dependencyName in packageJson.peerDependencies) {
-            // NOTE: We always attempt to resolve peer dependencies — including optional ones — because
-            // package managers (npm 7+) will auto-install an optional peer when the project's version
-            // doesn't satisfy its range. Walking into those auto-installed copies is required to detect
-            // duplicates of bundled native modules. `resolveDependency` already returns null when the
-            // package isn't on disk, so genuinely uninstalled optional peers are still filtered out.
-            dependencies[dependencyName] = '';
+            // NOTE(@kitten): We only check peer dependencies because some package managers auto-install them
+            // which would mean they'd have no reference in any dependencies. However, optional peer dependencies
+            // don't auto-install and we can skip them
+            if (!isOptionalPeerDependencyMeta(peerDependenciesMeta, dependencyName)) {
+                dependencies[dependencyName] = '';
+            }
         }
     }
     const resolveDependency = async (dependencyName) => {
@@ -58,7 +63,7 @@ async function resolveDependencies(packageJson, nodeModulePaths, depth, shouldIn
             const nodeModulePath = await (0, utils_2.maybeRealpath)(originPath);
             if (nodeModulePath != null) {
                 return {
-                    source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
+                    source: types_1.DependencyResolutionSource.RECURSIVE_RESOLUTION,
                     name: dependencyName,
                     version: '',
                     path: nodeModulePath,
@@ -108,7 +113,7 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
         }
     };
     const searchResults = await recurse({
-        source: 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */,
+        source: types_1.DependencyResolutionSource.RECURSIVE_RESOLUTION,
         name: '',
         version: '',
         path: rootPath,
@@ -118,4 +123,11 @@ async function scanDependenciesRecursively(rawPath, { shouldIncludeDependency = 
     });
     return searchResults;
 }
+const isOptionalPeerDependencyMeta = (peerDependenciesMeta, packageName) => {
+    return (peerDependenciesMeta &&
+        peerDependenciesMeta[packageName] != null &&
+        typeof peerDependenciesMeta[packageName] === 'object' &&
+        'optional' in peerDependenciesMeta[packageName] &&
+        !!peerDependenciesMeta[packageName].optional);
+};
 //# sourceMappingURL=resolution.js.map

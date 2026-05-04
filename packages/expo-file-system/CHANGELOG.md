@@ -15,11 +15,17 @@
 - Add `overwrite` option to copy and move methods. ([#42979](https://github.com/expo/expo/pull/42979) by [@barthap](https://github.com/barthap))
 - [Android] Add `mode` option when opening file handle. ([#42983](https://github.com/expo/expo/pull/42983) by [@barthap](https://github.com/barthap))
 - Add `onProgress` callback and `AbortSignal` support to `File.downloadFileAsync()`. ([#43053](https://github.com/expo/expo/pull/43053) by [@aleqsio](https://github.com/aleqsio))
+- Add `file.createUploadTask()` and `File.createDownloadTask()` APIs ([#44055](https://github.com/expo/expo/pull/44055) by [@barthap](https://github.com/barthap))
+- Add `File.upload()` with legacy-compatible upload semantics, progress callbacks, and `AbortSignal` support. ([#45033](https://github.com/expo/expo/pull/45033) by [@barthap](https://github.com/barthap))
+- Add support for watching file/directory events. ([#44986](https://github.com/expo/expo/pull/44986) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
 - [Android] Fix copy/move support for SAF and content provider URIs. ([#42887](https://github.com/expo/expo/pull/42887) by [@barthap](https://github.com/barthap))
 - Fix out-of-memory errors when calculating file `md5` hash. ([#44064](https://github.com/expo/expo/pull/44064) by [@barthap](https://github.com/barthap))
+- [iOS] Fix `totalDiskSpace` returning free disk space instead of total disk capacity. ([#44849](https://github.com/expo/expo/pull/44849) by [@shanebdavis](https://github.com/shanebdavis))
+- Fix `onProgress` callback of `File.downloadFileAsync()` sometimes not firing on download completion. ([#45238](https://github.com/expo/expo/pull/45238) by [@barthap](https://github.com/barthap))
+- [iOS] Fix `File.pickFileAsync()` greying out all files when using wildcard MIME types like `*/*` or `image/*`. ([#45245](https://github.com/expo/expo/pull/45245) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 

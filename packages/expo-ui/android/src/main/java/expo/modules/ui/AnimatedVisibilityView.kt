@@ -23,6 +23,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // region Transition types
 
@@ -46,6 +48,7 @@ enum class ExitTransitionType(val value: String) : Enumerable {
   SCALE_OUT("scaleOut")
 }
 
+@OptimizedRecord
 data class EnterTransitionRecord(
   @Field val type: EnterTransitionType = EnterTransitionType.FADE_IN,
   @Field val initialAlpha: Float? = null,
@@ -54,6 +57,7 @@ data class EnterTransitionRecord(
   @Field val initialScale: Float? = null
 ) : Record
 
+@OptimizedRecord
 data class ExitTransitionRecord(
   @Field val type: ExitTransitionType = ExitTransitionType.FADE_OUT,
   @Field val targetAlpha: Float? = null,
@@ -105,6 +109,7 @@ private fun List<ExitTransitionRecord>.toComposedExitTransition(): ExitTransitio
 
 // endregion
 
+@OptimizedComposeProps
 data class AnimatedVisibilityProps(
   val visible: Boolean = true,
   val enterTransition: List<EnterTransitionRecord>? = null,

@@ -64,6 +64,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       return HostLayout {
         Children()
       }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
       .modifier(GeometryChangeModifier(props: props))
@@ -72,6 +73,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     return ZStack(alignment: alignment) {
       Children()
     }
+    .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
     .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
     .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
     .modifier(GeometryChangeModifier(props: props))

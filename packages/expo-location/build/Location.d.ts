@@ -1,5 +1,5 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { LocationErrorCallback, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
+import type { PermissionResponse } from 'expo-modules-core';
+import type { LocationErrorCallback, LocationCallback, LocationGeocodedAddress, LocationGeocodedLocation, LocationHeadingCallback, LocationHeadingObject, LocationLastKnownOptions, LocationObject, LocationOptions, LocationPermissionResponse, LocationProviderStatus, LocationRegion, LocationSubscription, LocationTaskOptions } from './Location.types';
 /**
  * Check status of location providers.
  * @return A promise which fulfills with an object of type [`LocationProviderStatus`](#locationproviderstatus).

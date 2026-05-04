@@ -1,7 +1,7 @@
-import { Album } from './Album';
-import { Asset } from './Asset';
-import { AssetField, AssetFieldValueMap } from './AssetField';
-import { SortDescriptor } from './SortDescriptor';
+import type { Album } from './Album';
+import type { Asset } from './Asset';
+import type { AssetField, AssetFieldValueMap } from './AssetField';
+import type { SortDescriptor } from './SortDescriptor';
 
 /**
  * Represents a query to fetch data from the media library.

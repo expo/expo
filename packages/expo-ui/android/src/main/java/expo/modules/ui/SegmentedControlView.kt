@@ -5,7 +5,9 @@ import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class SingleChoiceSegmentedButtonRowProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -19,6 +21,7 @@ fun FunctionalComposableScope.SingleChoiceSegmentedButtonRowContent(props: Singl
   }
 }
 
+@OptimizedComposeProps
 data class MultiChoiceSegmentedButtonRowProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps

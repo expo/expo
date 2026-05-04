@@ -1,8 +1,8 @@
+import type { Device } from '../../../start/platforms/android/adb';
 import {
   DeviceABI,
   getDeviceABIsAsync,
   getAttachedDevicesAsync,
-  Device,
 } from '../../../start/platforms/android/adb';
 import { CommandError } from '../../../utils/errors';
 import { resolveGradlePropsAsync } from '../resolveGradlePropsAsync';

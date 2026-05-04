@@ -27,7 +27,7 @@ export type NativeTabNavigationEventMap = {
   tabPress: { data: { __internalTabsType: 'native' }; canPreventDefault: false };
 };
 
-export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'tabKey' | 'isFocused'>>;
+export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'screenKey'>>;
 
 export interface NativeTabOptions extends DefaultRouterOptions {
   icon?: SymbolOrImageSource;
@@ -319,6 +319,24 @@ export interface NativeTabsProps extends PropsWithChildren {
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
 }
+export interface OnTabChangeEventPayload {
+  /**
+   * The route key of the tab the native side has just selected.
+   */
+  selectedKey: string;
+  /**
+   * The provenance value reported by the native side for this selection.
+   *
+   * The navigator echoes this back via `navState.provenance` on subsequent
+   * JS-driven updates so the native side can distinguish stale updates from
+   * fresh ones. See `TabsHostNavState` in `react-native-screens` for the full
+   * contract.
+   */
+  provenance: number;
+  // TODO(@ubax): consider renaming this field
+  isNativeAction: boolean;
+}
+
 export interface NativeTabsViewProps
   extends Omit<
     InternalNativeTabsProps,
@@ -331,8 +349,12 @@ export interface NativeTabsViewProps
     | 'badgeTextColor'
   > {
   focusedIndex: number;
+  /**
+   * Provenance counter associated with the currently rendered `focusedIndex`.
+   */
+  provenance: number;
   tabs: NativeTabsViewTabItem[];
-  onTabChange: (tabKey: string) => void;
+  onTabChange: (event: OnTabChangeEventPayload) => void;
 }
 
 export interface NativeTabsViewTabItem {

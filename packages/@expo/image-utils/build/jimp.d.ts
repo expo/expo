@@ -1,5 +1,5 @@
 import Jimp from 'jimp-compact';
-import { ResizeOptions, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
+import type { ResizeOptions, SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 type JimpGlobalOptions = Omit<SharpGlobalOptions, 'input'> & {
     input: string | Buffer | Jimp;
     originalInput: string;

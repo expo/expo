@@ -19,7 +19,7 @@ export function AppMetricsRoot({ children }: { children: React.ReactNode }) {
  * Wraps a component with `AppMetricsRoot`.
  * Usage: `AppMetricsRoot.wrap(App);`
  */
-AppMetricsRoot.wrap = function wrap<P extends object>(
+AppMetricsRoot.wrap = function wrap<P extends Record<string, unknown>>(
   Component: React.ComponentType<P>
 ): React.ComponentType<P> {
   const Wrapped = (props: P) => (

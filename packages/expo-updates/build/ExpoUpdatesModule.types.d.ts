@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo-modules-core';
-import { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, UpdateCheckResultRollBack, UpdateFetchResultRollBackToEmbedded, UpdateFetchResultFailure, UpdateFetchResultSuccess, UpdatesLogEntry, UpdatesNativeStateMachineContext, ReloadScreenOptions } from './Updates.types';
+import type { Manifest, UpdateCheckResultAvailable, UpdateCheckResultNotAvailable, UpdateCheckResultRollBack, UpdateFetchResultRollBackToEmbedded, UpdateFetchResultFailure, UpdateFetchResultSuccess, UpdatesLogEntry, UpdatesNativeStateMachineContext, ReloadScreenOptions } from './Updates.types';
 export type UpdatesEvents = {
     'Expo.nativeUpdatesStateChangeEvent': (params: any) => void;
 };

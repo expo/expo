@@ -50,3 +50,5 @@ export function ScrollView({
     </RNScrollView>
   );
 }
+
+export * from './types';

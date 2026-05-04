@@ -1,5 +1,5 @@
 import React from 'react';
-import { DOMPropsInternal } from './dom-internal.types';
+import type { DOMPropsInternal } from './dom-internal.types';
 import ExpoDomWebView from './webview/ExpoDOMWebView';
 import RNWebView from './webview/RNWebView';
 type RawWebViewProps = React.ComponentProps<Exclude<typeof ExpoDomWebView, undefined>> & React.ComponentProps<Exclude<typeof RNWebView, undefined>>;

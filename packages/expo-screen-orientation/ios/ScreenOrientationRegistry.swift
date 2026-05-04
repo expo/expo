@@ -93,10 +93,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         let windowScene = self.rootViewController?.view.window?.windowScene
         windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
         self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
-      } else {
-        UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
-        UIViewController.attemptRotationToDeviceOrientation()
       }
+      UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
+      UIViewController.attemptRotationToDeviceOrientation()
 
       if self.currentScreenOrientation == .unknown {
         // CurrentScreenOrientation might be unknown (especially just after launch), but at this point we already know it.

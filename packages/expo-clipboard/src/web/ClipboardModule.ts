@@ -13,13 +13,13 @@ import {
   htmlToPlainText,
   isClipboardPermissionDeniedAsync,
 } from './Utils';
-import {
+import type {
   ClipboardImage,
   GetImageOptions,
   GetStringOptions,
   SetStringOptions,
-  StringFormat,
 } from '../Clipboard.types';
+import { StringFormat } from '../Clipboard.types';
 
 export default {
   async getStringAsync(options: GetStringOptions): Promise<string> {

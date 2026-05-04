@@ -1,5 +1,4 @@
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
@@ -814,12 +813,12 @@ it('stamps zoom transition screen ID on preloaded route', () => {
   });
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
-  const innerState = state?.routes[0].state;
+  const innerState = state?.routes[0]!.state;
   if (innerState?.type !== 'stack') {
     throw new Error('Expected a stack navigator');
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0];
+  const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0]!;
 
   expect(preloadedRoute.name).toBe('target');
   expect(preloadedRoute.params).toHaveProperty(
@@ -840,12 +839,12 @@ it('does not stamp zoom transition screen ID without zoom source param', () => {
   });
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
-  const innerState = state?.routes[0].state;
+  const innerState = state?.routes[0]!.state;
   if (innerState?.type !== 'stack') {
     throw new Error('Expected a stack navigator');
   }
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0];
+  const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0]!;
 
   expect(preloadedRoute.name).toBe('target');
   expect(preloadedRoute.params).not.toHaveProperty(
@@ -880,11 +879,11 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
   });
 
   const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
-  const innerState = state?.routes[0].state;
+  const innerState = state?.routes[0]!.state;
   if (innerState?.type !== 'stack') {
     throw new Error('Expected a stack navigator');
   }
-  const navigatedRoute = innerState.routes[innerState.routes.length - 1];
+  const navigatedRoute = innerState.routes[innerState.routes.length - 1]!;
 
   expect(navigatedRoute.name).toBe('target');
   expect(navigatedRoute.params).toHaveProperty(

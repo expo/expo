@@ -1,8 +1,7 @@
 import { type PropsWithChildren } from 'react';
 import { StackScreenTitle, StackScreenBackButton } from './screen';
 import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
-import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
-import type { NativeStackNavigationEventMap } from '../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions, NativeStackNavigationEventMap } from '../../react-navigation/native-stack';
 import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 type StackBaseScreenProps = BaseScreenProps<NativeStackNavigationOptions, StackNavigationState<ParamListBase>, NativeStackNavigationEventMap>;
 export interface StackScreenProps extends PropsWithChildren {
@@ -89,7 +88,7 @@ export interface StackScreenProps extends PropsWithChildren {
  * }
  * ```
  */
-export declare const StackScreen: (({ children, options, ...rest }: StackScreenProps) => import("react").JSX.Element) & {
+export declare const StackScreen: (({ children, options, ...rest }: StackScreenProps) => import("react/jsx-runtime").JSX.Element) & {
     Title: typeof StackScreenTitle;
     BackButton: typeof StackScreenBackButton;
 };

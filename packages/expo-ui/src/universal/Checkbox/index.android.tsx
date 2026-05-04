@@ -32,3 +32,5 @@ export function Checkbox({
     </Row>
   );
 }
+
+export * from './types';

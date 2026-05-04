@@ -26,3 +26,5 @@ export function Checkbox({
     />
   );
 }
+
+export * from './types';

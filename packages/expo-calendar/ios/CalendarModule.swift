@@ -584,7 +584,7 @@ public class CalendarModule: Module {
       return firstEvent
     }
 
-    guard let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame else {
+    if let firstEventStart = firstEvent.startDate, firstEventStart.compare(startDate) == .orderedSame {
       return firstEvent
     }
 
@@ -594,10 +594,8 @@ public class CalendarModule: Module {
     )
 
     for event in events {
-      if event.calendarItemIdentifier != id {
-        break
-      }
-      if let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
+      if event.calendarItemIdentifier == firstEvent.calendarItemIdentifier,
+        let eventStart = event.startDate, eventStart.compare(startDate) == .orderedSame {
         return event
       }
     }

@@ -1,13 +1,14 @@
 import EASClient
 import ExpoAppMetrics
+import ExpoModulesCore
 
 @AppMetricsActor
 internal struct ObservabilityManager {
   private static let easClientId = EASClientID.uuid().uuidString
   private static var endpointUrl: URL? = nil
-  private static var enableInDebug: Bool = false
   private static var projectId: String? = nil
   private static var useOpenTelemetry = false
+
 
   /**
    Returns entries from AppMetrics storage that have not been dispatched yet.
@@ -38,20 +39,18 @@ internal struct ObservabilityManager {
       return
     }
     do {
-      // Filter entries based on environment if enableInDebug is false
-      let entriesToDispatch =
-        enableInDebug
-        ? entries
-        : entries.filter { $0.environment != "development" }
+      if !Self.shouldDispatch() {
+        ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
+        return
+      }
 
-      let events = entriesToDispatch.map { entry in
+      let events = entries.map { entry in
         return Event.create(
           app: entry.app, device: entry.device, sessions: entry.sessions,
           environment: entry.environment)
       }
 
-      if events.isEmpty || !ObserveUserDefaults.dispatchingEnabled {
-        // All entries were filtered out or dispatching is disabled — mark as dispatched
+      if events.isEmpty {
         ObserveUserDefaults.lastDispatchedEntryId = entries.first?.id ?? -1
         return
       }
@@ -89,6 +88,23 @@ internal struct ObservabilityManager {
     }
   }
 
+  // Static function extracted for testability
+  internal nonisolated static func shouldDispatch(
+    config: PersistedConfig?, isDev: Bool, isInSample: Bool
+  ) -> Bool {
+    let dispatchingEnabled = config?.dispatchingEnabled ?? true
+    let dispatchInDebug = config?.dispatchInDebug ?? false
+    return dispatchingEnabled && isInSample && (!isDev || dispatchInDebug)
+  }
+
+  private static func shouldDispatch() -> Bool {
+    let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
+    let isDev = EXAppDefines.APP_DEBUG || isJsDev
+    return Self.shouldDispatch(
+      config: ObserveUserDefaults.config, isDev: isDev, isInSample: isInSample()
+    )
+  }
+
   internal nonisolated static func setEndpointUrl(_ urlString: String?, projectId: String) {
     let defaultUrl = "https://o.expo.dev"
     let urlString = urlString ?? defaultUrl
@@ -102,17 +118,18 @@ internal struct ObservabilityManager {
     }
   }
 
-  internal nonisolated static func setEnableInDebug(_ enabled: Bool?) {
-    let enabled = enabled ?? false
-    AppMetricsActor.isolated {
-      self.enableInDebug = enabled
-    }
-  }
-
   internal nonisolated static func setUseOpenTelemetry(_ enabled: Bool?) {
     let enabled = enabled ?? true
     AppMetricsActor.isolated {
       self.useOpenTelemetry = enabled
     }
+  }
+
+  private static func isInSample() -> Bool {
+    guard let rate = ObserveUserDefaults.config?.sampleRate else {
+      return true
+    }
+    let clamped = min(max(rate, 0.0), 1.0)
+    return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }

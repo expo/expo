@@ -1,5 +1,5 @@
-import { type EventSubscription } from 'expo-modules-core';
-import { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState } from './Battery.types';
+import type { EventSubscription } from 'expo-modules-core';
+import { type BatteryLevelEvent, BatteryState, type BatteryStateEvent, type PowerModeEvent, type PowerState } from './Battery.types';
 /**
  * Resolves with whether the battery API is available on the current device. The value of this
  * property is `true` on Android and physical iOS devices and `false` on iOS simulators. On web,
@@ -22,7 +22,7 @@ export declare function getBatteryLevelAsync(): Promise<number>;
 /**
  * Tells the battery's current state. On web, this always returns `BatteryState.UNKNOWN`.
  * @return Returns a `Promise` which fulfills with a [`Battery.BatteryState`](#batterystate) enum
- * value for whether the device is any of the four states.
+ * value for whether the device is any of the five states.
  * @example
  * ```ts
  * await Battery.getBatteryStateAsync();
@@ -93,7 +93,7 @@ export declare function getPowerStateAsync(): Promise<PowerState>;
 export declare function addBatteryLevelListener(listener: (event: BatteryLevelEvent) => void): EventSubscription;
 /**
  * Subscribe to the battery state change updates to receive an object with a [`Battery.BatteryState`](#batterystate)
- * enum value for whether the device is any of the four states.
+ * enum value for whether the device is any of the five states.
  *
  * On web, the event never fires.
  * @param listener A callback that is invoked when battery state changes. The callback is provided a
@@ -155,5 +155,6 @@ export declare function useLowPowerMode(): boolean;
  * @return Returns power state information.
  */
 export declare function usePowerState(): PowerState;
-export { BatteryLevelEvent, BatteryState, BatteryStateEvent, PowerModeEvent, PowerState, EventSubscription as Subscription, };
+export { type BatteryLevelEvent, BatteryState, type BatteryStateEvent, type PowerModeEvent, type PowerState, } from './Battery.types';
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 //# sourceMappingURL=Battery.d.ts.map

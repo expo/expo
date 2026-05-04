@@ -27,13 +27,18 @@ RCT_EXPORT_MODULE()
   return result;
 }
 
-- (NSNumber *)foldArray:(NSArray *)array 
+- (NSNumber *)foldArray:(NSArray *)array
 {
   double sum = 0.0;
   for (NSNumber *num in array) {
     sum += [num doubleValue];
   }
   return @(sum);
+}
+
+- (NSDictionary *)echoObject:(NSDictionary *)point
+{
+  return point;
 }
 
 @end

@@ -1,4 +1,5 @@
-import { ReactNode, PureComponent, createRef } from 'react';
+import type { ReactNode } from 'react';
+import { PureComponent, createRef } from 'react';
 
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView, { NativeTextureVideoView } from './NativeVideoView';

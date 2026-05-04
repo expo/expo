@@ -1,6 +1,6 @@
 import { Asset } from 'expo-asset';
 
-import { AudioSource, AudioStatus } from './Audio.types';
+import type { AudioSource, AudioStatus } from './Audio.types';
 
 export const nextId = (() => {
   let id = 0;

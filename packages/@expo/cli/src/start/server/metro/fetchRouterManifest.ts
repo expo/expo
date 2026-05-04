@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { Options as RoutesManifestOptions } from '@expo/router-server/build/routes-manifest';
-import { type RoutesManifest } from 'expo-server/private';
+import type { RoutesManifest } from 'expo-server/private';
 
 import { getRoutePaths } from './router';
 

@@ -8,6 +8,11 @@
 
 ### 🎉 New features
 
+- [next] Add support for listeners ([#44326](https://github.com/expo/expo/pull/44326) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add `presentPermissionsPicker` ([#44432](https://github.com/expo/expo/pull/44432) by [@Wenszel](https://github.com/Wenszel))
+- [next][iOS] Add `asset.getMediaSubtypes()`, `asset.getLivePhotoVideoUri()`, `asset.getIsInCloud()`, and `asset.getOrientation()` ([#44568](https://github.com/expo/expo/pull/44568) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add `asset.getAlbums()` ([#44604](https://github.com/expo/expo/pull/44604) by [@Wenszel](https://github.com/Wenszel))
+- [next] Add `Album.getAll()` ([#44446](https://github.com/expo/expo/pull/44446) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Add `album.removeAssets()` ([#44455](https://github.com/expo/expo/pull/44455) by [@Wenszel](https://github.com/Wenszel))
 - [next] Add usePermissions ([#44403](https://github.com/expo/expo/pull/44403) by [@Wenszel](https://github.com/Wenszel))
 - [next][iOS] Fixed `Query.limit(0)` returning all assets instead of an empty array ([#44245](https://github.com/expo/expo/pull/44245) by [@Wenszel](https://github.com/Wenszel))
@@ -22,6 +27,7 @@
 
 ### 💡 Others
 
+- Mark legacy API deprecated ([#44605](https://github.com/expo/expo/pull/44605) by [@Wenszel](https://github.com/Wenszel))
 - [next] Replace JS static overrides with StaticAsyncFunction ([#44473](https://github.com/expo/expo/pull/44473) by [@Wenszel](https://github.com/Wenszel))
 
 ### ⚠️ Notices

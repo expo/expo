@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { types as t } from '@babel/core';
+import type { types as t } from '@babel/core';
 import generate from '@babel/generator';
 import type {
   MixedOutput,
@@ -21,11 +21,11 @@ import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import assert from 'assert';
 import util from 'node:util';
 
-import { ExpoJsOutput, isExpoJsOutput } from './jsOutput';
+import type { ExpoJsOutput } from './jsOutput';
+import { isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
+import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
-  Dependency,
-  DependencyData,
   getKeyForDependency,
   hashKey,
   InvalidRequireCallError as InternalInvalidRequireCallError,

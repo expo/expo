@@ -5,6 +5,7 @@ description: Learn how to install and configure expo-dev-client in your existing
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -24,9 +25,13 @@ To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-nativ
 
 </Collapsible>
 
-## Prerequisites
-
-**The `expo` package must be installed and configured.** If you created your project with `npx @react-native-community/cli@latest init` and do not have any other Expo libraries installed, you will need to [install Expo modules](/bare/installing-expo-modules) before proceeding.
+<Prerequisites>
+  <Requirement title="Install and configure the expo package">
+    If you created your project with `npx @react-native-community/cli@latest init` and do not have
+    any other Expo libraries installed, you will need to [install Expo
+    modules](/bare/installing-expo-modules) before proceeding.
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 

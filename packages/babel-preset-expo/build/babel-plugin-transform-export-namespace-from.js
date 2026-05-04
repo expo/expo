@@ -50,3 +50,4 @@ function withLocation(node, loc) {
     }
     return node;
 }
+//# sourceMappingURL=babel-plugin-transform-export-namespace-from.js.map

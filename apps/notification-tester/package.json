@@ -21,6 +21,7 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/native": "^7.1.33",
+    "@expo/ui": "workspace:*",
     "expo": "workspace:*",
     "expo-font": "workspace:*",
     "expo-linking": "workspace:*",
@@ -32,12 +33,15 @@
     "expo-sqlite": "workspace:*",
     "expo-status-bar": "workspace:*",
     "expo-notifications": "workspace:*",
+    "expo-updates": "workspace:*",
+    "native-component-list": "workspace:*",
+    "test-suite": "workspace:*",
     "expo-task-manager": "workspace:*",
     "react-native-gesture-handler": "~2.30.0",
     "react": "19.2.3",
-    "react-native": "0.85.0",
+    "react-native": "0.85.2",
     "react-native-safe-area-context": "5.6.2",
-    "react-native-screens": "4.24.0"
+    "react-native-screens": "4.25.0-beta.1"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",

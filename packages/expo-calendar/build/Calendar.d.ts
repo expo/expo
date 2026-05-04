@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
 export type { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
 /**
  * Options for specifying a particular instance of a recurring event.

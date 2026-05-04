@@ -6,6 +6,7 @@ hasVideoLink: true
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
@@ -34,11 +35,14 @@ If you need finer-grained control over your notifications, communicating directl
 
 </Collapsible>
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="A physical Android or iOS device">
+    Push notifications are not supported on Android Emulators or iOS Simulators. You will need a
+    real device to test.
+  </Requirement>
+</Prerequisites>
 
-> **warning** **Important:** Push notifications are not supported on Android Emulators and iOS Simulators. A real device is required.
-
-The following steps described in this guide use [EAS Build](/build/introduction/). This is the easiest way to set up notifications since your EAS project will also contain the [notification credentials](#get-credentials-for-development-builds). However, you can use the `expo-notifications` library without EAS Build by building [your project locally](/guides/local-app-development/).
+The following steps in this guide use [EAS Build](/build/introduction/). This is the easiest way to set up notifications since your EAS project will also contain the [notification credentials](#get-credentials-for-development-builds). However, you can use the `expo-notifications` library without EAS Build by building [your project locally](/guides/local-app-development/).
 
 <Step label="1">
 
@@ -82,7 +86,7 @@ Add the `expo-notifications` plugin in the `plugins` array of your [app config](
 The code below shows a working example of how to register for, send, and receive push notifications in a React Native app. Copy and paste it into your project:
 
 ```tsx App.tsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';

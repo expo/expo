@@ -32,10 +32,24 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
       return nil
     }
 
+    // If startup already completed, create the real view directly to handle
+    // brownfield re-mounts and simultaneous multi-view scenarios, given that
+    // didStartWithSuccess fires only once per controller lifetime.
+    if controller.isStarted, let launchAssetUrl = controller.launchAssetUrl() {
+      return reactDelegate.reactNativeFactory.recreateRootView(
+        withBundleURL: launchAssetUrl,
+        moduleName: moduleName,
+        initialProps: initialProperties,
+        launchOptions: launchOptions
+      )
+    }
+
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    controller.delegate = self
-    controller.start()
+    if !controller.isStarted {
+      controller.delegate = self
+      controller.start()
+    }
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties

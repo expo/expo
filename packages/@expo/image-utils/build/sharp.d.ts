@@ -1,4 +1,4 @@
-import { SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
+import type { SharpCommandOptions, SharpGlobalOptions } from './sharp.types';
 export declare function resizeBufferAsync(buffer: Buffer, sizes: number[]): Promise<Buffer[]>;
 /**
  * Returns `true` if a global sharp instance can be found.

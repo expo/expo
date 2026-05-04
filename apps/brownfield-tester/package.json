@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "expo": "workspace:*",
-    "react-native": "0.85.0",
+    "react-native": "0.85.2",
     "react": "19.2.3",
     "react-native-reanimated": "4.3.0",
     "react-native-worklets": "0.8.1"

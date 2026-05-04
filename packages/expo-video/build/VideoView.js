@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { PureComponent, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView, { NativeTextureVideoView } from './NativeVideoView';
@@ -57,9 +58,9 @@ export class VideoView extends PureComponent {
         const { player, ...props } = this.props;
         const playerId = player ? getPlayerId(player) : null;
         if (NativeTextureVideoView && this.props.surfaceType === 'textureView') {
-            return <NativeTextureVideoView {...props} player={playerId} ref={this.nativeRef}/>;
+            return _jsx(NativeTextureVideoView, { ...props, player: playerId, ref: this.nativeRef });
         }
-        return <NativeVideoView {...props} player={playerId} ref={this.nativeRef}/>;
+        return _jsx(NativeVideoView, { ...props, player: playerId, ref: this.nativeRef });
     }
 }
 // Temporary solution to pass the shared object ID instead of the player object.

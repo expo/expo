@@ -1,4 +1,4 @@
-import { IosConfig } from './types';
+import type { IosConfig } from './types';
 export declare const cleanUpArtifacts: (config: IosConfig) => Promise<void>;
 export declare const buildFramework: (config: IosConfig) => Promise<import("./types").RunCommandResult | undefined>;
 export declare const copyXCFrameworks: (config: IosConfig, dest: string) => Promise<void>;

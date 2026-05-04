@@ -14,6 +14,7 @@ exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
 exports.getIsServer = getIsServer;
+exports.getIsDomComponent = getIsDomComponent;
 exports.getIsLoaderBundle = getIsLoaderBundle;
 exports.getIsHermesV1 = getIsHermesV1;
 exports.getMetroSourceType = getMetroSourceType;
@@ -108,6 +109,10 @@ function getIsServer(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isServer ?? false;
 }
+function getIsDomComponent(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.isDomComponent ?? false;
+}
 function getIsLoaderBundle(caller) {
     assertExpoBabelCaller(caller);
     return caller?.isLoaderBundle ?? false;
@@ -197,3 +202,4 @@ const REGEXP_REPLACE_SLASHES = /\\/g;
 function toPosixPath(filePath) {
     return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
 }
+//# sourceMappingURL=common.js.map

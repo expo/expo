@@ -55,3 +55,4 @@ const checkPrebuild = (platform) => {
     const nativeDirectory = node_path_1.default.join(process.cwd(), platform);
     return node_fs_1.default.existsSync(nativeDirectory);
 };
+//# sourceMappingURL=prebuild.js.map

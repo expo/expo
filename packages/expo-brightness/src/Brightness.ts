@@ -1,10 +1,7 @@
 import {
   createPermissionHook,
   type EventSubscription,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
-  PermissionStatus,
+  type PermissionResponse,
   UnavailabilityError,
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
@@ -36,7 +33,13 @@ export type BrightnessEvent = {
   brightness: number;
 };
 
-export { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus };
+// TODO(@kitten): Remove re-exports from EMC
+export {
+  type PermissionExpiration,
+  type PermissionHookOptions,
+  type PermissionResponse,
+  PermissionStatus,
+} from 'expo-modules-core';
 
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app

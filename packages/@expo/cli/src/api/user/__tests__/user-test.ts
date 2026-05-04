@@ -8,8 +8,8 @@ import {
 import { getExpoApiBaseUrl } from '../../endpoint';
 import { getSession, getSettingsFilePath } from '../UserSettings';
 import { getSessionUsingBrowserAuthFlowAsync } from '../expoSsoLauncher';
+import type { Actor } from '../user';
 import {
-  Actor,
   getActorDisplayName,
   getUserAsync,
   loginAsync,

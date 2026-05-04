@@ -1,5 +1,5 @@
 import { Children, type ReactNode } from 'react';
-import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';

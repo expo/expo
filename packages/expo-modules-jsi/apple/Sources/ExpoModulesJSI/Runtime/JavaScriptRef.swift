@@ -74,7 +74,7 @@ public final class JavaScriptRef<T: JavaScriptType & ~Copyable>: JavaScriptType,
    Takes the value as a `JavaScriptValue`. Returns `undefined` value if the reference does not hold any value.
    */
   public func asValue() -> JavaScriptValue {
-    return take()?.asValue() ?? .undefined()
+    return take()?.asValue() ?? .undefined
   }
 
   /**

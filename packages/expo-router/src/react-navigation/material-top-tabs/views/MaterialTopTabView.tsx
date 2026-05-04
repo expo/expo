@@ -60,31 +60,29 @@ export function MaterialTopTabView({
     });
   };
 
-  const focusedOptions = descriptors[state.routes[state.index].key].options;
+  const focusedOptions = descriptors[state.routes[state.index]!.key]!.options;
 
   return (
     <TabView<Route<string>>
       {...rest}
       onIndexChange={(index: number) => {
-        const route = state.routes[index];
-
         navigation.dispatch({
-          ...CommonActions.navigate(route),
+          ...CommonActions.navigate(state.routes[index]!),
           target: state.key,
         });
       }}
       renderScene={({ route, position }: any) => (
         <TabAnimationContext.Provider value={{ position }}>
-          {descriptors[route.key].render()}
+          {descriptors[route.key]!.render()}
         </TabAnimationContext.Provider>
       )}
       navigationState={state}
       renderTabBar={renderTabBar}
       renderLazyPlaceholder={({ route }: any) =>
-        descriptors[route.key].options.lazyPlaceholder?.() ?? null
+        descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
       lazy={({ route }: any) =>
-        descriptors[route.key].options.lazy === true &&
+        descriptors[route.key]!.options.lazy === true &&
         !state.preloadedRouteKeys.includes(route.key)
       }
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}

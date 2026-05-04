@@ -1,6 +1,6 @@
 import { CodedError } from 'expo-modules-core';
 
-import { ActionCrop } from '../../ImageManipulator.types';
+import type { ActionCrop } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';
 
 const clamp = (value: number, max: number): number => Math.max(0, Math.min(max, value));

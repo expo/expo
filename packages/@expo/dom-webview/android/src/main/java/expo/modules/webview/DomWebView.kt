@@ -28,7 +28,9 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
   val webViewId = DomWebViewRegistry.add(this)
 
   private var source: DomWebViewSource? = null
+  private var injectedJS: String? = null
   private var injectedJSBeforeContentLoaded: String? = null
+  private val rncWebViewBridge = RNCWebViewBridge(this@DomWebView)
   var webviewDebuggingEnabled = false
   var nestedScrollEnabled = true
 
@@ -66,6 +68,15 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
     this.source = source
   }
 
+  fun setInjectedJS(script: String?) {
+    injectedJS = if (!script.isNullOrEmpty()) {
+      "(function() { $script; })();true;"
+    } else {
+      null
+    }
+    needsResetupScripts = true
+  }
+
   fun setInjectedJSBeforeContentLoaded(script: String?) {
     injectedJSBeforeContentLoaded = if (!script.isNullOrEmpty()) {
       "(function() { $script; })();true;"
@@ -73,6 +84,10 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
       null
     }
     needsResetupScripts = true
+  }
+
+  fun setInjectedJavaScriptObject(source: String) {
+    rncWebViewBridge.injectedObjectJson = source
   }
 
   fun injectJavaScript(script: String) {
@@ -139,7 +154,7 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
       setBackgroundColor(Color.TRANSPARENT)
       settings.javaScriptEnabled = true
       webViewClient = createWebViewClient()
-      addJavascriptInterface(RNCWebViewBridge(this@DomWebView), "ReactNativeWebView")
+      addJavascriptInterface(rncWebViewBridge, "ReactNativeWebView")
       addJavascriptInterface(DomWebViewBridge(this@DomWebView), "ExpoDomWebViewBridge")
       setOnTouchListener(this@DomWebView)
     }
@@ -150,6 +165,13 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
       super.onPageStarted(view, url, favicon)
       injectJavaScript(INSTALL_GLOBALS_SCRIPT.replace("\"%%WEBVIEW_ID%%\"", webViewId.toString()))
       this@DomWebView.injectedJSBeforeContentLoaded?.let {
+        injectJavaScript(it)
+      }
+    }
+
+    override fun onPageFinished(view: WebView?, url: String?) {
+      super.onPageFinished(view, url)
+      this@DomWebView.injectedJS?.let {
         injectJavaScript(it)
       }
     }

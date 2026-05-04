@@ -1,7 +1,7 @@
 import type { SharedRefType } from 'expo';
 import React, { useState } from 'react';
 
-import { ImageProps, ImageSource } from '../Image.types';
+import type { ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 

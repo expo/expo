@@ -97,10 +97,10 @@ const STATE_INACTIVE = 0;
 const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
 const STATE_ON_TOP = 2;
 
-const FALLBACK_DESCRIPTOR = Object.freeze({ options: {} });
+const FALLBACK_DESCRIPTOR = Object.freeze({ options: {} as StackNavigationOptions });
 
 const getInterpolationIndex = (scenes: Scene[], index: number) => {
-  const { cardStyleInterpolator } = scenes[index].descriptor.options;
+  const { cardStyleInterpolator } = scenes[index]!.descriptor.options;
 
   // Start from current card and count backwards the number of cards with same interpolation
   let interpolationIndex = 0;
@@ -270,9 +270,9 @@ export class CardStack extends React.Component<Props, State> {
 
       const oldScene = state.scenes[index];
 
-      const currentGesture = gestures[route.key];
-      const previousGesture = previousRoute ? gestures[previousRoute.key] : undefined;
-      const nextGesture = nextRoute ? gestures[nextRoute.key] : undefined;
+      const currentGesture = gestures[route.key]!;
+      const previousGesture = previousRoute ? gestures[previousRoute.key]! : undefined;
+      const nextGesture = nextRoute ? gestures[nextRoute.key]! : undefined;
 
       const descriptor =
         (isPreloaded ? props.preloadedDescriptors : props.descriptors)[route.key] ||
@@ -293,7 +293,7 @@ export class CardStack extends React.Component<Props, State> {
       // With this approach, combining different transition styles in the same navigator mostly looks right
       // This will still be broken when 2 transitions have different idle state (e.g. modal presentation),
       // but the majority of the transitions look alright
-      const optionsForTransitionConfig =
+      const optionsForTransitionConfig: StackNavigationOptions =
         index !== self.length - 1 && nextOptions && nextOptions?.presentation !== 'transparentModal'
           ? nextOptions
           : descriptor.options;
@@ -308,7 +308,7 @@ export class CardStack extends React.Component<Props, State> {
 
       const transitionPreset =
         animation !== 'default'
-          ? NAMED_TRANSITIONS_PRESETS[animation]
+          ? NAMED_TRANSITIONS_PRESETS[animation]!
           : optionsForTransitionConfig.presentation === 'transparentModal'
             ? ModalFadeTransition
             : optionsForTransitionConfig.presentation === 'modal' || isModal
@@ -391,7 +391,7 @@ export class CardStack extends React.Component<Props, State> {
         return oldScene;
       }
 
-      return scene;
+      return scene as unknown as Scene;
     });
 
     let activeStates = state.activeStates;
@@ -400,7 +400,7 @@ export class CardStack extends React.Component<Props, State> {
       let activeScreensLimit = 1;
 
       for (let i = props.routes.length - 1; i >= 0; i--) {
-        const { options } = scenes[i].descriptor;
+        const { options } = scenes[i]!.descriptor;
 
         const {
           // By default, we don't want to detach the previous screen of the active one for modals
@@ -546,7 +546,7 @@ export class CardStack extends React.Component<Props, State> {
   private getFocusedRoute = () => {
     const { state } = this.props;
 
-    return state.routes[state.index];
+    return state.routes[state.index]!;
   };
 
   private getPreviousScene = ({ route }: { route: Route<string> }) => {
@@ -590,7 +590,7 @@ export class CardStack extends React.Component<Props, State> {
 
     const { scenes, layout, gestures, activeStates, headerHeights } = this.state;
 
-    const focusedRoute = state.routes[state.index];
+    const focusedRoute = state.routes[state.index]!;
     const focusedHeaderHeight = headerHeights[focusedRoute.key];
 
     const isFloatHeaderAbsolute = this.state.scenes.slice(-2).some((scene) => {
@@ -628,8 +628,8 @@ export class CardStack extends React.Component<Props, State> {
           onLayout={this.handleLayout}>
           {[...routes, ...state.preloadedRoutes].map((route, index) => {
             const focused = focusedRoute.key === route.key;
-            const gesture = gestures[route.key];
-            const scene = scenes[index];
+            const gesture = gestures[route.key]!;
+            const scene = scenes[index]!;
             // It is possible that for a short period the route appears in both arrays.
             // Particularly, if the screen is removed with `retain`, then it needs a moment to execute the animation.
             // However, due to the router action, it immediately populates the `preloadedRoutes` array.
@@ -655,7 +655,7 @@ export class CardStack extends React.Component<Props, State> {
             const safeAreaInsetBottom = insets.bottom;
             const safeAreaInsetLeft = insets.left;
 
-            const headerHeight = headerShown !== false ? headerHeights[route.key] : 0;
+            const headerHeight = headerShown !== false ? (headerHeights[route.key] ?? 0) : 0;
 
             // Start from current card and count backwards the number of cards with same interpolation
             const interpolationIndex = getInterpolationIndex(scenes, index);
@@ -667,7 +667,7 @@ export class CardStack extends React.Component<Props, State> {
             const detachCurrentScreen =
               scenes[index + 1]?.descriptor.options.detachPreviousScreen !== false;
 
-            const activityState = isPreloaded ? STATE_INACTIVE : activeStates[index];
+            const activityState = isPreloaded ? STATE_INACTIVE : activeStates[index]!;
 
             return (
               <MaybeScreen

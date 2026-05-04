@@ -11,8 +11,9 @@
 import { types as t } from '@babel/core';
 import type { MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
-import { ExpoJsOutput } from '../serializer/jsOutput';
+import type { CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
+import { InvalidRequireCallError as InternalInvalidRequireCallError } from './collect-dependencies';
+import type { ExpoJsOutput } from '../serializer/jsOutput';
 export { JsTransformOptions };
 interface TransformResponse {
     readonly dependencies: CollectedDependencies['dependencies'];

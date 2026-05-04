@@ -1,5 +1,5 @@
-import { Component, ComponentClass } from 'react';
-import { ViewProps } from 'react-native';
+import type { Component, ComponentClass } from 'react';
+import type { ViewProps } from 'react-native';
 export type SurfaceCreateEvent = {
     nativeEvent: {
         exglCtxId: number;

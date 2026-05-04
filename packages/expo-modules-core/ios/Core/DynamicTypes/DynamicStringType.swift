@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicStringType: AnyDynamicType {
   static let shared = DynamicStringType()
 
@@ -27,7 +29,7 @@ internal struct DynamicStringType: AnyDynamicType {
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     if let string = value as? String {
-      return .string(string, runtime: try appContext.runtime)
+      return JavaScriptValue(try appContext.runtime, string)
     }
     throw Conversions.ConversionToJSFailedException((kind: .string, nativeType: ValueType.self))
   }

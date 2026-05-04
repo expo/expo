@@ -1,8 +1,8 @@
-import React, { useMemo } from 'react';
-import { ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
+import { useMemo, type ReactNode } from 'react';
+import { type ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
-import { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { convertFontWeightToStringFontWeight } from '../../../utils/style';
 import { areAllChildrenPrimitiveValues, convertChildrenToString } from '../toolbar/shared';
 
@@ -11,7 +11,7 @@ export type StackScreenTitleProps = {
    * The title content. Pass a string for a plain text title,
    * or a custom component when `asChild` is enabled.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
   /**
    * Use this to render a custom component as the header title.
    *

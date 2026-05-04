@@ -1,4 +1,5 @@
-import { getConfig, getProjectConfigDescriptionWithPaths, ProjectConfig } from '@expo/config';
+import type { ProjectConfig } from '@expo/config';
+import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 
 import * as Log from '../../../../log';
 import { stripAnsi } from '../../../../utils/ansi';
