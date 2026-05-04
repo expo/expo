@@ -1,5 +1,6 @@
 const noopSubscription = { remove() { } };
 class WidgetStub {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(_name, _layout) { }
     reload() { }
     updateTimeline(_entries) { }
@@ -18,6 +19,7 @@ class LiveActivityStub {
     }
 }
 class LiveActivityFactoryStub {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor(_name, _layout) { }
     start(_props, _url) {
         return new LiveActivityStub();

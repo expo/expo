@@ -11,6 +11,7 @@ import type {
 const noopSubscription: EventSubscription = { remove() {} };
 
 class WidgetStub {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string) {}
   reload(): void {}
   updateTimeline(_entries: ExpoTimelineEntry[]): void {}
@@ -36,6 +37,7 @@ class LiveActivityStub {
 }
 
 class LiveActivityFactoryStub {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string) {}
   start(_props: string, _url?: string): NativeLiveActivity {
     return new LiveActivityStub() as NativeLiveActivity;
