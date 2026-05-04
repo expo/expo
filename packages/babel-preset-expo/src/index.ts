@@ -155,16 +155,16 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     overrides: [...flowFragment.overrides, ...tsFragment.overrides],
     plugins: [...syntaxPlugins, ...flowFragment.plugins],
     presets: [
-      // Module transforms (CommonJS) preset is first so it runs last (Babel reverses preset order).
+      // Module transforms preset is first so it runs last (Babel reverses preset order).
       // This ensures import/export transforms run after all other plugins have processed the code.
-      ...(platformOptions.disableImportExportTransform
-        ? []
-        : [
-            [
-              require('./configs/module-transforms'),
-              { lazyImportExportTransform: platformOptions.lazyImports },
-            ],
-          ]),
+      [
+        require('./configs/module-transforms'),
+        {
+          disableImportExportTransform: platformOptions.disableImportExportTransform,
+          lazyImportExportTransform: platformOptions.lazyImports,
+        },
+      ],
+
       (() => {
         const presetOpts = {
           // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer

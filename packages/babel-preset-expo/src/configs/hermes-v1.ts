@@ -117,12 +117,10 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
       {
         plugins: extraPlugins,
       },
-      {
-        plugins: [
-          require('../plugins/babel-plugin-transform-export-namespace-from'),
-
-          ...(options.isDomComponent
-            ? [
+      ...(options.isDomComponent
+        ? [
+            {
+              plugins: [
                 // These plugins are required to support the older JavaScript environment of Android factory WebViews.
                 // For example Android 9 and Chromium 66.
                 [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
@@ -131,10 +129,10 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
                   require('@babel/plugin-transform-logical-assignment-operators'),
                   { loose: true },
                 ],
-              ]
-            : []),
-        ],
-      },
+              ] as PluginItem[],
+            },
+          ]
+        : []),
     ],
   };
 };

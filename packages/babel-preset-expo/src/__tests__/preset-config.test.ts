@@ -245,8 +245,8 @@ describe('plugin list snapshots', () => {
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "transform-export-namespace-from",
         "transform-runtime",
+        "transform-export-namespace-from",
         "proposal-export-default-from",
         "transform-modules-commonjs",
       ]
@@ -288,8 +288,8 @@ describe('plugin list snapshots', () => {
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "transform-export-namespace-from",
         "transform-runtime",
+        "transform-export-namespace-from",
         "proposal-export-default-from",
         "transform-modules-commonjs",
       ]
@@ -333,8 +333,8 @@ describe('plugin list snapshots', () => {
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "transform-export-namespace-from",
         "transform-runtime",
+        "transform-export-namespace-from",
         "proposal-export-default-from",
         "transform-modules-commonjs",
       ]
@@ -380,8 +380,8 @@ describe('plugin list snapshots', () => {
         "transform-class-static-block",
         "transform-private-methods",
         "transform-private-property-in-object",
-        "transform-export-namespace-from",
         "transform-runtime",
+        "transform-export-namespace-from",
         "proposal-export-default-from",
         "transform-modules-commonjs",
       ]
@@ -439,10 +439,10 @@ describe('plugin list snapshots', () => {
         "transform-parameters",
         "transform-react-display-name",
         "transform-runtime",
-        "transform-export-namespace-from",
         "transform-optional-chaining",
         "transform-nullish-coalescing-operator",
         "transform-logical-assignment-operators",
+        "transform-export-namespace-from",
         "proposal-export-default-from",
         "transform-modules-commonjs",
       ]

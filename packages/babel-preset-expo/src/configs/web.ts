@@ -44,7 +44,6 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
           [require('@babel/plugin-transform-class-static-block'), { loose }],
           [require('@babel/plugin-transform-private-methods'), { loose }],
           [require('@babel/plugin-transform-private-property-in-object'), { loose }],
-          [require('../plugins/babel-plugin-transform-export-namespace-from')],
         ],
       },
       {
