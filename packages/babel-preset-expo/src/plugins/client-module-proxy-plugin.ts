@@ -5,7 +5,7 @@ import type { ConfigAPI, PluginObj } from '@babel/core';
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from './common';
+import { getPossibleProjectRoot, getIsReactServer, toPosixPath } from '../common';
 
 export function reactClientReferencesPlugin(
   api: ConfigAPI & typeof import('@babel/core')

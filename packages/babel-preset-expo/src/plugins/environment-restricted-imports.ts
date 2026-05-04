@@ -3,7 +3,7 @@
  */
 import type { ConfigAPI, PluginObj, NodePath } from '@babel/core';
 
-import { getIsReactServer } from './common';
+import { getIsReactServer } from '../common';
 
 const FORBIDDEN_CLIENT_IMPORTS = ['server-only'];
 const FORBIDDEN_REACT_SERVER_IMPORTS = ['client-only'];

@@ -4,7 +4,7 @@
 import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import nodePath from 'node:path';
 
-import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from './common';
+import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from '../common';
 
 const debug = require('debug')('expo:babel:router');
 

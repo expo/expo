@@ -6,7 +6,7 @@ import crypto from 'node:crypto';
 import { basename } from 'node:path';
 import url from 'node:url';
 
-import { getIsProd, getPossibleProjectRoot } from './common';
+import { getIsProd, getPossibleProjectRoot } from '../common';
 
 export function expoUseDomDirectivePlugin(
   api: ConfigAPI & typeof import('@babel/core')

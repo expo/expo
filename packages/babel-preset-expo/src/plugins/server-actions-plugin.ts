@@ -12,7 +12,7 @@ import type { ConfigAPI, types as t, NodePath, PluginObj, PluginPass } from '@ba
 import { relative as getRelativePath } from 'node:path';
 import url from 'node:url';
 
-import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from './common';
+import { createAddNamedImportOnce, getPossibleProjectRoot, toPosixPath } from '../common';
 
 const debug = require('debug')('expo:babel:server-actions');
 

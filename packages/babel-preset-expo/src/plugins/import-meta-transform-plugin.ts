@@ -2,7 +2,7 @@
 
 import type { ConfigAPI, PluginObj } from '@babel/core';
 
-import { getPlatform } from './common';
+import { getPlatform } from '../common';
 
 export function expoImportMetaTransformPluginFactory(pluginEnabled: boolean) {
   return (api: ConfigAPI & typeof import('@babel/core')): PluginObj => {

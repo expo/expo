@@ -1,7 +1,7 @@
 import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
-import { reactClientReferencesPlugin } from './client-module-proxy-plugin';
+import { reactClientReferencesPlugin } from './plugins/client-module-proxy-plugin';
 import {
   getBabelRuntimeVersion,
   getBaseUrl,
@@ -17,19 +17,19 @@ import {
   getReactCompiler,
   getMetroSourceType,
 } from './common';
-import { environmentRestrictedImportsPlugin } from './environment-restricted-imports';
-import { expoInlineManifestPlugin } from './expo-inline-manifest-plugin';
-import { expoRouterBabelPlugin } from './expo-router-plugin';
-import { expoImportMetaTransformPluginFactory } from './import-meta-transform-plugin';
-import { expoInlineEnvVars } from './inline-env-vars';
+import { environmentRestrictedImportsPlugin } from './plugins/environment-restricted-imports';
+import { expoInlineManifestPlugin } from './plugins/expo-inline-manifest-plugin';
+import { expoRouterBabelPlugin } from './plugins/expo-router-plugin';
+import { expoImportMetaTransformPluginFactory } from './plugins/import-meta-transform-plugin';
+import { expoInlineEnvVars } from './plugins/inline-env-vars';
 import { lazyImports } from './lazyImports';
-import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
-import { reactServerActionsPlugin } from './server-actions-plugin';
-import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
-import { serverMetadataPlugin } from './server-metadata-plugin';
-import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
+import { environmentRestrictedReactAPIsPlugin } from './plugins/restricted-react-api-plugin';
+import { reactServerActionsPlugin } from './plugins/server-actions-plugin';
+import { serverDataLoadersPlugin } from './plugins/server-data-loaders-plugin';
+import { serverMetadataPlugin } from './plugins/server-metadata-plugin';
+import { expoUseDomDirectivePlugin } from './plugins/use-dom-directive-plugin';
 import { hasModule, resolveModule } from './utils/resolveModule';
-import { widgetsPlugin } from './widgets-plugin';
+import { widgetsPlugin } from './plugins/widgets-plugin';
 
 type BabelPresetExpoPlatformOptions = {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */

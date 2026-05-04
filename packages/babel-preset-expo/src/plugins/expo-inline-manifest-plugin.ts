@@ -2,7 +2,7 @@ import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 
-import { getIsReactServer, getPlatform, getPossibleProjectRoot } from './common';
+import { getIsReactServer, getPlatform, getPossibleProjectRoot } from '../common';
 
 const debug = require('debug')('expo:babel:inline-manifest');
 

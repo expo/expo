@@ -1,6 +1,6 @@
 import type { ConfigAPI, NodePath, PluginObj, PluginPass, types as t } from '@babel/core';
 
-import { createAddNamedImportOnce, getIsProd } from './common';
+import { createAddNamedImportOnce, getIsProd } from '../common';
 
 const debug = require('debug')('expo:babel:env-vars');
 
