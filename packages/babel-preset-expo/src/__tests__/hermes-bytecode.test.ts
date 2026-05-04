@@ -81,7 +81,7 @@ const LANGUAGE_SAMPLES: {
     getCompiledCode({ platform }) {
       if (platform === 'web') {
         // NOTE(@kitten): This should align with the below, but doesn't
-        return `Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;function _interopRequireWildcard(e,t){if("function"==typeof WeakMap)var r=new WeakMap(),n=new WeakMap();return(_interopRequireWildcard=function(e,t){if(!t&&e&&e.__esModule)return e;var o,i,f={__proto__:null,default:e};if(null===e||"object"!=typeof e&&"function"!=typeof e)return f;if(o=t?n:r){if(o.has(e))return o.get(e);o.set(e,f);}for(const t in e)"default"!==t&&{}.hasOwnProperty.call(e,t)&&((i=(o=Object.defineProperty)&&Object.getOwnPropertyDescriptor(e,t))&&(i.get||i.set)?o(f,t,i):f[t]=e[t]);return f;})(e,t);}`;
+        return `var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;`;
       }
       return `var _interopRequireWildcard=require("@babel/runtime/helpers/interopRequireWildcard").default;Object.defineProperty(exports,"__esModule",{value:true});exports.ns=void 0;var _ns=_interopRequireWildcard(require("mod"));exports.ns=_ns;`;
     },
@@ -146,7 +146,7 @@ const LANGUAGE_SAMPLES: {
       }`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
+        return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
       }
       return 'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _foo=(0,_classPrivateFieldLooseKey2.default)("foo");class Counter{constructor(){Object.defineProperty(this,_foo,{value:_foo2});}}function _foo2(){}';
     },
@@ -163,7 +163,7 @@ const LANGUAGE_SAMPLES: {
       }`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return `function _checkInRHS(e){if(Object(e)!==e)throw TypeError("right-hand side of 'in' should be an object, got "+(null!==e?typeof e:"null"));return e;}var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has(_checkInRHS(obj));}}`;
+        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has((0,_checkInRHS2.default)(obj));}}`;
       }
       return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _checkInRHS2=_interopRequireDefault(require("@babel/runtime/helpers/checkInRHS"));var _barBrandCheck=new WeakSet();class Foo{#bar=(_barBrandCheck.add(this),"bar");test(obj){return _barBrandCheck.has((0,_checkInRHS2.default)(obj));}}`;
     },
@@ -184,7 +184,7 @@ const LANGUAGE_SAMPLES: {
 }`,
     getCompiledCode({ platform }) {
       if (platform === 'web') {
-        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
+        return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch{_C.y="unknown";}})();`;
       }
       return `var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _classPrivateFieldLooseBase2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseBase"));var _classPrivateFieldLooseKey2=_interopRequireDefault(require("@babel/runtime/helpers/classPrivateFieldLooseKey"));var _C;var _x=(0,_classPrivateFieldLooseKey2.default)("x");class C{}_C=C;Object.defineProperty(C,_x,{writable:true,value:42});(()=>{try{_C.y=doSomethingWith((0,_classPrivateFieldLooseBase2.default)(_C,_x)[_x]);}catch(_unused){_C.y="unknown";}})();`;
     },
