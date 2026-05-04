@@ -195,7 +195,7 @@ function getDeepImportWarningsOverride(options) {
     return [
         {
             test: (fileName) => !!fileName && !EXCLUDED_FIRST_PARTY_PATHS.some((regex) => regex.test(fileName)),
-            plugins: [[require('../plugins/plugin-warn-on-deep-imports')]],
+            plugins: [[require('../plugins/warn-on-deep-rn-imports')]],
         },
     ];
 }
