@@ -21,6 +21,40 @@ export type CameraPosition = {
     zoom?: number;
 };
 /**
+ * The event payload for the `onCameraMove` callback on `AppleMaps.View` and `GoogleMaps.View`.
+ */
+export type CameraMoveEvent = {
+    /**
+     * The coordinates of the camera center.
+     */
+    coordinates: Coordinates;
+    /**
+     * The zoom level of the camera.
+     */
+    zoom: number;
+    /**
+     * The tilt of the camera in degrees.
+     */
+    tilt: number;
+    /**
+     * The bearing of the camera in degrees.
+     */
+    bearing: number;
+    /**
+     * The height of the visible region in degrees of latitude — how much of
+     * the world fits on screen vertically. Larger values mean the map is
+     * zoomed out further.
+     */
+    latitudeDelta: number;
+    /**
+     * The width of the visible region in degrees of longitude — how much of
+     * the world fits on screen horizontally. Larger values mean the map is
+     * zoomed out further. Always positive, even when the visible region
+     * crosses the antimeridian (±180°).
+     */
+    longitudeDelta: number;
+};
+/**
  * @hidden
  */
 export type MapsModule = {
