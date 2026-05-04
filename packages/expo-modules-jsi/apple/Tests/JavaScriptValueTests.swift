@@ -126,6 +126,36 @@ struct JavaScriptValueTests {
     #expect(value.getString() == "round-trip 🎉")
   }
 
+  @Test
+  func `toString returns BMP and non-BMP characters unchanged`() throws {
+    let value = try runtime.eval("({ toString() { return 'café 世界 🎉' } })")
+    let result = value.toString()
+    #expect(result == "café 世界 🎉")
+  }
+
+  @Test
+  func `toString preserves non-BMP characters via surrogate pairs`() throws {
+    let value = try runtime.eval("({ toString() { return '🌍🚀' } })")
+    let result = value.toString()
+    #expect(result == "🌍🚀")
+    #expect(result.unicodeScalars.count == 2)
+  }
+
+  @Test
+  func `getString preserves embedded null characters`() throws {
+    let value = try runtime.eval("'a\\u0000b'")
+    let result = value.getString()
+    #expect(result == "a\u{0000}b")
+    #expect(result.utf8.count == 3)
+  }
+
+  @Test
+  func `getString handles lone surrogate code units deterministically`() throws {
+    let value = try runtime.eval("'\\uD800'")
+    let result = value.getString()
+    #expect(result == "\u{FFFD}")
+  }
+
   // MARK: - Type Checking Tests
 
   @Test
