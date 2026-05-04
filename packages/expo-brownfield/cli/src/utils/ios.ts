@@ -30,11 +30,7 @@ export const enumerateSourceBuiltDeps = (
   config: IosConfig,
   alreadyCovered: Set<string>
 ): string[] => {
-  const frameworkBinary = path.join(
-    config.simulator,
-    `${config.scheme}.framework`,
-    config.scheme
-  );
+  const frameworkBinary = path.join(config.simulator, `${config.scheme}.framework`, config.scheme);
   if (!fs.existsSync(frameworkBinary)) {
     return [];
   }
@@ -55,9 +51,7 @@ export const enumerateSourceBuiltDeps = (
       names.add(match[1]);
     }
   }
-  return Array.from(names).filter(
-    (name) => name !== config.scheme && !alreadyCovered.has(name)
-  );
+  return Array.from(names).filter((name) => name !== config.scheme && !alreadyCovered.has(name));
 };
 
 /**

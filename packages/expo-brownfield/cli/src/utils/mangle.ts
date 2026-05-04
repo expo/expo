@@ -43,8 +43,7 @@ const SWIFT_SYMBOL_PATTERNS: RegExp[] = [
   /get_witness_table /,
 ];
 
-const isSwiftSymbol = (line: string): boolean =>
-  SWIFT_SYMBOL_PATTERNS.some((re) => re.test(line));
+const isSwiftSymbol = (line: string): boolean => SWIFT_SYMBOL_PATTERNS.some((re) => re.test(line));
 
 const LOG_FILE_NAME = 'expo-brownfield-mangle.log';
 
@@ -253,10 +252,7 @@ const prefixSelectors = (prefix: string, selectors: string[]): string[] => {
   return defines;
 };
 
-const buildManglingDefines = async (
-  prefix: string,
-  binaries: string[]
-): Promise<string[]> => {
+const buildManglingDefines = async (prefix: string, binaries: string[]): Promise<string[]> => {
   const allSymbolsGU = await runNm(binaries, '-gU');
   const allSymbolsU = await runNm(binaries, '-U');
 
@@ -355,10 +351,8 @@ export const runMangle = async (
   }
 };
 
-export const isManglingUpToDate = (
-  xcconfigPath: string,
-  expectedChecksum: string
-): boolean => readExistingChecksum(xcconfigPath) === expectedChecksum;
+export const isManglingUpToDate = (xcconfigPath: string, expectedChecksum: string): boolean =>
+  readExistingChecksum(xcconfigPath) === expectedChecksum;
 
 export const __testing = {
   isSwiftSymbol,

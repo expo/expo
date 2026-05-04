@@ -18,7 +18,8 @@ const getPrebuiltSettingsLines = (): string[] => {
     end`.split('\n');
 };
 
-const MANGLE_REQUIRE_MARKER = "require File.join(File.dirname(`node --print \"require.resolve('expo-brownfield/package.json')\"`), 'scripts/ios/mangle')";
+const MANGLE_REQUIRE_MARKER =
+  "require File.join(File.dirname(`node --print \"require.resolve('expo-brownfield/package.json')\"`), 'scripts/ios/mangle')";
 const MANGLE_RUN_MARKER = 'ExpoBrownfield::Mangle.run!';
 
 const getMangleRunLines = (targetName: string): string[] => {
@@ -74,9 +75,7 @@ const addMangleRunCall = (podfile: string, targetName: string): string => {
   const runLines = getMangleRunLines(targetName);
   const lines = podfile.split('\n');
 
-  const postInstallIndex = lines.findIndex((line) =>
-    line.includes('post_install do |installer|')
-  );
+  const postInstallIndex = lines.findIndex((line) => line.includes('post_install do |installer|'));
 
   if (postInstallIndex === -1) {
     // No post_install block exists yet — append one at the bottom.
