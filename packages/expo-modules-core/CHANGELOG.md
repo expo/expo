@@ -70,6 +70,7 @@
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
 - [Android] Improve performance of `PersistentFileLog`. ([#45058](https://github.com/expo/expo/pull/45058) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Improve performance of `EnumTypeConverter`. ([#45204](https://github.com/expo/expo/pull/45204) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Made `ExpoModulesWorklets` precompilable via runtime provider injection. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.12 — 2026-02-25
 

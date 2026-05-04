@@ -121,6 +121,7 @@
 - [Android] Improved application startup performance by reducing reflection. ([#45021](https://github.com/expo/expo/pull/45021) by [@lukmccall](https://github.com/lukmccall))
 - [jetpack-compose] Added `expand` and `partialExpand` to `ModalBottomSheet`. ([#44682](https://github.com/expo/expo/pull/44682) by [@kudo](https://github.com/kudo))
 - Removed iOS universal `Host` workaround. ([#45173](https://github.com/expo/expo/pull/45173) by [@kudo](https://github.com/kudo))
+- [iOS] Unblocked precompiled-xcframework distribution via the runtime worklets provider. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.1 — 2026-02-25
 
