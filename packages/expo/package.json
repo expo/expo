@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "55.0.19",
+  "version": "55.0.20",
   "description": "The Expo SDK",
   "main": "src/Expo.ts",
   "module": "src/Expo.ts",
@@ -77,7 +77,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "55.0.27",
+    "@expo/cli": "55.0.28",
     "@expo/config": "~55.0.15",
     "@expo/config-plugins": "~55.0.8",
     "@expo/devtools": "55.0.2",
@@ -85,7 +85,7 @@
     "@expo/local-build-cache-provider": "55.0.11",
     "@expo/log-box": "55.0.11",
     "@expo/metro": "~55.1.1",
-    "@expo/metro-config": "55.0.18",
+    "@expo/metro-config": "55.0.19",
     "@expo/vector-icons": "^15.0.2",
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "~55.0.19",

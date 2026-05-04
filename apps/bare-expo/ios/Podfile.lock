@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.19):
+  - Expo (55.0.20):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -63,15 +63,15 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-client (55.0.30):
+  - expo-dev-client (55.0.31):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (55.0.31):
+  - expo-dev-launcher (55.0.32):
     - EXManifests
-    - expo-dev-launcher/Main (= 55.0.31)
+    - expo-dev-launcher/Main (= 55.0.32)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -100,7 +100,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Main (55.0.31):
+  - expo-dev-launcher/Main (55.0.32):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -131,7 +131,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Tests (55.0.31):
+  - expo-dev-launcher/Tests (55.0.32):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -166,7 +166,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - expo-dev-launcher/Unsafe (55.0.31):
+  - expo-dev-launcher/Unsafe (55.0.32):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.19):
+  - Expo/Tests (55.0.20):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -642,7 +642,7 @@ PODS:
     - RNScreens
   - ExpoScreenCapture (55.0.13):
     - ExpoModulesCore
-  - ExpoScreenOrientation (55.0.13):
+  - ExpoScreenOrientation (55.0.14):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -694,7 +694,7 @@ PODS:
     - UMAppLoader
   - ExpoTrackingTransparency (55.0.13):
     - ExpoModulesCore
-  - ExpoUI (55.0.13):
+  - ExpoUI (55.0.14):
     - ExpoModulesCore
     - React-RCTFabric
   - ExpoVideo (55.0.15):
@@ -3941,15 +3941,15 @@ SPEC CHECKSUMS:
   EXConstants: b2ff8818e17593c8e0a4dc19fa256c804473fed4
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 45bb6adf798ea7b79e18de8904a87a872edd9894
-  Expo: 4fff73f1b8e3243edb881dc615cce0b1c47e3fe0
-  expo-dev-client: c80c0a70b637e093430c4cdb7c987ebd3634aaa8
-  expo-dev-launcher: 54ad17e489c2abfc0b4d8d35ac1f4c85d9995303
+  Expo: 3d00b93602f42dd15ea97544498602f131237514
+  expo-dev-client: 2a84a12baa50f542d64f29db396ca3c24532b2cb
+  expo-dev-launcher: 2297e9a34890b557bede1cf5a3747f2a044bc4d8
   expo-dev-menu: 524ca4a9d0b2c41d424d7c3b0629a3c2e8427607
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppIntegrity: 9fd00a7e48bd94dd4dc838f933b8fdd628ee6dab
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
-  ExpoAppMetrics: e1779c971cfd12733fe53d755b31c969f8b60dad
+  ExpoAppMetrics: 5feaac88ed4e9015b15f288e1523d6178a464625
   ExpoAsset: e5a93c1082e763fb7b59a0b3a16c38224ba07f8a
   ExpoAudio: bb9b02133e7ed48b18a58a5fad9a7a90289fa94d
   ExpoBackgroundFetch: 31cdc1b7018965e12960e0abc8041f968e725428
@@ -3999,7 +3999,7 @@ SPEC CHECKSUMS:
   ExpoPrint: 4de2eaf713b1f23ad6a306dd1034158d6d84d43a
   ExpoRouter: 73e97e4468c4435576be4c4b72ff4b5276854a1a
   ExpoScreenCapture: 3cde76108a8c6ca1ec75d0da772b4adf0f6ae89f
-  ExpoScreenOrientation: 0ae57967b00b3e90cbea24560683bf0f2e1c03fe
+  ExpoScreenOrientation: cc7bfcd863df29f060d027de733211078743ba63
   ExpoSecureStore: 03372541cb9b7f67601fa2ed0a8c2abbc9037e04
   ExpoSensors: a6a6b0cba1488e548119e201613268bc247821d4
   ExpoSharing: 7bc7b17aaaab37a933a012a14aa776562999feaa
@@ -4012,7 +4012,7 @@ SPEC CHECKSUMS:
   ExpoSystemUI: 179b6f2b3bd151499e17115339ee047eaba636c3
   ExpoTaskManager: cc97180368cdcf637b6af9532e2cc96315184b20
   ExpoTrackingTransparency: 287445639184c0f885ccff78f6e2b6d8414d58c4
-  ExpoUI: 34dfa4e3d594f48e05042f1f4614abd776a2548e
+  ExpoUI: 08815ebd566af4f1df6de084e0c8bb4b82cd28e8
   ExpoVideo: fe990ba488ca5e4b2e9b7b63c4039134de9e6205
   ExpoVideoThumbnails: e33e336b7db87b701d62ce309d99ce8bc003cc2a
   ExpoWebBrowser: 0f4255b795de0eca7e0337de591c3d1c20efbdf0
