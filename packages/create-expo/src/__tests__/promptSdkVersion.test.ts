@@ -33,7 +33,7 @@ function mockVersionsResponse({
   sdkVersions = sampleSdkVersions,
 }: {
   expoGoSdkVersion?: string;
-  sdkVersions?: Record<string, { releaseNoteUrl?: string; isDeprecated?: boolean; beta?: boolean }>;
+  sdkVersions?: Record<string, { releaseNoteUrl?: string; isDeprecated?: boolean }>;
 } = {}) {
   fetchMock.mockResolvedValue({
     ok: true,
@@ -61,11 +61,10 @@ describe(fetchSdkVersionsAsync, () => {
     });
   });
 
-  it('skips deprecated and beta entries even if they have a releaseNoteUrl', async () => {
+  it('skips deprecated entries even if they have a releaseNoteUrl', async () => {
     mockVersionsResponse({
       sdkVersions: {
-        '52.0.0': { releaseNoteUrl: 'https://example.com', isDeprecated: true },
-        '53.0.0': { releaseNoteUrl: 'https://example.com', beta: true },
+        '53.0.0': { releaseNoteUrl: 'https://example.com', isDeprecated: true },
         '54.0.0': { releaseNoteUrl: 'https://example.com' },
       },
       expoGoSdkVersion: '54.0.0',
@@ -103,28 +102,40 @@ describe(applySdkVersionToTemplateAsync, () => {
     Object.defineProperty(process.stdin, 'isTTY', { value: originalIsTTY, configurable: true });
   });
 
-  it('passes through unchanged without prompting or fetching when --yes is set', async () => {
+  it('pins to the latest SDK without prompting when --yes is set with the default template', async () => {
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: true })).toBe(
-      'expo-template-default'
+      'expo-template-default@sdk-55'
     );
     expect(mockPrompts).not.toHaveBeenCalled();
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('passes through unchanged without prompting or fetching in CI', async () => {
+  it('pins to the latest SDK without prompting in CI with the default template', async () => {
     process.env.CI = 'true';
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
-      'expo-template-default'
+      'expo-template-default@sdk-55'
     );
     expect(mockPrompts).not.toHaveBeenCalled();
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('passes through unchanged without prompting or fetching when stdin is not a TTY', async () => {
+  it('pins to the latest SDK without prompting when stdin is not a TTY with the default template', async () => {
     Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
-      'expo-template-default'
+      'expo-template-default@sdk-55'
     );
+    expect(mockPrompts).not.toHaveBeenCalled();
+  });
+
+  it('passes through to npm `latest` non-interactively when --template is specified', async () => {
+    process.env.CI = 'true';
+    expect(
+      await applySdkVersionToTemplateAsync('expo-template-tabs', {
+        yes: false,
+        showAlternatives: false,
+      })
+    ).toBe('expo-template-tabs');
     expect(mockPrompts).not.toHaveBeenCalled();
     expect(fetchMock).not.toHaveBeenCalled();
   });

@@ -17,7 +17,7 @@ const VERSIONS_URL = 'https://exp.host/--/api/v2/versions';
 
 type VersionsResponse = {
   expoGoSdkVersion?: string;
-  sdkVersions?: Record<string, { releaseNoteUrl?: string; isDeprecated?: boolean; beta?: boolean }>;
+  sdkVersions?: Record<string, { releaseNoteUrl?: string; isDeprecated?: boolean }>;
 };
 
 type SdkVersionsSummary = {
@@ -45,7 +45,7 @@ export async function fetchSdkVersionsAsync(): Promise<SdkVersionsSummary | null
 
   const sdkVersions = json.sdkVersions ?? {};
   const available = Object.entries(sdkVersions)
-    .filter(([, info]) => !!info.releaseNoteUrl && !info.isDeprecated && !info.beta)
+    .filter(([, info]) => !!info.releaseNoteUrl && !info.isDeprecated)
     .map(([version]) => parseSdkMajor(version))
     .filter((major): major is number => major != null)
     .sort((a, b) => b - a);
@@ -98,8 +98,11 @@ export async function applySdkVersionToTemplateAsync(
     return template;
   }
 
-  // Non-interactive runs fall through to the template's npm `latest` dist-tag.
-  if (yes || env.CI || !process.stdin.isTTY) {
+  const nonInteractive = yes || env.CI || !process.stdin.isTTY;
+
+  // Non-interactive + user explicitly chose a template: fall through to that
+  // template's npm `latest` dist-tag. No need to fetch the versions endpoint.
+  if (nonInteractive && !showAlternatives) {
     logCreatingProject(template, projectName);
     return template;
   }
@@ -108,6 +111,13 @@ export async function applySdkVersionToTemplateAsync(
   if (!versions) {
     logCreatingProject(template, projectName);
     return template;
+  }
+
+  // Non-interactive + default template: pin to the actual latest released SDK.
+  if (nonInteractive) {
+    const pinned = `${name}@sdk-${versions.latest}`;
+    logCreatingProject(pinned, projectName);
+    return pinned;
   }
 
   const selectedSdk = await promptSdkVersionAsync(versions, name, showAlternatives, projectName);
