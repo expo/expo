@@ -203,14 +203,11 @@ function getDeepImportWarningsOverride(options) {
 }
 function getReactPreset(options) {
     return [
-        require('@babel/preset-react'),
+        require('./react'),
         {
-            development: options.isDev,
-            // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-            runtime: options.jsxRuntime || 'automatic',
-            ...(options.jsxRuntime !== 'classic' && {
-                importSource: options.jsxImportSource || 'react',
-            }),
+            dev: options.isDev,
+            jsxRuntime: options.jsxRuntime,
+            jsxImportSource: options.jsxImportSource,
         },
     ];
 }
