@@ -7,6 +7,7 @@ import { expoInlineManifestPlugin } from '../plugins/expo-inline-manifest-plugin
 import { expoRouterBabelPlugin } from '../plugins/expo-router-plugin';
 import { expoImportMetaTransformPluginFactory } from '../plugins/import-meta-transform-plugin';
 import { expoInlineEnvVars } from '../plugins/inline-env-vars';
+import { lazyDecoratorsPlugin } from '../plugins/lazy-decorators-plugin';
 import { environmentRestrictedReactAPIsPlugin } from '../plugins/restricted-react-api-plugin';
 import { reactServerActionsPlugin } from '../plugins/server-actions-plugin';
 import { serverDataLoadersPlugin } from '../plugins/server-data-loaders-plugin';
@@ -150,10 +151,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
 
   // TODO: Remove
   if (options.decorators !== false) {
-    plugins.push([
-      require('@babel/plugin-proposal-decorators'),
-      options.decorators ?? { legacy: true },
-    ]);
+    plugins.push([lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
   }
 
   // Automatically add worklets or reanimated plugin when package is installed.
