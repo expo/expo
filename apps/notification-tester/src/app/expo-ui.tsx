@@ -1,3 +1,3 @@
-import HorizontalPagerScreen from 'native-component-list/src/screens/UI/HorizontalPagerScreen';
+import HorizontalPagerScreen from 'native-component-list/src/screens/UI/MaskScreen';
 
 export default HorizontalPagerScreen;

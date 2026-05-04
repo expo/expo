@@ -323,6 +323,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Mask (recordLayer/drawLayer)',
+    route: 'ui/mask',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaskScreen'));
+    },
+  },
+  {
     name: 'Modifiers',
     route: 'ui/modifiers',
     options: {},

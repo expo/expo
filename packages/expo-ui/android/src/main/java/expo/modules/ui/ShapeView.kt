@@ -54,8 +54,8 @@ data class ShapeProps(
   val cornerRounding: Float = 0.0f,
   val smoothing: Float = 0.0f,
   val verticesCount: Int = 6,
-  val innerRadius: Float = 0.0f,
-  val radius: Float = 0.0f,
+  val innerRadius: Float = 1.0f,
+  val radius: Float = 1.0f,
   val cornerRadii: CornerRadii? = null,
   val type: ShapeType = ShapeType.CIRCLE,
   val color: GraphicsColor? = null,
@@ -155,9 +155,9 @@ data class ShapeRecord(
   @Field
   val verticesCount: Int = 6,
   @Field
-  val innerRadius: Float = 0.0f,
+  val innerRadius: Float = 1.0f,
   @Field
-  val radius: Float = 0.0f,
+  val radius: Float = 1.0f,
   @Field
   val cornerRadii: CornerRadii? = null,
   @Field

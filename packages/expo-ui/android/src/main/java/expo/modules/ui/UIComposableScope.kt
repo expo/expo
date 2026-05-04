@@ -3,6 +3,7 @@ package expo.modules.ui
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import expo.modules.kotlin.views.ComposableScope
 
@@ -10,7 +11,8 @@ data class UIComposableScope(
   val rowScope: RowScope? = null,
   val columnScope: ColumnScope? = null,
   val boxScope: BoxScope? = null,
-  val nestedScrollConnection: NestedScrollConnection? = null
+  val nestedScrollConnection: NestedScrollConnection? = null,
+  val layerToRecord: GraphicsLayer? = null
 ) : ComposableScope
 
 val ComposableScope.rowScope: RowScope?
@@ -24,3 +26,6 @@ val ComposableScope.boxScope: BoxScope?
 
 val ComposableScope.nestedScrollConnection: NestedScrollConnection?
   get() = (this as? UIComposableScope)?.nestedScrollConnection
+
+val ComposableScope.layerToRecord: GraphicsLayer?
+  get() = (this as? UIComposableScope)?.layerToRecord

@@ -40,10 +40,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
@@ -138,8 +145,37 @@ internal data class OffsetParams(
 ) : Record
 
 @OptimizedRecord
+internal data class GradientPoint(
+  @Field val x: Float = 0f,
+  @Field val y: Float = 0f
+) : Record
+
+@OptimizedRecord
+internal data class BrushParams(
+  @Field val type: String = "",
+  @Field val colors: List<Color> = emptyList(),
+  @Field val startPoint: GradientPoint = GradientPoint(),
+  @Field val endPoint: GradientPoint = GradientPoint(1f, 1f)
+) : Record
+
+private class NormalizedLinearGradientBrush(
+  private val colors: List<androidx.compose.ui.graphics.Color>,
+  private val start: GradientPoint,
+  private val end: GradientPoint
+) : ShaderBrush() {
+  override fun createShader(size: Size): Shader =
+    LinearGradientShader(
+      from = Offset(start.x * size.width, start.y * size.height),
+      to = Offset(end.x * size.width, end.y * size.height),
+      colors = colors,
+      colorStops = null
+    )
+}
+
+@OptimizedRecord
 internal data class BackgroundParams(
-  @Field val color: Color? = null
+  @Field val color: Color? = null,
+  @Field val brush: BrushParams? = null
 ) : Record
 
 @OptimizedRecord
@@ -256,6 +292,71 @@ internal data class MenuAnchorParams(
   @Field val type: MenuAnchorType = MenuAnchorType.PRIMARY_NOT_EDITABLE,
   @Field val enabled: Boolean = true
 ) : Record
+
+enum class BlendModeType(val value: String) : Enumerable {
+  CLEAR("clear"),
+  SRC("src"),
+  DST("dst"),
+  SRC_OVER("srcOver"),
+  DST_OVER("dstOver"),
+  SRC_IN("srcIn"),
+  DST_IN("dstIn"),
+  SRC_OUT("srcOut"),
+  DST_OUT("dstOut"),
+  SRC_ATOP("srcAtop"),
+  DST_ATOP("dstAtop"),
+  XOR("xor"),
+  PLUS("plus"),
+  MODULATE("modulate"),
+  SCREEN("screen"),
+  OVERLAY("overlay"),
+  DARKEN("darken"),
+  LIGHTEN("lighten"),
+  COLOR_DODGE("colorDodge"),
+  COLOR_BURN("colorBurn"),
+  HARD_LIGHT("hardLight"),
+  SOFT_LIGHT("softLight"),
+  DIFFERENCE("difference"),
+  EXCLUSION("exclusion"),
+  MULTIPLY("multiply"),
+  HUE("hue"),
+  SATURATION("saturation"),
+  COLOR("color"),
+  LUMINOSITY("luminosity");
+
+  fun toBlendMode(): BlendMode = when (this) {
+    CLEAR -> BlendMode.Clear
+    SRC -> BlendMode.Src
+    DST -> BlendMode.Dst
+    SRC_OVER -> BlendMode.SrcOver
+    DST_OVER -> BlendMode.DstOver
+    SRC_IN -> BlendMode.SrcIn
+    DST_IN -> BlendMode.DstIn
+    SRC_OUT -> BlendMode.SrcOut
+    DST_OUT -> BlendMode.DstOut
+    SRC_ATOP -> BlendMode.SrcAtop
+    DST_ATOP -> BlendMode.DstAtop
+    XOR -> BlendMode.Xor
+    PLUS -> BlendMode.Plus
+    MODULATE -> BlendMode.Modulate
+    SCREEN -> BlendMode.Screen
+    OVERLAY -> BlendMode.Overlay
+    DARKEN -> BlendMode.Darken
+    LIGHTEN -> BlendMode.Lighten
+    COLOR_DODGE -> BlendMode.ColorDodge
+    COLOR_BURN -> BlendMode.ColorBurn
+    HARD_LIGHT -> BlendMode.Hardlight
+    SOFT_LIGHT -> BlendMode.Softlight
+    DIFFERENCE -> BlendMode.Difference
+    EXCLUSION -> BlendMode.Exclusion
+    MULTIPLY -> BlendMode.Multiply
+    HUE -> BlendMode.Hue
+    SATURATION -> BlendMode.Saturation
+    COLOR -> BlendMode.Color
+    LUMINOSITY -> BlendMode.Luminosity
+  }
+}
+
 
 // endregion
 
@@ -452,9 +553,19 @@ object ModifierRegistry {
     // Appearance modifiers
     register("background") { map, _, _, _ ->
       val params = recordFromMap<BackgroundParams>(map)
-      params.color?.let { color ->
-        Modifier.background(color.compose)
-      } ?: Modifier
+      val brush = params.brush
+      when {
+        brush?.type == "linearGradient" && brush.colors.size >= 2 ->
+          Modifier.background(
+            brush = NormalizedLinearGradientBrush(
+              colors = brush.colors.map { it.compose },
+              start = brush.startPoint,
+              end = brush.endPoint
+            )
+          )
+        params.color != null -> Modifier.background(params.color.compose)
+        else -> Modifier
+      }
     }
 
     register("border") { map, _, _, _ ->
@@ -530,6 +641,13 @@ object ModifierRegistry {
     register("zIndex") { map, _, _, _ ->
       val params = recordFromMap<ZIndexParams>(map)
       Modifier.zIndex(params.index)
+    }
+
+    register("recordLayer") { _, scope, _, _ ->
+      val layer = scope?.layerToRecord ?: return@register Modifier
+      Modifier.drawWithContent {
+        layer.record { this@drawWithContent.drawContent() }
+      }
     }
 
     // Animation modifiers
