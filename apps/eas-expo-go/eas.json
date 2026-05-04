@@ -10,7 +10,7 @@
       "node": "22.17.1",
       "credentialsSource": "local",
       "android": {
-        "image": "sdk-54",
+        "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",
         "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
