@@ -109,7 +109,8 @@ export const UIUniversalScreens = [
     options: { title: 'TextInput' },
     getComponent() {
       return optionalRequire(() => require('./TextInputScreen'));
-  }
+    },
+  },
 ];
 
 function stripPrefix(elements: ListElement[]): ListElement[] {
