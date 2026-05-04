@@ -145,7 +145,7 @@ plugins, }) => {
     }
     finally {
         // Restore the old process.env.BABEL_ENV
-        if (OLD_BABEL_ENV != null) {
+        if (OLD_BABEL_ENV == null) {
             // We have to treat this as a special case because writing undefined to
             // an environment variable coerces it to the string 'undefined'. To
             // unset it, we must delete it.
