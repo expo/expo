@@ -13,6 +13,7 @@ import { DependencyVersionOverrideCheck } from '../checks/DependencyVersionOverr
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
+import { ExpoRouterReactNavigationCheck } from '../checks/ExpoRouterReactNavigationCheck';
 import { GlobalPackageInstalledLocallyCheck } from '../checks/GlobalPackageInstalledLocallyCheck';
 import { IllegalPackageCheck } from '../checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
@@ -52,6 +53,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
     new PeerDependencyChecks(),
+    new ExpoRouterReactNavigationCheck(),
     new AutolinkingDependencyDuplicatesCheck(),
     new VectorIconsCheck(),
 
