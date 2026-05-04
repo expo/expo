@@ -119,9 +119,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
 
   @JavaScriptActor
   internal func castValue(jsValue: JavaScriptValue, appContext: AppContext) throws -> Type? {
-    let rawValue = try fieldType.cast(jsValue: jsValue, appContext: appContext)
-    let convertedValue = try fieldType.cast(rawValue, appContext: appContext)
-    return convertedValue as? Type
+    return try fieldType.cast(jsValue: jsValue, appContext: appContext) as? Type
   }
 }
 

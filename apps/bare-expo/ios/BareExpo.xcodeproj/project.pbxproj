@@ -264,7 +264,7 @@
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			packageReferences = (
-				B07E3E252FA5EE03002CB39D /* XCLocalSwiftPackageReference "../../../packages/expo-modules-jsi/apple" */,
+				B07E3E252FA5EE03002CB39D /* XCLocalSwiftPackageReference "apple" */,
 			);
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
@@ -907,7 +907,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		B07E3E252FA5EE03002CB39D /* XCLocalSwiftPackageReference "../../../packages/expo-modules-jsi/apple" */ = {
+		B07E3E252FA5EE03002CB39D /* XCLocalSwiftPackageReference "apple" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = "../../../packages/expo-modules-jsi/apple";
 		};

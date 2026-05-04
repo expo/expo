@@ -26,7 +26,7 @@ internal struct DynamicConvertibleType: AnyDynamicType {
       try record.update(withObject: try jsValue.asObject(), appContext: appContext)
       return record
     }
-    return jsValue.getAny()
+    return try innerType.convert(from: jsValue.getAny(), appContext: appContext)
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
