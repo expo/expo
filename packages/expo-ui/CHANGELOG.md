@@ -26,6 +26,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [android] Use `LocalContentColor` when `tint` is omitted
 - [universal] Added `TextInput` component that mirrors RN's `TextInput` API but routes to SwiftUI on iOS, Compose on Android, and RN's `TextInput` on web. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
 - [compose] Exposed extension utilities for third-party modules: `ModifierRegistry.unregister`, and re-exported `createModifier` / `createModifierWithEventListener` / `createViewModifierEventListener` from `@expo/ui/jetpack-compose/modifiers`. Exported `PrimitiveBaseProps` from `@expo/ui/jetpack-compose`. ([#45122](https://github.com/expo/expo/pull/45122) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `colors` prop to `HorizontalFloatingToolbar` to override the variant's default toolbar and FAB container/content colors. ([#45244](https://github.com/expo/expo/pull/45244) by [@Ubax](https://github.com/Ubax))
