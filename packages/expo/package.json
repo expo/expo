@@ -88,7 +88,7 @@
     "@expo/metro-config": "55.0.19",
     "@expo/vector-icons": "^15.0.2",
     "@ungap/structured-clone": "^1.3.0",
-    "babel-preset-expo": "~55.0.19",
+    "babel-preset-expo": "~55.0.20",
     "expo-asset": "~55.0.16",
     "expo-constants": "~55.0.15",
     "expo-file-system": "~55.0.17",
