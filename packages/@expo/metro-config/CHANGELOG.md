@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `BABEL_ENV` being incorrectly restored ([#45348](https://github.com/expo/expo/pull/45348) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 55.0.18 — 2026-05-01
