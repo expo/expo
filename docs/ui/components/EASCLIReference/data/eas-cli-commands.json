@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-04-30T11:04:31.013Z",
-    "cliVersion": "18.9.1"
+    "fetchedAt": "2026-05-04T10:53:40.373Z",
+    "cliVersion": "18.10.0"
   },
-  "totalCommands": 107,
+  "totalCommands": 114,
   "commands": [
     {
       "command": "eas account:login",
@@ -330,6 +330,41 @@
       "command": "eas integrations:asc:status",
       "description": "show the App Store Connect app link status for the current project",
       "usage": "USAGE\n  $ eas integrations:asc:status [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  show the App Store Connect app link status for the current project"
+    },
+    {
+      "command": "eas integrations:convex:connect",
+      "description": "connect Convex to your Expo project",
+      "usage": "USAGE\n  $ eas integrations:convex:connect [--non-interactive] [--region aws-us-east-1|aws-eu-west-1] [--team-name <value>]\n    [--project-name <value>]\n\nFLAGS\n  --non-interactive       Run the command in non-interactive mode.\n  --project-name=<value>  Name for the Convex project (defaults to app slug)\n  --region=<option>       Convex deployment region (e.g. aws-us-east-1, aws-eu-west-1)\n                          <options: aws-us-east-1|aws-eu-west-1>\n  --team-name=<value>     Name for the new Convex team (defaults to EAS account name)\n\nDESCRIPTION\n  connect Convex to your Expo project"
+    },
+    {
+      "command": "eas integrations:convex:dashboard",
+      "description": "open the Convex dashboard for the linked Convex project",
+      "usage": "USAGE\n  $ eas integrations:convex:dashboard\n\nDESCRIPTION\n  open the Convex dashboard for the linked Convex project"
+    },
+    {
+      "command": "eas integrations:convex:project",
+      "description": "display the Convex project linked to the current Expo app",
+      "usage": "USAGE\n  $ eas integrations:convex:project\n\nDESCRIPTION\n  display the Convex project linked to the current Expo app"
+    },
+    {
+      "command": "eas integrations:convex:project:delete",
+      "description": "remove the Convex project link for the current Expo app from EAS servers",
+      "usage": "USAGE\n  $ eas integrations:convex:project:delete [--non-interactive] [-y]\n\nFLAGS\n  -y, --yes              Skip confirmation prompt\n      --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove the Convex project link for the current Expo app from EAS servers"
+    },
+    {
+      "command": "eas integrations:convex:team",
+      "description": "display Convex teams linked to the current Expo app's owner account",
+      "usage": "USAGE\n  $ eas integrations:convex:team\n\nDESCRIPTION\n  display Convex teams linked to the current Expo app's owner account"
+    },
+    {
+      "command": "eas integrations:convex:team:delete [CONVEX_TEAM]",
+      "description": "remove a Convex team link from the current Expo app owner account's EAS servers",
+      "usage": "USAGE\n  $ eas integrations:convex:team:delete [CONVEX_TEAM] [--non-interactive] [-y]\n\nARGUMENTS\n  [CONVEX_TEAM]  Slug of the Convex team to remove\n\nFLAGS\n  -y, --yes              Skip confirmation prompt\n      --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove a Convex team link from the current Expo app owner account's EAS servers"
+    },
+    {
+      "command": "eas integrations:convex:team:invite [CONVEX_TEAM]",
+      "description": "send a Convex team invitation to your verified email address",
+      "usage": "USAGE\n  $ eas integrations:convex:team:invite [CONVEX_TEAM] [--non-interactive]\n\nARGUMENTS\n  [CONVEX_TEAM]  Slug of the Convex team to invite yourself to\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  send a Convex team invitation to your verified email address"
     },
     {
       "command": "eas login",
