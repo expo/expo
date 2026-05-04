@@ -1,8 +1,10 @@
 import { BridgeModule, ExpoModule, TurboModule } from 'benchmarking';
+import { Platform } from 'react-native';
 
 import { BenchmarkRun } from './ModulesBenchmarksHistory';
 
 const DEFAULT_ITERATIONS = 100_000;
+const DEFAULT_ASYNC_ITERATIONS = Platform.OS === 'ios' ? DEFAULT_ITERATIONS : 25_000;
 
 export enum BenchmarkStatus {
   Idle = 'idle',
@@ -22,6 +24,7 @@ export type Group = {
   id: string;
   title: string;
   iterations?: number;
+  description?: string;
   benchmarks: Benchmark[];
 };
 
@@ -64,6 +67,8 @@ export const GROUPS: Group[] = [
   {
     id: 'nothing',
     title: 'nothing()',
+    description:
+      'Synchronous no-op host function. Measures the raw JS↔native boundary cost with no arguments and no return value.',
     benchmarks: [
       {
         id: 'expo',
@@ -101,8 +106,52 @@ export const GROUPS: Group[] = [
     ],
   },
   {
+    id: 'nothingAsync',
+    title: 'nothingAsync()',
+    description:
+      'Asynchronous no-op host function. Each iteration `await`s a Promise that resolves on the JS thread, so it measures Promise allocation and resolution on top of the boundary cost.',
+    iterations: DEFAULT_ASYNC_ITERATIONS,
+    benchmarks: [
+      {
+        id: 'expo',
+        label: 'ExpoModule',
+        available: ExpoModule?.nothingAsync != null,
+        async run(iterations) {
+          await ExpoModule.nothingAsync();
+          return timeAsync(iterations, () => {
+            return ExpoModule.nothingAsync();
+          });
+        },
+      },
+      {
+        id: 'turbo',
+        label: 'TurboModule',
+        available: TurboModule?.nothingAsync != null,
+        async run(iterations) {
+          await TurboModule!.nothingAsync();
+          return timeAsync(iterations, () => {
+            return TurboModule!.nothingAsync();
+          });
+        },
+      },
+      {
+        id: 'bridge',
+        label: 'BridgeModule',
+        available: BridgeModule?.nothingAsync != null,
+        async run(iterations) {
+          await BridgeModule.nothingAsync();
+          return timeAsync(iterations, () => {
+            return BridgeModule.nothingAsync();
+          });
+        },
+      },
+    ],
+  },
+  {
     id: 'addNumbers',
     title: 'addNumbers(a, b)',
+    description:
+      'Synchronous call with two `Double` arguments returning a `Double`. Stresses argument coercion and primitive return — the closest analogue to a typical JSI host function.',
     benchmarks: [
       {
         id: 'expo',
@@ -153,6 +202,9 @@ export const GROUPS: Group[] = [
   {
     id: 'addNumbersAsync',
     title: 'addNumbersAsync(a, b)',
+    description:
+      'Asynchronous variant of `addNumbers`. Adds Promise allocation/resolution on top of the argument coercion overhead. Only Expo Module is implemented — no Turbo or Bridge counterpart.',
+    iterations: DEFAULT_ASYNC_ITERATIONS,
     benchmarks: [
       {
         id: 'expo',
@@ -181,6 +233,8 @@ export const GROUPS: Group[] = [
   {
     id: 'addStrings',
     title: 'addStrings(a, b)',
+    description:
+      'Synchronous call with two short `String` arguments returning a concatenated `String`. Highlights JSI string conversion, UTF decoding, and Swift `String` allocation cost.',
     benchmarks: [
       {
         id: 'expo',
@@ -218,42 +272,68 @@ export const GROUPS: Group[] = [
     ],
   },
   {
-    id: 'echoObject',
-    title: 'echoObject({ x, y })',
+    id: 'passthrough',
+    title: 'passthrough({ x, y })',
+    description:
+      'Synchronous round-trip of a 2D point represented in three different ways. Compares `[String: Any]` dictionary, `Record`, and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
     benchmarks: [
       {
-        id: 'expo',
-        label: 'ExpoModule',
-        available: ExpoModule?.echoObject != null,
+        id: 'expo-dict',
+        label: 'ExpoModule (dictionary)',
+        available: ExpoModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
-          ExpoModule.echoObject(point);
+          ExpoModule.passthroughDict(point);
           return timeSync(iterations, () => {
-            ExpoModule.echoObject(point);
+            ExpoModule.passthroughDict(point);
           });
         },
       },
       {
-        id: 'turbo',
-        label: 'TurboModule',
-        available: TurboModule?.echoObject != null,
+        id: 'expo-record',
+        label: 'ExpoModule (record)',
+        available: ExpoModule?.passthroughRecord != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
-          TurboModule!.echoObject(point);
+          ExpoModule.passthroughRecord(point);
           return timeSync(iterations, () => {
-            TurboModule!.echoObject(point);
+            ExpoModule.passthroughRecord(point);
           });
         },
       },
       {
-        id: 'bridge',
-        label: 'BridgeModule',
-        available: BridgeModule?.echoObject != null,
+        id: 'expo-shared',
+        label: 'ExpoModule (shared object)',
+        available: ExpoModule?.passthroughSharedObject != null && ExpoModule?.SharedPoint != null,
+        async run(iterations) {
+          const point = new ExpoModule.SharedPoint(1.5, 2.5);
+          ExpoModule.passthroughSharedObject(point);
+          return timeSync(iterations, () => {
+            ExpoModule.passthroughSharedObject(point);
+          });
+        },
+      },
+      {
+        id: 'turbo-dict',
+        label: 'TurboModule (dictionary)',
+        available: TurboModule?.passthroughDict != null,
         async run(iterations) {
           const point = { x: 1.5, y: 2.5 };
-          BridgeModule.echoObject(point);
+          TurboModule!.passthroughDict(point);
           return timeSync(iterations, () => {
-            BridgeModule.echoObject(point);
+            TurboModule!.passthroughDict(point);
+          });
+        },
+      },
+      {
+        id: 'bridge-dict',
+        label: 'BridgeModule (dictionary)',
+        available: BridgeModule?.passthroughDict != null,
+        async run(iterations) {
+          const point = { x: 1.5, y: 2.5 };
+          BridgeModule.passthroughDict(point);
+          return timeSync(iterations, () => {
+            BridgeModule.passthroughDict(point);
           });
         },
       },
@@ -262,6 +342,8 @@ export const GROUPS: Group[] = [
   {
     id: 'foldArray',
     title: 'foldArray(numbers)',
+    description:
+      'Synchronous call with a 10-element `Double` array, returning the sum. Measures array decoding from JS, including per-element coercion.',
     benchmarks: [
       {
         id: 'expo',

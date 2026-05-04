@@ -1,15 +1,22 @@
 package expo.modules.benchmark
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.sharedobjects.SharedObject
 
 class Point : Record {
   @Field
   var x: Double = 0.0
 
   @Field
+  var y: Double = 0.0
+}
+
+class SharedPoint(appContext: AppContext) : SharedObject(appContext) {
+  var x: Double = 0.0
   var y: Double = 0.0
 }
 
@@ -21,7 +28,15 @@ class BenchmarkingExpoModule : Module() {
       // Do nothing
     }
 
+    AsyncFunction("nothingAsync") {
+      // Do nothing
+    }
+
     Function("addNumbers") { a: Double, b: Double ->
+      a + b
+    }
+
+    AsyncFunction("addNumbersAsync") { a: Double, b: Double ->
       a + b
     }
 
@@ -33,8 +48,33 @@ class BenchmarkingExpoModule : Module() {
       array.sum()
     }
 
-    Function("echoObject") { point: Point ->
+    Function("passthroughDict") { point: Map<String, Any> ->
       point
+    }
+
+    Function("passthroughRecord") { point: Point ->
+      point
+    }
+
+    Function("passthroughSharedObject") { point: SharedPoint ->
+      point
+    }
+
+    Class(SharedPoint::class) {
+      Constructor { x: Double, y: Double ->
+        val point = SharedPoint(appContext)
+        point.x = x
+        point.y = y
+        return@Constructor point
+      }
+
+      Property("x") { point: SharedPoint ->
+        point.x
+      }
+
+      Property("y") { point: SharedPoint ->
+        point.y
+      }
     }
   }
 }
