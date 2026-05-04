@@ -164,9 +164,9 @@ console.log('keep', Linking.parse());
       absolutePath: '/app/b.js',
     }),
   ]);
-  expect(artifacts[0].source).toMatch('createURL');
+  expect(artifacts[0].source).not.toMatch('createURL');
+  expect(artifacts[0].source).not.toMatch('keep.createURL');
   expect(artifacts[0].source).toMatch('parse');
-  expect(artifacts[0].source).toMatch('keep.createURL');
   expect(artifacts[0].source).toMatch('keep.parse');
 });
 
@@ -982,6 +982,59 @@ it(`import star`, async () => {
     'index.js': `
           import * as Math from './math';
           console.log('keep', Math.add(1, 2));
+        `,
+    'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
+
+  expect(artifacts[0].source).not.toMatch('subtract');
+});
+
+it(`import star multiple`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import * as Math from './math';
+          console.log('keep', Math.add(1, 2), Math.multiply(3, 4));
+        `,
+    'math.js': `
+          export function add(a, b) {
+            return a + b;
+          }
+
+          export function subtract(a, b) {
+            return a - b;
+          }
+
+          export function multiply(a, b) {
+            return a * b;
+          }
+        `,
+  });
+
+  expectImports(graph, '/app/index.js').toEqual([
+    expect.objectContaining({ absolutePath: '/app/math.js' }),
+  ]);
+
+  expect(artifacts[0].source).toMatch('multiply');
+  expect(artifacts[0].source).not.toMatch('subtract');
+});
+
+it(`import star non-property usage`, async () => {
+  const [[, , graph], artifacts] = await serializeShakingAsync({
+    'index.js': `
+          import * as Math from './math';
+          console.log('keep', Math);
         `,
     'math.js': `
           export function add(a, b) {

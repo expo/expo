@@ -387,22 +387,42 @@ function getExportNamesFromPath(path) {
             });
         }
         else if (core_1.types.isImportDeclaration(path.node)) {
-            return path.node.specifiers
-                .map((specifier) => {
+            return path.node.specifiers.flatMap((specifier) => {
                 if (specifier.type === 'ImportDefaultSpecifier') {
-                    return 'default';
+                    return ['default'];
                 }
                 else if (specifier.type === 'ImportNamespaceSpecifier') {
-                    return '*';
+                    return getAccessedNamespaceProperties(path, specifier.local.name) ?? ['*'];
                 }
-                return core_1.types.isImportSpecifier(specifier) && core_1.types.isIdentifier(specifier.imported)
-                    ? specifier.imported.name
-                    : null;
-            })
-                .filter(Boolean);
+                else if (core_1.types.isImportSpecifier(specifier) && core_1.types.isIdentifier(specifier.imported)) {
+                    return [specifier.imported.name];
+                }
+                return [];
+            });
         }
     }
     return [];
+}
+// Returns the property names accessed on a namespace import binding, or null
+// if any reference is something other than a non-computed member expression
+// (e.g. `Utils[x]`, passing `Utils` as a value) and we must fall back to `'*'`.
+function getAccessedNamespaceProperties(path, localName) {
+    const binding = path.scope.getBinding(localName);
+    if (!binding) {
+        return [];
+    }
+    const accessed = new Set();
+    for (const refPath of binding.referencePaths) {
+        const parent = refPath.parent;
+        if (!core_1.types.isMemberExpression(parent) ||
+            parent.computed ||
+            !core_1.types.isIdentifier(parent.property) ||
+            parent.object !== refPath.node) {
+            return null;
+        }
+        accessed.add(parent.property.name);
+    }
+    return [...accessed];
 }
 function collectImports(path, state) {
     if (path.node.source) {
