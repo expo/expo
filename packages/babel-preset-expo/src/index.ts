@@ -59,8 +59,6 @@ type BabelPresetExpoPlatformOptions = {
 
   disableDeepImportWarnings?: boolean;
 
-  // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
-  disableFlowStripTypesTransform?: boolean;
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
   enableBabelRuntime?: boolean | string;
   // Defaults to `'default'`, can also use `'hermes-canary'`
@@ -349,8 +347,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     presets: [
       (() => {
         const presetOpts = {
-          // Defaults to undefined, set to `true` to disable `@babel/plugin-transform-flow-strip-types`
-          disableFlowStripTypesTransform: platformOptions.disableFlowStripTypesTransform,
           // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
           // Set to `false` to disable `@babel/plugin-transform-runtime`
           enableBabelRuntime:

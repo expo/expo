@@ -162,10 +162,6 @@ Enable transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegi
 
 Passed to `@react-native/babel-preset`.
 
-### `disableFlowStripTypesTransform`
-
-Passed to `@react-native/babel-preset`.
-
 ## Platform-specific options
 
 All options can be passed in the platform-specific objects `native` and `web` to provide different settings on different platforms. For example, if you'd like to only apply `disableImportExportTransform` on web, use the following:
