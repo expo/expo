@@ -1,15 +1,3 @@
-/**
- * Copyright © 2024 650 Industries.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * Babel preset for DOM components. Based on the default (Hermes V0) transform profile
- * with additional downlevel transforms for older Android factory WebView environments
- * (e.g. Android 9 / Chromium 66).
- */
-
 import type { ConfigAPI, PluginItem } from '@babel/core';
 
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
@@ -19,6 +7,7 @@ export interface WebviewConfigOptions {
   dev?: boolean;
 }
 
+/** Preset used for DOM components (more restrictive with many legacy transforms) */
 module.exports = function (_api: ConfigAPI, _options: WebviewConfigOptions) {
   return {
     comments: false,

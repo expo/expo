@@ -1,17 +1,3 @@
-/**
- * Copyright © 2024 650 Industries.
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * Metro module transform preset for babel-preset-expo.
- * Handles export namespace/default transforms and ES module to CommonJS conversion.
- *
- * This is a separate preset so that it runs after all other presets
- * (Babel applies presets in reverse order).
- */
-
 import type { ConfigAPI, PluginItem } from '@babel/core';
 
 import { lazyImports as expoLazyImports } from './utils/expo-lazy-imports';
@@ -23,6 +9,7 @@ export interface ModuleTransformOptions {
   lazyImportExportTransform: unknown;
 }
 
+/** Module-relevant preset that's run after all other presets */
 module.exports = function (_api: ConfigAPI, options: ModuleTransformOptions) {
   const plugins: PluginItem[] = [];
 

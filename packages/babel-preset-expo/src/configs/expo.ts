@@ -1,12 +1,3 @@
-/**
- * Copyright © 2024 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- * Expo-specific Babel plugins applied on top of the environment configs.
- */
-
 import type { ConfigAPI, PluginItem } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
