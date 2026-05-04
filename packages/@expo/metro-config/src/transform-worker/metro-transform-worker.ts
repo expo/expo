@@ -191,6 +191,23 @@ function applyUseStrictDirective(ast: t.File) {
   }
 }
 
+function getImportNames(options: JsTransformOptions, ast: t.File) {
+  if (
+    options.experimentalImportSupport === true &&
+    options.customTransformOptions?.liveBindings !== 'false'
+  ) {
+    // NOTE(@kitten): The live bindings import/export plugin doesn't use these helpers
+    // If it's used, we can assume that there's no conflicts (since we reserve this name, and assume users won't use it)
+    // and skip the expensive `generateImportNames` call
+    return {
+      importAll: '_$$_IMPORT_ALL',
+      importDefault: '_$$_IMPORT_DEFAULT',
+    };
+  }
+  // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
+  return generateImportNames(ast);
+}
+
 export function applyImportSupport<TFile extends t.File>(
   ast: TFile,
   {
@@ -355,8 +372,7 @@ async function transformJS(
   let ast: t.File | ParseResult =
     file.ast ?? nullthrows(parse(file.code, { sourceType: 'unambiguous' }));
 
-  // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
-  const { importDefault, importAll } = generateImportNames(ast);
+  const { importDefault, importAll } = getImportNames(options, ast);
 
   // Add "use strict" if the file was parsed as a module, and the directive did
   // not exist yet.
