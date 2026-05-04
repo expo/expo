@@ -18,8 +18,8 @@ internal struct DynamicValueOrUndefinedType<InnerType: AnyArgument>: AnyDynamicT
     if jsValue.isUndefined() {
       return ValueOrUndefined<InnerType>.undefined
     }
-
-    return try dynamicInnerType.cast(jsValue: jsValue, appContext: appContext)
+    let unwrapped = try dynamicInnerType.cast(jsValue: jsValue, appContext: appContext) as! InnerType
+    return ValueOrUndefined<InnerType>.value(unwrapped: unwrapped)
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {

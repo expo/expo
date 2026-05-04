@@ -19,14 +19,17 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
   func equals(_ type: AnyDynamicType) -> Bool
 
   /**
-   Preliminarily casts the given JavaScriptValue to a non-JS value that the other `cast` function can handle.
+   Casts the given JavaScript value to the final wrapped native value, ready to be
+   handed to the function's underlying closure or stored in a record/prop.
    It **must** be run on the thread used by the JavaScript runtime.
    */
   @JavaScriptActor
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any
 
   /**
-   Casts the given value to the wrapped type and returns it as `Any`.
+   Casts the given Swift-side value to the wrapped type and returns it as `Any`.
+   Used by record-field setters, view props, and other non-JS-origin paths that
+   need to coerce a Swift value into the dynamic type's representation.
    NOTE: It may not be just simple type-casting (e.g. when the wrapped type conforms to `Convertible`).
    */
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any
@@ -49,10 +52,6 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
 }
 
 extension AnyDynamicType {
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    return jsValue.getAny()
-  }
-
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     return value
   }

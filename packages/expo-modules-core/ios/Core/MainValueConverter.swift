@@ -15,8 +15,7 @@ public struct MainValueConverter: ~Copyable {
    */
   @JavaScriptActor
   public func toNative(_ value: JavaScriptValue, _ type: AnyDynamicType) throws -> Any {
-    let rawValue = try type.cast(jsValue: value, appContext: appContext)
-    return try type.cast(rawValue, appContext: appContext)
+    return try type.cast(jsValue: value, appContext: appContext)
   }
 
   /**
@@ -29,7 +28,7 @@ public struct MainValueConverter: ~Copyable {
       let type = types[index]
 
       do {
-        return try toNative(value.copy(), type)
+        return try toNative(value, type)
       } catch {
         throw ArgumentCastException((index: index, type: type)).causedBy(error)
       }
