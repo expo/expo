@@ -14,6 +14,7 @@ import * as Template from './Template';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
+import { applySdkVersionToTemplateAsync } from './promptSdkVersion';
 import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
@@ -100,9 +101,6 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     resolvedTemplate = await promptTemplateAsync();
   } else {
     resolvedTemplate = props.template ?? null;
-    console.log(
-      chalk`Creating an Expo project using the {cyan ${resolvedTemplate ?? 'default'}} template.\n`
-    );
     if (!resolvedTemplate) {
       console.log(
         chalk`{gray To choose from all available templates ({underline https://github.com/expo/expo/tree/main/templates}) pass in the --template arg:}`
@@ -114,6 +112,13 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
       console.log(chalk`  {gray $} ${formatSelfCommand()} {cyan --example}\n`);
     }
   }
+
+  resolvedTemplate = await applySdkVersionToTemplateAsync(
+    resolvedTemplate ?? 'expo-template-default',
+    { yes: props.yes }
+  );
+
+  console.log(chalk`Creating an Expo project using the {cyan ${resolvedTemplate}} template.\n`);
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });

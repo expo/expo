@@ -1,0 +1,197 @@
+import prompts from 'prompts';
+
+import { applySdkVersionToTemplateAsync, fetchSdkVersionsAsync } from '../promptSdkVersion';
+
+jest.mock('prompts');
+const mockPrompts = prompts as unknown as jest.Mock;
+
+const fetchMock = jest.fn();
+beforeAll(() => {
+  // @ts-expect-error - polyfill global fetch for tests
+  global.fetch = fetchMock;
+});
+
+beforeEach(() => {
+  fetchMock.mockReset();
+  mockPrompts.mockReset();
+  delete process.env.CI;
+  delete process.env.EXPO_BETA;
+});
+
+const sampleSdkVersions = {
+  '40.0.0': { releaseNoteUrl: 'https://example.com/sdk-40', isDeprecated: true },
+  '52.0.0': { releaseNoteUrl: 'https://example.com/sdk-52' },
+  '53.0.0': { releaseNoteUrl: 'https://example.com/sdk-53' },
+  '54.0.0': { releaseNoteUrl: 'https://example.com/sdk-54' },
+  '55.0.0': { releaseNoteUrl: 'https://example.com/sdk-55' },
+  // No releaseNoteUrl yet — still in development.
+  '56.0.0': {},
+};
+
+function mockVersionsResponse({
+  expoGoSdkVersion,
+  sdkVersions = sampleSdkVersions,
+}: {
+  expoGoSdkVersion?: string;
+  sdkVersions?: Record<string, { releaseNoteUrl?: string; isDeprecated?: boolean; beta?: boolean }>;
+} = {}) {
+  fetchMock.mockResolvedValue({
+    ok: true,
+    json: async () => ({ expoGoSdkVersion, sdkVersions }),
+  });
+}
+
+describe(fetchSdkVersionsAsync, () => {
+  it('returns null when the endpoint is unreachable', async () => {
+    fetchMock.mockRejectedValue(new Error('network down'));
+    expect(await fetchSdkVersionsAsync()).toBeNull();
+  });
+
+  it('returns null on a non-ok response', async () => {
+    fetchMock.mockResolvedValue({ ok: false, status: 500, json: async () => ({}) });
+    expect(await fetchSdkVersionsAsync()).toBeNull();
+  });
+
+  it('uses entries with a releaseNoteUrl as released SDKs', async () => {
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    expect(await fetchSdkVersionsAsync()).toEqual({
+      latest: 55,
+      expoGoCompatible: 54,
+      available: [55, 54, 53, 52],
+    });
+  });
+
+  it('skips deprecated and beta entries even if they have a releaseNoteUrl', async () => {
+    mockVersionsResponse({
+      sdkVersions: {
+        '52.0.0': { releaseNoteUrl: 'https://example.com', isDeprecated: true },
+        '53.0.0': { releaseNoteUrl: 'https://example.com', beta: true },
+        '54.0.0': { releaseNoteUrl: 'https://example.com' },
+      },
+      expoGoSdkVersion: '54.0.0',
+    });
+    expect(await fetchSdkVersionsAsync()).toEqual({
+      latest: 54,
+      expoGoCompatible: 54,
+      available: [54],
+    });
+  });
+
+  it('returns null expoGoCompatible when the field is missing', async () => {
+    mockVersionsResponse({});
+    expect(await fetchSdkVersionsAsync()).toEqual({
+      latest: 55,
+      expoGoCompatible: null,
+      available: [55, 54, 53, 52],
+    });
+  });
+
+  it('returns null when no entries have a releaseNoteUrl', async () => {
+    mockVersionsResponse({ sdkVersions: { '56.0.0': {} } });
+    expect(await fetchSdkVersionsAsync()).toBeNull();
+  });
+});
+
+describe(applySdkVersionToTemplateAsync, () => {
+  it('skips the prompt when --yes is set', async () => {
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: true })).toBe(
+      'expo-template-default'
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('skips the prompt in CI', async () => {
+    process.env.CI = 'true';
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
+      'expo-template-default'
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('skips the prompt when the template already has a tag', async () => {
+    expect(
+      await applySdkVersionToTemplateAsync('expo-template-default@sdk-54', { yes: false })
+    ).toBe('expo-template-default@sdk-54');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('skips the prompt for unknown templates', async () => {
+    expect(await applySdkVersionToTemplateAsync('some-third-party-template', { yes: false })).toBe(
+      'some-third-party-template'
+    );
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it('passes through unchanged when the versions endpoint fails', async () => {
+    fetchMock.mockRejectedValue(new Error('network down'));
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
+      'expo-template-default'
+    );
+    expect(mockPrompts).not.toHaveBeenCalled();
+  });
+
+  it('appends the chosen SDK tag for the latest option', async () => {
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    mockPrompts.mockResolvedValueOnce({ answer: 55 });
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
+      'expo-template-default@sdk-55'
+    );
+  });
+
+  it('shows the "For beginners" choice with the SDK number in the description', async () => {
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    mockPrompts.mockResolvedValueOnce({ answer: 54 });
+    await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
+    const promptCall = mockPrompts.mock.calls[0][0];
+    expect(promptCall.choices).toEqual([
+      { title: 'Latest (SDK 55)', value: 55, description: 'recommended for most projects' },
+      {
+        title: 'For learning with Expo Go (SDK 54)',
+        value: 54,
+        description: 'Compatible with Expo Go on App Store and Play Store',
+      },
+      { title: 'Other SDK version…', value: 'other' },
+    ]);
+  });
+
+  it('omits the "For beginners" choice when expoGoSdkVersion is missing', async () => {
+    mockVersionsResponse({});
+    mockPrompts.mockResolvedValueOnce({ answer: 55 });
+    await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
+    const promptCall = mockPrompts.mock.calls[0][0];
+    expect(promptCall.choices).toEqual([
+      { title: 'Latest (SDK 55)', value: 55, description: 'recommended for most projects' },
+      { title: 'Other SDK version…', value: 'other' },
+    ]);
+  });
+
+  it('omits the "For beginners" choice when the compatible SDK matches latest', async () => {
+    mockVersionsResponse({
+      sdkVersions: { '54.0.0': { releaseNoteUrl: 'https://example.com' } },
+      expoGoSdkVersion: '54.0.0',
+    });
+    mockPrompts.mockResolvedValueOnce({ answer: 54 });
+    await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
+    const promptCall = mockPrompts.mock.calls[0][0];
+    expect(promptCall.choices).toEqual([
+      { title: 'Latest (SDK 54)', value: 54, description: 'recommended for most projects' },
+      { title: 'Other SDK version…', value: 'other' },
+    ]);
+  });
+
+  it('handles the "Other SDK version" submenu', async () => {
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    mockPrompts.mockResolvedValueOnce({ answer: 'other' }).mockResolvedValueOnce({ sdkAnswer: 53 });
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
+      'expo-template-default@sdk-53'
+    );
+    expect(mockPrompts).toHaveBeenCalledTimes(2);
+    const submenuCall = mockPrompts.mock.calls[1][0];
+    expect(submenuCall.choices).toEqual([
+      { title: 'SDK 55', value: 55 },
+      { title: 'SDK 54', value: 54 },
+      { title: 'SDK 53', value: 53 },
+      { title: 'SDK 52', value: 52 },
+    ]);
+  });
+});
