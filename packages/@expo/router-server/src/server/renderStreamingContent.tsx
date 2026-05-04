@@ -148,6 +148,13 @@ export async function getStreamingContent(
       bootstrapScriptContent: getBootstrapContents({ hydrate: true, loadedData }),
       bootstrapScripts: options?.assets?.js,
       signal: options?.request?.signal,
+      onError(error) {
+        if (options?.request?.signal.aborted) {
+          return;
+        }
+
+        console.error('SSR streaming render error:', error);
+      },
     }
   );
 }
