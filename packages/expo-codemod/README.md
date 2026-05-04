@@ -1,6 +1,6 @@
 <!-- Title -->
 
-<h1 align="center">@expo/codemod</h1>
+<h1 align="center">expo-codemod</h1>
 
 <p align="center">CLI and jscodeshift codemods for migrating Expo apps between SDK versions</p>
 
@@ -9,7 +9,7 @@
   &ensp;•&ensp;
   <a aria-label="expo blog" href="https://expo.dev/blog">Learn more on our blog</a>
   &ensp;•&ensp;
-  <a aria-label="Contribute to @expo/codemod" href="#contributing">Contribute to @expo/codemod</a>
+  <a aria-label="Contribute to expo-codemod" href="#contributing">Contribute to expo-codemod</a>
 </p>
 
 <p align="center">
@@ -40,10 +40,10 @@
 
 ---
 
-The `@expo/codemod` package is a CLI binary provided to help you upgrade between Expo SDK versions.
+The `expo-codemod` package is a CLI binary provided to help you upgrade between Expo SDK versions.
 
 ```
-npx @expo/codemod <transform> <paths...>
+npx expo-codemod <transform> <paths...>
 ```
 
 ## Usage
@@ -51,7 +51,7 @@ npx @expo/codemod <transform> <paths...>
 Run a transform against one or more paths or globs:
 
 ```sh
-npx @expo/codemod <transform> <paths...>
+npx expo-codemod <transform> <paths...>
 ```
 
 ```
@@ -66,13 +66,13 @@ Options:
 For example, to run a transform over everything under `src`:
 
 ```sh
-npx @expo/codemod sdk-56-expo-router-react-navigation-replace src
+npx expo-codemod sdk-56-expo-router-react-navigation-replace src
 ```
 
 Globs work too (wrap them in quotes so the shell doesn't expand them):
 
 ```sh
-npx @expo/codemod sdk-56-expo-router-react-navigation-replace '**/*.{ts,tsx,js,jsx}'
+npx expo-codemod sdk-56-expo-router-react-navigation-replace '**/*.{ts,tsx,js,jsx}'
 ```
 
 ## Transforms

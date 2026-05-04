@@ -39,7 +39,7 @@ export async function parseAndValidateArgs(argv: string[] | undefined): Promise<
   if (values.help || !transform || paths.length === 0) {
     printHelp(
       'Run a codemod transform against the given paths.',
-      'npx @expo/codemod <transform> <paths...>',
+      'npx expo-codemod <transform> <paths...>',
       [
         '<transform>                   (required) name of transform to apply to files',
         '                              (see a list of transforms available below)',

@@ -2093,28 +2093,6 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2
 
-  packages/@expo/codemod:
-    dependencies:
-      chalk:
-        specifier: ^4.1.2
-        version: 4.1.2
-      jscodeshift:
-        specifier: ^17.1.2
-        version: 17.3.0(@babel/preset-env@7.29.2(@babel/core@7.29.0))
-      tinyglobby:
-        specifier: ^0.2.15
-        version: 0.2.15
-    devDependencies:
-      '@types/jscodeshift':
-        specifier: ^17.0.0
-        version: 17.3.0
-      '@types/node':
-        specifier: ^22.14.0
-        version: 22.19.15
-      expo-module-scripts:
-        specifier: workspace:*
-        version: link:../../expo-module-scripts
-
   packages/@expo/config:
     dependencies:
       '@expo/config-plugins':
@@ -3926,6 +3904,28 @@ importers:
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+
+  packages/expo-codemod:
+    dependencies:
+      chalk:
+        specifier: ^4.1.2
+        version: 4.1.2
+      jscodeshift:
+        specifier: ^17.1.2
+        version: 17.3.0(@babel/preset-env@7.29.2(@babel/core@7.29.0))
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^17.0.0
+        version: 17.3.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
       expo-module-scripts:
         specifier: workspace:*
         version: link:../expo-module-scripts

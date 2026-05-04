@@ -1,7 +1,6 @@
 {
-  "name": "@expo/codemod",
-  "private": true,
-  "version": "0.1.0",
+  "name": "expo-codemod",
+  "version": "55.0.0",
   "description": "Codemods for migrating Expo apps between SDK versions",
   "license": "MIT",
   "keywords": [
@@ -10,11 +9,11 @@
     "expo-router",
     "react-navigation"
   ],
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/codemod",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-codemod",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/codemod"
+    "directory": "packages/expo-codemod"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
