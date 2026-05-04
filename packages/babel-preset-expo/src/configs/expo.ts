@@ -55,22 +55,10 @@ export interface ExpoConfigOptions {
 }
 
 module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
-  const {
-    platform,
-    engine,
-    isProduction,
-    isServerEnv,
-    isReactServer,
-    isModernEngine,
-    baseUrl,
-    bundler,
-    inlineEnvironmentVariables,
-  } = options;
-
   const plugins: PluginItem[] = [];
 
   // React Native codegen for native module type generation (not needed on web/server).
-  if (!isModernEngine) {
+  if (!options.isModernEngine) {
     plugins.push(getCodegenPlugin());
   }
 
@@ -80,7 +68,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
     plugins.push(reactCompilerPlugin);
   }
 
-  if (engine !== 'hermes') {
+  if (options.engine !== 'hermes') {
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
     // @see https://github.com/expo/expo/pull/11960#issuecomment-887796455
@@ -89,47 +77,23 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
       // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
       { loose: true, useBuiltIns: true },
     ]);
-  } else if (!isModernEngine) {
+  } else if (!options.isModernEngine) {
     plugins.push(
       // Add support for class static blocks.
       [require('@babel/plugin-transform-class-static-block'), { loose: true }]
     );
   }
 
-  const inlines: Record<string, undefined | null | boolean | string> = {
-    'process.env.EXPO_OS': platform,
-    // 'typeof document': isServerEnv ? 'undefined' : 'object',
-    'process.env.EXPO_SERVER': !!isServerEnv,
-  };
-
-  // `typeof window` is left in place for native + client environments.
-  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
-  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
-  const minifyTypeofWindow = options.minifyTypeofWindow ?? isServerEnv;
-  if (minifyTypeofWindow !== false) {
-    // This nets out slightly faster in development when considering the cost of bundling server dependencies.
-    inlines['typeof window'] = isServerEnv ? 'undefined' : 'object';
-  }
-
-  if (isProduction) {
-    inlines['process.env.NODE_ENV'] = 'production';
-    inlines['__DEV__'] = false;
-    inlines['Platform.OS'] = platform;
-  }
-
-  if (process.env.NODE_ENV !== 'test') {
-    inlines['process.env.EXPO_BASE_URL'] = baseUrl;
-  }
-
+  const inlines = getInlinesFromOptions(options);
   plugins.push([require('../plugins/define-plugin'), inlines]);
 
-  if (isProduction) {
+  if (options.isProduction) {
     // Metro applies a version of this plugin too but it does it after the Platform modules have been transformed to CJS, this breaks the transform.
     // Here, we'll apply it before the commonjs transform, in production only, to ensure `Platform.OS` is replaced with a string literal.
     plugins.push([
       require('../plugins/minify-platform-select-plugin'),
       {
-        platform,
+        platform: options.platform,
       },
     ]);
   }
@@ -139,15 +103,15 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   // Development uses an uncached serializer.
   // Servers read from the environment.
   // Users who disable the feature may be using a different babel plugin.
-  if (inlineEnvironmentVariables) {
+  if (options.inlineEnvironmentVariables) {
     plugins.push(expoInlineEnvVars);
   }
 
-  if (platform === 'web') {
+  if (options.platform === 'web') {
     plugins.push(require('babel-plugin-react-native-web'));
   }
   // Webpack uses the DefinePlugin to provide the manifest to `expo-constants`.
-  if (bundler !== 'webpack') {
+  if (options.bundler !== 'webpack') {
     plugins.push(expoInlineManifestPlugin);
   }
 
@@ -158,7 +122,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
     // - Client bundles: Remove loader exports, they run on server only
     // - Server bundles: Keep loader exports (needed for SSG)
     // - Loader-only bundles: Keep only loader exports, remove everything else
-    if (!isReactServer) {
+    if (!options.isReactServer) {
       plugins.push(serverDataLoadersPlugin);
     }
   }
@@ -167,7 +131,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
 
   // Ensure these only run when the user opts-in to bundling for a react server to prevent unexpected behavior for
   // users who are bundling using the client-only system.
-  if (isReactServer) {
+  if (options.isReactServer) {
     plugins.push(reactServerActionsPlugin);
     plugins.push(environmentRestrictedReactAPIsPlugin);
   } else {
@@ -339,4 +303,35 @@ function getReactPreset(options: {
       }),
     },
   ];
+}
+
+function getInlinesFromOptions(
+  options: ExpoConfigOptions
+): Record<string, undefined | null | boolean | string> {
+  const inlines: Record<string, undefined | null | boolean | string> = {
+    'process.env.EXPO_OS': options.platform,
+    // 'typeof document': isServerEnv ? 'undefined' : 'object',
+    'process.env.EXPO_SERVER': !!options.isServerEnv,
+  };
+
+  // `typeof window` is left in place for native + client environments.
+  // NOTE(@kitten): We're temporarily disabling this default optimization for Web targets due to Web Workers
+  // We're currently not passing metadata to indicate we're transforming for a Web Worker to disable this automatically
+  const minifyTypeofWindow = options.minifyTypeofWindow ?? options.isServerEnv;
+  if (minifyTypeofWindow !== false) {
+    // This nets out slightly faster in development when considering the cost of bundling server dependencies.
+    inlines['typeof window'] = options.isServerEnv ? 'undefined' : 'object';
+  }
+
+  if (options.isProduction) {
+    inlines['process.env.NODE_ENV'] = 'production';
+    inlines['__DEV__'] = false;
+    inlines['Platform.OS'] = options.platform;
+  }
+
+  if (process.env.NODE_ENV !== 'test') {
+    inlines['process.env.EXPO_BASE_URL'] = options.baseUrl;
+  }
+
+  return inlines;
 }
