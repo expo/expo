@@ -26,6 +26,7 @@
 - Added `@expo/ui/babel-plugin` when `@expo/ui` is installed. ([#45217](https://github.com/expo/expo/pull/45217) by [@kudo](https://github.com/kudo))
 - Update JSX (`react-jsx`) transform to skip deprecated `react-display-name` transform, only apply pure annotations to production builds, and skip legacy source/self transforms when the automatic runtime is used ([#45351](https://github.com/expo/expo/pull/45351) by [@kitten](https://github.com/kitten))
 - Apply `@babel/plugin-proposal-decorators` lazily ([#45353](https://github.com/expo/expo/pull/45353) by [@kitten](https://github.com/kitten))
+- Optimize vendored `warn-on-deep-rn-imports` plugin ([#45354](https://github.com/expo/expo/pull/45354) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
