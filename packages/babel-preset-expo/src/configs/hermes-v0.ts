@@ -15,22 +15,8 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-type ConfigOptions = {
-  disableDeepImportWarnings?: boolean;
-  dev?: boolean;
-};
-
-const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
-
-function isFirstParty(fileName: string | undefined | null) {
-  return !!fileName && !EXCLUDED_FIRST_PARTY_PATHS.some((regex) => regex.test(fileName));
-}
-
-module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
+module.exports = function (_api: ConfigAPI) {
   const extraPlugins: PluginItem[] = [];
-  const firstPartyPlugins: PluginItem[] = [];
-
-  extraPlugins.push([require('@react-native/babel-plugin-codegen'), {}, 'react-native-codegen']);
 
   // Classes are always transformed in hermes-v0
   extraPlugins.push([require('@babel/plugin-transform-classes')]);
@@ -50,11 +36,6 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
   // React display name (always included, equivalent to src === null in the original)
   extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
 
-  // Deep import warnings (first-party only, dev only)
-  if (options.dev && !options.disableDeepImportWarnings) {
-    firstPartyPlugins.push([require('../plugins/plugin-warn-on-deep-imports')]);
-  }
-
   return {
     comments: false,
     compact: true,
@@ -69,10 +50,6 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
           [require('@babel/plugin-transform-private-property-in-object'), { loose }],
           [require('@babel/plugin-transform-unicode-regex')],
         ],
-      },
-      {
-        test: isFirstParty,
-        plugins: firstPartyPlugins,
       },
       {
         plugins: extraPlugins,

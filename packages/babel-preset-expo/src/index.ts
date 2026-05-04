@@ -170,7 +170,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
       (() => {
         const presetOpts = {
-          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           dev: isDev,
         };
 
@@ -211,6 +210,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           baseUrl,
           bundler,
           inlineEnvironmentVariables,
+          disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           decorators: platformOptions.decorators,
           reanimated: platformOptions.reanimated,
           worklets: platformOptions.worklets,

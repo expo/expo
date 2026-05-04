@@ -16,15 +16,8 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 const loose = true;
 
 type ConfigOptions = {
-  disableDeepImportWarnings?: boolean;
   dev?: boolean;
 };
-
-const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
-
-function isFirstParty(fileName: string | undefined | null) {
-  return !!fileName && !EXCLUDED_FIRST_PARTY_PATHS.some((regex) => regex.test(fileName));
-}
 
 module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
   // We enable regenerator in dev builds for the time being because
@@ -33,9 +26,6 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
   const enableRegenerator = options.dev ?? false;
 
   const extraPlugins: PluginItem[] = [];
-  const firstPartyPlugins: PluginItem[] = [];
-
-  extraPlugins.push([require('@react-native/babel-plugin-codegen'), {}, 'react-native-codegen']);
 
   // NOTE: Hermes V1 preserves classes — no transform-classes or class-properties plugins.
 
@@ -68,11 +58,6 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
     ]);
   }
 
-  // Deep import warnings (first-party only, dev only)
-  if (options.dev && !options.disableDeepImportWarnings) {
-    firstPartyPlugins.push([require('../plugins/plugin-warn-on-deep-imports')]);
-  }
-
   // Needed for regenerator (always included since src === null in the original)
   if (enableRegenerator) {
     extraPlugins.push([require('@babel/plugin-transform-for-of'), { loose: true }]);
@@ -92,10 +77,6 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
           [require('@babel/plugin-transform-private-property-in-object'), { loose }],
           [require('@babel/plugin-transform-unicode-regex')],
         ],
-      },
-      {
-        test: isFirstParty,
-        plugins: firstPartyPlugins,
       },
       {
         plugins: extraPlugins,

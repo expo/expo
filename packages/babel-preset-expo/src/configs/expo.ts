@@ -24,6 +24,8 @@ import { expoUseDomDirectivePlugin } from '../plugins/use-dom-directive-plugin';
 import { widgetsPlugin } from '../plugins/widgets-plugin';
 import { hasModule, resolveModule } from '../utils/resolveModule';
 
+const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
+
 type ExpoConfigOptions = {
   platform?: string;
   engine: string;
@@ -47,6 +49,7 @@ type ExpoConfigOptions = {
   minifyTypeofWindow?: boolean;
   transformImportMeta?: boolean;
   disableImportExportTransform?: boolean;
+  disableDeepImportWarnings?: boolean;
   jsxRuntime?: 'classic' | 'automatic';
   jsxImportSource?: string;
 };
@@ -65,6 +68,11 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   } = options;
 
   const plugins: PluginItem[] = [];
+
+  // React Native codegen for native module type generation (not needed on web/server).
+  if (!isModernEngine) {
+    plugins.push(getCodegenPlugin());
+  }
 
   // Add compiler as soon as possible to prevent other plugins from modifying the code.
   const reactCompilerPlugin = getReactCompilerPlugin(options);
@@ -218,6 +226,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
 
   return {
     presets: [getReactPreset(options)],
+    overrides: getDeepImportWarningsOverride(options),
     plugins,
   };
 };
@@ -291,6 +300,26 @@ function getReactRefreshPlugin(options: {
       },
     ];
   }
+}
+
+function getCodegenPlugin(): PluginItem {
+  return [require('@react-native/babel-plugin-codegen'), {}, 'react-native-codegen'];
+}
+
+function getDeepImportWarningsOverride(options: {
+  isDev?: boolean;
+  disableDeepImportWarnings?: boolean;
+}) {
+  if (!options.isDev || options.disableDeepImportWarnings) {
+    return [];
+  }
+  return [
+    {
+      test: (fileName: string | undefined | null) =>
+        !!fileName && !EXCLUDED_FIRST_PARTY_PATHS.some((regex) => regex.test(fileName)),
+      plugins: [[require('../plugins/plugin-warn-on-deep-imports')]] as PluginItem[],
+    },
+  ];
 }
 
 function getReactPreset(options: {

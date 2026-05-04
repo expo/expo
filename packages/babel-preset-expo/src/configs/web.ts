@@ -17,8 +17,6 @@ const loose = true;
 module.exports = function (_api: ConfigAPI) {
   const extraPlugins: PluginItem[] = [];
 
-  // NOTE: We also remove `@react-native/babel-plugin-codegen` since it doesn't seem needed on web.
-
   return {
     comments: false,
     compact: true,
