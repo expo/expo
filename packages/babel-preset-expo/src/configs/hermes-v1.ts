@@ -25,62 +25,38 @@ module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
   // Use native generators in release mode because it has already yielded perf wins.
   const enableRegenerator = options.dev ?? false;
 
-  const extraPlugins: PluginItem[] = [];
-
-  // NOTE: Hermes V1 preserves classes — no transform-classes or class-properties plugins.
-
-  extraPlugins.push([require('@babel/plugin-transform-named-capturing-groups-regex')]);
+  const plugins: PluginItem[] = [
+    [require('@babel/plugin-transform-block-scoping')],
+    // NOTE: Hermes V1 preserves classes, so no class-properties or transform-classes plugins.
+    [require('@babel/plugin-transform-private-methods'), { loose }],
+    [require('@babel/plugin-transform-private-property-in-object'), { loose }],
+    [require('@babel/plugin-transform-unicode-regex')],
+    [require('@babel/plugin-transform-named-capturing-groups-regex')],
+  ];
 
   // Needed for regenerator
   if (enableRegenerator) {
-    extraPlugins.push([require('@babel/plugin-transform-optional-catch-binding')]);
+    plugins.push([require('@babel/plugin-transform-optional-catch-binding')]);
   }
 
-  extraPlugins.push([require('@babel/plugin-transform-destructuring'), { useBuiltIns: true }]);
+  plugins.push(
+    [require('@babel/plugin-transform-destructuring'), { useBuiltIns: true }],
+    [require('@babel/plugin-transform-async-generator-functions')],
+    [require('@babel/plugin-transform-async-to-generator')],
+    [require('@babel/plugin-transform-react-display-name')]
+  );
 
-  // Async transforms (always included, equivalent to src === null in the original)
-  extraPlugins.push([require('@babel/plugin-transform-async-generator-functions')]);
-  extraPlugins.push([require('@babel/plugin-transform-async-to-generator')]);
-
-  // React display name (always included, equivalent to src === null in the original)
-  extraPlugins.push([require('@babel/plugin-transform-react-display-name')]);
-
-  // Needed for regenerator (always included since src === null in the original)
   if (enableRegenerator) {
-    extraPlugins.push([require('@babel/plugin-transform-optional-chaining'), { loose: true }]);
-  }
-
-  // Needed for regenerator (always included since src === null in the original)
-  if (enableRegenerator) {
-    extraPlugins.push([
-      require('@babel/plugin-transform-nullish-coalescing-operator'),
-      { loose: true },
-    ]);
-  }
-
-  // Needed for regenerator (always included since src === null in the original)
-  if (enableRegenerator) {
-    extraPlugins.push([require('@babel/plugin-transform-for-of'), { loose: true }]);
+    plugins.push(
+      [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
+      [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
+      [require('@babel/plugin-transform-for-of'), { loose: true }]
+    );
   }
 
   return {
     comments: false,
     compact: true,
-    overrides: [
-      // the flow strip types plugin must go BEFORE class properties!
-      // there'll be a test case that fails if you don't.
-      {
-        plugins: [
-          [require('@babel/plugin-transform-block-scoping')],
-          // NOTE: Hermes V1 preserves classes, so no class-properties plugin here.
-          [require('@babel/plugin-transform-private-methods'), { loose }],
-          [require('@babel/plugin-transform-private-property-in-object'), { loose }],
-          [require('@babel/plugin-transform-unicode-regex')],
-        ],
-      },
-      {
-        plugins: extraPlugins,
-      },
-    ],
+    plugins,
   };
 };

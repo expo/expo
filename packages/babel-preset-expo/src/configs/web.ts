@@ -15,24 +15,13 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 const loose = true;
 
 module.exports = function (_api: ConfigAPI) {
-  const extraPlugins: PluginItem[] = [];
-
   return {
     comments: false,
     compact: true,
-    overrides: [
-      // the flow strip types plugin must go BEFORE class properties!
-      // there'll be a test case that fails if you don't.
-      {
-        plugins: [
-          [require('@babel/plugin-transform-class-static-block'), { loose }],
-          [require('@babel/plugin-transform-private-methods'), { loose }],
-          [require('@babel/plugin-transform-private-property-in-object'), { loose }],
-        ],
-      },
-      {
-        plugins: extraPlugins,
-      },
-    ],
+    plugins: [
+      [require('@babel/plugin-transform-class-static-block'), { loose }],
+      [require('@babel/plugin-transform-private-methods'), { loose }],
+      [require('@babel/plugin-transform-private-property-in-object'), { loose }],
+    ] as PluginItem[],
   };
 };
