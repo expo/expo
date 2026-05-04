@@ -46,8 +46,6 @@ type BabelPresetExpoPlatformOptions = {
    * bundles only carry their own branch. @default `true`
    */
   expoUi?: boolean;
-  /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
-  useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
   jsxRuntime?: 'classic' | 'automatic';
   /** Change the source module ID to use when importing an automatic JSX import. Only applied when `jsxRuntime` is `'automatic'` (default). Passed to `plugin-transform-react-jsx`. @default `'react'` */
@@ -143,12 +141,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   // adds extra dependencies (requires/imports) we need to disable it
   if (metroSourceType === 'script') {
     platformOptions.enableBabelRuntime = false;
-  }
-
-  if (platformOptions.useTransformReactJSXExperimental != null) {
-    throw new Error(
-      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
-    );
   }
 
   if (platformOptions.disableImportExportTransform == null) {
@@ -264,12 +256,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         platform,
       },
     ]);
-  }
-
-  if (platformOptions.useTransformReactJSXExperimental != null) {
-    throw new Error(
-      `babel-preset-expo: The option 'useTransformReactJSXExperimental' has been removed in favor of { jsxRuntime: 'classic' }.`
-    );
   }
 
   // Only apply in non-server, for metro-only, in production environments, when the user hasn't disabled the feature.
