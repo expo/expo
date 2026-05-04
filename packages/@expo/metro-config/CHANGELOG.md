@@ -21,6 +21,7 @@
 - Delete Hermes v1 detection as it's the default ([#45263](https://github.com/expo/expo/pull/45263) by [@kitten](https://github.com/kitten))
 - Add more stringent Babel config detection that disables redundant Babel config/rc file crawling, and support more Babel config filenames by default ([#45254](https://github.com/expo/expo/pull/45254) by [@kitten](https://github.com/kitten))
 - Use Babel config path hint to Expo Metro transformer and add `loadPartialConfigSync` cache key to invalidate Babel transform cache more granularly ([#45260](https://github.com/expo/expo/pull/45260) by [@kitten](https://github.com/kitten))
+- Skip `generateImportNames` traversal/phase when live bindings import/export support is enabled ([#45349](https://github.com/expo/expo/pull/45349) by [@kitten](https://github.com/kitten))
 
 ## 55.0.9 — 2026-02-25
 
