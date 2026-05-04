@@ -26,6 +26,7 @@ module.exports = function (_api: ConfigAPI, _options: HermesV0ConfigOptions) {
     plugins: [
       [require('@babel/plugin-transform-block-scoping')],
       [require('@babel/plugin-transform-class-properties'), { loose }],
+      [require('@babel/plugin-transform-class-static-block'), { loose }],
       [require('@babel/plugin-transform-private-methods'), { loose }],
       [require('@babel/plugin-transform-private-property-in-object'), { loose }],
       [require('@babel/plugin-transform-unicode-regex')],

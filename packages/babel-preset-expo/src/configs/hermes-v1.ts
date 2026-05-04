@@ -28,6 +28,7 @@ module.exports = function (_api: ConfigAPI, options: HermesV1ConfigOptions) {
   const plugins: PluginItem[] = [
     [require('@babel/plugin-transform-block-scoping')],
     // NOTE: Hermes V1 preserves classes, so no class-properties or transform-classes plugins.
+    [require('@babel/plugin-transform-class-static-block'), { loose }],
     [require('@babel/plugin-transform-private-methods'), { loose }],
     [require('@babel/plugin-transform-private-property-in-object'), { loose }],
     [require('@babel/plugin-transform-unicode-regex')],

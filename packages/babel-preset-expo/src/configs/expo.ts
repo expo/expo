@@ -68,6 +68,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
     plugins.push(reactCompilerPlugin);
   }
 
+  // TODO(@kitten): Remove or add non-hermes config
   if (options.engine !== 'hermes') {
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
     // getters and setters in spread objects. We need to add this plugin ourself without that option.
@@ -77,11 +78,6 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
       // Assume no dependence on getters or evaluation order. See https://github.com/babel/babel/pull/11520
       { loose: true, useBuiltIns: true },
     ]);
-  } else if (!options.isModernEngine) {
-    plugins.push(
-      // Add support for class static blocks.
-      [require('@babel/plugin-transform-class-static-block'), { loose: true }]
-    );
   }
 
   const inlines = getInlinesFromOptions(options);
