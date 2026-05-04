@@ -9,7 +9,13 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Broken navigation flows and crashing screens often slip past code review because reviewers cannot run the app on every pull request. By the end of this chapter, we have a workflow that runs Maestro E2E tests on Android and iOS development builds, with the option to trigger it automatically on pull requests.
+Broken navigation flows and crashing screens often slip past code review because reviewers cannot run the app on every pull request.
+
+## Learning outcomes
+
+- Write [Maestro](https://maestro.mobile.dev/) flow files for navigation and screen-content tests
+- Run E2E tests against Android and iOS development builds in a workflow
+- Trigger E2E tests automatically on pull requests with `on.pull_request` or on demand with `on.pull_request_labeled`
 
 > **important** The Maestro job type in EAS Workflows is currently in [alpha](/more/release-statuses/#alpha).
 
@@ -56,7 +62,7 @@ Add an `e2e-test` profile to **eas.json**. This profile creates an unsigned APK 
 
 Create a **.maestro/** directory at the root of the project and then add the following test files.
 
-For example, the following code snippet adds a basic home screen test that launches the app and checks that the "Welcome" text is visible:
+For example, the following code snippet adds a basic home screen test that launches the app and checks that the "Welcome" text is visible. Replace `com.yourname.yourapp` in `appId` with your app's [`android.package`](/versions/latest/config/app/#package) on Android or [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) on iOS, both defined in the **app.json**:
 
 ```yaml .maestro/home.yml
 appId: com.yourname.yourapp # Replace with your app's package name/bundle identifier from app config file

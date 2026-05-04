@@ -7,11 +7,32 @@ description: Learn how to automate development builds with EAS Workflows using f
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FingerprintFlow } from '~/ui/components/FlowDiagram/Diagrams/FingerprintFlow';
 import { UnitTestGate } from '~/ui/components/FlowDiagram/Diagrams/UnitTestGate';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Manually rebuilding a development client on every push to a GitHub repository can be slow. By the end of this chapter, we automate [development builds](/develop/development-builds/introduction/) for Android and iOS, use fingerprints to skip creating unnecessary builds, and run unit tests before any build starts.
+Manually rebuilding a development client on every push to a GitHub repository can be slow. Team members or new contributors who pull native changes (a new module, a new permission, an SDK upgrade) wait for a fresh build before they can run the project.
+
+Automating dev builds on the `main` branch keeps a current build ready to install. Developers can run `eas build:dev` to install the latest compatible build. If the project fingerprint matches an existing EAS build, that build is downloaded instead of a new one being created.
+
+## Learning outcomes
+
+- Automate [development builds](/develop/development-builds/introduction/) for Android and iOS with the `build` job type
+- Use `fingerprint` and `get-build` jobs to skip rebuilding when native code hasn't changed
+- Add a custom unit testing job that gates the workflow on passing tests
+
+<Prerequisites>
+
+<Requirement title="EAS Build configured for development">
+
+EAS CLI prompts to generate credentials the first time we trigger a build for a profile. Trigger the development build manually for both Android and iOS so the credentials exist before the workflow runs using the command below:
+
+<Terminal cmd={['$ eas build --profile development --platform all']} />
+
+</Requirement>
+
+</Prerequisites>
 
 ## The `build` job type for development builds
 
@@ -76,7 +97,13 @@ On the EAS dashboard, notice that it says "Triggered manually" under the **Workf
   className="max-w-160"
 />
 
-Although the logs for each build are shown within the workflows interface, we can click the build ID (for example, `ef90d1f` is the Android build ID shown above) to view the EAS Build page.
+Although the logs for each build are shown within the workflows interface, clicking the build ID (for example, `ef90d1f` is the Android build ID shown above) opens the EAS Build page.
+
+<ContentSpotlight
+  alt="EAS Build page for an Android development build, showing the build status, fingerprint, commit, and the expanded log output."
+  src="/static/images/tutorial/cicd/development-builds-02.png"
+  className="max-w-160"
+/>
 
 > **important** Jobs without dependencies run in parallel by default in EAS Workflows. In the above workflow, since both `build_android` and `build_ios` jobs don't have any dependencies, they start at the same time.
 
@@ -256,11 +283,15 @@ jobs:
       profile: development
 ```
 
-Let's assume we made some TypeScript/JavaScript changes to our Expo project. After doing so, we can push a commit to the `main` branch to trigger the workflow from our GitHub repository:
+Let's assume we made some TypeScript/JavaScript changes to our Expo project, like changing a button's color or updating the text on a screen. After doing so, we can push a commit to the `main` branch to trigger the workflow from our GitHub repository:
 
 <Terminal
-  cmd={['$ git add .', '$ git commit -m "JS changes only"', '$ git push origin main']}
-  cmdCopy="git add . && git commit -m 'JS changes only' && git push origin main"
+  cmd={[
+    '$ git add .',
+    '$ git commit -m "Update button label and tweak styling"',
+    '$ git push origin main',
+  ]}
+  cmdCopy="git add . && git commit -m 'Update button label and tweak styling' && git push origin main"
 />
 
 This triggers a new workflow that completes in seconds. On the EAS dashboard, both Android and iOS builds are skipped because a matching build already exists from the previous section.
@@ -356,7 +387,7 @@ After triggering the workflow, open the EAS dashboard and notice the flow of the
 
 <ContentSpotlight
   alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
-  src="/static/images/tutorial/cicd/development-builds-03.png"
+  src="/static/images/tutorial/cicd/development-builds-04.png"
   className="max-w-160"
   caption='In the above image, we can see that the "run_tests" job runs first. Once it passes, the "fingerprint" and "get-build" jobs run, followed by the build jobs (if needed).'
 />

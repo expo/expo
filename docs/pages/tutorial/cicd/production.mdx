@@ -5,11 +5,30 @@ description: Learn how to automate production deployments with EAS Workflows usi
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Rebuilding the app for every production change is resourceful when most changes are TypeScript/JavaScript only. By the end of this chapter, pushing to a release branch either creates a native build if native code changed, or publishes an over-the-air (OTA) update if only TypeScript/JavaScript code changed.
+Rebuilding the app for every production change is resourceful when most changes are TypeScript/JavaScript only.
+
+## Learning outcomes
+
+- Trigger production deployments from a `release/*` branch instead of every push to `main`
+- Branch between a native build and an OTA update based on the project fingerprint
+- Automate app store submissions as a follow-up step in the production workflow
+
+<Prerequisites>
+
+<Requirement title="EAS Build configured for production">
+
+EAS CLI prompts to generate credentials the first time we trigger a build for a profile. Trigger the production build manually for both Android and iOS so the credentials exist before the workflow runs using the command below:
+
+<Terminal cmd={['$ eas build --profile production --platform all']} />
+
+</Requirement>
+
+</Prerequisites>
 
 ## Using a release branch
 

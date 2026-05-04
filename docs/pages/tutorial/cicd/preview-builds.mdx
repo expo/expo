@@ -6,11 +6,57 @@ description: Learn how to create preview build workflows for Slack notifications
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { PreviewPipeline } from '~/ui/components/FlowDiagram/Diagrams/PreviewPipeline';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Sharing in-progress mobile changes with teammates and PR reviewers often requires them to check out a branch and run a development server locally. By the end of this chapter, we have a preview build workflow with Slack notifications, and a second workflow that posts a testable OTA update on a pull request.
+Sharing in-progress mobile changes with teammates and PR reviewers often requires them to check out a branch and run a development server locally.
+
+## Learning outcomes
+
+- Automate preview builds with fingerprinting for internal distribution
+- Post Slack notifications when a build finishes
+- Publish an OTA update on every pull request and comment on the PR with a link to test it
+
+<Prerequisites>
+
+<Requirement title="expo-updates installed">
+
+Install the `expo-updates` library:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-updates'],
+    yarn: ['$ yarn dlx expo install expo-updates'],
+    pnpm: ['$ pnpm dlx expo install expo-updates'],
+    bun: ['$ bunx expo install expo-updates'],
+  }}
+/>
+
+</Requirement>
+
+<Requirement title="EAS Update configured">
+
+To configure EAS Update, run:
+
+<Terminal cmd={['$ eas update:configure']} />
+
+The above command adds the update URL and runtime version to **app.json**, and adds a `channel` field to each build profile in **eas.json**.
+
+</Requirement>
+
+<Requirement title="Preview build created">
+
+To receive PR preview updates, reviewers need a preview build with `expo-updates` and the EAS Update channel installed on their device. To create one:
+
+<Terminal cmd={['$ eas build --profile preview --platform all']} />
+
+Since `expo-updates` is a native library, this build embeds both its native code and the channel from **eas.json**. Running the above command will also allow EAS CLI to generate credentials the first time we trigger a preview build.
+
+</Requirement>
+
+</Prerequisites>
 
 ## The `build` job type for preview builds
 

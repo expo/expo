@@ -10,7 +10,14 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this chapter, we create our first EAS workflow. By the end, every push to `main` triggers a `"Hello, Workflows"` message, and we learn how to chain multiple jobs together and read the EAS dashboard to inspect them.
+In this chapter, we will create our first EAS Workflows job.
+
+## Learning outcomes
+
+- Create and run a custom workflow that prints a message to the EAS dashboard
+- Set up an automatic trigger so every push to `main` runs the workflow
+- Chain multiple jobs together so one job's output feeds the next
+- Read workflow logs and job graphs in the EAS dashboard
 
 ## How workflow files work
 
@@ -99,7 +106,7 @@ Switch to the **Workflow file** tab. This is the workflow file we wrote in Step 
 
 ## Automatically run a workflow
 
-Running `eas workflow:run` from the terminal works for a one-off, but most teams want workflows that fire automatically on GitHub events. Automatic triggers mean no one has to remember to run a workflow, and the workflow's configuration lives in the repository alongside the code it builds.
+Running `eas workflow:run` from the terminal works for a one-off, but most teams want workflows that fire automatically on GitHub events. Automatic triggers mean no one has to remember to run a workflow and the workflow's configuration lives in the repository alongside the code it builds.
 
 > **info** **Note:** A trigger is a rule that tells a CI/CD pipeline when to start. It defines the event (such as a code push or a pull request) that causes the pipeline to run automatically instead of requiring manual execution.
 
@@ -154,6 +161,8 @@ Commit the workflow file and push it to the `main` branch:
 <Step label="3">
 
 ### Verify the automatic trigger
+
+> **info** **Tip:** This step depends on our local Expo project being pushed to GitHub and the GitHub repository being connected to EAS. To confirm: run `git remote -v` to verify the local repo points to a GitHub URL and open the project's [GitHub settings on EAS](https://expo.dev/accounts/[account]/projects/[projectName]/github) to check that a repository is connected.
 
 Let's open our project's [Workflow page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on the EAS dashboard to see the new job.
 
