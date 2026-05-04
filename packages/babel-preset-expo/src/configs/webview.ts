@@ -12,6 +12,8 @@ module.exports = function (_api: ConfigAPI, _options: WebviewConfigOptions) {
   return {
     comments: false,
     compact: true,
+    // These plugins are required to support the older JavaScript environment of Android factory WebViews.
+    // For example Android 9 and Chromium 66.
     plugins: [
       [require('@babel/plugin-transform-block-scoping')],
       [require('@babel/plugin-transform-class-properties'), { loose }],
@@ -24,11 +26,10 @@ module.exports = function (_api: ConfigAPI, _options: WebviewConfigOptions) {
       [require('@babel/plugin-transform-destructuring'), { useBuiltIns: true }],
       [require('@babel/plugin-transform-async-generator-functions')],
       [require('@babel/plugin-transform-async-to-generator')],
-      // Ensure the react-jsx-dev plugin works as expected when JSX is used in a function body.
-      require('@babel/plugin-transform-parameters'),
+      [require('@babel/plugin-transform-for-of')],
+      [require('@babel/plugin-transform-parameters')],
       [require('@babel/plugin-transform-react-display-name')],
-      // These plugins are required to support the older JavaScript environment of Android factory WebViews.
-      // For example Android 9 and Chromium 66.
+      [require('@babel/plugin-transform-optional-catch-binding')],
       [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
       [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
       [require('@babel/plugin-transform-logical-assignment-operators'), { loose: true }],
