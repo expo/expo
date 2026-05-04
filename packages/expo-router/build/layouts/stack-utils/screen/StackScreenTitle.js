@@ -1,116 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StackScreenTitle = StackScreenTitle;
-exports.appendStackScreenTitlePropsToOptions = appendStackScreenTitlePropsToOptions;
-const jsx_runtime_1 = require("react/jsx-runtime");
-const react_1 = require("react");
-const react_native_1 = require("react-native");
-const composition_options_1 = require("../../../fork/native-stack/composition-options");
-const style_1 = require("../../../utils/style");
-const shared_1 = require("../toolbar/shared");
+exports.appendStackScreenTitlePropsToOptions = exports.StackScreenTitle = void 0;
+const StackTitle_1 = require("../StackTitle");
 /**
- * Component to set the screen title.
- *
- * Can be used inside Stack.Screen in a layout or directly inside a screen component.
- *
- * @example
- * String title in a layout:
- * ```tsx
- * import { Stack } from 'expo-router';
- *
- * export default function Layout() {
- *   return (
- *     <Stack>
- *       <Stack.Screen name="index">
- *         <Stack.Screen.Title large>Home</Stack.Screen.Title>
- *       </Stack.Screen>
- *     </Stack>
- *   );
- * }
- * ```
- *
- * @example
- * String title inside a screen:
- * ```tsx
- * import { Stack } from 'expo-router';
- *
- * export default function Page() {
- *   return (
- *     <>
- *       <Stack.Screen.Title>My Page</Stack.Screen.Title>
- *       <ScreenContent />
- *     </>
- *   );
- * }
- * ```
- *
- * @example
- * Custom component as the title using `asChild`:
- * ```tsx
- * import { Stack } from 'expo-router';
- *
- * export default function Layout() {
- *   return (
- *     <Stack>
- *       <Stack.Screen name="index">
- *         <Stack.Screen.Title asChild>
- *           <MyCustomTitle />
- *         </Stack.Screen.Title>
- *       </Stack.Screen>
- *     </Stack>
- *   );
- * }
- * ```
- *
- * > **Note:** If multiple instances of this component are rendered for the same screen,
- * the last one rendered in the component tree takes precedence.
+ * @deprecated Use `Stack.Title` instead.
  */
-function StackScreenTitle({ children, asChild, style, largeStyle, large, }) {
-    const options = (0, react_1.useMemo)(() => appendStackScreenTitlePropsToOptions({}, 
-    // satisfies ensures every prop is listed here
-    { children, asChild, style, largeStyle, large }), [children, asChild, style, largeStyle, large]);
-    (0, composition_options_1.useCompositionOption)(options);
-    return null;
-}
-function appendStackScreenTitlePropsToOptions(options, props) {
-    const flattenedStyle = react_native_1.StyleSheet.flatten(props.style);
-    const flattenedLargeStyle = react_native_1.StyleSheet.flatten(props.largeStyle);
-    let titleOptions = props.asChild
-        ? { headerTitle: () => (0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: props.children }) }
-        : { title: (0, shared_1.convertChildrenToString)(props.children) };
-    if (props.asChild && typeof props.children === 'string') {
-        if (__DEV__) {
-            console.warn("Stack.Screen.Title: 'asChild' expects a custom component as children, string received.");
-        }
-        titleOptions = {};
-    }
-    if (!props.asChild && props.children != null && !(0, shared_1.areAllChildrenPrimitiveValues)(props.children)) {
-        if (__DEV__) {
-            console.warn('Stack.Screen.Title: Component passed to Stack.Screen.Title without `asChild` enabled. In order to render a custom component as the title, set `asChild` to true.');
-        }
-        titleOptions = {};
-    }
-    return {
-        ...options,
-        ...titleOptions,
-        headerLargeTitle: props.large,
-        headerTitleAlign: flattenedStyle?.textAlign,
-        headerTitleStyle: {
-            ...flattenedStyle,
-            ...(flattenedStyle?.fontWeight
-                ? {
-                    fontWeight: (0, style_1.convertFontWeightToStringFontWeight)(flattenedStyle?.fontWeight),
-                }
-                : {}),
-        },
-        headerLargeTitleStyle: {
-            ...flattenedLargeStyle,
-            ...(flattenedLargeStyle?.fontWeight
-                ? {
-                    fontWeight: (0, style_1.convertFontWeightToStringFontWeight)(flattenedLargeStyle?.fontWeight),
-                }
-                : {}),
-        },
-    };
-}
+exports.StackScreenTitle = StackTitle_1.StackTitle;
+/**
+ * @deprecated Use `appendStackTitlePropsToOptions` instead.
+ */
+exports.appendStackScreenTitlePropsToOptions = StackTitle_1.appendStackTitlePropsToOptions;
 //# sourceMappingURL=StackScreenTitle.js.map
