@@ -22,7 +22,7 @@
         }
       },
       "ios": {
-        "image": "sdk-54",
+        "image": "macos-sequoia-15.6-xcode-26.2",
         "cocoapods": "1.16.2",
         "resourceClass": "medium",
         "env": {
