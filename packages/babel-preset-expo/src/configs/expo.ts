@@ -55,13 +55,9 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   const {
     platform,
     engine,
-    isDev,
     isProduction,
     isServerEnv,
     isReactServer,
-    isNodeModule,
-    isFastRefreshEnabled,
-    isReactCompilerEnabled,
     isModernEngine,
     baseUrl,
     bundler,
@@ -71,7 +67,10 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   const plugins: PluginItem[] = [];
 
   // Add compiler as soon as possible to prevent other plugins from modifying the code.
-  plugins.push(...getReactCompilerPlugins(options));
+  const reactCompilerPlugin = getReactCompilerPlugin(options);
+  if (reactCompilerPlugin != null) {
+    plugins.push(reactCompilerPlugin);
+  }
 
   if (engine !== 'hermes') {
     // `@react-native/babel-preset` configures this plugin with `{ loose: true }`, which breaks all
@@ -89,7 +88,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
     );
   }
 
-  const inlines: Record<string, null | boolean | string> = {
+  const inlines: Record<string, undefined | null | boolean | string> = {
     'process.env.EXPO_OS': platform,
     // 'typeof document': isServerEnv ? 'undefined' : 'object',
     'process.env.EXPO_SERVER': !!isServerEnv,
@@ -177,7 +176,10 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
     plugins.push(widgetsPlugin);
   }
 
-  plugins.push(...getReactRefreshPlugins(options));
+  const reactRefreshPlugin = getReactRefreshPlugin(options);
+  if (reactRefreshPlugin != null) {
+    plugins.push(reactRefreshPlugin);
+  }
 
   if (options.disableImportExportTransform) {
     plugins.push([require('../plugins/detect-dynamic-exports').detectDynamicExports]);
@@ -220,14 +222,14 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   };
 };
 
-function getReactCompilerPlugins(options: {
+function getReactCompilerPlugin(options: {
   isReactCompilerEnabled?: boolean;
   isNodeModule?: boolean;
   isServerEnv: boolean;
   isProduction?: boolean;
   isDev?: boolean;
   reactCompiler?: false | ReactCompilerOptions;
-}): PluginItem[] {
+}): PluginItem | null {
   if (
     !options.isReactCompilerEnabled ||
     // Don't run compiler on node modules, it can only safely be run on the user's code.
@@ -238,7 +240,7 @@ function getReactCompilerPlugins(options: {
     // Give users the ability to opt-out of the feature, per-platform.
     options.reactCompiler === false
   ) {
-    return [];
+    return null;
   }
 
   const reactCompilerOptions = options.reactCompiler;
@@ -256,43 +258,39 @@ function getReactCompilerPlugins(options: {
   ]);
 
   return [
-    [
-      require('babel-plugin-react-compiler'),
-      {
-        target: '19',
-        environment: {
-          enableResetCacheOnSourceFileChanges: !options.isProduction,
-          ...(reactCompilerOptions?.environment ?? {}),
-        },
-        panicThreshold: options.isDev ? undefined : 'NONE',
-        ...reactCompilerOptions,
-        // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
-        customOptOutDirectives: [...reactCompilerOptOutDirectives],
+    require('babel-plugin-react-compiler'),
+    {
+      target: '19',
+      environment: {
+        enableResetCacheOnSourceFileChanges: !options.isProduction,
+        ...(reactCompilerOptions?.environment ?? {}),
       },
-    ],
+      panicThreshold: options.isDev ? undefined : 'NONE',
+      ...reactCompilerOptions,
+      // See: https://github.com/facebook/react/blob/074d96b/compiler/packages/babel-plugin-react-compiler/src/Entrypoint/Options.ts#L160-L163
+      customOptOutDirectives: [...reactCompilerOptOutDirectives],
+    },
   ];
 }
 
-function getReactRefreshPlugins(options: {
+function getReactRefreshPlugin(options: {
   enableReactFastRefresh?: boolean;
   isFastRefreshEnabled?: boolean;
-}): PluginItem[] {
+}): PluginItem | null {
   if (
     !options.enableReactFastRefresh &&
     (!options.isFastRefreshEnabled || options.enableReactFastRefresh === false)
   ) {
-    return [];
-  }
-
-  return [
-    [
+    return null;
+  } else {
+    return [
       require('react-refresh/babel'),
       {
         // We perform the env check to enable `isFastRefreshEnabled`, unless the plugin is force-enabled
         skipEnvCheck: options.enableReactFastRefresh !== true,
       },
-    ],
-  ];
+    ];
+  }
 }
 
 function getReactPreset(options: {
