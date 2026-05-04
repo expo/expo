@@ -26,33 +26,33 @@ import { hasModule, resolveModule } from '../utils/resolveModule';
 
 const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
 
-type ExpoConfigOptions = {
-  platform?: string;
+export interface ExpoConfigOptions {
+  platform: string | null;
   engine: string;
-  isDev?: boolean;
-  isProduction?: boolean;
+  isDev: boolean;
+  isProduction: boolean;
   isServerEnv: boolean;
-  isReactServer?: boolean;
-  isNodeModule?: boolean;
-  isFastRefreshEnabled?: boolean;
-  isReactCompilerEnabled?: boolean;
+  isReactServer: boolean;
+  isNodeModule: boolean;
+  isFastRefreshEnabled: boolean;
+  isReactCompilerEnabled: boolean;
   isModernEngine: boolean;
-  baseUrl?: string;
-  bundler?: string;
+  baseUrl: string;
+  bundler: 'metro' | 'webpack' | null;
   inlineEnvironmentVariables?: boolean;
-  decorators?: false | { legacy?: boolean; version?: number };
-  reanimated?: boolean;
-  worklets?: boolean;
-  expoUi?: boolean;
-  reactCompiler?: false | ReactCompilerOptions;
-  enableReactFastRefresh?: boolean;
-  minifyTypeofWindow?: boolean;
-  transformImportMeta?: boolean;
-  disableImportExportTransform?: boolean;
-  disableDeepImportWarnings?: boolean;
-  jsxRuntime?: 'classic' | 'automatic';
-  jsxImportSource?: string;
-};
+  decorators: { legacy?: boolean; version?: number } | false | undefined;
+  reanimated: boolean | undefined;
+  worklets: boolean | undefined;
+  expoUi: boolean | undefined;
+  reactCompiler: ReactCompilerOptions | false | undefined;
+  enableReactFastRefresh: boolean | undefined;
+  minifyTypeofWindow: boolean | undefined;
+  transformImportMeta: boolean | undefined;
+  disableImportExportTransform: boolean | undefined;
+  disableDeepImportWarnings: boolean | undefined;
+  jsxRuntime: 'classic' | 'automatic' | undefined;
+  jsxImportSource: string | undefined;
+}
 
 module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   const {

@@ -19,9 +19,15 @@ import {
   getPlatform,
   getEngine,
 } from './common';
+import { ExpoConfigOptions } from './configs/expo';
 import { getConfig as getFlowConfig } from './configs/flow';
+import { HermesV0ConfigOptions } from './configs/hermes-v0';
+import { HermesV1ConfigOptions } from './configs/hermes-v1';
+import { ModuleTransformOptions } from './configs/module-transforms';
 import { syntaxPlugins } from './configs/syntax';
 import { getConfig as getTypeScriptConfig } from './configs/typescript';
+import { WebConfigOptions } from './configs/web';
+import { WebviewConfigOptions } from './configs/webview';
 
 interface BabelPresetExpoPlatformOptions {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -52,7 +58,7 @@ interface BabelPresetExpoPlatformOptions {
   // Defaults to undefined, set to `false` to disable `@babel/plugin-transform-runtime`
   enableBabelRuntime?: boolean | string;
   // Defaults to `'default'`, can also use `'hermes-canary'`
-  unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+  unstable_transformProfile?: 'default' | 'hermes-v0' | 'hermes-stable' | 'hermes-canary';
 
   /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
   'react-compiler'?: false | ReactCompilerOptions;
@@ -149,7 +155,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       : platformOptions.enableBabelRuntime;
 
   // Compute config fragments from helper modules to compose into the presets below.
-  const flowFragment = getFlowConfig({});
+  const flowFragment = getFlowConfig({ disableFlowStripTypesTransform: false });
   const tsFragment = getTypeScriptConfig();
   return {
     // Top-level overrides run before sub-preset plugins.
@@ -165,32 +171,28 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           enableBabelRuntime,
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform: platformOptions.lazyImports,
-        },
+        } satisfies ModuleTransformOptions,
       ],
 
       (() => {
-        const presetOpts = {
-          dev: isDev,
-        };
+        const presetOpts = { dev: isDev };
 
         if (isDomComponent) {
-          return [require('./configs/webview'), presetOpts];
-        }
-
-        if (isModernEngine) {
-          return [require('./configs/web'), presetOpts];
+          return [require('./configs/webview'), presetOpts satisfies WebviewConfigOptions];
+        } else if (isModernEngine) {
+          return [require('./configs/web'), presetOpts satisfies WebConfigOptions];
         }
 
         // Select the hermes config based on `unstable_transformProfile`, which is derived from
         // the caller's `engine` property or overridden by the user.
-        const useHermesV1Config =
-          platformOptions.unstable_transformProfile === 'hermes-stable' ||
-          platformOptions.unstable_transformProfile === 'hermes-canary';
-
-        if (useHermesV1Config) {
-          return [require('./configs/hermes-v1'), presetOpts];
+        switch (platformOptions.unstable_transformProfile) {
+          case 'hermes-stable':
+          case 'hermes-canary':
+            return [require('./configs/hermes-v1'), presetOpts satisfies HermesV1ConfigOptions];
+          case 'hermes-v0':
+          default:
+            return [require('./configs/hermes-v0'), presetOpts satisfies HermesV0ConfigOptions];
         }
-        return [require('./configs/hermes-v0'), presetOpts];
       })(),
 
       // Expo-specific plugins and React JSX/compiler/refresh support.
@@ -222,7 +224,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           jsxRuntime: platformOptions.jsxRuntime,
           jsxImportSource: platformOptions.jsxImportSource,
-        },
+        } satisfies ExpoConfigOptions,
       ],
     ],
   };

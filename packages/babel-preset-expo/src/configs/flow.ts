@@ -15,7 +15,7 @@ import type { PluginItem } from '@babel/core';
  * - `overrides`: flow-strip-types override (must precede class properties)
  * - `plugins`: hermes-parser and flow-enums plugins
  */
-export function getConfig(options: { disableFlowStripTypesTransform?: boolean }) {
+export function getConfig(options: { disableFlowStripTypesTransform: boolean }) {
   return {
     overrides: (options.disableFlowStripTypesTransform
       ? []

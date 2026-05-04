@@ -15,11 +15,11 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-type ConfigOptions = {
-  dev?: boolean;
-};
+export interface HermesV1ConfigOptions {
+  dev: boolean | undefined;
+}
 
-module.exports = function (_api: ConfigAPI, options: ConfigOptions) {
+module.exports = function (_api: ConfigAPI, options: HermesV1ConfigOptions) {
   // We enable regenerator in dev builds for the time being because
   // Hermes V1 doesn't yet fully support debugging native generators.
   // Use native generators in release mode because it has already yielded perf wins.

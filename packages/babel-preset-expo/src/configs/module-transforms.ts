@@ -17,11 +17,11 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 import { lazyImports as expoLazyImports } from './utils/expo-lazy-imports';
 import { lazyImports as rnLazyImports } from './utils/rn-lazy-imports';
 
-type ModuleTransformOptions = {
-  enableBabelRuntime?: string | false;
-  disableImportExportTransform?: boolean;
-  lazyImportExportTransform?: any;
-};
+export interface ModuleTransformOptions {
+  enableBabelRuntime?: string | false | undefined;
+  disableImportExportTransform: boolean | undefined;
+  lazyImportExportTransform: unknown;
+}
 
 module.exports = function (_api: ConfigAPI, options: ModuleTransformOptions) {
   const plugins: PluginItem[] = [];

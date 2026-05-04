@@ -15,7 +15,11 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-module.exports = function (_api: ConfigAPI) {
+export interface HermesV0ConfigOptions {
+  dev?: boolean;
+}
+
+module.exports = function (_api: ConfigAPI, _options: HermesV0ConfigOptions) {
   return {
     comments: false,
     compact: true,

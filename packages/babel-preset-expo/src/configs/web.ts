@@ -14,7 +14,11 @@ import type { ConfigAPI, PluginItem } from '@babel/core';
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
-module.exports = function (_api: ConfigAPI) {
+export interface WebConfigOptions {
+  dev?: boolean;
+}
+
+module.exports = function (_api: ConfigAPI, _options: WebConfigOptions) {
   return {
     comments: false,
     compact: true,
