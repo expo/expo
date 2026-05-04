@@ -14,6 +14,7 @@ import { serverMetadataPlugin } from '../plugins/server-metadata-plugin';
 import { expoUseDomDirectivePlugin } from '../plugins/use-dom-directive-plugin';
 import { widgetsPlugin } from '../plugins/widgets-plugin';
 import { hasModule, resolveModule } from '../utils/resolveModule';
+import { ReactConfigOptions } from './react';
 
 const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
 
@@ -279,16 +280,12 @@ function getReactPreset(options: {
   jsxImportSource?: string;
 }): [any, Record<string, any>] {
   return [
-    require('@babel/preset-react'),
+    require('./react'),
     {
-      development: options.isDev,
-
-      // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
-      runtime: options.jsxRuntime || 'automatic',
-      ...(options.jsxRuntime !== 'classic' && {
-        importSource: options.jsxImportSource || 'react',
-      }),
-    },
+      dev: options.isDev,
+      jsxRuntime: options.jsxRuntime,
+      jsxImportSource: options.jsxImportSource,
+    } satisfies ReactConfigOptions,
   ];
 }
 
