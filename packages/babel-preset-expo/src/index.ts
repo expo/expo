@@ -18,6 +18,7 @@ import {
 } from './common';
 import { getConfig as getFlowConfig } from './configs/flow';
 import { syntaxPlugins } from './configs/syntax';
+import { getConfig as getTypeScriptConfig } from './configs/typescript';
 
 interface BabelPresetExpoPlatformOptions {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -147,10 +148,11 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   // Compute config fragments from helper modules to compose into the presets below.
   const flowFragment = getFlowConfig({});
+  const tsFragment = getTypeScriptConfig();
   return {
-    // Top-level plugins/overrides run before sub-preset plugins.
-    // Flow plugins must run before class-properties in the env configs.
-    overrides: flowFragment.overrides,
+    // Top-level overrides run before sub-preset plugins.
+    // Flow/TypeScript type stripping must run before class-properties in the env configs.
+    overrides: [...flowFragment.overrides, ...tsFragment.overrides],
     plugins: [...syntaxPlugins, ...flowFragment.plugins],
     presets: [
       // Module transforms (CommonJS) preset is first so it runs last (Babel reverses preset order).

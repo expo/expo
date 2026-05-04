@@ -36,10 +36,6 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
   return {
     comments: false,
     compact: true,
-    presets: [
-      // TypeScript support
-      [require('@babel/preset-typescript'), { allowNamespaces: true }],
-    ],
     overrides: [
       // the flow strip types plugin must go BEFORE class properties!
       // there'll be a test case that fails if you don't.

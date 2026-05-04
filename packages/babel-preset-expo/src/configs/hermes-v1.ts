@@ -22,14 +22,6 @@ type ConfigOptions = {
   dev?: boolean;
 };
 
-function isTypeScriptSource(fileName: string | undefined | null) {
-  return !!fileName && fileName.endsWith('.ts');
-}
-
-function isTSXSource(fileName: string | undefined | null) {
-  return !!fileName && fileName.endsWith('.tsx');
-}
-
 const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
 
 function isFirstParty(fileName: string | undefined | null) {
@@ -119,39 +111,12 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
         ],
       },
       {
-        test: isTypeScriptSource,
-        plugins: [
-          [
-            require('@babel/plugin-transform-typescript'),
-            {
-              isTSX: false,
-              allowNamespaces: true,
-            },
-          ],
-        ],
-      },
-      {
-        test: isTSXSource,
-        plugins: [
-          [
-            require('@babel/plugin-transform-typescript'),
-            {
-              isTSX: true,
-              allowNamespaces: true,
-            },
-          ],
-        ],
-      },
-      {
         test: isFirstParty,
         plugins: firstPartyPlugins,
       },
       {
         plugins: extraPlugins,
       },
-      // The `@babel/plugin-transform-export-namespace-from` plugin must run after the TypeScript
-      // plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
-      // are stripped before the transform.
       {
         plugins: [
           require('../plugins/babel-plugin-transform-export-namespace-from'),
