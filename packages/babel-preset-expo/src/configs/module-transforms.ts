@@ -18,12 +18,26 @@ import { lazyImports as expoLazyImports } from './utils/expo-lazy-imports';
 import { lazyImports as rnLazyImports } from './utils/rn-lazy-imports';
 
 type ModuleTransformOptions = {
+  enableBabelRuntime?: string | false;
   disableImportExportTransform?: boolean;
   lazyImportExportTransform?: any;
 };
 
 module.exports = function (_babel: unknown, options: ModuleTransformOptions) {
   const plugins: PluginItem[] = [];
+
+  // Runtime transform (no regenerator for hermes-v0)
+  if (options.enableBabelRuntime !== false) {
+    const isVersion = typeof options.enableBabelRuntime === 'string';
+    plugins.push([
+      require('@babel/plugin-transform-runtime'),
+      {
+        helpers: true,
+        regenerator: true,
+        ...(isVersion && { version: options.enableBabelRuntime }),
+      },
+    ]);
+  }
 
   // The export-namespace-from transform must run after TypeScript plugins (which are at the
   // top level) to ensure namespace type exports (`export type * as Types from './module'`)

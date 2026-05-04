@@ -57,19 +57,6 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
     firstPartyPlugins.push([require('../plugins/plugin-warn-on-deep-imports')]);
   }
 
-  // Runtime transform (no regenerator for hermes-v0)
-  if (options.enableBabelRuntime !== false) {
-    const isVersion = typeof options.enableBabelRuntime === 'string';
-    extraPlugins.push([
-      require('@babel/plugin-transform-runtime'),
-      {
-        helpers: true,
-        regenerator: false,
-        ...(isVersion && { version: options.enableBabelRuntime }),
-      },
-    ]);
-  }
-
   return {
     comments: false,
     compact: true,

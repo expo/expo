@@ -2995,9 +2995,6 @@ importers:
       '@babel/plugin-transform-react-display-name':
         specifier: ^7.24.7
         version: 7.28.0(@babel/core@7.29.0)
-      '@babel/plugin-transform-regenerator':
-        specifier: ^7.24.7
-        version: 7.29.0(@babel/core@7.29.0)
       '@babel/plugin-transform-runtime':
         specifier: ^7.24.7
         version: 7.29.0(@babel/core@7.29.0)

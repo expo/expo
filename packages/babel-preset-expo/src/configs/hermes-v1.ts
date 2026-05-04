@@ -80,21 +80,6 @@ module.exports = function (_babel: unknown, options: ConfigOptions) {
     extraPlugins.push([require('@babel/plugin-transform-for-of'), { loose: true }]);
   }
 
-  // Runtime transform (regenerator enabled in dev for Hermes V1)
-  if (options.enableBabelRuntime !== false) {
-    const isVersion = typeof options.enableBabelRuntime === 'string';
-    extraPlugins.push([
-      require('@babel/plugin-transform-runtime'),
-      {
-        helpers: true,
-        regenerator: enableRegenerator,
-        ...(isVersion && { version: options.enableBabelRuntime }),
-      },
-    ]);
-  } else if (enableRegenerator) {
-    extraPlugins.push([require('@babel/plugin-transform-regenerator')]);
-  }
-
   return {
     comments: false,
     compact: true,

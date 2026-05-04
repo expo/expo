@@ -146,6 +146,14 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
   }
 
+  // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
+  // Set to `false` to disable `@babel/plugin-transform-runtime`
+  const enableBabelRuntime = 
+    platformOptions.enableBabelRuntime == null ||
+    platformOptions.enableBabelRuntime === true
+      ? api.caller(getBabelRuntimeVersion)
+      : platformOptions.enableBabelRuntime;
+
   // Compute config fragments from helper modules to compose into the presets below.
   const flowFragment = getFlowConfig({});
   const tsFragment = getTypeScriptConfig();
@@ -160,6 +168,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       [
         require('./configs/module-transforms'),
         {
+          enableBabelRuntime,
           disableImportExportTransform: platformOptions.disableImportExportTransform,
           lazyImportExportTransform: platformOptions.lazyImports,
         },
@@ -167,16 +176,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
       (() => {
         const presetOpts = {
-          // Defaults to Babel caller's `babelRuntimeVersion` or the version of `@babel/runtime` for this package's peer
-          // Set to `false` to disable `@babel/plugin-transform-runtime`
-          enableBabelRuntime:
-            platformOptions.enableBabelRuntime == null ||
-            platformOptions.enableBabelRuntime === true
-              ? getBabelRuntimeVersion()
-              : platformOptions.enableBabelRuntime,
-
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
-
           isDomComponent,
           dev: isDev,
         };
