@@ -103,30 +103,30 @@ describe(applySdkVersionToTemplateAsync, () => {
     Object.defineProperty(process.stdin, 'isTTY', { value: originalIsTTY, configurable: true });
   });
 
-  it('pins to the latest released SDK without prompting when --yes is set', async () => {
-    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+  it('passes through unchanged without prompting or fetching when --yes is set', async () => {
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: true })).toBe(
-      'expo-template-default@sdk-55'
+      'expo-template-default'
     );
     expect(mockPrompts).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('pins to the latest released SDK without prompting in CI', async () => {
+  it('passes through unchanged without prompting or fetching in CI', async () => {
     process.env.CI = 'true';
-    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
-      'expo-template-default@sdk-55'
+      'expo-template-default'
     );
     expect(mockPrompts).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('pins to the latest released SDK without prompting when stdin is not a TTY', async () => {
+  it('passes through unchanged without prompting or fetching when stdin is not a TTY', async () => {
     Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
-    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
-      'expo-template-default@sdk-55'
+      'expo-template-default'
     );
     expect(mockPrompts).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('skips the prompt when the template already has a tag', async () => {
@@ -198,19 +198,6 @@ describe(applySdkVersionToTemplateAsync, () => {
     expect(output).not.toMatch(/Tip:/);
     expect(output).not.toMatch(/--template/);
     expect(output).not.toMatch(/--example/);
-    logSpy.mockRestore();
-  });
-
-  it('logs the resolved template with the project name in non-interactive mode', async () => {
-    process.env.CI = 'true';
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
-    await applySdkVersionToTemplateAsync('expo-template-default', {
-      yes: false,
-      projectName: 'my-app',
-    });
-    const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
-    expect(output).toMatch(/Creating .*my-app.* using the .*expo-template-default@sdk-55/);
     logSpy.mockRestore();
   });
 

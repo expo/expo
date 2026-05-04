@@ -98,19 +98,16 @@ export async function applySdkVersionToTemplateAsync(
     return template;
   }
 
-  const versions = await fetchSdkVersionsAsync();
-  if (!versions) {
+  // Non-interactive runs fall through to the template's npm `latest` dist-tag.
+  if (yes || env.CI || !process.stdin.isTTY) {
     logCreatingProject(template, projectName);
     return template;
   }
 
-  // Non-interactive runs use the latest released SDK rather than falling back
-  // to the npm `latest` dist-tag, which is pinned to the SDK currently shipping
-  // in the App Store / Play Store version of Expo Go.
-  if (yes || env.CI || !process.stdin.isTTY) {
-    const pinned = `${name}@sdk-${versions.latest}`;
-    logCreatingProject(pinned, projectName);
-    return pinned;
+  const versions = await fetchSdkVersionsAsync();
+  if (!versions) {
+    logCreatingProject(template, projectName);
+    return template;
   }
 
   const selectedSdk = await promptSdkVersionAsync(versions, name, showAlternatives, projectName);
