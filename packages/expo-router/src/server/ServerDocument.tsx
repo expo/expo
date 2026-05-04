@@ -20,6 +20,28 @@ export type ServerDocumentData = {
 
 const ServerDocumentContext = createContext<ServerDocumentData | null>(null);
 
+/**
+ * Returns the server document data for server-side rendering, including `<html>`/`<body>`
+ * attributes and additional nodes to add to `<head>`/`<body>` for metadata and assets.
+ *
+ * @example
+ * ```tsx
+ * import { useServerDocumentContext } from 'expo-router/html';
+ *
+ * export default function Root({ children }) {
+ *   const { htmlAttributes, bodyAttributes, headNodes, bodyNodes } = useServerDocumentContext();
+ *   return (
+ *     <html {...htmlAttributes}>
+ *       <head>{headNodes}</head>
+ *       <body {...bodyAttributes}>
+ *         {children}
+ *         {bodyNodes}
+ *       </body>
+ *     </html>
+ *   );
+ * }
+ * ```
+ */
 export function useServerDocumentContext(): ServerDocumentData {
   return useContext(ServerDocumentContext) ?? {};
 }
