@@ -93,19 +93,40 @@ describe(fetchSdkVersionsAsync, () => {
 });
 
 describe(applySdkVersionToTemplateAsync, () => {
-  it('skips the prompt when --yes is set', async () => {
-    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: true })).toBe(
-      'expo-template-default'
-    );
-    expect(fetchMock).not.toHaveBeenCalled();
+  // Force TTY for the interactive tests below; non-interactive cases override.
+  let originalIsTTY: boolean | undefined;
+  beforeEach(() => {
+    originalIsTTY = process.stdin.isTTY;
+    Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
+  });
+  afterEach(() => {
+    Object.defineProperty(process.stdin, 'isTTY', { value: originalIsTTY, configurable: true });
   });
 
-  it('skips the prompt in CI', async () => {
-    process.env.CI = 'true';
-    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
-      'expo-template-default'
+  it('pins to the latest released SDK without prompting when --yes is set', async () => {
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: true })).toBe(
+      'expo-template-default@sdk-55'
     );
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(mockPrompts).not.toHaveBeenCalled();
+  });
+
+  it('pins to the latest released SDK without prompting in CI', async () => {
+    process.env.CI = 'true';
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
+      'expo-template-default@sdk-55'
+    );
+    expect(mockPrompts).not.toHaveBeenCalled();
+  });
+
+  it('pins to the latest released SDK without prompting when stdin is not a TTY', async () => {
+    Object.defineProperty(process.stdin, 'isTTY', { value: false, configurable: true });
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
+      'expo-template-default@sdk-55'
+    );
+    expect(mockPrompts).not.toHaveBeenCalled();
   });
 
   it('skips the prompt when the template already has a tag', async () => {
@@ -122,7 +143,7 @@ describe(applySdkVersionToTemplateAsync, () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('passes through unchanged when the versions endpoint fails', async () => {
+  it('passes through unchanged when the versions endpoint fails interactively', async () => {
     fetchMock.mockRejectedValue(new Error('network down'));
     expect(await applySdkVersionToTemplateAsync('expo-template-default', { yes: false })).toBe(
       'expo-template-default'
@@ -138,13 +159,35 @@ describe(applySdkVersionToTemplateAsync, () => {
     );
   });
 
-  it('shows the "For beginners" choice with the SDK number in the description', async () => {
+  it('prints a "Creating … Alternatively" lead-in with --template/--example before the prompt', async () => {
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    mockPrompts.mockResolvedValueOnce({ answer: 55 });
+    await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
+    const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
+    expect(output).toMatch(/Creating a project using the .*default.* template\. Alternatively:/);
+    expect(output).toMatch(/--template/);
+    expect(output).toMatch(/--example/);
+    logSpy.mockRestore();
+  });
+
+  it('logs the resolved template in non-interactive mode', async () => {
+    process.env.CI = 'true';
+    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
+    await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
+    const output = logSpy.mock.calls.map((c) => String(c[0] ?? '')).join('\n');
+    expect(output).toMatch(/Creating an Expo project using the .*expo-template-default@sdk-55/);
+    logSpy.mockRestore();
+  });
+
+  it('shows the "For learning with Expo Go" choice with the SDK number in the description', async () => {
     mockVersionsResponse({ expoGoSdkVersion: '54.0.0' });
     mockPrompts.mockResolvedValueOnce({ answer: 54 });
     await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
     const promptCall = mockPrompts.mock.calls[0][0];
     expect(promptCall.choices).toEqual([
-      { title: 'Latest (SDK 55)', value: 55, description: 'recommended for most projects' },
+      { title: 'Latest (SDK 55)', value: 55, description: 'Recommended for most projects' },
       {
         title: 'For learning with Expo Go (SDK 54)',
         value: 54,
@@ -154,18 +197,18 @@ describe(applySdkVersionToTemplateAsync, () => {
     ]);
   });
 
-  it('omits the "For beginners" choice when expoGoSdkVersion is missing', async () => {
+  it('omits the "For learning with Expo Go" choice when expoGoSdkVersion is missing', async () => {
     mockVersionsResponse({});
     mockPrompts.mockResolvedValueOnce({ answer: 55 });
     await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
     const promptCall = mockPrompts.mock.calls[0][0];
     expect(promptCall.choices).toEqual([
-      { title: 'Latest (SDK 55)', value: 55, description: 'recommended for most projects' },
+      { title: 'Latest (SDK 55)', value: 55, description: 'Recommended for most projects' },
       { title: 'Other SDK version…', value: 'other' },
     ]);
   });
 
-  it('omits the "For beginners" choice when the compatible SDK matches latest', async () => {
+  it('omits the "For learning with Expo Go" choice when the compatible SDK matches latest', async () => {
     mockVersionsResponse({
       sdkVersions: { '54.0.0': { releaseNoteUrl: 'https://example.com' } },
       expoGoSdkVersion: '54.0.0',
@@ -174,7 +217,7 @@ describe(applySdkVersionToTemplateAsync, () => {
     await applySdkVersionToTemplateAsync('expo-template-default', { yes: false });
     const promptCall = mockPrompts.mock.calls[0][0];
     expect(promptCall.choices).toEqual([
-      { title: 'Latest (SDK 54)', value: 54, description: 'recommended for most projects' },
+      { title: 'Latest (SDK 54)', value: 54, description: 'Recommended for most projects' },
       { title: 'Other SDK version…', value: 'other' },
     ]);
   });

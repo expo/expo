@@ -3,20 +3,16 @@ import prompts from 'prompts';
 
 import { ALIASES } from './legacyTemplates';
 import { Log } from './log';
+import { formatSelfCommand } from './resolvePackageManager';
 import { env } from './utils/env';
 import { splitNpmNameAndTag } from './utils/npm';
 
 const debug = require('debug')('expo:init:sdk') as typeof console.log;
 
-/**
- * The Expo versions endpoint is the source of truth for SDK selection:
- * - `sdkVersions` entries with a `releaseNoteUrl` are considered released
- *   (anything without one is canary/in-development).
- * - The top-level `expoGoSdkVersion` field reports which SDK is currently
- *   shipping in the App Store / Play Store version of Expo Go. We treat that
- *   field as optional so older API responses just hide the "For beginners"
- *   choice instead of breaking the prompt.
- */
+// SDKs without a `releaseNoteUrl` are canary/in-development. The top-level
+// `expoGoSdkVersion` reports the SDK currently shipping in store Expo Go and
+// is treated as optional — when absent, the "For learning with Expo Go" choice
+// is hidden.
 const VERSIONS_URL = 'https://exp.host/--/api/v2/versions';
 
 type VersionsResponse = {
@@ -83,29 +79,47 @@ export async function applySdkVersionToTemplateAsync(
   template: string,
   { yes }: { yes: boolean }
 ): Promise<string> {
-  if (yes || env.CI || env.EXPO_BETA) {
+  if (env.EXPO_BETA) {
+    logCreatingProject(template);
     return template;
   }
 
   const [name, tag] = splitNpmNameAndTag(template);
   if (tag) {
+    logCreatingProject(template);
     return template;
   }
   if (!isKnownExpoTemplate(name)) {
+    logCreatingProject(template);
     return template;
   }
 
   const versions = await fetchSdkVersionsAsync();
   if (!versions) {
+    logCreatingProject(template);
     return template;
   }
 
-  const selectedSdk = await promptSdkVersionAsync(versions);
+  // Non-interactive runs use the latest released SDK rather than falling back
+  // to the npm `latest` dist-tag, which is pinned to the SDK currently shipping
+  // in the App Store / Play Store version of Expo Go.
+  if (yes || env.CI || !process.stdin.isTTY) {
+    const pinned = `${name}@sdk-${versions.latest}`;
+    logCreatingProject(pinned);
+    return pinned;
+  }
+
+  const selectedSdk = await promptSdkVersionAsync(versions, name);
   if (selectedSdk == null) {
+    logCreatingProject(template);
     return template;
   }
 
   return `${name}@sdk-${selectedSdk}`;
+}
+
+function logCreatingProject(template: string): void {
+  console.log(chalk`Creating an Expo project using the {cyan ${template}} template.\n`);
 }
 
 function isKnownExpoTemplate(name: string): boolean {
@@ -116,14 +130,30 @@ function isKnownExpoTemplate(name: string): boolean {
   return ALIASES.includes(`expo-template-${name}`);
 }
 
-async function promptSdkVersionAsync(versions: SdkVersionsSummary): Promise<number | null> {
+async function promptSdkVersionAsync(
+  versions: SdkVersionsSummary,
+  templateName: string
+): Promise<number | null> {
   const { latest, expoGoCompatible, available } = versions;
+
+  const friendly = templateName.replace(/^expo-template-/, '');
+  const cmd = formatSelfCommand();
+  console.log(
+    chalk`Creating a project using the {cyan ${friendly}} template. Alternatively:`
+  );
+  console.log(
+    `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--template')}  ${chalk.gray('to pick from other templates')}`
+  );
+  console.log(
+    `  ${chalk.gray('•')} ${chalk.gray(cmd)} ${chalk.cyan('--example')}   ${chalk.gray('to explore examples')}`
+  );
+  console.log();
 
   const choices: prompts.Choice[] = [
     {
       title: `Latest (SDK ${latest})`,
       value: latest,
-      description: 'recommended for most projects',
+      description: 'Recommended for most projects',
     },
   ];
 
@@ -140,7 +170,7 @@ async function promptSdkVersionAsync(versions: SdkVersionsSummary): Promise<numb
   const { answer } = await prompts({
     type: 'select',
     name: 'answer',
-    message: 'Choose an Expo SDK version:',
+    message: 'Select an Expo SDK version:',
     choices,
   });
 
@@ -157,7 +187,7 @@ async function promptSdkVersionAsync(versions: SdkVersionsSummary): Promise<numb
   const { sdkAnswer } = await prompts({
     type: 'select',
     name: 'sdkAnswer',
-    message: 'Choose an SDK version:',
+    message: 'Select an SDK version:',
     choices: available.slice(0, 4).map((sdk) => ({
       title: `SDK ${sdk}`,
       value: sdk,

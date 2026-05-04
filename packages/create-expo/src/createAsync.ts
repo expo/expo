@@ -20,7 +20,6 @@ import {
   configurePackageManager,
   installDependenciesAsync,
   resolvePackageManager,
-  formatSelfCommand,
 } from './resolvePackageManager';
 import { assertFolderEmpty, assertValidName, resolveProjectRootAsync } from './resolveProjectRoot';
 import {
@@ -101,24 +100,12 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     resolvedTemplate = await promptTemplateAsync();
   } else {
     resolvedTemplate = props.template ?? null;
-    if (!resolvedTemplate) {
-      console.log(
-        chalk`{gray To choose from all available templates ({underline https://github.com/expo/expo/tree/main/templates}) pass in the --template arg:}`
-      );
-      console.log(chalk`  {gray $} ${formatSelfCommand()} {cyan --template}\n`);
-      console.log(
-        chalk`{gray To choose from all available examples ({underline https://github.com/expo/examples}) pass in the --example arg:}`
-      );
-      console.log(chalk`  {gray $} ${formatSelfCommand()} {cyan --example}\n`);
-    }
   }
 
   resolvedTemplate = await applySdkVersionToTemplateAsync(
     resolvedTemplate ?? 'expo-template-default',
     { yes: props.yes }
   );
-
-  console.log(chalk`Creating an Expo project using the {cyan ${resolvedTemplate}} template.\n`);
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
   await fs.promises.mkdir(projectRoot, { recursive: true });
