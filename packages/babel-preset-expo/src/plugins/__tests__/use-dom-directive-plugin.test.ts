@@ -4,7 +4,7 @@
 
 import * as babel from '@babel/core';
 
-import preset, { type BabelPresetExpoOptions } from '..';
+import preset, { type BabelPresetExpoOptions } from '../..';
 
 const ENABLED_CALLER = {
   name: 'metro',

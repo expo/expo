@@ -1,7 +1,7 @@
 import * as babel from '@babel/core';
 
-import preset from '..';
-import { getInlineEnvVarsEnabled } from '../common';
+import preset from '../..';
+import { getInlineEnvVarsEnabled } from '../../common';
 
 const ENABLED_CALLER = {
   name: 'metro',

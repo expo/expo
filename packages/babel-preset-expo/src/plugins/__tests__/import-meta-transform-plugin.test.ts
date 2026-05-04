@@ -1,6 +1,6 @@
 import * as babel from '@babel/core';
 
-import preset from '..';
+import preset from '../..';
 
 function getCaller(props: Record<string, string | boolean>): babel.TransformCaller {
   return props as unknown as babel.TransformCaller;
