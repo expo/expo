@@ -15,6 +15,9 @@ import {
   getIsServer,
   getReactCompiler,
   getMetroSourceType,
+  getStaticESM,
+  getPlatform,
+  getEngine,
 } from './common';
 import { getConfig as getFlowConfig } from './configs/flow';
 import { syntaxPlugins } from './configs/syntax';
@@ -79,7 +82,7 @@ export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
 
 function getOptions(
   options: BabelPresetExpoOptions,
-  platform?: string
+  platform: string | null
 ): BabelPresetExpoPlatformOptions {
   const tag = platform === 'web' ? 'web' : 'native';
 
@@ -92,8 +95,8 @@ function getOptions(
 function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): TransformOptions {
   const bundler = api.caller(getBundler);
   const isWebpack = bundler === 'webpack';
-  let platform = api.caller((caller) => (caller as any)?.platform);
-  const engine = api.caller((caller) => (caller as any)?.engine) ?? 'default';
+  const platform = api.caller(getPlatform);
+  const engine = api.caller(getEngine);
   const isDev = api.caller(getIsDev);
   const isNodeModule = api.caller(getIsNodeModule);
   const isServer = api.caller(getIsServer);
@@ -103,21 +106,13 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isDomComponent = api.caller(getIsDomComponent);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
-  const supportsStaticESM: boolean | undefined = api.caller(
-    (caller) => (caller as any)?.supportsStaticESM
-  );
+  const supportsStaticESM = api.caller(getStaticESM);
   const isServerEnv = isServer || isReactServer;
 
   // Unlike `isDev`, this will be `true` when the bundler is explicitly set to `production`,
   // i.e. `false` when testing, development, or used with a bundler that doesn't specify the correct inputs.
   const isProduction = api.caller(getIsProd);
   const inlineEnvironmentVariables = api.caller(getInlineEnvVarsEnabled);
-
-  // If the `platform` prop is not defined then this must be a custom config that isn't
-  // defining a platform in the babel-loader. Currently this may happen with Next.js + Expo web.
-  if (!platform && isWebpack) {
-    platform = 'web';
-  }
 
   const platformOptions = getOptions(options, platform);
 
