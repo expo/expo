@@ -15,9 +15,14 @@ export type GetStreamingContentOptions = {
         headNodes: ReactNode[];
     } | null;
     request?: Request;
-    /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
+    /** Assets for hydration bundles and development-only inline CSS. */
     assets?: {
         css: string[];
+        /** CSS source to inline into the document head, used by development SSR. */
+        inlineCss?: {
+            source: string;
+            hmrId?: string;
+        }[];
         js: string[];
     };
 };

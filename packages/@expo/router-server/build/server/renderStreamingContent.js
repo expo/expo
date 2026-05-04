@@ -107,11 +107,13 @@ function FontResources() {
 async function getStreamingContent(location, options) {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
     const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
+    const { headNodes: inlineCssNodes } = (0, react_1.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
     const serverDocumentData = {
         headNodes: [
             ...(options?.metadata?.headNodes ?? []),
             getStyleElement({ key: 'rnw-style-element' }),
             ...(headCssNodes ?? []),
+            ...(inlineCssNodes ?? []),
         ],
         bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {})],
     };
