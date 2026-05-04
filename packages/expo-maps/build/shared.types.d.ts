@@ -41,16 +41,11 @@ export type CameraMoveEvent = {
      */
     bearing: number;
     /**
-     * The height of the visible region in degrees of latitude — how much of
-     * the world fits on screen vertically. Larger values mean the map is
-     * zoomed out further.
+     * The height of the visible region in degrees of latitude
      */
     latitudeDelta: number;
     /**
-     * The width of the visible region in degrees of longitude — how much of
-     * the world fits on screen horizontally. Larger values mean the map is
-     * zoomed out further. Always positive, even when the visible region
-     * crosses the antimeridian (±180°).
+     * The width of the visible region in degrees of longitude
      */
     longitudeDelta: number;
 };
