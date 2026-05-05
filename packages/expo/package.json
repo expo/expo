@@ -83,7 +83,7 @@
     "@expo/fingerprint": "workspace:0.16.5",
     "@expo/local-build-cache-provider": "workspace:55.0.6",
     "@expo/log-box": "workspace:55.0.7",
-    "@expo/metro": "56.0.0-rc.2",
+    "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:55.0.9",
     "@expo/vector-icons": "^15.0.2",
     "@ungap/structured-clone": "^1.3.0",

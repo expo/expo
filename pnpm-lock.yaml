@@ -1804,8 +1804,8 @@ importers:
         specifier: workspace:55.0.7
         version: link:../log-box
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
       '@expo/metro-config':
         specifier: workspace:~55.0.9
         version: link:../metro-config
@@ -2533,8 +2533,8 @@ importers:
         specifier: workspace:~10.0.12
         version: link:../json-file
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
       '@expo/spawn-async':
         specifier: ^1.7.2
         version: 1.7.2
@@ -2628,8 +2628,8 @@ importers:
         version: 1.0.8
     devDependencies:
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
@@ -3097,8 +3097,8 @@ importers:
         specifier: ^7.26.0
         version: 7.29.0
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
       '@expo/metro-config':
         specifier: workspace:*
         version: link:../@expo/metro-config
@@ -3452,8 +3452,8 @@ importers:
         specifier: workspace:55.0.7
         version: link:../@expo/log-box
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
       '@expo/metro-config':
         specifier: workspace:55.0.9
         version: link:../@expo/metro-config
@@ -4208,8 +4208,8 @@ importers:
         specifier: workspace:*
         version: link:../@expo/json-file
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
       '@expo/schemer':
         specifier: workspace:*
         version: link:../@expo/schemer
@@ -4835,8 +4835,8 @@ importers:
         specifier: ^7.26.0
         version: 7.29.0
       '@expo/metro':
-        specifier: 56.0.0-rc.2
-        version: 56.0.0-rc.2
+        specifier: ~56.0.0
+        version: 56.0.0
 
   packages/expo-module-template:
     devDependencies:
@@ -7494,8 +7494,8 @@ packages:
     peerDependencies:
       '@modelcontextprotocol/sdk': ^1.26.0
 
-  '@expo/metro@56.0.0-rc.2':
-    resolution: {integrity: sha512-VgEkAshU/uVkOXux199M1i5in5rXw3PMOEHlTkl0Zi1BLP1zOL6mOIRXHG/8ZQ/6qDTJtpYgComI4/v42JOqFg==}
+  '@expo/metro@56.0.0':
+    resolution: {integrity: sha512-5gIgQHtEpjjvsjKfVtIv23a98LLRV0/y07PDShEwYSytAMlE3FSF8RHXqtHc1sUJL6dn7hnuIBpIbrLXXuVi0A==}
 
   '@expo/multipart-body-parser@1.1.0':
     resolution: {integrity: sha512-XOaS79wFIJgx0J7oUzRb+kZsnZmFqGpisu0r8RPO3b0wjbW7xpWgiXmRR4RavKeGiVAPauZOi4vad7cJ3KCspg==}
@@ -17367,7 +17367,7 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@expo/metro@56.0.0-rc.2':
+  '@expo/metro@56.0.0':
     dependencies:
       metro: 0.84.4
       metro-babel-transformer: 0.84.4
