@@ -74,6 +74,7 @@ module Expo
     @hermes_version = nil
     @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
+    @failed_remote_downloads = Set.new
     @warned_no_prebuilt_react = false
 
     class << self
@@ -1582,7 +1583,7 @@ module Expo
         current_dir = start_dir || Dir.pwd
 
         loop do
-          return current_dir if File.directory?(File.join(current_dir, 'packages'))
+          return current_dir if File.exist?(File.join(current_dir, 'packages', 'expo-modules-core', 'spm.config.json'))
 
           parent = File.dirname(current_dir)
           break if parent == current_dir
@@ -1808,22 +1809,41 @@ module Expo
           "#{product_name}.tar.gz"
         ].join('/')
         remote_url = "#{base_url.chomp('/')}/#{relative_path}"
+        remote_tarball = File.join(remote_precompiled_artifacts_dir, relative_path)
 
-        download_remote_tarball(remote_url, tarball, pod_name || product_name, flavor)
+        return remote_tarball if File.exist?(remote_tarball)
+        return remote_tarball if failed_remote_downloads.include?(remote_url)
+
+        download_remote_tarball(remote_url, remote_tarball, pod_name || product_name, flavor)
+        remote_tarball
+      end
+
+      def failed_remote_downloads
+        @failed_remote_downloads ||= Set.new
+      end
+
+      def remote_precompiled_artifacts_dir
+        pods_root = Pod::Config.instance.sandbox_root rescue File.join(Dir.pwd, 'Pods')
+        File.join(pods_root.to_s, 'ExpoPrecompiledArtifacts')
+      end
+
+      def gray(text)
+        text.respond_to?(:gray) ? text.gray : text
       end
 
       def download_remote_tarball(remote_url, destination_path, pod_name, flavor)
         FileUtils.mkdir_p(File.dirname(destination_path))
         tmp_path = "#{destination_path}.download-#{Process.pid}"
 
-        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloading #{flavor} artifact from #{remote_url}"
-
         download_to_file(remote_url, tmp_path)
         FileUtils.mv(tmp_path, destination_path)
+        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloaded remote #{flavor} artifact"
         destination_path
       rescue => e
         FileUtils.rm_f(tmp_path) if tmp_path && File.exist?(tmp_path)
-        Pod::UI.warn "[Expo-precompiled] #{pod_name}: failed to download #{flavor} artifact from #{remote_url}: #{e.message}"
+        failed_remote_downloads.add(remote_url)
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: remote #{flavor} artifact unavailable (#{e.message}); building from source".yellow}"
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  URL: #{remote_url}")}"
         nil
       end
 
