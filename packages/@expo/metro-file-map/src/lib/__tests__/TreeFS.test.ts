@@ -1580,4 +1580,584 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
   });
+
+  describe('fallback filesystem', () => {
+    let mockFallback: {
+      lookup: jest.Mock;
+      readdir: jest.Mock;
+    };
+
+    function makeFallbackTfs(
+      opts: {
+        files?: FileData;
+        roots?: string[];
+        serverRoot?: string | null;
+      } = {}
+    ): TreeFSType {
+      mockFallback = {
+        lookup: jest.fn().mockReturnValue(null),
+        readdir: jest.fn().mockReturnValue(null),
+      };
+      return new TreeFS({
+        rootDir: p('/project'),
+        files: opts.files ?? new Map(),
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+        fallbackFilesystem: mockFallback,
+        roots: opts.roots ?? [p('/project/src')],
+        serverRoot: opts.serverRoot,
+      });
+    }
+
+    describe('lookup triggers fallback for missing paths', () => {
+      test('calls fallback.lookup for a missing file outside watched roots', () => {
+        const fbTfs = makeFallbackTfs();
+        // The first missing segment is 'outside' (a directory), then 'file.js' inside it.
+        // #populateFromFilesystem at root level calls fallback.lookup for 'outside'.
+        // Return a directory Map with the file already in it.
+        const outsideDir = new Map([['file.js', [100, 5, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        const result = fbTfs.lookup(p('/project/outside/file.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+        expect(mockFallback.lookup).toHaveBeenCalled();
+      });
+
+      test('does not call fallback for paths inside watched roots', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('src/existing.js'), [100, 5, 0, null, 0, null]]]),
+        });
+
+        // 'src' directory is populated by the file above.
+        // Looking up a missing file inside 'src' should not trigger fallback
+        // because rootPattern blocks it.
+        fbTfs.lookup(p('/project/src/missing.js'));
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
+        expect(mockFallback.readdir).not.toHaveBeenCalled();
+      });
+
+      test('does not call fallback when skipFallback is true (getMtimeByNormalPath)', () => {
+        const fbTfs = makeFallbackTfs();
+        fbTfs.getMtimeByNormalPath(p('outside/file.js'));
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
+      });
+
+      test('populates parent directory via readdir for crawlable parents', () => {
+        const fbTfs = makeFallbackTfs();
+        // For 'outside/file.js':
+        // 1. 'outside' is missing at root → fallback.lookup('outside', ...) returns a directory
+        // 2. 'file.js' is missing inside 'outside' → shouldFallbackCrawlDir('outside') = true
+        //    → fallback.readdir('outside', ...) populates the dir
+        const outsideDir = new Map<string, any>();
+        mockFallback.lookup.mockReturnValue(outsideDir);
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            result.set('file.js', [100, 5, 0, null, 0, null]);
+            result.set('other.js', [200, 3, 0, null, 0, null]);
+            return result;
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/outside/file.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+        expect(mockFallback.readdir).toHaveBeenCalled();
+      });
+
+      test('traverses ".." and populates sibling via fallback', () => {
+        const fbTfs = makeFallbackTfs();
+        // For '../sibling/file.js':
+        // 1. '..' is missing → creates empty Map, sets in tree
+        // 2. 'sibling' is missing inside '..' → shouldFallbackCrawlDir('..') = true
+        //    → fallback.readdir('..', ...) populates the parent directory
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (!result.has('sibling')) {
+              const siblingDir = new Map([['file.js', [100, 5, 0, null, 0, null] as any]]);
+              result.set('sibling', siblingDir);
+            }
+            return result;
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/../sibling/file.js'));
+        expect(result).toMatchObject({ exists: true });
+      });
+    });
+
+    describe('fallback boundary (scopeFallback/serverRoot)', () => {
+      test('blocks fallback beyond serverRoot boundary depth', () => {
+        // serverRoot is /project itself → boundary depth = 0
+        // Paths above root (../) should be blocked
+        const fbTfs = makeFallbackTfs({ serverRoot: p('/project') });
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            result.set('outside', new Map([['file.js', [100, 5, 0, null, 0, null] as any]]));
+            return result;
+          }
+        );
+
+        // Looking up ../outside/file.js — the '..' traversal is within the tree,
+        // but 'outside' lookup inside '..' should be blocked by boundary
+        const result = fbTfs.lookup(p('/project/../outside/file.js'));
+        expect(result).toMatchObject({ exists: false });
+        // Fallback should not have been called for paths beyond boundary
+        expect(mockFallback.readdir).not.toHaveBeenCalled();
+      });
+
+      test('allows fallback within serverRoot boundary', () => {
+        // serverRoot is filesystem root → boundary includes all ancestors
+        const fbTfs = makeFallbackTfs({ serverRoot: p('/') });
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (!result.has('sibling')) {
+              result.set('sibling', new Map([['file.js', [100, 5, 0, null, 0, null] as any]]));
+            }
+            return result;
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/../sibling/file.js'));
+        expect(result).toMatchObject({ exists: true });
+      });
+
+      test('no boundary when serverRoot is null (scopeFallback disabled)', () => {
+        const fbTfs = makeFallbackTfs({ serverRoot: null });
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (!result.has('deep')) {
+              result.set('deep', new Map([['file.js', [100, 5, 0, null, 0, null] as any]]));
+            }
+            return result;
+          }
+        );
+
+        // Even deeply nested parent access should work
+        const result = fbTfs.lookup(p('/project/../../deep/file.js'));
+        expect(result).toMatchObject({ exists: true });
+      });
+    });
+
+    describe('matchFiles with fallback', () => {
+      test('populates empty directories during recursive iteration', () => {
+        const files = new Map<CanonicalPath, FileMetadata>([
+          [p('existing/placeholder.js'), [100, 5, 0, null, 0, null]],
+        ]);
+        const fbTfs = makeFallbackTfs({ files });
+        // When matchFiles iterates into 'outside' (an empty directory),
+        // the fallback should populate it
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            if (normalPath === p('outside') || normalPath.endsWith(p('/outside'))) {
+              const result = dirNode ?? new Map();
+              result.set('discovered.js', [200, 3, 0, null, 0, null]);
+              return result;
+            }
+            return dirNode;
+          }
+        );
+
+        // First trigger fallback to create 'outside' directory
+        mockFallback.lookup.mockReturnValue(new Map());
+        fbTfs.lookup(p('/project/outside'));
+
+        const matches = [
+          ...fbTfs.matchFiles({
+            rootDir: p('/project/outside'),
+            recursive: true,
+          }),
+        ];
+        expect(matches).toContain(p('/project/outside/discovered.js'));
+      });
+
+      test('does not populate ".." directories during iteration', () => {
+        const fbTfs = makeFallbackTfs();
+        // Create a '..' node in the tree by looking up a path above root
+        mockFallback.lookup.mockReturnValue(null);
+        fbTfs.lookup(p('/project/../something/file.js'));
+
+        // Now iterate — should not try to populate '..' directories
+        mockFallback.readdir.mockClear();
+        [...fbTfs.matchFiles({ rootDir: p('/project'), recursive: true })];
+        // readdir should not have been called with a '..' canonical path
+        for (const call of mockFallback.readdir.mock.calls) {
+          const canonicalPath = call[0] as string;
+          expect(canonicalPath).not.toContain('..');
+        }
+      });
+    });
+
+    describe('getSerializableSnapshot excludes fallback data', () => {
+      test('does not include fallback-populated directories in snapshot', () => {
+        const files = new Map<CanonicalPath, FileMetadata>([
+          [p('src/real.js'), [100, 5, 0, null, 0, null]],
+        ]);
+        const fbTfs = makeFallbackTfs({ files, roots: [p('/project/src')] });
+
+        // Trigger fallback to populate a directory outside roots.
+        // 'outside' is the first missing segment → fallback.lookup returns a directory.
+        const outsideDir = new Map([['external.js', [200, 3, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+        fbTfs.lookup(p('/project/outside/external.js'));
+
+        // Snapshot should only contain data within watched roots
+        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
+        // 'src' should be in the snapshot
+        expect(snapshot.has('src')).toBe(true);
+        // 'outside' should NOT be in the snapshot (directory outside roots)
+        expect(snapshot.has('outside')).toBe(false);
+      });
+
+      test('includes all watched root data in snapshot', () => {
+        const files = new Map<CanonicalPath, FileMetadata>([
+          [p('src/a.js'), [100, 5, 0, null, 0, null]],
+          [p('src/b.js'), [200, 3, 0, null, 0, null]],
+        ]);
+        const fbTfs = makeFallbackTfs({ files, roots: [p('/project/src')] });
+
+        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
+        const srcDir = snapshot.get('src') as Map<string, any>;
+        expect(srcDir).toBeInstanceOf(Map);
+        expect(srcDir.has('a.js')).toBe(true);
+        expect(srcDir.has('b.js')).toBe(true);
+      });
+    });
+
+    describe('rootPattern consistency with trailing separator', () => {
+      test('blocks fallback for paths that exactly match a root name', () => {
+        const files = new Map<CanonicalPath, FileMetadata>([
+          [p('src/existing.js'), [100, 5, 0, null, 0, null]],
+        ]);
+        // Root is 'src' — pattern should block 'src/' and 'src/foo' paths
+        const fbTfs = makeFallbackTfs({ files, roots: [p('/project/src')] });
+        mockFallback.lookup.mockReturnValue([200, 3, 0, null, 0, null]);
+
+        // Looking up a file directly inside 'src' — rootPattern should block
+        fbTfs.lookup(p('/project/src/new-file.js'));
+
+        // Fallback should not have been called for paths within the root
+        for (const call of mockFallback.lookup.mock.calls) {
+          const childPath = call[0] as string;
+          expect(childPath.startsWith('src' + p('/'))).toBe(false);
+        }
+      });
+    });
+
+    describe('interaction with lazy stat and symlink resolution', () => {
+      test('fallback-discovered file with null mtime is stat-ed by getOrComputeSha1', async () => {
+        const mockProcessFile = jest.fn((_path: string, metadata: FileMetadata) => {
+          metadata[H.SHA1] = 'computed';
+        });
+        mockFallback = {
+          lookup: jest.fn().mockReturnValue(null),
+          readdir: jest.fn().mockReturnValue(null),
+        };
+        const fbTfs = new TreeFS({
+          rootDir: p('/project'),
+          files: new Map(),
+          processFile: mockProcessFile,
+          fallbackFilesystem: mockFallback,
+          roots: [p('/project/src')],
+        });
+
+        // Fallback returns a directory with a file that has null mtime (lazy)
+        const outsideDir = new Map([['lazy.js', [null, 0, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        // First verify file is discoverable
+        const lookupResult = fbTfs.lookup(p('/project/outside/lazy.js'));
+        expect(lookupResult).toMatchObject({ exists: true, type: 'f' });
+
+        // Now getOrComputeSha1 should trigger lstat (null mtime path)
+        mockLstat.mockResolvedValueOnce({
+          mtime: { getTime: () => 777 },
+          size: 20,
+        });
+        const sha1Result = await fbTfs.getOrComputeSha1(p('outside/lazy.js'));
+        expect(sha1Result).toEqual({ sha1: 'computed' });
+        expect(mockLstat).toHaveBeenCalledWith(p('/project/outside/lazy.js'));
+        expect(mockProcessFile).toHaveBeenCalledTimes(1);
+      });
+
+      test('fallback-discovered symlink (readdir marker) resolves lazily on traversal', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('target.js'), [100, 5, 0, null, 0, null]]]),
+        });
+
+        // Fallback returns a directory with an unresolved symlink marker
+        const outsideDir = new Map<string, any>([
+          ['link.js', [null, 0, 0, null, 1, null]], // SYMLINK = 1 = unresolved
+        ]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        // readlinkSync will be called when the symlink is traversed
+        mockReadlinkSync.mockReturnValue(p('../target.js'));
+
+        const result = fbTfs.lookup(p('/project/outside/link.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+        expect(mockReadlinkSync).toHaveBeenCalledWith(p('/project/outside/link.js'));
+      });
+
+      test('fallback lookup eagerly-resolved symlink does not call readlinkSync again', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('target.js'), [100, 5, 0, null, 0, null]]]),
+        });
+
+        // Fallback lookup returns a symlink that's already eagerly resolved (string target)
+        const outsideDir = new Map<string, any>([['link.js', [50, 0, 0, null, 'target.js', null]]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        const result = fbTfs.lookup(p('/project/outside/link.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+        // readlinkSync should NOT be called — target already resolved
+        expect(mockReadlinkSync).not.toHaveBeenCalled();
+      });
+
+      test('addOrModify updates a path that was originally discovered via fallback', () => {
+        const fbTfs = makeFallbackTfs();
+        const outsideDir = new Map([['file.js', [100, 5, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        // Discover via fallback
+        expect(fbTfs.lookup(p('/project/outside/file.js'))).toMatchObject({ exists: true });
+
+        // Simulate watcher update — mtime changed
+        fbTfs.addOrModify(p('outside/file.js'), [200, 8, 0, null, 0, null]);
+
+        // Verify updated metadata is reflected
+        expect(fbTfs.getMtimeByNormalPath(p('outside/file.js'))).toBe(200);
+      });
+
+      test('remove deletes a path that was originally discovered via fallback', () => {
+        const fbTfs = makeFallbackTfs();
+        const outsideDir = new Map([['file.js', [100, 5, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        // Discover via fallback
+        expect(fbTfs.lookup(p('/project/outside/file.js'))).toMatchObject({ exists: true });
+
+        // Remove it
+        fbTfs.remove(p('outside/file.js'));
+
+        // Should no longer exist (fallback won't re-discover because parent dir is already populated)
+        expect(fbTfs.lookup(p('/project/outside/file.js'))).toMatchObject({ exists: false });
+      });
+
+      test('metadataIterator includes fallback-discovered files', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('src/real.js'), [100, 5, 0, null, 0, null]]]),
+          roots: [p('/project/src')],
+        });
+
+        // Discover a file via fallback
+        const outsideDir = new Map([['found.js', [200, 3, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+        fbTfs.lookup(p('/project/outside/found.js'));
+
+        const entries = [
+          ...fbTfs.metadataIterator({
+            includeSymlinks: false,
+            includeNodeModules: true,
+          }),
+        ];
+        const paths = entries.map((e) => e.canonicalPath);
+        expect(paths).toContain(p('src/real.js'));
+        expect(paths).toContain(p('outside/found.js'));
+      });
+
+      test('matchFiles follows fallback-discovered directory symlink', () => {
+        const fbTfs = makeFallbackTfs({
+          files: new Map([[p('real-dir/nested.js'), [100, 5, 0, null, 0, null]]]),
+          roots: [p('/project/src')],
+        });
+
+        // Fallback discovers a directory containing a symlink to 'real-dir'
+        const outsideDir = new Map<string, any>([
+          ['dir-link', [50, 0, 0, null, 1, null]], // unresolved symlink marker
+        ]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+        // When the symlink is resolved, it points to real-dir
+        mockReadlinkSync.mockReturnValue(p('../real-dir'));
+
+        // First discover 'outside' directory via fallback
+        fbTfs.lookup(p('/project/outside'));
+
+        const matches = [
+          ...fbTfs.matchFiles({
+            rootDir: p('/project/outside'),
+            follow: true,
+            recursive: true,
+          }),
+        ];
+        // Should follow the symlink and find nested.js
+        expect(matches).toContain(p('/project/outside/dir-link/nested.js'));
+      });
+    });
+
+    describe('#cloneTree excludes ".." when rootDir is a watched root', () => {
+      test('fallback-discovered ".." directories are excluded from snapshot', () => {
+        const fbTfs = makeFallbackTfs({ roots: [p('/project')] });
+
+        // Trigger fallback to create a '..' directory entry via lookup above root
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (!result.has('something')) {
+              result.set('something', new Map([['file.js', [100, 5, 0, null, 0, null] as any]]));
+            }
+            return result;
+          }
+        );
+        fbTfs.lookup(p('/project/../something/file.js'));
+
+        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
+        // '..' should NOT be in the snapshot (negative-lookahead pattern excludes it)
+        expect(snapshot.has('..')).toBe(false);
+      });
+    });
+
+    describe('fromDeserializedSnapshot + fallback integration', () => {
+      test('fallback extends a deserialized tree', () => {
+        // Create initial tree data (simulating a deserialized snapshot)
+        const fileSystemData: Map<string, any> = new Map([
+          ['src', new Map([['existing.js', [100, 5, 0, null, 0, null]]])],
+        ]);
+
+        mockFallback = {
+          lookup: jest.fn().mockReturnValue(null),
+          readdir: jest.fn().mockReturnValue(null),
+        };
+
+        const fbTfs = TreeFS.fromDeserializedSnapshot({
+          rootDir: p('/project'),
+          fileSystemData,
+          processFile: async () => {
+            throw new Error('Not implemented');
+          },
+          fallbackFilesystem: mockFallback,
+          roots: [p('/project/src')],
+        });
+
+        // Verify snapshot data is intact
+        expect(fbTfs.lookup(p('/project/src/existing.js'))).toMatchObject({
+          exists: true,
+          type: 'f',
+        });
+
+        // Now look up a path NOT in the snapshot — fallback should discover it
+        const outsideDir = new Map([['new-file.js', [200, 3, 0, null, 0, null] as any]]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+
+        const result = fbTfs.lookup(p('/project/outside/new-file.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+        expect(mockFallback.lookup).toHaveBeenCalled();
+
+        // Original snapshot data should still be intact
+        expect(fbTfs.lookup(p('/project/src/existing.js'))).toMatchObject({
+          exists: true,
+          type: 'f',
+        });
+      });
+    });
+
+    describe('negative caching behavior', () => {
+      test('caches null result from fallback.lookup and does not re-query', () => {
+        const fbTfs = makeFallbackTfs();
+        mockFallback.lookup.mockReturnValue(null);
+
+        // First lookup — fallback returns null
+        const result1 = fbTfs.lookup(p('/project/missing/file.js'));
+        expect(result1).toMatchObject({ exists: false });
+
+        // Clear call counts
+        mockFallback.lookup.mockClear();
+        mockFallback.readdir.mockClear();
+
+        // Second lookup — fallback should NOT be called again (negative cache)
+        const result2 = fbTfs.lookup(p('/project/missing/file.js'));
+        expect(result2).toMatchObject({ exists: false });
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
+        expect(mockFallback.readdir).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('node_modules bypass via direct lookup', () => {
+      test('lookups inside node_modules use fallback.lookup, not readdir of node_modules', () => {
+        const fbTfs = makeFallbackTfs();
+
+        // For 'outside/node_modules/pkg/index.js':
+        // 1. 'outside' is missing → fallback.lookup returns a directory
+        // 2. 'node_modules' is missing inside 'outside' → shouldFallbackCrawlDir('outside')
+        //    is true → readdir('outside') populates it with node_modules as a dir
+        // 3. 'pkg' is missing inside 'node_modules' → shouldFallbackCrawlDir checks
+        //    'outside/node_modules' which returns false → uses individual lookup
+        const nodeModulesDir = new Map<string, any>();
+        const outsideDir = new Map<string, any>([['node_modules', nodeModulesDir]]);
+        mockFallback.lookup.mockImplementation(
+          (normalPath: string, _absolutePath: string, _existing: any) => {
+            if (normalPath === 'outside') {
+              return outsideDir;
+            }
+            if (normalPath === p('outside/node_modules/pkg')) {
+              return new Map([['index.js', [100, 5, 0, null, 0, null] as any]]);
+            }
+            return null;
+          }
+        );
+        // readdir is called for 'outside' (crawlable parent), returns the outsideDir
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            return dirNode;
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/outside/node_modules/pkg/index.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+
+        // readdir should NOT have been called with a path containing 'node_modules'
+        for (const call of mockFallback.readdir.mock.calls) {
+          const normalPath = call[0] as string;
+          expect(normalPath).not.toMatch(/node_modules/);
+        }
+      });
+    });
+
+    describe('remove + re-lookup after fallback discovery', () => {
+      test('re-lookup after remove does NOT re-discover the file', () => {
+        const fbTfs = makeFallbackTfs();
+
+        // Discover directory via fallback with multiple files (so parent isn't removed)
+        const outsideDir = new Map([
+          ['file.js', [100, 5, 0, null, 0, null] as any],
+          ['other.js', [200, 3, 0, null, 0, null] as any],
+        ]);
+        mockFallback.lookup.mockReturnValue(outsideDir);
+        expect(fbTfs.lookup(p('/project/outside/file.js'))).toMatchObject({ exists: true });
+
+        // Remove only one file — parent 'outside' still has 'other.js' so it persists
+        fbTfs.remove(p('outside/file.js'));
+
+        // Clear mock call counts
+        mockFallback.lookup.mockClear();
+        mockFallback.readdir.mockClear();
+
+        // readdir may be called on the parent ('outside' is crawlable), but should
+        // return the existing dirNode as-is (already marked/populated)
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => dirNode
+        );
+
+        // Re-lookup — file should remain absent (not re-discovered)
+        const result = fbTfs.lookup(p('/project/outside/file.js'));
+        expect(result).toMatchObject({ exists: false });
+        // fallback.lookup should NOT be called for the individual file
+        expect(mockFallback.lookup).not.toHaveBeenCalled();
+      });
+    });
+  });
 });
