@@ -41,7 +41,7 @@ describe('processBatch', () => {
       setup: () => {},
       processFile: mockWorkerFn,
       Worker: class {
-        processFile: (msg: WorkerMessage) => WorkerMetadata = mockWorkerFn;
+        processFile: (msg: WorkerMessage) => Promise<WorkerMetadata> = mockWorkerFn;
       },
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
@@ -299,34 +299,34 @@ describe('processBatch', () => {
 
 describe('processRegularFile', () => {
   let FileProcessor: typeof import('../FileProcessor').FileProcessor;
-  const mockReadFileSync = jest.fn();
+  const mockReadFile = jest.fn();
 
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
     jest.unmock('../../worker');
     jest.mock('fs', () => ({
-      readFileSync: mockReadFileSync,
+      promises: {
+        readFile: mockReadFile,
+      },
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
   });
 
-  test('synchronously populates metadata', () => {
+  test('asynchronously populates metadata', async () => {
     const processor = new FileProcessor(defaultOptions);
     const [normalFilePath, metadata] = getNMockFiles(1)[0]!;
     expect(metadata[H.SHA1]).toBeFalsy();
 
     const fileContent = Buffer.from('hello world');
-    mockReadFileSync.mockReturnValue(fileContent);
+    mockReadFile.mockResolvedValue(fileContent);
 
-    const result = processor.processRegularFile(normalFilePath, metadata, {
+    const result = await processor.processRegularFile(normalFilePath, metadata, {
       computeSha1: true,
       maybeReturnContent: true,
     });
 
-    expect(mockReadFileSync).toHaveBeenCalledWith(
-      path.resolve(defaultOptions.rootDir, normalFilePath)
-    );
+    expect(mockReadFile).toHaveBeenCalledWith(path.resolve(defaultOptions.rootDir, normalFilePath));
 
     expect(result).toEqual({
       content: fileContent,

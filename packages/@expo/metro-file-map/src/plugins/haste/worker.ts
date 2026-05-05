@@ -23,13 +23,16 @@ export default class Worker implements MetadataWorker {
     }
   }
 
-  processFile(data: WorkerMessage, utils: Readonly<{ getContent: () => Buffer }>): V8Serializable {
+  async processFile(
+    data: WorkerMessage,
+    utils: { readonly getContent: () => Promise<Buffer> }
+  ): Promise<V8Serializable> {
     let hasteName: string | null = null;
     const { filePath } = data;
     if (filePath.endsWith(PACKAGE_JSON)) {
       // Process a package.json that is returned as a PACKAGE type with its name.
       try {
-        const fileData = JSON.parse(utils.getContent().toString());
+        const fileData = JSON.parse((await utils.getContent()).toString());
         if (fileData.name) {
           hasteName = fileData.name;
         }

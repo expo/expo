@@ -13,7 +13,7 @@ import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../.
 import nodeCrawl from '../index';
 
 const rootDir = '/project';
-const processFile = () => null;
+const processFile = async () => null;
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });

@@ -54,7 +54,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         [p('node_modules/pkg/a.js'), [123, 0, 0, null, 0, 'a']],
         [p('node_modules/pkg/package.json'), [123, 0, 0, null, 0, 'pkg']],
       ]),
-      processFile: () => {
+      processFile: async () => {
         throw new Error('Not implemented');
       },
     });
@@ -178,7 +178,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           [p('foo/index.js'), [123, 0, 0, null, 0, null]],
           [p('link-up'), [123, 0, 0, null, '..', null]],
         ]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -262,7 +262,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           [p('sub/deep.js'), [123, 10, 0, null, 0, null]],
           [p('link-to-nested-file'), [0, 0, 0, null, 1, null]],
         ]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -467,7 +467,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       const nullMtimeTfs = new TreeFS({
         rootDir: p('/project'),
         files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -486,7 +486,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       const zeroMtimeTfs = new TreeFS({
         rootDir: p('/project'),
         files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [0, 0, 0, null, 0, null]]]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -514,7 +514,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       const nullMtimeTfs = new TreeFS({
         rootDir: p('/project'),
         files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -537,7 +537,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         files: new Map<CanonicalPath, FileMetadata>([
           [p('a.js'), [null, 0, 0, null, p('./b.js'), null]],
         ]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -568,7 +568,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       const nullMtimeTfs = new TreeFS({
         rootDir: p('/project'),
         files: new Map<CanonicalPath, FileMetadata>([[p('a.js'), [null, 0, 0, null, 0, null]]]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -615,7 +615,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
             )
           )
         ),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
@@ -1289,7 +1289,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           [p('dir/nested.js'), [456, 0, 0, '', 0]],
           [p('mylink'), [0, 0, 0, '', 'dir']],
         ]),
-        processFile: () => {
+        processFile: async () => {
           throw new Error('Not implemented');
         },
       });
