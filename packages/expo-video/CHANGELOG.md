@@ -2,10 +2,6 @@
 
 ## Unpublished
 
-### 🐛 Bug fixes
-
-- [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`).([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
-
 ### 🛠 Breaking changes
 
 ### 🎉 New features
@@ -13,6 +9,8 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`).([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
 
 ## 56.0.0 — 2026-05-05
 
@@ -481,7 +479,6 @@ _This version does not introduce any user-facing changes._
 
 - Added support for React Native 0.75.x. ([#30034](https://github.com/expo/expo/pull/30034) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Added support for React Native 0.76.x. ([#31552](https://github.com/expo/expo/pull/31552) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 
 ## 1.2.7 - 2024-09-26
 
