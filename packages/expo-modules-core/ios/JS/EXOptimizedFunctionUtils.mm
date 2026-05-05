@@ -2,8 +2,6 @@
 
 #import <ExpoModulesCore/EXOptimizedFunctionUtils.h>
 
-#include <algorithm>
-
 #include <jsi/jsi.h>
 #include <ReactCommon/CallInvoker.h>
 #include <ReactCommon/TurboModuleUtils.h>
@@ -140,14 +138,21 @@ void parseTypeEncoding(NSString *typeEncoding, NSInteger argsCount, jsi::Runtime
 }
 
 /**
- Sets each JS argument on the invocation, capping the loop at the declared
- argument count so extras passed by JS are silently ignored (matching JS-native
- call semantics) rather than reading past `argTypes` and writing past the
- invocation's argument list.
+ Sets each JS argument on the invocation. Throws a JS error when the call site
+ passed a different number of arguments than the optimized function declares,
+ since the sync path reuses a cached invocation (omitted args would keep stale
+ values) and the async path would otherwise leave fresh slots uninitialized.
  */
 void setInvocationArguments(NSInvocation *invocation, const std::string &argTypes, jsi::Runtime &runtime, const jsi::Value *args, size_t count) {
-  size_t argLimit = std::min(count, argTypes.size());
-  for (size_t i = 0; i < argLimit; i++) {
+  if (count != argTypes.size()) {
+    throw jsi::JSError(
+      runtime,
+      "Received " + std::to_string(count) +
+      " arguments, but " + std::to_string(argTypes.size()) +
+      " was expected"
+    );
+  }
+  for (size_t i = 0; i < argTypes.size(); i++) {
     setInvocationArgument(invocation, i + 1, argTypes[i], runtime, args[i]);
   }
 }

@@ -252,6 +252,41 @@ struct OptimizedFunctionTests {
   }
 
   @Test
+  func `throws when fewer arguments than declared are passed`() async throws {
+    let error = try await #require(throws: ScriptEvaluationError.self) {
+      return try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1)")
+    }
+    #expect(error.message == "Received 1 arguments, but 2 was expected")
+  }
+
+  @Test
+  func `throws when more arguments than declared are passed`() async throws {
+    let error = try await #require(throws: ScriptEvaluationError.self) {
+      return try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1, 2, 3)")
+    }
+    #expect(error.message == "Received 3 arguments, but 2 was expected")
+  }
+
+  @Test
+  func `async call throws when fewer arguments than declared are passed`() async throws {
+    // Argument count is validated synchronously, so the host function throws
+    // before a promise is ever returned.
+    let error = try await #require(throws: ScriptEvaluationError.self) {
+      return try await runtime.evalAsync("expo.modules.TestModule.addNumbersAsync(1)")
+    }
+    #expect(error.message == "Received 1 arguments, but 2 was expected")
+  }
+
+  @Test
+  func `propagates the host-function error to Swift when uncaught in JS`() async throws {
+    // When the JS source doesn't catch the error, JSI surfaces it as a C++
+    // exception and `evalAsync` rethrows it as a Swift error.
+    await #expect(throws: (any Error).self) {
+      try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1)")
+    }
+  }
+
+  @Test
   func `keeps overlapping async calls isolated`() async throws {
     // Fires both promises and awaits the joined result, so the two NSInvocations
     // run concurrently from the helper's perspective. Verifies they do not share

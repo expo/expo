@@ -34,7 +34,7 @@ public final class BenchmarkingExpoModule: Module {
       return a + b
     }
 
-    AsyncFunction("addNumbersAsyncOptimized", addNumbersAsyncOptimized())
+    AsyncFunction("addNumbersAsyncOptimized", addNumbersOptimized())
 
     // MARK: - Strings
 
@@ -87,11 +87,6 @@ public final class BenchmarkingExpoModule: Module {
 
   @OptimizedFunction
   private func addNumbersOptimized(a: Double, b: Double) throws -> Double {
-    return a + b
-  }
-
-  @OptimizedFunction
-  private func addNumbersAsyncOptimized(a: Double, b: Double) throws -> Double {
     return a + b
   }
 
