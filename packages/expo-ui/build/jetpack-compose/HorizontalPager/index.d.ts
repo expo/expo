@@ -1,6 +1,7 @@
 import type { Ref } from 'react';
 import { type ModifierConfig } from '../../types';
-import type { PaddingValuesRecord } from '../Carousel';
+import { type PaddingValuesRecord } from '../Carousel';
+export type { PaddingValuesRecord };
 export type HorizontalPagerHandle = {
     /**
      * Mirrors Compose's `PagerState.animateScrollToPage`. Resolves when the
