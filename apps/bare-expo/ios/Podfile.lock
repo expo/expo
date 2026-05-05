@@ -578,6 +578,10 @@ PODS:
   - ExpoModulesWorklets (55.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
+  - ExpoModulesWorkletsAdapter (55.0.12):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+    - ExpoModulesWorklets
     - RNWorklets
   - ExpoNetwork (55.0.8):
     - ExpoModulesCore
@@ -2186,7 +2190,7 @@ PODS:
     - React-RCTFBReactNativeSpec
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-  - react-native-keyboard-controller (1.21.0):
+  - react-native-keyboard-controller (1.21.6):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2198,7 +2202,7 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-keyboard-controller/common (= 1.21.0)
+    - react-native-keyboard-controller/common (= 1.21.6)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -2209,7 +2213,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-keyboard-controller/common (1.21.0):
+  - react-native-keyboard-controller/common (1.21.6):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3319,6 +3323,7 @@ DEPENDENCIES:
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
+  - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
@@ -3390,7 +3395,7 @@ DEPENDENCIES:
   - "React-logger (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/logger`)"
   - "React-Mapbuffer (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon`)"
   - "React-microtasksnativemodule (from `../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
-  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.0_react-native-reanimated@4.3.0_patch_hash=1e34e4_cd02e1b4ea6391140214b0aa40af208c/node_modules/react-native-keyboard-controller`)"
+  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.0_patch_hash=1e34e4_4a7542518132451a7b077bd8ae3655f6/node_modules/react-native-keyboard-controller`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_f303a19f4539b0222af26531323c0855/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@6.9.1_react-native@0.85.2_@babel+core@7.29.0_@react-native+jest_42c16d1948ed01ee7c222c36c8d0a21c/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.2_@babel+core@7.29.0_@react-nati_61644d84055e7f59795950119a69a708/node_modules/react-native-safe-area-context`)"
@@ -3639,6 +3644,8 @@ EXTERNAL SOURCES:
   ExpoModulesWorklets:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core"
+  ExpoModulesWorkletsAdapter:
+    :path: "../../../packages/expo-modules-core"
   ExpoNetwork:
     inhibit_warnings: false
     :path: "../../../packages/expo-network/ios"
@@ -3797,7 +3804,7 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../../../node_modules/.pnpm/react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-preset@0.85.2_@babel+core@7.2_1ba4e579bcf69516e035b5d165f89777/node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-keyboard-controller:
-    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.0_react-native-reanimated@4.3.0_patch_hash=1e34e4_cd02e1b4ea6391140214b0aa40af208c/node_modules/react-native-keyboard-controller"
+    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.0_patch_hash=1e34e4_4a7542518132451a7b077bd8ae3655f6/node_modules/react-native-keyboard-controller"
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_f303a19f4539b0222af26531323c0855/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -3968,10 +3975,11 @@ SPEC CHECKSUMS:
   ExpoMaps: 94294944cff46ad1170ce4f92800adecbcdd04ac
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: 0b10a40c52e82e182c70dbfc12001ec30ba74cbd
+  ExpoModulesCore: 549c4ec6534357031c563ba7f3bd40eff1f93b3e
   ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
-  ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe
+  ExpoModulesWorklets: 3fc573fcc96eb8c457091dde007055ef35d58d70
+  ExpoModulesWorkletsAdapter: 8e561ffec777e8eacf2a2bad53a0edf04cfffa1a
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
   ExpoObserve: d5a52bd0670d1b2bc24a1d59cf9322f3c843a045
@@ -4045,7 +4053,7 @@ SPEC CHECKSUMS:
   React-logger: 2c87840a9f6322a1226d0df337d9662f44ea6094
   React-Mapbuffer: 1fc10d873f00aa895836c316a9737ce7d43875ce
   React-microtasksnativemodule: 85ac7286ff84e8fc8e1956233748b8d4b2a6dcea
-  react-native-keyboard-controller: 7d0575fb5c30f0c528bb7cbc72ea3516e0b80611
+  react-native-keyboard-controller: 91fb57a926597b9d16c8438bc88f1142a169715c
   react-native-netinfo: 4319d381f35bc11b53dafebd5cd99c04c66a9fb4
   react-native-pager-view: a3cb9627d41fa2f31ad2b312af6e3f10f831f26d
   react-native-safe-area-context: 91a90d98c310adcc90a511e5aeb6046d7c19d885

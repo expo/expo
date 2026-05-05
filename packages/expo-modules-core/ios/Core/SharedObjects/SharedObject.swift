@@ -103,7 +103,7 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
           try dynamicType.convertToJS(argument, appContext: appContext)
         }
       } catch {
-        log.warn("Failed to convert arguments for event '\(event)' on \(type(of: self)): \(error)")
+        log.warn("Failed to convert arguments for event '\(event)' on \(type(of: self)); the event will not be emitted: \(error)")
         return
       }
 

@@ -167,7 +167,10 @@ struct SharedObjectTests {
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
       .asObject()
 
-    try runtime.eval("sharedObject.addListener('buffer event', (payload) => { result = payload })")
+    try runtime.eval([
+      "result = null",
+      "sharedObject.addListener('buffer event', (payload) => { result = payload })"
+    ])
 
     let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
 
@@ -186,7 +189,10 @@ struct SharedObjectTests {
 
     nativeObject?.emit(event: "buffer event", arguments: payload)
 
-    let result = try runtime.eval("result").asObject()
+    let resultValue = try runtime.eval("result")
+    #expect(!resultValue.isNull() && !resultValue.isUndefined())
+
+    let result = try resultValue.asObject()
     let dataProperty = result.getProperty("data")
 
     #expect(dataProperty.isArrayBuffer())

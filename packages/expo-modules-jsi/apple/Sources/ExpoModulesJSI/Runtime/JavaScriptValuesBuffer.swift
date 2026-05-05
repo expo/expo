@@ -147,12 +147,15 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   }
 
   /**
-   Allocates a new owning buffer that copies each `JavaScriptValue` from the given array.
+   Allocates a new owning buffer holding a runtime-aware copy of each value's
+   underlying `facebook.jsi.Value`. The given `JavaScriptValue`s must all belong
+   to `runtime`; mixing runtimes will crash deep inside JSI.
    */
   @JavaScriptActor
   public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
     let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
     for (index, value) in values.enumerated() {
+      assert(value.runtime === runtime, "JavaScriptValue belongs to a different runtime than the buffer being initialized")
       buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
     }
     return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
