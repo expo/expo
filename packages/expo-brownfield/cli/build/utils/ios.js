@@ -50,6 +50,26 @@ const enumerateSourceBuiltDeps = (config, alreadyCovered) => {
 };
 exports.enumerateSourceBuiltDeps = enumerateSourceBuiltDeps;
 /**
+ * Build the `-framework <path>` (+ optional `-debug-symbols <dSYM-path>`) arg
+ * sequence for one slice of a `xcodebuild -create-xcframework` invocation.
+ *
+ * `-debug-symbols` is strict — pointing it at a non-existent path fails the
+ * whole create step — so we only attach the flag when the dSYM has actually
+ * been produced for that slice. dSYMs land at `<framework>.dSYM` next to the
+ * `.framework` in the products dir whenever
+ * `DEBUG_INFORMATION_FORMAT=dwarf-with-dsym` is in effect (forced for
+ * brownfield builds in `buildFramework`, but not guaranteed for transitive
+ * source-built deps that build under their own pod build settings).
+ */
+const xcframeworkSliceArgs = (frameworkPath) => {
+    const args = ['-framework', frameworkPath];
+    const dsymPath = `${frameworkPath}.dSYM`;
+    if (node_fs_1.default.existsSync(dsymPath)) {
+        args.push('-debug-symbols', dsymPath);
+    }
+    return args;
+};
+/**
  * Locate a source-built `.framework` for `name` inside one of the brownfield build product
  * slices. Pods that set `FRAMEWORK_SEARCH_PATHS` to `${PODS_CONFIGURATION_BUILD_DIR}/XCFrameworkIntermediates/<name>`
  * (e.g. `ExpoModulesJSI`) land in `XCFrameworkIntermediates/<name>/<name>.framework` rather
@@ -83,10 +103,8 @@ const bundleSourceBuiltFramework = async (config, name, dest) => {
     }
     const args = [
         '-create-xcframework',
-        '-framework',
-        deviceFramework,
-        '-framework',
-        simulatorFramework,
+        ...xcframeworkSliceArgs(deviceFramework),
+        ...xcframeworkSliceArgs(simulatorFramework),
         '-output',
         outputPath,
     ];
@@ -132,6 +150,11 @@ const buildFramework = async (config) => {
         'generic/platform=iphonesimulator',
         '-configuration',
         config.buildConfiguration,
+        // Ensure dSYMs are produced for both Debug and Release so they can be
+        // bundled into the resulting xcframework via `-create-xcframework
+        // -debug-symbols`. Release defaults to `dwarf-with-dsym`; Debug defaults
+        // to plain `dwarf` and would otherwise leave us with no dSYM to ship.
+        'DEBUG_INFORMATION_FORMAT=dwarf-with-dsym',
     ];
     if (config.dryRun) {
         console.log(`xcodebuild ${args.join(' ')}`);
@@ -259,10 +282,8 @@ const createXCframework = async (config, at) => {
     const outputPath = node_path_1.default.join(at, frameworkName);
     const args = [
         '-create-xcframework',
-        '-framework',
-        `${config.device}/${config.scheme}.framework`,
-        '-framework',
-        `${config.simulator}/${config.scheme}.framework`,
+        ...xcframeworkSliceArgs(`${config.device}/${config.scheme}.framework`),
+        ...xcframeworkSliceArgs(`${config.simulator}/${config.scheme}.framework`),
         '-output',
         outputPath,
     ];

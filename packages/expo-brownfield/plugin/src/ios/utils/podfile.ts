@@ -67,6 +67,54 @@ const addMangleRequire = (podfile: string): string => {
   return lines.join('\n');
 };
 
+/**
+ * Count Ruby block-opening keywords on `line` (after stripping `#` comments).
+ * Recognizes `do` (with or without `|args|`) anywhere on the line, plus the
+ * keywords `if/unless/while/until/case/begin/def/class/module/for` *only*
+ * when they appear at the start of the line — that excludes the trailing-
+ * modifier forms (`puts x if y`, `… while cond`) which don't take a matching
+ * `end`. Strings and regexes containing the literal text `do`/`end` would
+ * still be miscounted; Podfiles in practice don't put block keywords inside
+ * string literals, so this is good enough for our scope.
+ */
+const countBlockOpens = (line: string): number => {
+  const stripped = line.replace(/#.*$/, '');
+  let opens = 0;
+  const doMatches = stripped.match(/\bdo\b/g);
+  if (doMatches) {
+    opens += doMatches.length;
+  }
+  if (/^\s*(?:if|unless|while|until|case|begin|def|class|module|for)\b/.test(stripped)) {
+    opens += 1;
+  }
+  return opens;
+};
+
+const countBlockCloses = (line: string): number => {
+  const stripped = line.replace(/#.*$/, '');
+  const matches = stripped.match(/\bend\b/g);
+  return matches ? matches.length : 0;
+};
+
+/**
+ * Find the matching `end` for the block whose opener is on `openerIndex`.
+ * Walks forward tracking nesting depth so nested `do…end` (or `if…end`,
+ * `case…end`, …) inside the block don't get mistaken for the outer block's
+ * closer. Returns -1 if the input is unbalanced.
+ */
+const findMatchingEnd = (lines: string[], openerIndex: number): number => {
+  let depth = 0;
+  for (let i = openerIndex; i < lines.length; i++) {
+    const line = lines[i] ?? '';
+    depth += countBlockOpens(line);
+    depth -= countBlockCloses(line);
+    if (depth === 0 && i > openerIndex) {
+      return i;
+    }
+  }
+  return -1;
+};
+
 const addMangleRunCall = (podfile: string, targetName: string): string => {
   if (podfile.includes(MANGLE_RUN_MARKER)) {
     return podfile;
@@ -83,10 +131,7 @@ const addMangleRunCall = (podfile: string, targetName: string): string => {
     return lines.join('\n');
   }
 
-  const blockEnd = lines.findIndex(
-    (line, index) => index > postInstallIndex && /^\s*end\s*$/.test(line)
-  );
-
+  const blockEnd = findMatchingEnd(lines, postInstallIndex);
   if (blockEnd === -1) {
     return podfile;
   }
