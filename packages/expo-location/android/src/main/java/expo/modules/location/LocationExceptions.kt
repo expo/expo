@@ -61,14 +61,18 @@ internal class ForegroundServicePermissionsException :
 
 internal class MotionActivityUnauthorizedException :
   CodedException(
-    "Activity recognition permission is required. " +
-      "On Android 10 and above, add android.permission.ACTIVITY_RECOGNITION to your AndroidManifest.xml " +
-      "and request it at runtime before calling this method"
+    """
+    Activity recognition permission is required.
+    On Android 10 and above, add android.permission.ACTIVITY_RECOGNITION to your AndroidManifest.xml
+    and request it at runtime before calling this method
+    """.trimIndent()
   )
 
 internal class MotionActivityUnavailableException(cause: Throwable? = null) :
   CodedException(
-    message = "Activity recognition is not available on this device. " +
-      "Make sure Google Play Services is installed and up to date.",
+    message = """
+    Activity recognition is not available on this device.
+    Make sure Google Play Services is installed and up to date.
+    """.trimIndent(),
     cause = cause
   )
