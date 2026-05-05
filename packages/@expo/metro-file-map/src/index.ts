@@ -241,6 +241,9 @@ const WATCHMAN_REQUIRED_CAPABILITIES = [
  *
  */
 export default class FileMap extends EventEmitter {
+  // NOTE(@kitten): Expo brand to recognize patched `metro-file-map -> @expo/metro-file-map`
+  readonly __expo = true;
+
   #buildPromise: Promise<BuildResult> | undefined | null;
   readonly #cacheManager: CacheManager;
   #canUseWatchmanPromise: Promise<boolean> | undefined;
