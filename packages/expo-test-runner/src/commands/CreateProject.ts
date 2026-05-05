@@ -1,9 +1,10 @@
 import chalk from 'chalk';
-import { CommanderStatic } from 'commander';
+import type { CommanderStatic } from 'commander';
 
-import { Config } from '../Config';
+import type { Config } from '../Config';
 import TemplateProject from '../TemplateProject';
-import { DefaultOptions, registerCommand } from '../registerCommand';
+import type { DefaultOptions } from '../registerCommand';
+import { registerCommand } from '../registerCommand';
 
 interface CreateProjectOptions extends DefaultOptions {
   app: string;

@@ -249,5 +249,5 @@ export function usePowerState() {
     }, []);
     return { lowPowerMode, batteryLevel, batteryState };
 }
-export { BatteryState, };
+export { BatteryState, } from './Battery.types';
 //# sourceMappingURL=Battery.js.map

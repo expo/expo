@@ -86,11 +86,14 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
   // Build a map of product name -> package name
   // This is needed because external packages reference each other by product name
   // (e.g., "RNWorklets") rather than package name (e.g., "react-native-worklets")
+  // Source-only products are excluded — they are never built as xcframeworks,
+  // so other products cannot depend on them as binary dependencies.
   const productToPackage = new Map<string, string>();
   for (const pkg of packages) {
     try {
       const spmConfig = pkg.getSwiftPMConfiguration();
       for (const product of spmConfig.products) {
+        if (product.sourceOnly) continue;
         productToPackage.set(product.name, pkg.packageName);
       }
     } catch {
@@ -106,6 +109,9 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
     try {
       const spmConfig = pkg.getSwiftPMConfiguration();
       for (const product of spmConfig.products) {
+        // Source-only products are not built, so their externalDependencies
+        // do not influence prebuild ordering.
+        if (product.sourceOnly) continue;
         if (product.externalDependencies) {
           for (const dep of product.externalDependencies) {
             // Dependencies can be "package-name" or "package-name/ProductName"
@@ -120,8 +126,10 @@ export function sortPackagesByDependencies(packages: SPMPackageSource[]): Topolo
               // Try to resolve as product name first, fallback to literal
               packageName = productToPackage.get(dep) ?? dep;
             }
-            // Only track dependencies that are in our build set
-            if (packageMap.has(packageName)) {
+            // Only track dependencies that are in our build set, and ignore
+            // intra-package product references (a product depending on another
+            // product within the same package is not a build-order dependency).
+            if (packageMap.has(packageName) && packageName !== pkg.packageName) {
               deps.add(packageName);
             }
           }
@@ -285,6 +293,9 @@ export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPM
       }
 
       for (const product of spmConfig.products) {
+        // Source-only products are never built, so their externalDependencies
+        // do not need to be present in the build set.
+        if (product.sourceOnly) continue;
         if (!product.externalDependencies) continue;
 
         for (const dep of product.externalDependencies) {
@@ -310,27 +321,41 @@ export function expandWithUnbuiltDependencies(packages: SPMPackageSource[]): SPM
           if (CACHE_DEPS.has(depPackageName)) continue;
           if (packagesByName.has(depPackageName) || added.has(depPackageName)) continue;
 
-          // Check if the xcframework already exists (for both debug and release)
-          // Check both non-versioned and versioned paths (versioned: output/<ver>/<rn>/<hermes>/<flavor>/xcframeworks/)
-          const depBuildPath = path.join(getPrecompileDir(), '.build', depPackageName);
-          const debugExists = frameworkExistsAtAnyVersion(depBuildPath, depProductName, 'Debug');
-          const releaseExists = frameworkExistsAtAnyVersion(
-            depBuildPath,
-            depProductName,
-            'Release'
-          );
-
-          if (debugExists && releaseExists) continue;
-
-          // Try to find the package and add it to the build set
+          // Resolve the dep package once — needed for both the customBuild check
+          // and the auto-add below.
           const depPkg = getPackageByName(depPackageName);
-          if (depPkg && depPkg.hasSwiftPMConfiguration()) {
-            logger.info(
-              `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}, xcframework not found)`
+          if (!depPkg || !depPkg.hasSwiftPMConfiguration()) continue;
+
+          // customBuild products own their staleness signal (their build script
+          // hashes its own inputs and no-ops on cache hit). Always include them
+          // so the script runs and can detect source changes the existence
+          // check below cannot.
+          const depProduct = depPkg
+            .getSwiftPMConfiguration()
+            .products.find((p) => p.name === depProductName);
+          const isCustomBuild = !!depProduct?.customBuild;
+
+          if (!isCustomBuild) {
+            // Standard SPM products: skip if both flavors are already on disk.
+            // Check both non-versioned and versioned paths (versioned: output/<ver>/<rn>/<hermes>/<flavor>/xcframeworks/)
+            const depBuildPath = path.join(getPrecompileDir(), '.build', depPackageName);
+            const debugExists = frameworkExistsAtAnyVersion(depBuildPath, depProductName, 'Debug');
+            const releaseExists = frameworkExistsAtAnyVersion(
+              depBuildPath,
+              depProductName,
+              'Release'
             );
-            added.set(depPackageName, depPkg);
-            changed = true;
+
+            if (debugExists && releaseExists) continue;
           }
+
+          logger.info(
+            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}${
+              isCustomBuild ? ', customBuild — script decides cache' : ', xcframework not found'
+            })`
+          );
+          added.set(depPackageName, depPkg);
+          changed = true;
         }
       }
     }

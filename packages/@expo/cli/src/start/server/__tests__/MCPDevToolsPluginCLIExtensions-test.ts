@@ -1,9 +1,9 @@
 import { Log } from '../../../log';
-import { DevServerManager } from '../DevServerManager';
+import type { DevServerManager } from '../DevServerManager';
 import { DevToolsPlugin } from '../DevToolsPlugin';
-import { DevToolsPluginCommand } from '../DevToolsPlugin.schema';
+import type { DevToolsPluginCommand } from '../DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
-import { McpServer } from '../MCP';
+import type { McpServer } from '../MCP';
 import { addMcpCapabilities } from '../MCPDevToolsPluginCLIExtensions';
 
 jest.mock('../DevToolsPluginCliExtensionExecutor');

@@ -1,4 +1,4 @@
-import { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
+import type { ExpoUpdatesManifest, EmbeddedManifest } from 'expo-manifests';
 
 export type Manifest = ExpoUpdatesManifest | EmbeddedManifest;
 

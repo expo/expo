@@ -26,3 +26,5 @@ export function Switch({ value, onValueChange, label, disabled, testID }: Switch
     <RNSwitch value={value} onValueChange={onValueChange} disabled={disabled} testID={testID} />
   );
 }
+
+export * from './types';

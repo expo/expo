@@ -18,16 +18,21 @@ import type { TransformOptions } from './babel-core';
 export const loadBabelConfig = (function () {
   let babelRC: Pick<TransformOptions, 'extends' | 'presets'> | null = null;
 
-  return function _getBabelRC({ projectRoot }: { projectRoot: string }) {
+  return function _getBabelRC({
+    projectRoot,
+    enableBabelRCLookup = true,
+  }: {
+    projectRoot: string;
+    enableBabelRCLookup?: boolean;
+  }) {
     if (babelRC !== null) {
       return babelRC;
     }
 
     babelRC = {};
 
-    if (projectRoot) {
+    if (projectRoot && enableBabelRCLookup) {
       // Check for various babel config files in the project root
-      // TODO(EvanBacon): We might want to disable babelrc lookup when the user specifies `enableBabelRCLookup: false`.
       const possibleBabelRCPaths = ['.babelrc', '.babelrc.js', 'babel.config.js'];
 
       const foundBabelRCPath = possibleBabelRCPaths.find((configFileName) =>

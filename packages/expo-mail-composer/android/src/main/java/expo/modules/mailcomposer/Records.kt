@@ -2,10 +2,12 @@ package expo.modules.mailcomposer
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
 /**
  * Represents a mail client with a label and package name.
  */
+@OptimizedRecord
 data class MailClient(
   @Field
   val label: String,
@@ -13,6 +15,7 @@ data class MailClient(
   val packageName: String
 ) : Record
 
+@OptimizedRecord
 data class MailComposerOptions(
   @Field
   val recipients: List<String>?,

@@ -427,6 +427,7 @@ export const getBuildPlatformsFromProductPlatform = (
 ): BuildPlatform[] => {
   switch (platform) {
     case 'iOS(.v15)':
+    case 'iOS(.v16)':
       return ['iOS', 'iOS Simulator'];
     case 'macOS(.v11)':
       return ['macOS'];
@@ -796,7 +797,7 @@ let package = Package(
     name: "${dep.productName}-standalone",
 
     platforms: [
-        .iOS(.v15)
+        .iOS(.v16)
     ],
 
     products: [

@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- [Android] Bump `com.google.gms:google-services` Gradle plugin version to `4.4.4`. (by [@vonovak](https://github.com/vonovak)) ([#45320](https://github.com/expo/expo/pull/45320) by [@vonovak](https://github.com/vonovak))
+
 ## 55.0.6 — 2026-02-25
 
 ### 💡 Others

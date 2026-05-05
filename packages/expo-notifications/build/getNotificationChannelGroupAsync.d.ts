@@ -1,4 +1,4 @@
-import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
+import type { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 /**
  * Fetches information about a single notification channel group.
  * @param groupId The channel group's identifier.

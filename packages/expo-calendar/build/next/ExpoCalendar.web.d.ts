@@ -1,7 +1,9 @@
-import { PermissionResponse } from 'expo-modules-core';
-import { EntityTypes, Source } from '../Calendar';
+import type { PermissionResponse } from 'expo-modules-core';
+import type { DialogEventResult, EntityTypes, Source } from '../Calendar';
+import type { AddEventWithFormOptions } from './ExpoCalendar.types';
 declare class ExpoCalendar {
     constructor(id: string);
+    addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult>;
 }
 declare class ExpoCalendarEvent {
     constructor();
@@ -21,6 +23,7 @@ declare const _default: {
     getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
     listEvents(calendars: string[], startDate: string | Date, endDate: string | Date): Promise<ExpoCalendarEvent[]>;
     getCalendarById(calendarId: string): Promise<ExpoCalendar>;
+    presentPicker(): Promise<ExpoCalendar | null>;
     getEventById(eventId: string): Promise<ExpoCalendarEvent>;
     getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
     requestCalendarPermissions(): Promise<PermissionResponse>;

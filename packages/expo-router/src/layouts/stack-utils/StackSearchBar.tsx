@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { SearchBarProps } from 'react-native-screens';
 
 import { useCompositionOption } from '../../fork/native-stack/composition-options';
-import { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 
 // TODO: Discuss adding SearchBarSlot to react-native-screens header items
 // and exposing it as Stack.Header.SearchBarPreferredSlot

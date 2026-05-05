@@ -1,6 +1,6 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar';
-import { ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
+import { AddEventWithFormOptions, ExpoCalendar, ExpoCalendarEvent } from 'expo-calendar/next';
 import React, { useState, useEffect } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -104,7 +104,7 @@ const EventsScreen = ({ route }: Props) => {
       console.log('event', JSON.stringify(event, null, 2));
       Alert.alert('Event saved successfully');
       findEvents(calendar);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Event not saved successfully', e.message);
     }
   };
@@ -116,7 +116,7 @@ const EventsScreen = ({ route }: Props) => {
         instanceStartDate: event.startDate,
       });
       Alert.alert('Event found using getEventAsync', JSON.stringify(newEvent));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding event', e.message);
     }
   };
@@ -125,7 +125,7 @@ const EventsScreen = ({ route }: Props) => {
     try {
       const attendees = await event.getAttendees();
       Alert.alert('Attendees found using getAttendees', JSON.stringify(attendees));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding attendees', e.message);
     }
   };
@@ -144,7 +144,7 @@ const EventsScreen = ({ route }: Props) => {
         role: Calendar.AttendeeRole.SPEAKER,
       });
       Alert.alert('Attendee created using createAttendee', JSON.stringify(attendee));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error creating attendee', e.message);
     }
   };
@@ -171,7 +171,7 @@ const EventsScreen = ({ route }: Props) => {
         .update(newEvent);
       Alert.alert('Event saved successfully');
       findEvents(calendar);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Event not saved successfully', e.message);
     }
   };
@@ -188,7 +188,7 @@ const EventsScreen = ({ route }: Props) => {
       if (calendar) {
         findEvents(calendar);
       }
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Event not deleted successfully', e.message);
     }
   };
@@ -229,8 +229,8 @@ const EventsScreen = ({ route }: Props) => {
         <Button
           onPress={async () => {
             const { calendar } = route.params!;
-            const newEvent = prepareEvent(calendar.id);
-            const result = calendar.createEvent(newEvent);
+            const newEvent = prepareEvent(calendar.id, true);
+            const result = await calendar.addEventWithForm(newEvent as AddEventWithFormOptions);
             setTimeout(() => {
               Alert.alert('createEventInCalendarAsync result', JSON.stringify(result), undefined, {
                 cancelable: true,

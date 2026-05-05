@@ -1,5 +1,4 @@
 import { render, renderHook, within } from '@testing-library/react-native';
-import React from 'react';
 import { Platform, View } from 'react-native';
 
 import type { NativeStackHeaderItem } from '../types';
@@ -1145,7 +1144,7 @@ describe('children rendering', () => {
     );
     const { getByTestId } = render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
-    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0][0].source).toEqual({
+    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'back.png',
     });
   });
@@ -1156,7 +1155,7 @@ describe('children rendering', () => {
     );
     const { getByTestId } = render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
-    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0][0].source).toEqual({
+    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'back2.png',
     });
   });
@@ -1172,7 +1171,7 @@ describe('children rendering', () => {
     );
     const { getByTestId } = render(<>{result.current.children}</>);
     expect(getByTestId('ScreenStackHeaderBackButtonImage')).toBeTruthy();
-    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0][0].source).toEqual({
+    expect(MockedScreenStackHeaderBackButtonImage.mock.calls[0]![0].source).toEqual({
       uri: 'icon.png',
     });
   });

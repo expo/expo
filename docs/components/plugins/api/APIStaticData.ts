@@ -2,6 +2,7 @@ export const nonLinkableTypes = [
   '_default',
   '_ImmutableHeaders',
   '_ImmutableRequest',
+  'ActivityFamily',
   'AndroidBarcode',
   'AndroidSymbol',
   'AndroidSymbolWeight',

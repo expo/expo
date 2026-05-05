@@ -8,6 +8,8 @@
 
 - Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
 - Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
+- add a warning when mixing `@expo/vector-icons` and `react-native-vector-icons` or packages from `@react-native-vector-icons` ([#37958](https://github.com/expo/expo/pull/37958) by [@vonovak](https://github.com/vonovak))
+- Add check for both expo-router and react-navigation installed in same project ([#45323](https://github.com/expo/expo/pull/45323) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -17,6 +19,7 @@
 - Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
 - Include `web` platform in duplicate packages check ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
 - Use independent native modules API call, instead of reusing `@expo/cli`'s implementation ([#44593](https://github.com/expo/expo/pull/44593) by [@kitten](https://github.com/kitten))
+- Add explicit Node.js version requirement and make `@expo/env` fault tolerant ([#44985](https://github.com/expo/expo/pull/44985) by [@kitten](https://github.com/kitten))
 
 ## 1.18.8 — 2026-02-25
 

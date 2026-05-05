@@ -38,7 +38,7 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptors, registry, state);
 
-    expect(result['route-1'].options).toEqual({ title: 'Original' });
+    expect(result['route-1']!.options).toEqual({ title: 'Original' });
     // Should return same reference when no composition options
     expect(result['route-1']).toBe(descriptors['route-1']);
   });
@@ -54,7 +54,7 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptors, registry, state);
 
-    expect(result['route-1'].options).toEqual({
+    expect(result['route-1']!.options).toEqual({
       title: 'Composed Title',
       headerShown: true,
     });
@@ -72,8 +72,8 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptors, registry, state);
 
-    expect(result['route-1'].options.title).toBe('Dynamic');
-    expect(result['route-1'].options.headerShown).toBe(true);
+    expect(result['route-1']!.options.title).toBe('Dynamic');
+    expect(result['route-1']!.options.headerShown).toBe(true);
     expect(result['route-1']).not.toBe(descriptors['route-1']);
   });
 
@@ -89,8 +89,8 @@ describe('mergeOptions', () => {
     const result = mergeOptions(descriptors, registry, state);
 
     // Last title entry wins
-    expect(result['route-1'].options.title).toBe('Second Title');
-    expect(result['route-1'].options.headerShown).toBe(false);
+    expect(result['route-1']!.options.title).toBe('Second Title');
+    expect(result['route-1']!.options.headerShown).toBe(false);
     expect(result['route-1']).not.toBe(descriptors['route-1']);
   });
 
@@ -112,9 +112,9 @@ describe('mergeOptions', () => {
     const result = mergeOptions(descriptors, registry, state);
 
     // Focused route gets composition options
-    expect(result['route-1'].options.title).toBe('Composed Focused');
+    expect(result['route-1']!.options.title).toBe('Composed Focused');
     // Preloaded unfocused route keeps original options
-    expect(result['route-preloaded'].options.title).toBe('Preloaded Static');
+    expect(result['route-preloaded']!.options.title).toBe('Preloaded Static');
     expect(result['route-preloaded']).toBe(descriptors['route-preloaded']);
   });
 
@@ -138,7 +138,7 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptors, registry, state);
 
-    expect(result['route-preloaded'].options.title).toBe('Preloaded Composed');
+    expect(result['route-preloaded']!.options.title).toBe('Preloaded Composed');
   });
 
   it('does not mutate input descriptors', () => {
@@ -154,12 +154,12 @@ describe('mergeOptions', () => {
     const result = mergeOptions(descriptors, registry, state);
 
     // Original descriptor options unchanged
-    expect(descriptors['route-1'].options.title).toBe('Original');
+    expect(descriptors['route-1']!.options.title).toBe('Original');
     // New result has merged options
-    expect(result['route-1'].options.title).toBe('Modified');
+    expect(result['route-1']!.options.title).toBe('Modified');
     // Different object reference
     expect(result['route-1']).not.toBe(descriptors['route-1']);
-    expect(result['route-1'].options).not.toBe(descriptors['route-1'].options);
+    expect(result['route-1']!.options).not.toBe(descriptors['route-1']!.options);
   });
 
   it('handles routes with no matching registry entries', () => {
@@ -180,8 +180,8 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptors, registry, state);
 
-    expect(result['route-1'].options.title).toBe('Modified One');
-    expect(result['route-2'].options.title).toBe('Two');
+    expect(result['route-1']!.options.title).toBe('Modified One');
+    expect(result['route-2']!.options.title).toBe('Two');
     expect(result['route-2']).toBe(descriptors['route-2']);
   });
 
@@ -194,7 +194,7 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptors, registry, state);
 
-    expect(result['route-1'].options).toEqual({ title: 'Original' });
+    expect(result['route-1']!.options).toEqual({ title: 'Original' });
     expect(result['route-1']).toBe(descriptors['route-1']);
   });
 
@@ -217,8 +217,8 @@ describe('mergeOptions', () => {
 
     const result = mergeOptions(descriptor, registry, state);
 
-    expect(result['route-1'].render).toBe(mockRender);
-    expect(result['route-1'].navigation).toBe(mockNavigation);
-    expect(result['route-1'].route).toBe(mockRoute);
+    expect(result['route-1']!.render).toBe(mockRender);
+    expect(result['route-1']!.navigation).toBe(mockNavigation);
+    expect(result['route-1']!.route).toBe(mockRoute);
   });
 });

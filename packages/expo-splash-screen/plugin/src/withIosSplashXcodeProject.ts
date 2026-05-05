@@ -1,10 +1,7 @@
-import Debug from 'debug';
 import { ConfigPlugin, IOSConfig, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
 import path from 'path';
 
 import { STORYBOARD_FILE_PATH } from './withIosSplashScreenStoryboard';
-
-const debug = Debug('expo:expo-splash-screen:ios:xcodeproj');
 
 export const withIosSplashXcodeProject: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
@@ -31,7 +28,6 @@ export async function setSplashStoryboardAsync({
   // Path relative to `ios` directory
   const storyboardFilePath = path.join(projectName, STORYBOARD_FILE_PATH);
   if (!project.hasFile(storyboardFilePath)) {
-    debug(`Adding ${storyboardFilePath} to Xcode project`);
     IOSConfig.XcodeUtils.addResourceFileToGroup({
       filepath: storyboardFilePath,
       groupName: projectName,

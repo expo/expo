@@ -21,5 +21,5 @@ export type ColorPickerProps = {
  * Renders a `ColorPicker` component using SwiftUI.
  * @platform ios
  */
-export declare function ColorPicker({ selection, onSelectionChange, modifiers, ...restProps }: ColorPickerProps): import("react").JSX.Element;
+export declare function ColorPicker({ selection, onSelectionChange, modifiers, ...restProps }: ColorPickerProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

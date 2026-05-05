@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import * as React from 'react';
 import { View } from 'react-native';
 // This is a shim view for platforms that aren't supported by Expo.
@@ -5,6 +6,6 @@ import { View } from 'react-native';
 export default function NativeLinearGradient(props) {
     const { colors, locations, startPoint, endPoint, ...viewProps } = props;
     console.warn('LinearGradient is not available on this platform');
-    return <View {...viewProps}/>;
+    return _jsx(View, { ...viewProps });
 }
 //# sourceMappingURL=NativeLinearGradient.js.map

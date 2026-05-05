@@ -1,13 +1,20 @@
-import { Ref } from 'react';
-import { ColorValue } from 'react-native';
-import { ModifierConfig } from '../../types';
+import type { Ref } from 'react';
+import type { ColorValue } from 'react-native';
+import type { ObservableState } from '../../State/useNativeState';
+import type { ModifierConfig } from '../../types';
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
     setText: (newText: string) => Promise<void>;
+    /** Clear the current text. */
+    clear: () => Promise<void>;
     focus: () => Promise<void>;
     blur: () => Promise<void>;
+    /**
+     * Programmatically set the selection range.
+     */
+    setSelection: (start: number, end: number) => Promise<void>;
 };
 export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
 export type TextFieldKeyboardType = 'text' | 'number' | 'email' | 'phone' | 'decimal' | 'password' | 'ascii' | 'uri' | 'numberPassword';
@@ -85,11 +92,24 @@ export type TextFieldColors = {
     disabledSuffixColor?: ColorValue;
     errorSuffixColor?: ColorValue;
 };
+export type TextFieldValue = {
+    text: string;
+    selection: {
+        start: number;
+        end: number;
+    };
+};
+export type TextFieldValueLike = string | TextFieldValue;
 /** Shared props between `TextField` and `OutlinedTextField`. */
-type BaseTextFieldProps = {
+type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
     ref?: Ref<TextFieldRef>;
-    /** Initial value displayed when mounted. Uncontrolled — change `key` to reset. */
-    defaultValue?: string;
+    /**
+     * An observable state that holds the current value. Create one with either:
+     * - `useNativeState('initial text')`.
+     * - `useNativeState<TextFieldValue>({ text: '', selection: { start: 0, end: 0 } })`
+     * If omitted, the field manages its own internal state.
+     */
+    value?: ObservableState<T>;
     /** If true, the text field will be focused automatically when mounted. @default false */
     autoFocus?: boolean;
     /** @default true */
@@ -102,10 +122,65 @@ type BaseTextFieldProps = {
     singleLine?: boolean;
     maxLines?: number;
     minLines?: number;
+    /**
+     * Display-time text transformation. `'password'` masks every character;
+     * `'none'` (default) leaves the buffer as-is.
+     */
+    visualTransformation?: 'password' | 'none';
+    /**
+     * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+     * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+     * `backgroundColor` is the highlighted-text background (typically the same
+     * tint at lower alpha so the underlying text stays readable).
+     */
+    textSelectionColors?: {
+        handleColor?: ColorValue;
+        backgroundColor?: ColorValue;
+    };
+    /**
+     * Observable state the field writes the current selection to.
+     * Create with `useNativeState({ start: 0, end: 0 })`.
+     * Use `ref.setSelection(start, end)` to set programmatically.
+     * @internal
+     */
+    selection?: ObservableState<{
+        start: number;
+        end: number;
+    }>;
+    /** Maximum number of characters allowed. Truncates natively as the user types. */
+    maxLength?: number;
+    /**
+     * Called when the selection range changes.
+     * @internal
+     */
+    onSelectionChange?: (selection: {
+        start: number;
+        end: number;
+    }) => void;
+    /**
+     * Text styling for the field's content. Maps to Compose's `TextStyle`.
+     */
+    textStyle?: {
+        textAlign?: 'left' | 'right' | 'center' | 'justify';
+        color?: ColorValue;
+        fontSize?: number;
+        fontFamily?: string;
+        fontWeight?: '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900' | 'normal' | 'bold';
+        lineHeight?: number;
+        letterSpacing?: number;
+    };
     keyboardOptions?: TextFieldKeyboardOptions;
     keyboardActions?: TextFieldKeyboardActions;
-    /** A callback triggered when user types text. */
-    onValueChange?: (value: string) => void;
+    /**
+     * Fires whenever the value changes. The callback receives the same shape as `value`:
+     * - `string` when `value` is a string observable (typing events only).
+     * - `TextFieldValue` when `value` is a TextFieldValue observable (every gesture:
+     *   typing, tap-to-place, drag, select-all, arrow keys).
+     *
+     * If marked with the `'worklet'` directive, runs synchronously on the UI thread;
+     * otherwise delivered asynchronously as a regular JS event.
+     */
+    onValueChange?: (value: T) => void;
     /** A callback triggered when the field gains or loses focus. */
     onFocusChanged?: (focused: boolean) => void;
     shape?: object;
@@ -113,65 +188,65 @@ type BaseTextFieldProps = {
     /** Slot children (e.g. `TextField.Label`, `TextField.Placeholder`). */
     children?: React.ReactNode;
 };
-export type TextFieldProps = BaseTextFieldProps & {
+export type TextFieldProps<T extends TextFieldValueLike = string> = BaseTextFieldProps<T> & {
     colors?: TextFieldColors;
 };
-export type OutlinedTextFieldProps = BaseTextFieldProps & {
+export type OutlinedTextFieldProps<T extends TextFieldValueLike = string> = BaseTextFieldProps<T> & {
     colors?: TextFieldColors;
 };
 /**
  * A Material3 `TextField`.
  */
-declare function TextFieldComponent(props: TextFieldProps): import("react").JSX.Element;
+declare function TextFieldComponent<T extends TextFieldValueLike = string>(props: TextFieldProps<T>): import("react/jsx-runtime").JSX.Element;
 declare namespace TextFieldComponent {
     var Label: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Placeholder: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var LeadingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var TrailingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Prefix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Suffix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var SupportingText: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 /**
  * A Material3 `OutlinedTextField` with a transparent background and border outline.
  */
-declare function OutlinedTextFieldComponent(props: OutlinedTextFieldProps): import("react").JSX.Element;
+declare function OutlinedTextFieldComponent<T extends TextFieldValueLike = string>(props: OutlinedTextFieldProps<T>): import("react/jsx-runtime").JSX.Element;
 declare namespace OutlinedTextFieldComponent {
     var Label: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Placeholder: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var LeadingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var TrailingIcon: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Prefix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Suffix: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var SupportingText: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
 //# sourceMappingURL=index.d.ts.map

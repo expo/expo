@@ -1,12 +1,8 @@
-import {
-  ConfigPlugin,
-  IOSConfig,
-  XcodeProject,
-  withInfoPlist,
-  withXcodeProject,
-} from 'expo/config-plugins';
+import type { ConfigPlugin, XcodeProject } from 'expo/config-plugins';
+import { IOSConfig, withInfoPlist, withXcodeProject } from 'expo/config-plugins';
 
-import { PluginConfigType, resolveConfigValue } from './pluginConfig';
+import type { PluginConfigType } from './pluginConfig';
+import { resolveConfigValue } from './pluginConfig';
 
 const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 

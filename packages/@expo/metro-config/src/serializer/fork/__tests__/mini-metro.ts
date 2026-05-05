@@ -9,7 +9,7 @@ import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import metroConfigDefaults from '@expo/metro/metro-config/defaults';
 import * as path from 'path';
 
-import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
+import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
 
 export const projectRoot = '/app';

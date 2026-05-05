@@ -6,6 +6,7 @@ description: Learn how to set up and use pre-packaged jobs in EAS Workflows.
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FAQ } from '~/ui/components/FAQ';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 Pre-packaged jobs are ready-to-use workflow jobs that help you automate common tasks like building, submitting, and testing your app. They provide a standardized way to handle these operations without having to write custom job configurations from scratch. This guide covers the available pre-packaged jobs and how to use them in your workflows.
 
@@ -15,9 +16,12 @@ Build your project into an Android or iOS app.
 
 Build jobs can be customized so that you can execute custom commands during the build process. See [Custom builds](/custom-builds/get-started/) for more information.
 
-### Prerequisites
-
-To successfully use the build job, you'll need to complete a build with EAS CLI using the same platform and profile as the pre-packaged job. Learn how to [create your first build](/build/setup/) to get started.
+<Prerequisites>
+  <Requirement title="A completed build from your local machine">
+    Complete a build with EAS CLI using the same platform and profile as the pre-packaged job. Learn
+    how to [create your first build](/build/setup/) to get started.
+  </Requirement>
+</Prerequisites>
 
 ### Syntax
 
@@ -179,9 +183,12 @@ jobs:
 
 Deploy your application using [EAS Hosting](/eas/hosting/introduction).
 
-### Prerequisites
-
-To deploy your application using EAS Hosting, you'll need to set up your project. See [Get Started with EAS Hosting](/eas/hosting/get-started/#prerequisites) for more information.
+<Prerequisites>
+  <Requirement title="A project set up for EAS Hosting">
+    See [Get started with EAS Hosting](/eas/hosting/get-started/#prerequisites) for setup
+    instructions.
+  </Requirement>
+</Prerequisites>
 
 ### Syntax
 
@@ -495,9 +502,14 @@ jobs:
 
 Submit an Android or iOS build to the app store using EAS Submit.
 
-### Prerequisites
-
-Submission jobs require additional configuration to run within a CI/CD process. See our [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services) and [Google Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) for more information.
+<Prerequisites>
+  <Requirement title="CI/CD submission configuration">
+    Submission jobs require additional configuration to run within a CI/CD process. See the [Google
+    Play Store CI/CD submission guide](/submit/android/#submitting-your-app-using-cicd-services) and
+    [Apple App Store CI/CD submission guide](/submit/ios/#submitting-your-app-using-cicd-services)
+    for more information.
+  </Requirement>
+</Prerequisites>
 
 ### Syntax
 
@@ -590,9 +602,13 @@ jobs:
 
 Distribute iOS builds to TestFlight internal and external testing groups. This is an alternative to the iOS submit job for when you need more advanced TestFlight features. If you need to control test groups, changelog, or Beta App Review submission, use the `testflight` job instead of submit.
 
-### Prerequisites
-
-TestFlight jobs require an iOS build created with `distribution: store`. You'll need to have your Apple Developer account configured. See the [TestFlight submission guide](/submit/ios/#submitting-your-app-using-cicd-services) for more information.
+<Prerequisites>
+  <Requirement title="An iOS store build and Apple Developer account">
+    TestFlight jobs require an iOS build created with `distribution: store` and an Apple Developer
+    account configured. See the [TestFlight submission
+    guide](/submit/ios/#submitting-your-app-using-cicd-services) for more information.
+  </Requirement>
+</Prerequisites>
 
 ### Syntax
 
@@ -692,9 +708,13 @@ jobs:
 
 Publish an update using [EAS Update](/eas-update/introduction/).
 
-### Prerequisites
-
-To publish update previews and to send over-the-air updates, you'll need to run `npx eas-cli@latest update:configure`, then create new builds. Learn more about [configuring EAS Update](/eas-update/getting-started/#prerequisites).
+<Prerequisites>
+  <Requirement title="EAS Update configured">
+    To publish update previews and to send over-the-air updates. Run `npx eas-cli@latest
+    update:configure`, then create new builds. Learn more about [configuring EAS
+    Update](/eas-update/getting-started/#prerequisites).
+  </Requirement>
+</Prerequisites>
 
 ### Syntax
 
@@ -1222,9 +1242,12 @@ jobs:
 
 Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying EAS Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
 
-### Prerequisites
-
-To use the GitHub Comment job, your project must have a GitHub repository connected. Learn how to [connect your GitHub repository](/build/building-from-github) to get started.
+<Prerequisites>
+  <Requirement title="A GitHub repository connected to your project">
+    To use the GitHub Comment job, your project must have a GitHub repository connected. Learn how
+    to [connect your GitHub repository](/build/building-from-github/) to get started.
+  </Requirement>
+</Prerequisites>
 
 ### Syntax
 

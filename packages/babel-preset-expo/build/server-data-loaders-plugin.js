@@ -145,3 +145,4 @@ function markWithLoaderReference(state) {
     assertExpoMetadata(state.file.metadata);
     state.file.metadata.loaderReference = state.file.opts.filename ?? undefined;
 }
+//# sourceMappingURL=server-data-loaders-plugin.js.map

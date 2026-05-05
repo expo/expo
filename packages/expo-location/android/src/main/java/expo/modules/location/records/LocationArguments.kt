@@ -6,6 +6,7 @@ import expo.modules.location.LocationModule.Companion.ACCURACY_BALANCED
 import java.io.Serializable
 
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class GeofencingRegionState : Enumerable {
   UNKNOWN,
@@ -28,11 +29,13 @@ enum class MotionActivityConfidence(val value: Int) : Enumerable {
   HIGH(2)
 }
 
+@OptimizedRecord
 internal class LocationLastKnownOptions(
   @Field var maxAge: Double? = null,
   @Field var requiredAccuracy: Double? = null
 ) : Record, Serializable
 
+@OptimizedRecord
 internal open class LocationOptions(
   @Field var accuracy: Int = ACCURACY_BALANCED,
   @Field var distanceInterval: Int? = null,
@@ -47,6 +50,7 @@ internal open class LocationOptions(
   )
 }
 
+@OptimizedRecord
 internal class ReverseGeocodeLocation(
   @Field var latitude: Double,
   @Field var longitude: Double,
@@ -75,6 +79,7 @@ internal class LocationTaskOptions(
   }
 }
 
+@OptimizedRecord
 internal class LocationTaskServiceOptions(
   @Field var notificationTitle: String? = null,
   @Field var notificationBody: String? = null,
@@ -90,6 +95,7 @@ internal class LocationTaskServiceOptions(
   )
 }
 
+@OptimizedRecord
 internal class GeofencingOptions(
   @Field var regions: List<Region>
 ) : Record, Serializable {
@@ -98,6 +104,7 @@ internal class GeofencingOptions(
   )
 }
 
+@OptimizedRecord
 internal class Region(
   @Field var identifier: String? = null,
   @Field var latitude: Double = .0,

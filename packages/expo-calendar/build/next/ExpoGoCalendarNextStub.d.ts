@@ -1,7 +1,9 @@
 import type { PermissionResponse } from 'expo-modules-core';
 declare class ExpoGoCalendarNextStub {
     static readonly ExpoCalendar: {
-        new (): {};
+        new (): {
+            addEventWithForm(): void;
+        };
     };
     static readonly ExpoCalendarEvent: {
         new (): {};
@@ -16,6 +18,7 @@ declare class ExpoGoCalendarNextStub {
     createCalendar(): void;
     getCalendars(): Promise<void>;
     listEvents(): Promise<void>;
+    presentPicker(): Promise<void>;
     requestCalendarPermissions(): Promise<PermissionResponse>;
     getCalendarPermissions(): Promise<PermissionResponse>;
     requestRemindersPermissions(): Promise<PermissionResponse>;

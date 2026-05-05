@@ -72,6 +72,8 @@ export function resolveProps(props: Props | undefined): Props | undefined {
   if (Object.keys(resolvedProps).length > 0) {
     return resolvedProps;
   }
+
+  return;
 }
 
 const withNavigationBar: ConfigPlugin<Props | undefined> = (config, _props) => {

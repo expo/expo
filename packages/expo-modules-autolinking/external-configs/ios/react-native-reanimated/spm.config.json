@@ -6,7 +6,7 @@
             "podName": "RNReanimated",
             "codegenName": "rnreanimated",
             "platforms": [
-                "iOS(.v15)"
+                "iOS(.v16)"
             ],
             "externalDependencies": [
                 "ReactNativeDependencies",
@@ -91,7 +91,9 @@
                         { "from": "LayoutAnimations/*.h", "to": "reanimated/LayoutAnimations/{filename}", "type": "header" },
                         { "from": "NativeModules/*.h", "to": "reanimated/NativeModules/{filename}", "type": "header" },
                         { "from": "RuntimeDecorators/*.h", "to": "reanimated/RuntimeDecorators/{filename}", "type": "header" },
-                        { "from": "Tools/*.h", "to": "reanimated/Tools/{filename}", "type": "header" }
+                        { "from": "Tools/*.h", "to": "reanimated/Tools/{filename}", "type": "header" },
+                        { "from": "Compat/*.h", "to": "reanimated/Compat/{filename}", "type": "header" },
+                        { "from": "Events/*.h", "to": "reanimated/Events/{filename}", "type": "header" }
                     ]
                 },
                 {

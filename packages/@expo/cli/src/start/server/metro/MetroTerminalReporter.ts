@@ -4,7 +4,7 @@ import path from 'path';
 import { stripVTControlCharacters } from 'util';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import {
+import type {
   BuildPhase,
   BundleDetails,
   BundleProgress,

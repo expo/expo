@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useComponent = useComponent;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const NavigationContent = ({ render, children }) => {
     return render(children);
@@ -53,7 +54,7 @@ function useComponent(render) {
         if (render === null) {
             throw new Error('The returned component must be rendered in the same render phase as the hook.');
         }
-        return <NavigationContent render={render}>{children}</NavigationContent>;
+        return (0, jsx_runtime_1.jsx)(NavigationContent, { render: render, children: children });
     }).current;
 }
 //# sourceMappingURL=useComponent.js.map

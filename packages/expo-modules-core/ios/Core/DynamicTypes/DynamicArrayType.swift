@@ -1,5 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type representing array types. Requires the array's element type
  for the initialization as it delegates casting to that type for each element in the array.
@@ -22,8 +24,13 @@ internal struct DynamicArrayType: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    let value = jsValue.isArray() ? jsValue.getArray() : [jsValue]
-    return try value.map { try elementType.cast(jsValue: $0, appContext: appContext) }
+    if jsValue.isArray() {
+      return try jsValue.getArray().map { value in
+        return try elementType.cast(jsValue: value, appContext: appContext)
+      }
+    }
+    // "Arrayize" the value if it's not an array.
+    return [try elementType.cast(jsValue: jsValue, appContext: appContext)]
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
@@ -40,6 +47,39 @@ internal struct DynamicArrayType: AnyDynamicType {
       return result.map { Conversions.convertFunctionResult($0, appContext: appContext) }
     }
     return result
+  }
+
+  /**
+   Type-aware conversion for arrays that were already normalized by `convertResult`.
+   Elements must use `castToJS` here to avoid re-entering `convertResult` for values that
+   are already in their post-conversion shape, such as `JavaScriptValue.undefined`.
+   */
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    guard let array = value as? [Any] else {
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext)
+    }
+    let runtime = try appContext.runtime
+    let jsArray = runtime.createArray(length: array.count)
+    for (index, element) in array.enumerated() {
+      try jsArray.set(value: try elementType.castToJS(element, appContext: appContext), at: index)
+    }
+    return jsArray.asValue()
+  }
+
+  /**
+   Converts original native arrays directly to JavaScript, allowing nested elements
+   to use their own direct conversion paths before any array-level normalization.
+   */
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    guard let array = value as? [Any] else {
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext)
+    }
+    let runtime = try appContext.runtime
+    let jsArray = runtime.createArray(length: array.count)
+    for (index, element) in array.enumerated() {
+      try jsArray.set(value: try elementType.convertToJS(element, appContext: appContext), at: index)
+    }
+    return jsArray.asValue()
   }
 
   var description: String {

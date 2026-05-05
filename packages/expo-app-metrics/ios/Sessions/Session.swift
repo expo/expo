@@ -1,7 +1,7 @@
 /**
  Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
  */
-public class Session: Codable, MetricsReceiver {
+public class Session: Codable, MetricsReceiver, @unchecked Sendable {
   /**
    Unique ID of the session in UUID v4 format.
    */
@@ -27,12 +27,28 @@ public class Session: Codable, MetricsReceiver {
    */
   public private(set) var metrics: [Metric] = []
 
+  /**
+   An array of log records collected during the session.
+   */
+  public private(set) var logs: [LogRecord] = []
+
   init(type: SessionType = .custom) {
     self.id = UUID().uuidString
     self.startDate = Date.now
     self.type = type
 
     AppMetrics.storage.currentEntry.add(session: self)
+  }
+
+  /**
+   Test-only initializer that builds a session with explicit values and skips registering it
+   with the global storage. Do not use from production code.
+   */
+  init(id: String, type: SessionType, startDate: Date, endDate: Date?) {
+    self.id = id
+    self.type = type
+    self.startDate = startDate
+    self.endDate = endDate
   }
 
   /**
@@ -100,10 +116,16 @@ public class Session: Codable, MetricsReceiver {
     try? AppMetrics.storage.commit()
   }
 
+  @AppMetricsActor
+  public func receiveLog(_ log: LogRecord) {
+    self.logs.append(log)
+    try? AppMetrics.storage.commit()
+  }
+
   // MARK: - Codable
 
   private enum CodingKeys: String, CodingKey {
-    case id, type, startDate, endDate, metrics
+    case id, type, startDate, endDate, metrics, logs
   }
 
   public required init(from decoder: any Decoder) throws {
@@ -113,5 +135,6 @@ public class Session: Codable, MetricsReceiver {
     startDate = try values.decode(Date.self, forKey: .startDate)
     endDate = try values.decodeIfPresent(Date.self, forKey: .endDate)
     metrics = try values.decodeIfPresent([Metric].self, forKey: .metrics) ?? []
+    logs = try values.decodeIfPresent([LogRecord].self, forKey: .logs) ?? []
   }
 }

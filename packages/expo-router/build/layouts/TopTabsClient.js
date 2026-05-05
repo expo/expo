@@ -1,11 +1,8 @@
 "use strict";
 'use client';
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TopTabs = void 0;
-const react_1 = __importDefault(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
 const withLayoutContext_1 = require("./withLayoutContext");
 const material_top_tabs_1 = require("../react-navigation/material-top-tabs");
 const Protected_1 = require("../views/Protected");
@@ -18,7 +15,7 @@ const MaterialTopTabs = (0, withLayoutContext_1.withLayoutContext)(MaterialTopTa
  * @hideType
  */
 const TopTabs = Object.assign((props) => {
-    return <MaterialTopTabs {...props}/>;
+    return (0, jsx_runtime_1.jsx)(MaterialTopTabs, { ...props });
 }, {
     Screen: Screen_1.Screen,
     Protected: Protected_1.Protected,

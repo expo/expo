@@ -13,7 +13,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { drawableFileTypes, getAssetLocalPath } from './metroAssetLocalPath';
-import { ExportAssetMap } from './saveAssets';
+import type { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
 function cleanAssetCatalog(catalogDir: string): void {

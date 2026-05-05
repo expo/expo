@@ -1,14 +1,11 @@
-import { ExpoConfig } from '@expo/config-types';
-import { XcodeProject } from 'xcode';
+import type { ExpoConfig } from '@expo/config-types';
+import type { XcodeProject } from 'xcode';
 
-import { InfoPlist } from './IosConfig.types';
+import type { InfoPlist } from './IosConfig.types';
 import { findFirstNativeTarget } from './Target';
-import { ConfigPlugin } from '../Plugin.types';
-import {
-  ConfigurationSectionEntry,
-  getBuildConfigurationsForListId,
-  sanitizedName,
-} from './utils/Xcodeproj';
+import type { ConfigPlugin } from '../Plugin.types';
+import type { ConfigurationSectionEntry } from './utils/Xcodeproj';
+import { getBuildConfigurationsForListId, sanitizedName } from './utils/Xcodeproj';
 import { createInfoPlistPluginWithPropertyGuard, withXcodeProject } from '../plugins/ios-plugins';
 
 export const withDisplayName = createInfoPlistPluginWithPropertyGuard(

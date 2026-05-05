@@ -91,6 +91,17 @@ export const width = (value: number) => createModifier('width', { width: value }
 export const height = (value: number) => createModifier('height', { height: value });
 
 /**
+ * Constrain the size of the wrapped layout only when it would be
+ * otherwise unconstrained: the `minWidth` and `minHeight` constraints
+ * are only applied when the incoming corresponding constraint is `0`.
+ * @param options.minWidth - Minimum width in dp.
+ * @param options.minHeight - Minimum height in dp.
+ * @see [Compose `defaultMinSize` modifier](https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#%28androidx.compose.ui.Modifier%29.defaultMinSize%28androidx.compose.ui.unit.Dp%2Candroidx.compose.ui.unit.Dp%29)
+ */
+export const defaultMinSize = (options: { minWidth?: number; minHeight?: number }) =>
+  createModifier('defaultMinSize', options);
+
+/**
  * Wraps the width to the content size.
  * @param alignment - Optional horizontal alignment ('start', 'centerHorizontally', 'end').
  */
@@ -336,6 +347,15 @@ export const onVisibilityChanged = (
     }
   );
 
+/**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export const onSizeChanged = (handler: (size: { width: number; height: number }) => void) =>
+  createModifierWithEventListener('onSizeChanged', (size: { width: number; height: number }) =>
+    handler(size)
+  );
+
 // =============================================================================
 // Utility Modifiers
 // =============================================================================
@@ -345,6 +365,11 @@ export const onVisibilityChanged = (
  * @param tag - Test ID string.
  */
 export const testID = (tag: string) => createModifier('testID', { testID: tag });
+
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export const semantics = (params: { contentType?: string }) => createModifier('semantics', params);
 
 // =============================================================================
 // Clip Modifier & Shapes
@@ -486,3 +511,6 @@ export const verticalScroll = () => createModifier('verticalScroll');
  * Use on a Row to create a non-lazy scrollable container.
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
+
+export { createModifier, createModifierWithEventListener } from './createModifier';
+export { createViewModifierEventListener } from './utils';

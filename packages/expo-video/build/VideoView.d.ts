@@ -1,4 +1,5 @@
-import { ReactNode, PureComponent } from 'react';
+import type { ReactNode } from 'react';
+import { PureComponent } from 'react';
 import type { VideoViewProps } from './VideoView.types';
 /**
  * Returns whether the current device supports Picture in Picture (PiP) mode.

@@ -1,10 +1,11 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { ConfigPlugin, InfoPlist } from '../Plugin.types';
+import type { ConfigPlugin, InfoPlist } from '../Plugin.types';
 import { createInfoPlistPlugin, withAppDelegate, withPodfile } from '../plugins/ios-plugins';
-import { mergeContents, MergeResults, removeContents } from '../utils/generateCode';
+import type { MergeResults } from '../utils/generateCode';
+import { mergeContents, removeContents } from '../utils/generateCode';
 
 const debug = require('debug')('expo:config-plugins:ios:maps') as typeof console.log;
 

@@ -8,7 +8,7 @@ import { renderRouter, within } from '../../testing-library';
 import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView as _NativeTabsView } from '../NativeTabsView';
-import { type NativeTabsTriggerIconProps } from '../common/elements';
+import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 
 jest.mock('react-native-screens', () => {
@@ -59,13 +59,13 @@ it('can pass nativeProps via unstable_nativeProps prop', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
   expect(NativeTabsView).toHaveBeenCalledTimes(1);
-  const call = NativeTabsView.mock.calls[0][0];
-  expect(call.tabs[0].options).toMatchObject({
+  const call = NativeTabsView.mock.calls[0]![0];
+  expect(call.tabs[0]!.options).toMatchObject({
     nativeProps: {
       ...indexOptions,
     },
   });
-  expect(call.tabs[1].options).toMatchObject({
+  expect(call.tabs[1]!.options).toMatchObject({
     nativeProps: {
       ...secondOptions,
     },
@@ -86,7 +86,7 @@ it('can pass options via elements', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(NativeTabsView).toHaveBeenCalledTimes(1);
-  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.icon).toStrictEqual({
+  expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.icon).toStrictEqual({
     sf: 'homepod.2.fill',
   } as NativeTabOptions);
 });
@@ -107,11 +107,11 @@ it('can use universal elements', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(NativeTabsView).toHaveBeenCalledTimes(1);
-  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.icon).toStrictEqual({
+  expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.icon).toStrictEqual({
     sf: 'homepod.2.fill',
   } as NativeTabOptions);
-  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe('Home');
-  expect(NativeTabsView.mock.calls[0][0].tabs[0].options.badgeValue).toBe('3');
+  expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe('Home');
+  expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.badgeValue).toBe('3');
 });
 
 it('when no options are passed, default ones are used', () => {
@@ -126,7 +126,7 @@ it('when no options are passed, default ones are used', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(NativeTabsView).toHaveBeenCalledTimes(1);
-  expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toStrictEqual({
+  expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toStrictEqual({
     hidden: false,
     specialEffects: {
       repeatedTabSelection: { popToRoot: true, scrollToTop: true },
@@ -164,7 +164,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       selectedIcon: { sf: 'star.bubble' },
       icon: { sf: 'stairs' },
     } as NativeTabOptions);
@@ -184,7 +184,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const options = NativeTabsView.mock.calls[0][0].tabs[0].options;
+    const options = NativeTabsView.mock.calls[0]![0].tabs[0]!.options;
     expect(options.icon).toBeUndefined();
     expect(options.selectedIcon).toBeUndefined();
   });
@@ -204,7 +204,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       icon: { sf: 'homepod.2.fill' },
       selectedIcon: undefined,
     } as NativeTabOptions);
@@ -225,7 +225,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject(
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject(
       expect.objectContaining({
         selectedIcon: { sf: 'homepod.2.fill' },
       })
@@ -250,7 +250,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       selectedIcon: undefined,
       icon: { sf: '0.circle.ar' },
     } as NativeTabOptions);
@@ -274,7 +274,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       selectedIcon: { sf: '0.circle.ar' },
       icon: undefined,
     } as NativeTabOptions);
@@ -291,7 +291,7 @@ describe('Icons', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       selectedIconColor: 'red',
     } as NativeTabOptions);
   });
@@ -311,11 +311,11 @@ describe('Icons', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const call = NativeTabsView.mock.calls[0][0];
-    expect(call.tabs[0].options).toMatchObject({
+    const call = NativeTabsView.mock.calls[0]![0];
+    expect(call.tabs[0]!.options).toMatchObject({
       selectedIconColor: 'blue',
     } as NativeTabOptions);
-    expect(call.tabs[1].options).toMatchObject({
+    expect(call.tabs[1]!.options).toMatchObject({
       selectedIconColor: 'red',
     } as NativeTabOptions);
   });
@@ -334,7 +334,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       icon: { xcasset: 'custom-icon' },
       selectedIcon: undefined,
     } as NativeTabOptions);
@@ -356,7 +356,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       icon: { xcasset: 'home-outline' },
       selectedIcon: { xcasset: 'home-filled' },
     } as NativeTabOptions);
@@ -376,7 +376,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       icon: undefined,
       selectedIcon: { xcasset: 'home-filled' },
     } as NativeTabOptions);
@@ -396,7 +396,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       icon: { sf: 'star' },
       selectedIcon: undefined,
     } as NativeTabOptions);
@@ -418,7 +418,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       badgeValue: '5',
     } as NativeTabOptions);
   });
@@ -437,7 +437,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       badgeValue: 'New',
     } as NativeTabOptions);
   });
@@ -454,7 +454,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).not.toHaveProperty('badgeValue');
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).not.toHaveProperty('badgeValue');
   });
 
   it('uses last Badge value when multiple are provided', () => {
@@ -473,7 +473,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       badgeValue: '3',
     } as NativeTabOptions);
   });
@@ -492,7 +492,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.badgeValue).toBe(' '); // Space is used to show empty badge
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.badgeValue).toBe(' '); // Space is used to show empty badge
   });
 
   it('when empty Badge is used with hidden, passes undefined to badgeValue', () => {
@@ -509,7 +509,7 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.badgeValue).toBeUndefined();
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.badgeValue).toBeUndefined();
   });
 });
 
@@ -528,7 +528,7 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe('Custom Title');
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe('Custom Title');
   });
 
   it('when title is not set, it is undefined in options', () => {
@@ -546,8 +546,8 @@ describe('Label', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe(undefined);
-    expect(NativeTabsView.mock.calls[0][0].tabs[1].options.title).toBe(undefined);
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe(undefined);
+    expect(NativeTabsView.mock.calls[0]![0].tabs[1]!.options.title).toBe(undefined);
   });
 
   it('uses last Label value when multiple are provided', () => {
@@ -566,7 +566,7 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       title: 'Last Title',
     } as NativeTabOptions);
   });
@@ -585,7 +585,7 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe(undefined); // Route name is added in the rendering component. Options has undefined title
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe(undefined); // Route name is added in the rendering component. Options has undefined title
   });
 
   it('when Label with hidden is used, passes empty string to title', () => {
@@ -602,7 +602,7 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe(''); // Empty string when Label is hidden
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe(''); // Empty string when Label is hidden
   });
 
   it('when selectedLabelStyle is provided, it is passed to screen', () => {
@@ -616,7 +616,7 @@ describe('Label', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options).toMatchObject({
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options).toMatchObject({
       selectedLabelStyle: { fontSize: 24, color: 'red' },
     } as NativeTabOptions);
   });
@@ -636,11 +636,11 @@ describe('Label', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const call = NativeTabsView.mock.calls[0][0];
-    expect(call.tabs[0].options).toMatchObject({
+    const call = NativeTabsView.mock.calls[0]![0];
+    expect(call.tabs[0]!.options).toMatchObject({
       selectedLabelStyle: { fontSize: 32, color: 'blue' },
     } as NativeTabOptions);
-    expect(call.tabs[1].options).toMatchObject({
+    expect(call.tabs[1]!.options).toMatchObject({
       selectedLabelStyle: { fontSize: 24, color: 'red' },
     } as NativeTabOptions);
   });
@@ -662,8 +662,8 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
-      expect(call.tabs[0].options).toMatchObject({
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
         specialEffects: {
           repeatedTabSelection: {
             popToRoot: false,
@@ -690,8 +690,8 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
-      expect(call.tabs[0].options).toMatchObject({
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
@@ -699,7 +699,7 @@ describe('Tab options', () => {
           },
         },
       } as NativeTabOptions);
-      expect(call.tabs[1].options).toMatchObject({
+      expect(call.tabs[1]!.options).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
@@ -725,8 +725,8 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
-      expect(call.tabs[0].options).toMatchObject({
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
         specialEffects: {
           repeatedTabSelection: {
             scrollToTop: false,
@@ -753,8 +753,8 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
-      expect(call.tabs[0].options).toMatchObject({
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
@@ -762,7 +762,7 @@ describe('Tab options', () => {
           },
         },
       } as NativeTabOptions);
-      expect(call.tabs[1].options).toMatchObject({
+      expect(call.tabs[1]!.options).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
@@ -787,8 +787,8 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
-      expect(call.tabs[0].options).toMatchObject({
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
         disableAutomaticContentInsets: value,
       } as NativeTabOptions);
     }
@@ -809,8 +809,8 @@ describe('Tab options', () => {
 
         expect(screen.getByTestId('index')).toBeVisible();
         expect(NativeTabsView).toHaveBeenCalledTimes(1);
-        const call = NativeTabsView.mock.calls[0][0];
-        expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(value);
+        const call = NativeTabsView.mock.calls[0]![0];
+        expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(value);
       }
     );
 
@@ -826,9 +826,9 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
+      const call = NativeTabsView.mock.calls[0]![0];
       // When not set on NativeTabs, screenOptions has undefined, which is inherited
-      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBeUndefined();
+      expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBeUndefined();
     });
 
     it('When disableTransparentOnScrollEdge is set on NativeTabs, passes it to all tabs', () => {
@@ -845,9 +845,9 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
-      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(true);
-      expect(call.tabs[1].options.disableTransparentOnScrollEdge).toBe(true);
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
+      expect(call.tabs[1]!.options.disableTransparentOnScrollEdge).toBe(true);
     });
 
     it('Trigger disableTransparentOnScrollEdge takes precedence over NativeTabs', () => {
@@ -864,11 +864,11 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
+      const call = NativeTabsView.mock.calls[0]![0];
       // Trigger's value (false) takes precedence over NativeTabs' value (true)
-      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(false);
+      expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(false);
       // Tab without explicit value inherits from NativeTabs
-      expect(call.tabs[1].options.disableTransparentOnScrollEdge).toBe(true);
+      expect(call.tabs[1]!.options.disableTransparentOnScrollEdge).toBe(true);
     });
 
     it('Trigger disableTransparentOnScrollEdge=true takes precedence over NativeTabs=false', () => {
@@ -885,11 +885,11 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(NativeTabsView).toHaveBeenCalledTimes(1);
-      const call = NativeTabsView.mock.calls[0][0];
+      const call = NativeTabsView.mock.calls[0]![0];
       // Trigger's value (true) takes precedence over NativeTabs' value (false)
-      expect(call.tabs[0].options.disableTransparentOnScrollEdge).toBe(true);
+      expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
       // Tab without explicit value inherits from NativeTabs
-      expect(call.tabs[1].options.disableTransparentOnScrollEdge).toBe(false);
+      expect(call.tabs[1]!.options.disableTransparentOnScrollEdge).toBe(false);
     });
   });
 });
@@ -918,14 +918,14 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(2);
-    const first = NativeTabsView.mock.calls[0][0];
-    const second = NativeTabsView.mock.calls[1][0];
-    expect(first.tabs[0].options).toMatchObject({
+    const first = NativeTabsView.mock.calls[0]![0];
+    const second = NativeTabsView.mock.calls[1]![0];
+    expect(first.tabs[0]!.options).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
       icon: { sf: '0.circle' },
     } as NativeTabOptions);
-    expect(second.tabs[0].options).toMatchObject({
+    expect(second.tabs[0]!.options).toMatchObject({
       title: 'Updated Title',
       badgeValue: '5',
       icon: {
@@ -958,14 +958,14 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(2);
-    expect(NativeTabsView.mock.calls[0][0].tabs[0].options.title).toBe('Initial Title');
-    expect(NativeTabsView.mock.calls[1][0].tabs[0].options.title).toBe('Updated Title 0');
+    expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe('Initial Title');
+    expect(NativeTabsView.mock.calls[1]![0].tabs[0]!.options.title).toBe('Updated Title 0');
     act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(NativeTabsView).toHaveBeenCalledTimes(3);
-    expect(NativeTabsView.mock.calls[2][0].tabs[0].options.title).toBe('Updated Title 1');
+    expect(NativeTabsView.mock.calls[2]![0].tabs[0]!.options.title).toBe('Updated Title 1');
     act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(NativeTabsView).toHaveBeenCalledTimes(4);
-    expect(NativeTabsView.mock.calls[3][0].tabs[0].options.title).toBe('Updated Title 2');
+    expect(NativeTabsView.mock.calls[3]![0].tabs[0]!.options.title).toBe('Updated Title 2');
   });
 
   it('can be used in preview', () => {
@@ -1000,15 +1000,15 @@ describe('Dynamic options', () => {
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
     expect(NativeTabsView).toHaveBeenCalledTimes(1);
-    const call = NativeTabsView.mock.calls[0][0];
-    expect(call.tabs[0].options.title).toBe('Initial Title');
-    expect(call.tabs[0].options.icon).toBeUndefined();
-    expect(call.tabs[0].options.selectedIcon).toBeUndefined();
-    expect(call.tabs[0].options.badgeValue).toBeUndefined();
-    expect(call.tabs[1].options.title).toBe('Second');
-    expect(call.tabs[1].options.icon).toBeUndefined();
-    expect(call.tabs[1].options.selectedIcon).toBeUndefined();
-    expect(call.tabs[1].options.badgeValue).toBeUndefined();
+    const call = NativeTabsView.mock.calls[0]![0];
+    expect(call.tabs[0]!.options.title).toBe('Initial Title');
+    expect(call.tabs[0]!.options.icon).toBeUndefined();
+    expect(call.tabs[0]!.options.selectedIcon).toBeUndefined();
+    expect(call.tabs[0]!.options.badgeValue).toBeUndefined();
+    expect(call.tabs[1]!.options.title).toBe('Second');
+    expect(call.tabs[1]!.options.icon).toBeUndefined();
+    expect(call.tabs[1]!.options.selectedIcon).toBeUndefined();
+    expect(call.tabs[1]!.options.badgeValue).toBeUndefined();
   });
 });
 

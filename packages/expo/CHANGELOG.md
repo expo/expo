@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- Use `expo/fetch` as default fetch. ([#44987](https://github.com/expo/expo/pull/44987) by [@kudo](https://github.com/kudo))
+- [dom] Use `@expo/dom-webview` as default webview for DOM components. ([#45224](https://github.com/expo/expo/pull/45224) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
@@ -15,12 +17,17 @@
 - Add `Symbol.toStringTag` to `expo/fetch` `Response` so it identifies as a standard `Response` object ([#44806](https://github.com/expo/expo/pull/44806) by [@zoontek](https://github.com/zoontek))
 - Prevent `original*` globals from being enumerable or from being created for globals with getters, since these may be side-effectful ([#44407](https://github.com/expo/expo/pull/44407) by [@kitten](https://github.com/kitten))
 - Resolve paths relative to project root instead of server root in `expo/scripts/resolveAppEntry.js` ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+- Fixed DOM Components rendering issues on Android 9 devices. ([#43156](https://github.com/expo/expo/pull/43156) by [@kudo](https://github.com/kudo))
+- [dom] Fixed unstable `initialProps` and reloading issue for `@expo/dom-webview`. ([#45222](https://github.com/expo/expo/pull/45222) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- [iOS] Updated `ExpoReactNativeFactory` to use the new `AppContext.setRuntime` API. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
 - Decouple web entry files from `react-native-web` by adding web-specific forks for `registerRootComponent`, `AppRegistry`, `AppEntryNotFound`, and `DevLoadingView`. ([#44298](https://github.com/expo/expo/pull/44298) by [@EvanBacon](https://github.com/EvanBacon))
 - [iOS] Updated AppDelegate Swift header imports for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Remove `RCTHostRuntimeDelegate` usage now that it's merged into `RCTHostDelegate`. ([#43838](https://github.com/expo/expo/pull/43838) by [@zoontek](https://github.com/zoontek))
+- Bumped project templates to TypeScript v6 ([#45091](https://github.com/expo/expo/pull/45091) by [@hassankhan](https://github.com/hassankhan))
+- [dom] Added opt-out `unstable_useExpoModulesBridge` flag. ([#45223](https://github.com/expo/expo/pull/45223) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

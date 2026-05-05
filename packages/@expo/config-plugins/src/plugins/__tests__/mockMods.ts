@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 
-import { ConfigPlugin, ExportedConfigWithProps, Mod } from '../../Plugin.types';
+import type { ConfigPlugin, ExportedConfigWithProps, Mod } from '../../Plugin.types';
 
 // Usage: add the following mock to the mods you are using:
 // jest.mock('../../plugins/android-plugins');

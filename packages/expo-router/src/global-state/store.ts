@@ -8,7 +8,7 @@ import type {
   ReactNavigationState,
   StoreRedirects,
 } from './types';
-import { RouteNode } from '../Route';
+import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';

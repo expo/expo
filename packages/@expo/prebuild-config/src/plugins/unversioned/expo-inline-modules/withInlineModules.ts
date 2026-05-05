@@ -1,5 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
-import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
+import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
+
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 

@@ -9,4 +9,6 @@ internal struct FullscreenOptions: Record {
   var orientation: FullscreenOrientation = FullscreenOrientation.default
   @Field
   var autoExitOnRotate: Bool = false
+  @Field
+  var keepFullscreenOnPiPStop: KeepFullscreenOnPiPStopBehavior = .autoEnter
 }

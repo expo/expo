@@ -1,5 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A protocol whose intention is to wrap any type
  to keep its real signature and not type-erase it by the compiler.
@@ -17,18 +19,29 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
   func equals(_ type: AnyDynamicType) -> Bool
 
   /**
-   Preliminarily casts the given JavaScriptValue to a non-JS value that the other `cast` function can handle.
+   Casts the given JavaScript value to the final wrapped native value, ready to be
+   handed to the function's underlying closure or stored in a record/prop.
    It **must** be run on the thread used by the JavaScript runtime.
    */
+  @JavaScriptActor
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any
 
   /**
-   Casts the given value to the wrapped type and returns it as `Any`.
+   Casts the given Swift-side value to the wrapped type and returns it as `Any`.
+   Used by record-field setters, view props, and other non-JS-origin paths that
+   need to coerce a Swift value into the dynamic type's representation.
    NOTE: It may not be just simple type-casting (e.g. when the wrapped type conforms to `Convertible`).
    */
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
+
+  /**
+   Converts the given native value directly to `JavaScriptValue`.
+   The default implementation uses `convertResult` and then `castToJS`, but dynamic types
+   can override it to avoid unnecessary intermediate representations.
+   */
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
 
   /**
    Converts function's result to the type that can later be converted to a JS value.
@@ -39,18 +52,17 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
 }
 
 extension AnyDynamicType {
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    return jsValue.getRaw() as Any
-  }
-
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     return value
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    // This conversion isn't the most efficient way to convert Objective-C value to JS value.
-    // Better performance should be provided in dynamic type specializations.
-    return try JavaScriptValue.from(value, runtime: appContext.runtime)
+    return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
+  }
+
+  public func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: self)
+    return try castToJS(result, appContext: appContext)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {

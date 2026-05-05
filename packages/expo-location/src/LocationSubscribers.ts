@@ -1,7 +1,7 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
-import {
+import type {
   LocationCallback,
   LocationErrorCallback,
   LocationHeadingCallback,

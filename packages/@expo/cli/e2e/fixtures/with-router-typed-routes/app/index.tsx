@@ -102,8 +102,8 @@ function useSegmentsTest() {
   const plainSegments = useSegments();
   const firstUnion: '' | 'about' | 'fruit' | '(a)' | '_sitemap' = plainSegments[0];
   const secondUnion: 'fruit' | '[fruit]' | undefined = plainSegments[1];
-  const thirdUnion: '[fruit]' | '[...other]' = plainSegments[2];
-  const forthUnion: '[...other]' = plainSegments[3];
+  const thirdUnion: '[fruit]' | '[...other]' | undefined = plainSegments[2];
+  const forthUnion: '[...other]' | undefined = plainSegments[3];
   // @ts-expect-error - No extra segments are possible
   plainSegments[4];
 

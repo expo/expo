@@ -1,9 +1,17 @@
 import { requireNativeView } from 'expo';
-import { type ColorSchemeName, I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { useMemo } from 'react';
+import {
+  type ColorSchemeName,
+  type ColorValue,
+  type StyleProp,
+  type ViewStyle,
+  I18nManager,
+  useColorScheme as useRNColorScheme,
+} from 'react-native';
 
-import { PrimitiveBaseProps } from '../layout';
+import { getMaterialColors, HostPaletteContext } from '../colors';
+import { type PrimitiveBaseProps } from '../layout';
 
-//#region Host Component
 export type HostProps = {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from Jetpack Compose.
@@ -26,9 +34,20 @@ export type HostProps = {
   useViewportSizeMeasurement?: boolean;
 
   /**
-   * The color scheme of the host view.
+   * The color scheme of the host view. `'light'` / `'dark'` force a specific
+   * appearance; omitted follows the device setting. The palette itself
+   * follows the device wallpaper on Android 12+ (Material You) or the static
+   * Material 3 baseline otherwise — unless {@link seedColor} is set.
    */
   colorScheme?: ColorSchemeName;
+
+  /**
+   * Seed color used to generate a Material 3 palette (`SchemeTonalSpot`) for
+   * this host. Combines with `colorScheme` (`'light'` / `'dark'` or omitted)
+   * to produce a seeded palette that themes Compose children and is
+   * available to descendants via `useMaterialColors()`.
+   */
+  seedColor?: ColorValue;
 
   /**
    * The layout direction for the content.
@@ -47,27 +66,55 @@ export type HostProps = {
   style?: StyleProp<ViewStyle>;
 } & PrimitiveBaseProps;
 
-const HostNativeView: React.ComponentType<
-  HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
-> = requireNativeView('ExpoUI', 'HostView');
+type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
+  matchContentsVertical?: boolean;
+  matchContentsHorizontal?: boolean;
+  colorScheme?: ColorSchemeName;
+  seedColor?: ColorValue;
+};
+
+const HostNativeView: React.ComponentType<NativeHostProps> = requireNativeView(
+  'ExpoUI',
+  'HostView'
+);
 
 export function Host(props: HostProps) {
-  const { matchContents, modifiers, onLayoutContent, layoutDirection, ...restProps } = props;
+  const {
+    matchContents,
+    modifiers,
+    onLayoutContent,
+    layoutDirection,
+    colorScheme,
+    seedColor,
+    ...restProps
+  } = props;
+  const schemeString = colorScheme === 'light' || colorScheme === 'dark' ? colorScheme : undefined;
+
+  const systemScheme = useRNColorScheme();
+  const resolvedScheme = schemeString ?? (systemScheme === 'dark' ? 'dark' : 'light');
+  const palette = useMemo(
+    () => getMaterialColors({ scheme: resolvedScheme, seedColor }),
+    [resolvedScheme, seedColor]
+  );
+
   return (
-    <HostNativeView
-      {...restProps}
-      modifiers={modifiers}
-      matchContentsVertical={
-        typeof matchContents === 'object' ? matchContents.vertical : matchContents
-      }
-      matchContentsHorizontal={
-        typeof matchContents === 'object' ? matchContents.horizontal : matchContents
-      }
-      onLayoutContent={onLayoutContent}
-      layoutDirection={
-        layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-      }
-    />
+    <HostPaletteContext.Provider value={palette}>
+      <HostNativeView
+        {...restProps}
+        modifiers={modifiers}
+        matchContentsVertical={
+          typeof matchContents === 'object' ? matchContents.vertical : matchContents
+        }
+        matchContentsHorizontal={
+          typeof matchContents === 'object' ? matchContents.horizontal : matchContents
+        }
+        colorScheme={schemeString}
+        seedColor={seedColor}
+        onLayoutContent={onLayoutContent}
+        layoutDirection={
+          layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+        }
+      />
+    </HostPaletteContext.Provider>
   );
 }
-//#endregion

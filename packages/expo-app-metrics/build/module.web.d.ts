@@ -1,5 +1,5 @@
 import { NativeModule } from 'expo';
-import type { ExpoAppMetricsModuleType } from './types';
+import type { ExpoAppMetricsModuleType, LogEventOptions, MetricAttributes } from './types';
 export * from './types';
 declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {
     addCustomMetricToSession(sessionId: string, metric: {
@@ -8,9 +8,13 @@ declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetric
         value: number;
     }): Promise<void>;
     markFirstRender(): Promise<void>;
-    markInteractive(): Promise<void>;
+    markInteractive(attributes?: MetricAttributes): Promise<void>;
+    logEvent(name: string, options?: LogEventOptions): void;
     getStoredEntries(): Promise<never[]>;
     clearStoredEntries(): Promise<void>;
+    getAllSessions(): Promise<never[]>;
+    simulateCrashReport(): void;
+    triggerCrash(): void;
     startSession(metadata?: string): string;
     stopSession(sessionId: string): void;
 }

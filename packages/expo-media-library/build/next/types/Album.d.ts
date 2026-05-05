@@ -1,4 +1,4 @@
-import { Asset } from './Asset';
+import type { Asset } from './Asset';
 /**
  * Represents a media album (collection of assets) on the device.
  *
@@ -54,17 +54,22 @@ export declare class Album {
      */
     delete(): Promise<void>;
     /**
-     * Adds an asset to the album.
-     * @param asset - The {@link Asset} to add.
-     * @returns A promise that resolves once the asset has been added.
+     * Adds one or more assets to the album.
+     * @param assets - The {@link Asset} or list of {@link Asset} objects to add.
+     * @returns A promise that resolves once the assets have been added.
      *
      * @example
      * ```ts
      * const asset = await Asset.create("file:///path/to/photo.png");
      * await album.add(asset);
      * ```
+     *
+     * @example
+     * ```ts
+     * await album.add([asset1, asset2]);
+     * ```
      */
-    add(asset: Asset): Promise<void>;
+    add(assets: Asset | Asset[]): Promise<void>;
     /**
      * Removes assets from the album without deleting them from the library.
      * This is supported only on iOS.
@@ -126,5 +131,15 @@ export declare class Album {
      * ```
      */
     static get(title: string): Promise<Album | null>;
+    /**
+     * A static function. Retrieves all albums on the device.
+     * @returns A promise resolving to an array of {@link Album} objects.
+     *
+     * @example
+     * ```ts
+     * const albums = await Album.getAll();
+     * ```
+     */
+    static getAll(): Promise<Album[]>;
 }
 //# sourceMappingURL=Album.d.ts.map

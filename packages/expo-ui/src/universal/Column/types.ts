@@ -1,7 +1,5 @@
 import type { UniversalAlignment, UniversalBaseProps } from '../types';
 
-export type { UniversalAlignment };
-
 /**
  * Props for the [`Column`](#column) component, a vertical layout container.
  */

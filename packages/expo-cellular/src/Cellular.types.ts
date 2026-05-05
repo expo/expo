@@ -1,8 +1,9 @@
+// TODO(@kitten): Remove
 export {
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
+  type PermissionExpiration,
+  type PermissionHookOptions,
 } from 'expo-modules-core';
 
 // @needsAudit

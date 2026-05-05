@@ -1,7 +1,6 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "./tsconfig.node.json",
   "compilerOptions": {
-    "declaration": true,
-    "noUncheckedIndexedAccess": true
+    "sourceMap": false
   }
 }

@@ -1,8 +1,9 @@
 import { useEvent } from 'expo';
-import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo-modules-core';
+import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useMemo } from 'react';
 
-import {
+import type {
   AudioMode,
   AudioPlayerOptions,
   AudioPlaylistOptions,
@@ -19,7 +20,7 @@ import {
   PLAYLIST_STATUS_UPDATE,
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
-import { AudioPlayer, AudioSample } from './AudioModule.types';
+import type { AudioPlayer, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource, resolveSources } from './utils/resolveSource';
@@ -202,5 +203,7 @@ export function clearAllPreloadedSources(): void {
 export function getPreloadedSources(): string[] {
   return AudioModule.getPreloadedSources();
 }
+
+export { useAudioStream } from './AudioStream.web';
 
 export { AudioModule };

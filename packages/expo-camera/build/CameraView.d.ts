@@ -1,7 +1,7 @@
 import { type EventSubscription } from 'expo-modules-core';
 import { Component } from 'react';
-import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec, AvailableLenses } from './Camera.types';
-import { PictureRef } from './PictureRef';
+import type { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraViewProps, CameraRecordingOptions, CameraViewRef, ScanningOptions, ScanningResult, VideoCodec, AvailableLenses } from './Camera.types';
+import type { PictureRef } from './PictureRef';
 export default class CameraView extends Component<CameraViewProps> {
     /**
      * Property that determines if the current device has the ability to use `DataScannerViewController` (iOS 16+) or the Google code scanner (Android).
@@ -170,6 +170,6 @@ export default class CameraView extends Component<CameraViewProps> {
     _onObjectDetected: (callback?: Function) => ({ nativeEvent }: {
         nativeEvent: any;
     }) => void;
-    render(): import("react").JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 //# sourceMappingURL=CameraView.d.ts.map

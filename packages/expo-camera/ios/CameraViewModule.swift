@@ -405,7 +405,10 @@ public final class CameraViewModule: Module, ScannerResultHandler {
       controller.delegate = delegate
     }
 
-    appContext?.utilities?.currentViewController()?.present(controller, animated: true) {
+    appContext?.utilities?.currentViewController()?.present(controller, animated: true) { [weak self] in
+      if let delegate = self?.scannerContext?.delegate as? VisionScannerDelegate {
+        controller.presentationController?.delegate = delegate
+      }
       try? controller.startScanning()
     }
   }
@@ -416,12 +419,23 @@ public final class CameraViewModule: Module, ScannerResultHandler {
     guard let controller = scannerContext?.controller as? DataScannerViewController else {
       return
     }
-    controller.stopScanning()
-    controller.dismiss(animated: true)
+    controller.dismiss(animated: true) { [weak self] in
+      self?.onScannerDismissed()
+    }
   }
 
   func onItemScanned(result: [String: Any]) {
     sendEvent("onModernBarcodeScanned", result)
+  }
+
+  @MainActor
+  func onScannerDismissed() {
+    if #available(iOS 16.0, *) {
+      if let controller = scannerContext?.controller as? DataScannerViewController {
+        controller.stopScanning()
+      }
+    }
+    scannerContext = nil
   }
 
   private func getAvailableVideoCodecs() -> [String] {

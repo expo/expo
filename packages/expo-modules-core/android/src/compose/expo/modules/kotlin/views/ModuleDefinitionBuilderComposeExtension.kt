@@ -9,15 +9,12 @@ import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.modules.InternalModuleDefinitionBuilder
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.types.AnyType
-import expo.modules.kotlin.types.descriptors.toTypeDescriptor
 import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import expo.modules.kotlin.types.toArgsArray
 import expo.modules.kotlin.viewevent.CoalescingKey
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.reflect.KClass
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.memberProperties
 
 /**
  * The name for the global event dispatcher
@@ -34,11 +31,10 @@ open class ModuleDefinitionBuilderWithCompose(
   @JvmName("ComposeView")
   inline fun <reified T : ExpoComposeView<P>, reified P : ComposeProps> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit = {}) {
     val viewDefinitionBuilder = ViewDefinitionBuilder(viewClass, typeDescriptorOf<T>())
-    P::class.memberProperties.forEach { prop ->
-      val kType = prop.returnType.arguments.first().type
-      if (kType != null && viewDefinitionBuilder.props[prop.name] == null) {
-        viewDefinitionBuilder.props[prop.name] = ComposeViewProp(prop.name, AnyType(kType.toTypeDescriptor()), prop)
-      }
+
+    val propsParsingStrategy = toPropsParsingStrategy<P>()
+    for (prop in propsParsingStrategy.unwrappedProps().values) {
+      viewDefinitionBuilder.props[prop.name] = prop
     }
 
     viewDefinitionBuilder.UseCSSProps()
@@ -58,7 +54,10 @@ open class ModuleDefinitionBuilderWithCompose(
     name: String,
     block: ComposeViewBuilderScope<Props>.() -> Unit
   ) {
-    val scope = ComposeViewBuilderScope<Props>(name, Props::class).apply(block)
+    val scope = ComposeViewBuilderScope(
+      name,
+      toPropsParsingStrategy<Props>()
+    ).apply(block)
     registerViewDefinition(scope.build())
   }
 
@@ -80,7 +79,12 @@ open class ModuleDefinitionBuilderWithCompose(
   ) {
     val eventBuilder = ComposeViewEventDefinitionBuilder()
     events.invoke(eventBuilder)
-    val functionBuilder = ComposeViewFunctionDefinitionBuilder(name, Props::class, viewFunction, eventBuilder)
+    val functionBuilder = ComposeViewFunctionDefinitionBuilder(
+      name,
+      toPropsParsingStrategy<Props>(),
+      viewFunction,
+      eventBuilder
+    )
     registerViewDefinition(functionBuilder.build())
   }
 }
@@ -112,7 +116,7 @@ class ComposeViewEventDefinitionBuilder {
 @DefinitionMarker
 class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps> @PublishedApi internal constructor(
   val name: String,
-  val propsClass: KClass<Props>,
+  val propsParsingStrategy: PropsParsingStrategy<Props>,
   val viewFunction: @Composable FunctionalComposableScope.(props: Props) -> Unit,
   private val eventBuilder: ComposeViewEventDefinitionBuilder = ComposeViewEventDefinitionBuilder()
 ) {
@@ -135,7 +139,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps> @PublishedApi i
       name = name,
       viewFactory = { context, appContext ->
         val instance: Props = try {
-          propsClass.createInstance()
+          propsParsingStrategy.createNewInstance()
         } catch (e: Exception) {
           throw IllegalStateException("Could not instantiate props instance of $name compose component.", e)
         }
@@ -143,10 +147,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps> @PublishedApi i
       },
       callbacksDefinition = eventBuilder.callbacksDefinition,
       viewType = ComposeFunctionHolder::class.java,
-      props = propsClass.memberProperties.associate { prop ->
-        val kType = prop.returnType
-        prop.name to ComposeViewProp(prop.name, AnyType(kType.toTypeDescriptor()), prop)
-      },
+      props = propsParsingStrategy.props(),
       asyncFunctions = allFunctions.values.toList()
     )
   }
@@ -174,7 +175,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps> @PublishedApi i
 @DefinitionMarker
 class ComposeViewBuilderScope<Props : ComposeProps> @PublishedApi internal constructor(
   @PublishedApi internal val name: String,
-  @PublishedApi internal val propsClass: KClass<Props>
+  @PublishedApi internal val propsParsingStrategy: PropsParsingStrategy<Props>
 ) {
   @PublishedApi
   internal val viewType = typeDescriptorOf<ComposeFunctionHolder<ComposeProps>>()
@@ -360,7 +361,7 @@ class ComposeViewBuilderScope<Props : ComposeProps> @PublishedApi internal const
     if (eventNames.isNotEmpty()) {
       eventBuilder.Events(*eventNames.toTypedArray())
     }
-    val functionBuilder = ComposeViewFunctionDefinitionBuilder(name, propsClass, content, eventBuilder)
+    val functionBuilder = ComposeViewFunctionDefinitionBuilder(name, propsParsingStrategy, content, eventBuilder)
     asyncFunctions.forEach { (fnName, component) ->
       functionBuilder.deferredFunctions[fnName] = component
     }

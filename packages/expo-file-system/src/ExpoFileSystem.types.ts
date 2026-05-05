@@ -43,6 +43,75 @@ export type FileWriteOptions = {
   append?: boolean;
 };
 
+/**
+ * The default debounce time for file system watcher events in milliseconds.
+ */
+export const DEFAULT_DEBOUNCE_MS = 100;
+
+/**
+ * The type of change that triggered a watcher event.
+ * - `created` &mdash; a new file or directory was created
+ * - `modified` &mdash; the file contents or metadata changed
+ * - `deleted` &mdash; the file or directory was removed
+ * - `renamed` &mdash; the file or directory was renamed or moved
+ */
+export type WatchEventType = 'created' | 'modified' | 'deleted' | 'renamed';
+
+/**
+ * Describes a change detected by a file system watcher.
+ */
+export type WatchEvent<T extends File | Directory> = {
+  /**
+   * The kind of change that occurred.
+   */
+  type: WatchEventType;
+  /**
+   * The file or directory that changed. For `renamed` events, this is the original path before the rename.
+   */
+  target: T;
+  /**
+   * Raw platform-specific event flags for advanced use cases.
+   * On Android: FileObserver event flags.
+   * On iOS: DispatchSource.FileSystemEvent flags.
+   */
+  nativeEventFlags?: number;
+  /**
+   * For rename events, the new path after rename.
+   * Populated when MOVED_FROM and MOVED_TO events are correlated within the debounce window.
+   * @platform android
+   */
+  newTarget?: T;
+};
+
+/**
+ * Options for configuring a file system watcher.
+ */
+export type WatchOptions = {
+  /**
+   * The debounce interval in milliseconds for coalescing rapid successive events into a single callback.
+   * @default DEFAULT_DEBOUNCE_MS
+   */
+  debounce?: number;
+  /**
+   * Limits which event types trigger the callback. If omitted, all event types are observed.
+   *
+   * On iOS, directory watchers only provide coarse-grained notifications that the directory itself
+   * changed, so filtering for child-level `created`, `deleted`, or `renamed` events is not reliable.
+   */
+  events?: WatchEventType[];
+};
+
+/**
+ * A handle to an active file system watcher. Call `remove()` to stop watching and release resources.
+ */
+export type WatchSubscription = {
+  /**
+   * Stops watching for changes and releases native resources.
+   * After calling this method, the callback will no longer be invoked.
+   */
+  remove(): void;
+};
+
 export type DirectoryCreateOptions = {
   /**
    * Whether to create intermediate directories if they do not exist.
@@ -149,6 +218,21 @@ export declare class Directory {
   createFile(name: string, mimeType: string | null): File;
 
   createDirectory(name: string): Directory;
+
+  /**
+   * Watches this directory for changes to its contents.
+   *
+   * On iOS, DispatchSource can only detect that the directory changed,
+   * not which specific child was affected. The `target` will always be
+   * the directory itself, and content changes are reported as `modified`.
+   * Call `directory.list()` to determine what changed.
+   *
+   * On Android, FileObserver provides granular child-level events.
+   */
+  watch(
+    callback: (event: WatchEvent<File | Directory>) => void,
+    options?: WatchOptions
+  ): WatchSubscription;
 
   /**
    * Copies a directory.
@@ -411,6 +495,18 @@ export declare class File {
   ): Promise<File>;
 
   /**
+   * Uploads this file to the network.
+   *
+   * The promise resolves with the HTTP response metadata and body for any completed response,
+   * including non-2xx status codes. It rejects only for local file errors, transport failures,
+   * or cancellation.
+   *
+   * @param url The URL to upload the file to.
+   * @param options Upload options.
+   */
+  upload(url: string, options?: UploadOptions): Promise<UploadResult>;
+
+  /**
    * An overload of the `pickFileAsync` method, which picks and returns a single `File`.
    * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
    * @param options options
@@ -433,6 +529,54 @@ export declare class File {
    * @returns A `File` instance or an array of `File` instances.
    */
   static pickFileAsync(initialUri?: string, mimeType?: string): Promise<File | File[]>;
+
+  /**
+   * Creates a download task for downloading a file with pause/resume support.
+   *
+   * @param url - The URL of the file to download.
+   * @param destination - The destination directory or file.
+   * @param options - Download options including headers, progress callback, and abort signal.
+   * @returns A `DownloadTask` instance that can be used to control the download.
+   *
+   * @example
+   * ```ts
+   * const dest = new File(Paths.document, 'video.mp4');
+   * const downloadTask = File.createDownloadTask(url, dest, {
+   *   onProgress: ({ bytesWritten, totalBytes }) => {
+   *     console.log(`Downloaded ${bytesWritten} of ${totalBytes} bytes`);
+   *   }
+   * });
+   * const file = await downloadTask.downloadAsync();
+   * ```
+   */
+  static createDownloadTask(
+    url: string,
+    destination: Directory | File,
+    options?: DownloadTaskOptions
+  ): DownloadTask;
+
+  /**
+   * Creates an upload task for uploading this file with progress tracking.
+   *
+   * @param url - The URL to upload the file to.
+   * @param options - Upload options including upload type, headers, progress callback, and abort signal.
+   * @returns An `UploadTask` instance that can be used to control the upload.
+   *
+   * @example
+   * ```ts
+   * const file = new File(Paths.document, 'photo.jpg');
+   * const uploadTask = file.createUploadTask(url, {
+   *   uploadType: UploadType.MULTIPART,
+   *   headers: { Authorization: 'Bearer token' },
+   *   onProgress: ({ bytesSent, totalBytes }) => {
+   *     console.log(`Uploaded ${bytesSent} of ${totalBytes} bytes`);
+   *   }
+   * });
+   * const result = await uploadTask.uploadAsync();
+   * console.log('Upload status:', result.status);
+   * ```
+   */
+  createUploadTask(url: string, options?: UploadOptions): UploadTask;
 
   /**
    * A size of the file in bytes. 0 if the file does not exist, or it cannot be read.
@@ -470,6 +614,11 @@ export declare class File {
    * @platform android
    */
   contentUri: string;
+
+  /**
+   * Watches for changes affecting this file.
+   */
+  watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription;
 }
 
 export declare class FileHandle {
@@ -646,3 +795,290 @@ export type PickFileCanceledResult = {
   result: null;
   canceled: true;
 };
+
+/**
+ * Represents the type of upload operation.
+ */
+export enum UploadType {
+  /**
+   * Binary content upload - the file is uploaded as-is in the request body.
+   */
+  BINARY_CONTENT = 0,
+  /**
+   * Multipart form upload - the file is uploaded as part of a multipart/form-data request.
+   */
+  MULTIPART = 1,
+}
+
+/**
+ * Represents upload progress data.
+ */
+export type UploadProgress = {
+  /**
+   * The number of bytes sent so far.
+   */
+  bytesSent: number;
+  /**
+   * The total number of bytes to send.
+   */
+  totalBytes: number;
+};
+
+/**
+ * Represents the result of an upload operation.
+ */
+export type UploadResult = {
+  /**
+   * The response body as a string.
+   */
+  body: string;
+  /**
+   * The HTTP status code.
+   */
+  status: number;
+  /**
+   * The response headers.
+   */
+  headers: Record<string, string>;
+};
+
+/**
+ * Options for upload operations.
+ */
+export type UploadOptions = {
+  /**
+   * The HTTP method to use.
+   * @default 'POST'
+   */
+  httpMethod?: 'POST' | 'PUT' | 'PATCH';
+  /**
+   * The type of upload operation.
+   * @default UploadType.BINARY_CONTENT
+   */
+  uploadType?: UploadType;
+  /**
+   * Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
+  /**
+   * The field name for the file in multipart uploads.
+   * @default 'file'
+   */
+  fieldName?: string;
+  /**
+   * The MIME type of the file.
+   */
+  mimeType?: string;
+  /**
+   * Additional form parameters to include in multipart uploads.
+   */
+  parameters?: Record<string, string>;
+  /**
+   * Callback for upload progress updates.
+   *
+   * > **Note:** For multipart uploads, the reported bytes may include multipart framing overhead
+   * > (boundary strings, headers, form parameters) in addition to the file content.
+   */
+  onProgress?: (data: UploadProgress) => void;
+  /**
+   * Determines whether the iOS native session should continue in the background.
+   *
+   * When set to `'background'`, the native transfer may continue after the app is
+   * suspended. However, the JavaScript `UploadTask` instance is not
+   * restored if the app is terminated or relaunched, so its promise, progress
+   * callbacks, and cancellation state are only available while the original JS
+   * runtime is still alive.
+   *
+   * @platform ios
+   * @default 'background'
+   */
+  sessionType?: NetworkTaskSessionType;
+  /**
+   * An `AbortSignal` that can be used to cancel the upload.
+   * When the signal is aborted, the upload is cancelled and the promise rejects with an `AbortError`.
+   */
+  signal?: AbortSignal;
+};
+
+/**
+ * Options for download task operations.
+ */
+export type DownloadTaskOptions = {
+  /**
+   * Custom headers to include in the request.
+   */
+  headers?: Record<string, string>;
+  /**
+   * Determines whether the iOS native session should continue in the background.
+   * Android accepts this option for API consistency and ignores it.
+   *
+   * When set to `'background'`, the native transfer may continue after the app is
+   * suspended. However, the JavaScript `DownloadTask` instance is not
+   * restored if the app is terminated or relaunched, so its promise, progress
+   * callbacks, and cancellation state are only available while the original JS
+   * runtime is still alive.
+   *
+   * @platform ios
+   * @default 'background'
+   */
+  sessionType?: NetworkTaskSessionType;
+  /**
+   * Callback for download progress updates.
+   */
+  onProgress?: (data: DownloadProgress) => void;
+  /**
+   * AbortSignal to cancel the download.
+   */
+  signal?: AbortSignal;
+};
+
+/**
+ * The native URL session mode used by iOS upload and download tasks.
+ */
+export type NetworkTaskSessionType = 'background' | 'foreground';
+
+/**
+ * Represents the state of a paused download that can be persisted and resumed later.
+ */
+export type DownloadPauseState = {
+  /**
+   * The URL of the download.
+   */
+  url: string;
+  /**
+   * The destination file or directory URI.
+   */
+  fileUri: string;
+  /**
+   * Whether the destination is a directory. When `true`, the filename is derived from the URL.
+   */
+  isDirectory: boolean;
+  /**
+   * Custom headers that were used for the download request.
+   */
+  headers?: Record<string, string>;
+  /**
+   * Platform-specific opaque resume data.
+   */
+  resumeData?: string;
+};
+
+/**
+ * Represents the current state of an upload or download task.
+ * @inline
+ */
+type TaskState = 'idle' | 'active' | 'paused' | 'completed' | 'cancelled' | 'error';
+
+/**
+ * Represents the current state of an upload task.
+ */
+export type UploadTaskState = Exclude<TaskState, 'paused'>;
+
+/**
+ * Represents the current state of a download task.
+ */
+export type DownloadTaskState = TaskState;
+
+/**
+ * Represents an upload task with progress tracking and cancellation support.
+ */
+export declare class UploadTask {
+  /**
+   * The current state of the upload task.
+   */
+  readonly state: UploadTaskState;
+
+  /**
+   * Creates a new upload task.
+   * @param file The file to upload.
+   * @param url The destination URL.
+   * @param options Upload options including headers, progress callback, and abort signal.
+   */
+  constructor(file: File, url: string, options?: UploadOptions);
+
+  /**
+   * Starts the upload operation.
+   * @returns A promise that resolves with the upload result.
+   * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
+   */
+  uploadAsync(): Promise<UploadResult>;
+
+  /**
+   * Cancels the upload operation.
+   * Any pending `uploadAsync()` promise rejects after cancellation.
+   */
+  cancel(): void;
+
+  /**
+   * Adds a listener for upload progress events.
+   */
+  addListener(
+    eventName: 'progress',
+    listener: (data: UploadProgress) => void
+  ): { remove: () => void };
+}
+
+/**
+ * Represents a download task with pause/resume support and progress tracking.
+ */
+export declare class DownloadTask {
+  /**
+   * The current state of the download task.
+   */
+  readonly state: DownloadTaskState;
+
+  /**
+   * Creates a new download task.
+   * @param url The source URL.
+   * @param destination The destination file or directory.
+   * @param options Download options including headers, progress callback, and abort signal.
+   */
+  constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
+
+  /**
+   * Starts the download operation.
+   * @returns A promise that resolves with the downloaded file, or null if paused.
+   * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
+   */
+  downloadAsync(): Promise<File | null>;
+
+  /**
+   * Pauses the download operation. The pending downloadAsync() promise resolves with null.
+   */
+  pause(): void;
+
+  /**
+   * Resumes a paused download operation.
+   * @returns A promise that resolves with the downloaded file, or null if paused again.
+   * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
+   */
+  resumeAsync(): Promise<File | null>;
+
+  /**
+   * Cancels the download operation.
+   * Any pending `downloadAsync()` or `resumeAsync()` promise rejects after cancellation.
+   */
+  cancel(): void;
+
+  /**
+   * Returns the current state that can be persisted and restored later.
+   * @returns The pause state.
+   */
+  savable(): DownloadPauseState;
+
+  /**
+   * Creates a download task from a saved state.
+   * @param state The saved pause state.
+   * @param options Optional new options to attach (e.g. onProgress, signal) since those are not persisted.
+   * @returns A new download task.
+   */
+  static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
+
+  /**
+   * Adds a listener for download progress events.
+   */
+  addListener(
+    eventName: 'progress',
+    listener: (data: DownloadProgress) => void
+  ): { remove: () => void };
+}

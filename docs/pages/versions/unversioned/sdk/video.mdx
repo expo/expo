@@ -13,6 +13,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 `expo-video` is a cross-platform, performant video component for React Native and Expo with Web support.
 
@@ -363,6 +365,118 @@ The cache functions offline. If a portion or the entirety of a video is cached, 
 - The preferred cache size in bytes can be defined using the [`setVideoCacheSizeAsync`](#videosetvideocachesizeasyncsizebytes) function. The default cache size is 1GB.
 - The [`getCurrentVideoCacheSize`](#videogetcurrentvideocachesize) can be used to get the current storage occupied by the cache in bytes.
 - All cached videos can be cleared using the [`clearVideoCacheAsync`](#videoclearvideocacheasync) function.
+
+### Intercepting native asset loading
+
+<Collapsible summary={<>This is a native <CODE>expo-video</CODE> feature meant for advanced users. Expand to learn more.</>}>
+#### Introduction
+
+`expo-video` includes a native extension point on iOS called `VideoAssetTransportProvider`. It allows you to intercept specific video sources, customize how the underlying `AVURLAsset` is created, and override how it loads data.
+
+This is useful when a source cannot be handled by `AVKit` directly and needs native preprocessing. For example, a provider can rewrite a URL, attach a custom `AVAssetResourceLoaderDelegate`, start a local proxy server, or transform one streaming format into another before playback begins.
+
+Providers are registered in the `VideoAssetTransportRegistry` at module startup. When `expo-video` loads a source, it creates a `VideoAssetSourceDescriptor` and asks registered providers, in priority order, whether they want to handle it. The first provider that returns a `VideoAssetLoadPlan` is used.
+
+This API is intended for advanced native integrations. It requires a custom native module, so it is not available in Expo Go. Use a development build instead.
+
+#### Customizable properties
+
+The main customization points are the fields on `VideoAssetTransportProvider` and the fields on the `VideoAssetLoadPlan` it returns.
+
+`VideoAssetTransportProvider` lets you control the following properties:
+
+| Property             | Description                                                                                                                 |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `identifier`         | A stable name for the provider. It is used when replacing or unregistering a provider.                                      |
+| `priority`           | Which provider wins if multiple providers match the same source. Higher values take precedence.                             |
+| `makeLoadPlan(for:)` | The matching and configuration entry point. Return `nil` to ignore a source, or return a `VideoAssetLoadPlan` to handle it. |
+
+`VideoAssetLoadPlan` lets you control how `expo-video` constructs and manages the asset via the following properties:
+
+| Property                  | Description                                                                                                                                                                                             |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `assetURL`                | The URL used to initialize the underlying `AVURLAsset`. This can be the original source URL or a transport-specific replacement such as a rewritten scheme, local proxy URL, or generated playlist URL. |
+| `assetOptions`            | Optional `AVURLAsset` initialization options. Use this to override the default options that `expo-video` would normally derive from the source.                                                         |
+| `reportedContentTypeHint` | An optional content type that describes the effective playback format of `assetURL`. Set this when the transport changes the source type, such as translating DASH into HLS.                            |
+| `resourceLoaderDelegate`  | An optional `AVAssetResourceLoaderDelegate` that should be attached to the asset's resource loader.                                                                                                     |
+| `resourceLoaderQueue`     | Optional dispatch queue on which `resourceLoaderDelegate` should receive callbacks.                                                                                                                     |
+| `prepareAsset`            | Optional async work to run before `expo-video` eagerly loads asset properties. Use this for transport bootstrap such as fetching manifests or starting a local server.                                  |
+| `retainedObjects`         | Optional array of helper objects that must stay alive for the lifetime of the asset, such as local HTTP servers, parsers, or transport state owners.                                                    |
+| `attachErrorHandler`      | An optional hook that lets the transport forward asynchronous errors back into `expo-video` after the load plan has been applied.                                                                       |
+| `onAssetDeinit`           | Optional cleanup to run when the `VideoAsset` is deallocated.                                                                                                                                           |
+
+#### Implementation and usage
+
+A typical setup looks as follows:
+
+1. Create an Expo module with [`create-expo-module`](/modules/get-started/).
+2. Add a class that conforms to `VideoAssetTransportProvider`.
+3. Register the provider in the module's `OnCreate` block.
+4. Build the app so the native module is compiled into your project.
+
+If you only need the provider in a single app, use the [local Expo module](/modules/get-started/#add-a-new-module-to-an-existing-application) flow.
+
+If you want to reuse the provider across multiple apps, use the [standalone Expo module](/modules/get-started/#create-a-new-module-with-an-example-project) flow instead.
+
+#### Basic usage example
+
+1. Define the provider and load plan. After creating the module, add a class that conforms to `VideoAssetTransportProvider`. In `makeLoadPlan(for:)`, inspect the `VideoAssetSourceDescriptor` and return `nil` for sources you do not want to handle.
+
+```swift
+import ExpoVideo
+
+final class ExampleVideoTransportProvider: VideoAssetTransportProvider {
+  static let providerIdentifier = "com.example.video-transport"
+
+  let identifier = Self.providerIdentifier
+  let priority = 500
+
+  func makeLoadPlan(for source: VideoAssetSourceDescriptor) -> VideoAssetLoadPlan? {
+    guard source.contentTypeHint == .dash, source.url.pathExtension == "mpd" else {
+      return nil
+    }
+
+    let transformedURL = URL(string: "http://127.0.0.1:8080/master.m3u8")!
+
+    return VideoAssetLoadPlan(
+      assetURL: transformedURL,
+      reportedContentTypeHint: .hls
+    )
+  }
+}
+```
+
+2. To register the provider, the recommended place to register a provider is an Expo module's `OnCreate` block. This ensures the provider is available before videos start loading.
+
+```swift
+import ExpoModulesCore
+import ExpoVideo
+
+public final class CustomVideoTransportModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("CustomVideoTransport")
+
+    OnCreate {
+      VideoAssetTransportRegistry.registerProvider(ExampleVideoTransportProvider())
+    }
+
+    OnDestroy {
+      VideoAssetTransportRegistry.unregisterProvider(
+        withId: ExampleVideoTransportProvider.providerIdentifier
+      )
+    }
+  }
+}
+```
+
+#### Complete examples
+
+You can use the following complete examples for a better grasp of how to use this API.
+
+- [Basic DASH support provider](https://github.com/expo/expo/tree/main/apps/bare-expo/modules/expo-video-dash-support-module) - a local module in Bare Expo that provides limited DASH support for `expo-video` on iOS.
+- [`expo-video` iOS caching](https://github.com/expo/expo/blob/main/packages/expo-video/ios/Cache/CacheVideoAssetTransportProvider.swift) - the built-in cache provider implementation.
+
+</Collapsible>
 
 ## API
 

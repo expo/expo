@@ -1,7 +1,7 @@
 import { isRunningInExpoGo } from 'expo';
 import { requireOptionalNativeModule } from 'expo-modules-core';
 
-import { SplashScreenNativeModule, SplashScreenOptions } from './SplashScreen.types';
+import type { SplashScreenNativeModule, SplashScreenOptions } from './SplashScreen.types';
 
 const SplashModule = requireOptionalNativeModule<SplashScreenNativeModule>('ExpoSplashScreen');
 

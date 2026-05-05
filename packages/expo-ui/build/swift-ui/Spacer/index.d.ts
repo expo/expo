@@ -6,5 +6,5 @@ export interface SpacerProps extends CommonViewModifierProps {
      */
     minLength?: number;
 }
-export declare function Spacer(props: SpacerProps): import("react").JSX.Element;
+export declare function Spacer(props: SpacerProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

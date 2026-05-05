@@ -1,9 +1,9 @@
 import { vol } from 'memfs';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { DependencyResolutionSource } from '../../dependencies/types';
 import { createMemoizer, _verifyMemoizerFreed } from '../../memoize';
-import { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
+import type { findGradleAndManifestAsync, parsePackageNameAsync } from '../androidResolver';
 import { loadConfigAsync } from '../config';
 import { resolveDependencyConfigImplIosAsync } from '../iosResolver';
 import {

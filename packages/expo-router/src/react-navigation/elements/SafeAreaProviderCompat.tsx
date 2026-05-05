@@ -22,7 +22,16 @@ type Props = {
   style?: StyleProp<ViewStyle>;
 };
 
-const { width = 0, height = 0 } = Dimensions.get('window');
+function getInitialFrameSize() {
+  if (Platform.OS === 'web') {
+    return { width: 0, height: 0 };
+  }
+
+  const { width = 0, height = 0 } = Dimensions.get('window');
+  return { width, height };
+}
+
+const { width, height } = getInitialFrameSize();
 
 // To support SSR on web, we need to have empty insets for initial values
 // Otherwise there can be mismatch between SSR and client output

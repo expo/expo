@@ -37,11 +37,6 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    */
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
-  public init(provider: JavaScriptRuntimeProvider) {
-    self.pointee = provider.consume()
-    self.scheduler = expo.RuntimeScheduler(pointee)
-  }
-
   /**
    Creates a runtime from the JSI runtime.
    */
@@ -105,22 +100,56 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
 
   /**
    Creates a JavaScript host object with given implementations for property getter, property setter, property names getter and dealloc.
+
+   Errors thrown from `get` or `set` propagate to JavaScript as a thrown `Error`. Conform
+   the thrown type to `JavaScriptThrowable` to control the resulting `message` and `code`.
+
+   Pass `nil` for `set` to make the host object read-only — assignment from JavaScript
+   then throws an `Error` whose message names the property and explains how to make it
+   writable. `getPropertyNames` and `dealloc` default to no-ops.
    */
   public func createHostObject(
-    get: @escaping (_ propertyName: String) -> JavaScriptValue,
-    set: @escaping (_ propertyName: String, _ value: JavaScriptValue) -> Void,
-    getPropertyNames: @escaping () -> [String],
-    dealloc: @escaping () -> Void
+    get: @escaping @JavaScriptActor (_ propertyName: String) throws -> JavaScriptValue,
+    set: (@JavaScriptActor (_ propertyName: String, _ value: JavaScriptValue) throws -> Void)? = nil,
+    getPropertyNames: @escaping @JavaScriptActor () -> [String] = { [] },
+    dealloc: @escaping @JavaScriptActor () -> Void = {}
   ) -> JavaScriptObject {
     func getter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>) -> facebook.jsi.Value {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
-      return context.get(String(cString: propertyName)).asJSIValue()
+      let propertyName = String(cString: propertyName)
+
+      guard let runtime = context.runtime else {
+        FatalError.runtimeLost()
+      }
+      return JavaScriptActor.assumeIsolated {
+        return forwardingSwiftErrorsToJS(runtime: runtime) {
+          return try context.get(propertyName).asJSIValue()
+        }
+      }
     }
 
     func setter(context: UnsafeMutableRawPointer, propertyName: UnsafePointer<CChar>, valuePointer: UnsafeMutableRawPointer) {
       let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeUnretainedValue()
-      let value = JavaScriptValue(context.runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
-      context.set(String(cString: propertyName), value)
+
+      guard let runtime = context.runtime else {
+        FatalError.runtimeLost()
+      }
+      guard let set = context.set else {
+        // Unreachable in practice: when the user passed `nil` for `set`, the call site
+        // below at `expo.HostObjectCallbacks(...)` also passes `nil` to C++, and
+        // `HostObjectCallbacks::set` throws a `jsi::JSError` directly instead of
+        // calling back into Swift. Trap loudly so a future C++ refactor can't silently
+        // swallow assignments.
+        FatalError.readOnlyHostObjectSetterInvoked()
+      }
+      let value = JavaScriptValue(runtime, valuePointer.assumingMemoryBound(to: facebook.jsi.Value.self).move())
+      let propertyName = String(cString: propertyName)
+
+      JavaScriptActor.assumeIsolated {
+        forwardingSwiftErrorsToJS(runtime: runtime) {
+          try set(propertyName, value)
+        }
+      }
     }
 
     func propertyNamesGetter(context: UnsafeMutableRawPointer) -> expo.HostObjectCallbacks.PropNameIds {
@@ -129,7 +158,12 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
       guard let runtime = context.runtime else {
         FatalError.runtimeLost()
       }
-      let propertyNames = context.getPropertyNames()
+      // Get property names within the actor isolation, but build the vector outside
+      // to avoid returning a non-copyable C++ type through `assumeIsolated`
+      // (its `withoutActuallyEscaping` forces a copy of the return value).
+      let propertyNames: [String] = JavaScriptActor.assumeIsolated {
+        return context.getPropertyNames()
+      }
       var vector = expo.HostObjectCallbacks.PropNameIds()
 
       vector.reserve(propertyNames.count)
@@ -142,11 +176,16 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     }
 
     func deallocate(context: UnsafeMutableRawPointer) {
-      Unmanaged<HostObjectContext>.fromOpaque(context).release()
+      let context = Unmanaged<HostObjectContext>.fromOpaque(context).takeRetainedValue()
+      JavaScriptActor.assumeIsolated {
+        context.dealloc()
+      }
     }
 
     let context = Unmanaged.passRetained(HostObjectContext(runtime: self, get, set, getPropertyNames, dealloc)).toOpaque()
-    let callbacks = expo.HostObjectCallbacks(context, getter, setter, propertyNamesGetter, deallocate)
+    // Pass a null setter to C++ when the Swift setter is nil so that JS assignment
+    // raises a `jsi::JSError` directly, without crossing the Swift boundary.
+    let callbacks = expo.HostObjectCallbacks(context, getter, set == nil ? nil : setter, propertyNamesGetter, deallocate)
     let hostObject = expo.HostObject.makeObject(pointee, consume callbacks)
 
     return JavaScriptObject(self, hostObject)
@@ -276,16 +315,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
     return createFunction(name) { this, arguments in
       let promise = JavaScriptPromise(self)
 
-      // Need to switch to reference semantics as Task escapes the closure (consumes on capture).
       // Arguments buffer needs to be copied to ensure safe async access.
-      let thisRef = this.ref()
       let argumentsRef = arguments.copy().ref()
 
       // Switch to asynchronous context.
       self.schedule(taskName: "[JS] Async function \(name)") {
         // Invoke the asynchronous function and resolve/reject the promise.
         do {
-          let result = try await function(thisRef.take(), argumentsRef.take())
+          let result = try await function(this, argumentsRef.take())
           promise.resolve(result)
         } catch {
           promise.reject(error)
@@ -298,6 +335,14 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   // MARK: - Runtime execution
+
+  /**
+   Whether the runtime scheduler can dispatch work asynchronously to the JS thread.
+   Returns false for standalone runtimes (e.g. in tests) where scheduled tasks run synchronously.
+   */
+  public var supportsAsyncScheduling: Bool {
+    return scheduler.supportsAsyncScheduling()
+  }
 
   /**
    Schedules a closure to be executed with granted synchronized access to the runtime.
@@ -375,7 +420,24 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   }
 
   /**
-   Asynchronously executes a closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   Asynchronously executes a sync closure on the JavaScript runtime thread, awaiting its completion without blocking.
+   */
+  public func execute<R: Sendable>(
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () throws -> R
+  ) async throws -> sending R {
+    return try await withUnsafeThrowingContinuation { continuation in
+      scheduler.scheduleTask(.ImmediatePriority) {
+        do {
+          continuation.resume(returning: try JavaScriptActor.assumeIsolated(closure))
+        } catch {
+          continuation.resume(throwing: error)
+        }
+      }
+    }
+  }
+
+  /**
+   Asynchronously executes an async closure on the JavaScript runtime thread, awaiting its completion without blocking.
    */
   public func execute<R: Sendable>(
     taskName: String? = "[JS] runtime.execute (async \(#function))",
@@ -494,14 +556,9 @@ private func createFunctionClosure(runtime: JavaScriptRuntime, name: String? = n
     let argumentsRef = JavaScriptValuesBuffer(runtime, start: argumentsPtr, count: argumentsCount).ref()
 
     return JavaScriptActor.assumeIsolated {
-      do {
+      return forwardingSwiftErrorsToJS(runtime: runtime) {
         let thisValue = JavaScriptValue(runtime, this)
-        let result = try context.call(thisValue, argumentsRef.take())
-        return result.asJSIValue()
-      } catch let error {
-        // TODO: Implement throwing `facebook.jsi.JSError`, returns `undefined` until then
-        print("Calling '\(context.name ?? "anonymous")' function has failed: \(error)")
-        return .undefined()
+        return try context.call(thisValue, argumentsRef.take()).asJSIValue()
       }
     }
   }

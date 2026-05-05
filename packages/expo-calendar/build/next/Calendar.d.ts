@@ -1,6 +1,6 @@
-import { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
+import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
-import { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties } from './ExpoCalendar.types';
+import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
 /**
  * Represents a calendar attendee object.
  */
@@ -40,6 +40,7 @@ export declare class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     listEvents(startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
     listReminders(startDate?: Date | null, endDate?: Date | null, status?: ReminderStatus | null): Promise<ExpoCalendarReminder[]>;
     update(details: Partial<ModifiableCalendarProperties>): Promise<void>;
+    addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult>;
     static get(calendarId: string): Promise<ExpoCalendar>;
 }
 /**
@@ -62,6 +63,12 @@ export declare function getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]
  * @returns An [`ExpoCalendar`](#expocalendar) object representing the newly created calendar.
  */
 export declare function createCalendar(details?: Partial<Calendar>): Promise<ExpoCalendar>;
+/**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+ * @platform ios
+ */
+export declare function presentPicker(): Promise<ExpoCalendar | null>;
 /**
  * Lists events from the device's calendar. It can be used to search events in multiple calendars.
  * > **Note:** If you want to search events in a single calendar, you can use [`ExpoCalendar.listEvents`](#listeventsstartdate-enddate) instead.
@@ -102,7 +109,7 @@ export declare const getRemindersPermissions: () => Promise<import("expo-modules
  * @returns An array of Source objects representing the sources found.
  */
 export declare const getSourcesSync: () => import("./Calendar").Source[];
-export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, } from './ExpoCalendar.types';
+export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, AddEventWithFormOptions, } from './ExpoCalendar.types';
 export type { PermissionResponse, Alarm, AlarmLocation, CalendarDialogParams, DaysOfTheWeek, DialogEventResult, OpenEventDialogResult, OpenEventPresentationOptions, PermissionExpiration, PermissionHookOptions, PresentationOptions, RecurrenceRule, RecurringEventOptions, Source, } from '../Calendar';
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
 export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';

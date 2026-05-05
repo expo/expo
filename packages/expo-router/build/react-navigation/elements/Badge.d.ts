@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { Animated, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 type Props = TextProps & {
     /**
@@ -18,6 +17,6 @@ type Props = TextProps & {
      */
     style?: Animated.WithAnimatedValue<StyleProp<TextStyle>>;
 };
-export declare function Badge({ children, style, visible, size, ...rest }: Props): React.JSX.Element | null;
+export declare function Badge({ children, style, visible, size, ...rest }: Props): import("react/jsx-runtime").JSX.Element | null;
 export {};
 //# sourceMappingURL=Badge.d.ts.map

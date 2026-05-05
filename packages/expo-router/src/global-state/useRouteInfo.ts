@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from 'react';
 
-import { type UrlObject } from './getRouteInfoFromState';
+import type { UrlObject } from './getRouteInfoFromState';
 import { routeInfoSubscribe } from './routeInfoCache';
 import { store } from './store';
 import { usePreviewInfo } from '../link/preview/PreviewRouteContext';

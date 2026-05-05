@@ -6,17 +6,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 'use client';
-/**
- * Copyright © 2024 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.App = App;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importDefault(require("react"));
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const client_1 = require("./router/client");
@@ -43,19 +38,15 @@ function RootErrorBoundary(props) {
             globalThis.__EXPO_REFETCH_ROUTE__ = refetchRoute;
         }
     }, [props.error, props.retry]);
-    return (<ErrorBoundary_1.ErrorBoundary error={props.error} retry={() => {
+    return ((0, jsx_runtime_1.jsx)(ErrorBoundary_1.ErrorBoundary, { error: props.error, retry: () => {
             // TODO: Invalidate the cache automatically when the request fails.
             // Invalidate the fetch cache so we can retry the request.
             globalThis.__EXPO_REFETCH_ROUTE_NO_CACHE__?.();
             return props.retry();
-        }}/>);
+        } }));
 }
 // Must be exported or Fast Refresh won't update the context
 function App() {
-    return (<react_native_safe_area_context_1.SafeAreaProvider>
-      <Try_1.Try catch={RootErrorBoundary}>
-        <client_1.Router />
-      </Try_1.Try>
-    </react_native_safe_area_context_1.SafeAreaProvider>);
+    return ((0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaProvider, { children: (0, jsx_runtime_1.jsx)(Try_1.Try, { catch: RootErrorBoundary, children: (0, jsx_runtime_1.jsx)(client_1.Router, {}) }) }));
 }
 //# sourceMappingURL=entry.js.map

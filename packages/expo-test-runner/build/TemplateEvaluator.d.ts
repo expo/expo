@@ -1,4 +1,4 @@
-import { Definitions } from 'dot';
+import type { Definitions } from 'dot';
 export default class TemplateEvaluator {
     private definitions;
     constructor(definitions: Definitions);

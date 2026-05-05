@@ -23,7 +23,10 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.ui.convertibles.HorizontalAlignment
 import expo.modules.ui.convertibles.VerticalArrangement
 import expo.modules.ui.convertibles.toComposeArrangement
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class ContentPadding(
   @Field val start: Int = 0,
   @Field val top: Int = 0,
@@ -31,6 +34,7 @@ data class ContentPadding(
   @Field val bottom: Int = 0
 ) : Record
 
+@OptimizedComposeProps
 data class LazyColumnProps(
   val verticalArrangement: MutableState<VerticalArrangement?> = mutableStateOf(null),
   val horizontalAlignment: MutableState<HorizontalAlignment?> = mutableStateOf(null),

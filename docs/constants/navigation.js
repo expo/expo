@@ -300,6 +300,7 @@ export const general = [
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
+      makePage('router/migrate/sdk-55-to-56.mdx'),
     ]),
   ]),
   makeSection(
@@ -395,6 +396,7 @@ export const general = [
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
         makePage('guides/expo-ui-swift-ui/extending.mdx'),
+        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -508,6 +510,7 @@ export const eas = [
         makePage('build-reference/app-extensions.mdx'),
         makePage('build-reference/easignore.mdx'),
         makePage('build-reference/npx-testflight.mdx'),
+        makePage('build-reference/repack.mdx'),
         makePage('build-reference/limitations.mdx'),
       ],
       { expanded: false }
@@ -581,6 +584,16 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
+  makeSection('Expo Observe', [
+    makePage('eas/observe/introduction.mdx'),
+    makePage('eas/observe/get-started.mdx'),
+    makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/configuration.mdx'),
+    makeGroup('Reference', [
+      makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/troubleshooting.mdx'),
+    ]),
+  ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
@@ -681,7 +694,6 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
-    makePage('archive/glossary.mdx'),
   ]),
 ];
 
@@ -729,6 +741,7 @@ const versionsReference = VERSIONS.reduce(
         [
           makePage('more/expo-cli.mdx'),
           makePage('more/create-expo.mdx'),
+          makePage('more/create-expo-module.mdx'),
           makePage('more/qr-codes.mdx'),
           makePage('more/release-statuses.mdx'),
           makePage('more/glossary-of-terms.mdx'),

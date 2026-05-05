@@ -4,6 +4,7 @@ import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
 import { PlanEnterpriseIcon } from '@expo/styleguide-icons/custom/PlanEnterpriseIcon';
 import { StoplightIcon } from '@expo/styleguide-icons/custom/StoplightIcon';
 import { PlaySquareDuotoneIcon } from '@expo/styleguide-icons/duotone/PlaySquareDuotoneIcon';
+import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
 import { CheckIcon } from '@expo/styleguide-icons/outline/CheckIcon';
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
@@ -254,6 +255,8 @@ function getIconElement(iconName?: string) {
       return Dataflow03Icon;
     case 'EAS Hosting':
       return Cloud01Icon;
+    case 'Expo Observe':
+      return ActivityIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;
     case 'Expo Router':

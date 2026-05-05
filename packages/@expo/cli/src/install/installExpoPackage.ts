@@ -1,4 +1,4 @@
-import * as PackageManager from '@expo/package-manager';
+import type * as PackageManager from '@expo/package-manager';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 

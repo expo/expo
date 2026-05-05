@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NavigationContainer = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
 const useBackButton_1 = require("./useBackButton");
@@ -93,15 +94,9 @@ function NavigationContainerInner({ direction = react_native_1.I18nManager.getCo
     if (!isLinkingReady) {
         // This is temporary until we have Suspense for data-fetching
         // Then the fallback will be handled by a parent `Suspense` component
-        return <native_1.ThemeProvider value={theme}>{fallback}</native_1.ThemeProvider>;
+        return (0, jsx_runtime_1.jsx)(native_1.ThemeProvider, { value: theme, children: fallback });
     }
-    return (<native_1.LocaleDirContext.Provider value={direction}>
-      <native_1.UNSTABLE_UnhandledLinkingContext.Provider value={unhandledLinkingContext}>
-        <native_1.LinkingContext.Provider value={linkingContext}>
-          <native_1.BaseNavigationContainer {...rest} theme={theme} onReady={onReadyForLinkingHandling} onStateChange={onStateChangeForLinkingHandling} initialState={rest.initialState == null ? initialState : rest.initialState} ref={refContainer}/>
-        </native_1.LinkingContext.Provider>
-      </native_1.UNSTABLE_UnhandledLinkingContext.Provider>
-    </native_1.LocaleDirContext.Provider>);
+    return ((0, jsx_runtime_1.jsx)(native_1.LocaleDirContext.Provider, { value: direction, children: (0, jsx_runtime_1.jsx)(native_1.UNSTABLE_UnhandledLinkingContext.Provider, { value: unhandledLinkingContext, children: (0, jsx_runtime_1.jsx)(native_1.LinkingContext.Provider, { value: linkingContext, children: (0, jsx_runtime_1.jsx)(native_1.BaseNavigationContainer, { ...rest, theme: theme, onReady: onReadyForLinkingHandling, onStateChange: onStateChangeForLinkingHandling, initialState: rest.initialState == null ? initialState : rest.initialState, ref: refContainer }) }) }) }));
 }
 exports.NavigationContainer = react_1.default.forwardRef(NavigationContainerInner);
 //# sourceMappingURL=NavigationContainer.js.map

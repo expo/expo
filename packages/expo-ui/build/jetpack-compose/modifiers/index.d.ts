@@ -48,6 +48,18 @@ export declare const width: (value: number) => import("./createModifier").Modifi
  */
 export declare const height: (value: number) => import("./createModifier").ModifierConfig;
 /**
+ * Constrain the size of the wrapped layout only when it would be
+ * otherwise unconstrained: the `minWidth` and `minHeight` constraints
+ * are only applied when the incoming corresponding constraint is `0`.
+ * @param options.minWidth - Minimum width in dp.
+ * @param options.minHeight - Minimum height in dp.
+ * @see [Compose `defaultMinSize` modifier](https://developer.android.com/reference/kotlin/androidx/compose/ui/Modifier#%28androidx.compose.ui.Modifier%29.defaultMinSize%28androidx.compose.ui.unit.Dp%2Candroidx.compose.ui.unit.Dp%29)
+ */
+export declare const defaultMinSize: (options: {
+    minWidth?: number;
+    minHeight?: number;
+}) => import("./createModifier").ModifierConfig;
+/**
  * Wraps the width to the content size.
  * @param alignment - Optional horizontal alignment ('start', 'centerHorizontally', 'end').
  */
@@ -217,10 +229,24 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
     minFractionVisible?: number;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export declare const semantics: (params: {
+    contentType?: string;
+}) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;
@@ -315,4 +341,6 @@ export declare const verticalScroll: () => import("./createModifier").ModifierCo
  * Use on a Row to create a non-lazy scrollable container.
  */
 export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
+export { createModifier, createModifierWithEventListener } from './createModifier';
+export { createViewModifierEventListener } from './utils';
 //# sourceMappingURL=index.d.ts.map

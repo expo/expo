@@ -1,7 +1,7 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import { ImageStyle as RNImageStyle, TextStyle, StyleProp, View, ViewProps, ViewStyle, ColorValue } from 'react-native';
+import type { ImageStyle as RNImageStyle, TextStyle, StyleProp, View, ViewProps, ViewStyle, ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
-import ExpoImage from './ExpoImage';
+import type ExpoImage from './ExpoImage';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,

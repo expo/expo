@@ -5,10 +5,10 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.toJSValueExperimental
 import org.junit.Test
-import expo.modules.kotlin.types.Introspectable
+import expo.modules.kotlin.types.OptimizedRecord
 
 class FormatterTest {
-  @Introspectable
+  @OptimizedRecord
   class MyRecord(
     @Field val a: String = "a",
     @Field val b: String? = "b",
@@ -75,13 +75,13 @@ class FormatterTest {
 
   @Test
   fun `nested record`() {
-    @Introspectable
+    @OptimizedRecord
     class NestedRecord(
       @Field val a: String = "a",
       @Field val b: String = "b"
     ) : Record
 
-    @Introspectable
+    @OptimizedRecord
     class MyRecordWithNested(
       @Field val nested: NestedRecord = NestedRecord()
     ) : Record

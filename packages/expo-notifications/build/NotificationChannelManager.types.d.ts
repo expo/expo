@@ -1,4 +1,4 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import type { ProxyNativeModule } from 'expo-modules-core';
 /**
  * @platform android
  * */

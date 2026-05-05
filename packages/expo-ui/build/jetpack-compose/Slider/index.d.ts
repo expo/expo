@@ -1,5 +1,5 @@
 import { type ColorValue } from 'react-native';
-import { type ModifierConfig } from '../../types';
+import type { ModifierConfig } from '../../types';
 /**
  * Colors for slider elements. Maps directly to Material3's `SliderDefaults.colors()`.
  * @platform android
@@ -65,14 +65,14 @@ export type SliderProps = {
  *
  * @platform android
  */
-declare function SliderComponent(props: SliderProps): import("react").JSX.Element;
+declare function SliderComponent(props: SliderProps): import("react/jsx-runtime").JSX.Element;
 declare namespace SliderComponent {
     var Thumb: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Track: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { SliderComponent as Slider };
 //# sourceMappingURL=index.d.ts.map

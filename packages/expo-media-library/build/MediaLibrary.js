@@ -1,4 +1,4 @@
-import { PermissionStatus, createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExpoMediaLibrary';
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -7,7 +7,8 @@ if (isExpoGo && !loggedExpoGoWarning) {
     console.warn('Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build. https://docs.expo.dev/develop/development-builds/create-a-build');
     loggedExpoGoWarning = true;
 }
-export { PermissionStatus, };
+// TODO(@kitten): Remove re-exports from EMC
+export { PermissionStatus, } from 'expo-modules-core';
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;
@@ -74,6 +75,7 @@ export const SortBy = MediaLibrary.SortBy;
 // @needsAudit
 /**
  * Returns whether the Media Library API is enabled on the current device.
+ * @deprecated This legacy `expo-media-library` API is deprecated. This feature will be removed in the `expo-media-library/next`.
  * @return A promise which fulfils with a `boolean`, indicating whether the Media Library API is
  * available on the current device.
  */
@@ -83,6 +85,7 @@ export async function isAvailableAsync() {
 // @needsAudit @docsMissing
 /**
  * Asks the user to grant permissions for accessing media in user's media library.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `requestPermissionsAsync()` from `expo-media-library/next` instead.
  * @param writeOnly
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has an
  * effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
@@ -102,6 +105,7 @@ export async function requestPermissionsAsync(writeOnly = false, granularPermiss
 // @needsAudit @docsMissing
 /**
  * Checks user's permissions for accessing media library.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `getPermissionsAsync()` from `expo-media-library/next` instead.
  * @param writeOnly
  * @param granularPermissions - A list of [`GranularPermission`](#granularpermission) values. This parameter has
  * an effect only on Android 13 and newer. By default, `expo-media-library` will ask for all possible permissions.
@@ -120,6 +124,7 @@ export async function getPermissionsAsync(writeOnly = false, granularPermissions
 /**
  * Check or request permissions to access the media library.
  * This uses both `requestPermissionsAsync` and `getPermissionsAsync` to interact with the permissions.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `usePermissions` from `expo-media-library/next` instead.
  *
  * @example
  * ```ts
@@ -136,6 +141,7 @@ export const usePermissions = createPermissionHook({
  * Allows the user to update the assets that your app has access to.
  * The system modal is only displayed if the user originally allowed only `limited` access to their
  * media library, otherwise this method is a no-op.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `presentPermissionsPicker()` from `expo-media-library/next` instead.
  * @param mediaTypes Limits the type(s) of media that the user will be granting access to. By default, a list that shows both photos and videos is presented.
  *
  * @return A promise that either rejects if the method is unavailable, or resolves to `void`.
@@ -163,6 +169,7 @@ export async function presentPermissionsPickerAsync(mediaTypes = ['photo', 'vide
 /**
  * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `Asset.create()` from `expo-media-library/next` instead.
  *
  * @example
  * ```js
@@ -197,6 +204,7 @@ export async function createAssetAsync(localUri, album) {
  * This method doesn't return created asset.
  * On __iOS 11+__, it's possible to use this method without asking for `CAMERA_ROLL` permission,
  * however then yours `Info.plist` should have `NSPhotoLibraryAddUsageDescription` key.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `Asset.create()` from `expo-media-library/next` instead.
  * @param localUri A URI to the image or video file. It must contain an extension. On Android it
  * must be a local path, so it must start with `file:///`.
  */
@@ -213,6 +221,7 @@ export async function saveToLibraryAsync(localUri) {
  * On Android, by default it copies assets from the current album to provided one, however it's also
  * possible to move them by passing `false` as `copyAssets` argument. In case they're copied you
  * should keep in mind that `getAssetsAsync` will return duplicated assets.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `album.add()` from `expo-media-library/next` instead.
  * @param assets An array of [Asset](#asset) or their IDs.
  * @param album An [Album](#album) or its ID.
  * @param copy __Android only.__ Whether to copy assets to the new album instead of move them.
@@ -240,6 +249,7 @@ export async function addAssetsToAlbumAsync(assets, album, copy = true) {
  * Removes given assets from album.
  *
  * On Android, album will be automatically deleted if there are no more assets inside.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `album.removeAssets()` from `expo-media-library/next` instead.
  * @param assets An array of [Asset](#asset) or their IDs.
  * @param album An [Album](#album) or its ID.
  * @return Returns promise which fulfils with `true` if the assets were successfully removed from
@@ -259,6 +269,7 @@ export async function removeAssetsFromAlbumAsync(assets, album) {
  * Deletes assets from the library. On iOS it deletes assets from all albums they belong to, while
  * on Android it keeps all copies of them (album is strictly connected to the asset). Also, there is
  * additional dialog on iOS that requires user to confirm this action.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `asset.delete()` or `Asset.delete()` from `expo-media-library/next` instead.
  * @param assets An array of [Asset](#asset) or their IDs.
  * @return Returns promise which fulfils with `true` if the assets were successfully deleted.
  */
@@ -273,6 +284,8 @@ export async function deleteAssetsAsync(assets) {
 // @needsAudit
 /**
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `asset.getInfo()` from `expo-media-library/next` instead.
+ * For better performance, prefer using individual getters such as `asset.getLocation()` or `asset.getExif()` to fetch only the data you need.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
  * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
@@ -293,6 +306,7 @@ export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNet
 // @needsAudit
 /**
  * Queries for user-created albums in media gallery.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `Album.getAll()` from `expo-media-library/next` instead.
  * @return A promise which fulfils with an array of [`Album`](#asset)s. Depending on Android version,
  * root directory of your storage may be listed as album titled `"0"` or unlisted at all.
  */
@@ -305,6 +319,7 @@ export async function getAlbumsAsync({ includeSmartAlbums = false } = {}) {
 // @needsAudit
 /**
  * Queries for an album with a specific name.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `Album.get(title)` from `expo-media-library/next` instead.
  * @param title Name of the album to look for.
  * @return An object representing an [`Album`](#album), if album with given name exists, otherwise
  * returns `null`.
@@ -326,6 +341,7 @@ export async function getAlbumAsync(title) {
  * passing `false` as `copyAsset` argument.
  * In case it's copied you should keep in mind that `getAssetsAsync` will return duplicated asset.
  * > On Android, it's not possible to create an empty album. You must provide an existing asset to copy or move into the album or an uri of a local file, which will be used to create an initial asset for the album.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `Album.create()` from `expo-media-library/next` instead.
  * @param albumName Name of the album to create.
  * @param asset An [Asset](#asset) or its ID. On Android you either need to provide an asset or a localUri.
  * @param initialAssetLocalUri A URI to the local media file, which will be used to create the initial asset inside the album. It must contain an extension. On Android it
@@ -361,6 +377,7 @@ export async function createAlbumAsync(albumName, asset, copyAsset = true, initi
  * Deletes given albums from the library. On Android by default it deletes assets belonging to given
  * albums from the library. On iOS it doesn't delete these assets, however it's possible to do by
  * passing `true` as `deleteAssets`.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `album.delete()` or `Album.delete()` from `expo-media-library/next` instead.
  * @param albums An array of [`Album`](#asset)s or their IDs.
  * @param assetRemove __iOS Only.__ Whether to also delete assets belonging to given albums.
  * Defaults to `false`.
@@ -381,6 +398,7 @@ export async function deleteAlbumsAsync(albums, assetRemove = false) {
 // @needsAudit
 /**
  * Fetches a page of assets matching the provided criteria.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use the `Query` class from `expo-media-library/next` instead.
  * @param assetsOptions
  * @return A promise that fulfils with to [`PagedInfo`](#pagedinfo) object with array of [`Asset`](#asset)s.
  */
@@ -425,6 +443,7 @@ export async function getAssetsAsync(assetsOptions = {}) {
 // @needsAudit
 /**
  * Subscribes for updates in user's media library.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `addListener()` from `expo-media-library/next` instead.
  * @param listener A callback that is fired when any assets have been inserted or deleted from the
  * library. On Android it's invoked with an empty object. On iOS, it's invoked with [`MediaLibraryAssetsChangeEvent`](#medialibraryassetschangeevent)
  * object.
@@ -438,7 +457,7 @@ export function addListener(listener) {
     return MediaLibrary.addListener(MediaLibrary.CHANGE_LISTENER_NAME, listener);
 }
 /**
- * @deprecated use subscription.remove() instead.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `subscription.remove()` instead.
  */
 export function removeSubscription(subscription) {
     subscription.remove();
@@ -446,6 +465,7 @@ export function removeSubscription(subscription) {
 // @needsAudit
 /**
  * Removes all listeners.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `removeAllListeners()` from `expo-media-library/next` instead.
  */
 export function removeAllListeners() {
     MediaLibrary.removeAllListeners(MediaLibrary.CHANGE_LISTENER_NAME);
@@ -454,6 +474,7 @@ export function removeAllListeners() {
 /**
  * Fetches a list of moments, which is a group of assets taken around the same place
  * and time.
+ * @deprecated This legacy `expo-media-library` API is deprecated. This feature will be removed in the `expo-media-library/next`.
  * @return An array of [albums](#album) whose type is `moment`.
  * @platform ios
  */
@@ -486,6 +507,7 @@ export async function getMomentsAsync() {
  * all your albums. If your application doesn't add assets to albums, you don't have to migrate.
  * Everything will work as it used to. You can read more about scoped storage in [the Android documentation](https://developer.android.com/about/versions/11/privacy/storage).
  *
+ * @deprecated This legacy `expo-media-library` API is deprecated. This feature will be removed in the `expo-media-library/next`.
  * @param album An [Album](#album) or its ID.
  * @return A promise which fulfils to `void`.
  */
@@ -500,6 +522,7 @@ export async function migrateAlbumIfNeededAsync(album) {
  * Checks if the album should be migrated to a different location. In other words, it checks if the
  * application has the write permission to the album folder. If not, it returns `true`, otherwise `false`.
  * > Note: For **Android below R**, **web** or **iOS**, this function always returns `false`.
+ * @deprecated This legacy `expo-media-library` API is deprecated. This feature will be removed in the `expo-media-library/next`.
  * @param album An [Album](#album) or its ID.
  * @return Returns a promise which fulfils with `true` if the album should be migrated.
  */
@@ -511,6 +534,7 @@ export async function albumNeedsMigrationAsync(album) {
 }
 /**
  * On iOS, this adds or removes the asset from the system "Favorites" smart album.
+ * @deprecated This legacy `expo-media-library` API is deprecated. Use `asset.setFavorite()` from `expo-media-library/next` instead.
  * @param asset An [Asset](#asset) or its ID.
  * @param isFavorite Whether the asset should be marked as favorite.
  * @platform ios

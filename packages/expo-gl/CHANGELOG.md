@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Changed `EXGLContext.prepare:` signature — callers must now schedule onto the JS thread and pass a raw `jsi::Runtime` pointer. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
+
 ## 55.0.9 — 2026-02-25
 
 _This version does not introduce any user-facing changes._

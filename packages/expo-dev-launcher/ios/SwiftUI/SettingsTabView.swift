@@ -31,6 +31,7 @@ struct SettingsTabView: View {
   var body: some View {
     ScrollView {
       VStack(alignment: .leading, spacing: 24) {
+        SafeAreaTopPadding(manualInset: viewModel.topSafeAreaInset)
         titleSection
         showMenuAtLaunch
         gestures

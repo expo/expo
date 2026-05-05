@@ -166,24 +166,15 @@ describe(getWatchHandler, () => {
   });
 
   it('can add files', () => {
-    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, type: 'add' });
-    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/fruit/banana.ts`, type: 'add' });
-    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(group)/foo.ts`, type: 'add' });
-    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/bar.ts`, type: 'add' });
-    handler({
-      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/directory/(c,d)/route.ts`,
-      type: 'add',
-    });
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, 'add');
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/fruit/banana.ts`, 'add');
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/(group)/foo.ts`, 'add');
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/bar.ts`, 'add');
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/directory/(c,d)/route.ts`, 'add');
 
-    handler({
-      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a)/[slug]`,
-      type: 'add',
-    });
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/(a)/[slug]`, 'add');
 
-    handler({
-      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/directory/(c,d)/[...catchall]`,
-      type: 'add',
-    });
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/(a,b)/directory/(c,d)/[...catchall]`, 'add');
 
     expect(getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '')).toEqual({
       href: "Router.RelativePathString | Router.ExternalPathString | `/` | `/apple` | `/_sitemap` | `/fruit/banana` | `${'/(group)'}/foo` | `/foo` | `${'/(a)' | '/(b)'}/bar` | `/bar` | `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/route` | `/directory/route` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/apple`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownInputParams; } | { pathname: `${'/(group)'}/foo` | `/foo`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}/bar` | `/bar`; params?: Router.UnknownInputParams; } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/route` | `/directory/route`; params?: Router.UnknownInputParams; } | `/(a)/${Router.SingleRoutePart<T>}` | `/${Router.SingleRoutePart<T>}` | `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/${string}` | `/directory/${string}` | { pathname: `/(a)/[slug]` | `/[slug]`, params: Router.UnknownInputParams & { slug: string | number; } } | { pathname: `${'/(a)' | '/(b)'}/directory${'/(c)' | '/(d)'}/[...catchall]` | `/directory/[...catchall]`, params: Router.UnknownInputParams & { catchall: (string | number)[]; } }",
@@ -195,12 +186,9 @@ describe(getWatchHandler, () => {
   });
 
   it('can delete files', () => {
-    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, type: 'add' });
-    handler({ filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/fruit/banana.ts`, type: 'add' });
-    handler({
-      filePath: `${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`,
-      type: 'delete',
-    });
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, 'add');
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/fruit/banana.ts`, 'add');
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}/apple.ts`, 'delete');
 
     expect(getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '')).toEqual({
       href: 'Router.RelativePathString | Router.ExternalPathString | `/` | `/_sitemap` | `/fruit/banana` | { pathname: Router.RelativePathString, params?: Router.UnknownInputParams } | { pathname: Router.ExternalPathString, params?: Router.UnknownInputParams } | { pathname: `/`; params?: Router.UnknownInputParams; } | { pathname: `/_sitemap`; params?: Router.UnknownInputParams; } | { pathname: `/fruit/banana`; params?: Router.UnknownInputParams; }',
@@ -212,7 +200,7 @@ describe(getWatchHandler, () => {
   });
 
   it('will ignore files outside the app dir', () => {
-    handler({ filePath: `/other-directory/apple.ts`, type: 'add' });
+    handler(`/other-directory/apple.ts`, 'add');
 
     expect(fn).not.toHaveBeenCalled();
   });

@@ -7,6 +7,7 @@ import ExpoAppMetrics
 struct Event: Codable, Sendable {
   let metadata: Metadata
   let metrics: [Metric]
+  let logs: [Log]
 
   struct Metadata: Codable, Sendable {
     // AppInfo
@@ -14,8 +15,8 @@ struct Event: Codable, Sendable {
     let appIdentifier: String?
     let appVersion: String?
     let appBuildNumber: String?
-    let appUpdateId: String?
     let appEasBuildId: String?
+    let appUpdatesInfo: AppInfo.UpdatesInfo?
 
     // DeviceInfo
     let deviceName: String
@@ -50,6 +51,18 @@ struct Event: Codable, Sendable {
     let customParams: AnyCodable?
   }
 
+  struct Log: Codable, Sendable {
+    let name: String
+    let body: String?
+    let timestamp: String
+    let severity: Severity
+    let attributes: AnyCodable?
+    let droppedAttributesCount: Int
+
+    // Session
+    let sessionId: String
+  }
+
   /**
    Creates a new event for EAS, based on the objects from `expo-app-metrics` package.
    */
@@ -60,8 +73,8 @@ struct Event: Codable, Sendable {
         appIdentifier: app.appId,
         appVersion: app.appVersion,
         appBuildNumber: app.buildNumber,
-        appUpdateId: app.updateId,
         appEasBuildId: app.easBuildId,
+        appUpdatesInfo: app.updatesInfo,
 
         deviceName: device.modelName,
         deviceModel: device.modelIdentifier,
@@ -87,6 +100,19 @@ struct Event: Codable, Sendable {
             routeName: metric.routeName,
             updateId: metric.updateId,
             customParams: metric.params
+          )
+        }
+      },
+      logs: sessions.flatMap { session in
+        return session.logs.map { log in
+          return Log(
+            name: log.name,
+            body: log.body,
+            timestamp: log.timestamp,
+            severity: log.severity,
+            attributes: log.attributes,
+            droppedAttributesCount: log.droppedAttributesCount,
+            sessionId: session.id
           )
         }
       }

@@ -8,8 +8,8 @@ import {
   getBundler,
   getInlineEnvVarsEnabled,
   getIsDev,
+  getIsDomComponent,
   getIsFastRefreshEnabled,
-  getIsHermesV1,
   getIsNodeModule,
   getIsProd,
   getIsReactServer,
@@ -26,6 +26,7 @@ import { lazyImports } from './lazyImports';
 import { environmentRestrictedReactAPIsPlugin } from './restricted-react-api-plugin';
 import { reactServerActionsPlugin } from './server-actions-plugin';
 import { serverDataLoadersPlugin } from './server-data-loaders-plugin';
+import { serverMetadataPlugin } from './server-metadata-plugin';
 import { expoUseDomDirectivePlugin } from './use-dom-directive-plugin';
 import { hasModule, resolveModule } from './utils/resolveModule';
 import { widgetsPlugin } from './widgets-plugin';
@@ -39,6 +40,12 @@ type BabelPresetExpoPlatformOptions = {
    * using `react-native-worklets` or Reanimated 4. @default `true`
    */
   worklets?: boolean;
+  /** Enable or disable adding the `@expo/ui` Babel plugin when `@expo/ui` is
+   * installed. The plugin rewrites `Icon.select({ ios, android })` to the
+   * active platform's value (read from the babel caller) so per-platform
+   * bundles only carry their own branch. @default `true`
+   */
+  expoUi?: boolean;
   /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
   useTransformReactJSXExperimental?: boolean;
   /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
@@ -108,7 +115,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
   const isReactServer = api.caller(getIsReactServer);
   const isFastRefreshEnabled = api.caller(getIsFastRefreshEnabled);
   const isReactCompilerEnabled = api.caller(getReactCompiler);
-  const isHermesV1 = api.caller(getIsHermesV1);
+  const isDomComponent = api.caller(getIsDomComponent);
   const metroSourceType = api.caller(getMetroSourceType);
   const baseUrl = api.caller(getBaseUrl);
   const supportsStaticESM: boolean | undefined = api.caller(
@@ -127,10 +134,12 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     platform = 'web';
   }
 
-  // Use the simpler babel preset for web and server environments (both web and native SSR).
-  const isModernEngine = platform === 'web' || isServerEnv;
-
   const platformOptions = getOptions(options, platform);
+
+  // Use the simpler babel preset for web and server environments (both web and native SSR).
+  // For DOM components, the webview may be an Android factory WebView that doesn't support many modern JavaScript features,
+  // so we need to use the more compatible preset for web regardless.
+  const isModernEngine = (platform === 'web' || isServerEnv) && !isDomComponent;
 
   // If the input is a script, we're unable to add any dependencies. Since the @babel/runtime transformer
   // adds extra dependencies (requires/imports) we need to disable it
@@ -154,7 +163,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
     }
   }
 
-  if (platformOptions.unstable_transformProfile == null) {
+  if (platformOptions.unstable_transformProfile == null && !isDomComponent) {
     platformOptions.unstable_transformProfile = engine === 'hermes' ? 'hermes-stable' : 'default';
   }
 
@@ -215,13 +224,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       { loose: true, useBuiltIns: true },
     ]);
   } else if (!isModernEngine) {
-    // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-    // JSX is used in a function body. This is technically not required in production, but we
-    // should retain the same behavior since it's hard to debug the differences.
-    if (!isHermesV1) {
-      extraPlugins.push(require('@babel/plugin-transform-parameters'));
-    }
-
     extraPlugins.push(
       // Add support for class static blocks.
       [require('@babel/plugin-transform-class-static-block'), { loose: true }]
@@ -291,6 +293,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
 
   if (hasModule(api, 'expo-router/package.json')) {
     extraPlugins.push(expoRouterBabelPlugin);
+    extraPlugins.push(serverMetadataPlugin);
     // Process `loader()` functions for client, loader and server bundles (excluding RSC)
     // - Client bundles: Remove loader exports, they run on server only
     // - Server bundles: Keep loader exports (needed for SSG)
@@ -401,11 +404,32 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
         // doesn't do that and we can't rely on Hermes spec compliance enough to use standard presets.
         const babelPresetReactNativeEnv = getPreset(null, presetOpts);
 
-        // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
-        // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
-        // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
         babelPresetReactNativeEnv.overrides.push({
-          plugins: [require('./babel-plugin-transform-export-namespace-from')],
+          plugins: [
+            // Add the `@babel/plugin-transform-export-namespace-from` plugin to the preset but ensure it runs after
+            // the TypeScript plugins to ensure namespace type exports (TypeScript 5.0+) `export type * as Types from './module';`
+            // are stripped before the transform. Otherwise the transform will extraneously include the types as syntax.
+            require('./babel-plugin-transform-export-namespace-from'),
+
+            ...(isDomComponent
+              ? [
+                  // These plugins are required to support the older JavaScript environment of Android factory WebViews.
+                  // For example Android 9 and Chromium 66.
+
+                  // callsite: https://github.com/expo/expo/blob/fa2c26e39549edc144657c50a189271ca56d1ab9/packages/%40expo/log-box/src/LogBox.ts#L88
+                  [require('@babel/plugin-transform-optional-chaining'), { loose: true }],
+
+                  // callsite: https://github.com/facebook/metro/blob/7446b90ea53fa0173256da690a01df12e67b0deb/packages/metro-runtime/src/polyfills/require.js#L97
+                  [require('@babel/plugin-transform-nullish-coalescing-operator'), { loose: true }],
+
+                  // callsite: https://github.com/expo/expo/blob/fa2c26e39549edc144657c50a189271ca56d1ab9/packages/%40expo/log-box/src/Data/LogBoxData.tsx#L404
+                  [
+                    require('@babel/plugin-transform-logical-assignment-operators'),
+                    { loose: true },
+                  ],
+                ]
+              : []),
+          ],
         });
 
         return babelPresetReactNativeEnv;
@@ -456,14 +480,24 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
             return [require(workletsPlugin)];
           }
         }
-
         if (platformOptions.reanimated !== false) {
           const reanimatedPlugin = resolveModule(api, 'react-native-reanimated/plugin');
           if (reanimatedPlugin) {
             return [require(reanimatedPlugin)];
           }
         }
+        return null;
+      })(),
 
+      // Automatically add the `@expo/ui` plugin when the package is installed.
+      // Independent of reanimated/worklets — must live in its own IIFE so the
+      // earlier fallback chain doesn't short-circuit before reaching it.
+      ((): PluginItem | null => {
+        if (platformOptions.expoUi === false) return null;
+        const plugin = resolveModule(api, '@expo/ui/babel-plugin');
+        if (plugin) {
+          return [require(plugin)];
+        }
         return null;
       })(),
     ].filter((x): x is PluginItem => !!x),

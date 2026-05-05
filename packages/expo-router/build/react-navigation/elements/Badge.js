@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Badge = Badge;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const color_1 = require("../../utils/color");
@@ -72,7 +73,7 @@ function Badge({ children, style, visible = true, size = 18, ...rest }) {
     const textColor = (0, color_1.Color)(backgroundColor)?.isLight() ? 'black' : 'white';
     const borderRadius = size / 2;
     const fontSize = Math.floor((size * 3) / 4);
-    return (<react_native_1.Animated.Text numberOfLines={1} style={[
+    return ((0, jsx_runtime_1.jsx)(react_native_1.Animated.Text, { numberOfLines: 1, style: [
             {
                 transform: [
                     {
@@ -95,9 +96,7 @@ function Badge({ children, style, visible = true, size = 18, ...rest }) {
             fonts.regular,
             styles.container,
             restStyle,
-        ]} {...rest}>
-      {children}
-    </react_native_1.Animated.Text>);
+        ], ...rest, children: children }));
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

@@ -94,14 +94,14 @@ export function getIsServer(caller?: any) {
   return caller?.isServer ?? false;
 }
 
+export function getIsDomComponent(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  return caller?.isDomComponent ?? false;
+}
+
 export function getIsLoaderBundle(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.isLoaderBundle ?? false;
-}
-
-export function getIsHermesV1(caller?: any): boolean {
-  assertExpoBabelCaller(caller);
-  return caller?.isHermesV1 ?? false;
 }
 
 export function getMetroSourceType(caller?: any) {

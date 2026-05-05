@@ -265,16 +265,6 @@ class CocoaPodsPackageManager {
     async uninstallAsync() {
         throw new Error('Unimplemented');
     }
-    // Private
-    async podRepoUpdateAsync() {
-        try {
-            await this._runAsync(['repo', 'update']);
-        }
-        catch (error) {
-            error.message = error.message || (error.stderr ?? error.stdout);
-            throw new CocoaPodsError('The command `pod install --repo-update` failed', 'COMMAND_FAILED', error);
-        }
-    }
     // Exposed for testing
     async _runAsync(args) {
         if (!this.silent) {

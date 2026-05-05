@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 
 import { KeyPressHandler } from './KeyPressHandler';
-import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printUsage } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
@@ -10,7 +11,7 @@ import { getAllSpinners, ora } from '../../utils/ora';
 import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
-import { DevServerManager } from '../server/DevServerManager';
+import type { DevServerManager } from '../server/DevServerManager';
 
 const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
 

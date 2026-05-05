@@ -1,7 +1,16 @@
 import Checkbox from 'expo-checkbox';
 import * as Contacts from 'expo-contacts';
-import { File, Directory, Paths, FileMode } from 'expo-file-system';
-import type { DownloadProgress, FileHandle } from 'expo-file-system';
+import { File, Directory, Paths, FileMode, UploadType, DownloadTask } from 'expo-file-system';
+import type {
+  FileHandle,
+  UploadProgress,
+  DownloadProgress,
+  DownloadPauseState,
+  DownloadTaskState,
+  UploadTaskState,
+  WatchSubscription,
+  WatchEvent,
+} from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
 import React, { useEffect, useRef, useState } from 'react';
@@ -65,6 +74,7 @@ export default function FileSystemScreen() {
         <FileInfoSection withCurrentFile={withCurrentFile} />
         <ReadWriteSection withCurrentFile={withCurrentFile} />
         <FileHandleSection currentFile={currentFile} />
+        <FileWatcherSection currentFile={currentFile} />
         <CopyMoveSection
           withCurrentFile={withCurrentFile}
           safDirectory={safDirectory}
@@ -81,6 +91,8 @@ export default function FileSystemScreen() {
         <FileLifecycleSection setCurrentFile={setCurrentFile} withCurrentFile={withCurrentFile} />
         <FilePickerSection setCurrentFile={setCurrentFile} />
         <DownloadSection />
+        <UploadSection currentFile={currentFile} />
+        <DownloadTaskSection />
       </View>
     </ScrollView>
   );
@@ -431,6 +443,113 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
   );
 }
 
+function FileWatcherSection({ currentFile }: { currentFile: File | null }) {
+  const subscriptionRef = useRef<WatchSubscription | null>(null);
+  const [watchTarget, setWatchTarget] = useState<string | null>(null);
+  const [watchLog, setWatchLog] = useState<string[]>([]);
+
+  useEffect(() => {
+    return () => {
+      subscriptionRef.current?.remove();
+      subscriptionRef.current = null;
+    };
+  }, []);
+
+  function appendLog(line: string) {
+    const timestamp = new Date().toLocaleTimeString();
+    setWatchLog((prev) => [`[${timestamp}] ${line}`, ...prev].slice(0, 50));
+  }
+
+  function stopWatching() {
+    if (subscriptionRef.current) {
+      subscriptionRef.current.remove();
+      subscriptionRef.current = null;
+      appendLog('Stopped watching');
+      setWatchTarget(null);
+    }
+  }
+
+  function watchFile(file: File) {
+    stopWatching();
+    try {
+      const subscription = file.watch((event: WatchEvent<File>) => {
+        appendLog(`${event.type.toUpperCase()}: ${event.target.name}`);
+      });
+      subscriptionRef.current = subscription;
+      setWatchTarget(`File: ${file.name}`);
+      appendLog(`Started watching file: ${file.name}`);
+    } catch (e: any) {
+      Alert.alert('Error', e.message);
+    }
+  }
+
+  function watchDirectory(dir: Directory) {
+    stopWatching();
+    try {
+      const subscription = dir.watch((event: WatchEvent<File | Directory>) => {
+        const targetType = event.target instanceof Directory ? 'dir' : 'file';
+        appendLog(`${event.type.toUpperCase()} (${targetType}): ${event.target.name}`);
+      });
+      subscriptionRef.current = subscription;
+      setWatchTarget(`Directory: ${dir.name}`);
+      appendLog(`Started watching directory: ${dir.name}`);
+    } catch (e: any) {
+      Alert.alert('Error', e.message);
+    }
+  }
+
+  return (
+    <>
+      <HeadingText>File System Watcher</HeadingText>
+      <Text style={styles.note}>Watch files or directories for changes</Text>
+
+      <ListButton
+        title="Watch current file"
+        disabled={!currentFile}
+        onPress={() => watchFile(currentFile!)}
+      />
+      <ListButton
+        title="Watch cache directory"
+        onPress={() => {
+          const cacheDir = new Directory(Paths.cache, 'test_sandbox');
+          cacheDir.create({ intermediates: true, idempotent: true });
+          watchDirectory(cacheDir);
+        }}
+      />
+      <ListButton title="Watch document directory" onPress={() => watchDirectory(Paths.document)} />
+      <ListButton
+        title="Stop watching"
+        disabled={!subscriptionRef.current}
+        onPress={stopWatching}
+      />
+
+      {watchTarget && (
+        <View style={styles.watchStatusBar}>
+          <Text style={styles.watchStatusText}>Watching: {watchTarget}</Text>
+        </View>
+      )}
+
+      {watchLog.length > 0 && (
+        <>
+          <View style={styles.watchLogHeader}>
+            <Text style={styles.watchLogTitle}>Event Log</Text>
+            <TouchableOpacity onPress={() => setWatchLog([])}>
+              <Text style={styles.clearLogButton}>Clear</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.watchLogContainer} nestedScrollEnabled>
+            {watchLog.map((line, index) => (
+              <Text key={index} style={styles.watchLogLine}>
+                {line}
+              </Text>
+            ))}
+          </ScrollView>
+        </>
+      )}
+    </>
+  );
+}
+
 // ===== Section: Copy & Move =====
 
 function CopyMoveSection({
@@ -691,7 +810,6 @@ function FileLifecycleSection({
   );
 }
 
-// ===== Section: File Lifecycle =====
 function FilePickerSection({ setCurrentFile }: { setCurrentFile: (f: File) => void }) {
   const { width } = useWindowDimensions();
   const [multiple, setMultiple] = useState(false);
@@ -830,7 +948,6 @@ function DownloadSection() {
     }
 
     try {
-      // ~100 MB test file
       const file = await File.downloadFileAsync('https://proof.ovh.net/files/100Mb.dat', dest, {
         idempotent: true,
         signal: controller.signal,
@@ -924,7 +1041,258 @@ function DownloadSection() {
   );
 }
 
-// ===== Styles =====
+function UploadSection({ currentFile }: { currentFile: File | null }) {
+  const [progress, setProgress] = useState<string>('');
+  const [result, setResult] = useState<string>('');
+  const [uploading, setUploading] = useState(false);
+  const [taskState, setTaskState] = useState<UploadTaskState | null>(null);
+  const taskRef = useRef<ReturnType<File['createUploadTask']> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const handleUpload = async (uploadType: UploadType) => {
+    if (!currentFile) {
+      Alert.alert('Error', 'No file selected');
+      return;
+    }
+    setUploading(true);
+    setProgress('Starting...');
+    setResult('');
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    try {
+      const task = currentFile.createUploadTask('https://httpbin.org/post', {
+        uploadType,
+        fieldName: 'file',
+        mimeType: currentFile.type || 'application/octet-stream',
+        parameters: { description: 'test upload' },
+        onProgress: ({ bytesSent, totalBytes }: UploadProgress) => {
+          setProgress(`${bytesSent} / ${totalBytes} bytes`);
+        },
+        signal: abortController.signal,
+      });
+      taskRef.current = task;
+      setTaskState(task.state);
+      const uploadResult = await task.uploadAsync();
+      setTaskState(task.state);
+      setResult(
+        JSON.stringify(
+          { status: uploadResult.status, body: truncate(uploadResult.body, 300) },
+          null,
+          2
+        )
+      );
+    } catch (e: any) {
+      console.log(e);
+      setTaskState(taskRef.current?.state ?? null);
+      setResult(`Error: ${e.message}`);
+      setProgress('Errored');
+    } finally {
+      setUploading(false);
+      taskRef.current = null;
+      abortControllerRef.current = null;
+    }
+  };
+
+  return (
+    <>
+      <HeadingText>Upload Task</HeadingText>
+      <ListButton
+        title="Upload binary"
+        disabled={!currentFile || uploading}
+        onPress={() => handleUpload(UploadType.BINARY_CONTENT)}
+      />
+      <ListButton
+        title="Upload multipart"
+        disabled={!currentFile || uploading}
+        onPress={() => handleUpload(UploadType.MULTIPART)}
+      />
+      <ListButton
+        title="Cancel upload (task.cancel)"
+        disabled={!uploading}
+        onPress={() => taskRef.current?.cancel()}
+      />
+      <ListButton
+        title="Cancel upload (AbortSignal)"
+        disabled={!uploading}
+        onPress={() => abortControllerRef.current?.abort()}
+      />
+      {taskState ? <MonoText>State: {taskState}</MonoText> : null}
+      {progress ? <MonoText>Progress: {progress}</MonoText> : null}
+      {result ? <MonoText>{result}</MonoText> : null}
+    </>
+  );
+}
+
+function DownloadTaskSection() {
+  const [progress, setProgress] = useState<string>('');
+  const [status, setStatus] = useState<'idle' | 'downloading' | 'paused' | 'completed'>('idle');
+  const [resultInfo, setResultInfo] = useState<string>('');
+  const [savedState, setSavedState] = useState<DownloadPauseState | null>(null);
+  const [taskState, setTaskState] = useState<DownloadTaskState | null>(null);
+  const taskRef = useRef<ReturnType<typeof File.createDownloadTask> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const onProgress = ({ bytesWritten, totalBytes }: DownloadProgress) => {
+    const pct = totalBytes > 0 ? Math.round((bytesWritten / totalBytes) * 100) : '?';
+    setProgress(`${bytesWritten} / ${totalBytes} bytes (${pct}%)`);
+  };
+
+  const handleStart = async () => {
+    setStatus('downloading');
+    setProgress('Starting...');
+    setResultInfo('');
+    setSavedState(null);
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    const dest = new File(Paths.cache, 'test_sandbox', 'download_task_test.bin');
+    const task = File.createDownloadTask('https://proof.ovh.net/files/100Mb.dat', dest, {
+      onProgress,
+      signal: abortController.signal,
+    });
+    taskRef.current = task;
+    setTaskState(task.state);
+    try {
+      const file = await task.downloadAsync();
+      setTaskState(task.state);
+      if (file) {
+        setStatus('completed');
+        setResultInfo(`Done: ${file.uri}\nSize: ${file.size} bytes`);
+      } else {
+        // Paused — downloadAsync resolved with null
+        setStatus('paused');
+        try {
+          const state = task.savable();
+          setSavedState(state);
+          setResultInfo(`Paused. Resume data: ${state.resumeData ?? 'none'}`);
+        } catch {
+          setResultInfo('Paused (no savable state yet)');
+        }
+      }
+    } catch (e: any) {
+      console.log(e);
+      setTaskState(task.state);
+      setStatus('idle');
+      setProgress('Errored');
+      setResultInfo(`Error: ${e.message}`);
+    }
+  };
+
+  const handlePause = () => {
+    try {
+      taskRef.current?.pause();
+      // downloadAsync() will resolve with null, which is handled in handleStart
+    } catch (e: any) {
+      console.log(e);
+      setResultInfo(`Pause error: ${e.message}`);
+    }
+  };
+
+  const handleResume = async () => {
+    setStatus('downloading');
+    setTaskState(taskRef.current?.state ?? null);
+    try {
+      const file = await taskRef.current?.resumeAsync();
+      setTaskState(taskRef.current?.state ?? null);
+      if (file) {
+        setStatus('completed');
+        setSavedState(null);
+        setResultInfo(`Done: ${file.uri}\nSize: ${file.size} bytes`);
+      } else {
+        setStatus('paused');
+        try {
+          const state = taskRef.current!.savable();
+          setSavedState(state);
+        } catch {
+          /* not in paused state yet */
+        }
+        setResultInfo('Paused again');
+      }
+    } catch (e: any) {
+      console.log(e);
+      setStatus('idle');
+      setResultInfo(`Resume error: ${e.message}`);
+    }
+  };
+
+  const handleRestoreFromSaved = async () => {
+    if (!savedState) {
+      return;
+    }
+    setStatus('downloading');
+    setProgress('Resuming from saved state...');
+    setResultInfo('');
+    abortControllerRef.current = new AbortController();
+    const task = DownloadTask.fromSavable(savedState, {
+      onProgress,
+      signal: abortControllerRef.current.signal,
+    });
+    taskRef.current = task;
+    setTaskState(task.state);
+    try {
+      const file = await task.resumeAsync();
+      setTaskState(task.state);
+      if (file) {
+        setStatus('completed');
+        setSavedState(null);
+        setResultInfo(`Done (from savable): ${file.uri}\nSize: ${file.size} bytes`);
+      } else {
+        setStatus('paused');
+        setResultInfo('Paused again');
+      }
+    } catch (e: any) {
+      console.log(e);
+      setStatus('idle');
+      setResultInfo(`Resume from saved error: ${e.message}`);
+    }
+  };
+
+  const handleCancel = () => {
+    taskRef.current?.cancel();
+    taskRef.current = null;
+    abortControllerRef.current = null;
+    setStatus('idle');
+    setProgress('');
+    setSavedState(null);
+    setResultInfo('Cancelled');
+  };
+
+  const handleAbort = () => {
+    abortControllerRef.current?.abort();
+    abortControllerRef.current = null;
+  };
+
+  return (
+    <>
+      <HeadingText>Download Task</HeadingText>
+      <ListButton
+        title="Start download"
+        disabled={status === 'downloading'}
+        onPress={handleStart}
+      />
+      <ListButton title="Pause" disabled={status !== 'downloading'} onPress={handlePause} />
+      <ListButton title="Resume" disabled={status !== 'paused'} onPress={handleResume} />
+      <ListButton
+        title="Resume from savable"
+        disabled={!savedState}
+        onPress={handleRestoreFromSaved}
+      />
+      <ListButton
+        title="Cancel"
+        disabled={status === 'idle' || status === 'completed'}
+        onPress={handleCancel}
+      />
+      <ListButton
+        title="Abort (AbortSignal)"
+        disabled={status !== 'downloading'}
+        onPress={handleAbort}
+      />
+      {taskState ? <MonoText>State: {taskState}</MonoText> : null}
+      {progress ? <MonoText>Progress: {progress}</MonoText> : null}
+      {resultInfo ? <MonoText>{resultInfo}</MonoText> : null}
+      {savedState ? <MonoText>Saved state: {JSON.stringify(savedState, null, 2)}</MonoText> : null}
+    </>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -1014,5 +1382,45 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#888',
     marginBottom: 4,
+  },
+  watchStatusBar: {
+    backgroundColor: '#e8f5e9',
+    padding: 8,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  watchStatusText: {
+    fontSize: 12,
+    color: '#2e7d32',
+    fontWeight: '500',
+  },
+  watchLogHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  watchLogTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#333',
+  },
+  clearLogButton: {
+    fontSize: 12,
+    color: '#4630eb',
+  },
+  watchLogContainer: {
+    maxHeight: 150,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 4,
+    padding: 8,
+    marginTop: 4,
+  },
+  watchLogLine: {
+    fontSize: 11,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    color: '#333',
+    paddingVertical: 2,
   },
 });

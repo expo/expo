@@ -8,7 +8,8 @@ import { Screen } from './Screen';
 import { useContextKey } from '../Route';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
-import { RouterFactory, useNavigationBuilder } from '../react-navigation/native';
+import type { RouterFactory } from '../react-navigation/native';
+import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
@@ -114,7 +115,7 @@ function SlotNavigator(props: NavigatorProps<any>) {
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
   );
 }
 
@@ -153,7 +154,7 @@ function NavigatorSlot() {
 
   const { state, descriptors } = context;
 
-  return descriptors[state.routes[state.index].key]?.render() ?? null;
+  return descriptors[state.routes[state.index]!.key]?.render() ?? null;
 }
 
 /**

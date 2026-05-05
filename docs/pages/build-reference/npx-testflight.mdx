@@ -5,16 +5,24 @@ description: A single command that allows you to build, sign, and submit your iO
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
 [`npx testflight`](https://www.npmjs.com/package/testflight) is a CLI tool that walks you through building, signing, and submitting your iOS app to TestFlight.
 
-## Prerequisites
-
-- A React Native iOS project you want to deploy to TestFlight
-- A paid [Apple Developer Account](https://developer.apple.com/account/)
-- An [Expo](https://expo.dev/signup) account
+<Prerequisites>
+  <Requirement title="A React Native iOS project">
+    A React Native iOS project you want to deploy to TestFlight.
+  </Requirement>
+  <Requirement title="Apple Developer account">
+    A paid [Apple Developer account](https://developer.apple.com/account/) is required for
+    TestFlight distribution.
+  </Requirement>
+  <Requirement title="Expo account">
+    Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
+  </Requirement>
+</Prerequisites>
 
 ## Run `npx testflight` command
 

@@ -39,7 +39,7 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = true
-  private var isStarted = false
+  public private(set) var isStarted = false
   private var startupStartTime: DispatchTime?
   private var startupEndTime: DispatchTime?
 
@@ -207,6 +207,10 @@ public class EnabledAppController: InternalAppControllerInterface, UpdatesInterf
 
   public var updateURL: URL? {
     return config.updateUrl
+  }
+
+  public var requestHeaders: [String : String]? {
+    return config.requestHeaders
   }
 
   public var launchedUpdateId: UUID? {

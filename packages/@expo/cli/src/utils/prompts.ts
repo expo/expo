@@ -1,5 +1,6 @@
 import assert from 'assert';
-import prompts, { Choice, Options, PromptObject } from 'prompts';
+import type { Choice, Options, PromptObject } from 'prompts';
+import prompts from 'prompts';
 
 import { AbortCommandError, CommandError } from './errors';
 import { isInteractive } from './interactive';

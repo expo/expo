@@ -22,7 +22,7 @@
   "resolutions": {
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.0",
+    "react-native": "0.85.2",
     "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
     "@types/babel__generator": "^7.27.0",
@@ -48,6 +48,6 @@
     "expotools": "workspace:*",
     "jest": "^29.7.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^6.0.2"
   }
 }

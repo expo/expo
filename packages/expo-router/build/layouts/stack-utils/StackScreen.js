@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackScreen = void 0;
 exports.validateStackPresentation = validateStackPresentation;
 exports.appendScreenStackPropsToOptions = appendScreenStackPropsToOptions;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const StackHeaderComponent_1 = require("./StackHeaderComponent");
 const screen_1 = require("./screen");
@@ -56,10 +57,7 @@ exports.StackScreen = Object.assign(function StackScreen({ children, options, ..
         console.warn('Stack.Screen: Function-form options are not supported inside page components. Pass an options object directly.');
     }
     const ownOptions = (0, react_1.useMemo)(() => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})), [options]);
-    return (<>
-        <Screen_1.Screen {...rest} options={ownOptions}/>
-        {children}
-      </>);
+    return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(Screen_1.Screen, { ...rest, options: ownOptions }), children] }));
 }, {
     Title: screen_1.StackScreenTitle,
     BackButton: screen_1.StackScreenBackButton,

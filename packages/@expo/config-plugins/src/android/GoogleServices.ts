@@ -1,7 +1,7 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import path from 'path';
 
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle, withProjectBuildGradle } from '../plugins/android-plugins';
 import { withDangerousMod } from '../plugins/withDangerousMod';
 import { copyFilePathToPathAsync } from '../utils/fs';
@@ -13,7 +13,7 @@ const googleServicesClassPath = 'com.google.gms:google-services';
 const googleServicesPlugin = 'com.google.gms.google-services';
 
 // NOTE(brentvatne): This may be annoying to keep up to date...
-const googleServicesVersion = '4.4.1';
+const googleServicesVersion = '4.4.4';
 
 export const withClassPath: ConfigPlugin = (config) => {
   return withProjectBuildGradle(config, (config) => {

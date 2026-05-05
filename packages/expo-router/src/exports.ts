@@ -14,7 +14,7 @@ export {
   useLoaderData,
 } from './hooks';
 
-export { router, Router } from './imperative-api';
+export { router, type ImperativeRouter } from './imperative-api';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
@@ -23,8 +23,8 @@ export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
 export { Unmatched } from './views/Unmatched';
 export { Sitemap } from './views/Sitemap';
-export { useSitemap, SitemapType } from './views/useSitemap';
-export { ErrorBoundaryProps } from './views/Try';
+export { useSitemap, type SitemapType } from './views/useSitemap';
+export type { ErrorBoundaryProps } from './views/Try';
 export { ErrorBoundary } from './views/ErrorBoundary';
 export { SuspenseFallback, type SuspenseFallbackProps } from './views/SuspenseFallback';
 export type { ScreenProps } from './useScreens';
@@ -37,9 +37,16 @@ export * as SplashScreen from './views/Splash';
 
 // React Navigation
 export { useNavigation } from './useNavigation';
-export { useFocusEffect, EffectCallback } from './useFocusEffect';
+export { useFocusEffect, type EffectCallback } from './useFocusEffect';
 export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
+
+export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
+export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';
+export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
+export { useTheme } from './react-navigation/core/theming/useTheme';
+export { useRoutePath } from './react-navigation/native/useRoutePath';
+export { useScrollToTop } from './react-navigation/native/useScrollToTop';
 
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
@@ -48,13 +55,13 @@ export type * from './types';
 
 export {
   Badge,
-  BadgeProps,
+  type BadgeProps,
   Icon,
-  IconProps,
+  type IconProps,
   Label,
-  LabelProps,
+  type LabelProps,
   VectorIcon,
-  VectorIconProps,
+  type VectorIconProps,
 } from './primitives';
 
 export { unstable_navigationEvents } from './navigationEvents';
@@ -63,5 +70,3 @@ export { unstable_navigationEvents } from './navigationEvents';
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
  */
 export { Tabs } from './layouts/Tabs';
-
-export * from './react-navigation';

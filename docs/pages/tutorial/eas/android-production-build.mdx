@@ -7,6 +7,7 @@ hasVideoLink: true
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -23,13 +24,22 @@ In this chapter, we'll create our example app's production version and submit it
 
 ---
 
-## Prerequisites
-
-To publish and distribute an app on the Google Play Store, we need:
-
-- **Google Play Developer Account:** Must have a paid developer account. For details on setting one up, visit the [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
-- **Google Service Account key:** We'll need a Google Service Account email and JSON key to automate the app submission process. **Follow the detailed instructions in our guide on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account), then return to this guide.** This is optional but required for [automating the release process](#automated-release).
-- **Production build profile:** Ensure that a `production` build profile is present in your **eas.json**, which is added by default.
+<Prerequisites>
+  <Requirement title="Google Play Developer account">
+    A paid Google Play Developer account is required. For details on setting one up, visit the
+    [Google Play sign-up page](https://play.google.com/apps/publish/signup/).
+  </Requirement>
+  <Requirement title="A production build profile in eas.json">
+    Ensure that a `production` build profile is present in your **eas.json**, which is added by
+    default.
+  </Requirement>
+  <Requirement title="Google Service Account key (optional)">
+    A Google Service Account email and JSON key is required to [automate the release
+    process](#automated-release). Follow the detailed instructions in [creating a Google Service
+    Account key or downloading it from an existing
+    account](https://expo.fyi/creating-google-service-account), then return to this guide.
+  </Requirement>
+</Prerequisites>
 
 ## Production build for Android
 

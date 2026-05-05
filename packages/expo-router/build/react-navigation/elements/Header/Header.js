@@ -38,6 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Header = Header;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -84,7 +85,7 @@ function Header(props) {
             return { height, width };
         });
     };
-    const { layout = frame, modal = false, back, title, headerTitle: customTitle, headerTitleAlign = react_native_1.Platform.OS === 'ios' ? 'center' : 'left', headerLeft = back ? (props) => <HeaderBackButton_1.HeaderBackButton {...props}/> : undefined, headerSearchBarOptions, headerTransparent, headerTintColor, headerBackground, headerRight, headerTitleAllowFontScaling: titleAllowFontScaling, headerTitleStyle: titleStyle, headerLeftContainerStyle: leftContainerStyle, headerRightContainerStyle: rightContainerStyle, headerTitleContainerStyle: titleContainerStyle, headerBackButtonDisplayMode = react_native_1.Platform.OS === 'ios' ? 'default' : 'minimal', headerBackTitleStyle, headerBackgroundContainerStyle: backgroundContainerStyle, headerStyle: customHeaderStyle, headerShadowVisible, headerPressColor, headerPressOpacity, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, } = props;
+    const { layout = frame, modal = false, back, title, headerTitle: customTitle, headerTitleAlign = react_native_1.Platform.OS === 'ios' ? 'center' : 'left', headerLeft = back ? (props) => (0, jsx_runtime_1.jsx)(HeaderBackButton_1.HeaderBackButton, { ...props }) : undefined, headerSearchBarOptions, headerTransparent, headerTintColor, headerBackground, headerRight, headerTitleAllowFontScaling: titleAllowFontScaling, headerTitleStyle: titleStyle, headerLeftContainerStyle: leftContainerStyle, headerRightContainerStyle: rightContainerStyle, headerTitleContainerStyle: titleContainerStyle, headerBackButtonDisplayMode = react_native_1.Platform.OS === 'ios' ? 'default' : 'minimal', headerBackTitleStyle, headerBackgroundContainerStyle: backgroundContainerStyle, headerStyle: customHeaderStyle, headerShadowVisible, headerPressColor, headerPressOpacity, headerStatusBarHeight = isParentHeaderShown ? 0 : insets.top, } = props;
     const defaultHeight = (0, getDefaultHeaderHeight_1.getDefaultHeaderHeight)(layout, modal, headerStatusBarHeight);
     const { height = defaultHeight, maxHeight, minHeight, backfaceVisibility, backgroundColor, borderBlockColor, borderBlockEndColor, borderBlockStartColor, borderBottomColor, borderBottomEndRadius, borderBottomLeftRadius, borderBottomRightRadius, borderBottomStartRadius, borderBottomWidth, borderColor, borderCurve, borderEndColor, borderEndEndRadius, borderEndStartRadius, borderEndWidth, borderLeftColor, borderLeftWidth, borderRadius, borderRightColor, borderRightWidth, borderStartColor, borderStartEndRadius, borderStartStartRadius, borderStartWidth, borderStyle, borderTopColor, borderTopEndRadius, borderTopLeftRadius, borderTopRightRadius, borderTopStartRadius, borderTopWidth, borderWidth, boxShadow, elevation, filter, mixBlendMode, opacity, shadowColor, shadowOffset, shadowOpacity, shadowRadius, transform, transformOrigin, ...unsafeStyles } = react_native_1.StyleSheet.flatten(customHeaderStyle || {});
     if (process.env.NODE_ENV !== 'production') {
@@ -195,86 +196,64 @@ function Header(props) {
         })
         : null;
     const headerTitle = typeof customTitle !== 'function'
-        ? (props) => <HeaderTitle_1.HeaderTitle {...props}/>
+        ? (props) => (0, jsx_runtime_1.jsx)(HeaderTitle_1.HeaderTitle, { ...props })
         : customTitle;
-    return (<react_native_1.Animated.View pointerEvents="box-none" style={[{ height, minHeight, maxHeight, opacity, transform }]}>
-      <react_native_1.Animated.View pointerEvents="box-none" style={[react_native_1.StyleSheet.absoluteFill, backgroundContainerStyle]}>
-        {headerBackground ? (headerBackground({ style: backgroundStyle })) : (<HeaderBackground_1.HeaderBackground pointerEvents={
-            // Allow touch through the header when background color is transparent
-            headerTransparent &&
-                (backgroundStyle.backgroundColor === 'transparent' ||
-                    (backgroundStyle.backgroundColor &&
-                        (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
-                ? 'none'
-                : 'auto'} style={backgroundStyle}/>)}
-      </react_native_1.Animated.View>
-      <react_native_1.View pointerEvents="none" style={{ height: headerStatusBarHeight }}/>
-      <react_native_1.View pointerEvents="box-none" style={[
-            styles.content,
-            react_native_1.Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
-        ]}>
-        <react_native_1.Animated.View pointerEvents="box-none" style={[
-            styles.start,
-            !searchBarVisible && headerTitleAlign === 'center' && styles.expand,
-            { marginStart: insets.left },
-            leftContainerStyle,
-        ]}>
-          {leftButton}
-        </react_native_1.Animated.View>
-        {react_native_1.Platform.OS === 'ios' || !searchBarVisible ? (<>
-            <react_native_1.Animated.View pointerEvents="box-none" style={[
-                styles.title,
-                {
-                    // Avoid the title from going offscreen or overlapping buttons
-                    maxWidth: headerTitleAlign === 'center'
-                        ? layout.width -
-                            ((leftButton ? (headerBackButtonDisplayMode !== 'minimal' ? 80 : 32) : 16) +
-                                (rightButton || headerSearchBarOptions ? 16 : 0) +
-                                Math.max(insets.left, insets.right)) *
-                                2
-                        : layout.width -
-                            ((leftButton ? 52 : 16) +
-                                (rightButton || headerSearchBarOptions ? 52 : 16) +
-                                insets.left -
-                                insets.right),
-                },
-                headerTitleAlign === 'left' && leftButton
-                    ? { marginStart: 4 }
-                    : { marginHorizontal: 16 },
-                titleContainerStyle,
-            ]}>
-              {headerTitle({
-                children: title,
-                allowFontScaling: titleAllowFontScaling,
-                tintColor: headerTintColor,
-                onLayout: onTitleLayout,
-                style: titleStyle,
-            })}
-            </react_native_1.Animated.View>
-            <react_native_1.Animated.View pointerEvents="box-none" style={[styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle]}>
-              {rightButton}
-              {headerSearchBarOptions ? (<HeaderButton_1.HeaderButton tintColor={iconTintColor} pressColor={headerPressColor} pressOpacity={headerPressOpacity} onPress={() => {
-                    setSearchBarVisible(true);
-                    headerSearchBarOptions?.onOpen?.();
-                }}>
-                  <HeaderIcon_1.HeaderIcon source={search_icon_png_1.default} tintColor={iconTintColor}/>
-                </HeaderButton_1.HeaderButton>) : null}
-            </react_native_1.Animated.View>
-          </>) : null}
-        {react_native_1.Platform.OS === 'ios' || searchBarVisible ? (<HeaderSearchBar_1.HeaderSearchBar {...headerSearchBarOptions} visible={searchBarVisible} onClose={() => {
-                setSearchBarVisible(false);
-                headerSearchBarOptions?.onClose?.();
-            }} tintColor={headerTintColor} style={[
-                react_native_1.Platform.OS === 'ios'
-                    ? [
-                        react_native_1.StyleSheet.absoluteFill,
-                        { paddingTop: headerStatusBarHeight ? 0 : 4 },
-                        { backgroundColor: backgroundColor ?? colors.card },
-                    ]
-                    : !leftButton && { marginStart: 8 },
-            ]}/>) : null}
-      </react_native_1.View>
-    </react_native_1.Animated.View>);
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [{ height, minHeight, maxHeight, opacity, transform }], children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [react_native_1.StyleSheet.absoluteFill, backgroundContainerStyle], children: headerBackground ? (headerBackground({ style: backgroundStyle })) : ((0, jsx_runtime_1.jsx)(HeaderBackground_1.HeaderBackground, { pointerEvents: 
+                    // Allow touch through the header when background color is transparent
+                    headerTransparent &&
+                        (backgroundStyle.backgroundColor === 'transparent' ||
+                            (backgroundStyle.backgroundColor &&
+                                (0, color_1.Color)(backgroundStyle.backgroundColor)?.alpha() === 0))
+                        ? 'none'
+                        : 'auto', style: backgroundStyle })) }), (0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "none", style: { height: headerStatusBarHeight } }), (0, jsx_runtime_1.jsxs)(react_native_1.View, { pointerEvents: "box-none", style: [
+                    styles.content,
+                    react_native_1.Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
+                ], children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [
+                            styles.start,
+                            !searchBarVisible && headerTitleAlign === 'center' && styles.expand,
+                            { marginStart: insets.left },
+                            leftContainerStyle,
+                        ], children: leftButton }), react_native_1.Platform.OS === 'ios' || !searchBarVisible ? ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [
+                                    styles.title,
+                                    {
+                                        // Avoid the title from going offscreen or overlapping buttons
+                                        maxWidth: headerTitleAlign === 'center'
+                                            ? layout.width -
+                                                ((leftButton ? (headerBackButtonDisplayMode !== 'minimal' ? 80 : 32) : 16) +
+                                                    (rightButton || headerSearchBarOptions ? 16 : 0) +
+                                                    Math.max(insets.left, insets.right)) *
+                                                    2
+                                            : layout.width -
+                                                ((leftButton ? 52 : 16) +
+                                                    (rightButton || headerSearchBarOptions ? 52 : 16) +
+                                                    insets.left -
+                                                    insets.right),
+                                    },
+                                    headerTitleAlign === 'left' && leftButton
+                                        ? { marginStart: 4 }
+                                        : { marginHorizontal: 16 },
+                                    titleContainerStyle,
+                                ], children: headerTitle({
+                                    children: title,
+                                    allowFontScaling: titleAllowFontScaling,
+                                    tintColor: headerTintColor,
+                                    onLayout: onTitleLayout,
+                                    style: titleStyle,
+                                }) }), (0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: "box-none", style: [styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle], children: [rightButton, headerSearchBarOptions ? ((0, jsx_runtime_1.jsx)(HeaderButton_1.HeaderButton, { tintColor: iconTintColor, pressColor: headerPressColor, pressOpacity: headerPressOpacity, onPress: () => {
+                                            setSearchBarVisible(true);
+                                            headerSearchBarOptions?.onOpen?.();
+                                        }, children: (0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: search_icon_png_1.default, tintColor: iconTintColor }) })) : null] })] })) : null, react_native_1.Platform.OS === 'ios' || searchBarVisible ? ((0, jsx_runtime_1.jsx)(HeaderSearchBar_1.HeaderSearchBar, { ...headerSearchBarOptions, visible: searchBarVisible, onClose: () => {
+                            setSearchBarVisible(false);
+                            headerSearchBarOptions?.onClose?.();
+                        }, tintColor: headerTintColor, style: [
+                            react_native_1.Platform.OS === 'ios'
+                                ? [
+                                    react_native_1.StyleSheet.absoluteFill,
+                                    { paddingTop: headerStatusBarHeight ? 0 : 4 },
+                                    { backgroundColor: backgroundColor ?? colors.card },
+                                ]
+                                : !leftButton && { marginStart: 8 },
+                        ] })) : null] })] }));
 }
 const styles = react_native_1.StyleSheet.create({
     content: {

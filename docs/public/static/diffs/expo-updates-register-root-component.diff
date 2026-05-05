@@ -1,0 +1,12 @@
+diff --git a/index.js b/index.js
+index 0000000..1111111 100644
+--- a/index.js
++++ b/index.js
+@@ -1,5 +1,4 @@
+-import {AppRegistry} from 'react-native';
+-import {name as appName} from './app.json';
++import {registerRootComponent} from 'expo';
+ import App from './App';
+-
+-AppRegistry.registerComponent(appName, () => App);
++export default registerRootComponent(App);

@@ -5,11 +5,17 @@ class ExpoAppMetricsModule extends NativeModule {
         throw new Error('Method not implemented.');
     }
     async markFirstRender() { }
-    async markInteractive() { }
+    async markInteractive(attributes) { }
+    logEvent(name, options) { }
     async getStoredEntries() {
         return [];
     }
     async clearStoredEntries() { }
+    async getAllSessions() {
+        return [];
+    }
+    simulateCrashReport() { }
+    triggerCrash() { }
     startSession(metadata) {
         return '';
     }

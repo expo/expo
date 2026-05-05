@@ -1,5 +1,5 @@
 import { CodedError } from 'expo-modules-core';
-import { Notification, NotificationBehavior } from './Notifications.types';
+import type { Notification, NotificationBehavior } from './Notifications.types';
 /**
  * @hidden
  */

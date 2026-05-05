@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { types as t } from '@babel/core';
+import type { types as t } from '@babel/core';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
-import { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
+import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 export type JsOutput = {
     data: {
