@@ -140,4 +140,33 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
   ] as const)('getAncestorOfRootIdx (%s => %s)', (input, expected) => {
     expect(pathUtils.getAncestorOfRootIdx(input)).toEqual(expected);
   });
+
+  describe('resolveSymlinkToNormal', () => {
+    beforeEach(() => {
+      pathUtils = new RootPathUtils(p('/project/root'));
+    });
+
+    test.each([
+      ['foo/link', './target.js', p('foo/target.js')],
+      ['foo/link', '../bar.js', 'bar.js'],
+      ['link', 'target.js', 'target.js'],
+      [p('a/b/link'), p('../../c.js'), 'c.js'],
+      [p('a/b/link'), p('../../../outside/f.js'), p('../outside/f.js')],
+    ])('resolves relative target (%s -> %s) to %s', (symlinkPath, readlinkResult, expected) => {
+      expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
+    });
+
+    test.each([
+      ['link', p('/project/root/target.js'), 'target.js'],
+      ['link', p('/project/root/a/b.js'), p('a/b.js')],
+      ['link', p('/outside/foo.js'), p('../../outside/foo.js')],
+      [p('a/link'), p('/project/root'), ''],
+    ])('resolves absolute target (%s -> %s) to %s', (symlinkPath, readlinkResult, expected) => {
+      expect(pathUtils.resolveSymlinkToNormal(p(symlinkPath), readlinkResult)).toEqual(expected);
+    });
+
+    test('strips trailing separator from target', () => {
+      expect(pathUtils.resolveSymlinkToNormal('link', p('/project/root/dir/'))).toEqual('dir');
+    });
+  });
 });

@@ -8,6 +8,8 @@
 import invariant from 'invariant';
 import path from 'path';
 
+import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
+
 /**
  * This module provides path utility functions - similar to `node:path` -
  * optimised for Metro's use case (many paths, few roots) under assumptions
@@ -157,6 +159,24 @@ export class RootPathUtils {
       this.#tryCollapseIndirectionsInSuffix(relativePath, 0, 0)?.collapsedPath ??
       path.relative(this.#rootDir, path.join(this.#rootDir, relativePath))
     );
+  }
+
+  resolveSymlinkToNormal(symlinkNormalPath: string, readlinkResult: string): string {
+    let target = normalizePathSeparatorsToSystem(readlinkResult);
+    // WARN: This only applies to Windows + Node 20 case, where the value is completely
+    // unnormalized and a trailing slash may be returned
+    if (target[target.length - 1] === path.sep) {
+      target = target.slice(0, -1);
+    }
+    if (path.isAbsolute(target)) {
+      return this.absoluteToNormal(target);
+    }
+    // Resolve relative to the symlink's containing directory, expressed as
+    // a root-relative (possibly non-normal) path, then normalize
+    const sepIdx = symlinkNormalPath.lastIndexOf(path.sep);
+    const rootRelativeTarget =
+      sepIdx === -1 ? target : symlinkNormalPath.slice(0, sepIdx) + path.sep + target;
+    return this.relativeToNormal(rootRelativeTarget);
   }
 
   // If a path is a direct ancestor of the project root (or the root itself),
