@@ -11,7 +11,7 @@ const style_1 = require("../../utils/style");
 /**
  * Component to set the screen title.
  *
- * Can be used inside Stack.Screen in a layout or directly inside a screen component.
+ * Can be used inside `Stack.Screen` in a layout or directly inside a screen component.
  *
  * @example
  * String title in a layout:
