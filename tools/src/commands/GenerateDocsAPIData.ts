@@ -63,6 +63,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/tabview': ['swift-ui/TabView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
