@@ -9,13 +9,13 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~55.0.21",
+    "expo": "~55.0.22",
     "expo-background-task": "~55.0.17",
     "expo-clipboard": "55.0.13",
     "expo-dev-client": "~55.0.32",
     "expo-router": "~55.0.13",
     "expo-image": "~55.0.9",
-    "expo-media-library": "55.0.15",
+    "expo-media-library": "55.0.16",
     "expo-notifications": "~55.0.22",
     "expo-observe": "~0.2.0",
     "expo-splash-screen": "~55.0.19",
