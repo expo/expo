@@ -1,6 +1,15 @@
 import type { StackNavigationProp } from '@react-navigation/stack';
-import * as Calendar from 'expo-calendar';
-import { createCalendar, ExpoCalendar, getCalendars, presentPicker } from 'expo-calendar/next';
+import {
+  AttendeeType,
+  CalendarAccessLevel,
+  createCalendar,
+  EntityTypes,
+  ExpoCalendar,
+  getCalendars,
+  presentPicker,
+  useCalendarPermissions,
+  useRemindersPermissions,
+} from 'expo-calendar/next';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -43,7 +52,7 @@ const CalendarRow = (props: {
 }) => {
   const { calendar } = props;
   const calendarTypeName =
-    calendar.entityType === Calendar.EntityTypes.REMINDER ? 'RemindersNext' : 'EventsNext';
+    calendar.entityType === EntityTypes.REMINDER ? 'RemindersNext' : 'EventsNext';
   return (
     <View style={styles.calendarRow}>
       <HeadingText>{calendar.title}</HeadingText>
@@ -67,8 +76,8 @@ const CalendarRow = (props: {
 };
 
 export default function CalendarsNextScreen({ navigation }: { navigation: StackNavigation }) {
-  const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
-  const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
+  const [, askForCalendarPermissions] = useCalendarPermissions();
+  const [, askForReminderPermissions] = useRemindersPermissions();
 
   const [calendars, setCalendars] = useState<ExpoCalendar[]>([]);
 
@@ -78,9 +87,9 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       const reminderGranted =
         Platform.OS === 'ios' ? (await askForReminderPermissions()).granted : true;
       if (calendarGranted && reminderGranted) {
-        const eventCalendars = (await getCalendars(Calendar.EntityTypes.EVENT)) as unknown as any[];
+        const eventCalendars = (await getCalendars(EntityTypes.EVENT)) as unknown as any[];
         const reminderCalendars = (
-          Platform.OS === 'ios' ? await getCalendars(Calendar.EntityTypes.REMINDER) : []
+          Platform.OS === 'ios' ? await getCalendars(EntityTypes.REMINDER) : []
         ) as any[];
         setCalendars([...eventCalendars, ...reminderCalendars]);
       }
@@ -113,8 +122,8 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
       color: '#c0ff33',
       ...sourceDetails,
       name: 'coolNewCalendar',
-      accessLevel: Calendar.CalendarAccessLevel.OWNER,
-      allowedAttendeeTypes: [Calendar.AttendeeType.REQUIRED, Calendar.AttendeeType.OPTIONAL],
+      accessLevel: CalendarAccessLevel.OWNER,
+      allowedAttendeeTypes: [AttendeeType.REQUIRED, AttendeeType.OPTIONAL],
     };
 
     try {

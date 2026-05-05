@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
@@ -205,14 +205,8 @@ export async function listEvents(calendars, startDate, endDate) {
  */
 export const requestCalendarPermissions = InternalExpoCalendar.requestCalendarPermissions;
 /**
- * Check or request permissions to access the calendar.
- * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
- * with the permissions.
- *
- * @example
- * ```ts
- * const [status, requestPermission] = Calendar.useCalendarPermissions();
- * ```
+ * Checks user's permissions for accessing user's calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermissions;
 /**
@@ -231,5 +225,32 @@ export const getRemindersPermissions = InternalExpoCalendar.getRemindersPermissi
  */
 export const getSourcesSync = InternalExpoCalendar.getSourcesSync;
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
-export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
+/**
+ * Check or request permissions to access the user's calendars.
+ * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export const useCalendarPermissions = createPermissionHook({
+    getMethod: getCalendarPermissions,
+    requestMethod: requestCalendarPermissions,
+});
+/**
+ * Check or request permissions to access the user's reminders.
+ * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export const useRemindersPermissions = createPermissionHook({
+    getMethod: getRemindersPermissions,
+    requestMethod: requestRemindersPermissions,
+});
 //# sourceMappingURL=Calendar.js.map

@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- [next] Add permission hooks ([#45390](https://github.com/expo/expo/pull/45390) by [@Wenszel](https://github.com/Wenszel))
 - [next] Clean up null options workaround ([#45328](https://github.com/expo/expo/pull/45328) by [@Wenszel](https://github.com/Wenszel))
 - Add deprecation notes ([#45118](https://github.com/expo/expo/pull/45118) by [@Wenszel](https://github.com/Wenszel))
 - [next] Refactor Calendar@Next ([#43434](https://github.com/expo/expo/pull/43434) by [@Wenszel](https://github.com/Wenszel))
