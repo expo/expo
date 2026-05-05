@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add unstable_nativeProps to NativeTabs host ([#45408](https://github.com/expo/expo/pull/45408) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
