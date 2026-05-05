@@ -21,6 +21,7 @@ import TreeFS from './lib/TreeFS';
 import checkWatchmanCapabilities from './lib/checkWatchmanCapabilities';
 import normalizePathSeparatorsToPosix from './lib/normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from './lib/normalizePathSeparatorsToSystem';
+import removeOverlappingRoots from './lib/removeOverlappingRoots';
 import type {
   BuildParameters,
   BuildResult,
@@ -316,7 +317,7 @@ export default class FileMap extends EventEmitter {
       plugins,
       retainAllFiles: options.retainAllFiles,
       rootDir: options.rootDir,
-      roots: Array.from(new Set(options.roots)),
+      roots: removeOverlappingRoots(options.roots),
     };
 
     this.#options = {
