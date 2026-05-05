@@ -14,6 +14,7 @@ import { performance } from 'perf_hooks';
 import { Watcher } from './Watcher';
 import { DiskCacheManager } from './cache/DiskCacheManager';
 import H from './constants';
+import createFallbackFilesystem from './crawlers/node/fallback';
 import { FileProcessor } from './lib/FileProcessor';
 import { FileSystemChangeAggregator } from './lib/FileSystemChangeAggregator';
 import { RootPathUtils } from './lib/RootPathUtils';
@@ -72,6 +73,7 @@ export type {
 
 export interface InputOptions {
   readonly computeSha1?: boolean | undefined | null;
+  readonly enableFallback?: boolean | undefined | null;
   readonly enableSymlinks?: boolean | undefined | null;
   readonly extensions: readonly string[];
   readonly forceNodeFilesystemAPI?: boolean | undefined | null;
@@ -80,7 +82,8 @@ export interface InputOptions {
   readonly retainAllFiles: boolean;
   readonly rootDir: string;
   readonly roots: readonly string[];
-
+  readonly scopeFallback?: boolean | undefined | null;
+  readonly serverRoot?: string | undefined | null;
   readonly cacheManagerFactory?: CacheManagerFactory | undefined | null;
   readonly console?: Console;
   readonly healthCheck: HealthCheckOptions;
@@ -101,6 +104,9 @@ interface HealthCheckOptions {
 }
 
 interface InternalOptions extends BuildParameters {
+  readonly enableFallback: boolean;
+  readonly scopeFallback: boolean;
+  readonly serverRoot: string | undefined | null;
   readonly healthCheck: HealthCheckOptions;
   readonly perfLoggerFactory: PerfLoggerFactory | undefined | null;
   readonly resetCache: boolean | undefined | null;
@@ -307,6 +313,9 @@ export default class FileMap extends EventEmitter {
     }
     this.#plugins = indexedPlugins;
 
+    const enableFallback = options.enableFallback ?? true;
+    const scopeFallback = options.scopeFallback ?? true;
+
     const buildParameters: BuildParameters = {
       cacheBreaker: CACHE_BREAKER,
       computeSha1: options.computeSha1 || false,
@@ -328,6 +337,9 @@ export default class FileMap extends EventEmitter {
       useWatchman: options.useWatchman ?? false,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
+      enableFallback,
+      scopeFallback: enableFallback && scopeFallback,
+      serverRoot: options.serverRoot,
     };
 
     const cacheFactoryOptions: CacheManagerFactoryOptions = {
@@ -378,6 +390,16 @@ export default class FileMap extends EventEmitter {
           this.emit('metadata');
           return result?.content;
         };
+        const fallbackFilesystem = this.#options.enableFallback
+          ? createFallbackFilesystem({
+              rootPathUtils: this.#pathUtils,
+              extensions: this.#options.extensions,
+              ignore: (filePath) => this.#options.ignorePattern.test(filePath),
+              includeSymlinks: this.#options.enableSymlinks,
+            })
+          : null;
+        const { roots } = this.#options;
+        const serverRoot = this.#options.scopeFallback ? this.#options.serverRoot : null;
         const fileSystem =
           initialData != null
             ? TreeFS.fromDeserializedSnapshot({
@@ -387,8 +409,17 @@ export default class FileMap extends EventEmitter {
                 fileSystemData: initialData.fileSystemData as any,
                 processFile,
                 rootDir,
+                fallbackFilesystem,
+                roots,
+                serverRoot,
               })
-            : new TreeFS({ processFile, rootDir });
+            : new TreeFS({
+                processFile,
+                rootDir,
+                fallbackFilesystem,
+                roots,
+                serverRoot,
+              });
         this.#startupPerfLogger?.point('constructFileSystem_end');
 
         const plugins = this.#plugins;
@@ -579,8 +610,10 @@ export default class FileMap extends EventEmitter {
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
       } else if (fileData[H.MTIME] != null && fileData[H.MTIME] !== 0) {
-        // The symlink will only be updated, if it's been accessed before
-        // If this is a newly crawled entry, it's skipped
+        // Symlink was previously resolved and its mtime changed — resolve
+        // eagerly to update the cached target. Symlinks with null mtime
+        // (cold start or never accessed) are deferred to lazy resolution
+        // in TreeFS.#resolveSymlinkTargetToNormalPath.
         const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
         if (maybeReadLink) {
           readLinkPromises.push(
