@@ -3,6 +3,7 @@ import {
   getCanonicalPath,
   getJapaneseSectionTitle,
   getJapaneseSidebarTitle,
+  hasJapaneseTranslation,
   type SupportedLocale,
 } from '~/common/i18n';
 import * as Utilities from '~/common/utilities';
@@ -222,10 +223,10 @@ function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
   locale: SupportedLocale
 ): T {
   const next: T = { ...route };
-  if (isInternalHref(next.href)) {
+  if (isInternalHref(next.href) && hasJapaneseTranslation(next.href)) {
     next.href = buildLocalePath(next.href, locale);
   }
-  if (isInternalHref(next.as)) {
+  if (isInternalHref(next.as) && hasJapaneseTranslation(next.as as string)) {
     next.as = buildLocalePath(next.as as string, locale);
   }
   if (locale === 'ja' && next.type === 'page' && route.href) {
