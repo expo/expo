@@ -146,3 +146,5 @@ export function TextField(props: TextFieldProps) {
 }
 
 TextField.Placeholder = Placeholder;
+
+export { type ObservableState };

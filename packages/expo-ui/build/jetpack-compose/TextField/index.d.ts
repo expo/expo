@@ -235,4 +235,5 @@ declare namespace OutlinedTextFieldComponent {
     }) => import("react/jsx-runtime").JSX.Element;
 }
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
+export { type ObservableState };
 //# sourceMappingURL=index.d.ts.map
