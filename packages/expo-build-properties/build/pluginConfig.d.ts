@@ -186,7 +186,7 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      * Enable GIF support in React Native's `<Image>` component. This property does not affect
      * `expo-image`, which uses Glide on Android.
      *
-     * @see [Optimizing app size](https://docs.expo.dev/distribution/app-size/)
+     * @see [Optimizing app size](/distribution/app-size/)
      *
      * @default true
      */
@@ -195,7 +195,7 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      * Enable WebP support in React Native's `<Image>` component. This property does not affect
      * `expo-image`, which uses Glide on Android.
      *
-     * @see [Optimizing app size](https://docs.expo.dev/distribution/app-size/)
+     * @see [Optimizing app size](/distribution/app-size/)
      *
      * @default true
      */
@@ -204,7 +204,7 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
      * Enable animated WebP support in React Native's `<Image>` component. Requires `webpEnabled`
      * to also be `true`. iOS does not support animated WebP via React Native's `<Image>`.
      *
-     * @see [Optimizing app size](https://docs.expo.dev/distribution/app-size/)
+     * @see [Optimizing app size](/distribution/app-size/)
      *
      * @default false
      */
