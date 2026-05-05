@@ -22,7 +22,8 @@ export default class DependencyExtractorWorker implements MetadataWorker {
 
   constructor({ dependencyExtractor }: Readonly<{ dependencyExtractor: string | null }>) {
     if (dependencyExtractor != null) {
-      this.#dependencyExtractor = require(dependencyExtractor);
+      const mod = require(dependencyExtractor);
+      this.#dependencyExtractor = mod.__esModule === true && 'default' in mod ? mod.default : mod;
     }
   }
 

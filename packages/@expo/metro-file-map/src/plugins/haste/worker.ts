@@ -18,7 +18,8 @@ export default class Worker implements MetadataWorker {
 
   constructor({ hasteImplModulePath }: Readonly<{ hasteImplModulePath: string | null }>) {
     if (hasteImplModulePath != null) {
-      this.#hasteImpl = require(hasteImplModulePath);
+      const mod = require(hasteImplModulePath);
+      this.#hasteImpl = mod.__esModule === true && 'default' in mod ? mod.default : mod;
     }
   }
 

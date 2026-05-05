@@ -22,8 +22,11 @@ export default class DependencyPlugin extends FileDataPlugin<readonly string[] |
 
     let cacheKey: string;
     if (dependencyExtractor != null) {
-      const extractor = require(dependencyExtractor);
-      cacheKey = extractor.getCacheKey?.() ?? dependencyExtractor;
+      const mod = require(dependencyExtractor);
+      const getCacheKey =
+        mod?.getCacheKey ??
+        (mod.__esModule === true && 'default' in mod ? mod.default : mod).getCacheKey;
+      cacheKey = getCacheKey?.() ?? dependencyExtractor;
     } else {
       cacheKey = 'default-dependency-extractor';
     }

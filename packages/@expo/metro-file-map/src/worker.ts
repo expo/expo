@@ -22,7 +22,8 @@ export class Worker {
 
   constructor({ plugins = [] }: WorkerSetupArgs) {
     this.#plugins = plugins.map(({ modulePath, setupArgs }) => {
-      const PluginWorker = require(modulePath);
+      const mod = require(modulePath);
+      const PluginWorker = mod.__esModule === true && 'default' in mod ? mod.default : mod;
       return new PluginWorker(setupArgs);
     });
   }
