@@ -5,9 +5,100 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import { PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
-import { runWithSpinner } from '../../Utils';
+import { runWithSpinner, spawnAsync } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
 import { Parcel, TaskArgs } from '../types';
+
+/**
+ * Xcode version that prebuilds must be built with. Each Xcode bundles a specific Swift
+ * compiler, and `.swiftinterface` files emitted by a newer Swift cannot be parsed by an
+ * older one, which breaks consumers who haven't yet upgraded. Keep in sync with the CI
+ * workflows that publish artifacts (see .github/workflows/publish-canaries.yml).
+ */
+export const SUPPORTED_XCODE_VERSION = '26.2.0';
+
+type InstalledXcode = { developerDir: string; xcode: string | null };
+
+// Strip a trailing `.0` so '26.2.0' renders as '26.2' to match Apple's labeling.
+function displayVersion(v: string): string {
+  return v.replace(/\.0$/, '');
+}
+
+// Returns major.minor.patch (`Xcode 26.2` → `26.2.0`); `null` when the prefix isn't found.
+export function parseXcodeVersion(output: string): string | null {
+  const match = output.match(/Xcode\s+(\d+)(?:\.(\d+))?(?:\.(\d+))?/);
+  if (!match) return null;
+  return `${match[1]}.${match[2] ?? '0'}.${match[3] ?? '0'}`;
+}
+
+async function readXcodeVersionAsync(developerDir?: string): Promise<string | null> {
+  const env = developerDir ? { ...process.env, DEVELOPER_DIR: developerDir } : process.env;
+  try {
+    const { stdout } = await spawnAsync('xcodebuild', ['-version'], { env });
+    return parseXcodeVersion(stdout);
+  } catch {
+    return null;
+  }
+}
+
+async function listInstalledXcodesAsync(): Promise<InstalledXcode[]> {
+  const entries = await fs.promises.readdir('/Applications').catch(() => [] as string[]);
+  const xcodeApps = entries.filter((n) => /^Xcode.*\.app$/i.test(n));
+  return Promise.all(
+    xcodeApps.map(async (name) => {
+      const developerDir = path.join('/Applications', name, 'Contents', 'Developer');
+      const xcode = await readXcodeVersionAsync(developerDir);
+      return { developerDir, xcode };
+    })
+  );
+}
+
+// Returns a restorer that undoes any DEVELOPER_DIR mutation (no-op if none).
+// `readActive` / `listInstalled` are injection seams for tests.
+export async function ensureSupportedToolchainAsync(
+  readActive: () => Promise<string | null> = () => readXcodeVersionAsync(),
+  listInstalled: () => Promise<InstalledXcode[]> = listInstalledXcodesAsync
+): Promise<() => void> {
+  const active = await readActive();
+  if (active === SUPPORTED_XCODE_VERSION) {
+    logger.log(`   Using active toolchain: Xcode ${displayVersion(active)}`);
+    return () => {};
+  }
+
+  const installed = await listInstalled();
+  const match = installed.find((t) => t.xcode === SUPPORTED_XCODE_VERSION);
+  if (match) {
+    const previous = process.env.DEVELOPER_DIR;
+    process.env.DEVELOPER_DIR = match.developerDir;
+    logger.log(
+      `   Switched DEVELOPER_DIR to ${match.developerDir} for this run (will reset after).`
+    );
+    return () => {
+      if (previous === undefined) {
+        delete process.env.DEVELOPER_DIR;
+      } else {
+        process.env.DEVELOPER_DIR = previous;
+      }
+    };
+  }
+
+  const wanted = displayVersion(SUPPORTED_XCODE_VERSION);
+  const activeDescription = active
+    ? `Active toolchain is Xcode ${displayVersion(active)}`
+    : 'No active Xcode toolchain detected';
+  const found =
+    installed.length > 0
+      ? `Found in /Applications: ${installed
+          .map((t) => `Xcode ${t.xcode ? displayVersion(t.xcode) : '?'} at ${t.developerDir}`)
+          .join('; ')}.`
+      : `No Xcode-shaped apps found in /Applications.`;
+  throw new Error(
+    `${activeDescription}, but iOS prebuilds must be built with Xcode ${wanted}. ` +
+      `Newer Swift compilers emit module interfaces that older consumer toolchains cannot parse, which breaks compilation for downstream consumers. ` +
+      `${found} ` +
+      `Install Xcode ${wanted} from https://developer.apple.com/download/all/ (it can coexist with other Xcodes).`
+  );
+}
 
 /**
  * Packages whose iOS prebuilt xcframeworks should be bundled into the npm tarball.
@@ -54,79 +145,85 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
       return;
     }
 
-    const result = await runPrebuildPackagesAsync(relevantParcels, {
-      clean: false,
-      cleanCache: false,
-      skipGenerate: false,
-      skipArtifacts: false,
-      skipBuild: false,
-      skipCompose: false,
-      skipVerify: false,
-      verbose: false,
-      bundleSharedDeps: true,
-    });
+    const restoreToolchain = await ensureSupportedToolchainAsync();
 
-    if (result.exitCode !== 0) {
-      logger.error(`iOS prebuild failed with exit code ${result.exitCode}`);
-      if (result.errorLogPath) {
-        logger.error(`Error log: ${result.errorLogPath}`);
+    try {
+      const result = await runPrebuildPackagesAsync(relevantParcels, {
+        clean: false,
+        cleanCache: false,
+        skipGenerate: false,
+        skipArtifacts: false,
+        skipBuild: false,
+        skipCompose: false,
+        skipVerify: false,
+        verbose: false,
+        bundleSharedDeps: true,
+      });
+
+      if (result.exitCode !== 0) {
+        logger.error(`iOS prebuild failed with exit code ${result.exitCode}`);
+        if (result.errorLogPath) {
+          logger.error(`Error log: ${result.errorLogPath}`);
+        }
+
+        const errorDetails = result.errors
+          .map((e) => `  - [${e.packageName}/${e.productName}] ${e.stage}: ${e.error.message}`)
+          .join('\n');
+        const errorMessage = errorDetails
+          ? `iOS prebuild pipeline failed:\n${errorDetails}`
+          : 'iOS prebuild pipeline failed';
+        throw new Error(errorMessage);
       }
 
-      const errorDetails = result.errors
-        .map((e) => `  - [${e.packageName}/${e.productName}] ${e.stage}: ${e.error.message}`)
-        .join('\n');
-      const errorMessage = errorDetails
-        ? `iOS prebuild pipeline failed:\n${errorDetails}`
-        : 'iOS prebuild pipeline failed';
-      throw new Error(errorMessage);
-    }
+      // Copy built tarballs into each package's prebuilds/ directory
+      for (const pkgName of IOS_PREBUILD_PACKAGES) {
+        const parcel = parcels.find(
+          (p) => p.pkg.packageName === pkgName || p.pkg.packageSlug === pkgName
+        );
+        if (!parcel) {
+          logger.warn(`Package ${pkgName} not found in parcels, skipping prebuild bundling`);
+          continue;
+        }
 
-    // Copy built tarballs into each package's prebuilds/ directory
-    for (const pkgName of IOS_PREBUILD_PACKAGES) {
-      const parcel = parcels.find(
-        (p) => p.pkg.packageName === pkgName || p.pkg.packageSlug === pkgName
-      );
-      if (!parcel) {
-        logger.warn(`Package ${pkgName} not found in parcels, skipping prebuild bundling`);
-        continue;
-      }
+        await runWithSpinner(
+          `Bundling iOS prebuilds into ${pkgName}`,
+          async () => {
+            for (const flavor of FLAVORS) {
+              const srcDir = path.join(
+                PRECOMPILE_BUILD_DIR,
+                pkgName,
+                'output',
+                flavor,
+                'xcframeworks'
+              );
+              const destDir = path.join(
+                parcel.pkg.path,
+                'prebuilds',
+                'output',
+                flavor,
+                'xcframeworks'
+              );
 
-      await runWithSpinner(
-        `Bundling iOS prebuilds into ${pkgName}`,
-        async () => {
-          for (const flavor of FLAVORS) {
-            const srcDir = path.join(
-              PRECOMPILE_BUILD_DIR,
-              pkgName,
-              'output',
-              flavor,
-              'xcframeworks'
-            );
-            const destDir = path.join(
-              parcel.pkg.path,
-              'prebuilds',
-              'output',
-              flavor,
-              'xcframeworks'
-            );
+              if (!fs.existsSync(srcDir)) {
+                logger.warn(`  No ${flavor} xcframeworks found at ${srcDir}`);
+                continue;
+              }
 
-            if (!fs.existsSync(srcDir)) {
-              logger.warn(`  No ${flavor} xcframeworks found at ${srcDir}`);
-              continue;
-            }
+              await fs.promises.mkdir(destDir, { recursive: true });
 
-            await fs.promises.mkdir(destDir, { recursive: true });
-
-            const files = await fs.promises.readdir(srcDir);
-            for (const file of files) {
-              if (file.endsWith('.tar.gz')) {
-                await fs.promises.copyFile(path.join(srcDir, file), path.join(destDir, file));
+              const files = await fs.promises.readdir(srcDir);
+              for (const file of files) {
+                if (file.endsWith('.tar.gz')) {
+                  await fs.promises.copyFile(path.join(srcDir, file), path.join(destDir, file));
+                }
               }
             }
-          }
-        },
-        `Bundled iOS prebuilds into ${pkgName}`
-      );
+          },
+          `Bundled iOS prebuilds into ${pkgName}`
+        );
+      }
+    } finally {
+      restoreToolchain();
     }
   }
 );

@@ -74,6 +74,7 @@ We use our fork of React Native for building Expo Go, but it is not used otherwi
 **How:**
 
 - Run `et publish-packages`. Talk to @tsapeta for more details/information.
+  - This requires Xcode 26.2 (the lowest Xcode supported by EAS Build for SDK 55) so that emitted `.swiftinterface` files remain parseable by all consumer toolchains. Install it from https://developer.apple.com/download/all/ — it can coexist with newer versions of Xcode, and `et publish-packages` will switch `DEVELOPER_DIR` automatically.
 - Run `et sync-bundled-native-modules` to sync the `bundledNativeModules.json` file with www.
 
 ## 0.7. Merge and cutoff changelogs
