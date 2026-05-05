@@ -6,7 +6,9 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class Point : Record {
   @Field
   var x: Double = 0.0
