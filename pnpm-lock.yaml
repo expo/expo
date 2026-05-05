@@ -2651,6 +2651,9 @@ importers:
       expo-module-scripts:
         specifier: workspace:*
         version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.6.0
+        version: 3.6.0
 
   packages/@expo/metro-runtime:
     dependencies:
