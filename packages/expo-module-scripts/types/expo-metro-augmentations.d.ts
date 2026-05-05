@@ -97,4 +97,10 @@ declare module '@expo/metro/metro-source-map/source-map' {
   export function toSegmentTuple(mapping: BabelSourceMapSegment): MetroSourceMapSegmentTuple;
 }
 
+import * as __metroConfigTypes from '@expo/metro/metro-config/types';
 
+declare module '@expo/metro/metro-config/types' {
+  export interface ResolverConfigT {
+    unstable_onDemandFilesystem?: unknown;
+  }
+}

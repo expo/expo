@@ -193,6 +193,11 @@ export async function loadMetroConfigAsync(
   asWritable(config.transformer).extendsBabelConfigPath =
     config.transformer.enableBabelRCLookup !== false ? resolveBabelrcName(projectRoot) : undefined;
 
+  // On-Demand Filesystem is enabled by default
+  // TODO(@kitten): Add to config-types JSON schema
+  const onDemandFilesystem = (exp.experiments as any)?.onDemandFilesystem ?? true;
+  asWritable(config.resolver).unstable_onDemandFilesystem = onDemandFilesystem;
+
   // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
   // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
   // which is slower than just using the Node filesystem API

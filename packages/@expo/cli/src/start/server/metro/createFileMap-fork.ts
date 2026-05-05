@@ -8,6 +8,7 @@ import type MetroServer from '@expo/metro/metro/Server';
 import type { ConfigT } from '@expo/metro/metro-config';
 import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/metro-file-map';
 import ciInfo from 'ci-info';
+import path from 'node:path';
 
 function getIgnorePattern(config: ConfigT): RegExp {
   const { blockList, blacklistRE } = config.resolver;
@@ -77,6 +78,18 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
   });
   plugins.push(hasteMap);
 
+  const projectRoot = config.projectRoot;
+  const serverRoot = config.server.unstable_serverRoot;
+  const enableFallback = !!config.resolver.unstable_onDemandFilesystem;
+
+  // NOTE(@kitten): We allow the on-demand filesystem to escape the server root and access any file,
+  // - if we're using the CLI from `expo/expo` on an external project (e.g. in CI(
+  // - if the user explicitly sets the experimental flag to 'UNSTABLE_ALLOW_ALL'
+  const scopeFallback =
+    enableFallback &&
+    config.resolver.unstable_onDemandFilesystem !== 'UNSTABLE_ALLOW_ALL' &&
+    isDirectoryIn(__dirname, serverRoot ?? projectRoot);
+
   const fileMap = new FileMap({
     // NOTE(@kitten): Dropped `config.unstable_fileMapCacheManagerFactory`
     cacheManagerFactory: (factoryParams: any) => {
@@ -89,6 +102,9 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
     perfLoggerFactory: config.unstable_perfLoggerFactory,
     computeSha1: !config.watcher.unstable_lazySha1,
     enableSymlinks: true,
+    // NOTE(@kitten): @expo/metro-file-map fork adds `enableFallback` and `scopeFallback`
+    enableFallback,
+    scopeFallback,
     extensions: Array.from(
       new Set([
         ...config.resolver.sourceExts,
@@ -96,19 +112,19 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
         ...config.watcher.additionalExts,
       ])
     ),
-    // NOTE(@kitten): Native find crawler support has been dropped
-    forceNodeFilesystemAPI: true,
     healthCheck: config.watcher.healthCheck,
     ignorePattern: getIgnorePattern(config),
     maxWorkers: config.maxWorkers,
     plugins,
     retainAllFiles: true,
     resetCache: config.resetCache,
-    rootDir: config.projectRoot,
+    rootDir: projectRoot,
     roots: config.watchFolders,
     useWatchman: config.resolver.useWatchman ?? false,
     watch,
     watchmanDeferStates: config.watcher.watchman.deferStates,
+    // NOTE: (@expo/metro-file-map fork) New option is required for `scopeFallback: true` checks
+    serverRoot,
   });
 
   return {
@@ -116,6 +132,10 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
     hasteMap,
     dependencyPlugin,
   };
+}
+
+function isDirectoryIn(targetPath: string, rootPath: string) {
+  return targetPath === rootPath || targetPath.startsWith(rootPath + path.sep);
 }
 
 function assertMetroFileMapPatched(metro: { getBundler(): any }): void {
