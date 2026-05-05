@@ -842,6 +842,16 @@ function buildSwiftSettings(
   // Define RCT_NEW_ARCH_ENABLED for Fabric support
   settings.push('.define("RCT_NEW_ARCH_ENABLED")');
 
+  // Per-target Swift settings from spm.config.json
+  for (const feature of target?.swiftSettings?.enableUpcomingFeatures ?? []) {
+    settings.push(`.enableUpcomingFeature("${feature}")`);
+  }
+  const userUnsafeFlags = target?.swiftSettings?.unsafeFlags ?? [];
+  if (userUnsafeFlags.length > 0) {
+    const quoted = userUnsafeFlags.map((f) => `"${f}"`).join(', ');
+    settings.push(`.unsafeFlags([${quoted}])`);
+  }
+
   // Common C++ flags (not path-dependent)
   // Note: -fcxx-modules is intentionally omitted (see buildCSettings comment).
   const commonCxxFlags: string[] = ['-Xcc', '-fmodules'];

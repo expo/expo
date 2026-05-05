@@ -3968,7 +3968,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 94294944cff46ad1170ce4f92800adecbcdd04ac
   ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: 0b10a40c52e82e182c70dbfc12001ec30ba74cbd
+  ExpoModulesCore: 8f144ce25c48aa2c7c6e786e55482d1d9d8689f0
   ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: 3a4d6451e29822c01c397da92be1f962a0f870fe

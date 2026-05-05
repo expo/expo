@@ -107,7 +107,16 @@
             "CoreGraphics",
             "CoreMedia",
             "SwiftUI"
-          ]
+          ],
+          "swiftSettings": {
+            "enableUpcomingFeatures": [
+              "NonisolatedNonsendingByDefault",
+              "InferIsolatedConformances"
+            ],
+            "unsafeFlags": [
+              "-no-verify-emitted-module-interface"
+            ]
+          }
         }
       ]
     },
