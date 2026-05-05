@@ -214,7 +214,21 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     do {
       try device.lockForConfiguration()
       defer { device.unlockForConfiguration() }
-      let minZoom = 1.0
+      // For virtual devices that include both ultra-wide and wide constituents (Triple Camera,
+      // Dual Wide Camera), videoZoomFactor 1.0 corresponds to the ultra-wide lens. The system
+      // Camera app's "1×" view sits at the first switch-over factor (typically 2.0). Use that
+      // as our minimum so `zoom: 0` frames like the system camera — ultra-wide / macro is
+      // reached via auto-macro on close focus, or by selecting the ultra-wide lens explicitly.
+      let minZoom: CGFloat = {
+        let constituents = device.constituentDevices
+        let hasUltraWide = constituents.contains { $0.deviceType == .builtInUltraWideCamera }
+        let hasWide = constituents.contains { $0.deviceType == .builtInWideAngleCamera }
+        if hasUltraWide && hasWide,
+           let firstFactor = device.virtualDeviceSwitchOverVideoZoomFactors.first?.doubleValue {
+          return CGFloat(firstFactor)
+        }
+        return 1.0
+      }()
       device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, delegate.zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")

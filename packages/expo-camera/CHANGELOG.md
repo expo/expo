@@ -18,6 +18,7 @@
 - [iOS] Fix inconsistent barcode `type` value returned by ZXing fallback scanner (code39, pdf417, codabar) — it now returns the same format as the AVFoundation scanner (e.g. `"code39"` instead of `"org.iso.Code39"`). ([#44726](https://github.com/expo/expo/pull/44726) by [@jensdev](https://github.com/jensdev))
 - [iOS] Fix camera activity indicator remaining active after `CameraView.launchScanner` is interactively dismissed and the app is backgrounded/foregrounded. ([#45063](https://github.com/expo/expo/pull/45063) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45132](https://github.com/expo/expo/pull/45132) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix preview framing when `selectedLens` is a virtual multi-lens device (Triple Camera, Dual Wide Camera). `zoom: 0` previously pinned the device to its ultra-wide constituent (videoZoomFactor 1.0); it now uses the device's first reported `virtualDeviceSwitchOverVideoZoomFactors` value (typically 2.0), matching the system Camera app's default 1× framing. (by [@seanadkinson](https://github.com/seanadkinson))
 
 ### 💡 Others
 
