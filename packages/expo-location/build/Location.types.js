@@ -95,7 +95,6 @@ export var LocationGeofencingRegionState;
      */
     LocationGeofencingRegionState[LocationGeofencingRegionState["Outside"] = 2] = "Outside";
 })(LocationGeofencingRegionState || (LocationGeofencingRegionState = {}));
-// @needsAudit
 /**
  * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
  * on iOS. On Android, the raw `DetectedActivity` confidence (0-100) is bucketed into these
@@ -116,7 +115,6 @@ export var MotionActivityConfidence;
      */
     MotionActivityConfidence[MotionActivityConfidence["High"] = 2] = "High";
 })(MotionActivityConfidence || (MotionActivityConfidence = {}));
-// @needsAudit
 /**
  * The type of physical activity the user is currently performing.
  *
