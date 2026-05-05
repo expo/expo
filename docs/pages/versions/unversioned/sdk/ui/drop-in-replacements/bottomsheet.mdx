@@ -127,30 +127,30 @@ export default function DynamicBottomSheetExample() {
 
 This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and animation layer through `react-native-gesture-handler` and `react-native-reanimated`, while `@expo/ui/community/bottom-sheet` delegates those behaviors to Jetpack Compose, SwiftUI, and the web drawer primitive. As a result, this component is best suited for modal bottom sheet flows, including callsites that use the `BottomSheet` API rather than `BottomSheetModal`.
 
-| Feature | Android | iOS | Web |
-| --- | --- | --- | --- |
-| Presentation | Jetpack Compose modal bottom sheet | SwiftUI sheet | vaul drawer |
-| Snap points | Maps to partial and expanded states | Supports provided snap points | Supports provided snap points |
-| No `snapPoints` | Fits content | Fits content | Fits content |
-| Pan down to close | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss |
-| Persistent inline peek | Not supported | Not supported | Not supported |
+| Feature                | Android                                        | iOS                               | Web                           |
+| ---------------------- | ---------------------------------------------- | --------------------------------- | ----------------------------- |
+| Presentation           | Jetpack Compose modal bottom sheet             | SwiftUI sheet                     | vaul drawer                   |
+| Snap points            | Maps to partial and expanded states            | Supports provided snap points     | Supports provided snap points |
+| No `snapPoints`        | Fits content                                   | Fits content                      | Fits content                  |
+| Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss        |
+| Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
 
 ## Supported exports
 
-| Export | Supported | Notes |
-| --- | --- | --- |
-| `BottomSheet` | Yes | Modal on Android and iOS, drawer on web |
-| `BottomSheetModal` | Yes | Starts closed and opens with `present()` |
-| `BottomSheetModalProvider` | Yes | Renders children directly for compatibility |
-| `BottomSheetView` | Yes | Wraps sheet content |
-| `BottomSheetScrollView` | Yes | Re-export of React Native `ScrollView` |
-| `BottomSheetFlatList` | Yes | Re-export of React Native `FlatList` |
-| `BottomSheetSectionList` | Yes | Re-export of React Native `SectionList` |
-| `BottomSheetTextInput` | Yes | Re-export of React Native `TextInput` |
-| `useBottomSheet` | Yes | Returns the sheet ref methods from context |
-| `BottomSheetBackdrop` | No | The native sheet or web drawer handles the backdrop |
-| `BottomSheetHandle` | No | The native sheet or web drawer handles the drag indicator |
-| `BottomSheetFooter` | No | No equivalent in this implementation |
+| Export                     | Supported | Notes                                                     |
+| -------------------------- | --------- | --------------------------------------------------------- |
+| `BottomSheet`              | Yes       | Modal on Android and iOS, drawer on web                   |
+| `BottomSheetModal`         | Yes       | Starts closed and opens with `present()`                  |
+| `BottomSheetModalProvider` | Yes       | Renders children directly for compatibility               |
+| `BottomSheetView`          | Yes       | Wraps sheet content                                       |
+| `BottomSheetScrollView`    | Yes       | Re-export of React Native `ScrollView`                    |
+| `BottomSheetFlatList`      | Yes       | Re-export of React Native `FlatList`                      |
+| `BottomSheetSectionList`   | Yes       | Re-export of React Native `SectionList`                   |
+| `BottomSheetTextInput`     | Yes       | Re-export of React Native `TextInput`                     |
+| `useBottomSheet`           | Yes       | Returns the sheet ref methods from context                |
+| `BottomSheetBackdrop`      | No        | The native sheet or web drawer handles the backdrop       |
+| `BottomSheetHandle`        | No        | The native sheet or web drawer handles the drag indicator |
+| `BottomSheetFooter`        | No        | No equivalent in this implementation                      |
 
 ## Compatibility notes
 
