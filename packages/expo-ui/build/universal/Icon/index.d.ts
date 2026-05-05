@@ -54,9 +54,9 @@ import type { IconProps, IconSelectSpec } from './types';
  * <Icon name="star.fill" size={24} />
  * ```
  */
-export declare function Icon(_props: IconProps): null;
+export declare function Icon(props: IconProps): null;
 export declare namespace Icon {
-    var select: (_spec: IconSelectSpec) => SFSymbol | ImageSourcePropType;
+    var select: (spec: IconSelectSpec) => SFSymbol | ImageSourcePropType;
 }
 export * from './types';
 //# sourceMappingURL=index.d.ts.map

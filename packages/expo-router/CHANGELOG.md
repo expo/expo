@@ -24,6 +24,7 @@
 - [web] Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
 - [web] Support streaming SSR in development ([#45362](https://github.com/expo/expo/pull/45362) by [@hassankhan](https://github.com/hassankhan))
 - [web] Add `createStaticLoader()` and `createServerLoader()` helpers ([#45401](https://github.com/expo/expo/pull/45401) by [@hassankhan](https://github.com/hassankhan))
+- Add ExperimentalStack navigator ([#45259](https://github.com/expo/expo/pull/45259) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 

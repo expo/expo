@@ -32,6 +32,7 @@ const HomeIndex = () => {
       <CaseLink href="/params" text="Params" />
       <CaseLink href="/js-stack" text="JS Stack" />
       <CaseLink href="/js-tabs" text="JS Tabs" />
+      <CaseLink href="/experimental-stack" text="Experimental Stack" />
     </ScrollView>
   );
 };
