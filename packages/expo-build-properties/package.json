@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
-    "@expo/schema-utils": "^55.0.3",
+    "@expo/schema-utils": "^55.0.4",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },

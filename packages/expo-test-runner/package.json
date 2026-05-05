@@ -30,7 +30,7 @@
     "@babel/core": "^7.23.7",
     "@types/node": "^22.14.0",
     "@types/node-fetch": "^2.5.12",
-    "eslint-config-universe": "^15.0.3",
+    "eslint-config-universe": "^15.0.4",
     "expo-module-scripts": "^55.0.2",
     "typescript": "^5.9.2"
   },

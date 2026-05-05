@@ -43,11 +43,11 @@
     ]
   },
   "dependencies": {
-    "@expo/image-utils": "^0.8.13",
+    "@expo/image-utils": "^0.8.14",
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
     "expo-application": "~55.0.14",
-    "expo-constants": "~55.0.15"
+    "expo-constants": "~55.0.16"
   },
   "devDependencies": {
     "expo-module-scripts": "^55.0.2",

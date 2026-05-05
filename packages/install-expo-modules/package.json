@@ -36,9 +36,9 @@
     "directory": "packages/install-expo-modules"
   },
   "devDependencies": {
-    "@expo/config": "~55.0.15",
+    "@expo/config": "~55.0.16",
     "@expo/config-plugins": "~55.0.8",
-    "@expo/package-manager": "^1.10.4",
+    "@expo/package-manager": "^1.10.5",
     "@expo/spawn-async": "^1.7.2",
     "@types/prompts": "^2.0.6",
     "@types/semver": "^7.0.0",

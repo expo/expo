@@ -37,9 +37,9 @@
     "prepublishOnly": "expo-module prepublishOnly"
   },
   "devDependencies": {
-    "@expo/config": "~55.0.15",
-    "@expo/json-file": "^10.0.13",
-    "@expo/package-manager": "^1.10.4",
+    "@expo/config": "~55.0.16",
+    "@expo/json-file": "^10.0.14",
+    "@expo/package-manager": "^1.10.5",
     "@expo/spawn-async": "^1.7.2",
     "@octokit/types": "^13.5.0",
     "@types/debug": "^4.1.7",
