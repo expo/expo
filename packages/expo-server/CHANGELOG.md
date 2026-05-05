@@ -8,6 +8,7 @@
 
 - Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
 - Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+- Add `createStaticLoader()` and `createServerLoader()` helpers ([#45401](https://github.com/expo/expo/pull/45401) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
