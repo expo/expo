@@ -1174,7 +1174,7 @@ export default class TreeFS implements MutableFileSystem {
     const pathSep = opts.alwaysYieldPosix ? '/' : path.sep;
     const prefixWithSep = pathPrefix === '' ? pathPrefix : pathPrefix + pathSep;
 
-    // Optimization: We can attempt to eagerly popuplate directories we're visiting
+    // Optimization: We can attempt to eagerly populate directories we're visiting
     // if they're missing and not accessing a parent ('..')
     if (
       this.#fallbackFilesystem != null &&
