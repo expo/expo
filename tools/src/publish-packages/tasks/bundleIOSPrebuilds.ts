@@ -15,15 +15,15 @@ import { CommandOptions, Parcel, TaskArgs } from '../types';
  * older one, which breaks consumers who haven't yet upgraded. Keep in sync with the CI
  * workflows that publish artifacts (see .github/workflows/publish-canaries.yml).
  */
-export const SUPPORTED_XCODE_VERSION = '26.4';
+export const SUPPORTED_XCODE_VERSION = '26.4.1';
 
 type InstalledXcode = { developerDir: string; xcode: string | null };
 
-// Returns major.minor (`Xcode 26.4.1` → `26.4`); `null` when the prefix isn't found.
+// Returns major.minor.patch (`Xcode 26.4` → `26.4.0`); `null` when the prefix isn't found.
 export function parseXcodeVersion(output: string): string | null {
-  const match = output.match(/Xcode\s+(\d+)(?:\.(\d+))?/);
+  const match = output.match(/Xcode\s+(\d+)(?:\.(\d+))?(?:\.(\d+))?/);
   if (!match) return null;
-  return `${match[1]}.${match[2] ?? '0'}`;
+  return `${match[1]}.${match[2] ?? '0'}.${match[3] ?? '0'}`;
 }
 
 async function readXcodeVersionAsync(developerDir?: string): Promise<string | null> {

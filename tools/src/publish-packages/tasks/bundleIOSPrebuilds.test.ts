@@ -9,15 +9,15 @@ import {
 
 describe('parseXcodeVersion', () => {
   it('parses a normal `xcodebuild -version` output', () => {
-    assert.equal(parseXcodeVersion('Xcode 26.0\nBuild version 16A5318g\n'), '26.0');
+    assert.equal(parseXcodeVersion('Xcode 26.4.1\nBuild version 16A5318g\n'), '26.4.1');
   });
 
-  it('normalizes a major-only Xcode version to major.minor', () => {
-    assert.equal(parseXcodeVersion('Xcode 26\nBuild version 16A5318g\n'), '26.0');
+  it('normalizes a major-only Xcode version to major.minor.patch', () => {
+    assert.equal(parseXcodeVersion('Xcode 26\nBuild version 16A5318g\n'), '26.0.0');
   });
 
-  it('strips the patch component from an Xcode version', () => {
-    assert.equal(parseXcodeVersion('Xcode 26.0.1\n'), '26.0');
+  it('normalizes a major.minor Xcode version to major.minor.patch', () => {
+    assert.equal(parseXcodeVersion('Xcode 26.4\n'), '26.4.0');
   });
 
   it('returns null when the expected prefix is missing', () => {
@@ -57,12 +57,12 @@ describe('ensureSupportedToolchainAsync', () => {
       async () => '26.2',
       async () => [
         {
-          developerDir: '/Applications/Xcode_26.4.app/Contents/Developer',
+          developerDir: '/Applications/Xcode_26.4.1.app/Contents/Developer',
           xcode: SUPPORTED_XCODE_VERSION,
         },
       ]
     );
-    assert.equal(process.env.DEVELOPER_DIR, '/Applications/Xcode_26.4.app/Contents/Developer');
+    assert.equal(process.env.DEVELOPER_DIR, '/Applications/Xcode_26.4.1.app/Contents/Developer');
     restore();
     assert.equal(process.env.DEVELOPER_DIR, undefined);
   });
@@ -74,12 +74,12 @@ describe('ensureSupportedToolchainAsync', () => {
       async () => '27.0',
       async () => [
         {
-          developerDir: '/Applications/Xcode_26.4.app/Contents/Developer',
+          developerDir: '/Applications/Xcode_26.4.1.app/Contents/Developer',
           xcode: SUPPORTED_XCODE_VERSION,
         },
       ]
     );
-    assert.equal(process.env.DEVELOPER_DIR, '/Applications/Xcode_26.4.app/Contents/Developer');
+    assert.equal(process.env.DEVELOPER_DIR, '/Applications/Xcode_26.4.1.app/Contents/Developer');
     restore();
     assert.equal(process.env.DEVELOPER_DIR, prior);
   });
