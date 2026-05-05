@@ -6,7 +6,7 @@
  */
 
 import { createHash } from 'crypto';
-import fs from 'graceful-fs';
+import fs from 'fs';
 
 import type { MetadataWorker, WorkerMessage, WorkerMetadata, WorkerSetupArgs } from './types';
 

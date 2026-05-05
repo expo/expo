@@ -1,7 +1,6 @@
 // Prevent real filesystem access in tests — use memfs via __mocks__/
 jest.mock('fs');
 jest.mock('fs/promises');
-jest.mock('graceful-fs');
 
 // Redirect node: prefixed built-in modules to their mocked equivalents
 jest.mock('node:fs', () => require('fs'));

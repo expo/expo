@@ -8,8 +8,8 @@
  */
 
 import { spawn } from 'child_process';
-import * as fs from 'graceful-fs';
 import { platform } from 'os';
+import * as fs from 'fs';
 import * as path from 'path';
 
 import hasNativeFindSupport from './hasNativeFindSupport';

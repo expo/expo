@@ -2614,9 +2614,6 @@ importers:
       fb-watchman:
         specifier: ^2.0.2
         version: 2.0.2
-      graceful-fs:
-        specifier: ^4.2.4
-        version: 4.2.11
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -2639,9 +2636,6 @@ importers:
       '@types/fb-watchman':
         specifier: ^2.0.6
         version: 2.0.6
-      '@types/graceful-fs':
-        specifier: ^4.1.9
-        version: 4.1.9
       '@types/invariant':
         specifier: ^2.2.37
         version: 2.2.37
