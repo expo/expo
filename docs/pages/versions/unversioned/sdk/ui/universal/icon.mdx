@@ -9,7 +9,7 @@ platforms: ['android', 'ios', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A platform-native icon. On iOS it renders an [SF Symbol](https://developer.apple.com/sf-symbols/); on Android it renders a Material Symbol XML vector drawable supplied through [`@expo/material-symbols`](https://github.com/expo/expo/tree/main/packages/material-symbols) (other XML vector drawable assets aren't officially supported).
+A platform-native icon. On Android, it renders a Material Symbol XML vector drawable supplied through [`@expo/material-symbols`](https://github.com/expo/expo/tree/main/packages/material-symbols) (other XML vector drawable assets aren't officially supported). On iOS, it renders an [SF Symbol](https://developer.apple.com/sf-symbols/)
 
 > **Note:** `Icon` does not render on web.
 
@@ -69,7 +69,7 @@ export default function HoistedIconExample() {
 
 ### Platform-specific files
 
-Inside an `.android.tsx` file, import the XML asset directly. Inside an `.ios.tsx` file, pass the SF Symbol name as a string.
+Inside an **.android.tsx** file, import the XML asset directly. Inside an **.ios.tsx** file, pass the SF Symbol name as a string.
 
 ```tsx Icon.android.tsx
 import StarIcon from '@expo/material-symbols/star.xml';
