@@ -298,6 +298,8 @@ describe('non-interactive module creation', () => {
     await executePassing([
       projectName,
       '--no-example',
+      '--source',
+      localTemplatePath,
       '--name',
       'TestModule',
       '--description',
@@ -345,6 +347,8 @@ describe('non-interactive module creation', () => {
     const result = await executePassing([
       projectName,
       '--no-example',
+      '--source',
+      localTemplatePath,
       '--name',
       'NonEmpty',
       '--package',
