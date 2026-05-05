@@ -152,7 +152,7 @@ export default function Root({ children }: { children: ReactNode }) {
 The **+html.tsx** file is only used by the server renderer and never by client code. This means:
 
 - It will be run by `expo-server` during server rendering
-- It is not rehydrated on the client, and hence shouldn't use React hooks other than [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext)
+- It is not rehydrated on the client, and should only use [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) React hook
 - You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/navigation-layouts/#root-layout) for styles)
 - You may not call browser APIs like `window` or `document` in your `+html.tsx`
 
