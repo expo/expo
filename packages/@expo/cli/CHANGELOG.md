@@ -17,6 +17,7 @@
 - Rewrite @react-navigation/core to expo-router for library compatibility ([#45039](https://github.com/expo/expo/pull/45039) by [@Ubax](https://github.com/Ubax))
 - Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
 - Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+- Support streaming SSR in development ([#45362](https://github.com/expo/expo/pull/45362) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
