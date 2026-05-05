@@ -12,10 +12,7 @@ module.exports = function (_api: ConfigAPI, options: ReactConfigOptions) {
 
   if (runtime === 'classic' && options.dev) {
     // NOTE(@kitten): runtime 'classic' is typically not needed but preserved for legacy cases (deprecated)
-    plugins.push([
-      require('@babel/plugin-transform-react-jsx-development'),
-      { runtime },
-    ]);
+    plugins.push([require('@babel/plugin-transform-react-jsx-development'), { runtime }]);
   } else {
     plugins.push([
       require('@babel/plugin-transform-react-jsx'),
@@ -30,9 +27,7 @@ module.exports = function (_api: ConfigAPI, options: ReactConfigOptions) {
   }
 
   if (!options.dev) {
-    plugins.push([
-      require('@babel/plugin-transform-react-pure-annotations')
-    ]);
+    plugins.push([require('@babel/plugin-transform-react-pure-annotations')]);
   }
 
   return {

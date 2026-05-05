@@ -28,6 +28,7 @@
 - [iOS] Remove `RCTHostRuntimeDelegate` usage now that it's merged into `RCTHostDelegate`. ([#43838](https://github.com/expo/expo/pull/43838) by [@zoontek](https://github.com/zoontek))
 - Bumped project templates to TypeScript v6 ([#45091](https://github.com/expo/expo/pull/45091) by [@hassankhan](https://github.com/hassankhan))
 - [dom] Added opt-out `unstable_useExpoModulesBridge` flag. ([#45223](https://github.com/expo/expo/pull/45223) by [@kudo](https://github.com/kudo))
+- Bump to `@expo/metro@56.0.0` and `metro@0.84.4` ([#45404](https://github.com/expo/expo/pull/45404) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 

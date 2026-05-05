@@ -78,7 +78,7 @@ it(`transforms React display name`, () => {
   `;
   expect(babel.transform(sourceCode, options)!.code).toMatchInlineSnapshot(`
     "
-    var bar = createReactClass({ displayName: "bar" });"
+    var bar = createReactClass({});"
   `);
 });
 

@@ -14,20 +14,11 @@ final class SharedPoint: SharedObject {
 }
 
 public final class BenchmarkingExpoModule: Module {
-//  @OptimizedFunction
-  private func addNumbersOptimized(a: Double, b: Double) throws -> Double {
-    return a + b
-  }
-
-//  @OptimizedFunction
-  private func addNumbersAsyncOptimized(a: Double, b: Double) throws -> Double {
-    return a + b
-  }
-
   public func definition() -> ModuleDefinition {
     Name("BenchmarkingExpoModule")
 
     Function("nothing") {}
+    Function("nothingOptimized", nothingOptimized())
 
     AsyncFunction("nothingAsync") { () async -> Void in }
 
@@ -37,19 +28,21 @@ public final class BenchmarkingExpoModule: Module {
       return a + b
     }
 
-    Function("addNumbersOptimized", addNumbersOptimized)
+    Function("addNumbersOptimized", addNumbersOptimized())
 
     AsyncFunction("addNumbersAsync") { (a: Double, b: Double) in
       return a + b
     }
 
-    AsyncFunction("addNumbersAsyncOptimized", addNumbersAsyncOptimized)
+    AsyncFunction("addNumbersAsyncOptimized", addNumbersOptimized())
 
     // MARK: - Strings
 
     Function("addStrings") { (a: String, b: String) in
       return a + b
     }
+
+    Function("addStringsOptimized", addStringsOptimized())
 
     // MARK: - Arrays
 
@@ -87,5 +80,18 @@ public final class BenchmarkingExpoModule: Module {
         return point.y
       }
     }
+  }
+
+  @OptimizedFunction
+  private func nothingOptimized() -> Void {}
+
+  @OptimizedFunction
+  private func addNumbersOptimized(a: Double, b: Double) throws -> Double {
+    return a + b
+  }
+
+  @OptimizedFunction
+  private func addStringsOptimized(a: String, b: String) throws -> String {
+    return a + b
   }
 }

@@ -4,6 +4,8 @@ import type {
   TabsScreenItemStateAppearanceIOS,
 } from 'react-native-screens';
 
+// Intentionally importing from .ios file in order to test
+// correct exports
 import {
   appendStyleToAppearance,
   convertStyleToAppearance,
@@ -11,7 +13,7 @@ import {
   createScrollEdgeAppearanceFromOptions,
   createStandardAppearanceFromOptions,
   type AppearanceStyle,
-} from '../appearance';
+} from '../appearance.ios';
 import type { NativeTabOptions } from '../types';
 
 describe(createStandardAppearanceFromOptions, () => {

@@ -3,9 +3,10 @@ import { Text } from 'react-native';
 import * as StackHeaderModule from '../StackHeaderComponent';
 import { StackHeaderComponent } from '../StackHeaderComponent';
 import { appendScreenStackPropsToOptions } from '../StackScreen';
-import { StackScreenBackButton, StackScreenTitle } from '../screen';
+import { StackTitle } from '../StackTitle';
+import * as StackTitleModule from '../StackTitle';
+import { StackScreenBackButton } from '../screen';
 import * as StackScreenBackButtonModule from '../screen/StackScreenBackButton';
-import * as StackScreenTitleModule from '../screen/StackScreenTitle';
 import { StackToolbar } from '../toolbar';
 import * as StackToolbarClientModule from '../toolbar/StackToolbarClient';
 
@@ -78,18 +79,18 @@ describe(appendScreenStackPropsToOptions, () => {
     });
   });
 
-  describe('StackScreenTitle processing', () => {
+  describe('StackTitle processing', () => {
     let spy: jest.SpyInstance;
 
     beforeEach(() => {
-      spy = jest.spyOn(StackScreenTitleModule, 'appendStackScreenTitlePropsToOptions');
+      spy = jest.spyOn(StackTitleModule, 'appendStackTitlePropsToOptions');
     });
 
     afterEach(() => {
       spy.mockRestore();
     });
 
-    it('calls appendStackScreenTitlePropsToOptions with correct props', () => {
+    it('calls appendStackTitlePropsToOptions with correct props', () => {
       const props = {
         children: 'Test Title',
         large: true,
@@ -99,7 +100,7 @@ describe(appendScreenStackPropsToOptions, () => {
       appendScreenStackPropsToOptions(
         {},
         {
-          children: <StackScreenTitle {...props} />,
+          children: <StackTitle {...props} />,
         }
       );
 
@@ -111,9 +112,9 @@ describe(appendScreenStackPropsToOptions, () => {
         {},
         {
           children: (
-            <StackScreenTitle large style={{ textAlign: 'center', fontWeight: 'bold' }}>
+            <StackTitle large style={{ textAlign: 'center', fontWeight: 'bold' }}>
               Page Title
-            </StackScreenTitle>
+            </StackTitle>
           ),
         }
       );
@@ -322,7 +323,7 @@ describe(appendScreenStackPropsToOptions, () => {
         {},
         {
           children: [
-            <StackScreenTitle key="title">Title</StackScreenTitle>,
+            <StackTitle key="title">Title</StackTitle>,
             <StackScreenBackButton key="back">Back</StackScreenBackButton>,
             <StackHeaderComponent key="header" />,
             <StackToolbar key="toolbar" placement="left">
@@ -342,7 +343,7 @@ describe(appendScreenStackPropsToOptions, () => {
         {},
         {
           children: [
-            <StackScreenTitle key="title">Page Title</StackScreenTitle>,
+            <StackTitle key="title">Page Title</StackTitle>,
             <StackScreenBackButton key="back">Back</StackScreenBackButton>,
             <StackHeaderComponent key="header" blurEffect="systemMaterial" />,
             <StackToolbar key="toolbar-right" placement="right">
@@ -363,8 +364,8 @@ describe(appendScreenStackPropsToOptions, () => {
         {},
         {
           children: [
-            <StackScreenTitle key="title1">First Title</StackScreenTitle>,
-            <StackScreenTitle key="title2">Second Title</StackScreenTitle>,
+            <StackTitle key="title1">First Title</StackTitle>,
+            <StackTitle key="title2">Second Title</StackTitle>,
           ],
         }
       );
@@ -407,7 +408,7 @@ describe(appendScreenStackPropsToOptions, () => {
       const result = appendScreenStackPropsToOptions(
         {},
         {
-          children: [<StackScreenTitle key="title">Title</StackScreenTitle>, null],
+          children: [<StackTitle key="title">Title</StackTitle>, null],
         }
       );
 
@@ -418,7 +419,7 @@ describe(appendScreenStackPropsToOptions, () => {
       const result = appendScreenStackPropsToOptions(
         {},
         {
-          children: [<StackScreenTitle key="title">Title</StackScreenTitle>, undefined],
+          children: [<StackTitle key="title">Title</StackTitle>, undefined],
         }
       );
 
@@ -429,7 +430,7 @@ describe(appendScreenStackPropsToOptions, () => {
       const result = appendScreenStackPropsToOptions(
         {},
         {
-          children: [<StackScreenTitle key="title">Title</StackScreenTitle>, false, true],
+          children: [<StackTitle key="title">Title</StackTitle>, false, true],
         }
       );
 

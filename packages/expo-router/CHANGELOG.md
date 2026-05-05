@@ -51,6 +51,7 @@
 - add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
 - refactor global-state logic ([#44056](https://github.com/expo/expo/pull/44056) by [@Ubax](https://github.com/Ubax))
 - Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+- Rename `Stack.Screen.Title` to `Stack.Title`. The old name is kept as a deprecated alias. ([#45334](https://github.com/expo/expo/pull/45334) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.2 — 2026-02-25
 

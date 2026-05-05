@@ -58,7 +58,7 @@
     "@expo/inline-modules": "workspace:0.0.1",
     "@expo/json-file": "workspace:^10.0.12",
     "@expo/log-box": "workspace:55.0.7",
-    "@expo/metro": "56.0.0-rc.2",
+    "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:~55.0.9",
     "@expo/metro-file-map": "workspace:55.0.0-0",
     "@expo/osascript": "workspace:^2.4.2",

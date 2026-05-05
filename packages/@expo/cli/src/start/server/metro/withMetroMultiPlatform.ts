@@ -634,9 +634,8 @@ export function withExtendedResolver(
         if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
           const filePath = context.originModulePath;
           if (!filePath.includes('node_modules')) {
-            // TODO(@ubax): Add link to migration guide, once it is published
             throw new Error(
-              'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see [MIGRATION_GUIDE_URL]. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
+              'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
             );
           }
           if (moduleName === '@react-navigation/core') {

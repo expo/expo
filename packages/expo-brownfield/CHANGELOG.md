@@ -22,6 +22,7 @@
 - [iOS] Support rendering multiple ReactNativeView simultaneously ([#44891](https://github.com/expo/expo/pull/44891) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Support registering custom turbo modules from the hosting app ([#44929](https://github.com/expo/expo/pull/44929) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Add support for iOS prebuilds. ([#45148](https://github.com/expo/expo/pull/45148) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Add support for using multiple inner app frameworks in one host app via the new `multipleFrameworks` property. ([#45347](https://github.com/expo/expo/pull/45347) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
