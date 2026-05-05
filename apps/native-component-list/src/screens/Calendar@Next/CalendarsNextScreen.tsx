@@ -13,31 +13,11 @@ import {
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
-import Button from '../components/Button';
-import HeadingText from '../components/HeadingText';
-import ListButton from '../components/ListButton';
-import MonoText from '../components/MonoText';
-import Colors from '../constants/Colors';
-import { optionalRequire } from '../navigation/routeBuilder';
-
-export const CalendarsNextScreens = [
-  {
-    name: 'EventsNext',
-    route: 'events-next',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./EventsNextScreen'));
-    },
-  },
-  {
-    name: 'RemindersNext',
-    route: 'reminders-next',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./RemindersNextScreen'));
-    },
-  },
-];
+import Button from '../../components/Button';
+import HeadingText from '../../components/HeadingText';
+import ListButton from '../../components/ListButton';
+import MonoText from '../../components/MonoText';
+import Colors from '../../constants/Colors';
 
 type StackNavigation = StackNavigationProp<{
   RemindersNext: { calendar: ExpoCalendar };

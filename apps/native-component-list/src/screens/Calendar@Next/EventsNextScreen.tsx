@@ -4,10 +4,10 @@ import { AddEventWithFormOptions, ExpoCalendar, ExpoCalendarEvent } from 'expo-c
 import React, { useState, useEffect } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import Button from '../components/Button';
-import HeadingText from '../components/HeadingText';
-import ListButton from '../components/ListButton';
-import MonoText from '../components/MonoText';
+import Button from '../../components/Button';
+import HeadingText from '../../components/HeadingText';
+import ListButton from '../../components/ListButton';
+import MonoText from '../../components/MonoText';
 
 type EventRowProps = {
   event: ExpoCalendarEvent;

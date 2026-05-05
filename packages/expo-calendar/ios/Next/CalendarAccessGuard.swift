@@ -2,7 +2,7 @@ import EventKit
 import ExpoModulesCore
 import Foundation
 
-public class ExpoCalendarPermissions {
+public class CalendarAccessGuard {
   private var permittedEntities: EKEntityMask = .event
   private let eventStore: EKEventStore
   private weak var appContext: AppContext?
@@ -18,12 +18,12 @@ public class ExpoCalendarPermissions {
     }
     var permittedEntities: EKEntityMask = []
     if permissionsManager.hasGrantedPermission(
-      usingRequesterClass: CalendarPermissionsRequester.self) {
+      usingRequesterClass: CalendarNextPermissionsRequester.self) {
       permittedEntities.insert(.event)
     }
 
     if permissionsManager.hasGrantedPermission(
-      usingRequesterClass: RemindersPermissionRequester.self) {
+      usingRequesterClass: RemindersNextPermissionRequester.self) {
       permittedEntities.insert(.reminder)
     }
 
@@ -31,30 +31,40 @@ public class ExpoCalendarPermissions {
   }
 
   public func checkCalendarPermissions() throws {
-    try self.checkPermissions(entity: .event)
+    try self.checkPermissions(
+      entity: .event,
+      requester: CalendarNextPermissionsRequester.self,
+      permissionName: "CALENDAR"
+    )
+  }
+
+  public func checkCalendarWritePermissions() throws {
+    try self.checkPermissions(
+      entity: .event,
+      requester: CalendarWriteOnlyNextPermissionsRequester.self,
+      permissionName: "CALENDARWRITEONLY"
+    )
   }
 
   public func checkRemindersPermissions() throws {
-    try self.checkPermissions(entity: .reminder)
+    try self.checkPermissions(
+      entity: .reminder,
+      requester: RemindersNextPermissionRequester.self,
+      permissionName: "REMINDERS"
+    )
   }
 
-  private func checkPermissions(entity: EKEntityType) throws {
+  private func checkPermissions(
+    entity: EKEntityType,
+    requester: EXPermissionsRequester.Type,
+    permissionName: String
+  ) throws {
     guard let permissionsManager = appContext?.permissions else {
       throw PermissionsManagerNotFoundException()
     }
 
-    var requester: EXPermissionsRequester.Type?
-    switch entity {
-    case .event:
-      requester = CalendarPermissionsRequester.self
-    case .reminder:
-      requester = RemindersPermissionRequester.self
-    @unknown default:
-      requester = nil
-    }
-    if let requester, !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
-      let message = requester.permissionType().uppercased()
-      throw MissionPermissionsException(message)
+    if !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
+      throw MissionPermissionsException(permissionName)
     }
 
     resetEventStoreIfPermissionWasChanged(entity: entity)
