@@ -347,7 +347,6 @@ export async function hasServicesEnabledAsync(): Promise<boolean> {
   return await ExpoLocation.hasServicesEnabledAsync();
 }
 
-// @needsAudit
 /**
  * Checks user's permissions for accessing motion activity data.
  * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
@@ -359,7 +358,6 @@ export async function getMotionActivityPermissionsAsync(): Promise<PermissionRes
   return await ExpoLocation.getMotionActivityPermissionsAsync();
 }
 
-// @needsAudit
 /**
  * Asks the user to grant permissions for motion activity detection.
  * On Android 10+, this requests the `ACTIVITY_RECOGNITION` runtime permission.
@@ -373,7 +371,6 @@ export async function requestMotionActivityPermissionsAsync(): Promise<Permissio
   return await ExpoLocation.requestMotionActivityPermissionsAsync();
 }
 
-// @needsAudit
 /**
  * Checks or requests permissions for motion activity detection.
  * This uses both `requestMotionActivityPermissionsAsync` and `getMotionActivityPermissionsAsync`
@@ -394,7 +391,6 @@ export const useMotionActivityPermissions = createPermissionHook({
 
 // --- Motion activity
 
-// @needsAudit
 /**
  * Fetches the current motion activity status of the device by subscribing to the first available
  * activity update and immediately unsubscribing afterwards.
@@ -431,7 +427,6 @@ export async function getMotionActivityAsync(): Promise<MotionActivityObject> {
   });
 }
 
-// @needsAudit
 /**
  * Subscribes to motion activity updates from the device. The callback fires whenever the
  * platform's motion coprocessor detects a change in the user's activity. Only foreground use
