@@ -7,7 +7,7 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  * In left/right placements, width is required.
  * In bottom placement, if width is not provided, creates a flexible spacer that expands to fill space.
  *
- * > **Note:** flexible spacers are iOS-only. On Android, `width` is a required property
+ * > **Note:** Flexible spacers are iOS-only. On Android, `width` is a required property
  *
  * @example
  * ```tsx

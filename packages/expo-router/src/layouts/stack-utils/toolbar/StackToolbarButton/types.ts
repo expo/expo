@@ -80,12 +80,12 @@ export interface StackToolbarButtonProps {
   /**
    * Icon to display in the button.
    *
-   * On Android only image source is supported
-   * 
-   * On iOS it can be a string representing an SFSymbol, an image source or xcasset.
+   * On Android, only image source is supported.
+   *
+   * On iOS, it can be a string representing an SFSymbol, an image source or xcasset.
    *
    * > **Note**: When used in `placement="bottom"` on iOS, only string SFSymbols are supported. Use the `image` prop to provide custom images.
-   * 
+   *
    * @platform android
    * @platform ios
    */
@@ -137,7 +137,7 @@ export interface StackToolbarButtonProps {
   selected?: boolean;
   /**
    * Style for the label of the header item.
-   * 
+   *
    * @platform android
    * @platform ios
    */
@@ -147,7 +147,7 @@ export interface StackToolbarButtonProps {
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/tintcolor) for more information.
    * @see [Android documentation](https://developer.android.com/develop/ui/compose/graphics/images/customize#tint-image) for more information.
-   * 
+   *
    * @platform android
    * @platform ios
    */

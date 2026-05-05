@@ -76,9 +76,9 @@ function computeMenuLabelAndTitle(
  * }
  * ```
  *
- * > **Note (Android):** the root `icon` must be an `ImageSourcePropType` (use a
+ * > **Note (Android):** The root `icon` must be an `ImageSourcePropType` (use a
  * > `require()` or `{ uri }` source, or `<Stack.Toolbar.Icon src={...} />`); SF Symbols
- * > and `xcasset` icons are silently dropped. 
+ * > and `xcasset` icons are silently dropped.
  *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *

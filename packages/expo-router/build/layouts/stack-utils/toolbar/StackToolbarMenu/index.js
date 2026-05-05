@@ -53,7 +53,7 @@ function computeMenuLabelAndTitle(children, title) {
  * }
  * ```
  *
- * > **Note (Android):** the root `icon` must be an `ImageSourcePropType` (use a
+ * > **Note (Android):** The root `icon` must be an `ImageSourcePropType` (use a
  * > `require()` or `{ uri }` source, or `<Stack.Toolbar.Icon src={...} />`); SF Symbols
  * > and `xcasset` icons are silently dropped.
  *

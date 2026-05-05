@@ -78,9 +78,9 @@ export interface StackToolbarButtonProps {
     /**
      * Icon to display in the button.
      *
-     * On Android only image source is supported
+     * On Android, only image source is supported.
      *
-     * On iOS it can be a string representing an SFSymbol, an image source or xcasset.
+     * On iOS, it can be a string representing an SFSymbol, an image source or xcasset.
      *
      * > **Note**: When used in `placement="bottom"` on iOS, only string SFSymbols are supported. Use the `image` prop to provide custom images.
      *

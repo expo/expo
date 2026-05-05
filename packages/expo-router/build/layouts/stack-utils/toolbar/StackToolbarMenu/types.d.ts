@@ -218,7 +218,7 @@ export interface StackToolbarMenuActionProps {
      * Can be an SF Symbol name or an image source.
      *
      * > **Note (Android)**: Only `ImageSourcePropType` icons are rendered. SF Symbols are
-     * > silently dropped — provide a `require()` or `{ uri }` source.
+     * > silently dropped. Provide a `require()` or `{ uri }` source.
      */
     icon?: SFSymbol | ImageSourcePropType;
     /**
