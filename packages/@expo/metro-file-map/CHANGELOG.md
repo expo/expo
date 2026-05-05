@@ -11,6 +11,7 @@
 
 - Lazily stat files and populate symlinks for Node crawled file trees ([#45378](https://github.com/expo/expo/pull/45378) by [@kitten](https://github.com/kitten))
 - Pre-resolve symlink targets and store normal POSIX paths ([#45378](https://github.com/expo/expo/pull/45378) by [@kitten](https://github.com/kitten))
+- Implement on-demand filesystem access controlled by `enableFallback` and `scopeFallback` ([#45391](https://github.com/expo/expo/pull/45391) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 

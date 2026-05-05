@@ -18,6 +18,7 @@
 - Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
 - Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
 - Support streaming SSR in development ([#45362](https://github.com/expo/expo/pull/45362) by [@hassankhan](https://github.com/hassankhan))
+- Add `experiments.onDemandFilesystem` (enabled by default) to allow files in the server root outside of `watchFolders` to be accessed and crawled lazily ([#45391](https://github.com/expo/expo/pull/45391) by [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
 
