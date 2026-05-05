@@ -38,10 +38,15 @@ describe(createStaticLoader, () => {
 
 describe(createServerLoader, () => {
   it('passes request and params to the callback', () => {
-    const fn = jest.fn((request: InstanceType<typeof ImmutableRequest>, params: Record<string, string | string[]>) => ({
-      url: request.url,
-      id: params.id,
-    }));
+    const fn = jest.fn(
+      (
+        request: InstanceType<typeof ImmutableRequest>,
+        params: Record<string, string | string[]>
+      ) => ({
+        url: request.url,
+        id: params.id,
+      })
+    );
     const loader = createServerLoader(fn);
 
     const request = new ImmutableRequest(new Request('https://example.com/test'));

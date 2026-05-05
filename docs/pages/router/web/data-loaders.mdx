@@ -342,7 +342,7 @@ import { Text, View } from 'react-native';
 import { useLoaderData } from 'expo-router';
 import { createStaticLoader } from 'expo-router/server';
 
-export const loader = createStaticLoader(async (params) => {
+export const loader = createStaticLoader(async params => {
   const response = await fetch(`https://api.example.com/posts/${params.postId}`);
   return response.json();
 });
