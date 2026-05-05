@@ -1,4 +1,68 @@
----
+Market_abu_abdullah
+import React, { useState } from 'react';
+import { Text, View, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+
+export default function App() {
+  const [name, setName] = useState('');
+  const [amount, setAmount] = useState('');
+  const [list, setList] = useState([]);
+
+  const addDebt = () => {
+    if (name && amount) {
+      setList([...list, { id: Date.now().toString(), name, amount, paid: false }]);
+      setName('');
+      setAmount('');
+    }
+  };
+
+  const togglePaid = (id) => {
+    setList(list.map(item =>
+      item.id === id ? { ...item, paid: !item.paid } : item
+    ));
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>مارکیت ابو عبدالله</Text>
+
+      <TextInput
+        placeholder="ناوی کڕیار"
+        value={name}
+        onChangeText={setName}
+        style={styles.input}
+      />
+
+      <TextInput
+        placeholder="بڕی قەرز"
+        value={amount}
+        onChangeText={setAmount}
+        keyboardType="numeric"
+        style={styles.input}
+      />
+
+      <Button title="زیادکردن" onPress={addDebt} />
+
+      <FlatList
+        data={list}
+        renderItem={({ item }) => (
+          <Text
+            style={[styles.item, { color: item.paid ? 'green' : 'red' }]}
+            onPress={() => togglePaid(item.id)}
+          >
+            {item.name} - {item.amount} دینار ({item.paid ? 'پارەدراوە' : 'قەرزە'})
+          </Text>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { padding: 20, marginTop: 40, backgroundColor: '#fff8dc', flex: 1 },
+  title: { fontSize: 22, marginBottom: 10, color: '#b8860b' },
+  input: { borderWidth: 1, marginBottom: 10, padding: 8, borderColor: '#b8860b' },
+  item: { marginTop: 10, fontSize: 16 }
+});---
 title: Get started with EAS Workflows
 sidebar_title: Get started
 description: Learn how to use EAS Workflows to automate your React Native CI/CD development and release processes.
