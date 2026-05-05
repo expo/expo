@@ -51,13 +51,13 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("Directory.create function does not work with SAF content:// uris, use `Directory.createDirectory` instead")
+    }
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     if (!needsCreation(options)) {
       return
-    }
-    if (uri.isContentUri) {
-      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
     }
     validateCanCreate(options)
     if (options.overwrite && file.exists()) {
