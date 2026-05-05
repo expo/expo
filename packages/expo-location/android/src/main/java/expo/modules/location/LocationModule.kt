@@ -54,6 +54,8 @@ import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
+import expo.modules.location.records.MotionActivityConfidence
+import expo.modules.location.records.MotionActivityType
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
 import expo.modules.location.records.ReverseGeocodeLocation
@@ -97,31 +99,30 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
       // Aggregate raw confidence (0-100) per unified type. When multiple Android types map to
       // the same unified type (for example, WALKING + ON_FOOT maps to "walking"), take the maximum.
-      val rawConfidenceByType = mutableMapOf<String, Int>()
+      val rawConfidenceByType = mutableMapOf<MotionActivityType, Int>()
       for (detected in result.probableActivities) {
         val type = when (detected.type) {
-          DetectedActivity.IN_VEHICLE -> "automotive"
-          DetectedActivity.ON_BICYCLE -> "cycling"
-          DetectedActivity.RUNNING -> "running"
-          DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> "walking"
-          DetectedActivity.STILL -> "stationary"
-          else -> "unknown" // TILTING, UNKNOWN
+          DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
+          DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
+          DetectedActivity.RUNNING -> MotionActivityType.RUNNING
+          DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
+          DetectedActivity.STILL -> MotionActivityType.STATIONARY
+          else -> MotionActivityType.UNKNOWN
         }
         rawConfidenceByType[type] = maxOf(rawConfidenceByType[type] ?: 0, detected.confidence)
       }
 
-      val allTypes = listOf("automotive", "cycling", "running", "walking", "stationary", "unknown")
       val activitiesBundle = Bundle()
-      for (type in allTypes) {
+      for (type in MotionActivityType.entries) {
         val raw = rawConfidenceByType[type] ?: 0
         activitiesBundle.putBundle(
-          type,
+          type.value,
           bundleOf(
             "detected" to (raw >= 50),
             "confidence" to when {
-              raw >= 75 -> 2  // High
-              raw >= 50 -> 1  // Medium
-              else -> 0       // Low
+              raw >= 75 -> MotionActivityConfidence.HIGH.value
+              raw >= 50 -> MotionActivityConfidence.MEDIUM.value
+              else -> MotionActivityConfidence.LOW.value
             }
           )
         )
