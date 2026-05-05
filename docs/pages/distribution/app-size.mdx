@@ -96,7 +96,7 @@ Start by examining a build artifact to determine what assets are included in it.
 
 ### React Native image format support (Android)
 
-The Android template enables GIF and WebP decoders for React Native's `<Image>` component by default. If your app uses [`expo-image`](/versions/latest/sdk/image/) (which uses Glide on Android, not Fresco) or doesn't render those formats with React Native's `<Image>`, you can disable them with [`expo-build-properties`](/versions/latest/sdk/build-properties/) to reduce app size:
+The Android template enables GIF and WebP decoders for React Native's `<Image>` component by default. If your app uses [`expo-image`](/versions/latest/sdk/image/) (which uses Glide on Android) or doesn't render those formats with React Native's `<Image>`, you can disable them with [`expo-build-properties`](/versions/latest/sdk/build-properties/) to reduce app size:
 
 ```json app.json
 {
@@ -116,7 +116,7 @@ The Android template enables GIF and WebP decoders for React Native's `<Image>` 
 }
 ```
 
-These options correspond to the `expo.gif.enabled` and `expo.webp.enabled` Gradle properties in `android/gradle.properties`. The animated WebP decoder (`expo.webp.animated`) is disabled by default because React Native's `<Image>` on iOS doesn't support animated WebP.
+The above options correspond to the `expo.gif.enabled` and `expo.webp.enabled` Gradle properties in `android/gradle.properties`. The animated WebP decoder (`expo.webp.animated`) is disabled by default because React Native's `<Image>` on iOS doesn't support animated WebP.
 
 ### JavaScript bundle size
 
