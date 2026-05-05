@@ -106,7 +106,7 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
     resetCache: config.resetCache,
     rootDir: config.projectRoot,
     roots: config.watchFolders,
-    useWatchman: config.resolver.useWatchman,
+    useWatchman: config.resolver.useWatchman ?? false,
     watch,
     watchmanDeferStates: config.watcher.watchman.deferStates,
   });
