@@ -102,3 +102,18 @@ const JA_SECTION_TITLES: Record<string, string> = {
 export function getJapaneseSectionTitle(name: string): string | undefined {
   return JA_SECTION_TITLES[name];
 }
+
+export const OG_LOCALES: Record<SupportedLocale, string> = {
+  en: 'en_US',
+  ja: 'ja_JP',
+};
+
+export const SITE_NAMES: Record<SupportedLocale, string> = {
+  en: 'Expo Documentation',
+  ja: 'Expo ドキュメント',
+};
+
+export const BASE_DESCRIPTIONS: Record<SupportedLocale, string> = {
+  en: 'Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.',
+  ja: 'Expo は、JavaScript と React を使って Android、iOS、web で動作するユニバーサルネイティブアプリを作るためのオープンソースプラットフォームです。',
+};
