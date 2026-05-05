@@ -1,8 +1,8 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { getVersionedDependenciesAsync } from './doctor/dependencies/validateDependenciesVersions';
 import * as Log from '../log';
+import { getVersionedDependenciesAsync } from './doctor/dependencies/validateDependenciesVersions';
 
 export type DependencyCheckResult = {
   expo?: { actualVersion: string; expectedVersionOrRange: string };
@@ -28,7 +28,10 @@ export async function checkDependenciesAsync(
 
   return {
     expo: expoDep
-      ? { actualVersion: expoDep.actualVersion, expectedVersionOrRange: expoDep.expectedVersionOrRange }
+      ? {
+          actualVersion: expoDep.actualVersion,
+          expectedVersionOrRange: expoDep.expectedVersionOrRange,
+        }
       : undefined,
     otherCount,
   };
