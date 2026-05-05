@@ -57,7 +57,7 @@ A few details worth knowing:
 
 - Values outside the `[0, 1]` range are clamped to the nearest edge. `0` always drops; `1` always dispatches.
 - Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
-- Sampling is independent of [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
+- Sampling depends on [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
 
 ## Enable metrics in development
 
