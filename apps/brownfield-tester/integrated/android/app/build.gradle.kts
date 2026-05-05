@@ -59,14 +59,14 @@ val projectRoot = File(rootDir.absoluteFile, "../../expo-app").absolutePath
 
 react {
     root = File(projectRoot)
-    entryFile = file(listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
-    reactNativeDir = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
-    hermesCommand = file(listOf("node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"
-    codegenDir = file(listOf("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).parentFile.absoluteFile
+    entryFile = file(listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile
+    reactNativeDir = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile.parentFile
+    hermesCommand = file(listOf("node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile.parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"
+    codegenDir = file(listOf("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile.parentFile
     enableBundleCompression = false
 
     // Use Expo CLI to bundle the app, this ensures the Metro config works correctly with Expo projects.
-    cliFile = file(listOf("node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() })
+    cliFile = file(listOf("node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile
     bundleCommand = "export:embed"
 
     /* Autolinking */
