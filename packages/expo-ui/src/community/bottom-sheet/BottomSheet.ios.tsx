@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { useWindowDimensions, View } from 'react-native';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
 import type { BottomSheetMethods, BottomSheetProps } from './types';
@@ -82,6 +82,7 @@ export function BottomSheet(props: BottomSheetProps) {
     handleComponent,
     children,
   } = props;
+  const { width } = useWindowDimensions();
 
   // Two-state pattern for animated close:
   // - isMounted: whether the native sheet tree exists in the React tree
@@ -234,7 +235,7 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host matchContents>
+        <Host style={{ position: 'absolute', width }}>
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
