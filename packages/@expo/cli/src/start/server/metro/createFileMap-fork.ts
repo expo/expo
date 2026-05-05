@@ -96,7 +96,8 @@ export default function createFileMap(config: ConfigT, options?: CreateFileMapOp
         ...config.watcher.additionalExts,
       ])
     ),
-    forceNodeFilesystemAPI: !config.resolver.useWatchman,
+    // NOTE(@kitten): Native find crawler support has been dropped
+    forceNodeFilesystemAPI: true,
     healthCheck: config.watcher.healthCheck,
     ignorePattern: getIgnorePattern(config),
     maxWorkers: config.maxWorkers,

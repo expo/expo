@@ -17,7 +17,6 @@ const buildParameters: BuildParameters = {
   computeSha1: false,
   enableSymlinks: false,
   extensions: ['a'],
-  forceNodeFilesystemAPI: false,
   ignorePattern: /a/,
   plugins: [getMockPlugin('1')],
   retainAllFiles: false,

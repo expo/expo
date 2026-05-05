@@ -33,11 +33,12 @@ export default function rootRelativeCacheKeys(buildParameters: BuildParameters):
         case 'extensions':
         case 'computeSha1':
         case 'enableSymlinks':
-        case 'forceNodeFilesystemAPI':
         case 'retainAllFiles':
           return buildParameters[key] ?? null;
         case 'ignorePattern':
           return buildParameters[key].toString();
+        case 'forceNodeFilesystemAPI':
+          return null;
         default:
           key satisfies never;
           throw new Error('Unrecognised key in build parameters: ' + key);

@@ -5,32 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { spawn } from 'child_process';
-import { EventEmitter } from 'events';
 import { vol } from 'memfs';
 
 import H from '../../../constants';
 import TreeFS from '../../../lib/TreeFS';
 import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../../types';
-import hasNativeFindSupport from '../hasNativeFindSupport';
 import nodeCrawl from '../index';
-
-jest.mock('../hasNativeFindSupport', () => ({
-  __esModule: true,
-  default: jest.fn().mockResolvedValue(false),
-}));
-jest.mock('child_process', () => ({
-  spawn: jest.fn(),
-}));
-jest.mock('os', () => ({
-  ...jest.requireActual('os'),
-  platform: () => 'linux',
-}));
 
 const rootDir = '/project';
 const processFile = () => null;
-const mockedSpawn = jest.mocked(spawn);
-const mockedHasNativeFindSupport = jest.mocked(hasNativeFindSupport);
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });
@@ -65,8 +48,6 @@ function sorted(iter: IterableIterator<string>): string[] {
 describe('node crawler', () => {
   beforeEach(() => {
     vol.reset();
-    mockedHasNativeFindSupport.mockResolvedValue(false);
-    mockedSpawn.mockReset();
   });
 
   test('discovers files by extension', async () => {
@@ -248,80 +229,6 @@ describe('node crawler', () => {
     expect(meta[H.VISITED]).toBe(0);
     expect(meta[H.SHA1]).toBeNull();
     expect(meta[H.SYMLINK]).toBe(0);
-  });
-
-  describe('native find', () => {
-    function mockSpawnFind(filePaths: string[]) {
-      mockedSpawn.mockImplementation((() => {
-        const stdout = new EventEmitter() as EventEmitter & {
-          setEncoding: jest.Mock;
-        };
-        stdout.setEncoding = jest.fn();
-        process.nextTick(() => {
-          stdout.emit('data', filePaths.join('\n'));
-          process.nextTick(() => stdout.emit('close'));
-        });
-        return { stdout, on: jest.fn() };
-      }) as any);
-    }
-
-    beforeEach(() => {
-      mockedHasNativeFindSupport.mockResolvedValue(true);
-    });
-
-    test('uses native find when available', async () => {
-      vol.fromJSON({
-        '/project/fruits/apple.js': 'a',
-        '/project/fruits/pear.js': 'b',
-        '/project/fruits/tomato.js': 'c',
-      });
-
-      mockSpawnFind([
-        '/project/fruits/apple.js',
-        '/project/fruits/pear.js',
-        '/project/fruits/tomato.js',
-      ]);
-
-      const { changedFiles } = await crawl({
-        forceNodeFilesystemAPI: false,
-        ignore: (p: string) => /pear/.test(p),
-      });
-
-      expect(mockedSpawn).toHaveBeenCalledWith('find', expect.arrayContaining(['/project/fruits']));
-
-      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/tomato.js']);
-    });
-
-    test('constructs correct find expression for extensions', async () => {
-      vol.fromJSON({
-        '/project/fruits/apple.js': 'a',
-      });
-
-      mockSpawnFind(['/project/fruits/apple.js']);
-
-      await crawl({
-        forceNodeFilesystemAPI: false,
-        extensions: ['js', 'json'],
-      });
-
-      const spawnArgs = mockedSpawn.mock.calls[0]![1] as string[];
-      expect(spawnArgs).toContain('-iname');
-      expect(spawnArgs).toContain('*.js');
-      expect(spawnArgs).toContain('*.json');
-    });
-
-    test('falls back to node fs when forceNodeFilesystemAPI is true', async () => {
-      vol.fromJSON({
-        '/project/fruits/apple.js': 'a',
-      });
-
-      const { changedFiles } = await crawl({
-        forceNodeFilesystemAPI: true,
-      });
-
-      expect(mockedSpawn).not.toHaveBeenCalled();
-      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
-    });
   });
 
   describe('abort signal', () => {
