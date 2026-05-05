@@ -11,7 +11,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 Expo UI TabView matches the official SwiftUI [TabView API](https://developer.apple.com/documentation/swiftui/tabview) and switches between styles via the [`tabViewStyle`](modifiers/#tabviewstyleconfig) modifier.
 
-> For routed bottom-tab navigation across full-screen routes, use `expo-router/unstable-native-tabs` instead.
+> **Note:** For routed bottom-tab navigation across full-screen routes, use [expo-router/unstable-native-tabs`](/router/advanced/native-tabs/) instead.
 
 ## Installation
 
@@ -19,7 +19,7 @@ Expo UI TabView matches the official SwiftUI [TabView API](https://developer.app
 
 ## Usage
 
-Each page is a `<TabView.Tab>` child, identified by a `value` prop. `TabView` does not impose its own height — give it a frame, or place it inside a parent that does.
+Each page is a `<TabView.Tab>` child, identified by a `value` prop. `TabView` does not impose its own height &mdash; give it a frame, or place it inside a parent that does.
 
 ### Page style (swipeable pager)
 
@@ -27,7 +27,13 @@ Use `tabViewStyle({ type: 'page' })` for a horizontal pager with optional dot in
 
 ```tsx PagerExample.tsx
 import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
-import { background, font, foregroundStyle, frame, tabViewStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  font,
+  foregroundStyle,
+  frame,
+  tabViewStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
 const pageFrame = frame({ minHeight: 320, maxHeight: 320 });
@@ -185,12 +191,19 @@ function Page({ label, color }: { label: string; color: string }) {
 
 Use `tabViewStyle({ type: 'automatic' })` for the SwiftUI default tab bar. Each tab's `label` and `systemImage` populate the bar item. Use the [`badge`](modifiers/#badgevalue) modifier on a tab to attach a badge to its bar item.
 
-> For routed bottom-tab navigation across full-screen routes, use `expo-router/unstable-native-tabs` instead.
+> **Note:** For routed bottom-tab navigation across full-screen routes, use [expo-router/unstable-native-tabs`](/router/advanced/native-tabs/) instead.
 
 ```tsx BottomTabsExample.tsx
 import { useState } from 'react';
 import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
-import { background, badge, font, foregroundStyle, frame, tabViewStyle } from '@expo/ui/swift-ui/modifiers';
+import {
+  background,
+  badge,
+  font,
+  foregroundStyle,
+  frame,
+  tabViewStyle,
+} from '@expo/ui/swift-ui/modifiers';
 
 const fillFrame = frame({ maxWidth: Infinity, maxHeight: Infinity });
 
@@ -203,11 +216,7 @@ export default function BottomTabsExample() {
         selection={selected}
         onSelectionChange={setSelected}
         modifiers={[tabViewStyle({ type: 'automatic' })]}>
-        <TabView.Tab
-          value="inbox"
-          label="Inbox"
-          systemImage="tray.fill"
-          modifiers={[badge('3')]}>
+        <TabView.Tab value="inbox" label="Inbox" systemImage="tray.fill" modifiers={[badge('3')]}>
           <Page label="Inbox" color="#4F8DF6" />
         </TabView.Tab>
         <TabView.Tab value="sent" label="Sent" systemImage="paperplane.fill">
