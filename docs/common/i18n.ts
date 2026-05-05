@@ -117,3 +117,69 @@ export const BASE_DESCRIPTIONS: Record<SupportedLocale, string> = {
   en: 'Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.',
   ja: 'Expo は、JavaScript と React を使って Android、iOS、web で動作するユニバーサルネイティブアプリを作るためのオープンソースプラットフォームです。',
 };
+
+type EnglishOgContent = { title: string; description?: string };
+
+const EN_OG_OVERRIDES: Record<string, EnglishOgContent> = {
+  '/tutorial/overview': {
+    title: 'Overview of Expo and EAS tutorials',
+  },
+  '/tutorial/introduction': {
+    title: 'Tutorial: Using React Native and Expo',
+    description:
+      'An introduction to a React Native tutorial on how to build a universal app that runs on Android, iOS and the web using Expo.',
+  },
+  '/tutorial/create-your-first-app': {
+    title: 'Create your first app',
+    description: 'In this chapter, learn how to create a new Expo project.',
+  },
+  '/tutorial/add-navigation': {
+    title: 'Add navigation',
+    description: 'In this chapter, learn how to add navigation to the Expo app.',
+  },
+  '/tutorial/build-a-screen': {
+    title: 'Build a screen',
+    description:
+      "In this tutorial, learn how to use components such as React Native's Pressable and Expo Image to build a screen.",
+  },
+  '/tutorial/image-picker': {
+    title: 'Use an image picker',
+    description: 'In this tutorial, learn how to use Expo Image Picker.',
+  },
+  '/tutorial/create-a-modal': {
+    title: 'Create a modal',
+    description: 'In this tutorial, learn how to create a React Native modal to select an image.',
+  },
+  '/tutorial/gestures': {
+    title: 'Add gestures',
+    description:
+      'In this tutorial, learn how to implement gestures from React Native Gesture Handler and Reanimated libraries.',
+  },
+  '/tutorial/screenshot': {
+    title: 'Take a screenshot',
+    description:
+      'In this tutorial, learn how to capture a screenshot using a third-party library and Expo Media Library.',
+  },
+  '/tutorial/platform-differences': {
+    title: 'Handle platform differences',
+    description:
+      'In this tutorial, learn how to handle platform differences between native and web when creating a universal app.',
+  },
+  '/tutorial/configuration': {
+    title: 'Configure status bar, splash screen and app icon',
+    description:
+      'In this tutorial, learn the basics of how to configure a status bar, app icon, and splash screen.',
+  },
+  '/tutorial/follow-up': {
+    title: 'Learning resources',
+    description: 'Explore a curated list of resources to learn about Expo and React Native.',
+  },
+};
+
+export function getEnglishOgContent(path: string): { title: string; description: string } {
+  const override = EN_OG_OVERRIDES[getCanonicalPath(path)];
+  return {
+    title: override?.title ?? SITE_NAMES.en,
+    description: override?.description ?? BASE_DESCRIPTIONS.en,
+  };
+}
