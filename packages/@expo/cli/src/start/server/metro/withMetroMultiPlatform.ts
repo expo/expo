@@ -35,16 +35,10 @@ import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolv
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
-import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { installExitHooks } from '../../../utils/exit';
-import { resolveWatchFolders } from '../../../utils/resolveWatchFolders';
-import type { TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { loadTsConfigPathsAsync } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
+import { createTypescriptResolver } from './createTypescriptResolver';
 
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (
@@ -174,14 +168,12 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
 export function withExtendedResolver(
   config: ConfigT,
   {
-    tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
-    tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
     isExporting?: boolean;
@@ -240,53 +232,6 @@ export function withExtendedResolver(
     // https://github.com/expo/router/issues/37
     web: ['browser', 'module', 'main'],
   };
-
-  let tsConfigResolve =
-    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
-      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-          paths: tsconfig.paths ?? {},
-          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
-          hasBaseUrl: !!tsconfig.baseUrl,
-        })
-      : null;
-
-  // TODO: Move this to be a transform key for invalidation.
-  if (!isExporting && !env.CI) {
-    if (isTsconfigPathsEnabled) {
-      // TODO: We should track all the files that used imports and invalidate them
-      // currently the user will need to save all the files that use imports to
-      // use the new aliases.
-      // TODO(@kitten): It's unclear why we don't use Metro here, also the above todo is
-      // infeasible without switching to Metro and somehow cascading
-      const configWatcher = new FileNotifier(config.projectRoot, [
-        './tsconfig.json',
-        './jsconfig.json',
-      ]);
-      configWatcher.startObserving(() => {
-        debug('Reloading tsconfig.json');
-        loadTsConfigPathsAsync(config.projectRoot).then((tsConfigPaths) => {
-          if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
-            debug('Enabling tsconfig.json paths support');
-            tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-              paths: tsConfigPaths.paths ?? {},
-              baseUrl: tsConfigPaths.baseUrl ?? config.projectRoot,
-              hasBaseUrl: !!tsConfigPaths.baseUrl,
-            });
-          } else {
-            debug('Disabling tsconfig.json paths support');
-            tsConfigResolve = null;
-          }
-        });
-      });
-
-      // TODO: This probably prevents the process from exiting.
-      installExitHooks(() => {
-        configWatcher.stopObserving();
-      });
-    } else {
-      debug('Skipping tsconfig.json paths support');
-    }
-  }
 
   let nodejsSourceExtensions: string[] | null = null;
 
@@ -453,22 +398,15 @@ export function withExtendedResolver(
       }
       return null;
     },
-    // tsconfig paths
-    function requestTsconfigPaths(
-      context: ResolutionContext,
-      moduleName: string,
-      platform: string | null
-    ) {
-      return (
-        tsConfigResolve?.(
-          {
-            originModulePath: context.originModulePath,
-            moduleName,
-          },
-          getOptionalResolver(context, platform)
-        ) ?? null
-      );
-    },
+
+    isTsconfigPathsEnabled
+      ? createTypescriptResolver({
+          getStrictResolver,
+          projectRoot: config.projectRoot,
+          getMetroBundler,
+          watch: !isExporting && !env.CI,
+        })
+      : undefined,
 
     // Node.js externals support
     function requestNodeExternals(
@@ -929,7 +867,6 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
-    serverRoot,
 
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
@@ -955,51 +892,22 @@ export async function withMetroMultiPlatformAsync(
   const watchFolders = (config.watchFolders as string[]) || [];
   asWritable(config).watchFolders = watchFolders;
 
+  // NOTE(@kitten): If the on-demand filesystem is enabled, we can aggressively cut down the `watchFolders`
+  // to a minimum, since the files will be read lazily. This almost always speeds up exports
+  if (isExporting && !!config.resolver.unstable_onDemandFilesystem) {
+    watchFolders.length = 0;
+    watchFolders.push(projectRoot);
+  }
+
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
   const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
   const metroRequirePolyfill = require.resolve('@expo/cli/build/metro-require/require');
-  const metroOriginalModuleSystem = metroDefaults.moduleSystem;
   asWritable(metroDefaults).moduleSystem = metroRequirePolyfill;
   watchFolders.push(path.dirname(metroRequirePolyfill));
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
-
-  // This is used for running Expo CLI in development against projects outside the monorepo.
-  // NOTE(@kitten): If `projectRoot` is used without `serverRoot` being available this can mistrigger for user monorepos!
-  if (!isDirectoryIn(__dirname, serverRoot ?? projectRoot)) {
-    let reactNativePolyfills: string[] = [];
-
-    // Support web-only `expo start`
-    if (exp.platforms?.includes('ios') || exp.platforms?.includes('android')) {
-      try {
-        reactNativePolyfills = require('react-native/rn-get-polyfills')();
-        watchFolders.push(...resolveWatchFolders('react-native', { deep: false }));
-      } catch (error) {
-        // If the project targets native platforms, react-native is required.
-        throw new CommandError(
-          'REACT_NATIVE_NOT_FOUND',
-          'Failed to resolve react-native. Make sure it is installed in the project dependencies. Remove native platforms from the Expo config if you do not intend to target native platforms.'
-        );
-      }
-    }
-
-    watchFolders.push(
-      ...resolveWatchFolders('expo', { deep: true }),
-      ...resolveWatchFolders('@expo/metro', { deep: true }),
-      ...resolveWatchFolders('@expo/metro-runtime', { deep: true }),
-      ...[config.resolver.emptyModulePath, metroOriginalModuleSystem, ...reactNativePolyfills]
-        .map((targetPath) => (fs.existsSync(targetPath) ? path.dirname(targetPath) : null))
-        .filter((targetPath) => targetPath != null)
-    );
-  }
-
-  let tsconfig: null | TsConfigPaths = null;
-
-  if (isTsconfigPathsEnabled) {
-    tsconfig = await loadTsConfigPathsAsync(projectRoot);
-  }
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
@@ -1025,16 +933,11 @@ export async function withMetroMultiPlatformAsync(
 
   return withExtendedResolver(config, {
     autolinkingModuleResolverInput,
-    tsconfig,
-    isExporting,
     isTsconfigPathsEnabled,
+    isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });
-}
-
-function isDirectoryIn(targetPath: string, rootPath: string) {
-  return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
 }
 
 function hasExpoRouterModule(

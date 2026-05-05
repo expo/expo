@@ -12,6 +12,8 @@ const context_1 = require("../context");
  * In left/right placements, width is required.
  * In bottom placement, if width is not provided, creates a flexible spacer that expands to fill space.
  *
+ * > **Note:** Flexible spacers are iOS-only. On Android, `width` is a required property
+ *
  * @example
  * ```tsx
  * import { Stack } from 'expo-router';

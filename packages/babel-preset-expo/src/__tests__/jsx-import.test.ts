@@ -36,9 +36,9 @@ function App() {
     return <div />
 }`;
   expect(babel.transform(sourceCode, options)!.code).toMatchInlineSnapshot(`
-    "var _jsxDevRuntime = require("react/jsx-dev-runtime");var _jsxFileName = "/unknown";
+    "var _jsxRuntime = require("react/jsx-runtime");
     function App() {
-      return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)("div", {}, void 0, false, { fileName: _jsxFileName, lineNumber: 3, columnNumber: 12 }, this);
+      return (0, _jsxRuntime.jsx)("div", {});
     }_c = App;var _c;$RefreshReg$(_c, "App");"
   `);
 
@@ -104,7 +104,6 @@ describe('classic runtime', () => {
     const code = babel.transform(sourceCode, options)!.code;
 
     expect(code).not.toMatch(/"react\/jsx-runtime"/);
-    expect(code).not.toMatch(/_jsx\(View/);
     expect(code).toMatchInlineSnapshot(`
       "var _jsxFileName = "/unknown";import View from "react-native-web/dist/exports/View";
 
@@ -205,24 +204,19 @@ it(`supports nested React components in destructured props in Metro + developmen
 
   const code = babel.transform(sourceCode, options)!.code;
 
-  expect(code).toMatch(/"react\/jsx-dev-runtime"/);
+  expect(code).toMatch(/"react\/jsx-runtime"/);
   expect(code).toMatchInlineSnapshot(`
-    "var _jsxDevRuntime = require("react/jsx-dev-runtime");
-    var _jsxFileName = "/unknown";
+    "var _jsxRuntime = require("react/jsx-runtime");
     function Foo({
       button = () => {
-        return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(Text, {
+        return (0, _jsxRuntime.jsx)(Text, {
           children: "Foo"
-        }, void 0, false, {
-          fileName: _jsxFileName,
-          lineNumber: 4,
-          columnNumber: 14
-        }, this);
+        });
       }
     }) {
-      return /*#__PURE__*/(0, _jsxDevRuntime.jsxDEV)(_jsxDevRuntime.Fragment, {
+      return (0, _jsxRuntime.jsx)(_jsxRuntime.Fragment, {
         children: button()
-      }, void 0, false);
+      });
     }
     _c = Foo;
     var _c;
@@ -251,13 +245,12 @@ describe('auto runtime (default)', () => {
 
     const code = babel.transform(sourceCode, options)!.code;
 
-    expect(code).toMatch(/"react\/jsx-dev-runtime"/);
-    expect(code).not.toMatch(/_jsx\(View/);
+    expect(code).toMatch(/"react\/jsx-runtime"/);
     expect(code).toMatchInlineSnapshot(`
-      "var _jsxFileName = "/unknown";import View from "react-native-web/dist/exports/View";import { jsxDEV as _jsxDEV } from "react/jsx-dev-runtime";
+      "import View from "react-native-web/dist/exports/View";import { jsx as _jsx } from "react/jsx-runtime";
 
       export default function App() {
-        return /*#__PURE__*/_jsxDEV(View, {}, void 0, false, { fileName: _jsxFileName, lineNumber: 4, columnNumber: 12 }, this);
+        return _jsx(View, {});
       }_c = App;var _c;$RefreshReg$(_c, "App");"
     `);
   });
@@ -300,9 +293,7 @@ describe('auto runtime (default)', () => {
 
       const code = babel.transform(sourceCode, options)!.code;
 
-      expect(code).toMatch(/"react\/jsx-dev-runtime"/);
-      // Format is a little different for Metro
-      expect(code).not.toMatch(/_jsxRuntime\.jsx/);
+      expect(code).toMatch(/"react\/jsx-runtime"/);
       expect(code).toMatchSnapshot();
     });
     it(`compiles for Metro ${platform} in prod`, () => {

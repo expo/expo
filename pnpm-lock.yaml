@@ -1809,6 +1809,9 @@ importers:
       '@expo/metro-config':
         specifier: workspace:~55.0.9
         version: link:../metro-config
+      '@expo/metro-file-map':
+        specifier: workspace:55.0.0-0
+        version: link:../metro-file-map
       '@expo/osascript':
         specifier: workspace:^2.4.2
         version: link:../osascript
@@ -2603,6 +2606,52 @@ importers:
         specifier: ^1.60.0
         version: 1.98.0
 
+  packages/@expo/metro-file-map:
+    dependencies:
+      debug:
+        specifier: ^4.3.4
+        version: 4.4.3
+      fb-watchman:
+        specifier: ^2.0.2
+        version: 2.0.2
+      invariant:
+        specifier: ^2.2.4
+        version: 2.2.4
+      jest-worker:
+        specifier: ^29.7.0
+        version: 29.7.0
+      micromatch:
+        specifier: ^4.0.4
+        version: 4.0.8
+      walker:
+        specifier: ^1.0.8
+        version: 1.0.8
+    devDependencies:
+      '@expo/metro':
+        specifier: 56.0.0-rc.2
+        version: 56.0.0-rc.2
+      '@types/debug':
+        specifier: ^4.1.7
+        version: 4.1.12
+      '@types/fb-watchman':
+        specifier: ^2.0.6
+        version: 2.0.6
+      '@types/invariant':
+        specifier: ^2.2.37
+        version: 2.2.37
+      '@types/micromatch':
+        specifier: ^4.0.10
+        version: 4.0.10
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../../expo-module-scripts
+      memfs:
+        specifier: ^3.6.0
+        version: 3.6.0
+
   packages/@expo/metro-runtime:
     dependencies:
       '@expo/log-box':
@@ -2920,17 +2969,47 @@ importers:
       '@babel/plugin-proposal-export-default-from':
         specifier: ^7.24.7
         version: 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-syntax-dynamic-import':
+        specifier: ^7.8.3
+        version: 7.8.3(@babel/core@7.29.0)
       '@babel/plugin-syntax-export-default-from':
         specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-syntax-nullish-coalescing-operator':
+        specifier: ^7.8.3
+        version: 7.8.3(@babel/core@7.29.0)
+      '@babel/plugin-syntax-optional-chaining':
+        specifier: ^7.8.3
+        version: 7.8.3(@babel/core@7.29.0)
+      '@babel/plugin-transform-async-generator-functions':
+        specifier: ^7.25.4
+        version: 7.29.0(@babel/core@7.29.0)
+      '@babel/plugin-transform-async-to-generator':
+        specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-block-scoping':
+        specifier: ^7.25.0
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-class-properties':
+        specifier: ^7.25.4
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-class-static-block':
         specifier: ^7.27.1
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-classes':
+        specifier: ^7.25.4
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-destructuring':
+        specifier: ^7.24.8
+        version: 7.28.5(@babel/core@7.29.0)
       '@babel/plugin-transform-export-namespace-from':
         specifier: ^7.25.9
         version: 7.27.1(@babel/core@7.29.0)
       '@babel/plugin-transform-flow-strip-types':
         specifier: ^7.25.2
+        version: 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-for-of':
+        specifier: ^7.24.7
         version: 7.27.1(@babel/core@7.29.0)
       '@babel/plugin-transform-logical-assignment-operators':
         specifier: ^7.24.7
@@ -2938,10 +3017,16 @@ importers:
       '@babel/plugin-transform-modules-commonjs':
         specifier: ^7.24.8
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-named-capturing-groups-regex':
+        specifier: ^7.24.7
+        version: 7.29.0(@babel/core@7.29.0)
       '@babel/plugin-transform-nullish-coalescing-operator':
         specifier: ^7.24.7
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-object-rest-spread':
+        specifier: ^7.24.7
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-optional-catch-binding':
         specifier: ^7.24.7
         version: 7.28.6(@babel/core@7.29.0)
       '@babel/plugin-transform-optional-chaining':
@@ -2956,19 +3041,34 @@ importers:
       '@babel/plugin-transform-private-property-in-object':
         specifier: ^7.24.7
         version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-display-name':
+        specifier: ^7.24.7
+        version: 7.28.0(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-jsx':
+        specifier: ^7.28.6
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-jsx-development':
+        specifier: ^7.27.1
+        version: 7.27.1(@babel/core@7.29.0)
+      '@babel/plugin-transform-react-pure-annotations':
+        specifier: ^7.27.1
+        version: 7.27.1(@babel/core@7.29.0)
       '@babel/plugin-transform-runtime':
         specifier: ^7.24.7
         version: 7.29.0(@babel/core@7.29.0)
-      '@babel/preset-react':
-        specifier: ^7.22.15
-        version: 7.28.5(@babel/core@7.29.0)
+      '@babel/plugin-transform-typescript':
+        specifier: ^7.25.2
+        version: 7.28.6(@babel/core@7.29.0)
+      '@babel/plugin-transform-unicode-regex':
+        specifier: ^7.24.7
+        version: 7.27.1(@babel/core@7.29.0)
       '@babel/preset-typescript':
         specifier: ^7.23.0
         version: 7.28.5(@babel/core@7.29.0)
       '@babel/runtime':
         specifier: ^7.20.0
         version: 7.29.2
-      '@react-native/babel-preset':
+      '@react-native/babel-plugin-codegen':
         specifier: 0.85.2
         version: 0.85.2(@babel/core@7.29.0)
       babel-plugin-react-compiler:
@@ -6892,12 +6992,6 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0 || ^8.0.0-0 <8.0.0
 
-  '@babel/preset-react@7.28.5':
-    resolution: {integrity: sha512-Z3J8vhRq7CeLjdC58jLv4lnZ5RKFUJWqH5emvxmv9Hv3BD1T9R/Im713R4MTKwvFaV74ejZ3sM01LyEKk4ugNQ==}
-    engines: {node: '>=6.9.0'}
-    peerDependencies:
-      '@babel/core': ^7.0.0-0
-
   '@babel/preset-typescript@7.28.5':
     resolution: {integrity: sha512-+bQy5WOI2V6LJZpPVxY+yp66XdZ2yifu0Mc1aP5CQKgjn4QM5IN2i5fAZ4xKop47pr8rpVhiAeu+nDQa12C8+g==}
     engines: {node: '>=6.9.0'}
@@ -7364,7 +7458,7 @@ packages:
 
   '@expo/bunyan@4.0.1':
     resolution: {integrity: sha512-+Lla7nYSiHZirgK+U/uYzsLv/X+HaJienbD5AKX1UQZHYfWaP+9uuQluRB4GrEVWF0GZ7vEVp/jzaOT9k/SQlg==}
-    engines: {node: '>=0.10.0'}
+    engines: {'0': node >=0.10.0}
 
   '@expo/code-signing-certificates@0.0.6':
     resolution: {integrity: sha512-iNe0puxwBNEcuua9gmTGzq+SuMDa0iATai1FlFTMHJ/vUmKvN/V//drXoLJkVb5i5H3iE/n/qIJxyoBnXouD0w==}
@@ -9112,6 +9206,9 @@ packages:
 
   '@types/express@5.0.6':
     resolution: {integrity: sha512-sKYVuV7Sv9fbPIt/442koC7+IIwK5olP1KWeD88e/idgoJqDm3JV/YUiPwkoKK92ylff2MGxSz1CSjsXelx0YA==}
+
+  '@types/fb-watchman@2.0.6':
+    resolution: {integrity: sha512-1uLrko2lamBq7v5gZQOEnHa+GzK7wkPeGndFijhhK5kjqqXLVfzfeL6bVLiKCqVNaM5BVVcKRQ2Z57AzH4HcyA==}
 
   '@types/fbemitter@2.0.35':
     resolution: {integrity: sha512-Xem6d7qUfmouCHntCrRYgDBwbf+WWRd6G+7WEFlEZFZ67LZXiYRvT2LV8wcZa6mIaAil95+ABQdKgB6hPIsnng==}
@@ -16873,18 +16970,6 @@ snapshots:
       '@babel/types': 7.29.0
       esutils: 2.0.3
 
-  '@babel/preset-react@7.28.5(@babel/core@7.29.0)':
-    dependencies:
-      '@babel/core': 7.29.0
-      '@babel/helper-plugin-utils': 7.28.6
-      '@babel/helper-validator-option': 7.27.1
-      '@babel/plugin-transform-react-display-name': 7.28.0(@babel/core@7.29.0)
-      '@babel/plugin-transform-react-jsx': 7.28.6(@babel/core@7.29.0)
-      '@babel/plugin-transform-react-jsx-development': 7.27.1(@babel/core@7.29.0)
-      '@babel/plugin-transform-react-pure-annotations': 7.27.1(@babel/core@7.29.0)
-    transitivePeerDependencies:
-      - supports-color
-
   '@babel/preset-typescript@7.28.5(@babel/core@7.29.0)':
     dependencies:
       '@babel/core': 7.29.0
@@ -19356,6 +19441,10 @@ snapshots:
       '@types/body-parser': 1.19.6
       '@types/express-serve-static-core': 5.1.1
       '@types/serve-static': 2.2.0
+
+  '@types/fb-watchman@2.0.6':
+    dependencies:
+      '@types/node': 22.19.15
 
   '@types/fbemitter@2.0.35': {}
 

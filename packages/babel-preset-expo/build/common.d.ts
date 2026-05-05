@@ -1,7 +1,8 @@
 import type { NodePath, types as t } from '@babel/core';
 /** Determine which bundler is being used. */
 export declare function getBundler(caller?: any): "metro" | "webpack" | null;
-export declare function getPlatform(caller?: any): string | null | undefined;
+export declare function getPlatform(caller?: any): string | null;
+export declare function getEngine(caller?: any): 'hermes' | 'default' | (string & {});
 export declare function getPossibleProjectRoot(caller?: any): string | null | undefined;
 /** If bundling for a react-server target. */
 export declare function getIsReactServer(caller?: any): boolean;
@@ -11,6 +12,7 @@ export declare function getIsProd(caller?: any): boolean;
 export declare function getIsNodeModule(caller?: any): boolean;
 export declare function getBaseUrl(caller?: any): string;
 export declare function getReactCompiler(caller?: any): boolean;
+export declare function getStaticESM(caller?: any): boolean | undefined;
 export declare function getIsServer(caller?: any): boolean;
 export declare function getIsDomComponent(caller?: any): boolean;
 export declare function getIsLoaderBundle(caller?: any): boolean;

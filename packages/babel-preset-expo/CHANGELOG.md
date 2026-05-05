@@ -5,6 +5,8 @@
 ### 🛠 Breaking changes
 
 - Enable `import.meta` transform by default and rename option to `transformImportMeta` ([#44239](https://github.com/expo/expo/pull/44239) by [@kitten](https://github.com/kitten))
+- Refactor to split Hermes v0/v1 configs and fork away from `@react-native/babel-preset` ([#45337](https://github.com/expo/expo/pull/45337) by [@kitten](https://github.com/kitten))
+- Trim Hermes v1 preset to remove transforms for syntax that Hermes now supports ([#45345](https://github.com/expo/expo/pull/45345) by [@kitten](https://github.com/kitten))
 
 ### 🎉 New features
 
@@ -22,6 +24,9 @@
 - Remove @babel/plugin-transform-parameters require when using Hermes v1 ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Delete Hermes v1 detection as it's the default ([#45263](https://github.com/expo/expo/pull/45263) by [@kitten](https://github.com/kitten))
 - Added `@expo/ui/babel-plugin` when `@expo/ui` is installed. ([#45217](https://github.com/expo/expo/pull/45217) by [@kudo](https://github.com/kudo))
+- Update JSX (`react-jsx`) transform to skip deprecated `react-display-name` transform, only apply pure annotations to production builds, and skip legacy source/self transforms when the automatic runtime is used ([#45351](https://github.com/expo/expo/pull/45351) by [@kitten](https://github.com/kitten))
+- Apply `@babel/plugin-proposal-decorators` lazily ([#45353](https://github.com/expo/expo/pull/45353) by [@kitten](https://github.com/kitten))
+- Optimize vendored `warn-on-deep-rn-imports` plugin ([#45354](https://github.com/expo/expo/pull/45354) by [@kitten](https://github.com/kitten))
 
 ### ⚠️ Notices
 
