@@ -15,6 +15,8 @@ export class DevelopmentSession {
   /** If the `startAsync` was successfully called */
   private hasActiveSession = false;
 
+  private abortController: AbortController | undefined;
+
   constructor(
     /** Project root directory. */
     private projectRoot: string,
@@ -59,16 +61,20 @@ export class DevelopmentSession {
 
         if (this.url) {
           debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
+          this.abortController = new AbortController();
           await updateDevelopmentSessionAsync({
             url: this.url,
             runtime,
             exp,
             deviceIds,
+            signal: this.abortController.signal,
           });
           this.hasActiveSession = true;
         }
       } catch (error: any) {
         debug(`Error updating development session API: ${error}`);
+      } finally {
+        this.abortController = undefined;
       }
     };
 
@@ -85,7 +91,12 @@ export class DevelopmentSession {
 
   /** Try to close any pending development sessions, but always resolve */
   public async closeAsync(): Promise<boolean> {
-    if (env.CI || env.EXPO_OFFLINE || !this.hasActiveSession) {
+    if (env.CI || env.EXPO_OFFLINE) {
+      return false;
+    } else if (this.abortController) {
+      this.abortController.abort();
+      return false;
+    } else if (!this.hasActiveSession) {
       return false;
     }
 
