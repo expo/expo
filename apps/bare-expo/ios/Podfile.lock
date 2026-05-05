@@ -3127,7 +3127,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets (0.8.1):
+  - RNWorklets (0.8.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3150,10 +3150,10 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNWorklets/apple (= 0.8.1)
-    - RNWorklets/common (= 0.8.1)
+    - RNWorklets/apple (= 0.8.3)
+    - RNWorklets/common (= 0.8.3)
     - Yoga
-  - RNWorklets/apple (0.8.1):
+  - RNWorklets/apple (0.8.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3177,7 +3177,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNWorklets/common (0.8.1):
+  - RNWorklets/common (0.8.3):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3443,10 +3443,10 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.85.2_@babel+core@7.29.0_@react-native_107e9dee6834e63baf100e0652402239/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.85.2_@ba_a4d25e42b161001b24186e26c224ad41/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.30.0_react-native@0.85.2_@babel+core@7.29.0_@react-nativ_ad6bb5f12e1a5abd431d00bac412eae0/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_eda565d3f67be15d7dda9b0be7008390/node_modules/react-native-reanimated`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_52e70d4540923088e7b9d94790e121e6/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.25.0-beta.1_react-native@0.85.2_@babel+core@7.29.0_@react-native_44f021255a9c2abec1791ca078467a98/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-pres_ad5ed717b7cc12448deb4bef3fad356b/node_modules/react-native-svg`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_873264ea98792c8e9864fbfb4aec03b2/node_modules/react-native-worklets`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_21e1f0e21015cedcdf2e8fd371b2c176/node_modules/react-native-worklets`)"
   - TestExpoUi (from `../modules/test-expo-ui/ios`)
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
@@ -3900,13 +3900,13 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.30.0_react-native@0.85.2_@babel+core@7.29.0_@react-nativ_ad6bb5f12e1a5abd431d00bac412eae0/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_eda565d3f67be15d7dda9b0be7008390/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_52e70d4540923088e7b9d94790e121e6/node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/.pnpm/react-native-screens@4.25.0-beta.1_react-native@0.85.2_@babel+core@7.29.0_@react-native_44f021255a9c2abec1791ca078467a98/node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-pres_ad5ed717b7cc12448deb4bef3fad356b/node_modules/react-native-svg"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_873264ea98792c8e9864fbfb4aec03b2/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_21e1f0e21015cedcdf2e8fd371b2c176/node_modules/react-native-worklets"
   TestExpoUi:
     inhibit_warnings: false
     :path: "../modules/test-expo-ui/ios"
@@ -3979,7 +3979,7 @@ SPEC CHECKSUMS:
   ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
   ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
   ExpoModulesWorklets: 3fc573fcc96eb8c457091dde007055ef35d58d70
-  ExpoModulesWorkletsAdapter: 8e561ffec777e8eacf2a2bad53a0edf04cfffa1a
+  ExpoModulesWorkletsAdapter: c6ef233ec3f0840da71fe383a3df62a6abb65baf
   ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
   ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
   ExpoObserve: d5a52bd0670d1b2bc24a1d59cf9322f3c843a045
@@ -4104,7 +4104,7 @@ SPEC CHECKSUMS:
   RNReanimated: c51bd6bd2ff1ef0140d6056ff496e6089432d00c
   RNScreens: c476f5f41b7c4ddce3e73f838c23d40c5e33384c
   RNSVG: 04044c3abcf177fd674a1a3d13097efa1adebcbe
-  RNWorklets: c586254b36d144ad5ae62b82686de1b6a066949f
+  RNWorklets: a70e1e5b41eb2e149f9ecb3ac1fac31d5b197027
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
