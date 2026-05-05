@@ -1,8 +1,8 @@
-import { MessageFramePacker } from './MessageFramePacker';
-import { WebSocketBackingStore } from './WebSocketBackingStore';
-import { WebSocketWithReconnect, } from './WebSocketWithReconnect';
-import * as logger from './logger';
-import { blobToArrayBufferAsync } from './utils/blobUtils';
+import { MessageFramePacker } from './MessageFramePacker.js';
+import { WebSocketBackingStore } from './WebSocketBackingStore.js';
+import { WebSocketWithReconnect, } from './WebSocketWithReconnect.js';
+import * as logger from './logger.js';
+import { blobToArrayBufferAsync } from './utils/blobUtils.js';
 /**
  * This client is for the Expo DevTools Plugins to communicate between the app and the DevTools webpage hosted in a browser.
  * All the code should be both compatible with browsers and React Native.

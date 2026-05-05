@@ -2,8 +2,8 @@
  * Get the dev server address.
  */
 
-import { PROTOCOL_VERSION } from './ProtocolVersion';
-import type { ConnectionInfo } from './devtools.types';
+import { PROTOCOL_VERSION } from './ProtocolVersion.js';
+import type { ConnectionInfo } from './devtools.types.js';
 
 export function getConnectionInfo(): Omit<ConnectionInfo, 'pluginName'> {
   const devServerQuery = new URLSearchParams(window.location.search).get('devServer');

@@ -1,8 +1,20 @@
-import type { DevToolsPluginClient } from './DevToolsPluginClient';
-import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp';
-import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser';
-import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types';
-import { getConnectionInfo } from './getConnectionInfo';
+import type { DevToolsPluginClient } from './DevToolsPluginClient.js';
+import { DevToolsPluginClientImplApp } from './DevToolsPluginClientImplApp.js';
+import { DevToolsPluginClientImplBrowser } from './DevToolsPluginClientImplBrowser.js';
+import type { ConnectionInfo, DevToolsPluginClientOptions } from './devtools.types.js';
+
+type GetConnectionInfoFn = () => Omit<ConnectionInfo, 'pluginName'>;
+
+let _getConnectionInfo: GetConnectionInfoFn | null = null;
+
+/**
+ * Set the platform-specific getConnectionInfo implementation.
+ * This must be called before using getDevToolsPluginClientAsync.
+ * @hidden
+ */
+export function setGetConnectionInfo(fn: GetConnectionInfoFn) {
+  _getConnectionInfo = fn;
+}
 
 const instanceMap: Record<string, DevToolsPluginClient | Promise<DevToolsPluginClient>> = {};
 
@@ -31,7 +43,12 @@ export async function getDevToolsPluginClientAsync(
   pluginName: string,
   options?: DevToolsPluginClientOptions
 ): Promise<DevToolsPluginClient> {
-  const connectionInfo = getConnectionInfo();
+  if (_getConnectionInfo == null) {
+    throw new Error(
+      'getConnectionInfo has not been initialized. Ensure the correct platform entry point is loaded.'
+    );
+  }
+  const connectionInfo = _getConnectionInfo();
 
   let instance: DevToolsPluginClient | Promise<DevToolsPluginClient> | undefined =
     instanceMap[pluginName];

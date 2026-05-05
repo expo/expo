@@ -1,7 +1,7 @@
 /**
  * Get the dev server address.
  */
-import { PROTOCOL_VERSION } from './ProtocolVersion';
+import { PROTOCOL_VERSION } from './ProtocolVersion.js';
 export function getConnectionInfo() {
     const getDevServer = require('react-native/Libraries/Core/Devtools/getDevServer').default;
     const devServerUrl = getDevServer().url;
