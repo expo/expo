@@ -1,5 +1,5 @@
 import { useLoaderData } from 'expo-router';
-import { createServerLoader } from 'expo-server';
+import { createServerLoader } from 'expo-router/server';
 import { Suspense } from 'react';
 
 import { Loading } from '../components/Loading';
