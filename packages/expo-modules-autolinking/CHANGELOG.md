@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Disable precompiled modules with a clear warning when `EXPO_USE_PRECOMPILED_MODULES=1` is set without `RCT_USE_PREBUILT_RNCORE=1`
 - [iOS] Resolve npm-bundled precompiled XCFrameworks for nested Expo packages like `expo-modules-core` during `pod install`. ([#45166](https://github.com/expo/expo/pull/45166) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt. ([#45160](https://github.com/expo/expo/pull/45160) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
