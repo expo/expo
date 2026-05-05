@@ -46,7 +46,20 @@ RCT_EXPORT_MODULE(ExpoModulesCore);
   _appContext.reactBridge = bridge;
 
 #if !__has_include(<ReactCommon/RCTRuntimeExecutor.h>)
-  _appContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:bridge];
+  // Hop the runtime install (and the prepareRuntime() chain it triggers via
+  // _runtime.didSet) onto RCTJSThread. The original line ran synchronously
+  // on whatever thread called setBridge: — typically the main thread — and
+  // raced JSIExecutor::initializeRuntime() on the JS thread, corrupting
+  // Hermes' Hades GC (HadesGC::writeBarrierSlow EXC_BAD_ACCESS).
+  __weak EXAppContext *weakAppContext = _appContext;
+  __weak RCTBridge *weakBridge = bridge;
+  [bridge dispatchBlock:^{
+    EXAppContext *strongAppContext = weakAppContext;
+    RCTBridge *strongBridge = weakBridge;
+    if (strongAppContext != nil && strongBridge != nil && strongAppContext._runtime == nil) {
+      strongAppContext._runtime = [EXJavaScriptRuntimeManager runtimeFromBridge:strongBridge];
+    }
+  } queue:RCTJSThread];
 #endif // React Native <0.74
 }
 
