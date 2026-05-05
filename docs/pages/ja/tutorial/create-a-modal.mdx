@@ -46,7 +46,7 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-  /* @tutinfo Create a state variable inside the <CODE>Index</CODE> component. */
+  /* @tutinfo <CODE>Index</CODE> コンポーネント内に state 変数を作成します。 */
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   /* @end */
 
@@ -59,7 +59,7 @@ export default function Index() {
 
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
-      /* @tutinfo After selecting the image, set the app options to true. */
+      /* @tutinfo 画像を選択した後、app options を true に設定します。 */
       setShowAppOptions(true);
       /* @end */
     } else {
@@ -72,14 +72,14 @@ export default function Index() {
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
-      /* @tutinfo Based on the value of <CODE>showAppOptions</CODE>, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
+      /* @tutinfo <CODE>showAppOptions</CODE> の値に基づいてボタンが表示されます。また、既存のボタンを三項演算子のブロック内に移動します。 */
       {showAppOptions ? (
         <View />
       /* @end */
       ) : (
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
-          /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/
+          /* @tutinfo <CODE>alert()</CODE> を <CODE>onPress</CODE> に置き換えます。*/
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
           /* @end */
         </View>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 
 {/* prettier-ignore */}
 ```tsx components/Button.tsx
-<Pressable style={styles.button} /* @tutinfo Replace the <CODE>alert()</CODE> with the <CODE>onPress</CODE>.*/ onPress={onPress}/* @end */>
+<Pressable style={styles.button} /* @tutinfo <CODE>alert()</CODE> を <CODE>onPress</CODE> に置き換えます。*/ onPress={onPress}/* @end */>
 ```
 
 </Step>
@@ -221,7 +221,7 @@ import { useState } from 'react';
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
-/* @tutinfo Import <CODE>IconButton</CODE> and <CODE>CircleButton</CODE> components.*/
+/* @tutinfo <CODE>IconButton</CODE> と <CODE>CircleButton</CODE> コンポーネントをインポートします。*/
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 /* @end */
@@ -247,7 +247,7 @@ export default function Index() {
     }
   };
 
-  /* @tutinfo Add placeholder functions that we will add logic for in the next sections. */
+  /* @tutinfo 次のセクションでロジックを追加するためのプレースホルダー関数を追加します。 */
   const onReset = () => {
     setShowAppOptions(false);
   };
@@ -267,7 +267,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
       </View>
       {showAppOptions ? (
-        /* @tutinfo Replace empty <CODE>View</CODE> component with this snippet to display App option buttons. */
+        /* @tutinfo App オプションボタンを表示するため、空の <CODE>View</CODE> コンポーネントをこのスニペットに置き換えます。 */
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
             <IconButton icon="refresh" label="Reset" onPress={onReset} />
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     flex: 1 / 3,
     alignItems: 'center',
   },
-  /* @tutinfo Add styles for the new <CODE>View</CODE> components. */
+  /* @tutinfo 新しい <CODE>View</CODE> コンポーネントのスタイルを追加します。 */
   optionsContainer: {
     position: 'absolute',
     bottom: 80,
@@ -414,7 +414,7 @@ import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
-/* @tutinfo import the <CODE>EmojiPicker</CODE> component. */
+/* @tutinfo <CODE>EmojiPicker</CODE> コンポーネントをインポートします。 */
 import EmojiPicker from '@/components/EmojiPicker';
 /* @end */
 
@@ -423,7 +423,7 @@ const PlaceholderImage = require('@/assets/images/background-image.png');
 export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
-  /* @tutinfo Create a state variable. */
+  /* @tutinfo state 変数を作成します。 */
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   /* @end */
 
@@ -446,7 +446,7 @@ export default function Index() {
     setShowAppOptions(false);
   };
 
-  /* @tutinfo Update functions to control the modal's visibility.*/
+  /* @tutinfo モーダルの表示を制御するため、関数を更新します。*/
   const onAddSticker = () => {
     setIsModalVisible(true);
   };
@@ -479,7 +479,7 @@ export default function Index() {
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
         </View>
       )}
-      /* @tutinfo Render the <CODE>EmojiPicker</CODE> component at the bottom of the <CODE>Index</CODE> component. */
+      /* @tutinfo <CODE>Index</CODE> コンポーネントの末尾に <CODE>EmojiPicker</CODE> コンポーネントをレンダリングします。 */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* Emoji list component will go here */}
       </EmojiPicker>
@@ -606,7 +606,7 @@ import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
-/* @tutinfo Import the <CODE>EmojiList</CODE> component. */
+/* @tutinfo <CODE>EmojiList</CODE> コンポーネントをインポートします。 */
 import EmojiList from '@/components/EmojiList';
 /* @end */
 
@@ -616,7 +616,7 @@ export default function Index() {
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
-  /* @tutinfo Define a state variable. */
+  /* @tutinfo state 変数を定義します。 */
   const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
   /* @end */
 
@@ -671,7 +671,7 @@ export default function Index() {
         </View>
       )}
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
-        /* @tutinfo Render the <CODE>EmojiList</CODE> component inside the <CODE>EmojiPicker</CODE> component. */
+        /* @tutinfo <CODE>EmojiPicker</CODE> コンポーネント内に <CODE>EmojiList</CODE> コンポーネントをレンダリングします。 */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
       </EmojiPicker>
@@ -758,7 +758,7 @@ import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
-/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */import EmojiSticker from '@/components/EmojiSticker';/* @end */
+/* @tutinfo <CODE>EmojiSticker</CODE> コンポーネントをインポートします。 */import EmojiSticker from '@/components/EmojiSticker';/* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -804,7 +804,7 @@ export default function Index() {
     <View style={styles.container}>
       <View style={styles.imageContainer}>
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
-        /* @tutinfo Add this line to display the emoji sticker on the image. */
+        /* @tutinfo 画像に絵文字ステッカーを表示するため、この行を追加します。 */
         {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
         /* @end */
       </View>

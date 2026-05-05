@@ -162,12 +162,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 {/* prettier-ignore */}
 ```tsx app/index.tsx|collapseHeight=340
-import { Text, View, /* @tutinfo Import <CODE>StyleSheet</CODE> to define styles. */ StyleSheet/* @end */ } from 'react-native';
+import { Text, View, /* @tutinfo スタイルを定義するため <CODE>StyleSheet</CODE> をインポートします。 */ StyleSheet/* @end */ } from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say "Edit app/index.tsx to edit this screen". Now it says, "Home screen". */
+      /* @tutinfo 以前は "Edit app/index.tsx to edit this screen" と表示されていましたが、現在は "Home screen" と表示されます。 */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>
@@ -177,7 +177,7 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    /* @tutinfo Add the value of <CODE>backgroundColor</CODE> property with <CODE>'#25292e'</CODE>.*/
+    /* @tutinfo <CODE>backgroundColor</CODE> プロパティに <CODE>'#25292e'</CODE> の値を設定します。*/
     backgroundColor: '#25292e',
     /* @end */
     alignItems: 'center',

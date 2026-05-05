@@ -51,10 +51,10 @@ import * as ImagePicker from 'expo-image-picker';
 // ...rest of the code remains same
 
 export default function Index() {
-  /* @tutinfo Add this statement to import the permissions response and <CODE>requestPermission()</CODE> method from the hook. */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
+  /* @tutinfo フックから権限のレスポンスと <CODE>requestPermission()</CODE> メソッドをインポートするため、この文を追加します。 */const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();/* @end */
   // ...rest of the code remains same
 
-  /* @tutinfo Add an if statement to check the permission status. The requestPermission() method will trigger a dialog box for the user to grant or deny the permission. */
+  /* @tutinfo 権限の状態を確認するため、if 文を追加します。requestPermission() メソッドは、ユーザーが権限を許可または拒否するためのダイアログを表示します。 */
   useEffect(() => {
     if (!permissionResponse?.granted) {
       requestPermission();
@@ -80,18 +80,18 @@ export default function Index() {
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
-import { useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
-/* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
+import { useState, /* @tutinfo <CODE>react</CODE> から <CODE>useRef</CODE> フックをインポートします。 */useRef/* @end */ } from 'react';
+/* @tutinfo <CODE>react-native-view-shot</CODE> から <CODE>captureRef</CODE> をインポートします。 */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
-  /* @tutinfo Create an imageRef variable. */ const imageRef = useRef<View>(null);/* @end */
+  /* @tutinfo imageRef 変数を作成します。 */ const imageRef = useRef<View>(null);/* @end */
 
   // ...rest of the code remains same
 
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo Add a View component to wrap the ImageViewer and EmojiSticker inside it. */<View ref={imageRef} collapsable={false}>/* @end */
+        /* @tutinfo ImageViewer と EmojiSticker をラップする View コンポーネントを追加します。 */<View ref={imageRef} collapsable={false}>/* @end */
           <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
           {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
         /* @tutinfo */</View>/* @end */
@@ -181,7 +181,7 @@ export default function Index() {
     setIsModalVisible(false);
   };
 
-  /* @tutinfo Replace the comment with the code to capture the screenshot and save the image. */
+  /* @tutinfo スクリーンショットを撮影して画像を保存するコードに、コメントを置き換えます。 */
   const onSaveImageAsync = async () => {
     try {
       const localUri = await captureRef(imageRef, {

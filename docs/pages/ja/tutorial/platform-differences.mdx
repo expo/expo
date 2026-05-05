@@ -62,7 +62,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { captureRef } from 'react-native-view-shot';
-/* @tutinfo Import <CODE>domtoimage</CODE> library. */import domtoimage from 'dom-to-image';/* @end */
+/* @tutinfo <CODE>domtoimage</CODE> ライブラリをインポートします。 */import domtoimage from 'dom-to-image';/* @end */
 
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
@@ -116,7 +116,7 @@ export default function Index() {
   };
 
   const onSaveImageAsync = async () => {
-    /* @tutinfo Add the if condition here to check whether the current platform is web or not. */
+    /* @tutinfo 現在のプラットフォームが web かどうかを確認するため、ここに if 条件を追加します。 */
     if (Platform.OS !== 'web') {
     /* @end */
       try {
@@ -132,7 +132,7 @@ export default function Index() {
       } catch (e) {
         console.log(e);
       }
-    /* @tutinfo Add an else condition to run the logic when the current platform is the web. */
+    /* @tutinfo 現在のプラットフォームが web の場合にロジックを実行するため、else 条件を追加します。 */
     } else {
       try {
         const dataUrl = await domtoimage.toJpeg(imageRef.current, {

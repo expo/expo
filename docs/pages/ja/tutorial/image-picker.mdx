@@ -50,10 +50,10 @@ Expo SDK のライブラリである [`expo-image-picker`](/versions/latest/sdk/
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 // ...rest of the import statements remain unchanged
-/* @tutinfo Import <CODE>ImagePicker</CODE>. */ import * as ImagePicker from 'expo-image-picker';/* @end */
+/* @tutinfo <CODE>ImagePicker</CODE> をインポートします。 */ import * as ImagePicker from 'expo-image-picker';/* @end */
 
 export default function Index() {
-  /* @tutinfo Pass image picker options to <CODE>launchImageLibraryAsync()</CODE> */
+  /* @tutinfo <CODE>launchImageLibraryAsync()</CODE> に画像ピッカーのオプションを渡します */
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
@@ -62,11 +62,11 @@ export default function Index() {
     });
 
     if (!result.canceled) {
-      /* @tutinfo If the image is picked, print its information in terminal window. */
+      /* @tutinfo 画像が選択された場合、その情報をターミナルウィンドウに出力します。 */
       console.log(result);
       /* @end */
     } else {
-      /* @tutinfo If the user does not pick an image, show an alert. */
+      /* @tutinfo ユーザーが画像を選択しなかった場合、アラートを表示します。 */
       alert('You did not select any image.');
       /* @end */
     }
@@ -98,12 +98,12 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 type Props = {
   label: string;
   theme?: 'primary';
-  /* @tutinfo Define the type for <CODE>onPress</CODE> prop. */
+  /* @tutinfo <CODE>onPress</CODE> プロパティの型を定義します。 */
   onPress?: () => void;
   /* @end */
 };
 
-export default function Button({ label, theme, /* @tutinfo Pass this prop to trigger the handler method from the parent component. */onPress/* @end */ }: Props) {
+export default function Button({ label, theme, /* @tutinfo 親コンポーネントからハンドラーメソッドをトリガーするため、このプロパティを渡します。 */onPress/* @end */ }: Props) {
   if (theme === 'primary') {
     return (
       <View
@@ -188,7 +188,7 @@ export default function Index() {
         <ImageViewer imgSource={PlaceholderImage} />
       </View>
       <View style={styles.footerContainer}>
-        <Button theme="primary" label="Choose a photo" onPress={/* @tutinfo Add this. */pickImageAsync/* @end */} />
+        <Button theme="primary" label="Choose a photo" onPress={/* @tutinfo これを追加します。 */pickImageAsync/* @end */} />
         <Button label="Use this photo" />
       </View>
     </View>
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
 ```tsx app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-/* @tutinfo Import <CODE>useState</CODE> hook from <CODE>react<CODE>.*/
+/* @tutinfo <CODE>react<CODE> から <CODE>useState</CODE> フックをインポートします。*/
 import { useState } from 'react';
 /* @end */
 
@@ -316,7 +316,7 @@ import ImageViewer from '@/components/ImageViewer';
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
 export default function Index() {
-  /* @tutinfo Create a state variable that will hold the value of selected image. */
+  /* @tutinfo 選択された画像の値を保持する state 変数を作成します。 */
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
   /* @end */
 
@@ -328,7 +328,7 @@ export default function Index() {
     });
 
     if (!result.canceled) {
-      /* @tutinfo Pick the first uri from the <CODE>assets</CODE> array. Also, there is only one image selected at a time so you don't have to change this. */
+      /* @tutinfo <CODE>assets</CODE> 配列から最初の uri を取得します。また、一度に選択される画像は 1 つだけなので、ここを変更する必要はありません。 */
       setSelectedImage(result.assets[0].uri);
       /* @end */
     } else {
@@ -339,7 +339,7 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        /* @tutinfo Pass the selected image URI to the <CODE>ImageViewer</CODE> component. */
+        /* @tutinfo 選択された画像の URI を <CODE>ImageViewer</CODE> コンポーネントに渡します。 */
         <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
         /* @end */
       </View>
@@ -385,12 +385,12 @@ type Props = {
   /* @end */
 };
 
-export default function ImageViewer({ imgSource, /* @tutinfo Pass the <CODE>selectedImage</CODE> prop.*/selectedImage/* @end */ }: Props) {
-  /* @tutinfo If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
+export default function ImageViewer({ imgSource, /* @tutinfo <CODE>selectedImage</CODE> プロパティを渡します。*/selectedImage/* @end */ }: Props) {
+  /* @tutinfo 選択された画像が null でない場合はデバイスからの画像を表示し、そうでない場合はプレースホルダー画像を表示します。 */
   const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
   /* @end */
 
-  /* @tutinfo <CODE>imgSource</CODE> replaced by <CODE>imageSource</CODE>. */
+  /* @tutinfo <CODE>imgSource</CODE> を <CODE>imageSource</CODE> に置き換えます。 */
   return <Image source={imageSource} style={styles.image} />;
   /* @end */
 }
