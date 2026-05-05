@@ -769,7 +769,7 @@ export async function test(t) {
   t.describe('Set, Get properties', () => {
     let contact: Contact;
 
-    t.beforeAll(async () => {
+    t.beforeEach(async () => {
       const contactDetails = {
         givenName: 'Name',
         familyName: 'Tester',
@@ -778,7 +778,7 @@ export async function test(t) {
       t.expect(contact.id).toBeDefined();
     });
 
-    t.afterAll(async () => {
+    t.afterEach(async () => {
       await contact.delete();
     });
 
