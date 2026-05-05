@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (55.0.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.20):
+  - Expo (55.0.21):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -297,7 +297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (55.0.20):
+  - Expo/Tests (55.0.21):
     - ExpoModulesCore
     - hermes-engine
     - RCTRequired
@@ -454,7 +454,7 @@ PODS:
   - ExpoImageManipulator (55.0.15):
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (55.0.19):
+  - ExpoImagePicker (55.0.20):
     - ExpoModulesCore
   - ExpoInsights (55.0.16):
     - EASClient
@@ -3941,7 +3941,7 @@ SPEC CHECKSUMS:
   EXConstants: b2ff8818e17593c8e0a4dc19fa256c804473fed4
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 45bb6adf798ea7b79e18de8904a87a872edd9894
-  Expo: 3d00b93602f42dd15ea97544498602f131237514
+  Expo: 253896e224f9da8e187971e21a1a7de830450cd3
   expo-dev-client: bfef15cca462fb248f4309373191a82d490bdc4e
   expo-dev-launcher: 4ce74c6ee5aa480badc7aade43726c090a4b0f0e
   expo-dev-menu: 07c96acf4b594641c897954e3cb6aeb103d8e665
@@ -3949,7 +3949,7 @@ SPEC CHECKSUMS:
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppIntegrity: 9fd00a7e48bd94dd4dc838f933b8fdd628ee6dab
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
-  ExpoAppMetrics: 5feaac88ed4e9015b15f288e1523d6178a464625
+  ExpoAppMetrics: b636213bcda3c0850890c00ddb1b27efa71b9ce8
   ExpoAsset: e5a93c1082e763fb7b59a0b3a16c38224ba07f8a
   ExpoAudio: bb9b02133e7ed48b18a58a5fad9a7a90289fa94d
   ExpoBackgroundFetch: 31cdc1b7018965e12960e0abc8041f968e725428
@@ -3976,7 +3976,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 18a4632ae8de62130208c76ba2bb0a0a144e99b3
   ExpoImage: 3989b3db8ede85c28d5e37e8649c1e36a3749282
   ExpoImageManipulator: 41c2bfd6483c78533b4836774c4e168118aa5c14
-  ExpoImagePicker: 02ab32edea0c3c225f78e7c4393dc2ecb6c7dfce
+  ExpoImagePicker: 31deec6605ac794d0455d7ccd03ba9cedd475c71
   ExpoInsights: 3cdab47e97c78948478e693eb1c9feea371fd0c8
   ExpoKeepAwake: bf2f625dca3aad834b407df8dd519403946c7724
   ExpoLinearGradient: f7a3da6577688c5fb627e9ee6b47ed620c169da3

@@ -20,7 +20,7 @@ PODS:
   - EXManifests/Tests (55.0.16):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.20):
+  - Expo (55.0.21):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -113,7 +113,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.20):
+  - Expo/Tests (55.0.21):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -284,7 +284,7 @@ PODS:
   - ExpoImageManipulator (55.0.15):
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (55.0.19):
+  - ExpoImagePicker (55.0.20):
     - ExpoModulesCore
   - ExpoKeepAwake (55.0.7):
     - ExpoModulesCore
@@ -4831,12 +4831,12 @@ SPEC CHECKSUMS:
   EXConstants: b2ff8818e17593c8e0a4dc19fa256c804473fed4
   EXJSONUtils: 04bc3807d351331a5fe154ce1da596ec15d99169
   EXManifests: 45bb6adf798ea7b79e18de8904a87a872edd9894
-  Expo: a9ab11c86b5a069cc7022cdf4562d11e432393e1
+  Expo: 02817c17cb66564e8c59047bd23fcabab6c1fccd
   expo-dev-menu: ad70b53a344cd03b52e72437754b99fbe9d9973a
   expo-dev-menu-interface: 833795f4c98a674d36cbc12b11b21756c38e01e8
   ExpoAgeRange: ec26d88646d544de24e189261aec537e5613f44a
   ExpoAppleAuthentication: 9e3a40e8f9d95d23d980956f6dbf0b6c0302940b
-  ExpoAppMetrics: a5176ce51aba88e32168b5f168dbfbf86f327700
+  ExpoAppMetrics: ea09ba4ebf7dc00eebbce3938703612d5798445c
   ExpoAsset: e5a93c1082e763fb7b59a0b3a16c38224ba07f8a
   ExpoAudio: bb9b02133e7ed48b18a58a5fad9a7a90289fa94d
   ExpoBackgroundFetch: 31cdc1b7018965e12960e0abc8041f968e725428
@@ -4862,7 +4862,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 18a4632ae8de62130208c76ba2bb0a0a144e99b3
   ExpoImage: 3989b3db8ede85c28d5e37e8649c1e36a3749282
   ExpoImageManipulator: 41c2bfd6483c78533b4836774c4e168118aa5c14
-  ExpoImagePicker: 02ab32edea0c3c225f78e7c4393dc2ecb6c7dfce
+  ExpoImagePicker: 31deec6605ac794d0455d7ccd03ba9cedd475c71
   ExpoKeepAwake: bf2f625dca3aad834b407df8dd519403946c7724
   ExpoLinearGradient: f7a3da6577688c5fb627e9ee6b47ed620c169da3
   ExpoLinking: 0a21c06eab5a85911717d07771125fe384c7b4e8
@@ -4916,7 +4916,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: a785894172be9ea26a2d808760e5954874576bd8
+  hermes-engine: d59202edb9173c808259b0945bb161d1e24963f0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

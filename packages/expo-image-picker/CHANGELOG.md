@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [android] Fix potential vulnerability in `com.canhub.cropper.CropImageActivity` being exported. ([#45357](https://github.com/expo/expo/pull/45357) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 55.0.20 — 2026-05-05
+
+### 🐛 Bug fixes
+
+- [android] Fix potential vulnerability in `com.canhub.cropper.CropImageActivity` being exported. ([#45357](https://github.com/expo/expo/pull/45357) by [@behenate](https://github.com/behenate))
 
 ## 55.0.19 — 2026-04-21
 

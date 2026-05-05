@@ -49,7 +49,7 @@
   "expo-image": "~55.0.9",
   "expo-image-loader": "~55.0.0",
   "expo-image-manipulator": "~55.0.15",
-  "expo-image-picker": "~55.0.19",
+  "expo-image-picker": "~55.0.20",
   "expo-intent-launcher": "~55.0.12",
   "expo-insights": "~55.0.16",
   "expo-keep-awake": "~55.0.7",
