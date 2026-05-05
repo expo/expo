@@ -11,6 +11,7 @@ import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.frames.FrameMetricsRecorder
 import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.utils.DeviceConditions
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
@@ -51,6 +52,7 @@ object AppStartupManager {
       }
     }
   private var startupInfo: EASObserveAppStartupInfo? = null
+  private var applicationContext: Context? = null
 
   private val frameMetricsRecorder = FrameMetricsRecorder()
 
@@ -130,6 +132,7 @@ object AppStartupManager {
   fun recordAppCreated(context: Context) {
     val timestamp = getCurrentTimeInMillis()
     val startType = detectStartType(context)
+    applicationContext = context.applicationContext
     startupInfo = EASObserveAppStartupInfo(startType = startType, appCreateTimestamp = timestamp)
   }
 
@@ -208,17 +211,30 @@ object AppStartupManager {
     hasRecordedInteractive = true
 
     val frameMetrics = frameMetricsRecorder.stop()
-    val mergedParams = if (frameMetrics.expectedFrames > 0) {
-      params.orEmpty() + mapOf(
-        "frameRate.slowFrames" to frameMetrics.slowFrames,
-        "frameRate.frozenFrames" to frameMetrics.frozenFrames,
-        "frameRate.totalDelay" to frameMetrics.freezeTimeMs.toDouble() / 1000.0
-      )
+    val merged = mutableMapOf<String, Any>()
+    params?.let { merged.putAll(it) }
+    if (frameMetrics.expectedFrames > 0) {
+      merged["expo.frameRate.slowFrames"] = frameMetrics.slowFrames
+      merged["expo.frameRate.frozenFrames"] = frameMetrics.frozenFrames
+      merged["expo.frameRate.totalDelay"] = frameMetrics.freezeTimeMs.toDouble() / 1000.0
+    }
+    val context = applicationContext
+    if (context != null) {
+      merged.putAll(DeviceConditions.deviceParams(context))
+      merged.putAll(DeviceConditions.networkParams(context))
     } else {
-      params
+      Log.w(
+        TAG,
+        "markInteractive: applicationContext is null; skipping device/network params. " +
+          "This usually means AppMetricsApplicationLifecycleListeners did not run."
+      )
     }
 
-    addMetricSinceLaunch(AppStartupMetric.TimeToInteractive, routeName, mergedParams)
+    addMetricSinceLaunch(
+      AppStartupMetric.TimeToInteractive,
+      routeName,
+      if (merged.isEmpty()) null else merged
+    )
     startupState = StartupState.LAUNCHED
   }
 

@@ -57,14 +57,18 @@ struct AppStartupMonitoringTests {
   }
 
   @Test
-  func `emits nil params when no user params are provided and no frames were recorded`() async throws {
+  func `always attaches device and network params even with no user params`() async throws {
     let receiver = CapturingReceiver()
     let monitoring = makeMonitoring(receiver: receiver)
 
     monitoring.markInteractive()
 
     let metric = try await ttiMetric(from: receiver)
-    #expect(metric.params == nil)
+    let params = try #require(metric.params?.value as? [String: Any])
+    #expect(params["expo.device.lowPowerMode"] != nil)
+    #expect(params["expo.device.thermalState"] != nil)
+    #expect(params["expo.network.connected"] != nil)
+    #expect(params["expo.network.type"] != nil)
   }
 
   @Test
@@ -81,24 +85,29 @@ struct AppStartupMonitoringTests {
     let metric = try await ttiMetric(from: receiver)
     let params = try #require(metric.params?.value as? [String: Any])
     #expect(params["tenant"] as? String == "acme")
-    #expect(params["frameRate.slowFrames"] != nil)
-    #expect(params["frameRate.frozenFrames"] != nil)
-    #expect(params["frameRate.totalDelay"] != nil)
+    #expect(params["expo.frameRate.slowFrames"] != nil)
+    #expect(params["expo.frameRate.frozenFrames"] != nil)
+    #expect(params["expo.frameRate.totalDelay"] != nil)
   }
 
   @Test
-  func `frame metrics overwrite user-supplied frameRate keys on collision`() async throws {
+  func `framework-emitted params override user-supplied params on key collision`() async throws {
     let receiver = CapturingReceiver()
     let monitoring = makeMonitoring(receiver: receiver)
 
     monitoring.frameMetricsRecorder.processFrame(frame(at: 1.0))
     monitoring.frameMetricsRecorder.processFrame(frame(at: 1.8))
 
-    monitoring.markInteractive(params: ["frameRate.slowFrames": 999])
+    monitoring.markInteractive(params: [
+      "expo.frameRate.slowFrames": 999,
+      "expo.device.lowPowerMode": "user-supplied"
+    ])
 
     let metric = try await ttiMetric(from: receiver)
     let params = try #require(metric.params?.value as? [String: Any])
     // The actual frame recorder produces slowFrames == 1, not 999.
-    #expect((params["frameRate.slowFrames"] as? Int) != 999)
+    #expect((params["expo.frameRate.slowFrames"] as? Int) != 999)
+    // Device params come from the OS, not the user-supplied string.
+    #expect(params["expo.device.lowPowerMode"] is Bool)
   }
 }
