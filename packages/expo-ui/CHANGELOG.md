@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed dynamic sizing regression for `@expo/ui/community/bottom-sheet`. ([#45412](https://github.com/expo/expo/pull/45412) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 56.0.1 — 2026-05-05
