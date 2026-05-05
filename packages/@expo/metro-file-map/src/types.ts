@@ -280,6 +280,7 @@ export interface FileSystem {
   };
 
   getSerializableSnapshot(): CacheData['fileSystemData'];
+  getMtimeByNormalPath(file: Path): number | undefined | null;
   getSha1(file: Path): string | undefined | null;
   getOrComputeSha1(file: Path): Promise<{ sha1: string; content?: Buffer } | undefined | null>;
 

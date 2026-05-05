@@ -114,12 +114,16 @@ describe('node crawler', () => {
       '/project/fruits/tomato.js': 'same',
     });
 
-    // Get the mtime that memfs assigned to tomato so we can match it
+    // Get the mtime that memfs assigned to each file
     const tomatoStat = vol.statSync('/project/fruits/tomato.js');
+    const strawberryStat = vol.statSync('/project/fruits/strawberry.js');
 
     const previousFiles: FileData = new Map([
       // strawberry has a different mtime → will be reported as changed
-      ['fruits/strawberry.js', [0, 0, 1, null, 0, null] as FileMetadata],
+      [
+        'fruits/strawberry.js',
+        [strawberryStat.mtime.getTime() - 1000, 0, 1, null, 0, null] as FileMetadata,
+      ],
       // tomato has matching mtime → unchanged, excluded from changedFiles
       [
         'fruits/tomato.js',
@@ -215,7 +219,7 @@ describe('node crawler', () => {
     expect(changedFiles.get('fruits/apple.js')![H.SYMLINK]).toBe(0);
   });
 
-  test('populates file metadata correctly', async () => {
+  test('populates file metadata with null mtime on cold start', async () => {
     vol.fromJSON({
       '/project/fruits/apple.js': 'hello',
     });
@@ -224,11 +228,119 @@ describe('node crawler', () => {
     const meta = changedFiles.get('fruits/apple.js')!;
 
     expect(meta).toBeDefined();
-    expect(meta[H.MTIME]).toBeGreaterThan(0);
-    expect(meta[H.SIZE]).toBe(5); // 'hello'.length
+    // On cold start (empty previous FS), stat is deferred
+    expect(meta[H.MTIME]).toBeNull();
+    expect(meta[H.SIZE]).toBe(0);
     expect(meta[H.VISITED]).toBe(0);
     expect(meta[H.SHA1]).toBeNull();
     expect(meta[H.SYMLINK]).toBe(0);
+  });
+
+  test('skips lstat for files with no prior mtime', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/banana.js': 'b',
+    });
+
+    const previousFiles: FileData = new Map([
+      ['fruits/apple.js', [null, 0, 0, null, 0, null] as FileMetadata],
+      ['fruits/banana.js', [null, 0, 0, null, 0, null] as FileMetadata],
+    ]);
+
+    const { changedFiles, removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    // Both files had null mtime → stat deferred, getDifference treats as unchanged
+    expect(changedFiles).toEqual(new Map());
+    expect(removedFiles).toEqual(new Set());
+  });
+
+  test('calls lstat only for files with existing mtime', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/banana.js': 'b',
+    });
+
+    const appleStat = vol.statSync('/project/fruits/apple.js');
+
+    const previousFiles: FileData = new Map([
+      // apple has a real mtime → will be lstat'd, mtime differs → changed
+      ['fruits/apple.js', [appleStat.mtime.getTime() - 1000, 0, 1, null, 0, null] as FileMetadata],
+      // banana has null mtime → stat is deferred
+      ['fruits/banana.js', [null, 0, 0, null, 0, null] as FileMetadata],
+    ]);
+
+    const { changedFiles, removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    // apple was lstat'd (real mtime in result), banana was not (absent from changedFiles)
+    expect(changedFiles).toEqual(
+      new Map([
+        [
+          'fruits/apple.js',
+          [appleStat.mtime.getTime(), appleStat.size, 0, null, 0, null] as FileMetadata,
+        ],
+      ])
+    );
+    expect(removedFiles).toEqual(new Set());
+  });
+
+  test('excludes unchanged files when lstat mtime matches cache', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/banana.js': 'b',
+    });
+
+    const appleStat = vol.statSync('/project/fruits/apple.js');
+    const bananaStat = vol.statSync('/project/fruits/banana.js');
+
+    const previousFiles: FileData = new Map([
+      [
+        'fruits/apple.js',
+        [appleStat.mtime.getTime(), appleStat.size, 1, null, 0, null] as FileMetadata,
+      ],
+      [
+        'fruits/banana.js',
+        [bananaStat.mtime.getTime(), bananaStat.size, 1, null, 0, null] as FileMetadata,
+      ],
+    ]);
+
+    const { changedFiles, removedFiles } = await crawl({
+      previousState: {
+        fileSystem: makeTreeFS(previousFiles),
+        clocks: new Map(),
+      },
+    });
+
+    // Both files have matching mtime → lstat'd but unchanged
+    expect(changedFiles).toEqual(new Map());
+    expect(removedFiles).toEqual(new Set());
+  });
+
+  test('marks symlinks correctly when stat is skipped', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/target.js': 'target',
+    });
+    vol.symlinkSync('/project/fruits/target.js', '/project/fruits/link.js');
+
+    const { changedFiles } = await crawl({ includeSymlinks: true });
+
+    const linkMeta = changedFiles.get('fruits/link.js')!;
+    expect(linkMeta).toBeDefined();
+    // On cold start, mtime is deferred
+    expect(linkMeta[H.MTIME]).toBeNull();
+    expect(linkMeta[H.SIZE]).toBe(0);
+    // But symlink flag is still correctly set
+    expect(linkMeta[H.SYMLINK]).toBe(1);
   });
 
   describe('abort signal', () => {

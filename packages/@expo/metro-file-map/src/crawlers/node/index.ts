@@ -11,7 +11,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
-import type { Console, CrawlerOptions, CrawlResult, FileData, IgnoreMatcher } from '../../types';
+import type {
+  Console,
+  CrawlerOptions,
+  CrawlResult,
+  FileData,
+  FileSystem,
+  IgnoreMatcher,
+} from '../../types';
 
 type Callback = (result: FileData) => void;
 
@@ -22,6 +29,7 @@ function find(
   includeSymlinks: boolean,
   rootDir: string,
   console: Console,
+  previousFileSystem: FileSystem | null,
   callback: Callback
 ): void {
   const result: FileData = new Map();
@@ -74,25 +82,32 @@ function find(
             continue;
           }
 
-          activeCalls++;
-          fs.lstat(file, (err, stat) => {
-            activeCalls--;
+          const mtime = previousFileSystem?.getMtimeByNormalPath(childNormal);
+          if (mtime == null || mtime === 0) {
+            // When we're in a cold start or a previous file doesn't exist, we can skip
+            // the mtime/size lstat now and treat the file as new
+            result.set(childNormal, [null, 0, 0, null, isSymbolicLink ? 1 : 0, null]);
+          } else {
+            activeCalls++;
+            fs.lstat(file, (err, stat) => {
+              activeCalls--;
 
-            if (!err && stat) {
-              result.set(childNormal, [
-                stat.mtime.getTime(),
-                stat.size,
-                0,
-                null,
-                isSymbolicLink ? 1 : 0,
-                null,
-              ]);
-            }
+              if (!err && stat) {
+                result.set(childNormal, [
+                  stat.mtime.getTime(),
+                  stat.size,
+                  0,
+                  null,
+                  isSymbolicLink ? 1 : 0,
+                  null,
+                ]);
+              }
 
-            if (activeCalls === 0) {
-              callback(result);
-            }
-          });
+              if (activeCalls === 0) {
+                callback(result);
+              }
+            });
+          }
         }
       }
 
@@ -148,6 +163,15 @@ export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlR
       resolve(difference);
     };
 
-    find(roots, extensions, ignore, includeSymlinks, rootDir, console, callback);
+    find(
+      roots,
+      extensions,
+      ignore,
+      includeSymlinks,
+      rootDir,
+      console,
+      previousState.fileSystem,
+      callback
+    );
   });
 }

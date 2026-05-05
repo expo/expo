@@ -576,7 +576,9 @@ export default class FileMap extends EventEmitter {
 
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
-      } else {
+      } else if (fileData[H.MTIME] != null && fileData[H.MTIME] !== 0) {
+        // The symlink will only be updated, if it's been accessed before
+        // If this is a newly crawled entry, it's skipped
         const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
         if (maybeReadLink) {
           readLinkPromises.push(
