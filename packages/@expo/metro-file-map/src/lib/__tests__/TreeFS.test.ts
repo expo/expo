@@ -371,6 +371,74 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
       expect(mockReadlinkSync).not.toHaveBeenCalled();
     });
+
+    test('lazily resolves symlink pointing above root', () => {
+      const aboveTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('../outside/external.js'), [123, 10, 0, null, 0, null]],
+          [p('link-out'), [0, 0, 0, null, 1, null]],
+        ]),
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+      mockReadlinkSync.mockReturnValue(p('../outside'));
+
+      expect(aboveTfs.lookup(p('/project/link-out/external.js'))).toMatchObject({
+        exists: true,
+        realPath: p('/outside/external.js'),
+        type: 'f',
+      });
+    });
+
+    test('lazily resolves a chain of symlinks', () => {
+      const chainTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('real.js'), [123, 10, 0, null, 0, null]],
+          [p('link-a'), [0, 0, 0, null, 'link-b', null]],
+          [p('link-b'), [0, 0, 0, null, 1, null]],
+        ]),
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+      mockReadlinkSync.mockReturnValue(p('./real.js'));
+
+      expect(chainTfs.lookup(p('/project/link-a'))).toMatchObject({
+        exists: true,
+        realPath: p('/project/real.js'),
+        type: 'f',
+      });
+      // Only link-b needed readlinkSync; link-a was already resolved
+      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
+      expect(mockReadlinkSync).toHaveBeenCalledWith(p('/project/link-b'));
+    });
+
+    test('getAllFiles resolves lazy symlinks that point to files', () => {
+      mockReadlinkSync.mockReturnValue(p('./target.js'));
+
+      // getAllFiles iterates all paths including through symlinks;
+      // a lazy file-symlink should resolve and be included
+      const files = lazyTfs.getAllFiles().sort();
+      expect(files).toContain(p('/project/target.js'));
+      expect(files).toContain(p('/project/dir/nested.js'));
+      expect(files).toContain(p('/project/sub/deep.js'));
+    });
+
+    test('matchFiles with follow resolves lazy dir symlinks', () => {
+      mockReadlinkSync.mockReturnValue(p('./dir'));
+
+      const matches = [
+        ...lazyTfs.matchFiles({
+          rootDir: p('/project'),
+          follow: true,
+          recursive: true,
+        }),
+      ];
+      expect(matches).toContain(p('/project/unresolved-dir-link/nested.js'));
+    });
   });
 
   describe('getDifference', () => {
@@ -535,7 +603,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       const symlinkTfs = new TreeFS({
         rootDir: p('/project'),
         files: new Map<CanonicalPath, FileMetadata>([
-          [p('a.js'), [null, 0, 0, null, p('./b.js'), null]],
+          [p('a.js'), [null, 0, 0, null, 'b.js', null]],
         ]),
         processFile: async () => {
           throw new Error('Not implemented');
@@ -548,6 +616,50 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
 
       const result = symlinkTfs.getDifference(newFiles);
       expect(result.changedFiles.has(p('a.js'))).toBe(true);
+    });
+
+    test('treats unresolved symlink (1) as unchanged vs resolved symlink with null mtime', () => {
+      // Simulates re-crawl: old state has a resolved symlink target, new crawl
+      // produces an unresolved lazy marker (1) with null mtime
+      const resolvedTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('my-link'), [0, 0, 0, null, 'target.js', null]],
+        ]),
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        // Re-crawl produces unresolved symlink with null mtime
+        [p('my-link'), [null, 0, 0, null, 1, null]],
+      ]);
+
+      const result = resolvedTfs.getDifference(newFiles);
+      // Both are symlinks (not regular files), both have null/0 mtime → unchanged
+      expect(result.changedFiles.has(p('my-link'))).toBe(false);
+      expect(result.removedFiles.size).toBe(0);
+    });
+
+    test('treats re-crawled file with null mtime as unchanged when old mtime was also null', () => {
+      // Simulates warm re-crawl where a file was previously lazy and is still lazy
+      const lazyTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([[p('file.js'), [null, 0, 0, null, 0, null]]]),
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('file.js'), [null, 0, 0, null, 0, null]],
+      ]);
+
+      expect(lazyTfs.getDifference(newFiles)).toEqual({
+        changedFiles: new Map(),
+        removedFiles: new Set(),
+      });
     });
   });
 
@@ -1203,6 +1315,69 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       expect(mockProcessFile).toHaveBeenCalledWith(p('target.js'), expect.any(Array), {
         computeSha1: true,
       });
+    });
+
+    test('lazily resolves symlink to nested path and computes SHA1 on second call', async () => {
+      tfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('sub/target.js'), [123, 10, 0, null, 0, null]],
+          [p('lazy-nested-link'), [0, 0, 0, null, 1, null]],
+        ]),
+        processFile: mockProcessFile,
+      });
+
+      mockReadlinkSync.mockReturnValue(p('./sub/target.js'));
+
+      // First call: resolves the symlink lazily, stores posix path
+      expect(await tfs.getOrComputeSha1(p('lazy-nested-link'))).toEqual({
+        sha1: 'abc123',
+      });
+      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
+      expect(mockProcessFile).toHaveBeenCalledWith(p('sub/target.js'), expect.any(Array), {
+        computeSha1: true,
+      });
+
+      // Second call: uses cached H.SYMLINK (posix), should still resolve
+      mockProcessFile.mockClear();
+      expect(await tfs.getOrComputeSha1(p('lazy-nested-link'))).toEqual({
+        sha1: 'abc123',
+      });
+      // No re-read needed
+      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
+      // SHA1 was cached on target, no reprocessing
+      expect(mockProcessFile).not.toHaveBeenCalled();
+    });
+
+    test('lazily resolves symlink and stats target with null mtime', async () => {
+      tfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          // Target file has null mtime (also lazily crawled)
+          [p('sub/target.js'), [null, 0, 0, null, 0, null]],
+          [p('lazy-link'), [0, 0, 0, null, 1, null]],
+        ]),
+        processFile: mockProcessFile,
+      });
+
+      mockReadlinkSync.mockReturnValue(p('./sub/target.js'));
+      mockLstat.mockResolvedValueOnce({
+        mtime: { getTime: () => 555 },
+        size: 42,
+      });
+
+      expect(await tfs.getOrComputeSha1(p('lazy-link'))).toEqual({
+        sha1: 'abc123',
+      });
+      // Symlink was resolved
+      expect(mockReadlinkSync).toHaveBeenCalledTimes(1);
+      // Target was stat'd because its mtime was null
+      expect(mockLstat).toHaveBeenCalledTimes(1);
+      expect(mockLstat).toHaveBeenCalledWith(p('/project/sub/target.js'));
+      // Target was processed for SHA1
+      expect(mockProcessFile).toHaveBeenCalledTimes(1);
+      // Target's mtime is now populated
+      expect(tfs.getMtimeByNormalPath(p('sub/target.js'))).toBe(555);
     });
 
     test('lazily stats file and clears SHA1 when mtime is null', async () => {
