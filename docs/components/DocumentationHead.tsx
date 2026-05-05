@@ -1,12 +1,7 @@
 import NextHead from 'next/head';
 import type { PropsWithChildren } from 'react';
 
-import {
-  BASE_DESCRIPTIONS,
-  OG_LOCALES,
-  SITE_NAMES,
-  type SupportedLocale,
-} from '~/common/i18n';
+import { BASE_DESCRIPTIONS, OG_LOCALES, SITE_NAMES, type SupportedLocale } from '~/common/i18n';
 
 type HeadProps = PropsWithChildren<{
   title?: string;
