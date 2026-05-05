@@ -2,9 +2,9 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { getLogFile, shouldReduceLogs } from '../events';
+import { checkDependenciesOnStartAsync } from './checkDependenciesOnStart';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
-import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import type { Options } from './resolveOptions';
@@ -13,13 +13,13 @@ import * as Log from '../log';
 import type { BundlerStartOptions } from './server/BundlerDevServer';
 import type { MultiBundlerStartOptions } from './server/DevServerManager';
 import { DevServerManager } from './server/DevServerManager';
+import { maybeCreateMCPServerAsync } from './server/MCP';
 import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
-import { maybeCreateMCPServerAsync } from './server/MCP';
 import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
 async function getMultiBundlerStartOptions(
@@ -117,9 +117,9 @@ export async function startAsync(
     await devServerManager.bootstrapTypeScriptAsync();
   }
 
-  if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly && !options.devClient) {
+  if (!env.EXPO_OFFLINE && !env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly) {
     try {
-      await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
+      await profile(checkDependenciesOnStartAsync)(projectRoot, exp, pkg);
     } catch {
       // We don't show the dependency validation error, since it's non-essential
       // for the user to know it ran or failed
