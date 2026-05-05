@@ -51,6 +51,7 @@ const perf_hooks_1 = require("perf_hooks");
 const Watcher_1 = require("./Watcher");
 const DiskCacheManager_1 = require("./cache/DiskCacheManager");
 const constants_1 = __importDefault(require("./constants"));
+const fallback_1 = __importDefault(require("./crawlers/node/fallback"));
 const FileProcessor_1 = require("./lib/FileProcessor");
 const FileSystemChangeAggregator_1 = require("./lib/FileSystemChangeAggregator");
 const RootPathUtils_1 = require("./lib/RootPathUtils");
@@ -218,6 +219,8 @@ class FileMap extends events_1.default {
             }
         }
         this.#plugins = indexedPlugins;
+        const enableFallback = options.enableFallback ?? true;
+        const scopeFallback = options.scopeFallback ?? true;
         const buildParameters = {
             cacheBreaker: CACHE_BREAKER,
             computeSha1: options.computeSha1 || false,
@@ -238,6 +241,9 @@ class FileMap extends events_1.default {
             useWatchman: options.useWatchman ?? false,
             watch: !!options.watch,
             watchmanDeferStates: options.watchmanDeferStates ?? [],
+            enableFallback,
+            scopeFallback: enableFallback && scopeFallback,
+            serverRoot: options.serverRoot,
         };
         const cacheFactoryOptions = {
             buildParameters,
@@ -284,6 +290,16 @@ class FileMap extends events_1.default {
                     this.emit('metadata');
                     return result?.content;
                 };
+                const fallbackFilesystem = this.#options.enableFallback
+                    ? (0, fallback_1.default)({
+                        rootPathUtils: this.#pathUtils,
+                        extensions: this.#options.extensions,
+                        ignore: (filePath) => this.#options.ignorePattern.test(filePath),
+                        includeSymlinks: this.#options.enableSymlinks,
+                    })
+                    : null;
+                const { roots } = this.#options;
+                const serverRoot = this.#options.scopeFallback ? this.#options.serverRoot : null;
                 const fileSystem = initialData != null
                     ? TreeFS_1.default.fromDeserializedSnapshot({
                         // Typed `mixed` because we've read this from an external
@@ -292,8 +308,17 @@ class FileMap extends events_1.default {
                         fileSystemData: initialData.fileSystemData,
                         processFile,
                         rootDir,
+                        fallbackFilesystem,
+                        roots,
+                        serverRoot,
                     })
-                    : new TreeFS_1.default({ processFile, rootDir });
+                    : new TreeFS_1.default({
+                        processFile,
+                        rootDir,
+                        fallbackFilesystem,
+                        roots,
+                        serverRoot,
+                    });
                 this.#startupPerfLogger?.point('constructFileSystem_end');
                 const plugins = this.#plugins;
                 // Initialize plugins from cached file system and plugin state while
@@ -436,8 +461,10 @@ class FileMap extends events_1.default {
                 filesToProcess.push([normalFilePath, fileData]);
             }
             else if (fileData[constants_1.default.MTIME] != null && fileData[constants_1.default.MTIME] !== 0) {
-                // The symlink will only be updated, if it's been accessed before
-                // If this is a newly crawled entry, it's skipped
+                // Symlink was previously resolved and its mtime changed — resolve
+                // eagerly to update the cached target. Symlinks with null mtime
+                // (cold start or never accessed) are deferred to lazy resolution
+                // in TreeFS.#resolveSymlinkTargetToNormalPath.
                 const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
                 if (maybeReadLink) {
                     readLinkPromises.push(maybeReadLink.catch((error) => {

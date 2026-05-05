@@ -330,6 +330,12 @@ export interface MutableFileSystem extends FileSystem {
     bulkAddOrModify(addedOrModifiedFiles: FileData, listener?: FileSystemListener | undefined): void;
 }
 export type Path = string;
+type DirectoryNode = Map<string, MixedNode | null>;
+type MixedNode = FileMetadata | DirectoryNode;
+export interface FallbackFilesystem {
+    lookup(normalPath: Path, absolutePath: string, prevNode: MixedNode | null | undefined): MixedNode | null;
+    readdir(normalPath: Path, absolutePath: string, dirNode: DirectoryNode | null | undefined): DirectoryNode | null;
+}
 export type ProcessFileFunction = (normalPath: string, metadata: FileMetadata, request: Readonly<{
     computeSha1: boolean;
 }>) => Promise<Buffer | undefined | null>;

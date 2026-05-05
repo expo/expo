@@ -4,19 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { CacheData, FileData, FileMetadata, FileStats, FileSystemListener, LookupResult, MutableFileSystem, Path, ProcessFileFunction } from '../types';
-type DirectoryNode = Map<string, MixedNode>;
+import type { CacheData, FallbackFilesystem, FileData, FileMetadata, FileStats, FileSystemListener, LookupResult, MutableFileSystem, Path, ProcessFileFunction } from '../types';
+type DirectoryNode = Map<string, MixedNode | null>;
 type FileNode = FileMetadata;
 type MixedNode = FileNode | DirectoryNode;
 interface DeserializedSnapshotInput {
     rootDir: string;
     fileSystemData: DirectoryNode;
     processFile: ProcessFileFunction;
+    fallbackFilesystem?: FallbackFilesystem | null | undefined;
+    roots?: readonly string[];
+    serverRoot?: string | null | undefined;
 }
 interface TreeFSOptions {
     rootDir: Path;
     files?: FileData;
     processFile: ProcessFileFunction;
+    fallbackFilesystem?: FallbackFilesystem | null | undefined;
+    roots?: readonly string[];
+    serverRoot?: string | null | undefined;
 }
 interface MatchFilesOptions {
     readonly filter?: RegExp | null;

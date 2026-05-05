@@ -9,6 +9,7 @@ import type { BuildParameters, BuildResult, CacheData, CacheManagerFactory, Chan
 export type { BuildParameters, BuildResult, CacheData, ChangeEventMetadata, FileData, FileMap, FileSystem, HasteMapData, HasteMapItem, InputFileMapPlugin, };
 export interface InputOptions {
     readonly computeSha1?: boolean | undefined | null;
+    readonly enableFallback?: boolean | undefined | null;
     readonly enableSymlinks?: boolean | undefined | null;
     readonly extensions: readonly string[];
     readonly forceNodeFilesystemAPI?: boolean | undefined | null;
@@ -17,6 +18,8 @@ export interface InputOptions {
     readonly retainAllFiles: boolean;
     readonly rootDir: string;
     readonly roots: readonly string[];
+    readonly scopeFallback?: boolean | undefined | null;
+    readonly serverRoot?: string | undefined | null;
     readonly cacheManagerFactory?: CacheManagerFactory | undefined | null;
     readonly console?: Console;
     readonly healthCheck: HealthCheckOptions;

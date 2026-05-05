@@ -15,12 +15,13 @@ const path_1 = __importDefault(require("path"));
 const constants_1 = __importDefault(require("../constants"));
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("./normalizePathSeparatorsToPosix"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("./normalizePathSeparatorsToSystem"));
+const fallback_1 = require("../crawlers/node/fallback");
 const RootPathUtils_1 = require("./RootPathUtils");
 function isDirectory(node) {
     return node instanceof Map;
 }
 function isRegularFile(node) {
-    return node[constants_1.default.SYMLINK] === 0;
+    return node != null && node[constants_1.default.SYMLINK] === 0;
 }
 /**
  * OVERVIEW:
@@ -72,25 +73,42 @@ function isRegularFile(node) {
  *   a trailing slash
  */
 class TreeFS {
+    #fallbackBoundaryDepth;
+    #fallbackFilesystem;
     #pathUtils;
     #processFile;
     #rootDir;
+    #rootPattern;
     #rootNode = new Map();
     constructor(opts) {
-        const { rootDir, files, processFile } = opts;
+        const { rootDir, files, processFile, fallbackFilesystem, roots, serverRoot } = opts;
         this.#rootDir = rootDir;
         this.#pathUtils = new RootPathUtils_1.RootPathUtils(rootDir);
         this.#processFile = processFile;
+        this.#fallbackFilesystem = fallbackFilesystem ?? null;
+        if (serverRoot != null) {
+            this.#fallbackBoundaryDepth = (0, RootPathUtils_1.getAncestorOfRootIdx)(this.#pathUtils.absoluteToNormal(serverRoot));
+        }
+        else {
+            this.#fallbackBoundaryDepth = null;
+        }
+        this.#rootPattern = (0, RootPathUtils_1.pathsToPattern)(roots ?? [], this.#pathUtils);
         if (files != null) {
             this.bulkAddOrModify(files);
         }
     }
     getSerializableSnapshot() {
-        return this.#cloneTree(this.#rootNode);
+        return this.#cloneTree(this.#rootNode, '');
     }
     static fromDeserializedSnapshot(args) {
-        const { rootDir, fileSystemData, processFile } = args;
-        const tfs = new TreeFS({ processFile, rootDir });
+        const { rootDir, fileSystemData, processFile, fallbackFilesystem, roots, serverRoot } = args;
+        const tfs = new TreeFS({
+            processFile,
+            rootDir,
+            fallbackFilesystem,
+            roots,
+            serverRoot,
+        });
         tfs.#rootNode = fileSystemData;
         return tfs;
     }
@@ -158,6 +176,7 @@ class TreeFS {
     getMtimeByNormalPath(normalPath) {
         const result = this.#lookupByNormalPath(normalPath, {
             followLeaf: false,
+            skipFallback: true,
         });
         return result.exists && !isDirectory(result.node) ? result.node[constants_1.default.MTIME] : null;
     }
@@ -446,23 +465,41 @@ class TreeFS {
             }
             if (segmentNode == null) {
                 if (opts.makeDirectories !== true && segmentName !== '..') {
-                    return {
-                        canonicalMissingPath: isLastSegment
-                            ? targetNormalPath
-                            : targetNormalPath.slice(0, fromIdx - 1),
-                        exists: false,
-                        missingSegmentName: segmentName,
-                    };
-                }
-                segmentNode = new Map();
-                if (opts.makeDirectories === true) {
-                    if (changeListener != null) {
-                        const canonicalPath = isLastSegment
-                            ? targetNormalPath
-                            : targetNormalPath.slice(0, fromIdx - 1);
-                        changeListener.directoryAdded(canonicalPath);
+                    if (!opts.skipFallback && this.#fallbackFilesystem != null) {
+                        const parentEnd = isLastSegment
+                            ? fromIdx - segmentName.length - 1
+                            : fromIdx - segmentName.length - 2;
+                        const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
+                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath);
+                        if (segmentNode != null) {
+                            ancestorOfRootIdx = null;
+                        }
                     }
-                    parentNode.set(segmentName, segmentNode);
+                    if (segmentNode == null) {
+                        return {
+                            canonicalMissingPath: isLastSegment
+                                ? targetNormalPath
+                                : targetNormalPath.slice(0, fromIdx - 1),
+                            exists: false,
+                            missingSegmentName: segmentName,
+                        };
+                    }
+                }
+                if (segmentNode == null) {
+                    segmentNode = new Map();
+                    if (opts.makeDirectories === true) {
+                        if (changeListener != null) {
+                            const canonicalPath = isLastSegment
+                                ? targetNormalPath
+                                : targetNormalPath.slice(0, fromIdx - 1);
+                            changeListener.directoryAdded(canonicalPath);
+                        }
+                        parentNode.set(segmentName, segmentNode);
+                    }
+                    else if (!opts.skipFallback &&
+                        this.#fallbackFilesystem != null) {
+                        parentNode.set(segmentName, segmentNode);
+                    }
                 }
             }
             // We are done if...
@@ -749,7 +786,10 @@ class TreeFS {
     }
     *#metadataIterator(rootNode, opts, prefix = '') {
         for (const [name, node] of rootNode) {
-            if (!opts.includeNodeModules && isDirectory(node) && name === 'node_modules') {
+            if (node == null) {
+                continue;
+            }
+            else if (!opts.includeNodeModules && isDirectory(node) && name === 'node_modules') {
                 continue;
             }
             const prefixedName = prefix === '' ? name : prefix + path_1.default.sep + name;
@@ -779,8 +819,21 @@ class TreeFS {
     *#pathIterator(iterationRootNode, iterationRootParentNode, ancestorOfRootIdx, opts, pathPrefix = '', followedLinks = new Set()) {
         const pathSep = opts.alwaysYieldPosix ? '/' : path_1.default.sep;
         const prefixWithSep = pathPrefix === '' ? pathPrefix : pathPrefix + pathSep;
+        // Optimization: We can attempt to eagerly populate directories we're visiting
+        // if they're missing and not accessing a parent ('..')
+        if (this.#fallbackFilesystem != null &&
+            iterationRootNode.size === 0 &&
+            pathPrefix !== '..' &&
+            !pathPrefix.endsWith(pathSep + '..')) {
+            const canonicalRoot = opts.canonicalPathOfRoot;
+            const rootCanonical = pathPrefix === '' ? canonicalRoot : canonicalRoot + path_1.default.sep + pathPrefix;
+            this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false);
+        }
         for (const [name, node] of this.#directoryNodeIterator(iterationRootNode, iterationRootParentNode, ancestorOfRootIdx)) {
-            if (opts.subtreeOnly && name === '..') {
+            if (node == null) {
+                continue;
+            }
+            else if (opts.subtreeOnly && name === '..') {
                 continue;
             }
             const nodePath = prefixWithSep + name;
@@ -821,6 +874,15 @@ class TreeFS {
                 }
             }
             else if (opts.recursive) {
+                // Optimization: We can attempt to eagerly popuplate directories we're visiting
+                // if they're missing and not accessing a parent ('..')
+                if (this.#fallbackFilesystem != null && node.size === 0 && name !== '..') {
+                    const nodePathWithSystemSeparators = pathSep === path_1.default.sep ? nodePath : nodePath.replaceAll(pathSep, path_1.default.sep);
+                    const canonicalPath = opts.canonicalPathOfRoot === ''
+                        ? nodePathWithSystemSeparators
+                        : opts.canonicalPathOfRoot + path_1.default.sep + nodePathWithSystemSeparators;
+                    this.#populateDirFromFilesystem(node, canonicalPath, false);
+                }
                 yield* this.#pathIterator(node, iterationRootParentNode, ancestorOfRootIdx != null && ancestorOfRootIdx > 0 ? ancestorOfRootIdx - 1 : null, opts, nodePath, followedLinks);
             }
         }
@@ -862,17 +924,83 @@ class TreeFS {
         }
         return result.node;
     }
-    #cloneTree(root) {
+    #cloneTree(root, prefix) {
         const clone = new Map();
         for (const [name, node] of root) {
-            if (isDirectory(node)) {
-                clone.set(name, this.#cloneTree(node));
+            if (node == null) {
+                continue;
+            }
+            else if (isDirectory(node)) {
+                const childPath = prefix === '' ? name : prefix + path_1.default.sep + name;
+                if (this.#rootPattern == null || this.#rootPattern.test(childPath + path_1.default.sep)) {
+                    clone.set(name, this.#cloneTree(node, childPath));
+                }
             }
             else {
                 clone.set(name, [...node]);
             }
         }
         return clone;
+    }
+    #isOutsideFallbackBoundary(canonicalPath) {
+        const maxDepth = this.#fallbackBoundaryDepth;
+        return maxDepth != null && (0, RootPathUtils_1.getAncestorOfRootIdx)(canonicalPath) > maxDepth;
+    }
+    /**
+     * Synchronously populate a missing tree node by querying the injected
+     * fallback filesystem. The fallback returns tree-compatible nodes
+     * (FileMetadata tuples or directory Maps) that are inserted directly.
+     *
+     * Returns the newly created node, or null if the path doesn't exist on disk.
+     */
+    #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath) {
+        const fallback = this.#fallbackFilesystem;
+        if (fallback == null) {
+            return null;
+        }
+        const childCanonicalPath = parentCanonicalPath === '' ? segmentName : parentCanonicalPath + path_1.default.sep + segmentName;
+        if (this.#rootPattern?.test(childCanonicalPath + path_1.default.sep) ||
+            this.#isOutsideFallbackBoundary(childCanonicalPath)) {
+            return null;
+        }
+        else if (parentCanonicalPath !== '' && (0, fallback_1.shouldFallbackCrawlDir)(parentCanonicalPath)) {
+            this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true);
+            return parentNode.get(segmentName) ?? null;
+        }
+        else if (parentNode.has(segmentName)) {
+            return parentNode.get(segmentName) ?? null;
+        }
+        else {
+            const parentAbsolute = this.#pathUtils.normalToAbsolute(parentCanonicalPath);
+            const absolutePath = parentAbsolute + path_1.default.sep + segmentName;
+            const node = fallback.lookup(childCanonicalPath, absolutePath, parentNode.get(segmentName));
+            parentNode.set(segmentName, node);
+            return node;
+        }
+    }
+    /**
+     * Populate an existing (potentially empty sentinel) directory node from
+     * the filesystem. Used by #pathIterator to fill lazy directories before
+     * iteration, and by #populateFromFilesystem for optimistic parent
+     * population.
+     */
+    #populateDirFromFilesystem(dirNode, canonicalPath, skipCheck) {
+        const fallback = this.#fallbackFilesystem;
+        if (fallback == null ||
+            (!skipCheck &&
+                (this.#rootPattern?.test(canonicalPath + path_1.default.sep) ||
+                    this.#isOutsideFallbackBoundary(canonicalPath)))) {
+            return;
+        }
+        const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
+        const entries = fallback.readdir(canonicalPath, absolutePath, dirNode);
+        if (entries != null && entries !== dirNode) {
+            for (const [name, entry] of entries) {
+                if (!dirNode.has(name)) {
+                    dirNode.set(name, entry);
+                }
+            }
+        }
     }
 }
 exports.default = TreeFS;

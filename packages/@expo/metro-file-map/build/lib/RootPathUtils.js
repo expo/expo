@@ -10,6 +10,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RootPathUtils = void 0;
+exports.getAncestorOfRootIdx = getAncestorOfRootIdx;
+exports.pathsToPattern = pathsToPattern;
 const invariant_1 = __importDefault(require("invariant"));
 const path_1 = __importDefault(require("path"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("./normalizePathSeparatorsToSystem"));
@@ -274,3 +276,36 @@ class RootPathUtils {
     }
 }
 exports.RootPathUtils = RootPathUtils;
+function getAncestorOfRootIdx(normalPath) {
+    let pos = 0;
+    while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
+        pos += UP_FRAGMENT_SEP_LENGTH;
+    }
+    if (normalPath.length === pos + 2 &&
+        normalPath.charCodeAt(pos) === 46 &&
+        normalPath.charCodeAt(pos + 1) === 46) {
+        return pos / UP_FRAGMENT_SEP_LENGTH + 1;
+    }
+    return pos / UP_FRAGMENT_SEP_LENGTH;
+}
+function pathsToPattern(paths, pathUtils) {
+    if (paths.length === 0) {
+        return null;
+    }
+    const pathsPatterns = paths.map((input) => {
+        let pattern = pathUtils.absoluteToNormal(input);
+        // When pattern is '' (root === rootDir), match any normal path that
+        // doesn't escape the root via '..' indirections.
+        if (pattern === '') {
+            return `(?!\\.\\.(?:\\${path_1.default.sep}|$))`;
+        }
+        // Append separator so that 'src' matches 'src/foo' but not 'src2'.
+        if (!pattern.endsWith(path_1.default.sep)) {
+            pattern += path_1.default.sep;
+        }
+        // Escape all regex-special characters.
+        // eslint-disable-next-line no-useless-escape
+        return pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, '\\$&');
+    });
+    return new RegExp(`^(?:${pathsPatterns.join('|')})`);
+}
