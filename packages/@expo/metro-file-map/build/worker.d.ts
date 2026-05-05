@@ -11,7 +11,7 @@ import type { WorkerMessage, WorkerMetadata, WorkerSetupArgs } from './types';
 export declare class Worker {
     #private;
     constructor({ plugins }: WorkerSetupArgs);
-    processFile(data: WorkerMessage): WorkerMetadata;
+    processFile(data: WorkerMessage): Promise<WorkerMetadata>;
 }
 /**
  * Called automatically by jest-worker before the first call to `worker` when
@@ -21,4 +21,4 @@ export declare function setup(args: WorkerSetupArgs): void;
 /**
  * Called by jest-worker with each workload
  */
-export declare function processFile(data: WorkerMessage): WorkerMetadata;
+export declare function processFile(data: WorkerMessage): Promise<WorkerMetadata>;

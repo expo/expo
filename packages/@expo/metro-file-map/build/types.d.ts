@@ -12,7 +12,8 @@ export interface BuildParameters {
     readonly computeSha1: boolean;
     readonly enableSymlinks: boolean;
     readonly extensions: readonly string[];
-    readonly forceNodeFilesystemAPI: boolean;
+    /** @deprecated */
+    readonly forceNodeFilesystemAPI?: boolean;
     readonly ignorePattern: RegExp;
     readonly plugins: readonly InputFileMapPlugin[];
     readonly retainAllFiles: boolean;
@@ -86,7 +87,8 @@ export interface CrawlerOptions {
     computeSha1: boolean;
     console: Console;
     extensions: readonly string[];
-    forceNodeFilesystemAPI: boolean;
+    /** @deprecated */
+    forceNodeFilesystemAPI?: boolean;
     ignore: IgnoreMatcher;
     includeSymlinks: boolean;
     perfLogger?: PerfLogger | null | undefined;
@@ -172,10 +174,10 @@ export interface FileMapPlugin<SerializableState extends undefined | V8Serializa
 }
 export type InputFileMapPlugin = FileMapPlugin<never, never>;
 export interface MetadataWorkerParams {
-    getContent(): Buffer;
+    getContent(): Promise<Buffer>;
 }
 export interface MetadataWorker {
-    processFile(message: WorkerMessage, params: MetadataWorkerParams): V8Serializable;
+    processFile(message: WorkerMessage, params: MetadataWorkerParams): V8Serializable | Promise<V8Serializable>;
 }
 export type IgnoreMatcher = (item: string) => boolean;
 export type FileData = Map<CanonicalPath, FileMetadata>;
@@ -212,6 +214,7 @@ export interface FileSystem {
         removedFiles: Set<string>;
     };
     getSerializableSnapshot(): CacheData['fileSystemData'];
+    getMtimeByNormalPath(file: Path): number | undefined | null;
     getSha1(file: Path): string | undefined | null;
     getOrComputeSha1(file: Path): Promise<{
         sha1: string;
@@ -329,7 +332,7 @@ export interface MutableFileSystem extends FileSystem {
 export type Path = string;
 export type ProcessFileFunction = (normalPath: string, metadata: FileMetadata, request: Readonly<{
     computeSha1: boolean;
-}>) => Buffer | undefined | null;
+}>) => Promise<Buffer | undefined | null>;
 export type RawMockMap = {
     /** posix-separated mock name to posix-separated project-relative paths */
     readonly duplicates: Map<string, Set<string>>;

@@ -259,6 +259,9 @@ async function watchmanCrawl({ abortSignal, computeSha1, extensions, ignore, inc
                 if (fileData.type === 'l') {
                     symlinkInfo = fileData['symlink_target'] ?? 1;
                 }
+                if (typeof symlinkInfo === 'string') {
+                    symlinkInfo = (0, normalizePathSeparatorsToPosix_1.default)(pathUtils.resolveSymlinkToNormal(relativeFilePath, symlinkInfo));
+                }
                 const nextData = [mtime, size, 0, sha1hex ?? null, symlinkInfo, null];
                 // If watchman is fresh, the removed files map starts with all files
                 // and we remove them as we verify they still exist.

@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RootPathUtils = void 0;
 const invariant_1 = __importDefault(require("invariant"));
 const path_1 = __importDefault(require("path"));
+const normalizePathSeparatorsToSystem_1 = __importDefault(require("./normalizePathSeparatorsToSystem"));
 /**
  * This module provides path utility functions - similar to `node:path` -
  * optimised for Metro's use case (many paths, few roots) under assumptions
@@ -128,6 +129,22 @@ class RootPathUtils {
     relativeToNormal(relativePath) {
         return (this.#tryCollapseIndirectionsInSuffix(relativePath, 0, 0)?.collapsedPath ??
             path_1.default.relative(this.#rootDir, path_1.default.join(this.#rootDir, relativePath)));
+    }
+    resolveSymlinkToNormal(symlinkNormalPath, readlinkResult) {
+        let target = (0, normalizePathSeparatorsToSystem_1.default)(readlinkResult);
+        // WARN: This only applies to Windows + Node 20 case, where the value is completely
+        // unnormalized and a trailing slash may be returned
+        if (target[target.length - 1] === path_1.default.sep) {
+            target = target.slice(0, -1);
+        }
+        if (path_1.default.isAbsolute(target)) {
+            return this.absoluteToNormal(target);
+        }
+        // Resolve relative to the symlink's containing directory, expressed as
+        // a root-relative (possibly non-normal) path, then normalize
+        const sepIdx = symlinkNormalPath.lastIndexOf(path_1.default.sep);
+        const rootRelativeTarget = sepIdx === -1 ? target : symlinkNormalPath.slice(0, sepIdx) + path_1.default.sep + target;
+        return this.relativeToNormal(rootRelativeTarget);
     }
     // If a path is a direct ancestor of the project root (or the root itself),
     // return a number with the degrees of separation, e.g. root=0, parent=1,..

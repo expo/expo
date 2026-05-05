@@ -12,7 +12,8 @@ interface WatcherOptions {
     console: Console;
     enableSymlinks: boolean;
     extensions: readonly string[];
-    forceNodeFilesystemAPI: boolean;
+    /** @deprecated */
+    forceNodeFilesystemAPI?: boolean;
     healthCheckFilePrefix: string;
     ignoreForCrawl: (filePath: string) => boolean;
     ignorePatternForWatch: RegExp;

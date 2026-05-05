@@ -96,6 +96,7 @@ export default class TreeFS implements MutableFileSystem {
         changedFiles: FileData;
         removedFiles: Set<string>;
     };
+    getMtimeByNormalPath(normalPath: Path): number | null;
     getSha1(mixedPath: Path): string | null;
     getOrComputeSha1(mixedPath: Path): Promise<{
         sha1: string;

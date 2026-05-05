@@ -58,6 +58,7 @@ const TreeFS_1 = __importDefault(require("./lib/TreeFS"));
 const checkWatchmanCapabilities_1 = __importDefault(require("./lib/checkWatchmanCapabilities"));
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("./lib/normalizePathSeparatorsToPosix"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("./lib/normalizePathSeparatorsToSystem"));
+const removeOverlappingRoots_1 = __importDefault(require("./lib/removeOverlappingRoots"));
 const debug = require('debug')('Metro:FileMap');
 var DiskCacheManager_2 = require("./cache/DiskCacheManager");
 Object.defineProperty(exports, "DiskCacheManager", { enumerable: true, get: function () { return DiskCacheManager_2.DiskCacheManager; } });
@@ -72,7 +73,7 @@ Object.defineProperty(exports, "HastePlugin", { enumerable: true, get: function 
 // This should be bumped whenever a code change to `metro-file-map` itself
 // would cause a change to the cache data structure and/or content (for a given
 // filesystem state and build parameters).
-const CACHE_BREAKER = '11';
+const CACHE_BREAKER = '12';
 const CHANGE_INTERVAL = 30;
 const NODE_MODULES = path.sep + 'node_modules' + path.sep;
 const VCS_DIRECTORIES = /[/\\]\.(git|hg)[/\\]/.source;
@@ -227,14 +228,14 @@ class FileMap extends events_1.default {
             plugins,
             retainAllFiles: options.retainAllFiles,
             rootDir: options.rootDir,
-            roots: Array.from(new Set(options.roots)),
+            roots: (0, removeOverlappingRoots_1.default)(options.roots),
         };
         this.#options = {
             ...buildParameters,
             healthCheck: options.healthCheck,
             perfLoggerFactory: options.perfLoggerFactory,
             resetCache: options.resetCache,
-            useWatchman: options.useWatchman == null ? true : options.useWatchman,
+            useWatchman: options.useWatchman ?? false,
             watch: !!options.watch,
             watchmanDeferStates: options.watchmanDeferStates ?? [],
         };
@@ -273,8 +274,8 @@ class FileMap extends events_1.default {
                 }
                 const rootDir = this.#options.rootDir;
                 this.#startupPerfLogger?.point('constructFileSystem_start');
-                const processFile = (normalPath, metadata, opts) => {
-                    const result = this.#fileProcessor.processRegularFile(normalPath, metadata, {
+                const processFile = async (normalPath, metadata, opts) => {
+                    const result = await this.#fileProcessor.processRegularFile(normalPath, metadata, {
                         computeSha1: opts.computeSha1,
                         maybeReturnContent: true,
                     });
@@ -405,7 +406,7 @@ class FileMap extends events_1.default {
                 .readlink(this.#pathUtils.normalToAbsolute(normalPath))
                 .then((symlinkTarget) => {
                 fileMetadata[constants_1.default.VISITED] = 1;
-                fileMetadata[constants_1.default.SYMLINK] = symlinkTarget;
+                fileMetadata[constants_1.default.SYMLINK] = (0, normalizePathSeparatorsToPosix_1.default)(this.#pathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget));
             });
         }
         return null;
@@ -434,7 +435,9 @@ class FileMap extends events_1.default {
             if (fileData[constants_1.default.SYMLINK] === 0) {
                 filesToProcess.push([normalFilePath, fileData]);
             }
-            else {
+            else if (fileData[constants_1.default.MTIME] != null && fileData[constants_1.default.MTIME] !== 0) {
+                // The symlink will only be updated, if it's been accessed before
+                // If this is a newly crawled entry, it's skipped
                 const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
                 if (maybeReadLink) {
                     readLinkPromises.push(maybeReadLink.catch((error) => {
