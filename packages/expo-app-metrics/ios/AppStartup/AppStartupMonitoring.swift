@@ -109,7 +109,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
           params["expo.frameRate.frozenFrames"] = frameMetrics.frozenFrames
           params["expo.frameRate.totalDelay"] = frameMetrics.freezeTime
         }
-        for (key, value) in DeviceConditions.deviceParams() {
+        for (key, value) in await DeviceConditions.deviceParams() {
           params[key] = value
         }
         for (key, value) in DeviceConditions.networkParams() {

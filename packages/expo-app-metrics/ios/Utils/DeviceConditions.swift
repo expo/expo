@@ -15,7 +15,13 @@ enum DeviceConditions {
    sentinel values like `-1` or `.unknown`) when the OS does not report a
    meaningful value — typically the Simulator, or the brief window after
    battery monitoring is first enabled before the first reading is published.
+
+   Pinned to `@MainActor` because `UIDevice` is part of UIKit and its
+   battery state/level reads are not documented as thread-safe. `ProcessInfo`
+   reads (low-power mode, thermal state) are thread-safe in isolation, but
+   we pin the whole helper for simplicity at the cost of one main-actor hop.
    */
+  @MainActor
   static func deviceParams() -> [String: Any] {
     var params: [String: Any] = [:]
 
@@ -79,8 +85,10 @@ enum DeviceConditions {
     monitor.start(queue: queue)
     // NWPathMonitor delivers the initial path almost immediately (typically
     // sub-millisecond). 5ms is a generous upper bound that still keeps TTI
-    // reporting on a tight budget; a future change should replace this with a
-    // long-lived monitor so the snapshot is free.
+    // reporting on a tight budget.
+    // TODO: Replace this short-lived monitor with a long-lived one started at
+    // module init so the snapshot read is free and we don't block a
+    // cooperative-pool thread.
     _ = semaphore.wait(timeout: .now() + .milliseconds(5))
     monitor.cancel()
     return snapshot
