@@ -85,12 +85,12 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mGeocoderPaused = false
 
   // Motion activity
-  private var mMotionActivityWatchId = 0
-  private var mMotionActivityPendingIntent: PendingIntent? = null
-  private var mMotionActivityReceiverRegistered = false
-  private val mMotionActivityReceiver = object : BroadcastReceiver() {
-    override fun onReceive(context: Context?, intent: Intent?) {
-      if (!ActivityRecognitionResult.hasResult(intent ?: return)) {
+  private var MotionActivityWatchId = 0
+  private var MotionActivityPendingIntent: PendingIntent? = null
+  private var MotionActivityReceiverRegistered = false
+  private val MotionActivityReceiver = object : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+      if (!ActivityRecognitionResult.hasResult(intent)) {
         return
       }
       val result = ActivityRecognitionResult.extractResult(intent) ?: return
