@@ -22,8 +22,8 @@ enum DeviceConditions {
    we pin the whole helper for simplicity at the cost of one main-actor hop.
    */
   @MainActor
-  static func deviceParams() -> [String: Any] {
-    var params: [String: Any] = [:]
+  static func deviceParams() -> [String: any Sendable] {
+    var params: [String: any Sendable] = [:]
 
     params["expo.device.lowPowerMode"] = ProcessInfo.processInfo.isLowPowerModeEnabled
     params["expo.device.thermalState"] = thermalStateString(ProcessInfo.processInfo.thermalState)
@@ -68,9 +68,9 @@ enum DeviceConditions {
    and returns `expo.network.connected` and `expo.network.type`. The monitor is
    cancelled before returning so the helper holds no system resources.
    */
-  static func networkParams() -> [String: Any] {
+  static func networkParams() -> [String: any Sendable] {
     let path = currentNetworkPath()
-    var params: [String: Any] = [
+    var params: [String: any Sendable] = [
       "expo.network.connected": path?.status == .satisfied
     ]
     params["expo.network.type"] = networkTypeString(path)
