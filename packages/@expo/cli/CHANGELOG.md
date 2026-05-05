@@ -70,6 +70,7 @@
 - Disable watchman by default ([#45378](https://github.com/expo/expo/pull/45378) by [@kitten](https://github.com/kitten))
 - Defer version check output to command table, and prefetch on start, to prevent it blocking/slowing down startup ([#45400](https://github.com/expo/expo/pull/45400) by [@kitten](https://github.com/kitten))
 - Bump to `@expo/metro@56.0.0` and `metro@0.84.4` ([#45404](https://github.com/expo/expo/pull/45404) by [@kitten](https://github.com/kitten))
+- Add link to expo router migration guide ([#45397](https://github.com/expo/expo/pull/45397) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.12 — 2026-02-25
 
