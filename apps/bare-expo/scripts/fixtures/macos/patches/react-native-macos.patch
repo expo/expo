@@ -1,0 +1,123 @@
+diff --git a/ReactCommon/jsi/jsi/jsi-inl.h b/ReactCommon/jsi/jsi/jsi-inl.h
+index f859db9d78656d5a4b72a4ddb03c102dcefe177d..b4e24051f783fbf5541822b72ee8f74405286da5 100644
+--- a/ReactCommon/jsi/jsi/jsi-inl.h
++++ b/ReactCommon/jsi/jsi/jsi-inl.h
+@@ -115,6 +115,28 @@ inline Value Object::getProperty(Runtime& runtime, const PropNameID& name)
+   return runtime.getProperty(*this, name);
+ }
+ 
++// [Expo] Backports of upstream rn 0.82+ overloads. See jsi.h for rationale.
++inline Value Object::getProperty(Runtime& runtime, const Value& name) const {
++  return runtime.getProperty(*this, name);
++}
++
++inline void Object::deleteProperty(Runtime& runtime, const char* name) const {
++  deleteProperty(runtime, String::createFromAscii(runtime, name));
++}
++
++inline void Object::deleteProperty(Runtime& runtime, const String& name) const {
++  runtime.deleteProperty(*this, name);
++}
++
++inline void Object::deleteProperty(Runtime& runtime, const PropNameID& name)
++    const {
++  runtime.deleteProperty(*this, name);
++}
++
++inline void Object::deleteProperty(Runtime& runtime, const Value& name) const {
++  runtime.deleteProperty(*this, name);
++}
++
+ inline bool Object::hasProperty(Runtime& runtime, const char* name) const {
+   return hasProperty(runtime, String::createFromAscii(runtime, name));
+ }
+diff --git a/ReactCommon/jsi/jsi/jsi.cpp b/ReactCommon/jsi/jsi/jsi.cpp
+index 65c57dd37370d87458fbbec925d0b21b4463c48d..1fce1b292eeefc08a3cd8887937e46d7b94dcc19 100644
+--- a/ReactCommon/jsi/jsi/jsi.cpp
++++ b/ReactCommon/jsi/jsi/jsi.cpp
+@@ -290,6 +290,45 @@ ICast* Runtime::castInterface(const UUID& /*interfaceUUID*/) {
+   return nullptr;
+ }
+ 
++// [Expo] Backports of upstream rn 0.82+ default implementations. Non-virtual
++// (see jsi.h for rationale): they dispatch through Reflect.{get,deleteProperty}
++// so they depend only on existing public Runtime/Object/Function APIs and work
++// against the unpatched prebuilt macOS hermes.framework.
++Value Runtime::getProperty(const Object& object, const Value& name) {
++  auto getFn = global()
++                   .getPropertyAsObject(*this, "Reflect")
++                   .getPropertyAsFunction(*this, "get");
++  return getFn.call(*this, object, name);
++}
++
++void Runtime::deleteProperty(const Object& object, const PropNameID& name) {
++  auto nameStr = String::createFromUtf8(*this, name.utf8(*this));
++  auto deleteFn = global()
++                      .getPropertyAsObject(*this, "Reflect")
++                      .getPropertyAsFunction(*this, "deleteProperty");
++  if (!deleteFn.call(*this, object, nameStr).getBool()) {
++    throw JSError(*this, "Failed to delete property");
++  }
++}
++
++void Runtime::deleteProperty(const Object& object, const String& name) {
++  auto deleteFn = global()
++                      .getPropertyAsObject(*this, "Reflect")
++                      .getPropertyAsFunction(*this, "deleteProperty");
++  if (!deleteFn.call(*this, object, name).getBool()) {
++    throw JSError(*this, "Failed to delete property");
++  }
++}
++
++void Runtime::deleteProperty(const Object& object, const Value& name) {
++  auto deleteFn = global()
++                      .getPropertyAsObject(*this, "Reflect")
++                      .getPropertyAsFunction(*this, "deleteProperty");
++  if (!deleteFn.call(*this, object, name).getBool()) {
++    throw JSError(*this, "Failed to delete property");
++  }
++}
++
+ Instrumentation& Runtime::instrumentation() {
+   class NoInstrumentation : public Instrumentation {
+     std::string getRecordedGCStats() override {
+diff --git a/ReactCommon/jsi/jsi/jsi.h b/ReactCommon/jsi/jsi/jsi.h
+index ed8d37f265bf62893c78d51f7a98bd148c5945fa..7de5fbaa0286bc1972cf85738f32b7d412bbc2a2 100644
+--- a/ReactCommon/jsi/jsi/jsi.h
++++ b/ReactCommon/jsi/jsi/jsi.h
+@@ -486,6 +486,17 @@ class JSI_EXPORT Runtime : public ICast {
+   virtual void
+   setPropertyValue(const Object&, const String& name, const Value& value) = 0;
+ 
++  // [Expo] Backport of upstream JSI APIs (rn 0.82+) used by ExpoModulesJSI.
++  // Declared non-virtual on purpose: the macOS hermes.framework is prebuilt
++  // against the unpatched Runtime, so adding new vtable slots here would
++  // corrupt dispatch through that binary. The default impls in jsi.cpp use
++  // existing public Runtime/Object/Function APIs (Reflect.{get,deleteProperty})
++  // and so work uniformly across all Runtime subclasses.
++  Value getProperty(const Object&, const Value& name);
++  void deleteProperty(const Object&, const PropNameID& name);
++  void deleteProperty(const Object&, const String& name);
++  void deleteProperty(const Object&, const Value& name);
++
+   virtual bool isArray(const Object&) const = 0;
+   virtual bool isArrayBuffer(const Object&) const = 0;
+   virtual bool isFunction(const Object&) const = 0;
+@@ -954,6 +965,17 @@ class JSI_EXPORT Object : public Pointer {
+   /// undefined value.
+   Value getProperty(Runtime& runtime, const PropNameID& name) const;
+ 
++  /// [Expo] \return the property of the object with the given JS Value
++  /// name. Backport of upstream rn 0.82+ overload.
++  Value getProperty(Runtime& runtime, const Value& name) const;
++
++  /// [Expo] Deletes the property with the given name. Backport of upstream
++  /// rn 0.82+ overloads.
++  void deleteProperty(Runtime& runtime, const char* name) const;
++  void deleteProperty(Runtime& runtime, const String& name) const;
++  void deleteProperty(Runtime& runtime, const PropNameID& name) const;
++  void deleteProperty(Runtime& runtime, const Value& name) const;
++
+   /// \return true if and only if the object has a property with the
+   /// given ascii name.
+   bool hasProperty(Runtime& runtime, const char* name) const;

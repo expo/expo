@@ -11,6 +11,7 @@ PODS:
     - boost
     - DoubleConversion
     - ExpoModulesCore
+    - ExpoModulesJSI
     - fast_float
     - fmt
     - glog
@@ -264,14 +265,17 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (55.0.12):
-    - hermes-engine
+  - ExpoModulesJSI (55.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
   - ExpoModulesWorklets (55.0.12):
     - ExpoModulesCore
     - ExpoModulesJSI
+  - ExpoModulesWorkletsAdapter (55.0.12):
+    - ExpoModulesCore
+    - ExpoModulesJSI
+    - ExpoModulesWorklets
     - RNWorklets
   - ExpoSQLite (55.0.10):
     - ExpoModulesCore
@@ -2208,7 +2212,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - react-native-webview (13.16.0):
+  - react-native-webview (13.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3008,8 +3012,9 @@ DEPENDENCIES:
   - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
-  - ExpoModulesJSI (from `../../../packages/expo-modules-core`)
+  - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
+  - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
@@ -3057,7 +3062,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/microtasks`)
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@11.5.2_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_8c00f34e506f253739502776a6b151b3/node_modules/@react-native-community/netinfo`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.2_patch_hash=26e2b529e765bf444b7_4c4e874d7e413c452c675c18547f03af/node_modules/react-native-safe-area-context`)"
-  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.2_patch_hash=26e2b529e765bf444b707b628f5_ed94a4777d932f77580fcbe7088d9627/node_modules/react-native-webview`)"
+  - "react-native-webview (from `../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.85.2_patch_hash=26e2b529e765bf444b707b628f5_f1f57c38e166fde9b2d6089ca3e7e69d/node_modules/react-native-webview`)"
   - React-NativeModulesApple (from `../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-oscompat (from `../node_modules/react-native-macos/ReactCommon/oscompat`)
   - React-perflogger (from `../node_modules/react-native-macos/ReactCommon/reactperflogger`)
@@ -3161,9 +3166,11 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     inhibit_warnings: false
-    :path: "../../../packages/expo-modules-core"
+    :path: "../../../packages/expo-modules-jsi/apple"
   ExpoModulesWorklets:
     inhibit_warnings: false
+    :path: "../../../packages/expo-modules-core"
+  ExpoModulesWorkletsAdapter:
     :path: "../../../packages/expo-modules-core"
   ExpoSQLite:
     inhibit_warnings: false
@@ -3264,7 +3271,7 @@ EXTERNAL SOURCES:
   react-native-safe-area-context:
     :path: "../../../node_modules/.pnpm/react-native-safe-area-context@5.6.2_react-native@0.85.2_patch_hash=26e2b529e765bf444b7_4c4e874d7e413c452c675c18547f03af/node_modules/react-native-safe-area-context"
   react-native-webview:
-    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.0_react-native@0.85.2_patch_hash=26e2b529e765bf444b707b628f5_ed94a4777d932f77580fcbe7088d9627/node_modules/react-native-webview"
+    :path: "../../../node_modules/.pnpm/react-native-webview@13.16.1_react-native@0.85.2_patch_hash=26e2b529e765bf444b707b628f5_f1f57c38e166fde9b2d6089ca3e7e69d/node_modules/react-native-webview"
   React-NativeModulesApple:
     :path: "../node_modules/react-native-macos/ReactCommon/react/nativemodule/core/platform/ios"
   React-oscompat:
@@ -3342,7 +3349,7 @@ SPEC CHECKSUMS:
   EASClient: cb7854d65c09c520cc7d165f266c1d3bb901ceb7
   EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
   EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: afa1e57c45ee9b2b4d2b048df78f1de8849eb507
+  Expo: be6381e9c1390a5be199a157939b52ef0a461dc0
   expo-dev-client: 929c5e873b07c54035ab42aa165f095f74478d6c
   expo-dev-launcher: c7d71dc39d9279d532347d640121c90afb09e9d3
   expo-dev-menu: 8e225e6d1b0bd560f63cd8c96dd405a638d665d3
@@ -3356,9 +3363,10 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: efe64e98f2686d8bd0bd04300ba5ed360b3d0100
   ExpoLogBox: 4a892fbcf6e343ffc1a6b714dcdc04a754d7e42f
   ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: 6ac10871b4b9b56a13ecccb798cb7de19ae63b63
-  ExpoModulesJSI: 793687b04cbaa73ee8548bfdbcfba85954d1b2b5
-  ExpoModulesWorklets: c333b8e54a0a3785c48720f497de4fd6212142d3
+  ExpoModulesCore: e4fd3b49ec46068cf5617eae2ad50f4a07e27294
+  ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
+  ExpoModulesWorklets: 3fc573fcc96eb8c457091dde007055ef35d58d70
+  ExpoModulesWorkletsAdapter: 05761f23a998e68886eb0424dc3fa5762ee6fd74
   ExpoSQLite: bb89f888d972448c0594042c6654c41957b006a8
   ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
   EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
@@ -3407,7 +3415,7 @@ SPEC CHECKSUMS:
   React-microtasksnativemodule: 255f0b29a74d001ecd202e4d5f7f170a009b3987
   react-native-netinfo: 57447b5a45c98808f8eae292cf641f3d91d13830
   react-native-safe-area-context: c00143b4823773bba23f2f19f85663ae89ceb460
-  react-native-webview: 654f794a7686b47491cf43aa67f7f428bea00eed
+  react-native-webview: 8407aaaf6b539b1e38b72fabb55d6885de03beaf
   React-NativeModulesApple: c1e8f5e34efed354e5a066ef47c45a4ca5dddbb4
   React-oscompat: b359d251f6ea20fa91e5e0f99fd7b563f50a8af3
   React-perflogger: e5156a6e931998e62a95a5e1a4428e3a17a0e5cf
@@ -3436,7 +3444,7 @@ SPEC CHECKSUMS:
   React-timing: f91e37f2154ef9b25e1ded28326f9998669145f1
   React-utils: 35e85af00d70760e6fda280c78d184da64d89e3d
   ReactAppDependencyProvider: 17d150a60ad301142905427154168f58641e38c4
-  ReactCodegen: e4bbe2efd9da85d7876829eb9f58cd8770c0e311
+  ReactCodegen: e6cf8626fc56c2ac4443ccfef4135056c3b5fade
   ReactCommon: b2b6ff304cf01e1b67d8e9646e34d58320be0964
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
   RNGestureHandler: 9573b15d45c38e5771aac3330c89ab4683834bb6
