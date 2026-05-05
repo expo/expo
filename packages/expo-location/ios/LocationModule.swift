@@ -9,23 +9,6 @@ private let EVENT_HEADING_CHANGED = "Expo.headingChanged"
 private let EVENT_LOCATION_ERROR = "Expo.locationError"
 private let EVENT_MOTION_ACTIVITY_CHANGED = "Expo.motionActivityChanged"
 
-/// Builds a permission-response dictionary from the current CMMotionActivity authorization status.
-private func motionActivityPermissionResponse() -> [String: Any] {
-  let status = CMMotionActivityManager.authorizationStatus()
-  switch status {
-  case .authorized:
-    return ["status": "granted", "granted": true, "canAskAgain": true, "expires": "never"]
-  case .denied:
-    return ["status": "denied", "granted": false, "canAskAgain": false, "expires": "never"]
-  case .restricted:
-    return ["status": "denied", "granted": false, "canAskAgain": false, "expires": "never"]
-  case .notDetermined:
-    return ["status": "undetermined", "granted": false, "canAskAgain": true, "expires": "never"]
-  @unknown default:
-    return ["status": "undetermined", "granted": false, "canAskAgain": true, "expires": "never"]
-  }
-}
-
 public final class LocationModule: Module {
   private lazy var locationStreamers = [Int: BaseStreamer]()
   private lazy var motionActivityStreamers = [Int: MotionActivityStreamer]()
@@ -202,27 +185,12 @@ public final class LocationModule: Module {
       return try await Geocoder.reverseGeocode(location: location)
     }
 
-    AsyncFunction("getMotionActivityPermissionsAsync") { () -> [String: Any] in
-      return motionActivityPermissionResponse()
+    AsyncFunction("getMotionActivityPermissionsAsync") { (promise: Promise) in
+      try getPermissionUsingRequester(MotionActivityPermissionRequester.self, appContext: appContext, promise: promise)
     }
 
-    AsyncFunction("requestMotionActivityPermissionsAsync") { () -> [String: Any] in
-      guard CMMotionActivityManager.isActivityAvailable() else {
-        return motionActivityPermissionResponse()
-      }
-      let status = CMMotionActivityManager.authorizationStatus()
-      guard status == .notDetermined else {
-        return motionActivityPermissionResponse()
-      }
-      // Issuing a short historical query is the standard way to trigger the system
-      // Motion and Fitness permission prompt when the status is .notDetermined.
-      let manager = CMMotionActivityManager()
-      await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-        manager.queryActivityStarting(from: Date(timeIntervalSinceNow: -1), to: Date(), to: .main) { _, _ in
-          continuation.resume()
-        }
-      }
-      return motionActivityPermissionResponse()
+    AsyncFunction("requestMotionActivityPermissionsAsync") { (promise: Promise) in
+      try askForPermissionUsingRequester(MotionActivityPermissionRequester.self, appContext: appContext, promise: promise)
     }
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
