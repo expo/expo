@@ -65,6 +65,7 @@
 - Implement freestanding, faster TypeScript resolver ([#45227](https://github.com/expo/expo/pull/45227) by [@kitten](https://github.com/kitten))
 - Provide Babel config path hint to Expo Metro transformer ([#45260](https://github.com/expo/expo/pull/45260) by [@kitten](https://github.com/kitten))
 - Add `@expo/metro-file-map` fork ([#45373](https://github.com/expo/expo/pull/45373) by [@kitten](https://github.com/kitten))
+- Disable watchman by default ([#45378](https://github.com/expo/expo/pull/45378) by [@kitten](https://github.com/kitten))
 
 ## 55.0.12 — 2026-02-25
 
