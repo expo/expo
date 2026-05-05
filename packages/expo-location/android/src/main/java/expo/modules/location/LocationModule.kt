@@ -272,7 +272,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     }
 
     AsyncFunction("removeWatchAsync") { watchId: Int ->
-      // Motion activity does not require location permissions — check it first.
+      // Motion activity does not require location permissions - check it first.
       if (mMotionActivityWatchId != 0 && watchId == mMotionActivityWatchId) {
         stopMotionActivityWatch()
         return@AsyncFunction

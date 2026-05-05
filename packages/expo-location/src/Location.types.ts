@@ -513,7 +513,6 @@ export type LocationPermissionResponse = PermissionResponse & {
 
 export type { PermissionResponse };
 
-// @needsAudit
 /**
  * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
  * on iOS. On Android, the raw `DetectedActivity` confidence (0-100) is bucketed into these
@@ -534,7 +533,6 @@ export enum MotionActivityConfidence {
   High = 2,
 }
 
-// @needsAudit
 /**
  * The type of physical activity the user is currently performing.
  *
@@ -569,7 +567,6 @@ export enum MotionActivityType {
   Unknown = 'unknown',
 }
 
-// @needsAudit
 /**
  * Detection state for a single activity type.
  * When `detected` is `false`, `confidence` is always `Low`.
@@ -588,7 +585,6 @@ export type MotionActivityState = {
   confidence: MotionActivityConfidence;
 };
 
-// @needsAudit
 /**
  * Type returned by `getMotionActivityAsync` and the `watchMotionActivityAsync` callback.
  * Contains one entry per `MotionActivityType` so callers can inspect each activity
@@ -613,7 +609,6 @@ export type MotionActivityObject = {
   timestamp: number;
 };
 
-// @needsAudit
 /**
  * Represents the `watchMotionActivityAsync` callback.
  */
