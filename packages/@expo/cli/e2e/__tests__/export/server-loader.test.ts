@@ -268,8 +268,7 @@ describe.each(
     expect(data).toEqual({ foo: 'bar' });
   });
 
-  // TODO(@hassankhan): Re-enable `expo start` tests when streaming support in dev lands
-  (server.isExpoStart ? it.skip : it)('renders meta tags from loader data in HTML', async () => {
+  it('renders meta tags from loader data in HTML', async () => {
     const response = await server.fetchAsync('/meta');
     expect(response.status).toBe(200);
     const html = getHtml(await response.text());

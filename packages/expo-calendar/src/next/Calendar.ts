@@ -7,7 +7,6 @@ import type {
   DialogEventResult,
   EntityTypes,
   Event,
-  OpenEventDialogResult,
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
@@ -18,8 +17,6 @@ import type {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
-  CalendarDialogOpenParamsNext,
-  CalendarDialogParamsNext,
   ModifiableAttendeeProperties,
   AddEventWithFormOptions,
 } from './ExpoCalendar.types';
@@ -48,18 +45,6 @@ export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAtten
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
-  override async openInCalendar(
-    params?: CalendarDialogOpenParamsNext
-  ): Promise<OpenEventDialogResult> {
-    // We have to pass null here because the core doesn't support skipping the first param
-    return super.openInCalendar(params ?? null);
-  }
-
-  override async editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult> {
-    // We have to pass null here because the core doesn't support skipping the first param
-    return await super.editInCalendar(params ?? null);
-  }
-
   override getOccurrenceSync(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarEvent {
     const result = super.getOccurrenceSync(stringifyDateValues(recurringEventOptions));
     Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);

@@ -362,7 +362,7 @@ export default function Post() {
 
 ## Known limitations
 
-- Loaders **must** return JSON-serializable data. Streaming responses are currently not supported. This will be addressed in a future release.
+- Loaders **must** return JSON-serializable data. Returning streams or async iterable from a loader is not supported. This will be addressed in a future release.
 - Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
 
 ## Common questions

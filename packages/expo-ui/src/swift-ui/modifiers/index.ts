@@ -19,6 +19,7 @@ import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
 import { progressViewStyle } from './progressViewStyle';
+import { id, scrollPosition } from './scrollPosition';
 import type { Color } from './types';
 import { widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -590,7 +591,7 @@ export const scrollDismissesKeyboard = (
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
-type UnitPointValue =
+export type UnitPointValue =
   | 'zero'
   | 'topLeading'
   | 'top'
@@ -1316,6 +1317,8 @@ export type BuiltInModifier =
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>
   | ReturnType<typeof scrollTargetLayout>
+  | ReturnType<typeof id>
+  | ReturnType<typeof scrollPosition>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1403,6 +1406,7 @@ export * from './progressViewStyle';
 export * from './gaugeStyle';
 export * from './presentationModifiers';
 export * from './environment';
+export * from './scrollPosition';
 export * from './widgets';
 export type {
   TimingAnimationParams,

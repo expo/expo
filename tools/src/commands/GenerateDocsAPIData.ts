@@ -210,7 +210,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-router': ['exports.ts'],
+  'expo-router': [['exports.ts', 'html.ts']],
   'expo-router/stack': ['stack/index.ts', 'expo-router'],
   'expo-router/link': ['link/index.ts', 'expo-router'],
   'expo-router/color': ['color/index.ts', 'expo-router'],

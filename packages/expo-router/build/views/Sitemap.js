@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Sitemap = void 0;
 exports.getNavOptions = getNavOptions;
-exports.Sitemap = Sitemap;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = __importDefault(require("react"));
@@ -41,11 +41,12 @@ function getNavOptions() {
         },
     };
 }
-function Sitemap() {
+const Sitemap = () => {
     // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
     // we need to ensure that the Sitemap component is not rendered on the server.
     return ((0, jsx_runtime_1.jsx)(NoSSR_1.NoSSR, { children: (0, jsx_runtime_1.jsx)(SitemapInner, {}) }));
-}
+};
+exports.Sitemap = Sitemap;
 function SitemapInner() {
     const sitemap = (0, useSitemap_1.useSitemap)();
     const children = react_1.default.useMemo(() => sitemap?.children.filter(({ isInternal }) => !isInternal) ?? [], [sitemap]);
