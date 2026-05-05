@@ -249,10 +249,11 @@ function localizeRoute<T extends NavigationRoute | NavigationRouteWithSection>(
 
 export function appendSectionToRoute(route?: NavigationRouteWithSection) {
   if (route?.children) {
+    const sectionName = route.sidebarTitle ?? route.name;
     return route.children.map((entry: NavigationRouteWithSection) =>
       route.type !== 'page'
         ? Object.assign(entry, {
-            section: route.section ? `${route.section} - ${route.name}` : route.name,
+            section: route.section ? `${route.section} - ${sectionName}` : sectionName,
           })
         : route
     );
