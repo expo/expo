@@ -1,6 +1,7 @@
 import type { ConfigAPI, PluginItem } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
+import { ReactConfigOptions } from './react';
 import { reactClientReferencesPlugin } from '../plugins/client-module-proxy-plugin';
 import { environmentRestrictedImportsPlugin } from '../plugins/environment-restricted-imports';
 import { expoInlineManifestPlugin } from '../plugins/expo-inline-manifest-plugin';
@@ -15,7 +16,6 @@ import { serverMetadataPlugin } from '../plugins/server-metadata-plugin';
 import { expoUseDomDirectivePlugin } from '../plugins/use-dom-directive-plugin';
 import { widgetsPlugin } from '../plugins/widgets-plugin';
 import { hasModule, resolveModule } from '../utils/resolveModule';
-import { ReactConfigOptions } from './react';
 
 const EXCLUDED_FIRST_PARTY_PATHS = [/[/\\]node_modules[/\\]/];
 
