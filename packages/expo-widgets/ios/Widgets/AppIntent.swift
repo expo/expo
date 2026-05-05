@@ -1,6 +1,28 @@
 import AppIntents
 import WidgetKit
 
+struct WidgetReload: AppIntent {
+  // title is not used for non-discoverable intents, but it is required
+  static var title: LocalizedStringResource = "Reload widget"
+  static var isDiscoverable: Bool = false
+  @Parameter(title: "source")
+  var source: String?
+
+  init() {}
+  init(source: String?) {
+    self.source = source
+  }
+
+  func perform() async throws -> some IntentResult {
+    guard let source else {
+      return .result()
+    }
+
+    WidgetCenter.shared.reloadTimelines(ofKind: source)
+    return .result()
+  }
+}
+
 @available(iOS 16.0, *)
 struct WidgetUserInteraction: AppIntent {
   // title is not used for non-discoverable intents, but it is required

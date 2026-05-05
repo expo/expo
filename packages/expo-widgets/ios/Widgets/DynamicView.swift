@@ -106,7 +106,7 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(LinkView.self, LinkViewProps.self, updateProps: updateChildren)
 #if DEBUG
     case "RedBoxView":
-      render(RedBoxView.self, RedBoxViewProps.self)
+      render(RedBoxView.self, RedBoxViewProps.self) { $0.source = name }
     default:
       ZStack {
         Color.red.opacity(0.5)

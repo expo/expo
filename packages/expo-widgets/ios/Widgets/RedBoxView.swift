@@ -4,6 +4,7 @@ import ExpoUI
 
 public final class RedBoxViewProps: UIBaseViewProps {
   @Field var message: String
+  @Field var source: String?
   @Field var stack: String?
 }
 
@@ -21,6 +22,14 @@ public struct RedBoxView: ExpoSwiftUI.View {
         HStack(spacing: 6) {
           Image(systemName: "exclamationmark.triangle.fill")
           Text("Error").font(.headline)
+          Spacer()
+          if #available(iOS 17.0, *) {
+            Button(intent: WidgetReload(source: props.source)) {
+              Image(systemName: "arrow.clockwise")
+            }
+              .buttonStyle(.plain)
+              .padding(4)
+          }
         }
         .foregroundStyle(.white)
 
