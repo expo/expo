@@ -36,5 +36,8 @@
   "footerUnsubscribeSuffix": "をお読みください。",
   "progressTrackerMarkAsRead": "この章を読了にする",
   "progressTrackerMarkAsUnread": "この章を未読に戻す",
-  "progressTrackerNext": "次へ：{title}"
+  "progressTrackerNext": "次へ：{title}",
+  "prerequisitesHeading": "前提条件",
+  "prerequisitesRequirementSingular": "件",
+  "prerequisitesRequirementPlural": "件"
 }

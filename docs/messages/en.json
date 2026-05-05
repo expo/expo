@@ -36,5 +36,8 @@
   "footerUnsubscribeSuffix": ".",
   "progressTrackerMarkAsRead": "Mark this chapter as read",
   "progressTrackerMarkAsUnread": "Mark this chapter as unread",
-  "progressTrackerNext": "Next: {title}"
+  "progressTrackerNext": "Next: {title}",
+  "prerequisitesHeading": "Prerequisites",
+  "prerequisitesRequirementSingular": "requirement",
+  "prerequisitesRequirementPlural": "requirements"
 }
