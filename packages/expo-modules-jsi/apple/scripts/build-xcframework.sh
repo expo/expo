@@ -116,7 +116,17 @@ build_slice() {
   local platform="$1"
   local destination
   destination=$(platform_destination "$platform")
-  local build_dir_name="${CONFIGURATION}-${platform}"
+  # xcodebuild appends a `-${platform}` suffix to the products dir for every
+  # platform except macosx, which is the "base" SDK and emits to plain
+  # `${CONFIGURATION}`. The same applies to the GeneratedModuleMaps dir.
+  local build_dir_name suffix
+  if [[ "$platform" == "macosx" ]]; then
+    build_dir_name="${CONFIGURATION}"
+    suffix=""
+  else
+    build_dir_name="${CONFIGURATION}-${platform}"
+    suffix="-${platform}"
+  fi
 
   log "Building framework slice for ${platform}..."
 
@@ -150,20 +160,32 @@ build_slice() {
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
   local framework_path="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
   local swiftmodule_src="${product_path}/${PACKAGE_NAME}.swiftmodule"
-  local generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
+  local generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps${suffix}"
 
   # Stage the built slice for this platform.
   local slice_staging="${SLICES_DIR}/${platform}"
   rm -rf "$slice_staging"
   mkdir -p "$slice_staging"
 
-  cp -r "$framework_path" "$slice_staging/"
+  # `ditto` preserves symlinks (which `cp -r` dereferences on macOS Tahoe+),
+  # critical for the macOS framework's versioned bundle layout where the
+  # top-level binary is a symlink into Versions/Current/.
+  ditto "$framework_path" "$slice_staging/${PACKAGE_NAME}.framework"
   if [[ -d "${product_path}/${PACKAGE_NAME}.framework.dSYM" ]]; then
-    cp -r "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$slice_staging/"
+    ditto "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$slice_staging/${PACKAGE_NAME}.framework.dSYM"
+  fi
+
+  # macOS frameworks use the versioned bundle layout (Versions/A + top-level
+  # symlinks). Headers/Modules must live inside Versions/A — placing them at
+  # the top creates an "ambiguous bundle" that codesign rejects. Other Apple
+  # platforms use the flat layout where everything sits at the framework root.
+  local content_root="${slice_staging}/${PACKAGE_NAME}.framework"
+  if [[ "$platform" == "macosx" ]]; then
+    content_root="${slice_staging}/${PACKAGE_NAME}.framework/Versions/A"
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
-  local modules_dir="${slice_staging}/${PACKAGE_NAME}.framework/Modules"
+  local modules_dir="${content_root}/Modules"
   mkdir -p "$modules_dir"
   cp -r "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
@@ -185,10 +207,19 @@ build_slice() {
   find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface' \
     -exec sed -i '' '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
 
-  local headers_dir="${slice_staging}/${PACKAGE_NAME}.framework/Headers"
+  local headers_dir="${content_root}/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
   cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
+
+  # On macOS, expose Headers and Modules at the framework root via symlinks
+  # into Versions/Current/ — the binary and Resources already have these from
+  # SPM's output, but Headers/Modules don't because SPM doesn't emit them.
+  if [[ "$platform" == "macosx" ]]; then
+    local fw_root="${slice_staging}/${PACKAGE_NAME}.framework"
+    ln -sfn "Versions/Current/Headers" "${fw_root}/Headers"
+    ln -sfn "Versions/Current/Modules" "${fw_root}/Modules"
+  fi
 }
 
 # Assembles the xcframework from all staged slices.

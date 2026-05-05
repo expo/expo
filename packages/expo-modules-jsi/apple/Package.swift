@@ -33,6 +33,11 @@ let headerSearchPaths = [
   "\(publicHeaders)/DoubleConversion",
   "\(publicHeaders)/fmt",
   "\(publicHeaders)/fast_float",
+  // TODO(gabrieldonadel): Remove the following headers when we bump react-native-macos to 0.83
+  "\(publicHeaders)/React-jsinspector",
+  "\(publicHeaders)/React-jsinspectorcdp",
+  "\(publicHeaders)/React-jsinspectornetwork",
+  "\(publicHeaders)/React-jsinspectortracing",
 ]
 
 // Path to the generated module map for the `jsi` Clang module. The

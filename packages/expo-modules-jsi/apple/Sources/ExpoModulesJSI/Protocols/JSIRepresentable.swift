@@ -68,7 +68,10 @@ extension UInt8: JSIRepresentableNumber {}
 extension UInt16: JSIRepresentableNumber {}
 extension UInt32: JSIRepresentableNumber {}
 extension UInt64: JSIRepresentableNumber {}
+// Float16 is not available on x86_64 because Intel CPUs lack native Float16 support
+#if !os(macOS) || arch(arm64)
 extension Float16: JSIRepresentableNumber {}
+#endif
 extension Float32: JSIRepresentableNumber {}
 extension Float64: JSIRepresentableNumber {}
 extension CGFloat: JSIRepresentableNumber {}
