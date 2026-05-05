@@ -13,6 +13,25 @@ import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
 import java.io.Serializable
 
+internal class MotionActivityStateRecord(
+  @Field var detected: Boolean,
+  @Field var confidence: MotionActivityConfidence
+) : Record
+
+internal class MotionActivitiesRecord(
+  @Field var automotive: MotionActivityStateRecord,
+  @Field var cycling: MotionActivityStateRecord,
+  @Field var running: MotionActivityStateRecord,
+  @Field var walking: MotionActivityStateRecord,
+  @Field var stationary: MotionActivityStateRecord,
+  @Field var unknown: MotionActivityStateRecord
+) : Record
+
+internal class MotionActivityObjectRecord(
+  @Field var activities: MotionActivitiesRecord,
+  @Field var timestamp: Double
+) : Record
+
 internal class PermissionRequestResponse(
   @Field var canAskAgain: Boolean?,
   @Field var expires: String?,

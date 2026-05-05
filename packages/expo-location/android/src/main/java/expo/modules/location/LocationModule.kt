@@ -54,7 +54,10 @@ import expo.modules.location.records.LocationOptions
 import expo.modules.location.records.LocationProviderStatus
 import expo.modules.location.records.LocationResponse
 import expo.modules.location.records.LocationTaskOptions
+import expo.modules.location.records.MotionActivitiesRecord
 import expo.modules.location.records.MotionActivityConfidence
+import expo.modules.location.records.MotionActivityObjectRecord
+import expo.modules.location.records.MotionActivityStateRecord
 import expo.modules.location.records.MotionActivityType
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
@@ -87,55 +90,34 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mGeocoderPaused = false
 
   // Motion activity
-  private var MotionActivityWatchId = 0
-  private var MotionActivityPendingIntent: PendingIntent? = null
-  private var MotionActivityReceiverRegistered = false
-  private val MotionActivityReceiver = object : BroadcastReceiver() {
+  private var mMotionActivityWatchId = 0
+  private var mMotionActivityPendingIntent: PendingIntent? = null
+  private var mMotionActivityReceiverRegistered = false
+  private val mMotionActivityReceiver = object : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-      if (!ActivityRecognitionResult.hasResult(intent)) {
-        return
-      }
       val result = ActivityRecognitionResult.extractResult(intent) ?: return
 
-      // Aggregate raw confidence (0-100) per unified type. When multiple Android types map to
-      // the same unified type (for example, WALKING + ON_FOOT maps to "walking"), take the maximum.
-      val rawConfidenceByType = mutableMapOf<MotionActivityType, Int>()
-      for (detected in result.probableActivities) {
-        val type = when (detected.type) {
-          DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
-          DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
-          DetectedActivity.RUNNING -> MotionActivityType.RUNNING
-          DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
-          DetectedActivity.STILL -> MotionActivityType.STATIONARY
-          else -> MotionActivityType.UNKNOWN
-        }
-        rawConfidenceByType[type] = maxOf(rawConfidenceByType[type] ?: 0, detected.confidence)
-      }
-
-      val activitiesBundle = Bundle()
-      for (type in MotionActivityType.entries) {
-        val raw = rawConfidenceByType[type] ?: 0
-        activitiesBundle.putBundle(
-          type.value,
-          bundleOf(
-            "detected" to (raw >= 50),
-            "confidence" to when {
-              raw >= 75 -> MotionActivityConfidence.HIGH.value
-              raw >= 50 -> MotionActivityConfidence.MEDIUM.value
-              else -> MotionActivityConfidence.LOW.value
-            }
-          )
-        )
-      }
+      // When multiple Android types map to the same unified type
+      // (e.g. WALKING + ON_FOOT → walking), take the highest confidence.
+      val confidenceByType = result.probableActivities
+        .groupBy { it.toMotionActivityType() }
+        .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
 
       sendEvent(
         MOTION_ACTIVITY_EVENT_NAME,
-        bundleOf(
+        mapOf(
           "watchId" to mMotionActivityWatchId,
-          "activity" to Bundle().apply {
-            putBundle("activities", activitiesBundle)
-            putDouble("timestamp", System.currentTimeMillis().toDouble())
-          }
+          "activity" to MotionActivityObjectRecord(
+            activities = MotionActivitiesRecord(
+              automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
+              cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
+              running = confidenceByType.stateFor(MotionActivityType.RUNNING),
+              walking = confidenceByType.stateFor(MotionActivityType.WALKING),
+              stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
+              unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
+            ),
+            timestamp = System.currentTimeMillis().toDouble()
+          )
         )
       )
     }
@@ -935,6 +917,27 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       } ?: true
     }
     return false
+  }
+
+  private fun DetectedActivity.toMotionActivityType(): MotionActivityType = when (type) {
+    DetectedActivity.IN_VEHICLE -> MotionActivityType.AUTOMOTIVE
+    DetectedActivity.ON_BICYCLE -> MotionActivityType.CYCLING
+    DetectedActivity.RUNNING -> MotionActivityType.RUNNING
+    DetectedActivity.WALKING, DetectedActivity.ON_FOOT -> MotionActivityType.WALKING
+    DetectedActivity.STILL -> MotionActivityType.STATIONARY
+    else -> MotionActivityType.UNKNOWN
+  }
+
+  private fun Map<MotionActivityType, Int>.stateFor(type: MotionActivityType): MotionActivityStateRecord {
+    val raw = getOrDefault(type, 0)
+    return MotionActivityStateRecord(
+      detected = raw >= 50,
+      confidence = when {
+        raw >= 75 -> MotionActivityConfidence.HIGH
+        raw >= 50 -> MotionActivityConfidence.MEDIUM
+        else -> MotionActivityConfidence.LOW
+      }
+    )
   }
 
   // endregion
