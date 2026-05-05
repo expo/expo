@@ -28,6 +28,9 @@ enum DeviceConditions {
     params["expo.device.lowPowerMode"] = ProcessInfo.processInfo.isLowPowerModeEnabled
     params["expo.device.thermalState"] = thermalStateString(ProcessInfo.processInfo.thermalState)
 
+#if !os(tvOS)
+    // tvOS devices are wall-powered, so `UIDevice` doesn't expose battery
+    // state/level there. Skip the battery section entirely on that platform.
     let device = UIDevice.current
     // Battery readings require `isBatteryMonitoringEnabled = true`. We turn it
     // on once and leave it on rather than save/restore it around the read:
@@ -55,6 +58,7 @@ enum DeviceConditions {
     @unknown default:
       break
     }
+#endif
 
     return params
   }
