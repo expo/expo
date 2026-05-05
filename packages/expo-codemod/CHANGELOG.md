@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Warn when no paths are specified ([#45411](https://github.com/expo/expo/pull/45411) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
