@@ -105,7 +105,7 @@ In the above example, when the app user visits `/blog/my-post`, the page is rend
 
 You can customize the root HTML document by creating a **src/app/+html.tsx** file. This component wraps all routes and runs only on the server.
 
-The `useServerDocumentContext` hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
+The [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
 
 - `htmlAttributes`: attributes to add to the `<html>` element
 - `bodyAttributes`: attributes to add to the `<body>` element
@@ -152,7 +152,7 @@ export default function Root({ children }: { children: ReactNode }) {
 The **+html.tsx** file is only used by the server renderer and never by client code. This means:
 
 - It will be run by `expo-server` during server rendering
-- It is not rehydrated on the client, and hence shouldn't use React hooks other than `useServerDocumentContext`
+- It is not rehydrated on the client, and hence shouldn't use React hooks other than [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext)
 - You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/navigation-layouts/#root-layout) for styles)
 - You may not call browser APIs like `window` or `document` in your `+html.tsx`
 
@@ -160,9 +160,9 @@ All `+html.tsx` components are expected to render the `children` prop they recei
 
 ## Metadata
 
-Routes can export a `generateMetadata` function to define per-page metadata such as title, description, and Open Graph tags. This function runs on the server before rendering begins. Its result is injected into the `<head>` of the HTML document via the `headNodes` provided by `useServerDocumentContext` in your [Root HTML](#root-html) component.
+Routes can export a [`generateMetadata` function](/versions/unversioned/sdk/server/#generatemetadatafunctionrequest-params) to define per-page metadata such as title, description, and Open Graph tags. This function runs on the server before rendering begins. Its result is injected into the `<head>` of the HTML document via the `headNodes` provided by [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) in your [Root HTML](#root-html) component.
 
-Export a `generateMetadata` function from your route file and return a [`Metadata`](/versions/latest/sdk/server/#metadata) object. The function receives the incoming request and route parameters, which allows you to generate metadata dynamically:
+Export a [`generateMetadata` function](/versions/unversioned/sdk/server/#generatemetadatafunctionrequest-params) from your route file and return a [`Metadata`](/versions/unversioned/sdk/server/#metadata) object. The function receives the incoming request and route parameters, which you can use to generate metadata dynamically:
 
 ```tsx src/app/blog/[id].tsx
 import { Text } from 'react-native';
@@ -190,11 +190,11 @@ export default function BlogPost() {
 }
 ```
 
-The `generateMetadata` function executes on the server and is stripped from the client bundle, similar to [data loaders](/router/web/data-loaders). For a full list of supported metadata fields, see the [`Metadata`](/versions/latest/sdk/server/#metadata) type in the `expo-server` API reference.
+The `generateMetadata` function executes on the server and is stripped from the client bundle, similar to [data loaders](/router/web/data-loaders). For a full list of supported metadata fields, see the [`Metadata`](/versions/unversioned/sdk/server/#metadata) type in the `expo-server` API reference.
 
 ### Using `<Head>` with server rendering
 
-You can also use the [`<Head>`](/versions/latest/sdk/router/#head) component from `expo-router/head` to add meta tags. Both approaches can coexist in the same route. However, `generateMetadata` is the recommended approach for server rendering because it resolves metadata before the HTML stream begins, ensuring that meta tags are included in the earliest bytes of the response.
+You can also use the `<Head>` component from `expo-router/head` to add `<meta>` tags. Both approaches can co-exist in the same route. However, `generateMetadata` is the recommended approach for server rendering because it resolves metadata before the HTML stream begins, ensuring that `<meta>` tags are included in the earliest bytes of the response. `<Head>` can be used to update `<meta>` tags dynamically after the app has hydrated.
 
 ## Deployment
 
