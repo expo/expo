@@ -32,7 +32,11 @@ export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
 export * from './Carousel';
-export * from './HorizontalPager';
+export {
+  HorizontalPager,
+  type HorizontalPagerHandle,
+  type HorizontalPagerProps,
+} from './HorizontalPager';
 export * from './SearchBar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
