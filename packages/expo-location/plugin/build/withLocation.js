@@ -102,7 +102,7 @@ function removeForegroundServiceIconImageFiles(projectRoot) {
         }
     });
 }
-const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAlwaysPermission, locationWhenInUsePermission, motionUsagePermission, isIosBackgroundLocationEnabled, isAndroidBackgroundLocationEnabled, isAndroidForegroundServiceEnabled, androidForegroundServiceIcon, } = {}) => {
+const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAlwaysPermission, locationWhenInUsePermission, motionUsagePermission, isIosBackgroundLocationEnabled, isAndroidBackgroundLocationEnabled, isAndroidForegroundServiceEnabled, isAndroidMotionActivityEnabled, androidForegroundServiceIcon, } = {}) => {
     if (isIosBackgroundLocationEnabled) {
         config = withBackgroundLocation(config);
     }
@@ -133,6 +133,8 @@ const withLocation = (config, { locationAlwaysAndWhenInUsePermission, locationAl
         isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
         enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE',
         enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
+        isAndroidMotionActivityEnabled && 'android.permission.ACTIVITY_RECOGNITION',
+        isAndroidMotionActivityEnabled && 'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
     ].filter(Boolean));
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withLocation, pkg.name, pkg.version);
