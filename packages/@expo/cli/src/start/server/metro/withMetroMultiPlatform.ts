@@ -867,7 +867,6 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
-    serverRoot,
 
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
@@ -892,6 +891,13 @@ export async function withMetroMultiPlatformAsync(
 ) {
   const watchFolders = (config.watchFolders as string[]) || [];
   asWritable(config).watchFolders = watchFolders;
+
+  // NOTE(@kitten): If the on-demand filesystem is enabled, we can aggressively cut down the `watchFolders`
+  // to a minimum, since the files will be read lazily. This almost always speeds up exports
+  if (isExporting && !!config.resolver.unstable_onDemandFilesystem) {
+    watchFolders.length = 0;
+    watchFolders.push(projectRoot);
+  }
 
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
