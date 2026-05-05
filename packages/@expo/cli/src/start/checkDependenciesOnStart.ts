@@ -4,27 +4,46 @@ import chalk from 'chalk';
 import { getVersionedDependenciesAsync } from './doctor/dependencies/validateDependenciesVersions';
 import * as Log from '../log';
 
+export type DependencyCheckResult = {
+  expo?: { actualVersion: string; expectedVersionOrRange: string };
+  otherCount: number;
+};
+
 /**
- * Check dependency versions and print a condensed summary for the start command.
- * Shows a specific hint for `expo` if out-of-range, and a one-line summary for all others.
+ * Fetch dependency version check results.
+ * Returns null if everything is up-to-date.
  */
-export async function checkDependenciesOnStartAsync(
+export async function checkDependenciesAsync(
   projectRoot: string,
   exp: Pick<ExpoConfig, 'sdkVersion'>,
   pkg: PackageJSONConfig
-): Promise<void> {
+): Promise<DependencyCheckResult | null> {
   const incorrectDeps = await getVersionedDependenciesAsync(projectRoot, exp, pkg);
-  const expoDep = incorrectDeps.find((dep) => dep.packageName === 'expo');
-  const otherDeps = incorrectDeps.filter((dep) => dep.packageName !== 'expo');
+  if (incorrectDeps.length === 0) {
+    return null;
+  }
 
-  if (expoDep) {
+  const expoDep = incorrectDeps.find((dep) => dep.packageName === 'expo');
+  const otherCount = incorrectDeps.filter((dep) => dep.packageName !== 'expo').length;
+
+  return {
+    expo: expoDep
+      ? { actualVersion: expoDep.actualVersion, expectedVersionOrRange: expoDep.expectedVersionOrRange }
+      : undefined,
+    otherCount,
+  };
+}
+
+/** Print the condensed dependency check messages to the terminal. */
+export function printDependencyCheckResult(result: DependencyCheckResult): void {
+  if (result.expo) {
     Log.warn(
-      chalk`An update for {bold expo} is available: {red ${expoDep.actualVersion}} {dim →} {green ${expoDep.expectedVersionOrRange}}`
+      chalk`An update for {bold expo} is available: {red ${result.expo.actualVersion}} {dim →} {green ${result.expo.expectedVersionOrRange}}`
     );
   }
-  if (otherDeps.length > 0) {
+  if (result.otherCount > 0) {
     Log.warn(
-      chalk`${otherDeps.length} other package${otherDeps.length === 1 ? '' : 's'} should be updated. Run {bold npx expo install --check} for details.`
+      chalk`${result.otherCount} other package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`
     );
   }
 }

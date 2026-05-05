@@ -2,7 +2,8 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { getLogFile, shouldReduceLogs } from '../events';
-import { checkDependenciesOnStartAsync } from './checkDependenciesOnStart';
+import type { DependencyCheckResult } from './checkDependenciesOnStart';
+import { checkDependenciesAsync, printDependencyCheckResult } from './checkDependenciesOnStart';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
@@ -81,6 +82,13 @@ export async function startAsync(
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
+  // Start dependency version check in the background as early as possible (non-blocking).
+  // The result will be displayed in the TUI once it resolves.
+  let dependencyCheckPromise: Promise<DependencyCheckResult | null> | undefined;
+  if (!env.EXPO_OFFLINE && !env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly) {
+    dependencyCheckPromise = checkDependenciesAsync(projectRoot, exp, pkg).catch(() => null);
+  }
+
   if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
     // If Xcode could potentially be used, then we should eagerly perform the
     // assertions since they can take a while on cold boots.
@@ -117,15 +125,6 @@ export async function startAsync(
     await devServerManager.bootstrapTypeScriptAsync();
   }
 
-  if (!env.EXPO_OFFLINE && !env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly) {
-    try {
-      await profile(checkDependenciesOnStartAsync)(projectRoot, exp, pkg);
-    } catch {
-      // We don't show the dependency validation error, since it's non-essential
-      // for the user to know it ran or failed
-    }
-  }
-
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);
 
@@ -141,6 +140,7 @@ export async function startAsync(
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
+      dependencyCheckPromise,
     });
   } else {
     // Display the server location in CI...
@@ -150,6 +150,11 @@ export async function startAsync(
         console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
+    }
+    // In non-interactive mode, await the check and print if available.
+    const result = await dependencyCheckPromise;
+    if (result) {
+      printDependencyCheckResult(result);
     }
   }
 
