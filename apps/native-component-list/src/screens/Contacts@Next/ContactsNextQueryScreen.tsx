@@ -3,6 +3,7 @@ import {
   ContactField,
   ContactsSortOrder,
   PartialContactDetails,
+  requestPermissionsAsync,
 } from 'expo-contacts/next';
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TextInput } from 'react-native';
@@ -20,7 +21,7 @@ export default function ContactsManager() {
 
   useEffect(() => {
     const requestPermissions = async () => {
-      await Contact.requestPermissionsAsync();
+      await requestPermissionsAsync();
     };
     requestPermissions();
   }, []);

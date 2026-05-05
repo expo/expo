@@ -94,7 +94,7 @@ private val metricNameMap = mapOf(
   "launchTime" to "expo.app_startup.launch_time",
 
   // Updates
-  "updateDownloadTime" to "expo.updates.download_time",
+  "updateDownloadTime" to "expo.updates.download_time"
 )
 
 fun EASMetric.toOTMetric(): OTMetric {
@@ -134,7 +134,7 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
     OTAttribute.of("telemetry.sdk.language", "kotlin"),
     OTAttribute.of("expo.sdk.version", metadata.expoSdkVersion),
     OTAttribute.of("expo.react_native.version", metadata.reactNativeVersion),
-    OTAttribute.of("expo.eas_client.id", easClientId),
+    OTAttribute.of("expo.eas_client.id", easClientId)
   )
 
   // Send optional attributes only if they are set.
@@ -166,8 +166,16 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
   metadata.appBuildNumber?.let {
     attributes.add(OTAttribute.of("expo.app.build_number", it))
   }
-  metadata.appUpdateId?.let {
+  metadata.appUpdatesInfo?.updateId?.let {
+    // Fallback for backward compatibility
     attributes.add(OTAttribute.of("expo.app.update_id", it))
+    attributes.add(OTAttribute.of("expo.app.updates.id", it))
+  }
+  metadata.appUpdatesInfo?.channel?.let {
+    attributes.add(OTAttribute.of("expo.app.updates.channel", it))
+  }
+  metadata.appUpdatesInfo?.runtimeVersion?.let {
+    attributes.add(OTAttribute.of("expo.app.updates.runtime_version", it))
   }
   metadata.environment?.let {
     attributes.add(OTAttribute.of("expo.environment", it))

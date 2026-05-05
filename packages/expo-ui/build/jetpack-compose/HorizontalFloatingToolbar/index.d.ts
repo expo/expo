@@ -1,10 +1,26 @@
+import type { ColorValue } from 'react-native';
 import type { ExpoModifier } from '../../types';
+export type HorizontalFloatingToolbarColors = {
+    /**
+     * Color of the toolbar container (background).
+     */
+    toolbarContainerColor?: ColorValue;
+    /**
+     * Color of the floating action button container (background).
+     */
+    fabContainerColor?: ColorValue;
+};
 export type HorizontalFloatingToolbarProps = {
     /**
      * The variant of the horizontal floating toolbar.
      * @default 'standard'
      */
     variant?: 'standard' | 'vibrant';
+    /**
+     * Per-slot color overrides. Any field set here replaces the corresponding
+     * color from the variant default; unset fields fall back to the variant.
+     */
+    colors?: HorizontalFloatingToolbarColors;
     /**
      * The children of the component.
      */

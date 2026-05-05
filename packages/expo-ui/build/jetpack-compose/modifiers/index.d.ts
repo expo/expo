@@ -229,10 +229,24 @@ export declare const onVisibilityChanged: (handler: (isVisible: boolean) => void
     minFractionVisible?: number;
 }) => import("./createModifier").ModifierConfig;
 /**
+ * Calls the handler whenever the composable's measured size changes. Sizes are in dp.
+ * @param handler - Function called with the new size.
+ */
+export declare const onSizeChanged: (handler: (size: {
+    width: number;
+    height: number;
+}) => void) => import("./createModifier").ModifierConfig;
+/**
  * Sets the test ID for testing frameworks.
  * @param tag - Test ID string.
  */
 export declare const testID: (tag: string) => import("./createModifier").ModifierConfig;
+/**
+ * Applies semantic properties. Wraps `Modifier.semantics { ... }`.
+ */
+export declare const semantics: (params: {
+    contentType?: string;
+}) => import("./createModifier").ModifierConfig;
 type MaterialShapeName = 'cookie4Sided' | 'cookie6Sided' | 'cookie7Sided' | 'cookie9Sided' | 'cookie12Sided' | 'clover4Leaf' | 'clover8Leaf' | 'softBurst' | 'boom' | 'oval' | 'pill' | 'triangle' | 'diamond' | 'pentagon' | 'sunny' | 'verySunny' | 'fan' | 'pixelCircle' | 'pixelTriangle' | 'ghostish' | 'bun' | 'heart' | 'arch' | 'slanted' | 'puffy' | 'puffyDiamond';
 type CornerRadii = {
     topStart?: number;
@@ -327,4 +341,6 @@ export declare const verticalScroll: () => import("./createModifier").ModifierCo
  * Use on a Row to create a non-lazy scrollable container.
  */
 export declare const horizontalScroll: () => import("./createModifier").ModifierConfig;
+export { createModifier, createModifierWithEventListener } from './createModifier';
+export { createViewModifierEventListener } from './utils';
 //# sourceMappingURL=index.d.ts.map

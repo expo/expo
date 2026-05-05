@@ -75,6 +75,7 @@ module Expo
     @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
     @failed_remote_downloads = Set.new
+    @warned_no_prebuilt_react = false
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -96,9 +97,20 @@ module Expo
         ENV[EXTERNAL_MODULES_BASE_URL_ENV_VAR]
       end
 
-      # Returns true if precompiled modules are enabled via environment variable
+      # Returns true if precompiled modules are enabled via environment variable.
+      # Precompiled module xcframeworks are linked against the prebuilt
+      # React.xcframework, so they also require RCT_USE_PREBUILT_RNCORE=1. If
+      # the user opted in to precompiled modules but React Native is still set
+      # to build from source, fall back to source-built modules and warn once.
       def enabled?
-        ENV[ENV_VAR] == '1'
+        return false unless ENV[ENV_VAR] == '1'
+        return true if prebuilt_react_active?
+
+        unless @warned_no_prebuilt_react
+          @warned_no_prebuilt_react = true
+          Pod::UI.warn "[Expo] EXPO_USE_PRECOMPILED_MODULES=1 was set, but React Native is configured to build from source (RCT_USE_PREBUILT_RNCORE is not 1). Precompiled Expo modules require the prebuilt React.xcframework, so every Expo module will be built from source for this install. To use precompiled modules, ensure `ios.buildReactNativeFromSource` is not `true` in the `expo-build-properties` plugin (the default uses the prebuilt framework), or export RCT_USE_PREBUILT_RNCORE=1 before running `pod install`."
+        end
+        false
       end
 
       # Sets the list of package name patterns that should be built from source
@@ -364,11 +376,12 @@ module Expo
         end
       end
 
-      # Registers companion pods gated by a Podfile property.
+      # Registers companion pods gated by a Podfile property or resolved dependency.
       # A product can declare `autolinkWhen` in its spm.config.json to opt into this flow.
       # The pod is auto-registered when:
       #   1. The podspec exists (source build) or prebuilt xcframework exists (precompiled)
-      #   2. The gating Podfile.properties.json value is not the disabled value
+      #   2. The gating Podfile.properties.json value is not the disabled value, or
+      #      the gating dependency is present in the resolved dependency graph
       #   3. It's not already registered in the Podfile
       #   4. All of its local dependencies (pods in the lookup map) are already registered
       #
@@ -387,6 +400,9 @@ module Expo
       #     "podfileProperty": "expo.camera.barcode-scanner-enabled",
       #     "disabledValue": "false"
       #   }
+      #   "autolinkWhen": {
+      #     "podName": "RNWorklets"
+      #   }
       def register_companion_pods(podfile, target_definition, project_directory, tests_only: false)
         return if tests_only
 
@@ -396,14 +412,7 @@ module Expo
           condition = info[:autolink_when]
           next unless condition
           next if target_definition.dependencies.any? { |dep| dep.name == pod_name }
-
-          property = condition['podfileProperty']
-          disabled_value = condition['disabledValue']
-          next unless property
-
-          current_value = properties[property]
-          # Only skip if the property is explicitly set to the disabled value
-          next if current_value == disabled_value
+          next unless companion_autolink_condition_met?(condition, properties)
 
           podspec_file = File.join(info[:podspec_dir], "#{pod_name}.podspec")
           unless File.exist?(podspec_file)
@@ -429,7 +438,8 @@ module Expo
           registered_pod_names = target_definition.dependencies.map(&:name)
           missing_local_dep = spec.all_dependencies.find do |dep|
             root_spec_name = dep.name.partition('/').first
-            pod_lookup_map.key?(root_spec_name) && !registered_pod_names.include?(root_spec_name)
+            dep_info = pod_lookup_map[root_spec_name]
+            dep_info && dep_info[:type] == :internal && !registered_pod_names.include?(root_spec_name)
           end
           if missing_local_dep
             Pod::UI.message "[Expo] Skipping companion pod #{pod_name}: dependency #{missing_local_dep.name} is not installed"
@@ -446,11 +456,13 @@ module Expo
             end
           end
 
+          condition_label = companion_autolink_condition_label(condition)
+
           if enabled? && has_prebuilt_xcframework?(pod_name)
-            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{property})"
+            Pod::UI.message "— #{pod_name.green} (prebuilt companion, gated by #{condition_label})"
             podfile.pod(pod_name, :podspec => podspec_rel)
           else
-            Pod::UI.message "— #{pod_name.green} (companion, gated by #{property})"
+            Pod::UI.message "— #{pod_name.green} (companion, gated by #{condition_label})"
             podspec_dir_rel = Pathname.new(info[:podspec_dir]).relative_path_from(project_directory).to_s
             podfile.pod(pod_name, :path => podspec_dir_rel)
           end
@@ -463,6 +475,24 @@ module Expo
         props_path = File.join(Pod::Config.instance.installation_root.to_s, 'Podfile.properties.json')
         return {} unless File.exist?(props_path)
         JSON.parse(File.read(props_path)) rescue {}
+      end
+
+      def companion_autolink_condition_met?(condition, properties)
+        pod_name = condition['podName']
+        return pod_lookup_map.key?(pod_name) if pod_name
+
+        npm_package = condition['npmPackage']
+        return react_native_config.dig('dependencies', npm_package) != nil if npm_package
+
+        property = condition['podfileProperty']
+        return false unless property
+
+        # Only skip if the property is explicitly set to the disabled value.
+        properties[property] != condition['disabledValue']
+      end
+
+      def companion_autolink_condition_label(condition)
+        condition['podName'] || condition['npmPackage'] || condition['podfileProperty']
       end
 
       # ──────────────────────────────────────────────────────────────────────

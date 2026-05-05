@@ -11,6 +11,7 @@ const lazyImports_1 = require("./lazyImports");
 const restricted_react_api_plugin_1 = require("./restricted-react-api-plugin");
 const server_actions_plugin_1 = require("./server-actions-plugin");
 const server_data_loaders_plugin_1 = require("./server-data-loaders-plugin");
+const server_metadata_plugin_1 = require("./server-metadata-plugin");
 const use_dom_directive_plugin_1 = require("./use-dom-directive-plugin");
 const resolveModule_1 = require("./utils/resolveModule");
 const widgets_plugin_1 = require("./widgets-plugin");
@@ -32,7 +33,6 @@ function babelPresetExpo(api, options = {}) {
     const isReactServer = api.caller(common_1.getIsReactServer);
     const isFastRefreshEnabled = api.caller(common_1.getIsFastRefreshEnabled);
     const isReactCompilerEnabled = api.caller(common_1.getReactCompiler);
-    const isHermesV1 = api.caller(common_1.getIsHermesV1);
     const isDomComponent = api.caller(common_1.getIsDomComponent);
     const metroSourceType = api.caller(common_1.getMetroSourceType);
     const baseUrl = api.caller(common_1.getBaseUrl);
@@ -125,12 +125,6 @@ function babelPresetExpo(api, options = {}) {
         ]);
     }
     else if (!isModernEngine) {
-        // This is added back on hermes to ensure the react-jsx-dev plugin (`@babel/preset-react`) works as expected when
-        // JSX is used in a function body. This is technically not required in production, but we
-        // should retain the same behavior since it's hard to debug the differences.
-        if (!isHermesV1) {
-            extraPlugins.push(require('@babel/plugin-transform-parameters'));
-        }
         extraPlugins.push(
         // Add support for class static blocks.
         [require('@babel/plugin-transform-class-static-block'), { loose: true }]);
@@ -187,6 +181,7 @@ function babelPresetExpo(api, options = {}) {
     }
     if ((0, resolveModule_1.hasModule)(api, 'expo-router/package.json')) {
         extraPlugins.push(expo_router_plugin_1.expoRouterBabelPlugin);
+        extraPlugins.push(server_metadata_plugin_1.serverMetadataPlugin);
         // Process `loader()` functions for client, loader and server bundles (excluding RSC)
         // - Client bundles: Remove loader exports, they run on server only
         // - Server bundles: Keep loader exports (needed for SSG)
@@ -348,6 +343,18 @@ function babelPresetExpo(api, options = {}) {
                     if (reanimatedPlugin) {
                         return [require(reanimatedPlugin)];
                     }
+                }
+                return null;
+            })(),
+            // Automatically add the `@expo/ui` plugin when the package is installed.
+            // Independent of reanimated/worklets — must live in its own IIFE so the
+            // earlier fallback chain doesn't short-circuit before reaching it.
+            (() => {
+                if (platformOptions.expoUi === false)
+                    return null;
+                const plugin = (0, resolveModule_1.resolveModule)(api, '@expo/ui/babel-plugin');
+                if (plugin) {
+                    return [require(plugin)];
                 }
                 return null;
             })(),

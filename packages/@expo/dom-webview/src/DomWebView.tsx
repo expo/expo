@@ -24,6 +24,7 @@ const WebView = React.forwardRef<DomWebViewRef, DomWebViewProps>(
       () => ({
         scrollTo: (params) => viewRef.current?.scrollTo(params),
         injectJavaScript: (script: string) => viewRef.current?.injectJavaScript(script),
+        reload: () => viewRef.current?.reload(),
       }),
       []
     );

@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - Opt `"widget"` functions for `expo-widgets` out of react-compiler ([#43451](https://github.com/expo/expo/pull/43451) by [@kitten](https://github.com/kitten))
@@ -18,6 +20,8 @@
 ### 💡 Others
 
 - Remove @babel/plugin-transform-parameters require when using Hermes v1 ([#43080](https://github.com/expo/expo/pull/43080) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Delete Hermes v1 detection as it's the default ([#45263](https://github.com/expo/expo/pull/45263) by [@kitten](https://github.com/kitten))
+- Added `@expo/ui/babel-plugin` when `@expo/ui` is installed. ([#45217](https://github.com/expo/expo/pull/45217) by [@kudo](https://github.com/kudo))
 
 ### ⚠️ Notices
 

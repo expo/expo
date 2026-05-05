@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Disable precompiled modules with a clear warning when `EXPO_USE_PRECOMPILED_MODULES=1` is set without `RCT_USE_PREBUILT_RNCORE=1` ([#45381](https://github.com/expo/expo/pull/45381) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fall back to source build when a remote precompiled XCFramework download returns 404. ([#45240](https://github.com/expo/expo/pull/45240) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Resolve npm-bundled precompiled XCFrameworks for nested Expo packages like `expo-modules-core` during `pod install`. ([#45166](https://github.com/expo/expo/pull/45166) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt. ([#45160](https://github.com/expo/expo/pull/45160) by [@chrfalch](https://github.com/chrfalch))
@@ -33,6 +34,7 @@
 - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
 - [iOS] Add more detailed warnings when a package is not linked due to a mismatch between project and package deployment target. ([#44200](https://github.com/expo/expo/pull/44200) by [@behenate](https://github.com/behenate))
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
+- [iOS] Don't skip companion pods that depend on external (non-Expo) sibling pods. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.8 — 2026-02-25
 

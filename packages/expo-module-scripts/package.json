@@ -88,7 +88,7 @@
     "ts-jest": "~29.4.7"
   },
   "devDependencies": {
-    "@expo/metro": "56.0.0-rc.1",
+    "@expo/metro": "56.0.0-rc.2",
     "@babel/core": "^7.26.0"
   }
 }

@@ -27,6 +27,18 @@ export type CalendarDialogParamsNext = Omit<CalendarDialogParams, 'id'> & Presen
 
 export type CalendarDialogOpenParamsNext = CalendarDialogParamsNext & OpenEventPresentationOptions;
 
+export type AddEventWithFormOptions = {
+  title?: string;
+  startDate?: Date | string;
+  endDate?: Date | string;
+  allDay?: boolean;
+  notes?: string;
+  location?: string;
+  url?: string;
+  alarms?: Alarm[];
+  recurrenceRule?: RecurrenceRule;
+};
+
 export type ModifiableCalendarProperties = Pick<ExpoCalendar, 'color' | 'title'>;
 
 export type ModifiableEventProperties = Pick<
@@ -188,6 +200,13 @@ export declare class ExpoCalendar {
   createReminder(
     reminderData: Omit<Partial<ExpoCalendarReminder>, 'id' | 'calendarId'>
   ): Promise<ExpoCalendarReminder>;
+
+  /**
+   * Presents the system-provided dialog to create a new event in this calendar, pre-filled with the provided data.
+   * Requires at minimum write-only calendar permission.
+   * @platform ios
+   */
+  addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult>;
 
   /**
    * Updates the provided details of an existing calendar stored on the device. To remove a property,

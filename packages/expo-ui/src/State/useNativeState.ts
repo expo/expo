@@ -6,13 +6,14 @@ import { worklets } from './optionalWorklets';
 const ExpoUI = requireNativeModule('ExpoUI');
 
 /**
- * Observable state shared between JavaScript and native SwiftUI views.
+ * Observable state shared between JavaScript and native views (Jetpack Compose
+ * on Android and SwiftUI on iOS).
  */
 export type ObservableState<T> = SharedObject & {
   /**
    * The current value. Reads are safe from any thread; prefer writing from a worklet
-   * so the update runs on SwiftUI's UI thread. Updating state from the JS thread
-   * might show a SwiftUI warning.
+   * so the update runs on the native UI thread. Updating state from the JS thread
+   * might show a development warning.
    */
   value: T;
 };

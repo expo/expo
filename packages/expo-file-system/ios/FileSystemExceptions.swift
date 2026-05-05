@@ -156,3 +156,27 @@ internal final class UploadFailedToAccessCacheException: Exception {
     "Failed to access cache directory for upload temp file"
   }
 }
+
+internal final class WatcherSetupException: GenericException<String> {
+  override var reason: String {
+    "Cannot start watching path '\(param)'"
+  }
+}
+
+internal final class WatcherPermissionException: GenericException<String> {
+  override var reason: String {
+    "No permission to watch path '\(param)'"
+  }
+}
+
+internal final class WatcherPathNotFoundException: GenericException<String> {
+  override var reason: String {
+    "Path does not exist: '\(param)'"
+  }
+}
+
+internal final class WatcherUnsupportedPathException: GenericException<String> {
+  override var reason: String {
+    "Cannot watch path '\(param)'. Only local file:// paths are supported."
+  }
+}

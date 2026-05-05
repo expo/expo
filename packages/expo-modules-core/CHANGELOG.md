@@ -22,6 +22,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix random crash when concurrent access of the same `Record` on `Field.options`. The set is now guarded by a per-field lock and accessed through a single `withOptions` API. ([#45072](https://github.com/expo/expo/pull/45072) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed converting `Enumerable` function results to JS values. ([#45168](https://github.com/expo/expo/pull/45168) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed prebuild dependencies for `ExpoModulesJSI` ([#45124](https://github.com/expo/expo/pull/45124) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Add async/await overload for StaticAsyncFunction ([#44471](https://github.com/expo/expo/pull/44471) by [@Wenszel](https://github.com/Wenszel))
@@ -44,6 +45,7 @@
 - [iOS] Restore pre-ExpoModulesJSI `Record` conversion behavior by hydrating only declared fields, preserving `undefined` handling for object properties, and emitting typed records directly to JS. ([#45085](https://github.com/expo/expo/pull/45085) by [@barthap](https://github.com/barthap))
 - Fix reading EXConstants.bundle when using prebuilds + brownfield with SPM ([#45148](https://github.com/expo/expo/pull/45148) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Guard against null `eventEmitter` in `SwiftUIVirtualView.dispatchEvent` to prevent SIGSEGV after view teardown. ([#45175](https://github.com/expo/expo/pull/45175) by [@DORI2001](https://github.com/DORI2001))
+- [Android] Resolve `libworklets.so` via prefab before falling back to local CMake output. ([#43863](https://github.com/expo/expo/pull/43863) by [@Insik-Han](https://github.com/Insik-Han))
 
 ### 💡 Others
 
@@ -68,6 +70,7 @@
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
 - [Android] Improve performance of `PersistentFileLog`. ([#45058](https://github.com/expo/expo/pull/45058) by [@lukmccall](https://github.com/lukmccall))
 - [Android] Improve performance of `EnumTypeConverter`. ([#45204](https://github.com/expo/expo/pull/45204) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Made `ExpoModulesWorklets` precompilable via runtime provider injection. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.12 — 2026-02-25
 

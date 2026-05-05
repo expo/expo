@@ -39,7 +39,7 @@
     "@expo/config": "workspace:~55.0.8",
     "@expo/env": "workspace:~2.1.1",
     "@expo/json-file": "workspace:~10.0.12",
-    "@expo/metro": "56.0.0-rc.1",
+    "@expo/metro": "56.0.0-rc.2",
     "@expo/spawn-async": "^1.7.2",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",

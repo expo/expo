@@ -12,6 +12,16 @@ internal struct PersistedConfig: Codable {
 }
 
 /**
+ Bundle-derived facts pushed from the JS layer at package import time.
+
+ Set atomically by `setBundleDefaults`.
+ */
+internal struct PersistedBundleDefaults: Codable {
+  var environment: String
+  var isJsDev: Bool
+}
+
+/**
  Class that manages a custom `UserDefaults` database with `"dev.expo.observe"` suite name.
  */
 @AppMetricsActor
@@ -26,8 +36,10 @@ internal final class ObserveUserDefaults: UserDefaults {
    */
   private enum Keys: String {
     case lastDispatchedEntryId
+    case lastDispatchedLogEntryId
     case lastDispatchDate
     case config
+    case bundleDefaults
   }
 
   private init() {
@@ -65,6 +77,20 @@ internal final class ObserveUserDefaults: UserDefaults {
     }
   }
 
+  /**
+   Id of the last entry whose logs were dispatched. Tracked separately from `lastDispatchedEntryId`
+   so that a logs request failure does not block metrics dispatch (and vice versa) — both signals
+   move forward independently.
+   */
+  static var lastDispatchedLogEntryId: Int {
+    get {
+      return defaults.object(forKey: Keys.lastDispatchedLogEntryId.rawValue) as? Int ?? -1
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.lastDispatchedLogEntryId.rawValue)
+    }
+  }
+
   static var config: PersistedConfig? {
     guard let data = defaults.data(forKey: Keys.config.rawValue) else { return nil }
     return try? JSONDecoder().decode(PersistedConfig.self, from: data)
@@ -73,5 +99,15 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setConfig(_ newValue: PersistedConfig) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.config.rawValue)
+  }
+
+  static var bundleDefaults: PersistedBundleDefaults? {
+    guard let data = defaults.data(forKey: Keys.bundleDefaults.rawValue) else { return nil }
+    return try? JSONDecoder().decode(PersistedBundleDefaults.self, from: data)
+  }
+
+  static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
+    guard let data = try? JSONEncoder().encode(newValue) else { return }
+    defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
   }
 }

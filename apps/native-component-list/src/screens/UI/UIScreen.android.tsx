@@ -251,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'HorizontalPager component',
+    route: 'ui/horizontal-pager',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalPagerScreen'));
+    },
+  },
+  {
     name: 'Carousel component',
     route: 'ui/carousel',
     options: {},
@@ -344,6 +352,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./TooltipScreen'));
+    },
+  },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
 ];

@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
+- Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🐛 Bug fixes
 
 - Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
@@ -13,6 +16,8 @@
 - Replace invalid platform basepath stripping regex with slicing; discovered by @yavuzselimkolbasar - thank you! ([#44783](https://github.com/expo/expo/pull/44783) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
 
 ## 55.0.5 — 2026-02-25
 

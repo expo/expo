@@ -77,4 +77,66 @@ class ObservePreferencesTest {
     ObservePreferences.setConfig(context, PersistedConfig(sampleRate = null))
     assertNull(ObservePreferences.getConfig(context)?.sampleRate)
   }
+
+  // region PersistedBundleDefaults
+
+  @Test
+  fun `getBundleDefaults returns null by default`() {
+    assertNull(ObservePreferences.getBundleDefaults(context))
+  }
+
+  @Test
+  fun `setBundleDefaults persists environment and isJsDev`() {
+    ObservePreferences.setBundleDefaults(
+      context,
+      PersistedBundleDefaults(environment = "development", isJsDev = true)
+    )
+    val defaults = ObservePreferences.getBundleDefaults(context)
+    assertEquals("development", defaults?.environment)
+    assertEquals(true, defaults?.isJsDev)
+  }
+
+  @Test
+  fun `setBundleDefaults overwrites previous record`() {
+    ObservePreferences.setBundleDefaults(
+      context,
+      PersistedBundleDefaults(environment = "development", isJsDev = true)
+    )
+    ObservePreferences.setBundleDefaults(
+      context,
+      PersistedBundleDefaults(environment = "production", isJsDev = false)
+    )
+    val defaults = ObservePreferences.getBundleDefaults(context)
+    assertEquals("production", defaults?.environment)
+    assertEquals(false, defaults?.isJsDev)
+  }
+
+  @Test
+  fun `setBundleDefaults does not affect getConfig`() {
+    ObservePreferences.setConfig(
+      context,
+      PersistedConfig(dispatchingEnabled = false, sampleRate = 0.5)
+    )
+    ObservePreferences.setBundleDefaults(
+      context,
+      PersistedBundleDefaults(environment = "production", isJsDev = false)
+    )
+    val config = ObservePreferences.getConfig(context)
+    assertEquals(false, config?.dispatchingEnabled)
+    assertEquals(0.5, config?.sampleRate!!, 0.0001)
+  }
+
+  @Test
+  fun `setConfig does not affect getBundleDefaults`() {
+    ObservePreferences.setBundleDefaults(
+      context,
+      PersistedBundleDefaults(environment = "development", isJsDev = true)
+    )
+    ObservePreferences.setConfig(context, PersistedConfig(dispatchingEnabled = true))
+    val defaults = ObservePreferences.getBundleDefaults(context)
+    assertEquals("development", defaults?.environment)
+    assertEquals(true, defaults?.isJsDev)
+  }
+
+  // endregion
 }

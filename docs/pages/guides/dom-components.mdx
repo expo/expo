@@ -35,9 +35,35 @@ While the Expo native runtime generally does not support elements like `<div>` o
 
 ## Usage
 
+<Tabs>
+
+<Tab label="SDK 56 and later">
+
+DOM components use [`@expo/dom-webview`](https://www.npmjs.com/package/@expo/dom-webview) by default and no additional install is required.
+
+If you want to use `react-native-webview` instead, install it and opt out via the `dom` prop:
+
+<Terminal cmd={['$ npx expo install react-native-webview']} />
+
+```tsx App.tsx (native)
+import DOMComponent from './my-component';
+
+export default function App() {
+  return <DOMComponent dom={{ useExpoDOMWebView: false }} />;
+}
+```
+
+</Tab>
+
+<Tab label="SDK 55 and earlier">
+
 Install `react-native-webview` in your project:
 
 <Terminal cmd={['$ npx expo install react-native-webview']} />
+
+</Tab>
+
+</Tabs>
 
 To render a React component to the DOM, add the `'use dom'` directive to the top of the web component file:
 

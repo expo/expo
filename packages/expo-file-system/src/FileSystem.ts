@@ -10,11 +10,16 @@ import {
   FileMode,
   type UploadOptions,
   type UploadResult,
+  type DownloadProgress,
   type DownloadTaskOptions,
   type DownloadPauseState,
   type UploadTaskState,
   type DownloadTaskState,
+  type WatchEvent,
+  type WatchOptions,
+  type WatchSubscription,
 } from './ExpoFileSystem.types';
+import { FileSystemWatcher } from './FileSystemWatcher';
 import { PathUtilities } from './pathUtilities';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './streams';
 
@@ -165,6 +170,31 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   ): DownloadTask {
     return new DownloadTask(url, destination, options);
   }
+
+  /**
+   * Watches this file for changes on the filesystem.
+   *
+   * The watcher automatically stops when the file is deleted or renamed. To stop watching manually,
+   * call `remove()` on the returned subscription.
+   *
+   * @param callback Invoked when a change is detected. Receives a `WatchEvent` describing what changed.
+   * @param options Configuration for debouncing and filtering events.
+   * @return A subscription handle. Call `remove()` to stop watching.
+   *
+   * @example
+   * ```ts
+   * const file = new File(Paths.cache, 'data.json');
+   * const subscription = file.watch((event) => {
+   *   console.log(`File ${event.type}`);
+   * });
+   *
+   * // Later, stop watching:
+   * subscription.remove();
+   * ```
+   */
+  watch(callback: (event: WatchEvent<File>) => void, options?: WatchOptions): WatchSubscription {
+    return new FileSystemWatcher<File>(this.uri, callback, options, (uri) => new File(uri));
+  }
 }
 
 function createAbortError(reason?: string): Error {
@@ -184,6 +214,7 @@ File.downloadFileAsync = async function downloadFileAsync(
 
   let subscription: EventSubscription | undefined;
   let abortHandler: (() => void) | undefined;
+  let lastProgress: DownloadProgress | undefined;
 
   try {
     if (options?.signal?.aborted) {
@@ -193,7 +224,8 @@ File.downloadFileAsync = async function downloadFileAsync(
     if (downloadUuid && options?.onProgress) {
       subscription = ExpoFileSystem.addListener('downloadProgress', (event) => {
         if (event.uuid === downloadUuid) {
-          options.onProgress!(event.data);
+          lastProgress = event.data;
+          options.onProgress!(lastProgress);
         }
       });
     }
@@ -206,7 +238,16 @@ File.downloadFileAsync = async function downloadFileAsync(
     }
 
     const outputURI = await ExpoFileSystem.downloadFileAsync(url, to, options, downloadUuid);
-    return new File(outputURI);
+    const file = new File(outputURI);
+    const fileSize = file.size ?? 0;
+    if (
+      options?.onProgress &&
+      fileSize > 0 &&
+      (lastProgress?.bytesWritten !== fileSize || lastProgress?.totalBytes !== fileSize)
+    ) {
+      options.onProgress({ bytesWritten: fileSize, totalBytes: fileSize });
+    }
+    return file;
   } catch (error: any) {
     if (options?.signal?.aborted) {
       throw createAbortError(options.signal.reason);
@@ -340,6 +381,42 @@ export class Directory extends ExpoFileSystem.FileSystemDirectory {
 
   createDirectory(name: string): Directory {
     return new Directory(super.createDirectory(name).uri);
+  }
+
+  /**
+   * Watches this directory for changes to its contents or the directory itself.
+   *
+   * Events are emitted when files or subdirectories are created, modified, deleted, or renamed
+   * within this directory. On iOS, child changes are surfaced as a coarse-grained `modified` event
+   * on the directory itself, so filtering for child-level `created`, `deleted`, or `renamed` events
+   * is not reliable. The watcher automatically stops when the directory is deleted or renamed.
+   * To stop watching manually, call `remove()` on the returned subscription.
+   *
+   * @param callback Invoked when a change is detected. Receives a `WatchEvent` describing what changed.
+   * @param options Configuration for debouncing and filtering events.
+   * @return A subscription handle. Call `remove()` to stop watching.
+   *
+   * @example
+   * ```ts
+   * const cacheDir = new Directory(Paths.cache);
+   * const subscription = cacheDir.watch((event) => {
+   *   console.log(`${event.type}: ${event.target.uri}`);
+   * });
+   *
+   * // Later, stop watching:
+   * subscription.remove();
+   * ```
+   */
+  watch(
+    callback: (event: WatchEvent<File | Directory>) => void,
+    options?: WatchOptions
+  ): WatchSubscription {
+    return new FileSystemWatcher<File | Directory>(
+      this.uri,
+      callback,
+      options,
+      (uri, isDirectory) => (isDirectory ? new Directory(uri) : new File(uri))
+    );
   }
 }
 

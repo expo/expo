@@ -1,6 +1,6 @@
 import { Navigator, Slot } from './views/Navigator';
 export { useRouter, useUnstableGlobalHref, usePathname, useNavigationContainerRef, useGlobalSearchParams, useLocalSearchParams, useSegments, useRootNavigation, useRootNavigationState, useLoaderData, } from './hooks';
-export { router, type Router } from './imperative-api';
+export { router, type ImperativeRouter } from './imperative-api';
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
 export { ExpoRoot } from './ExpoRoot';
@@ -19,6 +19,12 @@ export { useNavigation } from './useNavigation';
 export { useFocusEffect, type EffectCallback } from './useFocusEffect';
 export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
+export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
+export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';
+export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
+export { useTheme } from './react-navigation/core/theming/useTheme';
+export { useRoutePath } from './react-navigation/native/useRoutePath';
+export { useScrollToTop } from './react-navigation/native/useScrollToTop';
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 export type * from './types';
@@ -28,5 +34,4 @@ export { unstable_navigationEvents } from './navigationEvents';
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
  */
 export { Tabs } from './layouts/Tabs';
-export * from './react-navigation';
 //# sourceMappingURL=exports.d.ts.map

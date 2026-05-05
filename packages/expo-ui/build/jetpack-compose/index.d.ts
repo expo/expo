@@ -31,6 +31,7 @@ export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
 export * from './Carousel';
+export * from './HorizontalPager';
 export * from './SearchBar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
@@ -47,4 +48,5 @@ export * from './Column';
 export * from './FlowRow';
 export { useNativeState } from '../State/useNativeState';
 export type { ViewEvent } from '../types';
+export type { PrimitiveBaseProps } from './layout-types';
 //# sourceMappingURL=index.d.ts.map

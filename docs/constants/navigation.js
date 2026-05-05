@@ -300,6 +300,7 @@ export const general = [
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
+      makePage('router/migrate/sdk-55-to-56.mdx'),
     ]),
   ]),
   makeSection(
@@ -395,6 +396,7 @@ export const general = [
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
         makePage('guides/expo-ui-swift-ui/extending.mdx'),
+        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),

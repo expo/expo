@@ -33,6 +33,7 @@ declare class ExpoCalendarNextModule extends NativeModule {
   ): Promise<ExpoCalendarEvent[]>;
 
   getCalendarById(calendarId: string): Promise<ExpoCalendar>;
+  presentPicker(): Promise<ExpoCalendar | null>;
   getEventById(eventId: string): Promise<ExpoCalendarEvent>;
   getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
 

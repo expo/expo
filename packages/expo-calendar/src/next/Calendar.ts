@@ -21,6 +21,7 @@ import type {
   CalendarDialogOpenParamsNext,
   CalendarDialogParamsNext,
   ModifiableAttendeeProperties,
+  AddEventWithFormOptions,
 } from './ExpoCalendar.types';
 
 /**
@@ -181,6 +182,13 @@ export class ExpoCalendar extends InternalExpoCalendar.ExpoCalendar {
     return await super.update(newDetails as Partial<ModifiableCalendarProperties>);
   }
 
+  override async addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult> {
+    if (!super.addEventWithForm) {
+      throw new UnavailabilityError('ExpoCalendar', 'addEventWithForm');
+    }
+    return super.addEventWithForm(options && stringifyDateValues(options));
+  }
+
   static override async get(calendarId: string): Promise<ExpoCalendar> {
     const calendar = await InternalExpoCalendar.getCalendarById(calendarId);
     Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
@@ -231,6 +239,22 @@ export async function createCalendar(details: Partial<Calendar> = {}): Promise<E
   const createdCalendar = await InternalExpoCalendar.createCalendar(newDetails);
   Object.setPrototypeOf(createdCalendar, ExpoCalendar.prototype);
   return createdCalendar;
+}
+
+/**
+ * Presents the OS calendar picker and returns the selected calendar.
+ * @return An [`ExpoCalendar`](#expocalendar) object or `null` when the picker is cancelled.
+ * @platform ios
+ */
+export async function presentPicker(): Promise<ExpoCalendar | null> {
+  if (!InternalExpoCalendar.presentPicker) {
+    throw new UnavailabilityError('Calendar', 'presentPicker');
+  }
+  const calendar = await InternalExpoCalendar.presentPicker();
+  if (calendar) {
+    Object.setPrototypeOf(calendar, ExpoCalendar.prototype);
+  }
+  return calendar;
 }
 
 /**
@@ -299,6 +323,7 @@ export type {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
+  AddEventWithFormOptions,
 } from './ExpoCalendar.types';
 
 export type {

@@ -6,6 +6,8 @@
 
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 - Remove dependency on react-navigation and move the navigation code to expo-router ([#44176](https://github.com/expo/expo/pull/44176) by [@Ubax](https://github.com/Ubax))
+- rename Router type to ImperativeRouter ([#45207](https://github.com/expo/expo/pull/45207) by [@Ubax](https://github.com/Ubax)
+- rename Route to RoutePath ([#45208](https://github.com/expo/expo/pull/45208) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
@@ -17,6 +19,9 @@
 - Copy material top tabs as `/js-top-tabs`. ([#44268](https://github.com/expo/expo/pull/44268) by [@jakex7](https://github.com/jakex7))
 - Support `ColorValue`. ([#44301](https://github.com/expo/expo/pull/44301) by [@jakex7](https://github.com/jakex7))
 - Allow customizing route-level `<Suspense>` fallback ([#43885](https://github.com/expo/expo/pull/43885) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade react-native-screens version to 4.25.0-beta.1 ([#45172](https://github.com/expo/expo/pull/45172) by [@Ubax](https://github.com/Ubax))
+- [web] Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
+- [web] Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
@@ -31,6 +36,7 @@
 - Fix `Stack.Screen.Title` string/number concatenation. ([#44213](https://github.com/expo/expo/pull/44213) by [@jakex7](https://github.com/jakex7))
 - [android] Use `tint` prop name instead of `tintColor` for Jetpack Compose icons ([#44427](https://github.com/expo/expo/pull/44427) by [@hassankhan](https://github.com/hassankhan))
 - Disable touch events on unfocused native tab screens ([#44778](https://github.com/expo/expo/pull/44778) by [@cortinico](https://github.com/cortinico))
+- fix RNScreensTabCompat to be compatible with new RNS version ([#45321](https://github.com/expo/expo/pull/45321) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 
@@ -42,6 +48,7 @@
 - Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
 - add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
 - refactor global-state logic ([#44056](https://github.com/expo/expo/pull/44056) by [@Ubax](https://github.com/Ubax))
+- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
 
 ## 55.0.2 — 2026-02-25
 

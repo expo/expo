@@ -1,7 +1,7 @@
 import DateTimePicker, {
   type DateTimePickerEvent,
   type DateTimePickerProps,
-} from '@expo/ui/datetimepicker';
+} from '@expo/ui/community/datetime-picker';
 import React, { useState } from 'react';
 import {
   Alert,

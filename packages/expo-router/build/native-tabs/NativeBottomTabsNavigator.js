@@ -102,24 +102,33 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
         }
     }
     const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
-    const onTabChange = (0, react_2.useCallback)((tabKey) => {
-        const { route } = descriptors[tabKey];
-        navigation.emit({
-            type: 'tabPress',
-            target: tabKey,
-            data: {
-                __internalTabsType: 'native',
-            },
-        });
-        navigation.dispatch({
-            type: 'JUMP_TO',
-            target: state.key,
-            payload: {
-                name: route.name,
-            },
-        });
+    const provenanceRef = (0, react_2.useRef)(0);
+    const onTabChange = (0, react_2.useCallback)(({ selectedKey, provenance, isNativeAction }) => {
+        // We should always send the last provenance we got from native side
+        provenanceRef.current = provenance;
+        if (isNativeAction) {
+            const { route } = descriptors[selectedKey];
+            navigation.emit({
+                type: 'tabPress',
+                target: selectedKey,
+                data: {
+                    __internalTabsType: 'native',
+                },
+            });
+            navigation.dispatch({
+                type: 'JUMP_TO',
+                target: state.key,
+                payload: {
+                    name: route.name,
+                },
+            });
+        }
     }, [descriptors, navigation, state.key]);
-    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(exports.NativeTabsContext, { value: true, children: (0, react_1.createElement)(NativeTabsView_1.NativeTabsView, { ...rest, key: visibleTabsKeys, focusedIndex: focusedIndex, tabs: visibleTabs, onTabChange: onTabChange }) }) }));
+    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(exports.NativeTabsContext, { value: true, children: (0, react_1.createElement)(NativeTabsView_1.NativeTabsView, { ...rest, key: visibleTabsKeys, focusedIndex: focusedIndex, 
+                // Provenance should only be sent with updates, and updates
+                // on JS side are only triggered by rerender, so passing ref
+                // here is ok.
+                provenance: provenanceRef.current, tabs: visibleTabs, onTabChange: onTabChange }) }) }));
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
 const NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);

@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed per-screen orientation not working with expo-dev-client by searching child VCs for react-native-screens orientation when an intermediate VC blocks the traversal. ([#44181](https://github.com/expo/expo/pull/44181) by [@vonovak](https://github.com/vonovak))
+- [iOS] Fixed `lockAsync` silently failing when flipping between previously-applied masks. ([#45239](https://github.com/expo/expo/pull/45239) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
