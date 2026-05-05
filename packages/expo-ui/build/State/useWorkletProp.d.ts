@@ -1,4 +1,5 @@
 import { type SharedObject } from 'expo-modules-core';
+import './index.fx';
 /**
  * Creates a `WorkletCallback` SharedObject that wraps a worklet function.
  * The SharedObject's integer ID survives React's prop serialization,

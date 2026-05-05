@@ -1,6 +1,10 @@
 import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
 
+// Side-effect: installs the iOS UI worklet runtime. Without this import,
+// worklet props silently no-op when consumers reach into expo-ui by deep
+// path (e.g. community/pager-view) instead of via the swift-ui umbrella.
+import './index.fx';
 import { worklets } from './optionalWorklets';
 
 const ExpoUI = requireNativeModule('ExpoUI');

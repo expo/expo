@@ -425,14 +425,20 @@ class ExpoUIModule : Module() {
       val scrollToPage by AsyncFunction<Int>()
       val onCurrentPageChange by Event<HorizontalPagerCurrentPageChangeEvent>()
       val onSettledPageChange by Event<HorizontalPagerSettledPageChangeEvent>()
+      val onPageScroll by Event<HorizontalPagerPageScrollEvent>()
+      val onScrollInProgressChange by Event<HorizontalPagerScrollInProgressChangeEvent>()
+      val onDragInteraction by Event<HorizontalPagerDragInteractionEvent>()
 
       Content { props ->
         HorizontalPagerContent(
-          props,
-          animateScrollToPage,
-          scrollToPage,
-          { onCurrentPageChange(it) },
-          { onSettledPageChange(it) }
+          props = props,
+          animateScrollToPage = animateScrollToPage,
+          scrollToPage = scrollToPage,
+          onCurrentPageChange = { onCurrentPageChange(it) },
+          onSettledPageChange = { onSettledPageChange(it) },
+          onPageScroll = { onPageScroll(it) },
+          onScrollInProgressChange = { onScrollInProgressChange(it) },
+          onDragInteraction = { onDragInteraction(it) }
         )
       }
     }

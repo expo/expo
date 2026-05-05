@@ -7,6 +7,9 @@
 ### 🎉 New features
 
 - Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `scrollIndicators(visibility, axes?)` SwiftUI modifier in `@expo/ui/swift-ui/modifiers`, wrapping SwiftUI's `scrollIndicators(_:axes:)`. ([#45649](https://github.com/expo/expo/pull/45649) by [@vonovak](https://github.com/vonovak))
+- Added `@expo/ui/community/pager-view` — a drop-in replacement for `react-native-pager-view`. ([#45499](https://github.com/expo/expo/pull/45499) by [@vonovak](https://github.com/vonovak))
+
 
 ### 🐛 Bug fixes
 

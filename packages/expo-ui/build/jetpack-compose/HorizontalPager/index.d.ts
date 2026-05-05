@@ -13,6 +13,11 @@ export type HorizontalPagerHandle = {
      */
     scrollToPage: (page: number) => Promise<void>;
 };
+/**
+ * Kind of drag interaction reported by `onDragInteraction`. Mirrors Compose's
+ * `DragInteraction.Start` / `DragInteraction.Stop` / `DragInteraction.Cancel`.
+ */
+export type HorizontalPagerDragInteraction = 'start' | 'stop' | 'cancel';
 export type HorizontalPagerProps = {
     /**
      * Imperative handle for programmatic navigation. Mirrors the methods on
@@ -36,6 +41,28 @@ export type HorizontalPagerProps = {
      * swipe or programmatic scroll has fully settled.
      */
     onSettledPageChange?: (page: number) => void;
+    /**
+     * Fires continuously while a swipe is in progress. Mirrors Compose's
+     * `PagerState.currentPage` and `currentPageOffsetFraction` — the latter is
+     * the signed fractional offset from `currentPage`, in the `[-0.5, 0.5]` range.
+     *
+     * If the callback is marked with the `'worklet'` directive, it runs
+     * synchronously on the UI thread; otherwise it is delivered asynchronously
+     * as a regular JS event.
+     */
+    onPageScroll?: (currentPage: number, currentPageOffsetFraction: number) => void;
+    /**
+     * Fires when Compose's `PagerState.isScrollInProgress` toggles — true while
+     * the pager is being dragged or animating to a snap target, false once it
+     * has settled.
+     */
+    onScrollInProgressChange?: (isScrollInProgress: boolean) => void;
+    /**
+     * Fires for each drag interaction emitted by `PagerState.interactionSource`.
+     * Combine with `onScrollInProgressChange` to distinguish user dragging from
+     * fling/snap-settling.
+     */
+    onDragInteraction?: (kind: HorizontalPagerDragInteraction) => void;
     /**
      * Spacing between pages in dp.
      * @default 0

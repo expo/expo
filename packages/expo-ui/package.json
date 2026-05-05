@@ -51,6 +51,10 @@
       "types": "./build/community/masked-view/index.d.ts",
       "default": "./src/community/masked-view/index.tsx"
     },
+    "./community/pager-view": {
+      "types": "./build/community/pager-view/index.d.ts",
+      "default": "./src/community/pager-view/index.tsx"
+    },
     "./babel-plugin": {
       "types": "./plugin/babel-plugin.d.ts",
       "default": "./plugin/babel-plugin.js"
