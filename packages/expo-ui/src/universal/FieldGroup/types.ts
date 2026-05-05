@@ -1,4 +1,26 @@
+import type { ReactNode } from 'react';
+
 import type { UniversalBaseProps } from '../types';
+
+/**
+ * Props for the [`FieldGroup.SectionHeader`](#fieldgroupsectionheader) slot marker.
+ */
+export interface FieldSectionHeaderProps {
+  /**
+   * Content rendered as the section's header.
+   */
+  children?: ReactNode;
+}
+
+/**
+ * Props for the [`FieldGroup.SectionFooter`](#fieldgroupsectionfooter) slot marker.
+ */
+export interface FieldSectionFooterProps {
+  /**
+   * Content rendered as the section's footer.
+   */
+  children?: ReactNode;
+}
 
 /**
  * Props for the [`FieldGroup`](#fieldgroup) component, a scrollable container

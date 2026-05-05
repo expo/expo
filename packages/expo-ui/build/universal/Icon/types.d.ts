@@ -5,11 +5,11 @@ import type { UniversalBaseProps } from '../types';
  * A platform-specific icon definition.
  *
  * Pass a primitive (`require()`'d XML asset on Android, `string` SF Symbol on
- * iOS) or use [`Icon.select`](#iconselect) for a cross-platform definition.
+ * iOS) or use [`Icon.select`](#selectspec) for a cross-platform definition.
  *
  * The plain object form (`{ ios, android }`) is also accepted but does not
  * tree-shake — the Android bundle still includes the iOS asset and vice versa.
- * Prefer `Icon.select` so the `babel-preset-expo` plugin can rewrite the call
+ * Prefer [`Icon.select`](#selectspec) so the `babel-preset-expo` plugin can rewrite the call
  * into a `Platform.OS` ternary that Metro DCE can fold per platform.
  */
 export type IconName = SFSymbol | ImageSourcePropType | {
@@ -24,7 +24,7 @@ export interface IconProps extends UniversalBaseProps {
      * Icon source. Android expects an XML vector drawable asset (typically from
      * `@expo/material-symbols`); iOS expects an SF Symbol string.
      *
-     * Use [`Icon.select`](#iconselect) for a cross-platform definition.
+     * Use [`Icon.select`](#selectspec) for a cross-platform definition.
      */
     name: IconName;
     /**
@@ -44,7 +44,7 @@ export interface IconProps extends UniversalBaseProps {
     accessibilityLabel?: string;
 }
 /**
- * Argument shape accepted by [`Icon.select`](#iconselect).
+ * Argument shape accepted by [`Icon.select`](#selectspec).
  *
  * The `android` slot accepts either a synchronous `require()` result or a
  * dynamic `import('*.xml')` expression. The latter is preferred because
