@@ -108,7 +108,7 @@
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.85.2",
+    "react-native": "0.85.3",
     "rimraf": "^6.1.2",
     "web-streams-polyfill": "^3.3.2"
   },

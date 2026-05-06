@@ -98,7 +98,7 @@
   "lottie-react-native": "~7.3.4",
   "react": "19.2.3",
   "react-dom": "19.2.3",
-  "react-native": "0.85.2",
+  "react-native": "0.85.3",
   "react-native-web": "~0.21.0",
   "react-native-gesture-handler": "~2.31.1",
   "react-native-get-random-values": "~1.11.0",

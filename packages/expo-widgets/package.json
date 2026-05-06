@@ -40,7 +40,7 @@
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native": "0.85.2",
+    "react-native": "0.85.3",
     "resolve-workspace-root": "^2.0.0"
   },
   "peerDependencies": {
