@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Compose `TextField` selection state synchronization. ([#45424](https://github.com/expo/expo/pull/45424) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.1 — 2026-05-05
