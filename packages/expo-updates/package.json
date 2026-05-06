@@ -85,5 +85,11 @@
     "expo-dev-client": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/create-updates-resources-ios.sh",
+      "./scripts/with-node.sh"
+    ]
   }
 }

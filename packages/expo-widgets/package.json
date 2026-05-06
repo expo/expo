@@ -47,5 +47,11 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/with-node.sh",
+      "./scripts/xcode-build-bundle.sh"
+    ]
   }
 }

@@ -54,5 +54,11 @@
   "peerDependencies": {
     "expo": "*",
     "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/get-app-config-ios.sh",
+      "./scripts/with-node.sh"
+    ]
   }
 }

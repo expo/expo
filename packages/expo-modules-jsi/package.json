@@ -36,5 +36,13 @@
   "devDependencies": {},
   "peerDependencies": {
     "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./apple/scripts/build-xcframework.sh",
+      "./apple/scripts/create-stub-xcframework.sh",
+      "./apple/scripts/generate-modulemap.sh",
+      "./apple/scripts/test.sh"
+    ]
   }
 }
