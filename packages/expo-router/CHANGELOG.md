@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Move `@jest/globals` to `devDependencies` ([#45469](https://github.com/expo/expo/pull/45469) by [@kitten](https://github.com/kitten))
+
 ## 56.0.4 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
