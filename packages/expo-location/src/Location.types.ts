@@ -536,9 +536,9 @@ export enum MotionActivityConfidence {
 /**
  * The type of physical activity the user is currently performing.
  *
- * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority
- * truthy property wins). On Android it maps to `DetectedActivity` constants from
- * Google Play Services.
+ * On Android it maps to `DetectedActivity` constants from Google Play Services.
+ * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority 
+ * truthy property wins).
  */
 export enum MotionActivityType {
   /**
