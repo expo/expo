@@ -10,6 +10,7 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -310,8 +311,9 @@ export function getDefaultConfig(
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
-        /\.expo[\\/]types/,
-      ].concat(metroDefaultValues.resolver.blockList ?? []),
+        // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+        exclusionList(['.expo/types']),
+      ],
     },
     cacheStores: [cacheStore],
     watcher: {
