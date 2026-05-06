@@ -69,9 +69,9 @@ object DeviceConditions {
   private fun thermalStatusString(status: Int): String {
     return when (status) {
       PowerManager.THERMAL_STATUS_NONE -> "nominal"
-      PowerManager.THERMAL_STATUS_LIGHT -> "fair"
-      PowerManager.THERMAL_STATUS_MODERATE -> "serious"
-      PowerManager.THERMAL_STATUS_SEVERE,
+      PowerManager.THERMAL_STATUS_LIGHT,
+      PowerManager.THERMAL_STATUS_MODERATE -> "fair"
+      PowerManager.THERMAL_STATUS_SEVERE -> "serious"
       PowerManager.THERMAL_STATUS_CRITICAL,
       PowerManager.THERMAL_STATUS_EMERGENCY,
       PowerManager.THERMAL_STATUS_SHUTDOWN -> "critical"
