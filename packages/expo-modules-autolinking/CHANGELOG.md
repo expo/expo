@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Reduce prominence of expected source-build fallback logs for missing external precompiled XCFrameworks.
+
 ## 56.0.0 — 2026-05-05
 
 ### 🎉 New features

@@ -1665,7 +1665,8 @@ module Expo
           unless has_prebuilt_xcframework?(pod_name)
             product_name = info[:product_name] || pod_name
             expected = File.join(info[:build_output_dir], build_flavor, 'xcframeworks', "#{product_name}.tar.gz")
-            Pod::UI.warn "[Expo-precompiled] #{pod_name}: prebuilt xcframework not found. Expected tarball at #{expected}"
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: prebuilt xcframework unavailable; building from source".yellow}"
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  Expected tarball: #{expected}")}"
             next
           end
 
