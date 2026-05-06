@@ -409,6 +409,8 @@ export function getDefaultConfig(
       assetRegistryPath: '@react-native/assets-registry/registry',
       // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
       enableBabelRuntime: babelRuntimeVersion ?? undefined,
+      // Allows additional babelrc lookups (mostly unused). The default of `undefined` enables the project's custom Babel config without enabling babelrc/configFile discovery
+      enableBabelRCLookup: undefined,
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {

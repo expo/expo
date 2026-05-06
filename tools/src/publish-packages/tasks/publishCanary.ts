@@ -7,10 +7,12 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import { packPackageToTarball } from './packPackageToTarball';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
+import { resolveWorkspaceSpecs } from './resolveWorkspaceSpecs';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
 import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
+import { verifyNoWorkspaceSpecs } from './verifyNoWorkspaceSpecs';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { sdkVersionAsync } from '../../ProjectVersions';
@@ -135,10 +137,12 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       updateBundledNativeModulesFile,
       updateModuleTemplate,
       updateWorkspaceProjects,
+      resolveWorkspaceSpecs,
       updateAndroidProjects,
       publishAndroidArtifacts,
       addTemplateTarball,
       bundleIOSPrebuilds,
+      verifyNoWorkspaceSpecs,
       packPackageToTarball,
       publishPackages,
       cleanWorkingTree,

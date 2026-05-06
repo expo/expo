@@ -25,7 +25,10 @@ export interface StackToolbarProps {
   /**
    * Child elements to compose the toolbar. Can include Stack.Toolbar.Button,
    * Stack.Toolbar.Menu, Stack.Toolbar.View, Stack.Toolbar.Spacer, and
-   * Stack.Toolbar.SearchBarSlot (bottom only) components.
+   * Stack.Toolbar.SearchBarSlot (bottom placement, iOS only) components.
+   *
+   * @platform android
+   * @platform ios
    */
   children?: ReactNode;
   /**
@@ -33,9 +36,12 @@ export interface StackToolbarProps {
    *
    * - `'left'`: Renders items in the left area of the header.
    * - `'right'`: Renders items in the right area of the header.
-   * - `'bottom'`: Renders items in the bottom toolbar (iOS only).
+   * - `'bottom'`: Renders items in the bottom toolbar.
    *
    * @default 'bottom'
+   *
+   * @platform android
+   * @platform ios
    */
   placement?: ToolbarPlacement;
   /**
@@ -45,6 +51,9 @@ export interface StackToolbarProps {
    * Only applies to `placement="left"` and `placement="right"`.
    *
    * @default false
+   *
+   * @platform android
+   * @platform ios
    */
   asChild?: boolean;
   /**
@@ -76,7 +85,7 @@ export interface StackToolbarProps {
  *
  * - Use `placement="left"` to customize the left side of the header.
  * - Use `placement="right"` to customize the right side of the header.
- * - Use `placement="bottom"` (default) to show a bottom toolbar (iOS only).
+ * - Use `placement="bottom"` (default) to show a bottom toolbar.
  *
  * If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
@@ -131,6 +140,7 @@ export interface StackToolbarProps {
  * ```
  *
  * @experimental
+ * @platform android
  * @platform ios
  */
 export const StackToolbar = (props: StackToolbarProps) => {

@@ -17,6 +17,20 @@ export function createInjectedCssAsNodes(hrefs: string[]): CreateNodeResult {
   };
 }
 
+export function createInjectedInlineCssAsNodes(
+  inlineCss: { source: string; hmrId?: string }[] = []
+): CreateNodeResult {
+  return {
+    headNodes: inlineCss.map(({ source, hmrId }, index) => (
+      <style
+        key={hmrId ? `inline-css-${hmrId}` : `inline-css-${index}`}
+        data-expo-css-hmr={hmrId}
+        dangerouslySetInnerHTML={{ __html: source }}
+      />
+    )),
+  };
+}
+
 export function createInjectedScriptAsNodes(srcs: string[]): CreateNodeResult {
   return {
     headNodes: srcs.map((src) => (

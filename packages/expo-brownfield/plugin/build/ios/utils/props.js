@@ -7,6 +7,7 @@ const getPluginConfig = (props, config) => {
         bundleIdentifier: getBundleIdentifier(props, config, targetName),
         targetName,
         buildReactNativeFromSource: props?.buildReactNativeFromSource ?? false,
+        multipleFrameworks: props?.multipleFrameworks ?? false,
     };
 };
 exports.getPluginConfig = getPluginConfig;

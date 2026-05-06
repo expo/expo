@@ -52,7 +52,9 @@ Projects can configure how Babel is used by modifying the [**babel.config.js**](
 
 ### Bare workflow
 
-Describes the approach when the native projects (in the **android** and **ios** directories) are versioned in Git and maintained manually. It's typical for **existing "bare" React Native apps** where you manually make changes to the native projects. There is freedom to customize them but also high maintenance overhead.
+> **warning** [**Deprecated**](/more/release-statuses/#deprecated): Expo no longer separates "managed" and "bare" workflows. All projects use the same architecture based on Continuous Native Generation (CNG). Run `npx expo prebuild` to generate native directories when you need native access. Config plugins let you customize native configuration declaratively.
+
+Describes the approach when the native projects (in the **android** and **ios** directories) are versioned in Git and maintained manually. It's typical for **existing React Native apps** where you manually make changes to the native projects. There is freedom to customize them but also high maintenance overhead.
 
 This is in contrast to using [app config and prebuild](/workflow/continuous-native-generation), where the native projects are not versioned. Instead, they are generated on demand using the `npx expo prebuild`, which is the [recommended approach](/workflow/continuous-native-generation).
 

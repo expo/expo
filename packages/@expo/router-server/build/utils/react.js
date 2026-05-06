@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createInjectedCssAsNodes = createInjectedCssAsNodes;
+exports.createInjectedInlineCssAsNodes = createInjectedInlineCssAsNodes;
 exports.createInjectedScriptAsNodes = createInjectedScriptAsNodes;
 exports.getBootstrapContents = getBootstrapContents;
 exports.createInjectedFontsAsNodes = createInjectedFontsAsNodes;
@@ -12,6 +13,11 @@ function createInjectedCssAsNodes(hrefs) {
             (0, jsx_runtime_1.jsx)("link", { rel: "preload", href: href, as: "style" }, `css-preload-${href}`),
             (0, jsx_runtime_1.jsx)("link", { rel: "stylesheet", href: href }, `css-stylesheet-${href}`),
         ]),
+    };
+}
+function createInjectedInlineCssAsNodes(inlineCss = []) {
+    return {
+        headNodes: inlineCss.map(({ source, hmrId }, index) => ((0, jsx_runtime_1.jsx)("style", { "data-expo-css-hmr": hmrId, dangerouslySetInnerHTML: { __html: source } }, hmrId ? `inline-css-${hmrId}` : `inline-css-${index}`))),
     };
 }
 function createInjectedScriptAsNodes(srcs) {

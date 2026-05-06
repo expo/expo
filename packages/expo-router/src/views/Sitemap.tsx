@@ -53,7 +53,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
   };
 }
 
-export function Sitemap() {
+export const Sitemap: React.FC = () => {
   // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
   // we need to ensure that the Sitemap component is not rendered on the server.
   return (
@@ -61,7 +61,7 @@ export function Sitemap() {
       <SitemapInner />
     </NoSSR>
   );
-}
+};
 
 function SitemapInner() {
   const sitemap = useSitemap();

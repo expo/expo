@@ -119,7 +119,7 @@ All of these must be true:
 
 **Our recommendation:** under 3s including the cold launch time.
 
-#### Extra params
+#### Automatic event params
 
 Each TTI event includes extra params to help triage issues:
 
@@ -133,6 +133,31 @@ Each TTI event includes extra params to help triage issues:
 - **High TTI + high total delay + many slow frames:** main thread contention. Offload work and simplify the initial render tree.
 - **High TTI + high delay + frozen frames:** something is blocking hard. Look for synchronous I/O, large JSON parsing, or blocking API calls.
 
+#### Custom event params
+
+You can attach your own params to the TTI event by passing them to `markInteractive()`. This is useful for slicing TTI by app-specific dimensions such as user cohort, tenant, feature flag variant, or the type of content the screen loaded.
+
+```tsx
+AppMetrics.markInteractive({
+  params: {
+    tenant: 'acme',
+    cohort: 'beta',
+    cacheHit: true,
+  },
+});
+```
+
+You can also override the route name attached to the event, which is otherwise populated from the initial route detected by [Expo Router](/router/introduction/). This useful when the screen's logical name differs from the router path, is a dynamic route, or when not using Expo Router:
+
+```tsx
+AppMetrics.markInteractive({
+  routeName: '/feed',
+  params: { cacheHit: true },
+});
+```
+
+Param values can be strings, numbers, booleans, or other JSON-serializable values.
+
 ## Data handling
 
 ### Offline collection
@@ -145,8 +170,8 @@ Metric data is retained for a minimum of 60 days.
 
 ### Sampling
 
-All sessions are tracked. There is no sampling applied to the data collection.
+By default, all installations dispatch their metrics. To dispatch from a fraction of installations instead, set [`sampleRate`](/eas/observe/configuration/#sampling) when calling `configure()`. The decision is deterministic per installation, so an installation is consistently in-sample or out-of-sample across app launches.
 
 ### Environment
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). Metrics with the `development` environment are filtered out before dispatching unless `enableInDebug` is set to `true` in your app config (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). Metrics collected from debug builds are dropped before dispatching unless `dispatchInDebug` is set to `true` via [`configure()`](/eas/observe/configuration/#configure) (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.

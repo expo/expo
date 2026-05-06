@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -12,10 +22,56 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `base64` result not being a JPEG data. ([#43806](https://github.com/expo/expo/pull/43806) by [@barthap](https://github.com/barthap))
+
+## 55.0.20 - 2026-05-05
+
+### 🐛 Bug fixes
+
+- [android] Fix potential vulnerability in `com.canhub.cropper.CropImageActivity` being exported. ([#45357](https://github.com/expo/expo/pull/45357) by [@behenate](https://github.com/behenate))
+
+## 55.0.19 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-03-11
+
+### 🐛 Bug fixes
+
 - [android] Handle edge-to-edge display in crop activity. ([#44208](https://github.com/expo/expo/pull/44208) by [@zoontek](https://github.com/zoontek))
 - fix potential `null` mime type reported ([#43734](https://github.com/expo/expo/pull/43734) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.11 - 2026-03-05
+
+### 🐛 Bug fixes
+
 - [android] fix cropper default colors in light mode ([#42437](https://github.com/expo/expo/pull/42437) by [@fobos531](https://github.com/fobos531))
-- [iOS] Fix `base64` result not being a JPEG data. ([#43806](https://github.com/expo/expo/pull/43806) by [@barthap](https://github.com/barthap))
+
+## 55.0.10 - 2026-02-26
 
 ### 💡 Others
 

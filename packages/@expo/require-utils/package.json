@@ -1,6 +1,6 @@
 {
   "name": "@expo/require-utils",
-  "version": "55.0.2",
+  "version": "56.0.0",
   "description": "Reusable require and Node resolution utilities library for Expo",
   "license": "MIT",
   "main": "./build/index.js",
@@ -44,7 +44,7 @@
     "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "memfs": "^3.2.0"
   },
   "publishConfig": {

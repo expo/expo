@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "55.0.10",
+  "version": "56.0.0",
   "description": "Provides an API to fetch push notification tokens and to present, schedule, receive, and respond to notifications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -42,20 +42,20 @@
     ]
   },
   "dependencies": {
-    "@expo/image-utils": "workspace:^0.8.12",
+    "@expo/image-utils": "0.9.0",
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "workspace:~55.0.8",
-    "expo-constants": "workspace:~55.0.7"
+    "expo-application": "56.0.0",
+    "expo-constants": "56.0.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "memfs": "^3.2.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "56.0.0-preview.2",
     "react": "*",
     "react-native": "*"
   }

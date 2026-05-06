@@ -1,6 +1,6 @@
 {
   "name": "@expo/devtools",
-  "version": "55.0.2",
+  "version": "56.0.0",
   "description": "DevTools plugin helpers for Expo",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -47,7 +47,7 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "ws": "^8.18.0"
   },
   "peerDependencies": {

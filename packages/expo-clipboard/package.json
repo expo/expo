@@ -1,6 +1,6 @@
 {
   "name": "expo-clipboard",
-  "version": "55.0.8",
+  "version": "56.0.0",
   "description": "Provides an interface for getting and setting Clipboard content on Android, iOS and Web.",
   "main": "build/Clipboard.js",
   "types": "build/Clipboard.d.ts",
@@ -31,10 +31,10 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "56.0.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "56.0.0-preview.2",
     "react": "*",
     "react-native": "*"
   },

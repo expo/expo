@@ -45,3 +45,4 @@ minimumReleaseAgeExclude:
   - '@react-native/*'
   - 'react-native'
   - multitars
+  - 'react-native-worklets'

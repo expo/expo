@@ -5,7 +5,7 @@ import { useUniversalLifecycle } from '../hooks';
 
 /**
  * A layout spacer that produces empty space between siblings in a
- * [`Row`](#row) or [`Column`](#column).
+ * `Row` or `Column`.
  */
 export function Spacer({
   size,

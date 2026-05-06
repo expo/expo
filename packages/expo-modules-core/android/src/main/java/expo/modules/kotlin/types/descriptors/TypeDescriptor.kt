@@ -21,6 +21,12 @@ sealed interface RawTypeDescriptor {
     override val introspection: PIntrospectionData<*>?,
     val params: List<RawTypeDescriptor>
   ) : RawTypeDescriptor
+
+  object Star : RawTypeDescriptor {
+    override val jClass: Class<*> = Any::class.java
+    override val isNullable: Boolean = true
+    override val introspection: PIntrospectionData<*>? = null
+  }
 }
 
 class TypeDescriptor(
@@ -42,6 +48,9 @@ class TypeDescriptor(
   inline val jClass: Class<*>
     get() = typeInfo.jClass
 
+  inline val isStar
+    get() = typeInfo == RawTypeDescriptor.Star
+
   inline val params: List<TypeDescriptor>
     get() = when (typeInfo) {
       is RawTypeDescriptor.Simple -> emptyList()
@@ -51,6 +60,8 @@ class TypeDescriptor(
           kTypeProvider = { kType.arguments[index].type ?: error("Type argument is missing") }
         )
       }
+
+      RawTypeDescriptor.Star -> emptyList()
     }
 
   override fun toString(): String {
@@ -68,14 +79,29 @@ fun KType.toTypeDescriptor(): TypeDescriptor {
   val classifier = this.classifier as? KClass<*> ?: error("Unsupported type: $this")
   val isNullable = this.isMarkedNullable
   val params = this.arguments.map { arg ->
-    val argType = arg.type ?: error("Type argument is missing for $this")
-    argType.toTypeDescriptor()
+    if (arg.variance == null) {
+      TypeDescriptor(
+        RawTypeDescriptor.Star
+      ) { error("Star projection doesn't have type") }
+    } else {
+      val argType = arg.type ?: error("Type argument is missing for $this")
+      argType.toTypeDescriptor()
+    }
   }
 
   val rawTypeDescriptor = if (params.isEmpty()) {
-    RawTypeDescriptor.Simple(classifier.java, isNullable, null)
+    RawTypeDescriptor.Simple(
+      classifier.java,
+      isNullable,
+      null
+    )
   } else {
-    RawTypeDescriptor.Parameterized(classifier.java, isNullable, null, params.map { it.typeInfo })
+    RawTypeDescriptor.Parameterized(
+      classifier.java,
+      isNullable,
+      null,
+      params.map { it.typeInfo }
+    )
   }
 
   return TypeDescriptor(

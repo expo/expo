@@ -30,6 +30,7 @@ describe.each(
       env: {
         TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
         TEST_THROW_ERROR: 'true',
+        E2E_ROUTER_SERVER_RENDERING: 'true',
       },
     },
   })
@@ -69,6 +70,8 @@ describe.each(
     expect(files).toContain('_expo/loaders/nullish/[value].js');
     expect(files).toContain('_expo/loaders/posts/[postId].js');
     expect(files).toContain('_expo/loaders/(group)/index.js');
+    expect(files).toContain('_expo/loaders/static-helper.js');
+    expect(files).toContain('_expo/loaders/server-helper.js');
   });
 
   (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {
@@ -268,8 +271,7 @@ describe.each(
     expect(data).toEqual({ foo: 'bar' });
   });
 
-  // TODO(@hassankhan): Re-enable `expo start` tests when streaming support in dev lands
-  (server.isExpoStart ? it.skip : it)('renders meta tags from loader data in HTML', async () => {
+  it('renders meta tags from loader data in HTML', async () => {
     const response = await server.fetchAsync('/meta');
     expect(response.status).toBe(200);
     const html = getHtml(await response.text());
@@ -283,4 +285,17 @@ describe.each(
     );
     expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
+
+  it.each(getPageAndLoaderData('/server-helper'))(
+    'can access data from `createServerLoader()` for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data.source).toBe('server-helper');
+      expect(new URL(data.url).pathname).toBe('/server-helper');
+      expect(data.method).toBe('GET');
+    }
+  );
 });

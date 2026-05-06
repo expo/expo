@@ -1,6 +1,6 @@
 {
   "name": "@expo/schema-utils",
-  "version": "55.0.2",
+  "version": "56.0.0",
   "description": "Reusable JSON Schema (Draft 04) validation library for Expo",
   "license": "MIT",
   "main": "./build/index.js",
@@ -29,7 +29,7 @@
   "devDependencies": {
     "@babel/cli": "^7.23.4",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "json-schema-to-typescript": "^15.0.0"
   },
   "publishConfig": {
