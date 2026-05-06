@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- [iOS] Reduce prominence of expected source-build fallback logs for missing external precompiled XCFrameworks.
+- [iOS] Reduce prominence of expected source-build fallback logs for missing external precompiled XCFrameworks. ([#45435](https://github.com/expo/expo/pull/45435) by [@chrfalch](https://github.com/chrfalch))
 
 ## 56.0.0 — 2026-05-05
 
