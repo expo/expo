@@ -46,13 +46,17 @@ const { data } = await Contacts.getContactsAsync({
 });
 
 // After, instance objects
-const contacts = await Contact.getAll({ limit: 20, offset: 10, sortOrder: ContactsSortOrder.GivenName });
+const contacts = await Contact.getAll({
+  limit: 20,
+  offset: 10,
+  sortOrder: ContactsSortOrder.GivenName,
+});
 
 // After, typed field projection
-const contacts = await Contact.getAllDetails(
-  [ContactField.FULL_NAME, ContactField.PHONES],
-  { limit: 20, offset: 10 }
-);
+const contacts = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES], {
+  limit: 20,
+  offset: 10,
+});
 ```
 
 `getAllDetails` returns a strongly typed projection narrowed to the requested fields.
@@ -90,7 +94,11 @@ await Contacts.updateContactAsync({ ...contact, firstName: 'Andrew' });
 await contact.patch({ givenName: 'Andrew' });
 
 // After, full replacement — all fields not provided will be cleared
-await contact.update({ givenName: 'John', familyName: 'Doe', phones: [{ label: 'mobile', number: '+12123456789' }] });
+await contact.update({
+  givenName: 'John',
+  familyName: 'Doe',
+  phones: [{ label: 'mobile', number: '+12123456789' }],
+});
 ```
 
 ### Delete a contact
@@ -107,25 +115,25 @@ await contact.delete();
 
 All scalar contact properties are now async getters and setters. Use `get*` to read and `set*` to write. You can also retrieve multiple fields at once using `contact.getDetails()`.
 
-| Field | Getter | Setter |
-|---|---|---|
-| Given name | `getGivenName` | `setGivenName` |
-| Family name | `getFamilyName` | `setFamilyName` |
-| Middle name | `getMiddleName` | `setMiddleName` |
-| Full name | `getFullName` | — |
-| Nickname (iOS only) | `getNickname` | `setNickname` |
-| Prefix | `getPrefix` | `setPrefix` |
-| Suffix | `getSuffix` | `setSuffix` |
-| Phonetic given name | `getPhoneticGivenName` | `setPhoneticGivenName` |
-| Phonetic family name | `getPhoneticFamilyName` | `setPhoneticFamilyName` |
-| Company | `getCompany` | `setCompany` |
-| Job title | `getJobTitle` | `setJobTitle` |
-| Department | `getDepartment` | `setDepartment` |
-| Birthday (iOS only) | `getBirthday` | `setBirthday` |
-| Note | `getNote` | `setNote` |
-| Image | `getImage` | `setImage` |
-| Thumbnail | `getThumbnail` | — |
-| Favourite (Android only) | `getIsFavourite` | `setIsFavourite` |
+| Field                    | Getter                  | Setter                  |
+| ------------------------ | ----------------------- | ----------------------- |
+| Given name               | `getGivenName`          | `setGivenName`          |
+| Family name              | `getFamilyName`         | `setFamilyName`         |
+| Middle name              | `getMiddleName`         | `setMiddleName`         |
+| Full name                | `getFullName`           | —                       |
+| Nickname (iOS only)      | `getNickname`           | `setNickname`           |
+| Prefix                   | `getPrefix`             | `setPrefix`             |
+| Suffix                   | `getSuffix`             | `setSuffix`             |
+| Phonetic given name      | `getPhoneticGivenName`  | `setPhoneticGivenName`  |
+| Phonetic family name     | `getPhoneticFamilyName` | `setPhoneticFamilyName` |
+| Company                  | `getCompany`            | `setCompany`            |
+| Job title                | `getJobTitle`           | `setJobTitle`           |
+| Department               | `getDepartment`         | `setDepartment`         |
+| Birthday (iOS only)      | `getBirthday`           | `setBirthday`           |
+| Note                     | `getNote`               | `setNote`               |
+| Image                    | `getImage`              | `setImage`              |
+| Thumbnail                | `getThumbnail`          | —                       |
+| Favourite (Android only) | `getIsFavourite`        | `setIsFavourite`        |
 
 ### Name
 
@@ -150,16 +158,16 @@ await contact.setMiddleName('Michael');
 
 Sub-records are no longer managed by re-writing the entire array with `updateContactAsync`. Each type has dedicated `add*`, `get*`, `update*`, and `delete*` methods:
 
-| Sub-record | Methods |
-|---|---|
-| Phone numbers | `addPhone`, `getPhones`, `updatePhone`, `deletePhone` |
-| Emails | `addEmail`, `getEmails`, `updateEmail`, `deleteEmail` |
-| Addresses | `addAddress`, `getAddresses`, `updateAddress`, `deleteAddress` |
-| URLs | `addUrlAddress`, `getUrlAddresses`, `updateUrlAddress`, `deleteUrlAddress` |
-| Social profiles | `addSocialProfile`, `getSocialProfiles`, `updateSocialProfile`, `deleteSocialProfile` |
-| IM addresses | `addImAddress`, `getImAddresses`, `updateImAddress`, `deleteImAddress` |
-| Dates | `addDate`, `getDates`, `updateDate`, `deleteDate` |
-| Extra names (Android only) | `addExtraName`, `getExtraNames`, `updateExtraName`, `deleteExtraName` |
+| Sub-record                 | Methods                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------- |
+| Phone numbers              | `addPhone`, `getPhones`, `updatePhone`, `deletePhone`                                 |
+| Emails                     | `addEmail`, `getEmails`, `updateEmail`, `deleteEmail`                                 |
+| Addresses                  | `addAddress`, `getAddresses`, `updateAddress`, `deleteAddress`                        |
+| URLs                       | `addUrlAddress`, `getUrlAddresses`, `updateUrlAddress`, `deleteUrlAddress`            |
+| Social profiles            | `addSocialProfile`, `getSocialProfiles`, `updateSocialProfile`, `deleteSocialProfile` |
+| IM addresses               | `addImAddress`, `getImAddresses`, `updateImAddress`, `deleteImAddress`                |
+| Dates                      | `addDate`, `getDates`, `updateDate`, `deleteDate`                                     |
+| Extra names (Android only) | `addExtraName`, `getExtraNames`, `updateExtraName`, `deleteExtraName`                 |
 
 The following examples use phone numbers.
 
