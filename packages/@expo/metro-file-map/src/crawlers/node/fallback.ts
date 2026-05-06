@@ -16,14 +16,29 @@ type FallbackFilesystemOptions = {
   includeSymlinks: boolean;
 };
 
-const readdirMarker = Symbol.for('fallbackDir');
+const FALLBACK_DIR = Symbol.for('fallbackDir');
 
-function markDir(dirNode: any) {
-  dirNode[readdirMarker] = true;
+const enum FallbackFlag {
+  VISITED = 0,
+  CRAWLED = 1,
 }
 
-function isMarkedDir(dirNode: any) {
-  return !!dirNode[readdirMarker];
+function markDir(dirNode: any, flag: FallbackFlag) {
+  dirNode[FALLBACK_DIR] = flag;
+}
+
+function getDirFlag(dirNode: any): FallbackFlag | undefined {
+  return dirNode[FALLBACK_DIR];
+}
+
+/**
+ * Whether a directory node was created or populated by the fallback filesystem.
+ * Used by TreeFS to determine if a directory outside the fallback boundary was
+ * reached legitimately (e.g., via symlink traversal) and should allow further
+ * fallback lookups.
+ */
+export function isFallbackDir(dirNode: any): boolean {
+  return dirNode[FALLBACK_DIR] != null;
 }
 
 function isDirectory(node: MixedNode | null | undefined): node is DirectoryNode {
@@ -57,7 +72,7 @@ export default function createFallbackFilesystem(
     absolutePath: string,
     dirNode: DirectoryNode | null | undefined
   ): DirectoryNode | null {
-    if (dirNode != null && isMarkedDir(dirNode)) {
+    if (dirNode != null && getDirFlag(dirNode) === FallbackFlag.CRAWLED) {
       return dirNode;
     }
     let dirEntries;
@@ -77,7 +92,9 @@ export default function createFallbackFilesystem(
 
       if (entry.isDirectory()) {
         if (!result.has(name)) {
-          result.set(name, new Map());
+          const childDir = new Map();
+          markDir(childDir, FallbackFlag.VISITED);
+          result.set(name, childDir);
         }
       } else if (entry.isSymbolicLink()) {
         // We can skip reading the symlink target here, since it'll be read lazily
@@ -91,7 +108,7 @@ export default function createFallbackFilesystem(
         }
       }
     }
-    markDir(result);
+    markDir(result, FallbackFlag.CRAWLED);
     return result;
   }
 
@@ -116,9 +133,15 @@ export default function createFallbackFilesystem(
 
       if (stat.isDirectory()) {
         const dirNode = isDirectory(prevNode) ? prevNode : null;
-        return shouldFallbackCrawlDir(absolutePath)
-          ? readdir(normalPath, absolutePath, dirNode)
-          : (dirNode ?? new Map());
+        if (shouldFallbackCrawlDir(absolutePath)) {
+          return readdir(normalPath, absolutePath, dirNode);
+        }
+        if (dirNode != null) {
+          return dirNode;
+        }
+        const newDir = new Map();
+        markDir(newDir, FallbackFlag.VISITED);
+        return newDir;
       } else if (stat.isSymbolicLink()) {
         if (!includeSymlinks) {
           return null;
