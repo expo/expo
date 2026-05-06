@@ -27,7 +27,18 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Switch';
 export * from './SyncSwitch';
-export * from './TextField';
+export {
+  TextField,
+  OutlinedTextField,
+  type TextFieldProps,
+  type TextFieldRef,
+  type TextFieldCapitalization,
+  type TextFieldImeAction,
+  type TextFieldKeyboardOptions,
+  type TextFieldKeyboardType,
+  type TextFieldKeyboardActions,
+  type TextFieldColors,
+} from './TextField';
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';

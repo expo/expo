@@ -26,7 +26,6 @@ import {
   foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { runOnJS } from 'react-native-worklets';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
@@ -40,13 +39,6 @@ export default function TextFieldScreen() {
   });
   const maskedPhone = useNativeState('');
   const phoneSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
-
-  const setPhoneCursor = React.useCallback(
-    (position: number) => {
-      phoneSelection.value = { start: position, end: position };
-    },
-    [phoneSelection]
-  );
 
   const submitLabelOptions = [
     'continue',
@@ -128,8 +120,7 @@ export default function TextFieldScreen() {
               }
               if (formatted !== v) {
                 maskedPhone.value = formatted;
-                // To keep selection at the end of the input while typing
-                runOnJS(setPhoneCursor)(formatted.length);
+                phoneSelection.value = { start: formatted.length, end: formatted.length };
               }
             }}
           />

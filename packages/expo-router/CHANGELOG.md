@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Pin `react-native-screens` to exact version ([#45421](https://github.com/expo/expo/pull/45421) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 56.0.1 — 2026-05-05

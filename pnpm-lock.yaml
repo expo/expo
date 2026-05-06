@@ -5147,7 +5147,7 @@ importers:
         specifier: ^4.2.2
         version: 4.2.2(91ff31fb95915589425baaf56c831ef8)
       react-native-screens:
-        specifier: ~4.25.0-beta.1
+        specifier: 4.25.0-beta.1
         version: 4.25.0-beta.1(react-native@0.85.2(@babel/core@7.29.0)(@react-native/jest-preset@0.85.2(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.2(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       server-only:
         specifier: ^0.0.1

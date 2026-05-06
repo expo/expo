@@ -199,7 +199,7 @@ export default function ErrorStateExample() {
 
 ### Imperative ref
 
-Use a ref to imperatively set text, focus, or blur the text field.
+Use a ref to imperatively set text, clear the field, change the selection, or move focus.
 
 ```tsx ImperativeRefExample.tsx
 import { useRef, useState } from 'react';
@@ -219,9 +219,17 @@ export default function ImperativeRefExample() {
           </TextField.Label>
         </TextField>
         <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
-          <Button onClick={() => ref.current?.setText('Hello!')}>
+          <Button onClick={() => ref.current?.setText('Hello world')}>
             <Text>Set text</Text>
           </Button>
+          <Button onClick={() => ref.current?.clear()}>
+            <Text>Clear</Text>
+          </Button>
+          <Button onClick={() => ref.current?.setSelection(0, 5)}>
+            <Text>Select first word</Text>
+          </Button>
+        </Row>
+        <Row horizontalArrangement={{ spacedBy: 8 }} modifiers={[padding(8, 0, 0, 0)]}>
           <Button onClick={() => ref.current?.focus()}>
             <Text>Focus</Text>
           </Button>
@@ -230,6 +238,50 @@ export default function ImperativeRefExample() {
           </Button>
         </Row>
       </Column>
+    </Host>
+  );
+}
+```
+
+### Worklet text masking
+
+When `onValueChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `value` and `selection` from the worklet to keep the cursor at the end of the formatted value.
+
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
+```tsx WorkletPhoneMaskExample.tsx
+import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function WorkletPhoneMaskExample() {
+  const phone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
+
+  return (
+    <Host matchContents>
+      <TextField
+        value={phone}
+        selection={selection}
+        keyboardOptions={{ keyboardType: 'phone' }}
+        modifiers={[fillMaxWidth()]}
+        onValueChange={v => {
+          'worklet';
+          const digits = v.replace(/\D/g, '').slice(0, 10);
+          let formatted = digits;
+          if (digits.length > 6) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+          } else if (digits.length > 3) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+          }
+          if (formatted !== v) {
+            phone.value = formatted;
+            selection.value = { start: formatted.length, end: formatted.length };
+          }
+        }}>
+        <TextField.Placeholder>
+          <Text>(555) 123-4567</Text>
+        </TextField.Placeholder>
+      </TextField>
     </Host>
   );
 }
