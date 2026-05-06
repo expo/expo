@@ -42,16 +42,16 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/env": "2.2.0"
+    "@expo/env": "workspace:~2.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-manifests": "56.0.1",
-    "expo-updates": "56.0.1",
-    "expo-module-scripts": "56.0.0"
+    "expo-manifests": "workspace:*",
+    "expo-updates": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "react-native": "*"
   }
 }

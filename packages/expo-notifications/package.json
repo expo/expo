@@ -42,20 +42,20 @@
     ]
   },
   "dependencies": {
-    "@expo/image-utils": "0.9.0",
+    "@expo/image-utils": "workspace:^0.9.0",
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "56.0.0",
-    "expo-constants": "56.0.1"
+    "expo-application": "workspace:~56.0.0",
+    "expo-constants": "workspace:~56.0.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }

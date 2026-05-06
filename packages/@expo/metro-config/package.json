@@ -65,9 +65,9 @@
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
-    "@expo/config": "56.0.0",
-    "@expo/env": "2.2.0",
-    "@expo/json-file": "10.1.0",
+    "@expo/config": "workspace:~56.0.0",
+    "@expo/env": "workspace:~2.2.0",
+    "@expo/json-file": "workspace:~10.1.0",
     "@expo/metro": "~56.0.0",
     "@expo/spawn-async": "^1.7.2",
     "browserslist": "^4.25.0",
@@ -83,7 +83,7 @@
     "resolve-from": "^5.0.0"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2"
+    "expo": "workspace:*"
   },
   "peerDependenciesMeta": {
     "expo": {
@@ -98,7 +98,7 @@
     "@types/getenv": "^1.0.0",
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "metro-minify-terser": "^0.84.2",
     "sass": "^1.60.0"
   },

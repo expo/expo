@@ -49,12 +49,12 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/env": "2.2.0",
+    "@expo/env": "workspace:~2.2.0",
     "chalk": "^4.1.2",
     "commander": "^14.0.3",
     "diff": "^5.2.0",
-    "expo-build-properties": "56.0.0",
-    "expo-manifests": "56.0.1",
+    "expo-build-properties": "workspace:~56.0.0",
+    "expo-manifests": "workspace:~56.0.1",
     "ora": "^5.4.1",
     "prompts": "^2.4.2"
   },
@@ -65,12 +65,12 @@
     "@types/prompts": "^2.0.6",
     "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
-    "create-expo": "3.7.0",
-    "expo-module-scripts": "56.0.0",
+    "create-expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "glob": "^13.0.6"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "react": "*"
   }
 }

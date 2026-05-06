@@ -10,18 +10,18 @@
   "dependencies": {
     "@react-navigation/bottom-tabs": "^7.15.5",
     "@react-navigation/native": "^7.1.33",
-    "expo": "56.0.0-preview.2",
-    "expo-dev-client": "56.0.0",
-    "expo-linking": "56.0.0",
-    "expo-router": "56.0.1",
-    "expo-splash-screen": "56.0.1",
+    "expo": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-linking": "workspace:*",
+    "expo-router": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "react": "19.2.3",
     "react-native": "0.85.2",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "~4.23.0"
   },
   "devDependencies": {
-    "babel-preset-expo": "56.0.1"
+    "babel-preset-expo": "workspace:*"
   },
   "private": true
 }

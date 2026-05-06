@@ -39,15 +39,15 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
-    "@expo/plist": "0.6.0",
+    "@expo/plist": "workspace:^0.6.0",
     "@expo/spawn-async": "^1.7.2",
     "arg": "^4.1.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
-    "expo-eas-client": "56.0.0",
-    "expo-manifests": "56.0.1",
-    "expo-structured-headers": "56.0.0",
-    "expo-updates-interface": "56.0.1",
+    "expo-eas-client": "workspace:~56.0.0",
+    "expo-manifests": "workspace:~56.0.1",
+    "expo-structured-headers": "workspace:~56.0.0",
+    "expo-updates-interface": "workspace:~56.0.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "ignore": "^5.3.1",
@@ -55,7 +55,7 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@expo/metro-config": "56.0.1",
+    "@expo/metro-config": "workspace:*",
     "@testing-library/react-native": "^13.3.0",
     "@types/debug": "^4.1.7",
     "@types/getenv": "^1.0.0",
@@ -65,7 +65,7 @@
     "@types/picomatch": "^4.0.0",
     "@types/react": "~19.2.0",
     "@vercel/ncc": "^0.38.3",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "memfs": "^3.2.0",
@@ -74,8 +74,8 @@
     "xstate": "^4.37.2"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
-    "expo-dev-client": "56.0.0",
+    "expo": "workspace:*",
+    "expo-dev-client": "workspace:*",
     "react": "*",
     "react-native": "*"
   },

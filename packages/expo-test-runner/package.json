@@ -29,8 +29,8 @@
     "@babel/core": "^7.23.7",
     "@types/node": "^22.14.0",
     "@types/node-fetch": "^2.5.12",
-    "eslint-config-universe": "15.1.0",
-    "expo-module-scripts": "56.0.0"
+    "eslint-config-universe": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.8",

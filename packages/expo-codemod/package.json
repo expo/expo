@@ -46,6 +46,6 @@
   "devDependencies": {
     "@types/jscodeshift": "^17.0.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   }
 }
