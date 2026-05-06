@@ -5068,9 +5068,6 @@ importers:
       '@expo/ui':
         specifier: workspace:^56.0.1
         version: link:../expo-ui
-      '@jest/globals':
-        specifier: ^29.7.0
-        version: 29.7.0
       '@radix-ui/react-slot':
         specifier: ^1.2.0
         version: 1.2.4(@types/react@19.2.14)(react@19.2.3)
@@ -5162,6 +5159,9 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
     devDependencies:
+      '@jest/globals':
+        specifier: ^29.7.0
+        version: 29.7.0
       '@testing-library/dom':
         specifier: ^10.4.0
         version: 10.4.1
