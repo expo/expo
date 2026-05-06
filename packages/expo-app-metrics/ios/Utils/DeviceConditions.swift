@@ -3,17 +3,36 @@
 import ExpoModulesCore
 
 /**
- Snapshots of the device's environment (power, thermals, connectivity) attached
- to metrics like `timeToInteractive` so regressions can be correlated with
- conditions outside the app's control.
+ A `Sendable` snapshot of the device's power and thermal state. Fields are
+ optional so missing OS data (Simulator, brief windows where the OS hasn't
+ published a value yet) can be expressed as `nil` rather than a sentinel.
+ */
+struct DeviceState: Sendable, Equatable {
+  enum ThermalState: String, Sendable {
+    case nominal
+    case fair
+    case serious
+    case critical
+    case unknown
+  }
+
+  let lowPowerMode: Bool?
+  let thermalState: ThermalState?
+  let batteryLevel: Double?
+  let batteryCharging: Bool?
+}
+
+/**
+ Reads the device's environment (power, thermals, battery) into a typed
+ `DeviceState`. The wire-format conversion to `expo.*` keys lives in
+ `MetricParamsBuilder`.
  */
 enum DeviceConditions {
   /**
-   Reads device power and thermal state and returns them as a flat dictionary
-   keyed with `expo.device.*`. Returned keys are omitted (rather than emitting
-   sentinel values like `-1` or `.unknown`) when the OS does not report a
-   meaningful value — typically the Simulator, or the brief window after
-   battery monitoring is first enabled before the first reading is published.
+   Reads device power, thermal, and battery state. Returned fields are `nil`
+   when the OS does not report a meaningful value — typically the Simulator,
+   or the brief window after battery monitoring is first enabled before the
+   first reading is published.
 
    Pinned to `@MainActor` because `UIDevice` is part of UIKit and its
    battery state/level reads are not documented as thread-safe. `ProcessInfo`
@@ -21,15 +40,20 @@ enum DeviceConditions {
    we pin the whole helper for simplicity at the cost of one main-actor hop.
    */
   @MainActor
-  static func deviceParams() -> [String: any Sendable] {
-    var params: [String: any Sendable] = [:]
+  static func deviceState() -> DeviceState {
+    let lowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
+    let thermalState = thermalState(from: ProcessInfo.processInfo.thermalState)
 
-    params["expo.device.lowPowerMode"] = ProcessInfo.processInfo.isLowPowerModeEnabled
-    params["expo.device.thermalState"] = thermalStateString(ProcessInfo.processInfo.thermalState)
-
-#if !os(tvOS)
+#if os(tvOS)
+    return DeviceState(
+      lowPowerMode: lowPowerMode,
+      thermalState: thermalState,
+      batteryLevel: nil,
+      batteryCharging: nil
+    )
+#else
     // tvOS devices are wall-powered, so `UIDevice` doesn't expose battery
-    // state/level there. Skip the battery section entirely on that platform.
+    // state/level there; the `#if` skips the battery section entirely.
     let device = UIDevice.current
     // Battery readings require `isBatteryMonitoringEnabled = true`. We turn it
     // on once and leave it on rather than save/restore it around the read:
@@ -43,72 +67,41 @@ enum DeviceConditions {
     }
 
     let level = device.batteryLevel
-    if level >= 0 {
-      params["expo.device.batteryLevel"] = Double(level)
-    }
+    let batteryLevel: Double? = level >= 0 ? Double(level) : nil
 
+    let batteryCharging: Bool?
     switch device.batteryState {
     case .charging, .full:
-      params["expo.device.batteryCharging"] = true
+      batteryCharging = true
     case .unplugged:
-      params["expo.device.batteryCharging"] = false
+      batteryCharging = false
     case .unknown:
-      break
+      batteryCharging = nil
     @unknown default:
-      break
+      batteryCharging = nil
     }
+
+    return DeviceState(
+      lowPowerMode: lowPowerMode,
+      thermalState: thermalState,
+      batteryLevel: batteryLevel,
+      batteryCharging: batteryCharging
+    )
 #endif
-
-    return params
   }
 
-  /**
-   Reads `expo.network.connected` and `expo.network.type` from the snapshot
-   maintained by `NetworkPathMonitor`. Awaits the monitor's first path
-   delivery if it hasn't arrived yet — the TTI value is captured from a
-   synchronously-recorded timestamp before we get here, so the await only
-   delays the local-storage write, not the metric itself.
-   */
-  @AppMetricsActor
-  static func networkParams() async -> [String: any Sendable] {
-    let path = await NetworkPathMonitor.shared.waitForFirstPath()
-    return [
-      "expo.network.connected": path?.status == .satisfied,
-      "expo.network.type": networkTypeString(path)
-    ]
-  }
-
-  private static func thermalStateString(_ state: ProcessInfo.ThermalState) -> String {
+  private static func thermalState(from state: ProcessInfo.ThermalState) -> DeviceState.ThermalState {
     switch state {
     case .nominal:
-      return "nominal"
+      return .nominal
     case .fair:
-      return "fair"
+      return .fair
     case .serious:
-      return "serious"
+      return .serious
     case .critical:
-      return "critical"
+      return .critical
     @unknown default:
-      return "unknown"
-    }
-  }
-
-  private static func networkTypeString(_ path: NetworkPath?) -> String {
-    guard let path else {
-      return "unknown"
-    }
-    if path.status != .satisfied {
-      return "none"
-    }
-    switch path.interfaceType {
-    case .wifi:
-      return "wifi"
-    case .cellular:
-      return "cellular"
-    case .ethernet:
-      return "ethernet"
-    case .other, .none:
-      return "other"
+      return .unknown
     }
   }
 }
