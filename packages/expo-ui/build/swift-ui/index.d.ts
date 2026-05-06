@@ -37,7 +37,7 @@ export { useNativeState } from '../State/useNativeState';
 export * from './SyncToggle';
 export * from './TabView';
 export * from './Toggle';
-export * from './TextField';
+export { TextField, type TextFieldProps, type TextFieldRef, type TextFieldSelection, } from './TextField';
 export * from './SecureField';
 export * from './Namespace';
 export * from './GlassEffectContainer';

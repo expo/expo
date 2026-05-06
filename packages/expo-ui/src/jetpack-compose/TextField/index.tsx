@@ -380,4 +380,5 @@ OutlinedTextFieldComponent.SupportingText = SupportingText;
 
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
 
+// Exported for docs api data
 export { type ObservableState };
