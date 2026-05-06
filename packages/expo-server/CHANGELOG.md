@@ -6,19 +6,42 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
 - Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
 - Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
 - Add `createStaticLoader()` and `createServerLoader()` helpers ([#45401](https://github.com/expo/expo/pull/45401) by [@hassankhan](https://github.com/hassankhan))
 
-### 🐛 Bug fixes
-
-- Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
-- Omit origin from redirect `Location` header value; discovered by @yavuzselimkolbasar - thank you! ([#44782](https://github.com/expo/expo/pull/44782) by [@kitten](https://github.com/kitten))
-- Replace invalid platform basepath stripping regex with slicing; discovered by @yavuzselimkolbasar - thank you! ([#44783](https://github.com/expo/expo/pull/44783) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
 
 - Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.9 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- Omit origin from redirect `Location` header value; discovered by @yavuzselimkolbasar - thank you! ([#44782](https://github.com/expo/expo/pull/44782) by [@kitten](https://github.com/kitten))
+- Replace invalid platform basepath stripping regex with slicing; discovered by @yavuzselimkolbasar - thank you! ([#44783](https://github.com/expo/expo/pull/44783) by [@kitten](https://github.com/kitten))
+
+## 55.0.7 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-02-26
+
+### 🐛 Bug fixes
+
+- Correctly handle JavaScript assets when `asyncRoutes: true` in SSR ([#43446](https://github.com/expo/expo/pull/43446) by [@hassankhan](https://github.com/hassankhan))`
 
 ## 55.0.5 — 2026-02-25
 

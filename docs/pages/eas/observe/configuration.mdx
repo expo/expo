@@ -10,7 +10,7 @@ Configure Expo Observe at runtime to fit your app's build setup, environment, an
 
 Use the `configure()` method to control how Expo Observe behaves at runtime:
 
-```js
+```tsx
 import ExpoObserve from 'expo-observe';
 
 ExpoObserve.configure({
@@ -19,10 +19,12 @@ ExpoObserve.configure({
 });
 ```
 
-| Option               | Type      | Default                | Description                                    |
-| -------------------- | --------- | ---------------------- | ---------------------------------------------- |
-| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events |
-| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server |
+| Option               | Type      | Default                | Description                                                                                        |
+| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
+| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                     |
+| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                     |
+| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds. |
+| `sampleRate`         | `number`  | `undefined`            | Fraction of installations that dispatch metrics, in `[0, 1]`. See [Sampling](#sampling).           |
 
 ## `dispatchEvents()`
 
@@ -30,31 +32,48 @@ Events are automatically dispatched when the app moves to the background. On And
 
 To flush events manually (for example, during testing or to ensure events are sent before a specific point), call `dispatchEvents()`:
 
-```js
+```tsx
 import ExpoObserve from 'expo-observe';
 
 await ExpoObserve.dispatchEvents();
 ```
 
-## Enable metrics in development
+## Sampling
 
-By default, metrics with the `development` environment are filtered out and not dispatched to the server. To collect development metrics (for example, to test your integration), set `enableInDebug` to `true` in your **app config**:
+By default, every installation dispatches its metrics. For high-volume apps, you can sample a fraction of installations by setting `sampleRate` to a value between `0` and `1`:
 
-```json app.json
-{
-  "expo": {
-    "extra": {
-      "eas": {
-        "observe": {
-          "enableInDebug": true
-        }
-      }
-    }
-  }
-}
+```tsx
+import ExpoObserve from 'expo-observe';
+
+// Dispatch metrics from ~25% of installations.
+ExpoObserve.configure({
+  sampleRate: 0.25,
+});
 ```
 
-> **warning** Enable this only when testing your Expo Observe integration. Development performance differs significantly from production, so collecting development metrics may affect the results shown in your dashboard.
+The sampling decision is **deterministic per installation**. Each installation is either permanently in-sample or out-of-sample for a given rate, so the choice is stable across app launches and you get a consistent slice of installations rather than a random subset of sessions.
+
+A few details worth knowing:
+
+- Values outside the `[0, 1]` range are clamped to the nearest edge. `0` always drops; `1` always dispatches.
+- Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
+- Sampling depends on [`dispatchingEnabled`](#configure). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
+
+## Enable metrics in development
+
+By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
+
+```tsx
+import ExpoObserve from 'expo-observe';
+
+ExpoObserve.configure({
+  dispatchInDebug: true,
+});
+```
+
+`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
+
+> **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 
@@ -80,4 +99,4 @@ The endpoint URL is baked into the native layer of the app at build time, so cha
 
 All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default. To override it, use [`configure({ environment })`](#configure).
 
-Metrics with the `development` environment are filtered out before dispatching unless [`enableInDebug` is set to `true`](#enable-metrics-in-development) in your app config. You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+Metrics collected from debug builds are dropped before dispatching unless [`dispatchInDebug` is set to `true`](#enable-metrics-in-development) via `configure()`. You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.

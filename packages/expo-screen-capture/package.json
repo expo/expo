@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "55.0.8",
+  "version": "56.0.0",
   "description": "Protects screens in your app from being captured or recorded, and notifies if a screenshot is taken.",
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",
@@ -35,10 +35,10 @@
   "devDependencies": {
     "@types/react": "~19.2.0",
     "@testing-library/react-native": "^13.3.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "56.0.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "56.0.0-preview.2",
     "react": "*"
   }
 }

@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -15,15 +25,44 @@
 ### 🐛 Bug fixes
 
 - [Android] Prevent crash in `FullscreenPlayerActivity` when `VideoView` is unmounted before `finish()` completes. ([#45199](https://github.com/expo/expo/pull/45199) by [@DORI2001](https://github.com/DORI2001))
-- [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
-- [iOS] Fix crashes when `VideoTrack` properties are non-finite. ([#44108](https://github.com/expo/expo/pull/44108) by [@behenate](https://github.com/behenate))
-- [Android] Fix PiP exiting immediately after auto-entering from fullscreen. ([#44157](https://github.com/expo/expo/pull/44157) by [@behenate](https://github.com/behenate))
-- [Android] Fix broken layout after returning from PiP when auto-enter if off. ([#44163](https://github.com/expo/expo/pull/44163) by [@behenate](https://github.com/behenate))
 - [Android] Hide the surface until the first frame after replacing the video source so the previous stream does not remain visible when switching to a different resolution. ([#44385](https://github.com/expo/expo/issues/44385)) ([#44467](https://github.com/expo/expo/pull/44467) by [@vj2303](https://github.com/vj2303))
 
 ### 💡 Others
 
 - [Android] Bump media3 version to 1.9.0. ([#44823](https://github.com/expo/expo/pull/44823) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.16 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-02-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash when loading PHAsset url fails ([#43373](https://github.com/expo/expo/pull/43373) by [@fractalbeauty](https://github.com/fractalbeauty))
+- [iOS] Fix crashes when `VideoTrack` properties are non-finite. ([#44108](https://github.com/expo/expo/pull/44108) by [@behenate](https://github.com/behenate))
+- [Android] Fix PiP exiting immediately after auto-entering from fullscreen. ([#44157](https://github.com/expo/expo/pull/44157) by [@behenate](https://github.com/behenate))
+- [Android] Fix broken layout after returning from PiP when auto-enter if off. ([#44163](https://github.com/expo/expo/pull/44163) by [@behenate](https://github.com/behenate))
 
 ## 55.0.9 — 2026-02-25
 

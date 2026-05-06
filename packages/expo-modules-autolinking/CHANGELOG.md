@@ -6,25 +6,15 @@
 
 ### 🎉 New features
 
-- Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
-- Add support for loading precompiled frameworks from npm. ([#44360](https://github.com/expo/expo/pull/44360) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Expose `isNativeModuleAsync` utility in internal exports ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
-- [iOS] Disable precompiled modules with a clear warning when `EXPO_USE_PRECOMPILED_MODULES=1` is set without `RCT_USE_PREBUILT_RNCORE=1` ([#45381](https://github.com/expo/expo/pull/45381) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Fall back to source build when a remote precompiled XCFramework download returns 404. ([#45240](https://github.com/expo/expo/pull/45240) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Resolve npm-bundled precompiled XCFrameworks for nested Expo packages like `expo-modules-core` during `pod install`. ([#45166](https://github.com/expo/expo/pull/45166) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt. ([#45160](https://github.com/expo/expo/pull/45160) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
-- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
-- Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
-- Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
-- Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
-- [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
-- [iOS] Fixes an issue where the modulemap is destroyed when switching between Debug and Release configurations. ([#44665](https://github.com/expo/expo/pull/44665) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
+### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🎉 New features
+
+- Expose `isNativeModuleAsync` utility in internal exports ([#44458](https://github.com/expo/expo/pull/44458) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -35,6 +25,80 @@
 - [iOS] Add more detailed warnings when a package is not linked due to a mismatch between project and package deployment target. ([#44200](https://github.com/expo/expo/pull/44200) by [@behenate](https://github.com/behenate))
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
 - [iOS] Don't skip companion pods that depend on external (non-Expo) sibling pods. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.21 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.20 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-04-28
+
+### 🐛 Bug fixes
+
+- [iOS] Disable precompiled modules with a clear warning when `EXPO_USE_PRECOMPILED_MODULES=1` is set without `RCT_USE_PREBUILT_RNCORE=1` ([#45381](https://github.com/expo/expo/pull/45381) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fall back to source build when a remote precompiled XCFramework download returns 404. ([#45240](https://github.com/expo/expo/pull/45240) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Resolve npm-bundled precompiled XCFrameworks for nested Expo packages like `expo-modules-core` during `pod install`. ([#45166](https://github.com/expo/expo/pull/45166) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Build precompiled Expo modules from source when a required upstream Expo dependency is unavailable as prebuilt. ([#45160](https://github.com/expo/expo/pull/45160) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add support for optionally downloading external precompiled XCFramework tarballs from during `pod install`. ([#45067](https://github.com/expo/expo/pull/45067) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Resolve 3rd-party prebuilt xcframework packages via `@react-native-community/cli` autolinking output instead of guessing `node_modules/<pkg>`, fixing pnpm non-hoisted layouts, transitive native deps, yarn resolutions/PnP, and aliased specifiers ([#45004](https://github.com/expo/expo/pull/45004) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.18 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- Fix missing deep object merging that should allow a project config to override a dependency's per-platform config options selectively ([#44668](https://github.com/expo/expo/pull/44668) by [@kitten](https://github.com/kitten))
+
+## 55.0.17 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed precompiled modules use_frameworks! override running when only prebuilt React Native is active. ([#44554](https://github.com/expo/expo/pull/44554) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.14 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+### 🎉 New features
+
+- Add support for loading precompiled frameworks from npm. ([#44360](https://github.com/expo/expo/pull/44360) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 55.0.12 - 2026-03-27
+
+### 🐛 Bug fixes
+
+- [Android] Fixed build failures caused by the "=" character in pnpm virtual store paths. ([#44109](https://github.com/expo/expo/pull/44109) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fixes an issue where the modulemap is destroyed when switching between Debug and Release configurations. ([#44665](https://github.com/expo/expo/pull/44665) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.11 - 2026-03-18
+
+### 🎉 New features
+
+- Add `include` option to `package.json:expo.autolinking` and per-platform configurations. This allows the verification and deduplication checks to also apply to additional packages that aren't otherwise recognized as native modules, which is useful to detect or deduplicate additional packages with singleton state, for example. ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-11
+
+### 🐛 Bug fixes
+
+- Stop dependency resolution at depth limit and increase max depth limit to 9 ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- Sort on unresolved path and load `version` for duplicate dependencies ([#43636](https://github.com/expo/expo/pull/43636) by [@kitten](https://github.com/kitten))
+- Fix regression that caused `pod install` to fail with `no implicit conversion of nil into String` due to an off-by-one in the depth limit check. ([#43731](https://github.com/expo/expo/pull/43731) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.8 — 2026-02-25
 

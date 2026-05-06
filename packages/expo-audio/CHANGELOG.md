@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -16,10 +26,8 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve looping support. ([#43600](https://github.com/expo/expo/pull/43600) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Prevent stale lock screen artwork updates from crashing or overwriting newer metadata. ([#44498](https://github.com/expo/expo/pull/44498) by [@kotadd](https://github.com/kotadd))
-- [Android] Fix lock screen controls on android 12 and earlier. ([#44754](https://github.com/expo/expo/pull/44754) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix playback progress continuing after pause by setting correct playback rate in now playing info. ([#44974](https://github.com/expo/expo/pull/44974) by [@JstUsername](https://github.com/JstUsername))
 - [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45131](https://github.com/expo/expo/pull/45131) by [@alanjhughes](https://github.com/alanjhughes))
 
@@ -27,6 +35,34 @@
 
 - [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Bump media3 version to 1.9.0. ([#44823](https://github.com/expo/expo/pull/44823) by [@lukmccall](https://github.com/lukmccall))
+
+## 55.0.14 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [Android] Fix lock screen controls on android 12 and earlier. ([#44754](https://github.com/expo/expo/pull/44754) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+### 🐛 Bug fixes
+
+- [iOS] Fix crash during seek. ([#43564](https://github.com/expo/expo/pull/43564) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.8 — 2026-02-25
 

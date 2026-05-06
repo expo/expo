@@ -4,13 +4,49 @@
 
 ### 🛠 Breaking changes
 
-- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.15 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.7 — 2026-02-25
 

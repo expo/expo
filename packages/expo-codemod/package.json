@@ -1,6 +1,6 @@
 {
   "name": "expo-codemod",
-  "version": "55.0.0",
+  "version": "56.0.0",
   "description": "Codemods for migrating Expo apps between SDK versions",
   "license": "MIT",
   "keywords": [
@@ -46,6 +46,6 @@
   "devDependencies": {
     "@types/jscodeshift": "^17.0.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "56.0.0"
   }
 }

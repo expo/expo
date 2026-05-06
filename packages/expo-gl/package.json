@@ -1,6 +1,6 @@
 {
   "name": "expo-gl",
-  "version": "55.0.9",
+  "version": "56.0.0",
   "description": "Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -44,11 +44,11 @@
     "@types/react-test-renderer": "^19.1.0",
     "@types/react": "~19.2.0",
     "@types/webgl2": "^0.0.6",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "react-test-renderer": "19.2.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "56.0.0-preview.2",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",

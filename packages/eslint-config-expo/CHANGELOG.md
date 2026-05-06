@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Disable `no-useless-return` for TypeScript files ([#45031](https://github.com/expo/expo/pull/45031) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🐛 Bug fixes
+
+- Disable `no-useless-return` for TypeScript files ([#45031](https://github.com/expo/expo/pull/45031) by [@kitten](https://github.com/kitten))
 
 ## 55.0.0 — 2026-01-21
 

@@ -4,6 +4,20 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 - Remove dependency on react-navigation and move the navigation code to expo-router ([#44176](https://github.com/expo/expo/pull/44176) by [@Ubax](https://github.com/Ubax))
 - rename Router type to ImperativeRouter ([#45207](https://github.com/expo/expo/pull/45207) by [@Ubax](https://github.com/Ubax)
@@ -28,12 +42,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
-- Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
 - Fix `Stack.Protected` guard not applying to index routes. ([#43769](https://github.com/expo/expo/pull/43769) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
-- Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
-- fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
 - [ios] fix tint color on VectorIcon ([#43904](https://github.com/expo/expo/pull/43904) by [@Ubax](https://github.com/Ubax))
 - [Android] Fix @expo/ui divider in toolbar. ([#44209](https://github.com/expo/expo/pull/44209) by [@jakex7](https://github.com/jakex7))
 - Fix `Stack.Screen.Title` string/number concatenation. ([#44213](https://github.com/expo/expo/pull/44213) by [@jakex7](https://github.com/jakex7))
@@ -45,14 +54,75 @@
 
 - Removed `react-native-is-edge-to-edge` dependency, `AutoStatusBar` component, and `canOverrideStatusBarBehavior` helper. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
 - Remove `expo-router/doctor` since this is covered by `expo-doctor`'s duplicates check now ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
-- use KVC to provide native API compatible with both react-native-screens 4.24.0 and 4.23.0 ([#43576](https://github.com/expo/expo/pull/43576) by [@Ubax](https://github.com/Ubax))
-- Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
-- Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
-- Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
 - add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
 - refactor global-state logic ([#44056](https://github.com/expo/expo/pull/44056) by [@Ubax](https://github.com/Ubax))
 - Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
 - Rename `Stack.Screen.Title` to `Stack.Title`. The old name is kept as a deprecated alias. ([#45334](https://github.com/expo/expo/pull/45334) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.14 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-03-18
+
+### 💡 Others
+
+- Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.6 - 2026-03-17
+
+### 🐛 Bug fixes
+
+- Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
+- Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
+- Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
+- fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.5 - 2026-03-11
+
+### 💡 Others
+
+- Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 - 2026-03-05
+
+### 💡 Others
+
+- use KVC to provide native API compatible with both react-native-screens 4.24.0 and 4.23.0 ([#43576](https://github.com/expo/expo/pull/43576) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.3 - 2026-02-26
+
+### 🐛 Bug fixes
+
+- Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
 
 ## 55.0.2 — 2026-02-25
 

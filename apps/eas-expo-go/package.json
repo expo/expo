@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "expo": "workspace:*"
+    "expo": "56.0.0-preview.2"
   },
   "scripts": {
     "eas-build-pre-install": "./scripts/eas-build-pre-install.sh",

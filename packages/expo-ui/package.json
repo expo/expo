@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "55.0.1",
+  "version": "56.0.1",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js"
@@ -85,16 +85,16 @@
     "@types/babel__core": "^7.20.5",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "react-native-reanimated": "4.3.0",
-    "react-native-worklets": "0.8.1"
+    "react-native-worklets": "0.8.3"
   },
   "jest": {
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
     "@babel/core": "*",
-    "expo": "workspace:*",
+    "expo": "56.0.0-preview.1",
     "react": "*",
     "react-dom": "*",
     "react-native": "*",

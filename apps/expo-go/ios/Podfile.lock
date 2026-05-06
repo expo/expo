@@ -4,23 +4,23 @@ PODS:
     - CocoaLumberjack/Core (= 3.5.3)
   - CocoaLumberjack/Core (3.5.3)
   - DoubleConversion (1.1.6)
-  - EASClient (55.0.2):
+  - EASClient (56.0.0):
     - ExpoModulesCore
-  - EASClient/Tests (55.0.2):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-  - EXApplication (55.0.8):
-    - ExpoModulesCore
-  - EXConstants (55.0.7):
-    - ExpoModulesCore
-  - EXJSONUtils (55.0.0)
-  - EXJSONUtils/Tests (55.0.0)
-  - EXManifests (55.0.9):
-    - ExpoModulesCore
-  - EXManifests/Tests (55.0.9):
+  - EASClient/Tests (56.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (55.0.2):
+  - EXApplication (56.0.0):
+    - ExpoModulesCore
+  - EXConstants (56.0.1):
+    - ExpoModulesCore
+  - EXJSONUtils (56.0.0)
+  - EXJSONUtils/Tests (56.0.0)
+  - EXManifests (56.0.1):
+    - ExpoModulesCore
+  - EXManifests/Tests (56.0.1):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - Expo (56.0.0-preview.2):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -52,7 +52,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (55.0.2):
+  - Expo/Tests (56.0.0-preview.2):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -85,136 +85,72 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoAgeRange (0.2.10):
+  - ExpoAsset (56.0.1):
     - ExpoModulesCore
-  - ExpoAppleAuthentication (55.0.8):
+  - ExpoAudio (56.0.0):
     - ExpoModulesCore
-  - ExpoAppMetrics (0.1.7):
-    - boost
-    - DoubleConversion
+  - ExpoBackgroundFetch (56.0.0):
     - ExpoModulesCore
-    - EXUpdatesInterface
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - ExpoAppMetrics/Tests (0.1.7):
-    - boost
-    - DoubleConversion
-    - ExpoModulesCore
-    - EXUpdatesInterface
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - ExpoAsset (55.0.7):
-    - ExpoModulesCore
-  - ExpoAudio (55.0.8):
-    - ExpoModulesCore
-  - ExpoBackgroundFetch (55.0.8):
-    - ExpoModulesCore
-  - ExpoBackgroundTask (55.0.8):
+  - ExpoBackgroundTask (56.0.0):
     - ExpoModulesCore
     - ExpoTaskManager
-  - ExpoBackgroundTask/Tests (55.0.8):
+  - ExpoBackgroundTask/Tests (56.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - ExpoTaskManager
-  - ExpoBattery (55.0.8):
+  - ExpoBattery (56.0.0):
     - ExpoModulesCore
-  - ExpoBlob (55.0.8):
+  - ExpoBlob (56.0.0):
     - ExpoModulesCore
-  - ExpoBlur (55.0.8):
+  - ExpoBlur (56.0.0):
     - ExpoModulesCore
-  - ExpoBrightness (55.0.8):
+  - ExpoBrightness (56.0.0):
     - ExpoModulesCore
-  - ExpoCalendar (55.0.8):
+  - ExpoCalendar (56.0.0):
     - ExpoModulesCore
-  - ExpoCamera (55.0.9):
+  - ExpoCamera (56.0.0):
     - ExpoModulesCore
-  - ExpoCameraBarcodeScanning (55.0.9):
+  - ExpoCameraBarcodeScanning (56.0.0):
     - ExpoCamera
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - ExpoCellular (55.0.8):
+  - ExpoCellular (56.0.0):
     - ExpoModulesCore
-  - ExpoClipboard (55.0.8):
+  - ExpoClipboard (56.0.0):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (55.0.8):
+  - ExpoClipboard/Tests (56.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoContacts (55.0.8):
+  - ExpoContacts (56.0.0):
     - ExpoModulesCore
-  - ExpoCrypto (55.0.8):
+  - ExpoCrypto (56.0.0):
     - ExpoModulesCore
-  - ExpoDevice (55.0.9):
+  - ExpoDevice (56.0.1):
     - ExpoModulesCore
-  - ExpoDocumentPicker (55.0.8):
+  - ExpoDocumentPicker (56.0.0):
     - ExpoModulesCore
-  - ExpoDomWebView (55.0.3):
+  - ExpoDomWebView (56.0.1):
     - ExpoModulesCore
-  - ExpoFileSystem (55.0.9):
+  - ExpoFileSystem (56.0.1):
     - ExpoModulesCore
-  - ExpoFont (55.0.4):
+  - ExpoFont (56.0.1):
     - ExpoModulesCore
-  - ExpoGL (55.0.9):
+  - ExpoGL (56.0.0):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ReactCommon/turbomodule/core
-  - ExpoGlassEffect (55.0.7):
+  - ExpoGlassEffect (56.0.1):
     - ExpoModulesCore
-  - ExpoHaptics (55.0.8):
+  - ExpoHaptics (56.0.0):
     - ExpoModulesCore
-  - ExpoImage (55.0.5):
+  - ExpoImage (56.0.1):
     - ExpoModulesCore
     - libavif/libdav1d
     - SDWebImage (~> 5.21.0)
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (55.0.5):
+  - ExpoImage/Tests (56.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - libavif/libdav1d
@@ -222,39 +158,35 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImageManipulator (55.0.9):
+  - ExpoImageManipulator (56.0.0):
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImagePicker (55.0.9):
+  - ExpoImagePicker (56.0.0):
     - ExpoModulesCore
-  - ExpoKeepAwake (55.0.4):
+  - ExpoKeepAwake (56.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (55.0.8):
+  - ExpoLinearGradient (56.0.0):
     - ExpoModulesCore
-  - ExpoLinking (55.0.7):
+  - ExpoLinking (56.0.0):
     - ExpoModulesCore
-  - ExpoLivePhoto (55.0.8):
+  - ExpoLocalAuthentication (56.0.0):
     - ExpoModulesCore
-  - ExpoLocalAuthentication (55.0.8):
+  - ExpoLocalization (56.0.0):
     - ExpoModulesCore
-  - ExpoLocalization (55.0.8):
+  - ExpoLocation (56.0.0):
     - ExpoModulesCore
-  - ExpoLocation (55.1.2):
-    - ExpoModulesCore
-  - ExpoLogBox (55.0.7):
+  - ExpoLogBox (56.0.1):
     - React-Core
-  - ExpoMailComposer (55.0.8):
+  - ExpoMailComposer (56.0.0):
     - ExpoModulesCore
-  - ExpoMediaLibrary (55.0.9):
+  - ExpoMediaLibrary (56.0.0):
     - ExpoModulesCore
     - React-Core
-  - ExpoMediaLibrary/Tests (55.0.9):
+  - ExpoMediaLibrary/Tests (56.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
-  - ExpoMeshGradient (55.0.8):
-    - ExpoModulesCore
-  - ExpoModulesCore (55.0.12):
+  - ExpoModulesCore (56.0.0):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -284,7 +216,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (55.0.12):
+  - ExpoModulesCore/Tests (56.0.0):
     - boost
     - DoubleConversion
     - ExpoModulesJSI
@@ -315,108 +247,46 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesJSI (55.0.0):
+  - ExpoModulesJSI (56.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesJSI/Tests (55.0.0):
+  - ExpoModulesJSI/Tests (56.0.0):
     - React-Core
     - React-runtimescheduler
     - ReactCommon
-  - ExpoModulesTestCore (55.0.2):
+  - ExpoModulesTestCore (56.0.0):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
     - React-hermes
-  - ExpoModulesWorklets (55.0.12):
+  - ExpoModulesWorklets (56.0.0):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorkletsAdapter (55.0.12):
+  - ExpoModulesWorkletsAdapter (56.0.0):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesWorklets
     - RNWorklets
-  - ExpoNetwork (55.0.8):
+  - ExpoNetwork (56.0.0):
     - ExpoModulesCore
-  - ExpoNotifications (55.0.10):
+  - ExpoNotifications (56.0.0):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (55.0.10):
+  - ExpoNotifications/Tests (56.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoObserve (0.1.7):
-    - boost
-    - DoubleConversion
-    - EASClient
-    - ExpoAppMetrics
+  - ExpoPrint (56.0.0):
     - ExpoModulesCore
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - ExpoObserve/Tests (0.1.7):
-    - boost
-    - DoubleConversion
-    - EASClient
-    - ExpoAppMetrics
-    - ExpoModulesCore
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - ExpoPrint (55.0.8):
-    - ExpoModulesCore
-  - ExpoRouter (55.0.2):
+  - ExpoRouter (56.0.1):
     - ExpoModulesCore
     - RNScreens
-  - ExpoRouter/Tests (55.0.2):
+  - ExpoRouter/Tests (56.0.1):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - RNScreens
-  - ExpoScreenCapture (55.0.8):
+  - ExpoScreenCapture (56.0.0):
     - ExpoModulesCore
-  - ExpoScreenOrientation (55.0.8):
+  - ExpoScreenOrientation (56.0.0):
     - boost
     - DoubleConversion
     - ExpoModulesCore
@@ -445,46 +315,46 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoSecureStore (55.0.8):
+  - ExpoSecureStore (56.0.0):
     - ExpoModulesCore
-  - ExpoSensors (55.0.8):
+  - ExpoSensors (56.0.0):
     - ExpoModulesCore
-  - ExpoSharing (55.0.10):
+  - ExpoSharing (56.0.0):
     - ExpoModulesCore
-  - ExpoSMS (55.0.8):
+  - ExpoSMS (56.0.0):
     - ExpoModulesCore
-  - ExpoSpeech (55.0.8):
+  - ExpoSpeech (56.0.0):
     - ExpoModulesCore
-  - ExpoSQLite (55.0.10):
+  - ExpoSQLite (56.0.0):
     - ExpoModulesCore
-  - ExpoStoreReview (55.0.8):
+  - ExpoStoreReview (56.0.0):
     - ExpoModulesCore
-  - ExpoSymbols (55.0.4):
+  - ExpoSymbols (56.0.1):
     - ExpoModulesCore
-  - ExpoSystemUI (55.0.9):
+  - ExpoSystemUI (56.0.1):
     - ExpoModulesCore
-  - ExpoTaskManager (55.0.9):
+  - ExpoTaskManager (56.0.0):
     - ExpoModulesCore
     - UMAppLoader
-  - ExpoTaskManager/Tests (55.0.9):
+  - ExpoTaskManager/Tests (56.0.0):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - UMAppLoader
-  - ExpoTrackingTransparency (55.0.8):
+  - ExpoTrackingTransparency (56.0.0):
     - ExpoModulesCore
-  - ExpoUI (55.0.1):
+  - ExpoUI (56.0.1):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
-  - ExpoVideo (55.0.9):
+  - ExpoVideo (56.0.0):
     - ExpoModulesCore
-  - ExpoVideoThumbnails (55.0.9):
+  - ExpoVideoThumbnails (56.0.0):
     - ExpoModulesCore
-  - ExpoWebBrowser (55.0.9):
+  - ExpoWebBrowser (56.0.1):
     - ExpoModulesCore
-  - EXStructuredHeaders (55.0.0)
-  - EXStructuredHeaders/Tests (55.0.0)
-  - EXUpdates (55.0.11):
+  - EXStructuredHeaders (56.0.0)
+  - EXStructuredHeaders/Tests (56.0.0)
+  - EXUpdates (56.0.1):
     - boost
     - DoubleConversion
     - EASClient
@@ -518,7 +388,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (55.0.11):
+  - EXUpdates/Tests (56.0.1):
     - boost
     - DoubleConversion
     - EASClient
@@ -553,7 +423,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdatesInterface (55.1.3):
+  - EXUpdatesInterface (56.0.1):
     - ExpoModulesCore
   - fast_float (8.0.0)
   - FBLazyVector (0.85.2)
@@ -3888,7 +3758,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets (0.8.1):
+  - RNWorklets (0.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3916,11 +3786,11 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/apple (= 0.8.1)
-    - RNWorklets/common (= 0.8.1)
+    - RNWorklets/apple (= 0.8.3)
+    - RNWorklets/common (= 0.8.3)
     - SocketRocket
     - Yoga
-  - RNWorklets/apple (0.8.1):
+  - RNWorklets/apple (0.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -3950,7 +3820,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNWorklets/common (0.8.1):
+  - RNWorklets/common (0.8.3):
     - boost
     - DoubleConversion
     - fast_float
@@ -4118,8 +3988,8 @@ PODS:
   - StripeUICore (25.11.0):
     - StripeCore (= 25.11.0)
   - SwiftUIIntrospect (1.3.0)
-  - UMAppLoader (55.0.2)
-  - UMAppLoader/Tests (55.0.2):
+  - UMAppLoader (56.0.0)
+  - UMAppLoader/Tests (56.0.0):
     - ExpoModulesTestCore
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
@@ -4142,10 +4012,6 @@ DEPENDENCIES:
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
   - Expo/Tests (from `../../../packages/expo`)
-  - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
-  - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
-  - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
-  - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -4178,7 +4044,6 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
-  - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
@@ -4186,7 +4051,6 @@ DEPENDENCIES:
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
-  - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
@@ -4197,8 +4061,6 @@ DEPENDENCIES:
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
-  - ExpoObserve (from `../../../packages/expo-observe/ios`)
-  - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
@@ -4278,13 +4140,13 @@ DEPENDENCIES:
   - React-logger (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
-  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.0_patch_hash=1e34e4_4a7542518132451a7b077bd8ae3655f6/node_modules/react-native-keyboard-controller`)"
+  - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.0_patch_hash=1e34e4_12f8a138b6657e483fa62a9a1cf41ec7/node_modules/react-native-keyboard-controller`)"
   - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_57a2ea0a29596ebe4de368af95700197/node_modules/react-native-maps`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_d6811183a2f0d3fa5b5e9d7583a256b6/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@8.0.1_react-native@0.85.2_@babel+core@7.29.0_@react-native+jest_f3ba7a4a9b5d6d93f4fca09e851e5dc1/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.7.0_react-native@0.85.2_@babel+core@7.29.0_@react-nati_f959cbc263c1da1b8982692148d3bcef/node_modules/react-native-safe-area-context`)"
   - "react-native-segmented-control (from `../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.85.2_@babel+core_5b5b94a5f22cb45e3ee4d4b6c33ef9a5/node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_react-native-reanimated@4.3.0_patch_hash=1e34e42385416_ac99610af16b480307d9da018beb05cf/node_modules/@shopify/react-native-skia`)"
+  - "react-native-skia (from `../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_react-native-reanimated@4.3.0_patch_hash=1e34e42385416_722c5d969a52a2fc0b328b39d6b1f5cd/node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/.pnpm/@react-native-community+slider@5.2.0/node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../modules/react-native-view-shot`)
   - react-native-webview (from `../modules/react-native-webview`)
@@ -4326,10 +4188,10 @@ DEPENDENCIES:
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.85.2_@babel+core@7.29.0_@react-native_107e9dee6834e63baf100e0652402239/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.1.0_expo@packages+expo_react-native@0.85.2_@ba_f8e06d76087279dd44164a8c975e0850/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.31.1_react-native@0.85.2_@babel+core@7.29.0_@react-nativ_f78985ff31676485766600bfef3239a5/node_modules/react-native-gesture-handler`)"
-  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_eda565d3f67be15d7dda9b0be7008390/node_modules/react-native-reanimated`)"
+  - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_52e70d4540923088e7b9d94790e121e6/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.25.0-beta.1_react-native@0.85.2_@babel+core@7.29.0_@react-native_44f021255a9c2abec1791ca078467a98/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-pres_ad5ed717b7cc12448deb4bef3fad356b/node_modules/react-native-svg`)"
-  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_873264ea98792c8e9864fbfb4aec03b2/node_modules/react-native-worklets`)"
+  - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_21e1f0e21015cedcdf2e8fd371b2c176/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.64.0_expo@packages+expo_react-native-webview@13.16.1_reac_c392cbeafcd5ae0cefe62df85a7de97d/node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
@@ -4395,12 +4257,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../packages/expo"
-  ExpoAgeRange:
-    :path: "../../../packages/expo-age-range/ios"
-  ExpoAppleAuthentication:
-    :path: "../../../packages/expo-apple-authentication/ios"
-  ExpoAppMetrics:
-    :path: "../../../packages/expo-app-metrics/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
   ExpoAudio:
@@ -4459,8 +4315,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-linear-gradient/ios"
   ExpoLinking:
     :path: "../../../packages/expo-linking/ios"
-  ExpoLivePhoto:
-    :path: "../../../packages/expo-live-photo/ios"
   ExpoLocalAuthentication:
     :path: "../../../packages/expo-local-authentication/ios"
   ExpoLocalization:
@@ -4473,8 +4327,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-mail-composer/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
-  ExpoMeshGradient:
-    :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
@@ -4489,8 +4341,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-network/ios"
   ExpoNotifications:
     :path: "../../../packages/expo-notifications/ios"
-  ExpoObserve:
-    :path: "../../../packages/expo-observe/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
   ExpoRouter:
@@ -4621,7 +4471,7 @@ EXTERNAL SOURCES:
   React-microtasksnativemodule:
     :path: "../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks"
   react-native-keyboard-controller:
-    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.0_patch_hash=1e34e4_4a7542518132451a7b077bd8ae3655f6/node_modules/react-native-keyboard-controller"
+    :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.21.6_react-native-reanimated@4.3.0_patch_hash=1e34e4_12f8a138b6657e483fa62a9a1cf41ec7/node_modules/react-native-keyboard-controller"
   react-native-maps:
     :path: "../../../node_modules/.pnpm/react-native-maps@1.27.2_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.2.3_react_57a2ea0a29596ebe4de368af95700197/node_modules/react-native-maps"
   react-native-netinfo:
@@ -4633,7 +4483,7 @@ EXTERNAL SOURCES:
   react-native-segmented-control:
     :path: "../../../node_modules/.pnpm/@react-native-segmented-control+segmented-control@2.5.7_react-native@0.85.2_@babel+core_5b5b94a5f22cb45e3ee4d4b6c33ef9a5/node_modules/@react-native-segmented-control/segmented-control"
   react-native-skia:
-    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_react-native-reanimated@4.3.0_patch_hash=1e34e42385416_ac99610af16b480307d9da018beb05cf/node_modules/@shopify/react-native-skia"
+    :path: "../../../node_modules/.pnpm/@shopify+react-native-skia@2.6.2_react-native-reanimated@4.3.0_patch_hash=1e34e42385416_722c5d969a52a2fc0b328b39d6b1f5cd/node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/.pnpm/@react-native-community+slider@5.2.0/node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -4717,13 +4567,13 @@ EXTERNAL SOURCES:
   RNGestureHandler:
     :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.31.1_react-native@0.85.2_@babel+core@7.29.0_@react-nativ_f78985ff31676485766600bfef3239a5/node_modules/react-native-gesture-handler"
   RNReanimated:
-    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_eda565d3f67be15d7dda9b0be7008390/node_modules/react-native-reanimated"
+    :path: "../../../node_modules/.pnpm/react-native-reanimated@4.3.0_patch_hash=1e34e4238541638db96b94d5a2e974e73f3b801788a3d8_52e70d4540923088e7b9d94790e121e6/node_modules/react-native-reanimated"
   RNScreens:
     :path: "../../../node_modules/.pnpm/react-native-screens@4.25.0-beta.1_react-native@0.85.2_@babel+core@7.29.0_@react-native_44f021255a9c2abec1791ca078467a98/node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.85.2_@babel+core@7.29.0_@react-native+jest-pres_ad5ed717b7cc12448deb4bef3fad356b/node_modules/react-native-svg"
   RNWorklets:
-    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.1_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_873264ea98792c8e9864fbfb4aec03b2/node_modules/react-native-worklets"
+    :path: "../../../node_modules/.pnpm/react-native-worklets@0.8.3_patch_hash=3f49a21b44ba558989a3366eeff9c92ee331e18b736dbe89_21e1f0e21015cedcdf2e8fd371b2c176/node_modules/react-native-worklets"
   stripe-react-native:
     :path: "../../../node_modules/.pnpm/@stripe+stripe-react-native@0.64.0_expo@packages+expo_react-native-webview@13.16.1_reac_c392cbeafcd5ae0cefe62df85a7de97d/node_modules/@stripe/stripe-react-native"
   UMAppLoader:
@@ -4735,82 +4585,76 @@ SPEC CHECKSUMS:
   boost: 7e761d76ca2ce687f7cc98e698152abd03a18f90
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
-  EASClient: cb7854d65c09c520cc7d165f266c1d3bb901ceb7
-  EXApplication: 44b0cde41562abc9650bcf7bd04c25c68878288d
-  EXConstants: ed3e09607493bb717a7932f0e6786846169692a2
-  EXJSONUtils: 475f1af3d20fbd99268694df81d096817092aa89
-  EXManifests: ad24b3a497444eee9e07cc8590b09974ba369050
-  Expo: be6381e9c1390a5be199a157939b52ef0a461dc0
-  ExpoAgeRange: 87dd980cb26e47b1108e24c39bcfb88a9ab1030e
-  ExpoAppleAuthentication: c8096cd35e4e4f88aec34fcbfcd9deae7cea04d3
-  ExpoAppMetrics: f534609a5bbd43849f843c6cca0a3c37d68a75f9
-  ExpoAsset: 595cc0587b67afaaedddca79d4c1cf506400cb27
-  ExpoAudio: 40c883c60ed3bb17ecb3744a00732fb47029535b
-  ExpoBackgroundFetch: ee315c8d1a54a3f358fc0cedb68e808e95935c57
-  ExpoBackgroundTask: 6f9f42ff3f0fd3907f625314b2822692af790d81
-  ExpoBattery: 978934da47fa3414103aea2b61aeaa459658e06d
-  ExpoBlob: 8aadbb43ad4e2cdabc9a10fd26344d7911bb9805
-  ExpoBlur: d3a8f3dbdfadac5f4f7ebe201deb245678257b72
-  ExpoBrightness: d1d486e406bcc66acbd5d0101bf7785d5f35fd88
-  ExpoCalendar: d21041bc88e41a4d187196157568fd1310b59fc7
-  ExpoCamera: e95e370de0bf60152a6ccfd23e5d9492b947b701
-  ExpoCameraBarcodeScanning: 0fd8335acfaef17a1690461ae6f0c2b817948668
-  ExpoCellular: 7d53af5a8e82d326a5c7bc79443166eca4515fc5
-  ExpoClipboard: 0acdce934cb6a71b507da1117399645265e51ed5
-  ExpoContacts: 9b79a617546de1855e2267550e1f7a026afd2e9c
-  ExpoCrypto: 51dabf8af02467094127eb920e140c318d300080
-  ExpoDevice: 7de9dc29fa2b2ae3e178bc4d6bc31b137c4c094b
-  ExpoDocumentPicker: ddcb3787230898ea845001f692e20fd193c63b08
-  ExpoDomWebView: f21393aa4accbb6b8512fbec1ae741c454894bec
-  ExpoFileSystem: ad5826003c4064d55ab867193a8a79d19e85bce3
-  ExpoFont: 387d22422f85258b053db3bdac0883974c304a96
-  ExpoGL: e1188d1245549eaa7a448db6c078245f600469ae
-  ExpoGlassEffect: 4b0f07bf7997cb6bef8c702074e9a6ddc7e67bb0
-  ExpoHaptics: 5aebc423ee7b7a7703472fc60986ca319b8826f0
-  ExpoImage: d9446e7c2d365c063df7c8acd9c88b76a7b48ee4
-  ExpoImageManipulator: 32880b92320d41f02a32bc22d111f518d6a68859
-  ExpoImagePicker: 36604ce32a8566b619b87ef59bea2e136e0c0cc3
-  ExpoKeepAwake: 72475c0e8644ad4dae17742bde04d5a0fe4ad4f9
-  ExpoLinearGradient: 76405dc81ad27c300347829ed90ba26e7597e846
-  ExpoLinking: 8505f5b8fa023e82b9d3ac7be1f1241f35b415dd
-  ExpoLivePhoto: cebdeea82761402e1bb2e0b61bd1622d889c729e
-  ExpoLocalAuthentication: efe64e98f2686d8bd0bd04300ba5ed360b3d0100
-  ExpoLocalization: 19a0300c9fe626c884ce65cbbc421f9980bd5636
-  ExpoLocation: 957da1f900af30208ee9245590dbd50c9d267709
-  ExpoLogBox: 4a892fbcf6e343ffc1a6b714dcdc04a754d7e42f
-  ExpoMailComposer: edd4f46a26ea55ff0e3a83ef0192e79f647911c8
-  ExpoMediaLibrary: 2fbddcb06042f43076cf5e495e8237ec2ab95726
-  ExpoMeshGradient: 93cf09380e6d86cd7a525da26dfddab2620a8421
-  ExpoModulesCore: d1fc51bb17e5202cb90bab6502631597572f8cfc
-  ExpoModulesJSI: 16f789b94db843249981e5f550e050cc321fe554
-  ExpoModulesTestCore: 62ce59e8c8162b449e65467e0421240256ba6732
-  ExpoModulesWorklets: 3fc573fcc96eb8c457091dde007055ef35d58d70
-  ExpoModulesWorkletsAdapter: 8e561ffec777e8eacf2a2bad53a0edf04cfffa1a
-  ExpoNetwork: 15d026c5c28251e0810849c8c01ebc9bc73ad007
-  ExpoNotifications: 58a5bf9c5a0a2ee7d1800f9ed26ff17ff3748fde
-  ExpoObserve: d764d07ad6d364d3df9f45605ae00aeb187b4afa
-  ExpoPrint: 884afdcfe9adea0d36f121353652d0cfa7963deb
-  ExpoRouter: 617b413f30eb9fa39b210e4261814b13afd0418b
-  ExpoScreenCapture: fe37f0547515f17434b002dcda5e1725fc61fe6f
-  ExpoScreenOrientation: ac6c5d6deee6ffda315c10f1596f213fc38009fd
-  ExpoSecureStore: 2cfd2091ba612c4b53a3ab53bab7cd29f4df7448
-  ExpoSensors: 8b9f828af53d424c50a4c8b660e593360445ed86
-  ExpoSharing: 0499c917472da9b1ececcdbbec270e8bdbe2a34a
-  ExpoSMS: 528c01f4f24b20238863db064b34622dec82969a
-  ExpoSpeech: e38a87df68cbb92fa22afe33aea17ada05031970
-  ExpoSQLite: bb89f888d972448c0594042c6654c41957b006a8
-  ExpoStoreReview: 4f855490cec2241cfe28773c60271582d67417bc
-  ExpoSymbols: 257ea8cbc29c3d9cc2b3c66396dfeea8ac741230
-  ExpoSystemUI: 45304f7673a470749a0fc099b09ba0a23d1a89c2
-  ExpoTaskManager: a06f59b8f5777b647a1707b3d21f5e9717cd157d
-  ExpoTrackingTransparency: a980b930c8e2affc688dd93940dc5b88f55c875b
-  ExpoUI: e6e61b9aa1424349659c6cb1165adee716a89b69
-  ExpoVideo: eca730ba53ec45c2a188aa9dbfe11f7f809d66a1
-  ExpoVideoThumbnails: 2340f0b7f599c9ce6ba49a885f783de919cf4dd3
-  ExpoWebBrowser: b65b3921741b51c5513e2a369f59c37076987d9b
-  EXStructuredHeaders: e25ac67c966d3795153dfdb40bfd3b999df18929
-  EXUpdates: 33cea909186babc6befefeed3596a82b6c1d63de
-  EXUpdatesInterface: 5ab8c3e8018ef533a132b9327af5b2a1926dd299
+  EASClient: 92d4859ba99ccb9e6b15e4a6f6bf729eac5e14ce
+  EXApplication: cbda7a9c73358e57878912da014aa733a8959bd0
+  EXConstants: 6808b4bf46160e72c034afe57b857a64896979fd
+  EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
+  EXManifests: 23fadfe43e47a071950a5d2cc698e2ec9e869af6
+  Expo: 0161e119fae96cd10d1a0607a9e32999d0398bd2
+  ExpoAsset: 705ac2c9a4efe8f68ed83ebc4c4bd2f335513122
+  ExpoAudio: e9f6100cbd0c61d991ae5cb699b22b6c3b4db041
+  ExpoBackgroundFetch: a78cee242f4318d064ed9d60a97c997528d16f74
+  ExpoBackgroundTask: b87922a5bc1da38177482cb41d3c33aeee8e3e42
+  ExpoBattery: b587a5f4f7b9b01fa9993256dd77ea0218733c98
+  ExpoBlob: f780a0d034b8ba5e3bcc89c799ef9dad43dd9abf
+  ExpoBlur: e392a6e09db71eef1e500e878112e1119c1ff1d0
+  ExpoBrightness: a5ded2872740afd1f2d4efd1208f14145c1f080d
+  ExpoCalendar: f710095d998314e748490db6fbde2d1a42fa5317
+  ExpoCamera: 4947e7537ee2709669d51db62756cf8cfecca168
+  ExpoCameraBarcodeScanning: 190a1fc2bf354ba6e8b446b2e9316fc1d245cc24
+  ExpoCellular: dfbbccd9416880c2ffbf24178e6e385217505036
+  ExpoClipboard: 4b208fe6266ed723a2e0770c500b910422d62b44
+  ExpoContacts: 03bb5421c591a7537e77751645d336e4cf320c62
+  ExpoCrypto: b4d4244224451c7089d2bbb7fbb919b0d7b0daa8
+  ExpoDevice: 687a6a9f1119a062e411479daebaa98db2df9baf
+  ExpoDocumentPicker: 4d58ccd9eeaa4273ef4ef0c031cbb6bf619fdd77
+  ExpoDomWebView: 418bc24c668bf84ed99187cdef4733dc294f1af1
+  ExpoFileSystem: 9087d62edbffa4565e4b4568fab5db0528d810ac
+  ExpoFont: a82790c3ad1bee08435ab3359bf87218ce20f858
+  ExpoGL: 230a3122c5856848d7ef3daa5c9fc7dd3025ce09
+  ExpoGlassEffect: 22eecdd9abf6600bff806f2d3fe38ac8e8efabe0
+  ExpoHaptics: 942f1080ca288140e3112d5a6f2bc342a85ae2ec
+  ExpoImage: fa4120fb31153caeee95d748c1c609ae7c888ae9
+  ExpoImageManipulator: aa4e2d3c2a153a04b6a6998a713d107dd0e9e6b1
+  ExpoImagePicker: 26a98921352081043c69b176690a43ac2932b6b9
+  ExpoKeepAwake: e889b7d99d846a45458baf9cf5a1d1cc96ee7b48
+  ExpoLinearGradient: 9ecd05fed3d86b96c18ab3e8881e4932aae584c6
+  ExpoLinking: 4e2e8c58e148dd22a6cfda744796abf36bae8787
+  ExpoLocalAuthentication: cc6baa33a0508a1b274421856aab72621220f7bf
+  ExpoLocalization: 76bd3d376fe14bc7ef1a5ff7ea6e395852ce6bcf
+  ExpoLocation: f936cb52117047963687a6a3aefc2fea85514219
+  ExpoLogBox: ff246a45c7fc0827f9460af43dda85759eea2354
+  ExpoMailComposer: 98116d32d61d06cc821663b819cd2cfed9698465
+  ExpoMediaLibrary: b3a987d115a5e06fb1763efc25b8ddf528a8357e
+  ExpoModulesCore: c5b827eec0a4ad847d7f87eeaa422a61657e0700
+  ExpoModulesJSI: ea32f68254fb0bb09198bc0b40489d4a9df4c708
+  ExpoModulesTestCore: 5660ab6b5928747366d4946580622a578865696a
+  ExpoModulesWorklets: 8bcb73d4467bf0363e0eb1f8a040fe1e37c18f79
+  ExpoModulesWorkletsAdapter: fb7bb06e9b617561f10fa02a20e31206cc00d138
+  ExpoNetwork: 23eca2e819b9bed3f74ba866401cb8bc481d90c7
+  ExpoNotifications: 98b903ae77c702da2feb1d065d7fc62d40dc720c
+  ExpoPrint: 11940265e67847e7f98231a6d654f3c8df41b7c1
+  ExpoRouter: 3c50a81167c9621bc47d2376e12e5d0c2853be29
+  ExpoScreenCapture: 49513bd6d872808a5f79a26004fe7cb234d08bd5
+  ExpoScreenOrientation: a4a0adf657a8f77fe2d8428a3ff6a2500131dc2b
+  ExpoSecureStore: f21bc12bb09ce0d94b999d1af57571213c33fa2f
+  ExpoSensors: 6872fd0ef1d22e3840d4853c3acbb02257f3531e
+  ExpoSharing: 8dd7e038afd1f3bb2db4cbc587c3cbbeecb9003c
+  ExpoSMS: 2e0e9d532fc5614c8887992f2b5a8d9585e0c54b
+  ExpoSpeech: 87867957dcb93c9c626bf2a22483b3110420c015
+  ExpoSQLite: b68f2516baa84ddb95c0edadf70cb606294a5ea6
+  ExpoStoreReview: 7c8ca2d4f3896e10493043a0f7b3239a617283a5
+  ExpoSymbols: 1103331f1192e922fef6a8f3f96bf6be446dc8a9
+  ExpoSystemUI: a8225377947e7066d86eb041c9b45f0835a2015f
+  ExpoTaskManager: 303bf0ec470e95b4d7fcf0016a925c77f2f2df52
+  ExpoTrackingTransparency: 66ffd9145e18c752319efe3c4731078300de06dc
+  ExpoUI: 378f546ff55a433636e7f09d0fad1792b20bf9f1
+  ExpoVideo: b90f337707445c6e8ba140769246b907ec7799b1
+  ExpoVideoThumbnails: 3ff80af3300cb8792dfce15a0c2d045c0e873ba2
+  ExpoWebBrowser: d7c838c799939f1f7574a54b691b501da9a2996e
+  EXStructuredHeaders: 9e89bcdd636ae2ecb59995cfba3230f5d7547c08
+  EXUpdates: 4800ec2c98d0ff8bac31c2a927096c1408cdd495
+  EXUpdatesInterface: d9c69c30c1c124bf5a73d8965bace90038146cf0
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 4cd65993d9ef677523093deeb7d8710f39fb9ed7
   FirebaseAnalytics: acfa848bf81e1a4dbf60ef1f0eddd7328fe6673e
@@ -4822,7 +4666,7 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
-  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
+  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
@@ -4838,7 +4682,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
-  RCT-Folly: 121436bcc4611f6bde5c09bf35f0a7a82cef1969
+  RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
   RCTDeprecation: 5c945c659e2d68c1428f4a732c83198a4ad6a659
   RCTRequired: c98eb09689f6a2a2c75f6fd419fa94fe71a672c9
   RCTSwiftUI: 88767b796e06cd4af8dca2f7a3f97fccf1d723e0
@@ -4926,7 +4770,7 @@ SPEC CHECKSUMS:
   RNReanimated: 7a13e1d8ccabef6780dce63cfd66999a63233497
   RNScreens: 16bd039e76f91145275890a1e1cf848b98c1da7a
   RNSVG: c9d7c940ad9655eba72c5b9ca7b017c95bb58083
-  RNWorklets: 67e8351cb9accf602a4c7fe62b3d2cd1967aa61e
+  RNWorklets: c2db7fdd38222fb256e77cbd4fee7c32b351744c
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
   SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
@@ -4943,7 +4787,7 @@ SPEC CHECKSUMS:
   StripePaymentsUI: e942824c2a21c67f41b3bf6c09e87ebe882dd5c5
   StripeUICore: 9ee3c730f282fd34605f7ba00f2b77d80729d882
   SwiftUIIntrospect: fee9aa07293ee280373a591e1824e8ddc869ba5d
-  UMAppLoader: 825f43fdb8b853ede700ebaf8e9beb84ebe49cab
+  UMAppLoader: 114b4c89b0083f3e103be55fe0ff0950475f267b
   Yoga: 6eb5d794e5d7a35a2750bb469e2e5320d41492f5
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 

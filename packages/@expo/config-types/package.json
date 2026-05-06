@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-types",
-  "version": "55.0.5",
+  "version": "56.0.0",
   "description": "Types for the Expo config object app.config.ts",
   "types": "build/ExpoConfig.d.ts",
   "main": "build/ExpoConfig.js",
@@ -38,7 +38,7 @@
   "devDependencies": {
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "expo-module-scripts": "workspace:*",
+    "expo-module-scripts": "56.0.0",
     "json-schema-to-typescript": "^15.0.0",
     "semver": "^7.7.4"
   },
