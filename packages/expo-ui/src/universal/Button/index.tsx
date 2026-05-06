@@ -52,6 +52,7 @@ export function Button({
 
   return (
     <Pressable
+      role="button"
       style={({ hovered }) => [
         styles.button,
         variantStyles[variant],
