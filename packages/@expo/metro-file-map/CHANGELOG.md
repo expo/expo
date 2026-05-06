@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix serialized snapshot not including relative roots ([#45462](https://github.com/expo/expo/pull/45462) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.0-1 — 2026-05-06
