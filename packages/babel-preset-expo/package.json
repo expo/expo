@@ -40,8 +40,8 @@
   },
   "peerDependencies": {
     "@babel/runtime": "^7.20.0",
-    "expo": "56.0.0-preview.2",
-    "expo-widgets": "56.0.1",
+    "expo": "workspace:*",
+    "expo-widgets": "workspace:^56.0.1",
     "react-refresh": ">=0.14.0 <1.0.0"
   },
   "peerDependenciesMeta": {
@@ -102,13 +102,13 @@
   "devDependencies": {
     "@babel/core": "^7.26.0",
     "@expo/metro": "~56.0.0",
-    "@expo/metro-config": "56.0.1",
+    "@expo/metro-config": "workspace:*",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
-    "expo-module-scripts": "56.0.0",
-    "expo-splash-screen": "56.0.1",
+    "expo-module-scripts": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
     "react-refresh": "^0.14.2",
     "resolve-from": "^5.0.0"

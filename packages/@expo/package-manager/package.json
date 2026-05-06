@@ -36,7 +36,7 @@
     "build"
   ],
   "dependencies": {
-    "@expo/json-file": "10.1.0",
+    "@expo/json-file": "workspace:^10.1.0",
     "@expo/spawn-async": "^1.7.2",
     "chalk": "^4.0.0",
     "npm-package-arg": "^11.0.0",
@@ -46,7 +46,7 @@
   "devDependencies": {
     "@types/micromatch": "^4.0.2",
     "@types/npm-package-arg": "^6.1.0",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

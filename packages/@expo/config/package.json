@@ -32,10 +32,10 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-plugins": "56.0.0",
-    "@expo/config-types": "56.0.0",
-    "@expo/json-file": "10.1.0",
-    "@expo/require-utils": "56.0.0",
+    "@expo/config-plugins": "workspace:~56.0.0",
+    "@expo/config-types": "workspace:^56.0.0",
+    "@expo/json-file": "workspace:^10.1.0",
+    "@expo/require-utils": "workspace:^56.0.0",
     "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
@@ -48,7 +48,7 @@
     "@types/babel__code-frame": "^7.27.0",
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.5.8",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

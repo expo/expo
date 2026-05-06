@@ -22,6 +22,6 @@
   "dependencies": {},
   "devDependencies": {},
   "peerDependencies": {
-    "expo": "56.0.0-preview.2"
+    "expo": "workspace:*"
   }
 }

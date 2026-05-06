@@ -30,14 +30,14 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-updates-interface": "56.0.1"
+    "expo-updates-interface": "workspace:~56.0.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }

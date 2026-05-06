@@ -37,13 +37,13 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
-    "expo-constants": "56.0.1",
+    "expo-constants": "workspace:~56.0.1",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
     "@types/invariant": "^2.2.33",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",
