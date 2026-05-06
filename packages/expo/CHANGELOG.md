@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `AbortSignal.timeout` and `AbortSignal.any` to the native Winter runtime.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

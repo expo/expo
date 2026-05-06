@@ -3,6 +3,7 @@
 
 import '../../types';
 
+import { installAbortSignalPatch } from './AbortSignal';
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
@@ -25,6 +26,7 @@ install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').Import
 install('structuredClone', () => require('@ungap/structured-clone').default);
 
 installFormDataPatch(FormData);
+installAbortSignalPatch(AbortSignal);
 
 // Polyfill async iterator symbol for Hermes.
 // @ts-expect-error: readonly property only applies when the engine supports it
