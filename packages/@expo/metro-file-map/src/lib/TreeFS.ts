@@ -133,6 +133,7 @@ export default class TreeFS implements MutableFileSystem {
   readonly #processFile: ProcessFileFunction;
   readonly #rootDir: Path;
   readonly #rootPattern: RegExp | null;
+  readonly #roots: readonly string[];
   #rootNode: DirectoryNode = new Map();
 
   constructor(opts: TreeFSOptions) {
@@ -148,6 +149,8 @@ export default class TreeFS implements MutableFileSystem {
     } else {
       this.#fallbackBoundaryDepth = null;
     }
+    const normalRoots = (roots ?? []).map((r) => this.#pathUtils.absoluteToNormal(r));
+    this.#roots = normalRoots;
     this.#rootPattern = pathsToPattern(roots ?? [], this.#pathUtils);
     if (files != null) {
       this.bulkAddOrModify(files);
@@ -155,7 +158,7 @@ export default class TreeFS implements MutableFileSystem {
   }
 
   getSerializableSnapshot(): CacheData['fileSystemData'] {
-    return this.#cloneTree(this.#rootNode, '');
+    return this.#cloneTree(this.#rootNode);
   }
 
   static fromDeserializedSnapshot(args: DeserializedSnapshotInput): TreeFS {
@@ -716,10 +719,7 @@ export default class TreeFS implements MutableFileSystem {
               changeListener.directoryAdded(canonicalPath);
             }
             parentNode.set(segmentName, segmentNode);
-          } else if (
-            !opts.skipFallback &&
-            this.#fallbackFilesystem != null
-          ) {
+          } else if (!opts.skipFallback && this.#fallbackFilesystem != null) {
             parentNode.set(segmentName, segmentNode);
           }
         }
@@ -1315,18 +1315,62 @@ export default class TreeFS implements MutableFileSystem {
     return result.node;
   }
 
-  #cloneTree(root: DirectoryNode, prefix: string): DirectoryNode {
+  /**
+   * Return a filtered view of the tree containing only content under watched
+   * roots. Walk each root path from #rootNode, creating intermediate directory
+   * nodes as needed, and reference the subtree at each root endpoint directly.
+   * Since roots are non-overlapping, each contributes independently.
+   */
+  #cloneTree(rootNode: DirectoryNode): DirectoryNode {
+    // NOTE(@kitten): The upstream version deeply clones this structure, but this
+    // isn't necessary since it's serialized right away by the DiskCacheManager.
+    // Even if it isn't, the intention is to store it faithfully, so we're okay
+    // with more modifications
+
+    function copyRootInto(normalRoot: string, source: DirectoryNode, clone: DirectoryNode): void {
+      let currentSource = source;
+      let currentClone = clone;
+      let fromIdx = 0;
+
+      while (fromIdx < normalRoot.length) {
+        const nextSepIdx = normalRoot.indexOf(path.sep, fromIdx);
+        const isLastSegment = nextSepIdx === -1;
+        const seg = isLastSegment
+          ? normalRoot.slice(fromIdx)
+          : normalRoot.slice(fromIdx, nextSepIdx);
+        fromIdx = isLastSegment ? normalRoot.length : nextSepIdx + 1;
+
+        const sourceChild = currentSource.get(seg);
+        if (sourceChild == null || !isDirectory(sourceChild)) {
+          return;
+        } else if (isLastSegment || fromIdx >= normalRoot.length) {
+          currentClone.set(seg, sourceChild);
+        } else {
+          let cloneChild = currentClone.get(seg);
+          if (cloneChild == null || !isDirectory(cloneChild)) {
+            cloneChild = new Map();
+            currentClone.set(seg, cloneChild);
+          }
+          currentSource = sourceChild;
+          currentClone = cloneChild as DirectoryNode;
+        }
+      }
+    }
+
+    if (this.#roots.length === 0) {
+      return rootNode;
+    }
     const clone: DirectoryNode = new Map();
-    for (const [name, node] of root) {
-      if (node == null) {
-        continue;
-      } else if (isDirectory(node)) {
-        const childPath = prefix === '' ? name : prefix + path.sep + name;
-        if (this.#rootPattern == null || this.#rootPattern.test(childPath + path.sep)) {
-          clone.set(name, this.#cloneTree(node, childPath));
+    for (const normalRoot of this.#roots) {
+      if (normalRoot === '') {
+        // Root is rootDir itself — include everything except '..'
+        for (const [name, node] of rootNode) {
+          if (node != null && name !== '..') {
+            clone.set(name, node);
+          }
         }
       } else {
-        clone.set(name, [...node]);
+        copyRootInto(normalRoot, rootNode, clone);
       }
     }
     return clone;
