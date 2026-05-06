@@ -8,8 +8,18 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Gauge matches the official SwiftUI [Gauge API](https://developer.apple.com/documentation/swiftui/gauge) and supports styling via the [`gaugeStyle`](modifiers/#gaugestylestyle) modifier.
+
+<div className="mx-auto max-w-[480px]">
+  <Diagram
+    source="/static/images/expo-ui/gauge/ios-light.png"
+    darkSource="/static/images/expo-ui/gauge/ios-dark.png"
+    alt="Circular capacity Gauge showing 70%"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

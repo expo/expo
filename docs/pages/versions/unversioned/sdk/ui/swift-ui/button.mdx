@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Button matches the official SwiftUI [Button API](https://developer.apple.com/documentation/swiftui/button) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle), [`controlSize`](modifiers/#controlsizesize), and other modifiers.
+
+<div className="mx-auto max-w-[480px]">
+  <Diagram
+    source="/static/images/expo-ui/button/ios-light.png"
+    darkSource="/static/images/expo-ui/button/ios-dark.png"
+    alt="Bordered prominent, bordered, and plain Button styles"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 
