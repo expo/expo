@@ -136,10 +136,9 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
   }
 
   const timeoutId = setTimeout(() => {
-    // Ensure the timeout is cleared before checking the active resources
-    clearTimeout(timeoutId);
-    // Check if the process can exit
-    ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
+    // Delay the next check by one tick so the current timer is fully cleaned up
+    // and doesn't appear in the active resources list.
+    process.nextTick(() => ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs));
 
     // setTimeout is using the global definitions from React Native which is missing the unref method in Node.js.
   }, 100) as unknown as NodeJS.Timeout;

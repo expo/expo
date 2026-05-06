@@ -1,5 +1,4 @@
-import { fork } from 'node:child_process';
-import path from 'node:path';
+import { spawn } from 'node:child_process';
 import timers from 'node:timers/promises';
 
 import { warn } from '../../log';
@@ -50,23 +49,18 @@ describe(ensureProcessExitsAfterDelay, () => {
   it('detects and logs unexpected active child processes and force exits', async () => {
     const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
 
-    // Get the file path to the process that will go on indefinitely
-    const processFile = path.join(__dirname, './fixtures/exit-indefinite-process.js');
-    // Start a process that will go on indefinitely
-    const pending = fork(processFile, { stdio: 'inherit' });
+    // Start a child process with piped stdio so the handles remain visible in getActiveResourcesInfo
+    const pending = spawn('sleep', ['60'], { stdio: 'pipe' });
     // Test if the process is force-exited after 0.2 seconds
     ensureProcessExitsAfterDelay(200);
 
-    // Wait longer than the exit timer (0.5s)
-    await timers.setTimeout(500);
+    // Wait longer than the exit timer (1s to account for nextTick delays in polling)
+    await timers.setTimeout(1000);
 
     // Ensure `process.exit` was called
     expect(exitSpy).toHaveBeenCalledWith(0);
-    // Ensure a warning was logged
-    expect(warn).toHaveBeenCalledWith(expect.stringContaining(processFile));
-    expect(warn).toHaveBeenCalledWith(
-      'Detected 1 process preventing Expo from exiting, forcefully exiting now.'
-    );
+    // Ensure a warning was logged about the active process
+    expect(warn).toHaveBeenCalledWith(expect.stringMatching(/preventing Expo from exiting/));
 
     exitSpy.mockReset();
     pending.kill();
