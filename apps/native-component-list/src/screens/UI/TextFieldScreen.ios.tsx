@@ -26,7 +26,6 @@ import {
   foregroundStyle,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
-import { runOnJS } from 'react-native-worklets';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
