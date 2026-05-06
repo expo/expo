@@ -40,6 +40,7 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
           .map((dep) => dep.name),
         mismatchedWorkspaceDependencies: [],
         workspacePeerDependencies: [],
+        mismatchedWorkspacePeerDependencies: [],
         workspaceOptionalDependencies: [],
       };
     });
@@ -142,6 +143,14 @@ function shouldUpdateDependencyVersion(context: {
 }) {
   // Do not update the version if there is no current version range
   if (!context.currentVersionRange) {
+    return false;
+  }
+
+  // Skip workspace: specs entirely. pnpm resolves them to concrete versions
+  // at pack time, so the published artifact gets the right version while the
+  // source stays as the workspace-protocol declaration. Rewriting source
+  // would flush the prefix and propagate concrete pins back into the repo.
+  if (context.currentVersionRange.startsWith('workspace:')) {
     return false;
   }
 
