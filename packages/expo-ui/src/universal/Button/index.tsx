@@ -17,7 +17,10 @@ const styles = StyleSheet.create({
 
 const variantStyles = StyleSheet.create({
   filled: { backgroundColor: '#007AFF' },
-  outlined: { borderColor: '#007AFF', borderWidth: 1 },
+  outlined: {
+    borderColor: '#007AFF',
+    borderWidth: 1,
+  },
   text: {},
 } satisfies Record<ButtonVariant, ViewStyle>);
 
@@ -53,6 +56,9 @@ export function Button({
   return (
     <Pressable
       role="button"
+      onPress={onPress}
+      disabled={disabled}
+      testID={testID}
       style={({ hovered }) => [
         styles.button,
         variantStyles[variant],
@@ -60,10 +66,7 @@ export function Button({
         hovered && !disabled && variantHoverStyles[variant],
         hidden && styles.hidden,
         disabled && styles.disabled,
-      ]}
-      onPress={onPress}
-      disabled={disabled}
-      testID={testID}>
+      ]}>
       {children ?? <Text style={[styles.label, variantLabelStyles[variant]]}>{label}</Text>}
     </Pressable>
   );
