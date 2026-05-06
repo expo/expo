@@ -14,7 +14,7 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@expo/html-elements": "^56.0.1",
+    "@expo/html-elements": "workspace:*",
     "@expo/styleguide-base": "^1.0.1",
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/bottom-tabs": "^7.15.5",

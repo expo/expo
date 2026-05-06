@@ -1317,7 +1317,7 @@ importers:
   apps/observe-tester:
     dependencies:
       '@expo/html-elements':
-        specifier: ^56.0.1
+        specifier: workspace:*
         version: link:../../packages/html-elements
       '@expo/styleguide-base':
         specifier: ^1.0.1
