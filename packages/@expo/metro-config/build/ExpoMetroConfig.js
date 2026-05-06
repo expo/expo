@@ -10,6 +10,7 @@ exports.getDefaultConfig = getDefaultConfig;
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const metro_cache_1 = require("@expo/metro/metro-cache");
+const exclusionList_1 = __importDefault(require("@expo/metro/metro-config/defaults/exclusionList"));
 const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -224,8 +225,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.
-                /\.expo[\\/]types/,
-            ].concat(metroDefaultValues.resolver.blockList ?? []),
+                // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+                (0, exclusionList_1.default)(['.expo/types', '.expo/web/cache']),
+                // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+                // pattern is reapplied to normal paths during the Node crawling phase
+                /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+            ],
         },
         cacheStores: [cacheStore],
         watcher: {
