@@ -97,11 +97,8 @@ object VideoManager {
     fullscreenPlayerActivities[id] = WeakReference(fullscreenActivity)
   }
 
-  fun unregisterFullscreenPlayerActivity(id: String, activity: FullscreenPlayerActivity) {
-    val currentRef = fullscreenPlayerActivities[id]
-    if (currentRef?.get() == activity) {
-      fullscreenPlayerActivities.remove(id)
-    }
+  fun unregisterFullscreenPlayerActivity(id: String) {
+    fullscreenPlayerActivities.remove(id)
   }
 
   fun finishFullscreenPlayer(id: String) {

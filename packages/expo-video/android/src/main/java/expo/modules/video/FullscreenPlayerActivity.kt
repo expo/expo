@@ -184,7 +184,7 @@ class FullscreenPlayerActivity : Activity(), VideoManagerListener {
       videoView.exitFullscreen()
     }
     VideoManager.unregisterListener(this)
-    videoViewId?.let { VideoManager.unregisterFullscreenPlayerActivity(it, this) }
+    videoViewId?.let { VideoManager.unregisterFullscreenPlayerActivity(it) }
     orientationHelper?.stopOrientationEventListener()
   }
 
