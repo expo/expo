@@ -13,6 +13,7 @@ import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-conf
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
+import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
@@ -20,6 +21,7 @@ import path from 'path';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { replaceMetroFileMap } from './createFileMap-fork';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
@@ -186,6 +188,15 @@ export async function loadMetroConfigAsync(
       },
     },
   };
+
+  // NOTE(@kitten): Pass a hint to the transformer on where to find the Babel config
+  asWritable(config.transformer).extendsBabelConfigPath =
+    config.transformer.enableBabelRCLookup !== false ? resolveBabelrcName(projectRoot) : undefined;
+
+  // On-Demand Filesystem is enabled by default
+  // TODO(@kitten): Add to config-types JSON schema
+  const onDemandFilesystem = (exp.experiments as any)?.onDemandFilesystem ?? true;
+  asWritable(config.resolver).unstable_onDemandFilesystem = onDemandFilesystem;
 
   // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
   // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
@@ -376,19 +387,23 @@ export async function instantiateMetroAsync(
       }
     : undefined;
 
-  const { address, server, hmrServer, metro } = await runServer(
-    metroBundler,
-    metroConfig,
-    {
-      host: options.host,
-      websocketEndpoints,
-      watch: !isExporting && isWatchEnabled(),
-      secureServerOptions,
-    },
-    {
-      mockServer: isExporting,
-    }
-  );
+  const watch = !isExporting && isWatchEnabled();
+
+  const { address, server, hmrServer, metro } = await replaceMetroFileMap(() => {
+    return runServer(
+      metroBundler,
+      metroConfig,
+      {
+        host: options.host,
+        websocketEndpoints,
+        watch,
+        secureServerOptions,
+      },
+      {
+        mockServer: isExporting,
+      }
+    );
+  });
 
   event('instantiate', {
     atlas: env.EXPO_ATLAS,

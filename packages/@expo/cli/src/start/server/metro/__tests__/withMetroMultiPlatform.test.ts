@@ -60,6 +60,14 @@ function getMetroBundlerGetter() {
       hasVirtualModule: jest.fn((path) => false),
       setVirtualModule: jest.fn(),
       transformFile,
+      _depGraph: {
+        doesFileExist: jest.fn(() => false),
+        _fileSystem: {
+          lookup: jest.fn(() => ({ exists: false })),
+          hierarchicalLookup: jest.fn(() => null),
+        },
+      },
+      getWatcher: jest.fn(() => ({ addListener: jest.fn() })),
     } as any;
   });
 }
@@ -133,7 +141,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -159,86 +166,10 @@ describe(withExtendedResolver, () => {
     );
   });
 
-  it(`resolves against tsconfig baseUrl`, async () => {
-    mockMinFs();
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isTsconfigPathsEnabled: true,
-    });
-
-    const platform = 'ios';
-
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
-
-    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-
-    expect(getResolveFunc()).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        extraNodeModules: {},
-        mainFields: ['react-native', 'browser', 'main'],
-        preferNativePlatform: true,
-      }),
-      '/src/react-native',
-      platform
-    );
-  });
-
-  it(`resolves against tsconfig baseUrl without paths`, async () => {
-    mockMinFs();
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: { baseUrl: '/src' },
-      isTsconfigPathsEnabled: true,
-    });
-
-    const platform = 'ios';
-
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
-
-    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-
-    expect(getResolveFunc()).toHaveBeenNthCalledWith(
-      1,
-      expect.objectContaining({
-        extraNodeModules: {},
-        mainFields: ['react-native', 'browser', 'main'],
-        preferNativePlatform: true,
-      }),
-      '/src/react-native',
-      platform
-    );
-  });
-
-  it(`does not alias react-native-web in initial resolution with baseUrl on web`, async () => {
-    mockMinFs();
-
-    const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: { baseUrl: '/src', paths: { '/*': ['*'] } },
-      isTsconfigPathsEnabled: true,
-    });
-
-    const platform = 'web';
-
-    modified.resolver.resolveRequest!(getDefaultRequestContext(), 'react-native', platform);
-
-    expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    expect(getResolveFunc()).toHaveBeenCalledWith(
-      expect.objectContaining({
-        mainFields: ['browser', 'module', 'main'],
-        preferNativePlatform: false,
-      }),
-      '/src/react-native',
-      platform
-    );
-  });
-
   it(`resolves to react-native-web on web`, async () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       isTsconfigPathsEnabled: false,
     });
 
@@ -261,7 +192,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       isTsconfigPathsEnabled: false,
     });
 
@@ -297,7 +227,6 @@ describe(withExtendedResolver, () => {
         mockMinFs();
 
         const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-          tsconfig: {},
           isTsconfigPathsEnabled: false,
         });
 
@@ -319,7 +248,6 @@ describe(withExtendedResolver, () => {
       mockMinFs();
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -341,7 +269,6 @@ describe(withExtendedResolver, () => {
       mockMinFs();
 
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -368,7 +295,6 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -395,7 +321,6 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
       });
 
@@ -418,8 +343,8 @@ describe(withExtendedResolver, () => {
 
     ['ios', 'web'].forEach((platform) => {
       const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
-        isTsconfigPathsEnabled: true,
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
       });
 
       modified.resolver.resolveRequest!(
@@ -446,8 +371,8 @@ describe(withExtendedResolver, () => {
     );
     const platform = 'ios';
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
-      isTsconfigPathsEnabled: true,
+      isTsconfigPathsEnabled: false,
+      getMetroBundler: getMetroBundlerGetter(),
     });
 
     modified.resolver.resolveRequest!(getDefaultRequestContext(), '@expo/vector-icons', platform);
@@ -467,7 +392,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
 
@@ -502,7 +426,6 @@ describe(withExtendedResolver, () => {
     });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
 
@@ -531,7 +454,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
     });
 
@@ -565,7 +487,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -607,7 +528,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -649,7 +569,6 @@ describe(withExtendedResolver, () => {
     mockMinFs();
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: null,
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -718,7 +637,6 @@ describe(withExtendedResolver, () => {
       });
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       isTsconfigPathsEnabled: false,
       getMetroBundler: getMetroBundlerGetter(),
     });
@@ -752,7 +670,6 @@ describe(withExtendedResolver, () => {
     );
 
     const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-      tsconfig: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
@@ -786,7 +703,6 @@ describe(withExtendedResolver, () => {
 
     const config = asMetroConfig({ projectRoot: '/root/' });
     const modified = withExtendedResolver(config, {
-      tsconfig: {},
       getMetroBundler: getMetroBundlerGetter(),
     });
 
@@ -806,7 +722,6 @@ describe(withExtendedResolver, () => {
   describe('built-in externals', () => {
     function getModifiedConfig(props: { isExporting?: boolean } = {}) {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isExporting: props.isExporting,
         isTsconfigPathsEnabled: false,
         getMetroBundler: getMetroBundlerGetter(),
@@ -980,7 +895,6 @@ describe(withExtendedResolver, () => {
   describe('with fallback module resolver', () => {
     function getModifiedConfig() {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         isTsconfigPathsEnabled: false,
         getMetroBundler: getMetroBundlerGetter() as any,
       });
@@ -1357,7 +1271,6 @@ describe(withExtendedResolver, () => {
   describe('with autolinking module resolver', () => {
     function getModifiedConfig(input: AutolinkingModuleResolverInput) {
       return withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
-        tsconfig: {},
         autolinkingModuleResolverInput: input,
         isTsconfigPathsEnabled: false,
         getMetroBundler: getMetroBundlerGetter() as any,

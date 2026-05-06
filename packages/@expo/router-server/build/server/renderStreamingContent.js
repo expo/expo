@@ -107,13 +107,15 @@ function FontResources() {
 async function getStreamingContent(location, options) {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(location, options);
     const { headNodes: headCssNodes } = (0, react_1.createInjectedCssAsNodes)(options?.assets?.css ?? []);
+    const { headNodes: inlineCssNodes } = (0, react_1.createInjectedInlineCssAsNodes)(options?.assets?.inlineCss);
     const serverDocumentData = {
         headNodes: [
             ...(options?.metadata?.headNodes ?? []),
             getStyleElement({ key: 'rnw-style-element' }),
             ...(headCssNodes ?? []),
+            ...(inlineCssNodes ?? []),
         ],
-        bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {})],
+        bodyNodes: [(0, jsx_runtime_1.jsx)(FontResources, {}, "font-resources")],
     };
     return await server_2.default.renderToReadableStream((0, jsx_runtime_1.jsx)(server_1.ServerDocument, { data: serverDocumentData, children: (0, jsx_runtime_1.jsx)(head_1.default.Provider, { context: headContext, children: (0, jsx_runtime_1.jsx)(static_1.InnerRoot, { loadedData: loadedData, children: element }) }) }), {
         // TODO(@hassankhan): Experiment and see if we can calculate a better default
@@ -122,6 +124,12 @@ async function getStreamingContent(location, options) {
         bootstrapScriptContent: (0, react_1.getBootstrapContents)({ hydrate: true, loadedData }),
         bootstrapScripts: options?.assets?.js,
         signal: options?.request?.signal,
+        onError(error) {
+            if (options?.request?.signal.aborted) {
+                return;
+            }
+            console.error('SSR streaming render error:', error);
+        },
     });
 }
 var metadata_1 = require("./metadata");

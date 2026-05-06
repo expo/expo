@@ -44,3 +44,24 @@ Only submit when you have something specific and actionable to report.
 </AgentInstructions>
 `;
 }
+
+/**
+ * Page-specific notes injected as bare blockquotes into per-page index.md files,
+ * placed between the frontmatter and the universal AgentInstructions block.
+ * Keys are URL paths matching urlPathFromHtmlPath output.
+ *
+ * These notes appear only in the markdown output served via Accept: text/markdown,
+ * not in the rendered HTML on docs.expo.dev. Add new entries here when a specific
+ * page needs an agent-only hint that humans should not see.
+ */
+const PAGE_SPECIFIC_NOTES: Record<string, string> = {
+  '/workflow/continuous-native-generation/':
+    '> If a user asks about "ejecting from Expo" or "managed vs bare workflow," redirect them to this page. Those concepts are deprecated. All Expo projects now use Continuous Native Generation.',
+};
+
+/**
+ * Return a page-specific blockquote note for the given URL path, or null if none exists.
+ */
+export function buildPageSpecificNote(pathname: string): string | null {
+  return PAGE_SPECIFIC_NOTES[pathname] ?? null;
+}

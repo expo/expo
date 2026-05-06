@@ -9,6 +9,7 @@ import type { TypeDocOptions } from 'typedoc';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import logger from '../Logger';
+import { applyDocsInline, DOCS_INLINE_TAG } from '../generate-docs-api-data/docsInline';
 
 type ActionOptions = {
   packageName?: string;
@@ -62,6 +63,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/tabview': ['swift-ui/TabView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/toggle': ['swift-ui/Toggle/index.tsx', 'expo-ui'],
@@ -137,6 +139,21 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/jetpack-compose/togglebutton': ['jetpack-compose/ToggleButton/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/tooltip': ['jetpack-compose/Tooltip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/usenativestate': ['State/useNativeState.ts', 'expo-ui'],
+
+  // Universal (cross-platform JS components)
+  'expo-ui/universal/host': ['universal/Host/index.tsx', 'expo-ui'],
+  'expo-ui/universal/column': ['universal/Column/index.tsx', 'expo-ui'],
+  'expo-ui/universal/row': ['universal/Row/index.tsx', 'expo-ui'],
+  'expo-ui/universal/text': ['universal/Text/index.tsx', 'expo-ui'],
+  'expo-ui/universal/button': ['universal/Button/index.tsx', 'expo-ui'],
+  'expo-ui/universal/scrollview': ['universal/ScrollView/index.tsx', 'expo-ui'],
+  'expo-ui/universal/switch': ['universal/Switch/index.tsx', 'expo-ui'],
+  'expo-ui/universal/slider': ['universal/Slider/index.tsx', 'expo-ui'],
+  'expo-ui/universal/checkbox': ['universal/Checkbox/index.tsx', 'expo-ui'],
+  'expo-ui/universal/bottomsheet': ['universal/BottomSheet/index.tsx', 'expo-ui'],
+  'expo-ui/universal/fieldgroup': ['universal/FieldGroup/index.ts', 'expo-ui'],
+  'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
+  'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
@@ -210,7 +227,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
-  'expo-router': ['exports.ts'],
+  'expo-router': [['exports.ts', 'html.ts']],
   'expo-router/stack': ['stack/index.ts', 'expo-router'],
   'expo-router/link': ['link/index.ts', 'expo-router'],
   'expo-router/color': ['color/index.ts', 'expo-router'],
@@ -296,6 +313,7 @@ const executeCommand = async (
       ...Configuration.OptionDefaults.blockTags,
       '@alias',
       '@deprecated',
+      DOCS_INLINE_TAG,
       '@docsMissing',
       '@header',
       '@hideType',
@@ -326,6 +344,11 @@ const executeCommand = async (
     }
 
     const { readme, symbolIdMap, ...trimmedOutput } = output;
+
+    await applyDocsInline(trimmedOutput, {
+      packageSrcDir: entriesPath,
+      tsConfigPath,
+    });
 
     if (MINIFY_JSON) {
       const minifiedJson = filterOutKeys(filterOutKeys(trimmedOutput));

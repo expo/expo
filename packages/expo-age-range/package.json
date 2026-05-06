@@ -1,6 +1,6 @@
 {
   "name": "expo-age-range",
-  "version": "0.2.10",
+  "version": "56.0.0",
   "description": "A native module for age range functionality",
   "sideEffects": false,
   "main": "build/index.js",
@@ -35,10 +35,10 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "56.0.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "56.0.0-preview.2",
     "react-native": "*"
   }
 }

@@ -123,7 +123,13 @@ class FullscreenPlayerActivity : Activity(), VideoManagerListener {
   override fun finish() {
     super.finish()
     didFinish = true
-    videoViewId?.let { VideoManager.getVideoView(it).attachPlayer() }
+    videoViewId?.let {
+      try {
+        VideoManager.getVideoView(it).attachPlayer()
+      } catch (e: VideoViewNotFoundException) {
+        Log.w("ExpoVideo", "VideoView $it already unmounted when finishing fullscreen — skipping attachPlayer")
+      }
+    }
 
     // Disable the exit transition
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {

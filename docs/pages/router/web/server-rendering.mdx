@@ -105,17 +105,28 @@ In the above example, when the app user visits `/blog/my-post`, the page is rend
 
 You can customize the root HTML document by creating a **src/app/+html.tsx** file. This component wraps all routes and runs only on the server.
 
+The [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) hook from `expo-router/html` provides metadata and asset nodes that the server renderer injects into the document. You must spread these values into your HTML to ensure metadata, fonts, and CSS are included in the response:
+
+- `htmlAttributes`: attributes to add to the `<html>` element
+- `bodyAttributes`: attributes to add to the `<body>` element
+- `headNodes`: React nodes for the `<head>` element (metadata, CSS, and other assets)
+- `bodyNodes`: React nodes for the `<body>` element (fonts and other deferred assets)
+
+> **info** When creating a custom **+html.tsx** template, you must use all properties returned to you by [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext). Otherwise, your server-side rendered HTML may appear broken or your app may not function correctly.
+
 ```tsx src/app/+html.tsx
-import { ScrollViewStyleReset } from 'expo-router/html';
-import { type PropsWithChildren } from 'react';
+import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
+import type { ReactNode } from 'react';
 
 // This file is web-only and used to configure the root HTML for every
 // web page during server rendering.
 // The contents of this function only run in Node.js environments and
 // do not have access to the DOM or browser APIs.
-export default function Root({ children }: PropsWithChildren) {
+export default function Root({ children }: { children: ReactNode }) {
+  const { bodyAttributes, bodyNodes, htmlAttributes, headNodes } = useServerDocumentContext();
+
   return (
-    <html lang="en">
+    <html lang="en" {...htmlAttributes}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -127,9 +138,14 @@ export default function Root({ children }: PropsWithChildren) {
         */}
         <ScrollViewStyleReset />
 
+        {headNodes}
+
         {/* Add any additional <head> elements that you want globally available on web... */}
       </head>
-      <body>{children}</body>
+      <body {...bodyAttributes}>
+        {children}
+        {bodyNodes}
+      </body>
     </html>
   );
 }
@@ -138,34 +154,49 @@ export default function Root({ children }: PropsWithChildren) {
 The **+html.tsx** file is only used by the server renderer and never by client code. This means:
 
 - It will be run by `expo-server` during server rendering
-- It is not rehydrated on the client, and hence shouldn't use React hooks
+- It is not rehydrated on the client, and should only use [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) React hook
 - You may not import global CSS in `+html.tsx` (use the [Root Layout](/router/basics/navigation-layouts/#root-layout) for styles)
 - You may not call browser APIs like `window` or `document` in your `+html.tsx`
 
 All `+html.tsx` components are expected to render the `children` prop they receive in their JSX content.
 
-## Meta tags
+## Metadata
 
-Add meta tags to your pages using the `<Head />` component from `expo-router`:
+Routes may export a [`generateMetadata`](/versions/unversioned/sdk/server/#generatemetadatafunctionrequest-params) function to define per-page metadata such as title, description, and [Open Graph](https://ogp.me/) tags. This function runs on the server before rendering begins, and its result is injected into the `<head>` of the HTML document via the `headNodes` provided by [`useServerDocumentContext`](/versions/unversioned/sdk/router/#useserverdocumentcontext) in your [Root HTML](#root-html) component.
 
-```tsx src/app/about.tsx
-import Head from 'expo-router/head';
+Export a [`generateMetadata`](/versions/unversioned/sdk/server/#generatemetadatafunctionrequest-params) function from your route file and return a [`Metadata`](/versions/unversioned/sdk/server/#metadata) object. The function receives the incoming request and route parameters, which you can use to generate metadata dynamically:
+
+```tsx src/app/blog/[id].tsx
 import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import type { GenerateMetadataFunction } from 'expo-router/server';
 
-export default function Page() {
-  return (
-    <>
-      <Head>
-        <title>About Us</title>
-        <meta name="description" content="Learn more about our company." />
-      </Head>
-      <Text>About page content</Text>
-    </>
-  );
+export const generateMetadata: GenerateMetadataFunction = async (request, params) => {
+  const response = await fetch(`https://api.example.com/posts/${params.id}`);
+  const post = await response.json();
+
+  return {
+    title: post.title,
+    description: post.excerpt,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt,
+      images: post.coverImage,
+    },
+  };
+};
+
+export default function BlogPost() {
+  const { id } = useLocalSearchParams();
+  return <Text>Post {id}</Text>;
 }
 ```
 
-During server-side rendering, `<Head>` elements are extracted and included in the initial HTML response, modifying the `<head>` element sent to the client, and improving search engine optimization (SEO).
+The `generateMetadata` function executes on the server and is stripped from the client bundle, similar to [data loaders](/router/web/data-loaders). For a full list of supported metadata fields, see the [`Metadata`](/versions/unversioned/sdk/server/#metadata) type in the `expo-server` API reference.
+
+### Using `<Head>` with server rendering
+
+You can also use the `<Head>` component from `expo-router/head` to add `<meta>` tags. Both approaches can co-exist in the same route. However, `generateMetadata` is the recommended approach for server rendering because it resolves metadata before the HTML stream begins, ensuring that `<meta>` tags are included in the earliest bytes of the response. `<Head>` can be used to update `<meta>` tags dynamically after the app has hydrated.
 
 ## Deployment
 
@@ -194,14 +225,16 @@ EAS Hosting supports server rendering out of the box. Export your app and deploy
 
 ## Comparison with static rendering
 
-| Feature            |     | Static Rendering                                                                      | Server Rendering              |
-| ------------------ | :-- | ------------------------------------------------------------------------------------- | ----------------------------- |
-| HTML generation    |     | Build time                                                                            | Request time                  |
-| Configuration      |     | `web.output: 'static'`                                                                | `web.output: 'server'`        |
-| Dynamic routes     |     | Requires [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) | Works automatically           |
-| Server required    |     | No                                                                                    | Yes                           |
-| Time to First Byte |     | Fastest (cached)                                                                      | Slower (rendered per request) |
-| Hosting            |     | Any static host                                                                       | Server runtime required       |
+| Feature            |     | Static Rendering                                                                      | Server Rendering                |
+| ------------------ | :-- | ------------------------------------------------------------------------------------- | ------------------------------- |
+| HTML generation    |     | Build time                                                                            | Request time                    |
+| HTML delivery      |     | Complete document                                                                     | Streamed progressively          |
+| Configuration      |     | `web.output: 'static'`                                                                | `web.output: 'server'`          |
+| Dynamic routes     |     | Requires [`generateStaticParams`](/router/web/static-rendering/#generatestaticparams) | Works automatically             |
+| Metadata           |     | [`<Head>`](/versions/latest/sdk/router/#head) component                               | [`generateMetadata`](#metadata) |
+| Server required    |     | No                                                                                    | Yes                             |
+| Time to First Byte |     | Fastest (cached)                                                                      | Slower (rendered per request)   |
+| Hosting            |     | Any static host                                                                       | Server runtime required         |
 
 ## Common questions
 

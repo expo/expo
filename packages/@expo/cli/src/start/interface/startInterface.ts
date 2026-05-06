@@ -10,6 +10,8 @@ import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
 import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
+import type { DependencyCheckResult } from '../checkDependenciesOnStart';
+import { printDependencyCheckResult } from '../checkDependenciesOnStart';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import type { DevServerManager } from '../server/DevServerManager';
 
@@ -37,7 +39,7 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckPromise'>
 ) {
   const actions = new DevServerManagerActions(devServerManager, options);
 
@@ -49,7 +51,33 @@ export async function startInterfaceAsync(
     ...options,
   };
 
+  // Wait briefly for the dependency check to resolve (it runs in the background since early startup).
+  // With a warm fetch cache this resolves near-instantly; on cold starts it may not be ready,
+  // in which case it will appear on the next TUI re-print (e.g. pressing 'c').
+  let dependencyCheckResult: DependencyCheckResult | null | undefined;
+  if (options.dependencyCheckPromise) {
+    dependencyCheckResult = await Promise.race([
+      options.dependencyCheckPromise,
+      new Promise<undefined>((resolve) => setTimeout(resolve, 100)),
+    ]);
+    if (!dependencyCheckResult) {
+      // Not ready yet — capture once resolved for display on next reprint
+      options.dependencyCheckPromise.then((result) => {
+        if (result) {
+          dependencyCheckResult = result;
+        }
+      });
+    }
+  }
+
+  const printDependencyCheckIfAvailable = () => {
+    if (dependencyCheckResult) {
+      printDependencyCheckResult(dependencyCheckResult);
+    }
+  };
+
   actions.printDevServerInfo(usageOptions);
+  printDependencyCheckIfAvailable();
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -144,7 +172,9 @@ export async function startInterfaceAsync(
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
-          return actions.printDevServerInfo(usageOptions);
+          actions.printDevServerInfo(usageOptions);
+          printDependencyCheckIfAvailable();
+          return;
         }
         break;
       }
@@ -188,7 +218,9 @@ export async function startInterfaceAsync(
       }
       case 'c':
         Log.clear();
-        return actions.printDevServerInfo(usageOptions);
+        actions.printDevServerInfo(usageOptions);
+        printDependencyCheckIfAvailable();
+        return;
       case 'j':
         return actions.openJsInspectorAsync();
       case 'r':

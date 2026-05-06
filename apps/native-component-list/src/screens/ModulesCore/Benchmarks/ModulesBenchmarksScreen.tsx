@@ -97,9 +97,14 @@ function reducer(state: State, action: Action): State {
   }
 }
 
-function yieldToEventLoop(): Promise<void> {
+// Delay between marking a benchmark as running and actually starting it.
+// Long enough for the press feedback to settle and the "running…" state to
+// paint before the JS thread gets occupied by the benchmark body.
+const PRE_BENCHMARK_DELAY_MS = 150;
+
+function delay(ms: number): Promise<void> {
   return new Promise((resolve) => {
-    return setTimeout(resolve, 0);
+    return setTimeout(resolve, ms);
   });
 }
 
@@ -139,7 +144,7 @@ export default function ModulesBenchmarksScreen() {
     }
 
     dispatch({ type: ActionType.MarkRunning, benchmarkId });
-    await yieldToEventLoop();
+    await delay(PRE_BENCHMARK_DELAY_MS);
 
     const iterations = iterationsOf(group);
 

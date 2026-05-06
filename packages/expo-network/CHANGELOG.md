@@ -4,15 +4,41 @@
 
 ### 🛠 Breaking changes
 
-- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed network state listener emitting a stale "connected" event when the device disconnects from the network on Android 13+. ([#44656](https://github.com/expo/expo/pull/44656) by [@gueroverdenwshq](https://github.com/gueroverdenwshq))
 
-### 💡 Others
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-25
 

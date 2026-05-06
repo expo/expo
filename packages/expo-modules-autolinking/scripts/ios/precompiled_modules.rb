@@ -74,6 +74,8 @@ module Expo
     @hermes_version = nil
     @claimed_vendored_frameworks = nil  # Set<String> — xcframework names already claimed by a prebuilt pod
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
+    @failed_remote_downloads = Set.new
+    @warned_no_prebuilt_react = false
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -95,9 +97,20 @@ module Expo
         ENV[EXTERNAL_MODULES_BASE_URL_ENV_VAR]
       end
 
-      # Returns true if precompiled modules are enabled via environment variable
+      # Returns true if precompiled modules are enabled via environment variable.
+      # Precompiled module xcframeworks are linked against the prebuilt
+      # React.xcframework, so they also require RCT_USE_PREBUILT_RNCORE=1. If
+      # the user opted in to precompiled modules but React Native is still set
+      # to build from source, fall back to source-built modules and warn once.
       def enabled?
-        ENV[ENV_VAR] == '1'
+        return false unless ENV[ENV_VAR] == '1'
+        return true if prebuilt_react_active?
+
+        unless @warned_no_prebuilt_react
+          @warned_no_prebuilt_react = true
+          Pod::UI.warn "[Expo] EXPO_USE_PRECOMPILED_MODULES=1 was set, but React Native is configured to build from source (RCT_USE_PREBUILT_RNCORE is not 1). Precompiled Expo modules require the prebuilt React.xcframework, so every Expo module will be built from source for this install. To use precompiled modules, ensure `ios.buildReactNativeFromSource` is not `true` in the `expo-build-properties` plugin (the default uses the prebuilt framework), or export RCT_USE_PREBUILT_RNCORE=1 before running `pod install`."
+        end
+        false
       end
 
       # Sets the list of package name patterns that should be built from source
@@ -1593,7 +1606,7 @@ module Expo
         current_dir = start_dir || Dir.pwd
 
         loop do
-          return current_dir if File.directory?(File.join(current_dir, 'packages'))
+          return current_dir if File.exist?(File.join(current_dir, 'packages', 'expo-modules-core', 'spm.config.json'))
 
           parent = File.dirname(current_dir)
           break if parent == current_dir
@@ -1819,22 +1832,41 @@ module Expo
           "#{product_name}.tar.gz"
         ].join('/')
         remote_url = "#{base_url.chomp('/')}/#{relative_path}"
+        remote_tarball = File.join(remote_precompiled_artifacts_dir, relative_path)
 
-        download_remote_tarball(remote_url, tarball, pod_name || product_name, flavor)
+        return remote_tarball if File.exist?(remote_tarball)
+        return remote_tarball if failed_remote_downloads.include?(remote_url)
+
+        download_remote_tarball(remote_url, remote_tarball, pod_name || product_name, flavor)
+        remote_tarball
+      end
+
+      def failed_remote_downloads
+        @failed_remote_downloads ||= Set.new
+      end
+
+      def remote_precompiled_artifacts_dir
+        pods_root = Pod::Config.instance.sandbox_root rescue File.join(Dir.pwd, 'Pods')
+        File.join(pods_root.to_s, 'ExpoPrecompiledArtifacts')
+      end
+
+      def gray(text)
+        text.respond_to?(:gray) ? text.gray : text
       end
 
       def download_remote_tarball(remote_url, destination_path, pod_name, flavor)
         FileUtils.mkdir_p(File.dirname(destination_path))
         tmp_path = "#{destination_path}.download-#{Process.pid}"
 
-        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloading #{flavor} artifact from #{remote_url}"
-
         download_to_file(remote_url, tmp_path)
         FileUtils.mv(tmp_path, destination_path)
+        Pod::UI.info "#{'[Expo-precompiled] '.blue}#{pod_name}: downloaded remote #{flavor} artifact"
         destination_path
       rescue => e
         FileUtils.rm_f(tmp_path) if tmp_path && File.exist?(tmp_path)
-        Pod::UI.warn "[Expo-precompiled] #{pod_name}: failed to download #{flavor} artifact from #{remote_url}: #{e.message}"
+        failed_remote_downloads.add(remote_url)
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{"#{pod_name}: remote #{flavor} artifact unavailable (#{e.message}); building from source".yellow}"
+        Pod::UI.puts "#{'[Expo-precompiled] '.blue}#{gray("  URL: #{remote_url}")}"
         nil
       end
 

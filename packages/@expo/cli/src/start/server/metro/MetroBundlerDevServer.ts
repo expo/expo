@@ -28,6 +28,7 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -118,6 +119,15 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
   specificOptions?: Partial<ExpoMetroOptions>,
   extras?: { hot?: boolean }
 ) => Promise<T>;
+
+type ResolveMetadataFunction =
+  typeof import('@expo/router-server/build/static/renderStaticContent').resolveMetadata;
+
+type DevServerRenderOptions = {
+  loader?: GetStreamingContentOptions['loader'];
+  metadata?: Awaited<ReturnType<ResolveMetadataFunction>>;
+  params: Record<string, string | string[]>;
+};
 
 interface BundleDirectResult {
   numModifiedFiles: number;
@@ -597,6 +607,70 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
+  private async getDevServerRenderOptionsAsync({
+    location,
+    route,
+    request,
+    resolveMetadata,
+  }: {
+    location: URL;
+    route: RouteInfo<RegExp>;
+    request?: ImmutableRequest;
+    resolveMetadata?: ResolveMetadataFunction;
+  }): Promise<DevServerRenderOptions> {
+    const { exp } = getConfig(this.projectRoot);
+    const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
+    const params = resolvedLoaderRoute?.params ?? {};
+    const renderOptions: DevServerRenderOptions = { params };
+
+    if (resolveMetadata) {
+      // TODO(@hassankhan): Revisit if we support request-less `generateMetadata()` during SSG
+      if (!request) {
+        throw new CommandError(
+          'SSR_STREAMING_REQUEST_REQUIRED',
+          'Invariant violation: development streaming SSR requires a request to resolve metadata.'
+        );
+      }
+
+      renderOptions.metadata = await resolveMetadata({
+        route: {
+          file: route.file,
+          page: route.page,
+        },
+        request,
+        params,
+      });
+    }
+
+    const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders === true;
+    if (!useServerDataLoaders || !resolvedLoaderRoute) {
+      return renderOptions;
+    }
+
+    const loaderResult = await this.executeServerDataLoaderAsync(
+      location,
+      resolvedLoaderRoute,
+      request
+    );
+
+    if (!loaderResult) {
+      return renderOptions;
+    }
+
+    const loaderData = loaderResult instanceof Response ? await loaderResult.json() : loaderResult;
+    const resolvedLoaderKey = resolveLoaderContextKey(
+      resolvedLoaderRoute.contextKey,
+      resolvedLoaderRoute.params
+    );
+
+    renderOptions.loader = {
+      data: loaderData ?? null,
+      key: resolvedLoaderKey,
+    };
+
+    return renderOptions;
+  }
+
   /**
    * This function is invoked when running in development via `expo start`
    */
@@ -604,7 +678,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     pathname: string,
     route: RouteInfo<RegExp>,
     request?: ImmutableRequest
-  ) {
+  ): Promise<{ content: string | ReadableStream<Uint8Array>; resources?: SerialAsset[] }> {
     const { exp } = getConfig(this.projectRoot);
     const { mode, isExporting, clientBoundaries, baseUrl, reactCompiler, routerRoot, asyncRoutes } =
       this.instanceMetroOptions;
@@ -635,6 +709,53 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bytecode: false,
     });
 
+    const isSSREnabled =
+      exp.web?.output === 'server' && exp.extra?.router?.unstable_useServerRendering === true;
+    const location = new URL(pathname, this.getDevServerUrlOrAssert());
+
+    if (isSSREnabled) {
+      if (!request) {
+        throw new CommandError(
+          'SSR_STREAMING_REQUEST_REQUIRED',
+          'Invariant violation: development streaming SSR requires a request.'
+        );
+      }
+
+      const { getStreamingContent, resolveMetadata } = await this.ssrLoadModule<
+        typeof import('@expo/router-server/build/static/renderStaticContent')
+      >(require.resolve('@expo/router-server/node/render.js'), {
+        // Development streaming SSR intentionally stays on the non-RSC server renderer.
+        environment: 'node',
+        minify: false,
+        isExporting,
+        platform,
+      });
+
+      const { artifacts: resources } = await this.getStaticResourcesAsync({
+        clientBoundaries: [],
+      });
+      const { cssHrefs, inlineCss } = getStreamingCssAssetsFromSerialAssets(resources);
+      const { loader, metadata } = await this.getDevServerRenderOptionsAsync({
+        location,
+        route,
+        request,
+        resolveMetadata,
+      });
+
+      const content = await getStreamingContent(location, {
+        loader,
+        metadata,
+        request: request as unknown as Request,
+        assets: {
+          css: cssHrefs,
+          inlineCss,
+          js: [devBundleUrlPathname],
+        },
+      });
+
+      return { content };
+    }
+
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await this.ssrLoadModule<
         typeof import('@expo/router-server/build/static/renderStaticContent')
@@ -647,35 +768,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         platform,
       });
 
-      const location = new URL(pathname, this.getDevServerUrlOrAssert());
-
-      const useServerDataLoaders = exp.extra?.router?.unstable_useServerDataLoaders;
-      if (!useServerDataLoaders) {
-        return await getStaticContent(location);
-      }
-
-      const resolvedLoaderRoute = fromServerManifestRoute(location.pathname, route);
-      if (!resolvedLoaderRoute) {
-        return await getStaticContent(location);
-      }
-
-      const loaderResult = await this.executeServerDataLoaderAsync(
+      const { loader } = await this.getDevServerRenderOptionsAsync({
         location,
-        resolvedLoaderRoute,
-        request
-      );
-      if (!loaderResult) {
-        return await getStaticContent(location);
-      }
-
-      const loaderData = await loaderResult.json();
-      const resolvedLoaderKey = resolveLoaderContextKey(
-        resolvedLoaderRoute.contextKey,
-        resolvedLoaderRoute.params
-      );
-      return await getStaticContent(location, {
-        loader: { data: loaderData, key: resolvedLoaderKey },
+        route,
+        request,
       });
+
+      return await getStaticContent(location, loader ? { loader } : undefined);
     };
 
     const [{ artifacts: resources }, staticHtml] = await Promise.all([
@@ -1434,8 +1533,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 );
               },
               getStaticPageAsync: async (pathname, route, request) => {
-                // TODO: Add server rendering when RSC is enabled.
                 if (isReactServerComponentsEnabled) {
+                  // RSC development HTML intentionally stays on the existing temporary SPA/template path.
+                  // Non-RSC streaming SSR is handled by `MetroBundlerDevServer#getStaticPageAsync()`.
                   // NOTE: This is a temporary hack to return the SPA/template index.html in development when RSC is enabled.
                   // While this technically works, it doesn't provide the correct experience of server rendering the React code to HTML first.
                   const html = await manifestMiddleware.getSingleHtmlTemplateAsync();
@@ -2271,4 +2371,25 @@ async function sourceMapStringAsync(
 
 function unique<T>(array: T[]): T[] {
   return Array.from(new Set(array));
+}
+
+function getStreamingCssAssetsFromSerialAssets(resources: SerialAsset[]): {
+  cssHrefs: string[];
+  inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'];
+} {
+  const cssHrefs: string[] = [];
+  const inlineCss: NonNullable<GetStreamingContentOptions['assets']>['inlineCss'] = [];
+
+  for (const asset of resources) {
+    if (asset.type === 'css') {
+      inlineCss.push({
+        source: asset.source,
+        hmrId: asset.metadata.hmrId,
+      });
+    } else if (asset.type === 'css-external') {
+      cssHrefs.push(asset.filename);
+    }
+  }
+
+  return { cssHrefs, inlineCss };
 }

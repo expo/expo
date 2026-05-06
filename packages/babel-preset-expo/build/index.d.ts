@@ -1,6 +1,6 @@
 import type { ConfigAPI, TransformOptions } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
-type BabelPresetExpoPlatformOptions = {
+interface BabelPresetExpoPlatformOptions {
     /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
     decorators?: false | {
         legacy?: boolean;
@@ -18,8 +18,6 @@ type BabelPresetExpoPlatformOptions = {
      * bundles only carry their own branch. @default `true`
      */
     expoUi?: boolean;
-    /** @deprecated Set `jsxRuntime: 'classic'` to disable automatic JSX handling.  */
-    useTransformReactJSXExperimental?: boolean;
     /** Change the policy for handling JSX in a file. Passed to `plugin-transform-react-jsx`. @default `'automatic'` */
     jsxRuntime?: 'classic' | 'automatic';
     /** Change the source module ID to use when importing an automatic JSX import. Only applied when `jsxRuntime` is `'automatic'` (default). Passed to `plugin-transform-react-jsx`. @default `'react'` */
@@ -27,9 +25,8 @@ type BabelPresetExpoPlatformOptions = {
     lazyImports?: boolean;
     disableImportExportTransform?: boolean;
     disableDeepImportWarnings?: boolean;
-    disableFlowStripTypesTransform?: boolean;
     enableBabelRuntime?: boolean | string;
-    unstable_transformProfile?: 'default' | 'hermes-stable' | 'hermes-canary';
+    unstable_transformProfile?: 'default' | 'hermes-v0' | 'hermes-stable' | 'hermes-canary';
     /** Settings to pass to `babel-plugin-react-compiler`. Set as `false` to disable the plugin. */
     'react-compiler'?: false | ReactCompilerOptions;
     /** Only set to `false` to disable `react-refresh/babel` forcefully, defaults to `undefined` */
@@ -44,12 +41,12 @@ type BabelPresetExpoPlatformOptions = {
      * @default `true`
      */
     transformImportMeta?: boolean;
-};
-export type BabelPresetExpoOptions = BabelPresetExpoPlatformOptions & {
+}
+export interface BabelPresetExpoOptions extends BabelPresetExpoPlatformOptions {
     /** Web-specific settings. */
     web?: BabelPresetExpoPlatformOptions;
     /** Native-specific settings. */
     native?: BabelPresetExpoPlatformOptions;
-};
+}
 declare function babelPresetExpo(api: ConfigAPI, options?: BabelPresetExpoOptions): TransformOptions;
 export default babelPresetExpo;

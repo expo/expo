@@ -5,7 +5,13 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type { LinkMenuActionProps } from '../../../../link/elements';
 import type { StackHeaderItemSharedProps } from '../shared';
 export interface StackToolbarMenuProps {
+    /**
+     * @platform ios
+     */
     accessibilityLabel?: string;
+    /**
+     * @platform ios
+     */
     accessibilityHint?: string;
     /**
      * Menu content - can include icons, labels, badges and menu actions.
@@ -18,19 +24,30 @@ export interface StackToolbarMenuProps {
      *   <Stack.Toolbar.MenuAction onPress={() => {}}>Action 1</Stack.Toolbar.MenuAction>
      * </Stack.Toolbar.Menu>
      * ```
+     *
+     * @platform android
+     * @platform ios
      */
     children?: ReactNode;
     /**
      * If `true`, the menu item will be displayed as destructive.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
+     *
+     * @platform ios
      */
     destructive?: boolean;
+    /**
+     * @platform android
+     * @platform ios
+     */
     disabled?: boolean;
     /**
      * Image to display for the menu item.
      *
      * > **Note**: This prop is only supported in toolbar with `placement="bottom"`.
+     *
+     * @platform ios
      */
     image?: ImageRef;
     /**
@@ -45,6 +62,9 @@ export interface StackToolbarMenuProps {
      * Whether the menu should be hidden.
      *
      * @default false
+     *
+     * @platform android
+     * @platform ios
      */
     hidden?: boolean;
     /**
@@ -52,66 +72,94 @@ export interface StackToolbarMenuProps {
      *
      * Can be an SF Symbol name or an image source.
      *
-     * > **Note**: When used in `placement="bottom"`, only string SFSymbols are supported. Use the `image` prop to provide custom images.
+     * > **Note**: When used in `placement="bottom"` on iOS, only string SFSymbols are supported. Use the `image` prop to provide custom images.
+     *
+     * > **Note (Android)**: Only `ImageSourcePropType` icons are rendered at the menu root.
+     * > SF Symbols and `xcasset` names are silently dropped — provide a `require()` or
+     * > `{ uri }` source.
+     *
+     * @platform android
+     * @platform ios
      */
     icon?: StackHeaderItemSharedProps['icon'];
     /**
-     * Controls how image-based icons are rendered on iOS.
+     * Controls how image-based icons are rendered.
      *
-     * - `'template'`: iOS applies tint color to the icon (useful for monochrome icons)
-     * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+     * - `'template'`: applies tint color to the icon (useful for monochrome icons)
+     * - `'original'`: preserves original icon colors (useful for multi-color icons)
      *
-     * **Default behavior:**
+     * **Default behavior on iOS:**
      * - If `tintColor` is specified, defaults to `'template'`
      * - If no `tintColor`, defaults to `'original'`
+     *
+     * **On Android:** defaults to `'template'`.
      *
      * This prop only affects image-based icons (not SF Symbols).
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
      *
+     * @platform android
      * @platform ios
      */
     iconRenderingMode?: 'template' | 'original';
     /**
      * If `true`, the menu will be displayed inline.
-     * This means that the menu will not be collapsed
+     * This means that the menu will not be collapsed.
      *
      * > **Note**: Inline menus are only supported in submenus.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayinline) for more information.
+     *
+     * @platform android
+     * @platform ios
      */
     inline?: boolean;
     /**
      * If `true`, the menu will be displayed as a palette.
-     * This means that the menu will be displayed as one row
+     * This means that the menu will be displayed as one row.
      *
      * > **Note**: Palette menus are only supported in submenus.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenu/options-swift.struct/displayaspalette) for more information.
+     *
+     * @platform ios
      */
     palette?: boolean;
     /**
      * Whether to separate the background of this item from other header items.
      *
      * @default false
+     * @platform ios
      */
     separateBackground?: boolean;
     /**
      * Style for the label of the header item.
+     *
+     * @platform android
+     * @platform ios
      */
     style?: StackHeaderItemSharedProps['style'];
     /**
-     * The tint color to apply to the button item
+     * The tint color to apply to the button item.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/tintcolor) for more information.
+     * @see [Android documentation](https://developer.android.com/develop/ui/compose/graphics/images/customize#tint-image) for more information.
+     *
+     * @platform android
+     * @platform ios
      */
     tintColor?: StackHeaderItemSharedProps['tintColor'];
     /**
      * Optional title to show on top of the menu.
+     *
+     * @platform android
+     * @platform ios
      */
     title?: string;
     /**
      * @default 'plain'
+     *
+     * @platform ios
      */
     variant?: StackHeaderItemSharedProps['variant'];
     /**
@@ -164,11 +212,21 @@ export interface StackToolbarMenuActionProps {
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/disabled) for more information.
      */
     disabled?: boolean;
+    /**
+     * Icon for the menu action.
+     *
+     * Can be an SF Symbol name or an image source.
+     *
+     * > **Note (Android)**: Only `ImageSourcePropType` icons are rendered. SF Symbols are
+     * > silently dropped. Provide a `require()` or `{ uri }` source.
+     */
     icon?: SFSymbol | ImageSourcePropType;
     /**
      * Image to display for the menu action.
      *
      * > **Note**: This prop is only supported in `Stack.Toolbar.Bottom`.
+     *
+     * @platform ios
      */
     image?: ImageRef;
     /**
@@ -192,30 +250,43 @@ export interface StackToolbarMenuActionProps {
      * If `true`, the menu item will be displayed as destructive.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/destructive) for more information.
+     *
+     * @platform android
+     * @platform ios
      */
     destructive?: boolean;
     /**
      * If `true`, the menu will be kept presented after the action is selected.
      *
-     * This is marked as unstable, because when action is selected it will recreate the menu,
-     * which will close all opened submenus and reset the scroll position.
+     * This is marked as unstable, because when action is selected on iOS it will recreate
+     * the menu, which will close all opened submenus and reset the scroll position.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/attributes/keepsmenupresented) for more information.
+     *
+     * @platform android
+     * @platform ios
      */
     unstable_keepPresented?: boolean;
     /**
      * If `true`, the menu item will be displayed as selected.
+     *
+     * @platform android
+     * @platform ios
      */
     isOn?: boolean;
     onPress?: () => void;
     /**
      * An elaborated title that explains the purpose of the action.
+     *
+     * @platform ios
      */
     discoverabilityLabel?: string;
     /**
      * An optional subtitle for the menu item.
      *
      * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uimenuelement/subtitle) for more information.
+     *
+     * @platform ios
      */
     subtitle?: string;
     hidden?: boolean;

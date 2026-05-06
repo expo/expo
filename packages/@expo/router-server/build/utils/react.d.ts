@@ -5,6 +5,10 @@ type CreateNodeResult = {
     bodyNodes?: ReactNode[];
 };
 export declare function createInjectedCssAsNodes(hrefs: string[]): CreateNodeResult;
+export declare function createInjectedInlineCssAsNodes(inlineCss?: {
+    source: string;
+    hmrId?: string;
+}[]): CreateNodeResult;
 export declare function createInjectedScriptAsNodes(srcs: string[]): CreateNodeResult;
 export declare function getBootstrapContents({ hydrate, loadedData, }: {
     hydrate: boolean;

@@ -1,6 +1,6 @@
-import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, OpenEventDialogResult, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
+import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
-import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, CalendarDialogOpenParamsNext, CalendarDialogParamsNext, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
+import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
 /**
  * Represents a calendar attendee object.
  */
@@ -12,8 +12,6 @@ export declare class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalen
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export declare class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
-    openInCalendar(params?: CalendarDialogOpenParamsNext): Promise<OpenEventDialogResult>;
-    editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult>;
     getOccurrenceSync(recurringEventOptions?: RecurringEventOptions): ExpoCalendarEvent;
     getAttendees(): Promise<ExpoCalendarAttendee[]>;
     createAttendee(attendee: Attendee): Promise<ExpoCalendarAttendee>;
@@ -84,14 +82,8 @@ export declare function listEvents(calendars: (string | ExpoCalendar)[], startDa
  */
 export declare const requestCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
 /**
- * Check or request permissions to access the calendar.
- * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
- * with the permissions.
- *
- * @example
- * ```ts
- * const [status, requestPermission] = Calendar.useCalendarPermissions();
- * ```
+ * Checks user's permissions for accessing user's calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export declare const getCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
 /**
@@ -112,5 +104,26 @@ export declare const getSourcesSync: () => import("./Calendar").Source[];
 export type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, AddEventWithFormOptions, } from './ExpoCalendar.types';
 export type { PermissionResponse, Alarm, AlarmLocation, CalendarDialogParams, DaysOfTheWeek, DialogEventResult, OpenEventDialogResult, OpenEventPresentationOptions, PermissionExpiration, PermissionHookOptions, PresentationOptions, RecurrenceRule, RecurringEventOptions, Source, } from '../Calendar';
 export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, CalendarAccessLevel, CalendarDialogResultActions, CalendarType, DayOfTheWeek, EntityTypes, EventAccessLevel, EventStatus, Frequency, MonthOfTheYear, ReminderStatus, SourceType, createEventInCalendarAsync, openEventInCalendarAsync, } from '../Calendar';
-export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
+/**
+ * Check or request permissions to access the user's calendars.
+ * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [import("expo-modules-core").PermissionResponse | null, () => Promise<import("expo-modules-core").PermissionResponse>, () => Promise<import("expo-modules-core").PermissionResponse>];
+/**
+ * Check or request permissions to access the user's reminders.
+ * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [import("expo-modules-core").PermissionResponse | null, () => Promise<import("expo-modules-core").PermissionResponse>, () => Promise<import("expo-modules-core").PermissionResponse>];
 //# sourceMappingURL=Calendar.d.ts.map

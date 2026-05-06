@@ -1,6 +1,6 @@
 {
   "name": "expo-background-fetch",
-  "version": "55.0.8",
+  "version": "56.0.0",
   "description": "Expo universal module for BackgroundFetch API",
   "main": "build/BackgroundFetch.js",
   "types": "build/BackgroundFetch.d.ts",
@@ -32,13 +32,13 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/background-fetch/",
   "dependencies": {
-    "expo-task-manager": "workspace:~55.0.9"
+    "expo-task-manager": "56.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "expo-module-scripts": "56.0.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "56.0.0-preview.2"
   }
 }

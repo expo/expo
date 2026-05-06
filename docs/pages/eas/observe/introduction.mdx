@@ -82,7 +82,7 @@ Metrics collected while offline are stored locally on the device. They are autom
 
 <Collapsible summary="Can I test metrics during development?">
 
-By default, metrics from the `development` environment are filtered out and not dispatched. You can enable development metrics for testing by setting `enableInDebug` to `true` in your [app config](/workflow/configuration/). See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
+By default, metrics collected from debug builds are not dispatched. You can dispatch them anyway for testing by setting `dispatchInDebug` to `true` via [`configure()`](/eas/observe/configuration/#configure). See [Configuration](/eas/observe/configuration/#enable-metrics-in-development) for details.
 
 </Collapsible>
 
