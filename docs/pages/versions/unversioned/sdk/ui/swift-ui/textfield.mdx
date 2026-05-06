@@ -171,7 +171,7 @@ export default function ImperativeRefExample() {
 
 When `onTextChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `text` and `selection` from the worklet to keep the cursor at the end of the formatted value.
 
-> **Note:** Worklets require [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). The `selection` prop requires iOS 18.0+ / tvOS 18.0+; on older versions the worklet can still update the text but cursor positioning is unavailable.
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). The `selection` prop requires iOS 18.0+ / tvOS 18.0+. On older versions the worklet can still update the text but cursor positioning is unavailable.
 
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
