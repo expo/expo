@@ -1,17 +1,18 @@
 ---
 title: Using Clerk
-description: A guide on adding Clerk authentication and user management to your Expo project.
-sidebar_title: Clerk
+description: Learn how to add Clerk authentication and user management in your Expo and React Native projects.
 platforms: ['android', 'ios', 'web']
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
-[Clerk](https://clerk.com/expo-authentication) is an authentication and user management platform that provides sign-up, sign-in, multi-factor authentication, social sign-in, organizations, and a hosted user database. The [`@clerk/expo`](https://www.npmjs.com/package/@clerk/expo) SDK gives you React hooks, control components, and prebuilt native UI components that render with SwiftUI on iOS and Jetpack Compose on Android.
+[Clerk](https://clerk.com/expo-authentication) is an authentication and user management platform that provides sign-up, sign-in, multi-factor authentication, social sign-in, organizations, and a hosted user database. The [`@clerk/expo`](https://www.npmjs.com/package/@clerk/expo) SDK gives you React hooks, control components, and prebuilt native UI components that render with Jetpack Compose on Android and SwiftUI on iOS.
 
 This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvider>`, and choose the integration approach that fits your project. It targets `@clerk/expo` Core 3 (the 3.x release line), which supports Expo SDK 53, 54, and 55.
 
@@ -21,20 +22,28 @@ This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvi
 
 | Approach | What you build | Runs in Expo Go | Best for |
 | --- | --- | --- | --- |
-| JavaScript only | Your own React Native screens that call `useSignIn()` and `useSignUp()` | Yes | Maximum UI control, prototyping in Expo Go |
-| JavaScript with native sign-in | Your own screens plus native Sign in with Google and Sign in with Apple buttons | No | Apps that want a custom look but native social sign-in |
-| Native UI components | Drop in `<AuthView />`, `<UserButton />`, and `<UserProfileView />` from `@clerk/expo/native` | No | The fastest path to a complete sign-in and account management UI |
+| JavaScript only | Your own React Native screens that call `useSignIn()` and `useSignUp()` | <YesIcon /> | Maximum UI control, prototyping in Expo Go |
+| JavaScript with native sign-in | Your own screens plus native Sign in with Google and Sign in with Apple buttons | <NoIcon /> | Apps that want a custom look but native social sign-in |
+| Native UI components | Drop in `<AuthView />`, `<UserButton />`, and `<UserProfileView />` from `@clerk/expo/native` | <NoIcon /> | The fastest path to a complete sign-in and account management UI |
 
-> **info** The native UI components in `@clerk/expo/native` are currently in beta. They render with SwiftUI on iOS and Jetpack Compose on Android, and they synchronize the signed-in session back to the JavaScript SDK so all `@clerk/expo` hooks (such as `useAuth()` and `useUser()`) stay in sync.
+> **info** The native UI components in `@clerk/expo/native` are currently in beta. They render with Jetpack Compose on Android and SwiftUI on iOS and they synchronize the signed-in session back to the JavaScript SDK so all `@clerk/expo` hooks (such as `useAuth()` and `useUser()`) stay in sync.
 
 ## Prerequisites
 
-Before you start, you need:
-
-- A Clerk account and a Clerk application. Sign up at the [Clerk Dashboard](https://dashboard.clerk.com/).
-- The **Native API** enabled in the Clerk Dashboard for your application. Open the [Native applications](https://dashboard.clerk.com/last-active?path=native-applications) page and ensure **Native API** is on. This is required for any Expo integration that uses `@clerk/expo`.
-- An Expo project running SDK 53 or later. `@clerk/expo` Core 3 has a peer dependency of `expo: >=53 <56`.
-- A development build for the native sign-in and native UI component approaches. The JavaScript-only approach also works in Expo Go.
+<Prerequisites>
+  <Requirement title="Create a Clerk account and application">
+    Sign up at the [Clerk Dashboard](https://dashboard.clerk.com/) and create an application.
+  </Requirement>
+  <Requirement title="Enable the Native API">
+    Open the [Native applications](https://dashboard.clerk.com/last-active?path=native-applications) page in the Clerk Dashboard and ensure **Native API** is on. This is required for any Expo integration that uses `@clerk/expo`.
+  </Requirement>
+  <Requirement title="Use Expo SDK 53 or later">
+    `@clerk/expo` Core 3 has a peer dependency of `expo: >=53 <56`.
+  </Requirement>
+  <Requirement title="Use a development build for native features">
+    The native sign-in and native UI component approaches require a development build. The JavaScript-only approach also works in Expo Go.
+  </Requirement>
+</Prerequisites>
 
 ## Install and configure Clerk
 
@@ -64,9 +73,9 @@ You do not need any of these extra packages if you only use `<AuthView />` from 
 
 ### Add the Clerk config plugin
 
-Add `@clerk/expo` to the `plugins` array in your **app.json**:
+Add `@clerk/expo` to the `plugins` array in your [app config](/workflow/configuration/):
 
-```json
+```json app.json
 {
   "expo": {
     "plugins": ["@clerk/expo"]
@@ -74,7 +83,7 @@ Add `@clerk/expo` to the `plugins` array in your **app.json**:
 }
 ```
 
-The plugin configures the iOS URL scheme for native Sign in with Google (when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is set) and applies the Android packaging fixes required by the underlying `clerk-android` SDK. The Apple Sign In entitlement is added by the `expo-apple-authentication` plugin if you install that package.
+The plugin configures the iOS URL scheme for native Sign in with Google (when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is set) and applies the Android packaging fixes required by the underlying `clerk-android` SDK. The Apple Sign In entitlement is added by the plugin from `expo-apple-authentication` library, if you install it.
 
 </Step>
 
@@ -84,11 +93,11 @@ The plugin configures the iOS URL scheme for native Sign in with Google (when `E
 
 Copy your Publishable Key from the [API keys](https://dashboard.clerk.com/last-active?path=api-keys) page in the Clerk Dashboard, then add it to a **.env** file in the root of your project:
 
-```bash
+```text .env
 EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your-key-here
 ```
 
-The `EXPO_PUBLIC_` prefix is required because Expo inlines these values at build time so they are available in your JavaScript bundle. Clerk's Publishable Key is safe to expose. **Do not** put Secret Keys behind the `EXPO_PUBLIC_` prefix.
+The `EXPO_PUBLIC_` prefix is required because [Expo inlines these values at build time](/guides/environment-variables/#reading-environment-variables-from-env-files) so they are available in your JavaScript bundle. Clerk's Publishable Key is safe to expose. **Do not** put Secret Keys behind the `EXPO_PUBLIC_` prefix.
 
 </Step>
 
@@ -96,9 +105,9 @@ The `EXPO_PUBLIC_` prefix is required because Expo inlines these values at build
 
 ### Wrap your app in `<ClerkProvider>`
 
-In your root layout file (**app/_layout.tsx** with Expo Router, or **App.tsx** otherwise), wrap your app in `<ClerkProvider>` and pass the Publishable Key. Passing `tokenCache` explicitly is recommended:
+In your root layout file (**src/app/_layout.tsx** with Expo Router), wrap your app in `<ClerkProvider>` and pass the Publishable Key. Passing `tokenCache` explicitly is recommended:
 
-```tsx
+```tsx src/app/_layout.tsx
 import { ClerkProvider } from '@clerk/expo';
 import { tokenCache } from '@clerk/expo/token-cache';
 import { Slot } from 'expo-router';
@@ -118,7 +127,7 @@ export default function RootLayout() {
 }
 ```
 
-In Core 3, `publishableKey` is required on `<ClerkProvider>` for Expo apps — environment variables inside `node_modules` are not inlined during production React Native builds, so the prop must be passed explicitly.
+In Core 3, `publishableKey` is required on `<ClerkProvider>` for Expo apps. Environment variables inside **node_modules** are not inlined during production React Native builds, so the prop must be passed explicitly.
 
 `tokenCache` from `@clerk/expo/token-cache` persists the user's session across app restarts using `expo-secure-store`. Passing it explicitly makes the dependency clear and lets you swap in a custom cache implementation later.
 
@@ -128,7 +137,7 @@ In Core 3, `publishableKey` is required on `<ClerkProvider>` for Expo apps — e
 
 The next step depends on which approach you chose. The tabs below show the minimum code for each.
 
-<Tabs tabs={['Native UI components', 'JavaScript with native sign-in', 'JavaScript only']}>
+<Tabs tabs={['Native UI components', 'JavaScript with native sign-in', 'JavaScript only (Expo Go)']}>
 
 <Tab>
 
@@ -197,8 +206,10 @@ This approach requires a development build because the components are backed by 
 <Terminal
   cmd={[
     '# Run a development build locally',
-    '$ npx expo run:ios',
     '$ npx expo run:android',
+    '',
+    '$ npx expo run:ios',
+    '',
     '# Or build with EAS',
     '$ eas build --platform ios --profile development',
   ]}
@@ -241,11 +252,11 @@ export function GoogleSignInButton() {
 }
 ```
 
-On Android, this uses Credential Manager and never opens a browser. On iOS, the flow uses ASAuthorization (the system credential picker) when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is configured; without it, iOS falls back to a system browser sheet. Follow the Clerk guides linked at the bottom of this page to register your iOS bundle ID, Android package name, and SHA-256 fingerprints in the Clerk Dashboard and the Google Cloud Console.
+On Android, this uses Credential Manager and never opens a browser. On iOS, the flow uses `ASAuthorization` (the system credential picker) when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is configured &mdash; without it, iOS falls back to a system browser sheet. Follow the Clerk guides linked at the bottom of this page to register your Android package name, iOS bundle ID, and SHA-256 fingerprints in the Clerk Dashboard and the Google Cloud Console.
 
 `useSignInWithApple()` from `@clerk/expo/apple` follows the same pattern (`startAppleAuthenticationFlow()` returning `{ createdSessionId, setActive }`) and is iOS only. App Store Guideline 4.8 requires that any app offering third-party social sign-in must also offer Sign in with Apple on iOS.
 
-This approach requires a development build because it uses native modules. `useSignInWithGoogle()` requires `expo-crypto`; `useSignInWithApple()` requires both `expo-apple-authentication` and `expo-crypto`.
+This approach requires a development build because it uses native modules. `useSignInWithGoogle()` requires `expo-crypto`. The `useSignInWithApple()` requires both `expo-apple-authentication` and `expo-crypto`.
 
 </Tab>
 
@@ -370,7 +381,7 @@ export default function HomeScreen() {
 
 ## Run the app
 
-<Tabs tabs={['Android', 'iOS']}>
+<Tabs tabs={['Android', 'iOS', 'JavaScript-only (Expo Go)']}>
 
 <Tab>
 
@@ -384,9 +395,15 @@ export default function HomeScreen() {
 
 </Tab>
 
-</Tabs>
+<Tab>
 
-For the JavaScript-only approach, `npx expo start` and Expo Go also work.
+For the JavaScript-only approach, run the following command and open the project in Expo Go:
+
+<Terminal cmd={['$ npx expo start']} />
+
+</Tab>
+
+</Tabs>
 
 ## Next steps
 
