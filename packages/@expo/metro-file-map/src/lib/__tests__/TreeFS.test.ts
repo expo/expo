@@ -1826,6 +1826,27 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         expect(srcDir.has('a.js')).toBe(true);
         expect(srcDir.has('b.js')).toBe(true);
       });
+
+      test('includes roots above rootDir in snapshot', () => {
+        const files = new Map<CanonicalPath, FileMetadata>([
+          [p('src/app.js'), [100, 5, 0, null, 0, null]],
+          [p('../packages/expo/index.js'), [200, 3, 0, null, 0, null]],
+        ]);
+        const fbTfs = makeFallbackTfs({
+          files,
+          roots: [p('/project/src'), p('/packages/expo')],
+        });
+
+        const snapshot = fbTfs.getSerializableSnapshot() as Map<string, any>;
+        expect(snapshot.has('src')).toBe(true);
+        const dotdot = snapshot.get('..') as Map<string, any>;
+        expect(dotdot).toBeInstanceOf(Map);
+        const pkgs = dotdot.get('packages') as Map<string, any>;
+        expect(pkgs).toBeInstanceOf(Map);
+        const expo = pkgs.get('expo') as Map<string, any>;
+        expect(expo).toBeInstanceOf(Map);
+        expect(expo.has('index.js')).toBe(true);
+      });
     });
 
     describe('rootPattern consistency with trailing separator', () => {
