@@ -101,14 +101,14 @@ module Expo
       # Precompiled module xcframeworks are linked against the prebuilt
       # React.xcframework, so they also require RCT_USE_PREBUILT_RNCORE=1. If
       # the user opted in to precompiled modules but React Native is still set
-      # to build from source, fall back to source-built modules and warn once.
+      # to build from source, fall back to source-built modules and print once.
       def enabled?
         return false unless ENV[ENV_VAR] == '1'
         return true if prebuilt_react_active?
 
         unless @warned_no_prebuilt_react
           @warned_no_prebuilt_react = true
-          Pod::UI.warn "[Expo] EXPO_USE_PRECOMPILED_MODULES=1 was set, but React Native is configured to build from source (RCT_USE_PREBUILT_RNCORE is not 1). Precompiled Expo modules require the prebuilt React.xcframework, so every Expo module will be built from source for this install. To use precompiled modules, ensure `ios.buildReactNativeFromSource` is not `true` in the `expo-build-properties` plugin (the default uses the prebuilt framework), or export RCT_USE_PREBUILT_RNCORE=1 before running `pod install`."
+          Pod::UI.puts "[Expo] EXPO_USE_PRECOMPILED_MODULES=1 was set, but React Native is configured to build from source (RCT_USE_PREBUILT_RNCORE is not 1). Precompiled Expo modules require the prebuilt React.xcframework, so every Expo module will be built from source for this install. To use precompiled modules, ensure `ios.buildReactNativeFromSource` is not `true` in the `expo-build-properties` plugin (the default uses the prebuilt framework), or export RCT_USE_PREBUILT_RNCORE=1 before running `pod install`.".yellow
         end
         false
       end

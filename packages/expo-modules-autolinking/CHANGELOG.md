@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Avoid logging the precompiled modules React Native fallback as a CocoaPods warning.
+
 ### 💡 Others
 
 ## 56.0.0 — 2026-05-05
