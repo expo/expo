@@ -3,17 +3,32 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isFallbackDir = isFallbackDir;
 exports.default = createFallbackFilesystem;
 exports.shouldFallbackCrawlDir = shouldFallbackCrawlDir;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("../../lib/normalizePathSeparatorsToPosix"));
-const readdirMarker = Symbol.for('fallbackDir');
-function markDir(dirNode) {
-    dirNode[readdirMarker] = true;
+const FALLBACK_DIR = Symbol.for('fallbackDir');
+var FallbackFlag;
+(function (FallbackFlag) {
+    FallbackFlag[FallbackFlag["VISITED"] = 0] = "VISITED";
+    FallbackFlag[FallbackFlag["CRAWLED"] = 1] = "CRAWLED";
+})(FallbackFlag || (FallbackFlag = {}));
+function markDir(dirNode, flag) {
+    dirNode[FALLBACK_DIR] = flag;
 }
-function isMarkedDir(dirNode) {
-    return !!dirNode[readdirMarker];
+function getDirFlag(dirNode) {
+    return dirNode[FALLBACK_DIR];
+}
+/**
+ * Whether a directory node was created or populated by the fallback filesystem.
+ * Used by TreeFS to determine if a directory outside the fallback boundary was
+ * reached legitimately (e.g., via symlink traversal) and should allow further
+ * fallback lookups.
+ */
+function isFallbackDir(dirNode) {
+    return dirNode[FALLBACK_DIR] != null;
 }
 function isDirectory(node) {
     return node instanceof Map;
@@ -34,7 +49,7 @@ function createFallbackFilesystem(opts) {
         return acc;
     }, {});
     function readdir(_normalPath, absolutePath, dirNode) {
-        if (dirNode != null && isMarkedDir(dirNode)) {
+        if (dirNode != null && getDirFlag(dirNode) === FallbackFlag.CRAWLED) {
             return dirNode;
         }
         let dirEntries;
@@ -53,7 +68,9 @@ function createFallbackFilesystem(opts) {
             }
             if (entry.isDirectory()) {
                 if (!result.has(name)) {
-                    result.set(name, new Map());
+                    const childDir = new Map();
+                    markDir(childDir, FallbackFlag.VISITED);
+                    result.set(name, childDir);
                 }
             }
             else if (entry.isSymbolicLink()) {
@@ -69,7 +86,7 @@ function createFallbackFilesystem(opts) {
                 }
             }
         }
-        markDir(result);
+        markDir(result, FallbackFlag.CRAWLED);
         return result;
     }
     return {
@@ -87,9 +104,15 @@ function createFallbackFilesystem(opts) {
             }
             if (stat.isDirectory()) {
                 const dirNode = isDirectory(prevNode) ? prevNode : null;
-                return shouldFallbackCrawlDir(absolutePath)
-                    ? readdir(normalPath, absolutePath, dirNode)
-                    : (dirNode ?? new Map());
+                if (shouldFallbackCrawlDir(absolutePath)) {
+                    return readdir(normalPath, absolutePath, dirNode);
+                }
+                if (dirNode != null) {
+                    return dirNode;
+                }
+                const newDir = new Map();
+                markDir(newDir, FallbackFlag.VISITED);
+                return newDir;
             }
             else if (stat.isSymbolicLink()) {
                 if (!includeSymlinks) {

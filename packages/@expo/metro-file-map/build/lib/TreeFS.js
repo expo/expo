@@ -428,6 +428,9 @@ class TreeFS {
         let targetNormalPath = requestedNormalPath;
         // Lazy-initialised set of seen target paths, to detect symlink cycles.
         let seen;
+        // Set when a symlink is followed, to allow fallback population outside
+        // the boundary for paths reachable transitively through symlinks.
+        let followedSymlink = false;
         // Pointer to the first character of the current path segment in
         // targetNormalPath.
         let fromIdx = opts.start?.pathIdx ?? 0;
@@ -470,7 +473,7 @@ class TreeFS {
                             ? fromIdx - segmentName.length - 1
                             : fromIdx - segmentName.length - 2;
                         const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
-                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath);
+                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlink);
                         if (segmentNode != null) {
                             ancestorOfRootIdx = null;
                         }
@@ -496,8 +499,7 @@ class TreeFS {
                         }
                         parentNode.set(segmentName, segmentNode);
                     }
-                    else if (!opts.skipFallback &&
-                        this.#fallbackFilesystem != null) {
+                    else if (!opts.skipFallback && this.#fallbackFilesystem != null) {
                         parentNode.set(segmentName, segmentNode);
                     }
                 }
@@ -617,6 +619,7 @@ class TreeFS {
                     };
                 }
                 seen.add(targetNormalPath);
+                followedSymlink = true;
                 fromIdx = 0;
                 parentNode = this.#rootNode;
                 ancestorOfRootIdx = 0;
@@ -827,7 +830,7 @@ class TreeFS {
             !pathPrefix.endsWith(pathSep + '..')) {
             const canonicalRoot = opts.canonicalPathOfRoot;
             const rootCanonical = pathPrefix === '' ? canonicalRoot : canonicalRoot + path_1.default.sep + pathPrefix;
-            this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false);
+            this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false, false);
         }
         for (const [name, node] of this.#directoryNodeIterator(iterationRootNode, iterationRootParentNode, ancestorOfRootIdx)) {
             if (node == null) {
@@ -881,7 +884,7 @@ class TreeFS {
                     const canonicalPath = opts.canonicalPathOfRoot === ''
                         ? nodePathWithSystemSeparators
                         : opts.canonicalPathOfRoot + path_1.default.sep + nodePathWithSystemSeparators;
-                    this.#populateDirFromFilesystem(node, canonicalPath, false);
+                    this.#populateDirFromFilesystem(node, canonicalPath, false, false);
                 }
                 yield* this.#pathIterator(node, iterationRootParentNode, ancestorOfRootIdx != null && ancestorOfRootIdx > 0 ? ancestorOfRootIdx - 1 : null, opts, nodePath, followedLinks);
             }
@@ -942,7 +945,11 @@ class TreeFS {
         }
         return clone;
     }
-    #isOutsideFallbackBoundary(canonicalPath) {
+    #isOutsideFallbackBoundary(canonicalPath, dirNode) {
+        // We allow any directory that's already been crawled
+        if ((0, fallback_1.isFallbackDir)(dirNode)) {
+            return false;
+        }
         const maxDepth = this.#fallbackBoundaryDepth;
         return maxDepth != null && (0, RootPathUtils_1.getAncestorOfRootIdx)(canonicalPath) > maxDepth;
     }
@@ -951,20 +958,26 @@ class TreeFS {
      * fallback filesystem. The fallback returns tree-compatible nodes
      * (FileMetadata tuples or directory Maps) that are inserted directly.
      *
+     * Accepts `wasFollowing` to allow traversal on symlinks that were followed.
+     * If we're resolving a symlink target, we allow the lookup to escape the
+     * fallback scope.
+     *
      * Returns the newly created node, or null if the path doesn't exist on disk.
      */
-    #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath) {
+    #populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, wasFollowing) {
         const fallback = this.#fallbackFilesystem;
         if (fallback == null) {
             return null;
         }
+        // A symlink traversal (wasFollowing) or a parent created by the fallback
+        // (isFallbackDir) lets us skip the boundary check.
         const childCanonicalPath = parentCanonicalPath === '' ? segmentName : parentCanonicalPath + path_1.default.sep + segmentName;
         if (this.#rootPattern?.test(childCanonicalPath + path_1.default.sep) ||
-            this.#isOutsideFallbackBoundary(childCanonicalPath)) {
+            (!wasFollowing && this.#isOutsideFallbackBoundary(childCanonicalPath, parentNode))) {
             return null;
         }
         else if (parentCanonicalPath !== '' && (0, fallback_1.shouldFallbackCrawlDir)(parentCanonicalPath)) {
-            this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true);
+            this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true, wasFollowing);
             return parentNode.get(segmentName) ?? null;
         }
         else if (parentNode.has(segmentName)) {
@@ -984,12 +997,12 @@ class TreeFS {
      * iteration, and by #populateFromFilesystem for optimistic parent
      * population.
      */
-    #populateDirFromFilesystem(dirNode, canonicalPath, skipCheck) {
+    #populateDirFromFilesystem(dirNode, canonicalPath, skipCheck, wasFollowed) {
         const fallback = this.#fallbackFilesystem;
         if (fallback == null ||
             (!skipCheck &&
                 (this.#rootPattern?.test(canonicalPath + path_1.default.sep) ||
-                    this.#isOutsideFallbackBoundary(canonicalPath)))) {
+                    (!wasFollowed && this.#isOutsideFallbackBoundary(canonicalPath, dirNode))))) {
             return;
         }
         const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
