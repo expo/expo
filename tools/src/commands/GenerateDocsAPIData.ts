@@ -105,6 +105,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'jetpack-compose/HorizontalFloatingToolbar/index.tsx',
     'expo-ui',
   ],
+  'expo-ui/jetpack-compose/horizontalpager': [
+    'jetpack-compose/HorizontalPager/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/jetpack-compose/host': ['jetpack-compose/Host/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/icon': ['jetpack-compose/Icon/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/iconbutton': ['jetpack-compose/IconButton/index.tsx', 'expo-ui'],

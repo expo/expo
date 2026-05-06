@@ -36,9 +36,10 @@
     "expo-json-utils": "workspace:~56.0.0"
   },
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

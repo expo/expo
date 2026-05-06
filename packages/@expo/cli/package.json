@@ -115,8 +115,8 @@
     ]
   },
   "peerDependencies": {
-    "expo": "workspace:*",
-    "expo-router": "workspace:*",
+    "expo": "*",
+    "expo-router": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
@@ -161,9 +161,11 @@
     "@types/ws": "^8.5.4",
     "devtools-protocol": "^0.0.1113120",
     "expect": "^29.7.0",
+    "expo": "workspace:*",
     "expo-atlas": "^0.4.1",
     "expo-module-scripts": "workspace:*",
     "expo-modules-autolinking": "workspace:*",
+    "expo-router": "workspace:*",
     "find-process": "^1.4.7",
     "jest-matcher-utils": "^29.7.0",
     "klaw-sync": "^6.0.0",

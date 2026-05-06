@@ -49,13 +49,14 @@
     "expo-constants": "workspace:~56.0.1"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
     "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

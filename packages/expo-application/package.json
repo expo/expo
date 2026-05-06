@@ -30,9 +30,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/application/",
   "dependencies": {},
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

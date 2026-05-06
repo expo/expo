@@ -38,7 +38,7 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-dom": "*",
     "react-native": "*"
@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react-dom": "19.2.3"
