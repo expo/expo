@@ -514,9 +514,8 @@ export type LocationPermissionResponse = PermissionResponse & {
 export type { PermissionResponse };
 
 /**
- * Confidence level for motion activity detection. Maps directly to `CMMotionActivityConfidence`
- * on iOS. On Android, the raw `DetectedActivity` confidence (0-100) is bucketed into these
- * three levels.
+ * Confidence level for motion activity detection. On Android, the raw `DetectedActivity` confidence (0-
+ * 100) is bucketed into these three levels. On iOS, maps directly to `CMMotionActivityConfidence`.
  */
 export enum MotionActivityConfidence {
   /**
@@ -536,9 +535,9 @@ export enum MotionActivityConfidence {
 /**
  * The type of physical activity the user is currently performing.
  *
- * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority
- * truthy property wins). On Android it maps to `DetectedActivity` constants from
- * Google Play Services.
+ * On Android it maps to `DetectedActivity` constants from Google Play Services.
+ * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority 
+ * truthy property wins).
  */
 export enum MotionActivityType {
   /**
@@ -578,9 +577,9 @@ export type MotionActivityState = {
   detected: boolean;
   /**
    * Confidence level of the detection.
-   * On iOS this is the overall reading confidence from `CMMotionActivityConfidence`, shared by all
-   * detected activities. On Android each activity type has its own confidence derived from the
-   * `DetectedActivity` probability value.
+   * On Android, each activity type has its own confidence derived from the
+   * `DetectedActivity` probability value. On iOS, this is the overall reading confidence from 
+   * `CMMotionActivityConfidence`, shared by all detected activities.
    */
   confidence: MotionActivityConfidence;
 };
