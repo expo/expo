@@ -439,7 +439,7 @@ export async function getMotionActivityAsync(): Promise<MotionActivityObject> {
  * @param errorHandler This function is called if the platform reports an error (for example,
  * when activity recognition permission is denied). It receives a string message as the
  * first argument.
- * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
+ * @return a promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  *
  * @platform android
  * @platform ios
