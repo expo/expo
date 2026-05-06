@@ -2,6 +2,7 @@
 
 import QuartzCore
 import CoreGraphics
+import ExpoModulesCore
 
 var defaultStartPoint = CGPoint(x: 0.5, y: 0.0)
 var defaultEndPoint = CGPoint(x: 0.5, y: 1.0)
@@ -59,6 +60,7 @@ final class LinearGradientLayer: CALayer {
       return result || color.cgColor.alpha < 1.0
     }
 
+    #if !os(macOS)
     UIGraphicsBeginImageContextWithOptions(bounds.size, !hasAlpha, 0.0)
 
     guard let contextRef = UIGraphicsGetCurrentContext() else {
@@ -75,6 +77,33 @@ final class LinearGradientLayer: CALayer {
     self.contentsScale = image.scale
 
     UIGraphicsEndImageContext()
+    #else
+    let scale = contentsScale > 0 ? contentsScale : (NSScreen.main?.backingScaleFactor ?? 2.0)
+    let pixelWidth = Int(bounds.size.width * scale)
+    let pixelHeight = Int(bounds.size.height * scale)
+    if pixelWidth == 0 || pixelHeight == 0 {
+      return
+    }
+    let colorSpace = CGColorSpaceCreateDeviceRGB()
+    let bitmapInfo: UInt32 = hasAlpha
+      ? CGImageAlphaInfo.premultipliedLast.rawValue
+      : CGImageAlphaInfo.noneSkipLast.rawValue
+    guard let ctx = CGContext(
+      data: nil,
+      width: pixelWidth,
+      height: pixelHeight,
+      bitsPerComponent: 8,
+      bytesPerRow: 0,
+      space: colorSpace,
+      bitmapInfo: bitmapInfo
+    ) else {
+      return
+    }
+    ctx.scaleBy(x: scale, y: scale)
+    draw(in: ctx)
+    self.contents = ctx.makeImage()
+    self.contentsScale = scale
+    #endif
   }
 
   override func draw(in ctx: CGContext) {

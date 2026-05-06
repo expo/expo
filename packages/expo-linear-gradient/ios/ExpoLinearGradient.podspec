@@ -13,6 +13,7 @@ Pod::Spec.new do |s|
   s.platforms      = {
     :ios => '16.4',
     :tvos => '16.4'
+    :osx => '13.4'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
