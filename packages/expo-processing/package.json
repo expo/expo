@@ -22,10 +22,10 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-processing",
   "dependencies": {
-    "expo-gl": "56.0.0"
+    "expo-gl": "workspace:56.0.0"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "processing-js": "^1.6.6"
   }
 }

@@ -16,10 +16,7 @@ describe('findWorkspaceSpecs', () => {
   });
 
   it('detects workspace: in dependencies', () => {
-    const offenders = findWorkspaceSpecs(
-      { dependencies: { foo: 'workspace:*' } },
-      'consumer'
-    );
+    const offenders = findWorkspaceSpecs({ dependencies: { foo: 'workspace:*' } }, 'consumer');
     assert.deepEqual(offenders, [
       { packageName: 'consumer', depKey: 'dependencies', depName: 'foo', spec: 'workspace:*' },
     ]);
@@ -35,10 +32,7 @@ describe('findWorkspaceSpecs', () => {
   });
 
   it('detects workspace: in peerDependencies', () => {
-    const offenders = findWorkspaceSpecs(
-      { peerDependencies: { foo: 'workspace:*' } },
-      'consumer'
-    );
+    const offenders = findWorkspaceSpecs({ peerDependencies: { foo: 'workspace:*' } }, 'consumer');
     assert.equal(offenders.length, 1);
     assert.equal(offenders[0].depKey, 'peerDependencies');
   });
@@ -62,10 +56,7 @@ describe('findWorkspaceSpecs', () => {
       'consumer'
     );
     assert.equal(offenders.length, 3);
-    assert.deepEqual(
-      offenders.map((o) => o.depName).sort(),
-      ['a', 'c', 'd']
-    );
+    assert.deepEqual(offenders.map((o) => o.depName).sort(), ['a', 'c', 'd']);
   });
 
   it('ignores non-string values', () => {
@@ -92,10 +83,7 @@ describe('findWorkspaceSpecs', () => {
   });
 
   it('reports the package name on each offender', () => {
-    const offenders = findWorkspaceSpecs(
-      { dependencies: { foo: 'workspace:*' } },
-      '@expo/ui'
-    );
+    const offenders = findWorkspaceSpecs({ dependencies: { foo: 'workspace:*' } }, '@expo/ui');
     assert.equal(offenders[0].packageName, '@expo/ui');
   });
 });

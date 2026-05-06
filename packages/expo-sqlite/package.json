@@ -63,11 +63,11 @@
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "better-sqlite3": "^11.6.0",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "react-error-boundary": "^4.0.11"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   }

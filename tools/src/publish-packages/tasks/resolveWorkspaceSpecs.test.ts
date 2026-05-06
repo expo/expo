@@ -41,14 +41,8 @@ describe('resolveWorkspaceSpec', () => {
   });
 
   it('passes through prerelease versions when target is prerelease', () => {
-    assert.equal(
-      resolveWorkspaceSpec('workspace:*', '56.0.0-preview.1', ctx),
-      '56.0.0-preview.1'
-    );
-    assert.equal(
-      resolveWorkspaceSpec('workspace:^', '56.0.0-preview.1', ctx),
-      '^56.0.0-preview.1'
-    );
+    assert.equal(resolveWorkspaceSpec('workspace:*', '56.0.0-preview.1', ctx), '56.0.0-preview.1');
+    assert.equal(resolveWorkspaceSpec('workspace:^', '56.0.0-preview.1', ctx), '^56.0.0-preview.1');
   });
 
   describe('error handling', () => {
@@ -82,12 +76,8 @@ describe('resolveWorkspaceSpec', () => {
 
     it('does not require target version for explicit-version specs', () => {
       // Explicit forms ship the embedded version regardless of workspace state.
-      assert.doesNotThrow(() =>
-        resolveWorkspaceSpec('workspace:1.2.3', undefined, ctx)
-      );
-      assert.doesNotThrow(() =>
-        resolveWorkspaceSpec('workspace:^1.2.3', undefined, ctx)
-      );
+      assert.doesNotThrow(() => resolveWorkspaceSpec('workspace:1.2.3', undefined, ctx));
+      assert.doesNotThrow(() => resolveWorkspaceSpec('workspace:^1.2.3', undefined, ctx));
     });
 
     it('error message names the offending package and dep', () => {

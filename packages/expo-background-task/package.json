@@ -31,13 +31,13 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/background-task/",
   "dependencies": {
-    "expo-task-manager": "56.0.0"
+    "expo-task-manager": "workspace:~56.0.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2"
+    "expo": "workspace:*"
   }
 }

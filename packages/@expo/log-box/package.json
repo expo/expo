@@ -20,7 +20,7 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
-    "@expo/dom-webview": "56.0.1",
+    "@expo/dom-webview": "workspace:^56.0.1",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10"
   },
@@ -28,7 +28,7 @@
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "glob": "^13.0.0",
     "npm-run-all2": "^8.0.4",
     "react": "19.2.3",
@@ -39,8 +39,8 @@
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "56.0.1",
-    "expo": "56.0.0-preview.2",
+    "@expo/dom-webview": "workspace:^56.0.1",
+    "expo": "workspace:*",
     "react": "*",
     "react-native": "*"
   },

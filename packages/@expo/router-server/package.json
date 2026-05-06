@@ -34,12 +34,12 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "56.0.1",
-    "expo": "56.0.0-preview.2",
-    "expo-constants": "56.0.1",
-    "expo-font": "56.0.1",
-    "expo-router": "56.0.1",
-    "expo-server": "56.0.0",
+    "@expo/metro-runtime": "workspace:^56.0.1",
+    "expo": "workspace:*",
+    "expo-constants": "workspace:^56.0.1",
+    "expo-font": "workspace:^56.0.1",
+    "expo-router": "workspace:*",
+    "expo-server": "workspace:^56.0.0",
     "react": "*",
     "react-dom": "*",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"

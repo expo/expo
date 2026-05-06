@@ -44,7 +44,7 @@
     "@types/babel__core": "^7.20.5",
     "@types/babel__code-frame": "^7.27.0",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "publishConfig": {
