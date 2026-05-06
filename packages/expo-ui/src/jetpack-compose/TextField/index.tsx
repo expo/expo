@@ -288,9 +288,7 @@ function useTransformedProps(
     selection: getStateId(selection),
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:
-      !isWorklet && onValueChange
-        ? (event) => onValueChange(event.nativeEvent.text)
-        : undefined,
+      !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
     onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
     onSelectionChange: onSelectionChange
       ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
@@ -381,3 +379,5 @@ OutlinedTextFieldComponent.SupportingText = SupportingText;
 // endregion Components
 
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
+
+export { type ObservableState };
