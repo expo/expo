@@ -225,5 +225,35 @@ describe('NativeToolbarButton', () => {
         size: 24,
       });
     });
+
+    it('passes accessibilityLabel to Icon as contentDescription', () => {
+      render(<NativeToolbarButton {...defaultProps} accessibilityLabel="Open settings" />);
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Open settings',
+      });
+    });
+
+    it('passes accessibilityLabel even when imageRenderingMode is original', () => {
+      render(
+        <NativeToolbarButton
+          {...defaultProps}
+          imageRenderingMode="original"
+          accessibilityLabel="Open settings"
+        />
+      );
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: 'Open settings',
+      });
+    });
+
+    it('omits contentDescription when accessibilityLabel is not provided', () => {
+      render(<NativeToolbarButton {...defaultProps} />);
+
+      expect(MockedIcon.mock.calls[0]![0]).toMatchObject({
+        contentDescription: undefined,
+      });
+    });
   });
 });

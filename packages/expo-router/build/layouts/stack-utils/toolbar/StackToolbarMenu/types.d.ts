@@ -6,6 +6,13 @@ import type { LinkMenuActionProps } from '../../../../link/elements';
 import type { StackHeaderItemSharedProps } from '../shared';
 export interface StackToolbarMenuProps {
     /**
+     * Accessibility label spoken by screen readers (VoiceOver / TalkBack).
+     *
+     *
+     * @see [Apple — Supporting VoiceOver in your app](https://developer.apple.com/documentation/uikit/supporting-voiceover-in-your-app#Update-your-apps-accessibility)
+     * @see [Android — Compose accessibility for graphic elements](https://developer.android.com/develop/ui/compose/accessibility/api-defaults#graphic-elements)
+     *
+     * @platform android
      * @platform ios
      */
     accessibilityLabel?: string;
