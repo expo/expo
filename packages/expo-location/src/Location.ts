@@ -403,7 +403,7 @@ export const useMotionActivityPermissions = createPermissionHook({
  *  On iOS, the system will prompt the user for Motion and Fitness access the first time this method is called.
  * 
  *
- * @return A promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).
+ * @return a promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).
  *
  * @platform android
  * @platform ios
