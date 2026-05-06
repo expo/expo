@@ -33,6 +33,8 @@ enum MetricParamsBuilder {
         params["expo.device.lowPowerMode"] = lowPowerMode
       }
       if let thermalState = deviceState.thermalState {
+        // Raw values on `DeviceState.ThermalState` are part of the wire
+        // contract — see the enum's docs. Don't rename cases.
         params["expo.device.thermalState"] = thermalState.rawValue
       }
       if let batteryLevel = deviceState.batteryLevel {
@@ -42,15 +44,14 @@ enum MetricParamsBuilder {
         params["expo.device.batteryCharging"] = batteryCharging
       }
     }
-    params["expo.network.connected"] = networkPath?.status == .satisfied
-    params["expo.network.type"] = networkTypeString(networkPath)
+    if let networkPath {
+      params["expo.network.connected"] = networkPath.status == .satisfied
+      params["expo.network.type"] = networkTypeString(networkPath)
+    }
     return params
   }
 
-  private static func networkTypeString(_ path: NetworkPath?) -> String {
-    guard let path else {
-      return "unknown"
-    }
+  private static func networkTypeString(_ path: NetworkPath) -> String {
     if path.status != .satisfied {
       return "none"
     }

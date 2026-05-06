@@ -24,10 +24,16 @@ struct MetricParamsBuilderTests {
   )
 
   @Test
-  func `emits network keys with no inputs`() {
+  func `returns empty map when all inputs are nil`() {
     let params = MetricParamsBuilder.build()
-    #expect(params["expo.network.connected"] as? Bool == false)
-    #expect(params["expo.network.type"] as? String == "unknown")
+    #expect(params.isEmpty)
+  }
+
+  @Test
+  func `omits network keys when networkPath is nil`() {
+    let params = MetricParamsBuilder.build(userParams: ["tenant": "acme"])
+    #expect(params["expo.network.connected"] == nil)
+    #expect(params["expo.network.type"] == nil)
   }
 
   @Test

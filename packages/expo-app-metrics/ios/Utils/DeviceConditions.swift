@@ -8,6 +8,10 @@ import ExpoModulesCore
  published a value yet) can be expressed as `nil` rather than a sentinel.
  */
 struct DeviceState: Sendable, Equatable {
+  /**
+   The raw values are part of the `expo.device.thermalState` wire contract
+   — `MetricParamsBuilder` emits them via `.rawValue`. Don't rename cases.
+   */
   enum ThermalState: String, Sendable {
     case nominal
     case fair
@@ -69,16 +73,11 @@ enum DeviceConditions {
     let level = device.batteryLevel
     let batteryLevel: Double? = level >= 0 ? Double(level) : nil
 
-    let batteryCharging: Bool?
-    switch device.batteryState {
-    case .charging, .full:
-      batteryCharging = true
-    case .unplugged:
-      batteryCharging = false
-    case .unknown:
-      batteryCharging = nil
-    @unknown default:
-      batteryCharging = nil
+    let batteryCharging: Bool? = switch device.batteryState {
+    case .charging, .full: true
+    case .unplugged: false
+    case .unknown: nil
+    @unknown default: nil
     }
 
     return DeviceState(
@@ -91,17 +90,12 @@ enum DeviceConditions {
   }
 
   private static func thermalState(from state: ProcessInfo.ThermalState) -> DeviceState.ThermalState {
-    switch state {
-    case .nominal:
-      return .nominal
-    case .fair:
-      return .fair
-    case .serious:
-      return .serious
-    case .critical:
-      return .critical
-    @unknown default:
-      return .unknown
+    return switch state {
+    case .nominal: .nominal
+    case .fair: .fair
+    case .serious: .serious
+    case .critical: .critical
+    @unknown default: .unknown
     }
   }
 }
