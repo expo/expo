@@ -313,6 +313,9 @@ export function getDefaultConfig(
         // This prevents unwanted fast refresh on the declaration files changes.
         // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
         exclusionList(['.expo/types']),
+        // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+        // pattern is reapplied to normal paths during the Node crawling phase
+        /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
       ],
     },
     cacheStores: [cacheStore],
