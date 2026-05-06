@@ -86,7 +86,7 @@ function attachMasterListener() {
  *
  * @see https://nodejs.org/docs/latest-v18.x/api/process.html#processgetactiveresourcesinfo
  */
-export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtMs = Date.now()) {
+export function ensureProcessExitsAfterDelay(waitUntilExitMs = 4_000, startedAtMs = Date.now()) {
   // Create a list of the expected active resources before exiting.
   // Note, the order is undeterministic
   const expectedResources = [
