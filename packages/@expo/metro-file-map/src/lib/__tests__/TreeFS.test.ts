@@ -1582,6 +1582,13 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
   });
 
   describe('fallback filesystem', () => {
+    const FALLBACK_DIR = Symbol.for('fallbackDir');
+
+    function markFallbackDir(dir: Map<string, any>, flag: 0 | 1 = 0): Map<string, any> {
+      (dir as any)[FALLBACK_DIR] = flag;
+      return dir;
+    }
+
     let mockFallback: {
       lookup: jest.Mock;
       readdir: jest.Mock;
@@ -1740,6 +1747,315 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         // Even deeply nested parent access should work
         const result = fbTfs.lookup(p('/project/../../deep/file.js'));
         expect(result).toMatchObject({ exists: true });
+      });
+
+      test('allows fallback for symlink targets outside serverRoot boundary', () => {
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([
+            [p('node_modules/pkg'), [0, 0, 0, null, '../../store/pkg', null] as any],
+          ]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (normalPath === p('../..')) {
+              if (!result.has('store')) {
+                result.set('store', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../store')) {
+              if (!result.has('pkg')) {
+                result.set('pkg', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../store/pkg')) {
+              result.set('index.js', [100, 5, 0, null, 0, null]);
+              return markFallbackDir(result, 1);
+            }
+            return dirNode;
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/node_modules/pkg/index.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+      });
+
+      test('blocks direct fallback access outside serverRoot even with symlinks elsewhere', () => {
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([
+            [p('node_modules/pkg'), [0, 0, 0, null, '../../store/pkg', null] as any],
+          ]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (_normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            result.set('index.js', [100, 5, 0, null, 0, null]);
+            return markFallbackDir(result, 1);
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/../../store/pkg/index.js'));
+        expect(result).toMatchObject({ exists: false });
+      });
+
+      test('allows chained symlinks outside boundary', () => {
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([[p('link-a'), [0, 0, 0, null, '../../external/hop', null] as any]]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (normalPath === p('../..')) {
+              if (!result.has('external')) {
+                result.set('external', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../external')) {
+              if (!result.has('hop')) {
+                result.set('hop', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../external/hop')) {
+              if (!result.has('link-b')) {
+                result.set('link-b', [0, 0, 0, null, '../../../other/final', null]);
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../..')) {
+              if (!result.has('other')) {
+                result.set('other', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../../other')) {
+              if (!result.has('final')) {
+                result.set('final', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../../other/final')) {
+              result.set('deep.js', [100, 5, 0, null, 0, null]);
+              return markFallbackDir(result, 1);
+            }
+            return dirNode;
+          }
+        );
+
+        const result = fbTfs.lookup(p('/project/link-a/link-b/deep.js'));
+        expect(result).toMatchObject({ exists: true, type: 'f' });
+      });
+
+      test('subsequent lookups via real path bypass boundary (pnpm relative import)', () => {
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([[p('node_modules/pkg'), [0, 0, 0, null, '../store/pkg', null] as any]]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (normalPath === p('..')) {
+              if (!result.has('store')) {
+                result.set('store', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../store')) {
+              if (!result.has('pkg')) {
+                result.set('pkg', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../store/pkg')) {
+              if (!result.has('dist')) {
+                result.set('dist', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../store/pkg/dist')) {
+              if (!result.has('exports')) {
+                result.set('exports', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../store/pkg/dist/exports')) {
+              if (!result.has('AppRegistry')) {
+                result.set('AppRegistry', markFallbackDir(new Map()));
+              }
+              if (!result.has('unmountComponentAtNode')) {
+                result.set('unmountComponentAtNode', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../store/pkg/dist/exports/AppRegistry')) {
+              result.set('index.js', [100, 5, 0, null, 0, null]);
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../store/pkg/dist/exports/unmountComponentAtNode')) {
+              result.set('index.js', [100, 5, 0, null, 0, null]);
+              return markFallbackDir(result, 1);
+            }
+            return dirNode;
+          }
+        );
+
+        // Follow symlink to populate the store directories
+        const appResult = fbTfs.lookup(
+          p('/project/node_modules/pkg/dist/exports/AppRegistry/index.js')
+        );
+        expect(appResult).toMatchObject({ exists: true, type: 'f' });
+
+        // Look up a sibling via real path (no symlink traversal)
+        const realPath = mockPathModule.resolve(
+          p('/project'),
+          p('../store/pkg/dist/exports/unmountComponentAtNode/index.js')
+        );
+        const siblingResult = fbTfs.lookup(realPath);
+        expect(siblingResult).toMatchObject({ exists: true, type: 'f' });
+      });
+
+      test('dot-folder reached via symlink allows sibling lookups', () => {
+        // .store is a dot-folder — shouldFallbackCrawlDir skips readdir,
+        // so children are resolved individually via fallback.lookup.
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([[p('node_modules/pkg'), [0, 0, 0, null, '../.store/pkg', null] as any]]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (normalPath === p('..')) {
+              if (!result.has('.store')) {
+                result.set('.store', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../.store/pkg')) {
+              if (!result.has('A.js')) {
+                result.set('A.js', [100, 5, 0, null, 0, null]);
+              }
+              if (!result.has('B.js')) {
+                result.set('B.js', [100, 5, 0, null, 0, null]);
+              }
+              return markFallbackDir(result, 1);
+            }
+            return dirNode;
+          }
+        );
+        mockFallback.lookup.mockImplementation((normalPath: string) => {
+          if (normalPath === p('../.store/pkg')) {
+            return markFallbackDir(new Map<string, any>());
+          }
+          return null;
+        });
+
+        const aResult = fbTfs.lookup(p('/project/node_modules/pkg/A.js'));
+        expect(aResult).toMatchObject({ exists: true, type: 'f' });
+
+        // Look up sibling B.js via real path (no symlink traversal)
+        const realPath = mockPathModule.resolve(p('/project'), p('../.store/pkg/B.js'));
+        const bResult = fbTfs.lookup(realPath);
+        expect(bResult).toMatchObject({ exists: true, type: 'f' });
+      });
+
+      test('hierarchicalLookup resolves subpath in symlink-reached directory', () => {
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([
+            [p('node_modules/react'), [0, 0, 0, null, '../../.bun-cache/react', null] as any],
+          ]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (normalPath === p('../..')) {
+              if (!result.has('.bun-cache')) {
+                result.set('.bun-cache', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (
+              normalPath === p('../../.bun-cache/react') ||
+              normalPath === p('node_modules/react')
+            ) {
+              result.set('package.json', [100, 5, 0, null, 0, null]);
+              result.set('index.js', [100, 5, 0, null, 0, null]);
+              return markFallbackDir(result, 1);
+            }
+            return dirNode;
+          }
+        );
+        mockFallback.lookup.mockImplementation((normalPath: string) => {
+          if (normalPath === p('../../.bun-cache/react')) {
+            return markFallbackDir(new Map<string, any>());
+          }
+          return null;
+        });
+
+        fbTfs.lookup(p('/project/node_modules/react/index.js'));
+
+        const found = fbTfs.hierarchicalLookup(
+          p('/project/node_modules/react/index.js'),
+          'package.json',
+          { subpathType: 'f' }
+        );
+        expect(found).not.toBeNull();
+        expect(found?.absolutePath).toBe(
+          mockPathModule.resolve(p('/project'), p('../../.bun-cache/react/package.json'))
+        );
+      });
+
+      test('matchFiles follows symlink to out-of-boundary directory', () => {
+        const fbTfs = makeFallbackTfs({
+          serverRoot: p('/project'),
+          files: new Map([
+            [p('outside/dir-link'), [0, 0, 0, null, '../../store/real-dir', null] as any],
+          ]),
+        });
+
+        mockFallback.readdir.mockImplementation(
+          (normalPath: string, _absolutePath: string, dirNode: any) => {
+            const result = dirNode ?? new Map();
+            if (normalPath === p('../..')) {
+              if (!result.has('store')) {
+                result.set('store', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../store')) {
+              if (!result.has('real-dir')) {
+                result.set('real-dir', markFallbackDir(new Map()));
+              }
+              return markFallbackDir(result, 1);
+            }
+            if (normalPath === p('../../store/real-dir') || normalPath === p('outside/dir-link')) {
+              result.set('found.js', [100, 5, 0, null, 0, null]);
+              return markFallbackDir(result, 1);
+            }
+            return dirNode;
+          }
+        );
+
+        const matches = [
+          ...fbTfs.matchFiles({
+            rootDir: p('/project/outside'),
+            follow: true,
+            recursive: true,
+          }),
+        ];
+        expect(matches).toContain(p('/project/outside/dir-link/found.js'));
       });
     });
 
