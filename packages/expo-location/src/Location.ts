@@ -362,7 +362,7 @@ export async function getMotionActivityPermissionsAsync(): Promise<PermissionRes
  * Asks the user to grant permissions for motion activity detection.
  * On Android 10+, this requests the `ACTIVITY_RECOGNITION` runtime permission.
  * On iOS, this triggers the system prompt for Motion and Fitness access the first time it is called.
- * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+ * @return a promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
  *
  * @platform android
  * @platform ios
