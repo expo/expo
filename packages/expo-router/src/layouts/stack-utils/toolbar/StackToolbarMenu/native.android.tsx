@@ -130,7 +130,12 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
             onClick={() => setExpanded(true)}
             enabled={!props.disabled}
             modifiers={[background(backgroundColor)]}>
-            <Icon source={props.source} tint={tintColor} size={24} />
+            <Icon
+              source={props.source}
+              tint={tintColor}
+              size={24}
+              contentDescription={props.accessibilityLabel}
+            />
           </IconButton>
         </DropdownMenu.Trigger>
         <DropdownMenu.Items>

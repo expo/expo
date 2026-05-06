@@ -20,7 +20,15 @@ import { convertOptionsIconToScreensPropsIcon } from './utils/optionsIconConvert
 import { getFirstChildOfType } from '../utils/children';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren } = props;
+  const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } =
+    props;
+  // `ios`/`android` are the only platform-nested keys on `TabsHostProps`. We drop the inactive
+  // platform's slice so users writing universal code don't pass Android-only props to the iOS host.
+  const {
+    ios: rawIosProps,
+    android: _ignoredRawAndroidProps,
+    ...rawHostRestProps
+  } = unstable_nativeProps ?? {};
 
   const { selectedScreenKey, provenance } = useSelectedScreenKey(props);
   const onTabSelected = useOnTabSelectedHandler(props.onTabChange);
@@ -36,6 +44,18 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   );
 
   const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
+
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    bottomAccessory &&
+    rawIosProps &&
+    'bottomAccessory' in rawIosProps
+  ) {
+    console.warn(
+      '<NativeTabs.BottomAccessory> is being overridden by `unstable_nativeProps.ios.bottomAccessory`. ' +
+        'Either remove the `<NativeTabs.BottomAccessory>` child or stop passing `ios.bottomAccessory` via `unstable_nativeProps`.'
+    );
+  }
 
   const children = tabs.map((tab, index) => (
     <Screen
@@ -58,16 +78,17 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     sidebarAdaptable ? 'tabSidebar' : sidebarAdaptable === false ? 'tabBar' : 'automatic';
 
   return (
-    // TODO(@ubax): add rawProps prop to tab host
     <TabsHostWrapper
-      navState={{ selectedScreenKey, provenance }}
       ios={{
         tabBarTintColor: props.tintColor,
         tabBarMinimizeBehavior: minimizeBehavior,
         tabBarControllerMode,
         bottomAccessory: bottomAccessoryFn,
+        ...rawIosProps,
       }}
       tabBarHidden={props.hidden}
+      {...rawHostRestProps}
+      navState={{ selectedScreenKey, provenance }}
       onTabSelected={onTabSelected}>
       {children}
     </TabsHostWrapper>

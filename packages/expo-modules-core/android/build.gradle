@@ -29,7 +29,7 @@ if (shouldIncludeCompose) {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.0'
+version = '56.0.2'
 
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
@@ -96,7 +96,7 @@ android {
   defaultConfig {
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "56.0.0"
+    versionName "56.0.2"
     buildConfigField "String", "EXPO_MODULES_CORE_VERSION", "\"${versionName}\""
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", "true"
 
@@ -230,7 +230,7 @@ dependencies {
     implementation workletsProject
   }
 
-  implementation("io.github.lukmccall.pika:pika-api:0.2.1-2.1.20")
+  implementation("io.github.lukmccall.pika:pika-api:0.3.2")
 
   testImplementation 'androidx.test:core:1.7.0'
   testImplementation 'junit:junit:4.13.2'

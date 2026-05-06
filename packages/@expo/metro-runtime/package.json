@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "56.0.1",
+  "version": "56.0.3",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
@@ -49,7 +49,7 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "workspace:56.0.1",
+    "@expo/log-box": "workspace:56.0.3",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",

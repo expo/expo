@@ -105,9 +105,15 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         var params = params
         let frameMetrics = frameMetricsRecorder.stop()
         if frameMetrics.expectedFrames > 0 {
-          params["frameRate.slowFrames"] = frameMetrics.slowFrames
-          params["frameRate.frozenFrames"] = frameMetrics.frozenFrames
-          params["frameRate.totalDelay"] = frameMetrics.freezeTime
+          params["expo.frameRate.slowFrames"] = frameMetrics.slowFrames
+          params["expo.frameRate.frozenFrames"] = frameMetrics.frozenFrames
+          params["expo.frameRate.totalDelay"] = frameMetrics.freezeTime
+        }
+        for (key, value) in await DeviceConditions.deviceParams() {
+          params[key] = value
+        }
+        for (key, value) in DeviceConditions.networkParams() {
+          params[key] = value
         }
         let metric = Metric(
           category: .appStartup,

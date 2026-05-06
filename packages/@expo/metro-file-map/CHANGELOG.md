@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.0-1 — 2026-05-06
+
+### 💡 Others
+
 - Reapply `ignorePattern` to directories' normal paths to allow excluding project relative folders ([#45418](https://github.com/expo/expo/pull/45418) by [@kitten](https://github.com/kitten))
 
 ## 56.0.0-0 — 2026-05-05

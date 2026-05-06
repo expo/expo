@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "56.0.1",
+  "version": "56.0.2",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

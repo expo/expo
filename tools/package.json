@@ -31,10 +31,10 @@
   "license": "MIT",
   "dependencies": {
     "@expo/commander": "2.21.1",
-    "@expo/json-file": "^8.3.3",
+    "@expo/json-file": "workspace:*",
     "@expo/multipart-body-parser": "^1.1.0",
-    "@expo/osascript": "^2.2.4",
-    "@expo/plist": "^0.3.4",
+    "@expo/osascript": "workspace:*",
+    "@expo/plist": "workspace:*",
     "@expo/xcpretty": "^4.4.0",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",

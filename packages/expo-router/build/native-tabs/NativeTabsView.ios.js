@@ -13,7 +13,10 @@ const bottomAccessory_1 = require("./utils/bottomAccessory");
 const optionsIconConverter_1 = require("./utils/optionsIconConverter");
 const children_1 = require("../utils/children");
 function NativeTabsView(props) {
-    const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren } = props;
+    const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } = props;
+    // `ios`/`android` are the only platform-nested keys on `TabsHostProps`. We drop the inactive
+    // platform's slice so users writing universal code don't pass Android-only props to the iOS host.
+    const { ios: rawIosProps, android: _ignoredRawAndroidProps, ...rawHostRestProps } = unstable_nativeProps ?? {};
     const { selectedScreenKey, provenance } = (0, NativeTabsView_shared_1.useSelectedScreenKey)(props);
     const onTabSelected = (0, NativeTabsView_shared_1.useOnTabSelectedHandler)(props.onTabChange);
     const iosAppearances = tabs.map((tab) => ({
@@ -22,17 +25,25 @@ function NativeTabsView(props) {
     }));
     const bottomAccessory = (0, react_1.useMemo)(() => (0, children_1.getFirstChildOfType)(nonTriggerChildren, elements_1.NativeTabsBottomAccessory), [nonTriggerChildren]);
     const bottomAccessoryFn = (0, bottomAccessory_1.useBottomAccessoryFunctionFromBottomAccessories)(bottomAccessory);
+    if (process.env.NODE_ENV !== 'production' &&
+        bottomAccessory &&
+        rawIosProps &&
+        'bottomAccessory' in rawIosProps) {
+        console.warn('<NativeTabs.BottomAccessory> is being overridden by `unstable_nativeProps.ios.bottomAccessory`. ' +
+            'Either remove the `<NativeTabs.BottomAccessory>` child or stop passing `ios.bottomAccessory` via `unstable_nativeProps`.');
+    }
     const children = tabs.map((tab, index) => ((0, jsx_runtime_1.jsx)(Screen, { routeKey: tab.routeKey, name: tab.name, options: tab.options, isFocused: selectedScreenKey === tab.routeKey, standardAppearance: iosAppearances[index].standardAppearance, scrollEdgeAppearance: iosAppearances[index].scrollEdgeAppearance, contentRenderer: tab.contentRenderer }, tab.routeKey)));
     if (children.length === 0) {
         return null;
     }
     const tabBarControllerMode = sidebarAdaptable ? 'tabSidebar' : sidebarAdaptable === false ? 'tabBar' : 'automatic';
-    return ((0, jsx_runtime_1.jsx)(TabsHostWrapper, { navState: { selectedScreenKey, provenance }, ios: {
+    return ((0, jsx_runtime_1.jsx)(TabsHostWrapper, { ios: {
             tabBarTintColor: props.tintColor,
             tabBarMinimizeBehavior: minimizeBehavior,
             tabBarControllerMode,
             bottomAccessory: bottomAccessoryFn,
-        }, tabBarHidden: props.hidden, onTabSelected: onTabSelected, children: children }));
+            ...rawIosProps,
+        }, tabBarHidden: props.hidden, ...rawHostRestProps, navState: { selectedScreenKey, provenance }, onTabSelected: onTabSelected, children: children }));
 }
 function Screen(props) {
     const { options, standardAppearance, scrollEdgeAppearance, contentRenderer } = props;
