@@ -196,29 +196,27 @@ function createImportDeclaration({
   namedImportsNames?: string[];
   importFromName: string;
 }): ts.Node[] {
-  if (!defaultImportName && (!namedImportsNames || namedImportsNames.length === 0)) {
+  const hasDefault = !!defaultImportName;
+  const hasNamed = namedImportsNames && namedImportsNames.length > 0;
+
+  if (!hasDefault && !hasNamed) {
     return [];
   }
-  const defaultImportIdentifier = defaultImportName
-    ? ts.factory.createIdentifier(defaultImportName)
-    : undefined;
-  const namedImportsIdentifiers =
-    namedImportsNames && namedImportsNames.length > 0
-      ? ts.factory.createNamedImports(
-          namedImportsNames.map((importedName) =>
-            ts.factory.createImportSpecifier(
-              false,
-              undefined,
-              ts.factory.createIdentifier(importedName)
-            )
-          )
+
+  const defaultImport = hasDefault ? ts.factory.createIdentifier(defaultImportName) : undefined;
+
+  const namedImports = hasNamed
+    ? ts.factory.createNamedImports(
+        namedImportsNames.map((name) =>
+          ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(name))
         )
-      : undefined;
+      )
+    : undefined;
 
   return [
     ts.factory.createImportDeclaration(
       undefined,
-      ts.factory.createImportClause(undefined, defaultImportIdentifier, namedImportsIdentifiers),
+      ts.factory.createImportClause(undefined, defaultImport, namedImports),
       ts.factory.createStringLiteral(importFromName)
     ),
   ];
@@ -543,6 +541,17 @@ function buildArgumentDeclaration(arg: Argument): ts.ParameterDeclaration {
   return buildArgumentDeclarationAndName(arg).argDeclaration;
 }
 
+export type buildFunctionOptions = {
+  functionDeclaration: FunctionDeclaration;
+  async?: boolean;
+  method?: boolean;
+  exported?: boolean;
+  declaration?: boolean;
+  returnStatement?: null | ts.ReturnStatement[];
+  overrideArgumentDeclarations?: ts.ParameterDeclaration[];
+  omitReturnType?: boolean;
+};
+
 export function buildFunction({
   functionDeclaration,
   async,
@@ -552,16 +561,7 @@ export function buildFunction({
   returnStatement,
   overrideArgumentDeclarations,
   omitReturnType,
-}: {
-  functionDeclaration: FunctionDeclaration;
-  async?: boolean;
-  method?: boolean;
-  exported?: boolean;
-  declaration?: boolean;
-  returnStatement?: null | ts.ReturnStatement[];
-  overrideArgumentDeclarations?: ts.ParameterDeclaration[];
-  omitReturnType?: boolean;
-}): ts.FunctionDeclaration | ts.MethodDeclaration {
+}: buildFunctionOptions): ts.FunctionDeclaration | ts.MethodDeclaration {
   const functionModifiers = constructModifiersArray({ exported, async: async && !declaration });
   const customReturn = !!returnStatement;
   const bareReturnTypeNode = mapTypeToTsTypeNode(functionDeclaration.returnType);
@@ -624,39 +624,33 @@ export function buildClass({
   declaration?: boolean;
   getFunctionReturnBlock?: (functionDeclaration: FunctionDeclaration) => ts.ReturnStatement[];
 }): ts.ClassDeclaration {
-  const constructorDeclaration = classDeclaration.constructor
-    ? buildConstructor(classDeclaration.constructor, declaration ?? false)
-    : undefined;
+  const getReturnStatement = (method: FunctionDeclaration) =>
+    !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null;
+
+  const buildMethod = (method: FunctionDeclaration, async?: boolean) =>
+    buildFunction({
+      functionDeclaration: method,
+      method: true,
+      async,
+      declaration,
+      returnStatement: getReturnStatement(method),
+    }) as ts.MethodDeclaration;
+
+  const classMembers = [
+    ...classDeclaration.methods.map((m) => buildMethod(m)),
+    ...classDeclaration.asyncMethods.map((m) => buildMethod(m, true)),
+    ...(declaration ? classDeclaration.properties.map(buildClassProperty) : []),
+    classDeclaration.constructor
+      ? buildConstructor(classDeclaration.constructor, declaration ?? false)
+      : undefined,
+  ].filter((x) => x !== undefined);
+
   return ts.factory.createClassDeclaration(
-    constructModifiersArray({ exported: exported, declare: declaration }),
+    constructModifiersArray({ exported, declare: declaration }),
     ts.factory.createIdentifier(classDeclaration.name),
     undefined,
     [],
-    [
-      ...classDeclaration.methods.map(
-        (method) =>
-          buildFunction({
-            functionDeclaration: method,
-            method: true,
-            declaration,
-            returnStatement:
-              !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
-          }) as ts.MethodDeclaration
-      ),
-      ...classDeclaration.asyncMethods.map(
-        (method) =>
-          buildFunction({
-            functionDeclaration: method,
-            async: true,
-            method: true,
-            declaration,
-            returnStatement:
-              !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null,
-          }) as ts.MethodDeclaration
-      ),
-      ...(declaration ? classDeclaration.properties.map(buildClassProperty) : []),
-      constructorDeclaration,
-    ].filter((v) => !!v)
+    classMembers
   );
 }
 
@@ -726,18 +720,22 @@ export function buildEnumTypeDeclaration(
 }
 
 function buildMissingTypesDeclarations(ctx: GenerationContext): ts.Node[] {
-  if (ctx.missingTypes.size === 0) return [];
-  return [
-    ts.addSyntheticLeadingComment(
-      ts.factory.createIdentifier(''),
-      ts.SyntaxKind.SingleLineCommentTrivia,
-      ` These types haven't been defined in provided file(s).`,
-      true
-    ),
-    ...[...ctx.missingTypes].map((identifier) =>
-      buildUnknownTypeAlias(identifier, true, ctx.fileInfo.inferredTypeParametersCount)
-    ),
-  ];
+  if (ctx.missingTypes.size === 0) {
+    return [];
+  }
+
+  const header = ts.addSyntheticLeadingComment(
+    ts.factory.createIdentifier(''),
+    ts.SyntaxKind.SingleLineCommentTrivia,
+    ` These types haven't been defined in provided file(s).`,
+    true
+  );
+
+  const aliases = [...ctx.missingTypes].map((identifier) =>
+    buildUnknownTypeAlias(identifier, true, ctx.fileInfo.inferredTypeParametersCount)
+  );
+
+  return [header, ...aliases];
 }
 
 function buildDefaultViewComponent({
@@ -747,26 +745,30 @@ function buildDefaultViewComponent({
   componentName: string;
   propsTypeAlias: string;
 }) {
-  const propsTypeNode = ts.factory.createTypeReferenceNode(propsTypeAlias);
+  const jsxElement = ts.factory.createJsxSelfClosingElement(
+    ts.factory.createIdentifier(componentName),
+    undefined,
+    ts.factory.createJsxAttributes([
+      ts.factory.createJsxSpreadAttribute(ts.factory.createIdentifier('props')),
+    ])
+  );
+
+  const functionBody = ts.factory.createBlock([ts.factory.createReturnStatement(jsxElement)]);
+
   return [
     ts.factory.createFunctionExpression(
       [exportModifier(), defaultModifier()],
       undefined,
       componentName + 'Component',
       undefined,
-      [createParameter({ name: 'props', type: propsTypeNode })],
+      [
+        createParameter({
+          name: 'props',
+          type: ts.factory.createTypeReferenceNode(propsTypeAlias),
+        }),
+      ],
       undefined,
-      ts.factory.createBlock([
-        ts.factory.createReturnStatement(
-          ts.factory.createJsxSelfClosingElement(
-            ts.factory.createIdentifier(componentName),
-            undefined,
-            ts.factory.createJsxAttributes([
-              ts.factory.createJsxSpreadAttribute(ts.factory.createIdentifier('props')),
-            ])
-          )
-        ),
-      ])
+      functionBody
     ),
   ];
 }
@@ -1038,22 +1040,22 @@ export async function generateModuleTypesFileContent(
 export async function generateConciseTsInterface(
   fileTypeInformation: FileTypeInformation
 ): Promise<{
-  volitileGeneratedFileContent: string;
+  volatileGeneratedFileContent: string;
   moduleTypescriptInterfaceFileContent: string;
 }> {
   const ctx = createDefaultGenerationContext(fileTypeInformation);
   if (!ctx) {
-    return { volitileGeneratedFileContent: '', moduleTypescriptInterfaceFileContent: '' };
+    return { volatileGeneratedFileContent: '', moduleTypescriptInterfaceFileContent: '' };
   }
 
-  const volitileGeneratedFileContent = await tsNodesToString(buildNativeModuleGeneratedNodes(ctx));
+  const volatileGeneratedFileContent = await tsNodesToString(buildNativeModuleGeneratedNodes(ctx));
 
   const moduleTypescriptInterfaceFileContent = await tsNodesToString(
     buildStableNativeModuleInterface(ctx)
   );
 
   return {
-    volitileGeneratedFileContent,
+    volatileGeneratedFileContent,
     moduleTypescriptInterfaceFileContent,
   };
 }

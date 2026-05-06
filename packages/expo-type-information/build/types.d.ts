@@ -57,4 +57,3 @@ export type OutputModuleDefinition = {
     }[];
 } & Record<'asyncFunctions' | 'functions' | 'properties', Closure[]> & Record<'props', Prop[]>;
 export type OutputNestedClassDefinition = Omit<OutputModuleDefinition, 'views' | 'classes'>;
-//# sourceMappingURL=types.d.ts.map

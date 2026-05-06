@@ -1,10 +1,19 @@
 import fs from 'fs';
 import path from 'path';
 
+// TODO(@HubertBer): Also exists in expo-modules-autolinking, but with a limiter, maybe take it or depend on it?
+export const taskAll = <T, R>(
+  inputs: T[],
+  map: (input: T, index: number) => Promise<R>
+): Promise<R[]> => {
+  return Promise.all(inputs.map(map));
+};
+
+// TODO(@HubertBer): Taken from expo-modules-autolinking, maybe import it instead?
 export async function* scanFilesRecursively(
   parentPath: string,
   includeDirectory?: (parentPath: string, name: string) => boolean,
-  sort = !fs.opendir
+  sort = !fs.promises.opendir
 ) {
   const queue = [parentPath];
   let targetPath: string | undefined;

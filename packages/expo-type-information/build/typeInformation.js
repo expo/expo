@@ -41,7 +41,7 @@ const fs = __importStar(require("fs"));
 const os = __importStar(require("os"));
 const path = __importStar(require("path"));
 const sourcekittenTypeInformation_1 = require("./swift/sourcekittenTypeInformation");
-const promises_1 = require("fs/promises");
+const utils_1 = require("./utils");
 var IdentifierKind;
 (function (IdentifierKind) {
     IdentifierKind[IdentifierKind["BASIC"] = 0] = "BASIC";
@@ -114,12 +114,20 @@ var TypeInferenceOption;
     /** Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
     TypeInferenceOption[TypeInferenceOption["PREPROCESS_AND_INFERENCE"] = 2] = "PREPROCESS_AND_INFERENCE";
 })(TypeInferenceOption || (exports.TypeInferenceOption = TypeInferenceOption = {}));
-const taskAll = (inputs, map) => {
-    return Promise.all(inputs.map((input) => map(input)));
-};
 async function mergeFileContents(absoluteFilePaths) {
-    const filesContents = await taskAll(absoluteFilePaths, (filePath) => fs.promises.readFile(filePath, 'utf-8'));
+    const filesContents = await (0, utils_1.taskAll)(absoluteFilePaths, (filePath) => fs.promises.readFile(filePath, 'utf-8'));
     return filesContents.join('');
+}
+async function withTempFile(content, fn) {
+    const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'type-gen-'));
+    const filePath = path.join(tempDir, 'TypeInformationTemporaryFile.swift');
+    try {
+        await fs.promises.writeFile(filePath, content, 'utf8');
+        return await fn(filePath);
+    }
+    finally {
+        await fs.promises.rm(tempDir, { recursive: true, force: true });
+    }
 }
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
@@ -140,13 +148,9 @@ async function getFileTypeInformation({ input, typeInference, }) {
         ? await mergeFileContents(input.inputFileAbsolutePaths)
         : input.fileContent;
     const preprocessedContent = shouldPreprocessFile ? (0, sourcekittenTypeInformation_1.preprocessSwiftFile)(fileContent) : fileContent;
-    const tempDir = await (0, promises_1.mkdtemp)(path.join(os.tmpdir(), 'type-gen-'));
-    const filePath = path.join(tempDir, `TypeInformationTemporaryFile.swift`);
-    await fs.promises.writeFile(filePath, preprocessedContent, 'utf8');
-    const fileTypeInfo = await (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(filePath, {
-        typeInference: typeInferenceOn,
+    return withTempFile(preprocessedContent, async (tempFilePath) => {
+        return (0, sourcekittenTypeInformation_1.getSwiftFileTypeInformation)(tempFilePath, {
+            typeInference: typeInferenceOn,
+        });
     });
-    await fs.promises.rm(tempDir, { recursive: true, force: true });
-    return fileTypeInfo;
 }
-//# sourceMappingURL=typeInformation.js.map

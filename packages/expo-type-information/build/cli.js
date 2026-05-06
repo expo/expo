@@ -7,26 +7,25 @@ const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("commander");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const node_child_process_1 = require("node:child_process");
-const node_crypto_1 = require("node:crypto");
+const child_process_1 = require("child_process");
+const crypto_1 = require("crypto");
 const mockgen_1 = require("./mockgen");
 const typeInformation_1 = require("./typeInformation");
 const typescriptGeneration_1 = require("./typescriptGeneration");
 const utils_1 = require("./utils");
-let sourcekittenInstalled = null;
+let sourcekittenInstalled;
 function isSourceKittenInstalled() {
-    if (sourcekittenInstalled !== null) {
+    if (sourcekittenInstalled !== undefined) {
         return sourcekittenInstalled;
     }
     try {
-        (0, node_child_process_1.execSync)('which sourcekitten', { stdio: 'ignore' });
+        (0, child_process_1.execSync)('which sourcekitten', { stdio: 'ignore' });
         sourcekittenInstalled = true;
-        return true;
     }
     catch (e) {
         sourcekittenInstalled = false;
-        return false;
     }
+    return sourcekittenInstalled;
 }
 function addCommonOptions(command) {
     return command
@@ -51,18 +50,17 @@ function debounce(fn, timeout = 500) {
         }, timeout);
     };
 }
-const taskAll = (inputs, map) => {
-    return Promise.all(inputs.map((input) => map(input)));
-};
 async function runCommandOnWatch(parsedArgs, command) {
     const debounced_command = debounce(command, 1000);
     debounced_command();
-    if (!parsedArgs.watcher)
+    if (!parsedArgs.watcher) {
         return;
-    await taskAll(parsedArgs.realInputPaths, async (realInputPath) => {
+    }
+    await (0, utils_1.taskAll)(parsedArgs.realInputPaths, async (realInputPath) => {
         for await (const _ of fs_1.default.promises.watch(realInputPath)) {
-            if (!fs_1.default.existsSync(realInputPath))
+            if (!fs_1.default.existsSync(realInputPath)) {
                 return;
+            }
             debounced_command();
         }
     });
@@ -87,32 +85,15 @@ function sanitizeAndValidateOutputPath(rawPath, isFilePath = true) {
         const resolvedPath = path_1.default.resolve(rawPath);
         if (fs_1.default.existsSync(resolvedPath)) {
             const pathStat = fs_1.default.statSync(resolvedPath);
-            if (isFilePath && !pathStat.isFile()) {
-                console.log('1');
-                return null;
-            }
-            if (!isFilePath && !pathStat.isDirectory()) {
-                console.log('2');
-                return null;
-            }
+            const isValid = isFilePath ? pathStat.isFile() : pathStat.isDirectory();
+            return isValid ? resolvedPath : null;
         }
-        else if (isFilePath) {
-            const parentDir = path_1.default.dirname(resolvedPath);
-            if (!fs_1.default.existsSync(parentDir)) {
-                console.log('3');
-                return null;
-            }
+        if (isFilePath && fs_1.default.existsSync(path_1.default.dirname(resolvedPath))) {
+            return resolvedPath;
         }
-        else {
-            console.log('4');
-            return null;
-        }
-        return resolvedPath;
     }
-    catch (error) {
-        console.log('5');
-        return null;
-    }
+    catch { }
+    return null;
 }
 function parseInferenceOption(option) {
     if (!option)
@@ -127,24 +108,30 @@ function parseInferenceOption(option) {
     }
     return null;
 }
-function getModuleFilePathsFromPodspec(modulePath) {
+function getPodspecFilePath(modulePath) {
     const normalizedModulePath = fs_1.default.realpathSync(modulePath).replace(/\\/g, '/');
     const podspecFiles = [...fs_1.default.globSync(`${normalizedModulePath}/ios/*.podspec`)];
     const podspecFile = podspecFiles[0];
-    if (!podspecFile) {
-        console.warn(`No .podspec found in ${modulePath}`);
-        return [];
-    }
-    const podspecPath = podspecFile.toString();
-    const podspecDir = path_1.default.dirname(podspecPath);
+    return podspecFile ?? null;
+}
+function getSourceFilesGlobFromPodspecFile(podspecPath) {
     const podspecContent = fs_1.default.readFileSync(podspecPath, 'utf8');
     const sourceFilesRegex = /\.source_files\s*=\s*(["'])(.*?)\1/;
     const match = podspecContent.match(sourceFilesRegex);
-    if (!match || !match[2]) {
-        console.warn(`Could not extract source_files glob from ${podspecPath}`);
-        return [];
+    return match?.[2] ?? null;
+}
+function getModuleFilePathsFromPodspec(modulePath) {
+    const podspecPath = getPodspecFilePath(modulePath);
+    if (!podspecPath) {
+        console.warn(`No .podspec found in ${modulePath}`);
+        return null;
     }
-    const extractedGlob = match[2];
+    const extractedGlob = getSourceFilesGlobFromPodspecFile(podspecPath);
+    if (!extractedGlob) {
+        console.warn(`Could not extract source_files glob from ${podspecPath}`);
+        return null;
+    }
+    const podspecDir = path_1.default.dirname(podspecPath);
     const absoluteGlobPattern = path_1.default.posix.join(podspecDir.replace(/\\/g, '/'), extractedGlob);
     return getFilesForGlobPattern(absoluteGlobPattern)?.filter((f) => f.endsWith('.swift')) ?? null;
 }
@@ -153,7 +140,9 @@ function uniqueStrings(strings) {
 }
 function parseCommandArguments(options, isOutputFile = true) {
     const appJsonPath = options.appJson ?? undefined;
-    let realInputPaths = options.inputPaths ?? [].flatMap(getFilesForGlobPattern).filter((p) => p != null);
+    let realInputPaths = (options.inputPaths ?? Array())
+        .flatMap(getFilesForGlobPattern)
+        .filter((p) => p != null);
     if (options.modulePath) {
         const modulePaths = getModuleFilePathsFromPodspec(options.modulePath) ?? [];
         realInputPaths.push(...modulePaths);
@@ -191,7 +180,7 @@ async function getFileTypeInformationFromArgs({ realInputPaths, typeInference, }
         typeInference,
     });
     if (!typeInfo) {
-        console.log(chalk_1.default.red(`Provided files: ${realInputPaths} couldn't be parsed for type information!`));
+        console.error(chalk_1.default.red(`Provided files: ${realInputPaths} couldn't be parsed for type information!`));
         return null;
     }
     return typeInfo;
@@ -206,12 +195,14 @@ function writeStringToFileOrPrintToConsole(text, realOutputPath) {
 function typeInformationCommand(cli) {
     return addCommonOptions(cli.command('type-information')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options);
-        if (!parsedArgs)
+        if (!parsedArgs) {
             return;
+        }
         const command = async () => {
             const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
+            if (!typeInfo) {
                 return;
+            }
             const typeInfoSerialized = (0, typeInformation_1.serializeTypeInformation)(typeInfo);
             const typeInfoSerializedString = JSON.stringify(typeInfoSerialized, null, 2);
             writeStringToFileOrPrintToConsole(typeInfoSerializedString, parsedArgs.realOutputPath);
@@ -222,16 +213,20 @@ function typeInformationCommand(cli) {
 function generateModuleTypesCommand(cli) {
     return addCommonOptions(cli.command('generate-module-types')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options);
-        if (!parsedArgs)
+        if (!parsedArgs) {
             return;
+        }
         const { realOutputPath } = parsedArgs;
         const command = async () => {
             const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
+            if (!typeInfo) {
                 return;
+            }
             const moduleTypesFileContent = await (0, typescriptGeneration_1.generateModuleTypesFileContent)(typeInfo);
-            if (!moduleTypesFileContent)
+            if (!moduleTypesFileContent) {
+                console.error(chalk_1.default.red(`Couldn't generate module types file content!`));
                 return;
+            }
             writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);
         };
         runCommandOnWatch(parsedArgs, command);
@@ -240,13 +235,15 @@ function generateModuleTypesCommand(cli) {
 function generateViewTypesCommand(cli) {
     return addCommonOptions(cli.command('generate-view-types')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options);
-        if (!parsedArgs)
+        if (!parsedArgs) {
             return;
+        }
         const { realOutputPath } = parsedArgs;
         const command = async () => {
             const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
+            if (!typeInfo) {
                 return;
+            }
             const viewTypesFileContent = await (0, typescriptGeneration_1.generateViewTypesFileContent)(typeInfo);
             if (!viewTypesFileContent) {
                 console.error("Couldn't generate view types!");
@@ -260,12 +257,14 @@ function generateViewTypesCommand(cli) {
 function generateMocksForFileCommand(cli) {
     return addCommonOptions(cli.command('generate-mocks-for-file')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options);
-        if (!parsedArgs)
+        if (!parsedArgs) {
             return;
+        }
         const command = async () => {
             const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
+            if (!typeInfo) {
                 return;
+            }
             (0, mockgen_1.generateMocks)([typeInfo], 'typescript');
         };
         runCommandOnWatch(parsedArgs, command);
@@ -274,13 +273,15 @@ function generateMocksForFileCommand(cli) {
 function generateJsxIntrinsics(cli) {
     return addCommonOptions(cli.command('generate-jsx-intrinsics')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options);
-        if (!parsedArgs)
+        if (!parsedArgs) {
             return;
+        }
         const { realOutputPath } = parsedArgs;
         const command = async () => {
             const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
+            if (!typeInfo) {
                 return;
+            }
             const jsxIntrinsicViewFileContent = await (0, typescriptGeneration_1.generateJSXIntrinsicsFileContent)(typeInfo);
             if (!jsxIntrinsicViewFileContent) {
                 console.error("Couldn't generate view types!");
@@ -292,7 +293,7 @@ function generateJsxIntrinsics(cli) {
     });
 }
 function getContentHash(content) {
-    return (0, node_crypto_1.createHash)('sha256').update(content).digest('hex');
+    return (0, crypto_1.createHash)('sha256').update(content).digest('hex');
 }
 function contentHasChanged(fileContent) {
     const hashRegex = /^\/\/ File hash: ([a-f0-9]{64})\r?\n/;
@@ -313,14 +314,15 @@ ${fileContent}`;
 async function generateConciseTsFiles(parsedArgs) {
     const { realInputPaths, realOutputPath } = parsedArgs;
     const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-    if (!typeInfo)
+    if (!typeInfo) {
         return;
-    const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } = await (0, typescriptGeneration_1.generateConciseTsInterface)(typeInfo);
+    }
+    const { volatileGeneratedFileContent, moduleTypescriptInterfaceFileContent } = await (0, typescriptGeneration_1.generateConciseTsInterface)(typeInfo);
     const moduleName = typeInfo.moduleClasses[0]?.name ?? 'UnknownModuleName';
     const dirName = realOutputPath ?? path_1.default.dirname(realInputPaths[0]);
     try {
         await Promise.all([
-            fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.generated.ts`), volitileGeneratedFileContent, {
+            fs_1.default.promises.writeFile(path_1.default.resolve(dirName, `${moduleName}.generated.ts`), volatileGeneratedFileContent, {
                 flag: 'w',
                 encoding: 'utf-8',
             }),
@@ -330,7 +332,9 @@ async function generateConciseTsFiles(parsedArgs) {
             }),
         ]);
     }
-    catch (e) { }
+    catch (e) {
+        console.error(`Error writing to a file. `, e);
+    }
 }
 function generateConciseExpoModuleTSInterfaceCommand(cli) {
     addCommonOptions(cli
@@ -358,22 +362,25 @@ async function writeToStableFile({ filePath, content }) {
         });
     }
     catch (e) {
-        console.error(`Error writing to file.${e}`);
+        console.error('Error writing to file.', e);
     }
 }
 function generateTypeFilesCommand(cli) {
     return addCommonOptions(cli.command('generate-type-files')).action(async (options) => {
         const parsedArgs = await parseCommandArguments(options, false);
-        if (!parsedArgs)
+        if (!parsedArgs) {
             return;
+        }
         const { realInputPaths, realOutputPath } = parsedArgs;
         const command = async () => {
             const typeInfo = await getFileTypeInformationFromArgs(parsedArgs);
-            if (!typeInfo)
+            if (!typeInfo) {
                 return;
+            }
             const generatedFiles = await (0, typescriptGeneration_1.generateFullTsInterface)(typeInfo);
-            if (!generatedFiles)
+            if (!generatedFiles) {
                 return;
+            }
             const { moduleTypesFile, moduleViewsFiles, moduleNativeFile, indexFile } = generatedFiles;
             const dirName = realOutputPath ?? path_1.default.dirname(realInputPaths[0]);
             const writeFilePromises = [];
@@ -383,9 +390,6 @@ function generateTypeFilesCommand(cli) {
                 moduleNativeFile,
                 indexFile,
             ]) {
-                if (!outputFile) {
-                    continue;
-                }
                 const outputFilePath = path_1.default.resolve(dirName, outputFile.name);
                 writeFilePromises.push(writeToStableFile({ filePath: outputFilePath, content: outputFile.content }));
             }
@@ -395,13 +399,20 @@ function generateTypeFilesCommand(cli) {
     });
 }
 async function getResolvedWatchedDirectoriesFromAppJson(appJsonPath) {
-    const watchedDirectories = JSON.parse(await fs_1.default.promises.readFile(appJsonPath, 'utf-8'))?.expo
-        ?.experiments?.inlineModules?.watchedDirectories;
-    if (!Array.isArray(watchedDirectories)) {
-        return null;
+    try {
+        const appJson = JSON.parse(await fs_1.default.promises.readFile(appJsonPath, 'utf-8'));
+        const watchedDirectories = appJson?.expo?.experiments?.inlineModules?.watchedDirectories;
+        if (!Array.isArray(watchedDirectories)) {
+            console.error(`watchedDirectories are not defined!`);
+            return null;
+        }
+        const rootDir = path_1.default.dirname(path_1.default.resolve(appJsonPath));
+        return watchedDirectories.map((relativePath) => path_1.default.resolve(rootDir, relativePath));
     }
-    const rootDir = path_1.default.dirname(path_1.default.resolve(appJsonPath));
-    return watchedDirectories.map((relativePath) => path_1.default.resolve(rootDir, relativePath));
+    catch (e) {
+        console.error(`Couldn't read ${appJsonPath}.`, e);
+    }
+    return null;
 }
 async function generateInlineModulesTypesCommand(cli) {
     return cli
@@ -438,7 +449,7 @@ async function generateInlineModulesTypesCommand(cli) {
                 dirents.push(dirent);
             }
         }
-        await taskAll(dirents, async (dirent) => await generateInlineModuleTSFiles(dirent.path, dirent.parentPath));
+        await (0, utils_1.taskAll)(dirents, async (dirent) => await generateInlineModuleTSFiles(dirent.path, dirent.parentPath));
         if (!watcher) {
             return;
         }
@@ -514,4 +525,3 @@ async function main(args) {
     await cli.parseAsync(args, { from: 'user' });
 }
 main(process.argv.slice(2));
-//# sourceMappingURL=cli.js.map

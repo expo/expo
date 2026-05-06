@@ -1,12 +1,10 @@
 {
-  "extends": "expo-module-scripts/tsconfig.base",
+  "extends": "expo-module-scripts/tsconfig.node",
+  "include": ["./src"],
   "compilerOptions": {
-    "moduleResolution": "node",
-    "strict": true,
+    "lib": ["dom", "esnext"],
     "outDir": "./build",
-    "types": ["node", "jest", "@jest/globals"],
-    "module": "commonjs",
-    "esModuleInterop": true
-  },
-  "include": ["./src"]
+    "rootDir": "./src",
+    "isolatedModules": true
+  }
 }

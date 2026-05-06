@@ -6,7 +6,7 @@ import {
   getSwiftFileTypeInformation,
   preprocessSwiftFile,
 } from './swift/sourcekittenTypeInformation';
-import { mkdtemp } from 'fs/promises';
+import { taskAll } from './utils';
 
 export enum IdentifierKind {
   BASIC,
@@ -129,15 +129,14 @@ export type ModuleClassDeclaration = {
   events: EventDeclaration[];
 } & DefinitionOffset;
 
-export type TypeIdentifierDefinitionMap = Map<
-  string,
-  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration }
->;
+export type IdentifierDefinition = {
+  kind: IdentifierKind;
+  definition: string | RecordType | EnumType | ClassDeclaration;
+};
 
-export type TypeIdentifierDefinitionList = [
-  string,
-  { kind: IdentifierKind; definition: string | RecordType | EnumType | ClassDeclaration },
-][];
+export type TypeIdentifierDefinitionMap = Map<string, IdentifierDefinition>;
+
+export type TypeIdentifierDefinitionList = [string, IdentifierDefinition][];
 
 export type FileTypeInformationSerialized = {
   usedTypeIdentifiersList: string[];
@@ -274,15 +273,23 @@ export type GetFileTypeInformationOptions = {
   typeInference?: TypeInferenceOption;
 };
 
-const taskAll = <T, R>(inputs: T[], map: (input: T) => Promise<R>): Promise<R[]> => {
-  return Promise.all(inputs.map((input) => map(input)));
-};
-
 async function mergeFileContents(absoluteFilePaths: string[]): Promise<string> {
   const filesContents = await taskAll(absoluteFilePaths, (filePath) =>
     fs.promises.readFile(filePath, 'utf-8')
   );
   return filesContents.join('');
+}
+
+async function withTempFile<T>(content: string, fn: (filePath: string) => Promise<T>): Promise<T> {
+  const tempDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'type-gen-'));
+  const filePath = path.join(tempDir, 'TypeInformationTemporaryFile.swift');
+
+  try {
+    await fs.promises.writeFile(filePath, content, 'utf8');
+    return await fn(filePath);
+  } finally {
+    await fs.promises.rm(tempDir, { recursive: true, force: true });
+  }
 }
 
 /**
@@ -308,14 +315,12 @@ export async function getFileTypeInformation({
     input.type === 'file'
       ? await mergeFileContents(input.inputFileAbsolutePaths)
       : input.fileContent;
+
   const preprocessedContent = shouldPreprocessFile ? preprocessSwiftFile(fileContent) : fileContent;
 
-  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'type-gen-'));
-  const filePath = path.join(tempDir, `TypeInformationTemporaryFile.swift`);
-  await fs.promises.writeFile(filePath, preprocessedContent, 'utf8');
-  const fileTypeInfo = await getSwiftFileTypeInformation(filePath, {
-    typeInference: typeInferenceOn,
+  return withTempFile(preprocessedContent, async (tempFilePath) => {
+    return getSwiftFileTypeInformation(tempFilePath, {
+      typeInference: typeInferenceOn,
+    });
   });
-  await fs.promises.rm(tempDir, { recursive: true, force: true });
-  return fileTypeInfo;
 }

@@ -3,10 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.taskAll = void 0;
 exports.scanFilesRecursively = scanFilesRecursively;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-async function* scanFilesRecursively(parentPath, includeDirectory, sort = !fs_1.default.opendir) {
+// TODO(@HubertBer): Also exists in expo-modules-autolinking, but with a limiter, maybe take it or depend on it?
+const taskAll = (inputs, map) => {
+    return Promise.all(inputs.map(map));
+};
+exports.taskAll = taskAll;
+// TODO(@HubertBer): Taken from expo-modules-autolinking, maybe import it instead?
+async function* scanFilesRecursively(parentPath, includeDirectory, sort = !fs_1.default.promises.opendir) {
     const queue = [parentPath];
     let targetPath;
     while (queue.length > 0 && (targetPath = queue.shift()) != null) {
@@ -34,4 +41,3 @@ async function* scanFilesRecursively(parentPath, includeDirectory, sort = !fs_1.
         }
     }
 }
-//# sourceMappingURL=utils.js.map

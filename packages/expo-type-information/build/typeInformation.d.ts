@@ -102,17 +102,12 @@ export type ModuleClassDeclaration = {
     views: ViewDeclaration[];
     events: EventDeclaration[];
 } & DefinitionOffset;
-export type TypeIdentifierDefinitionMap = Map<string, {
+export type IdentifierDefinition = {
     kind: IdentifierKind;
     definition: string | RecordType | EnumType | ClassDeclaration;
-}>;
-export type TypeIdentifierDefinitionList = [
-    string,
-    {
-        kind: IdentifierKind;
-        definition: string | RecordType | EnumType | ClassDeclaration;
-    }
-][];
+};
+export type TypeIdentifierDefinitionMap = Map<string, IdentifierDefinition>;
+export type TypeIdentifierDefinitionList = [string, IdentifierDefinition][];
 export type FileTypeInformationSerialized = {
     usedTypeIdentifiersList: string[];
     declaredTypeIdentifiersList: string[];
@@ -212,4 +207,3 @@ export type GetFileTypeInformationOptions = {
  * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
  */
 export declare function getFileTypeInformation({ input, typeInference, }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null>;
-//# sourceMappingURL=typeInformation.d.ts.map

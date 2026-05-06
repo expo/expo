@@ -18,22 +18,20 @@ import {
 import { GetFileTypeInformationOptions } from '../build';
 
 const swiftFile = fs.realpathSync('./tests/TestModule.swift');
-const getDefaultArgs = (): GetFileTypeInformationOptions => {
-  return {
-    input: { inputFileAbsolutePaths: [swiftFile], type: 'file' },
-    typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
-  };
+const defaultArgs: GetFileTypeInformationOptions = {
+  input: { inputFileAbsolutePaths: [swiftFile], type: 'file' },
+  typeInference: TypeInferenceOption.PREPROCESS_AND_INFERENCE,
 };
 
 let defaultArgsFileInfo: FileTypeInformation | null = null;
 beforeAll(async () => {
-  defaultArgsFileInfo = await getFileTypeInformation(getDefaultArgs());
+  defaultArgsFileInfo = await getFileTypeInformation(defaultArgs);
 });
 
 it('Same type information', async () => {
   expect(
     serializeTypeInformation(
-      (await getFileTypeInformation(getDefaultArgs())) ?? {
+      (await getFileTypeInformation(defaultArgs)) ?? {
         usedTypeIdentifiers: new Set(),
         declaredTypeIdentifiers: new Set(),
         inferredTypeParametersCount: new Map(),
@@ -45,6 +43,7 @@ it('Same type information', async () => {
     )
   ).toMatchSnapshot();
 });
+
 it('Same generated view file', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
@@ -52,6 +51,7 @@ it('Same generated view file', async () => {
     expect(await generateViewTypesFileContent(fileInfo)).toMatchSnapshot();
   }
 });
+
 it('Same generated module file', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
@@ -59,6 +59,7 @@ it('Same generated module file', async () => {
     expect(await generateModuleTypesFileContent(fileInfo)).toMatchSnapshot();
   }
 });
+
 it('Same generated mock file', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
@@ -68,6 +69,7 @@ it('Same generated mock file', async () => {
     ).toMatchSnapshot();
   }
 });
+
 it('Same generated mock file JS', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
@@ -82,9 +84,9 @@ it('Same generated concise ts interface', async () => {
   const fileInfo = defaultArgsFileInfo;
   expect(fileInfo).toBeTruthy();
   if (fileInfo) {
-    const { volitileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
+    const { volatileGeneratedFileContent, moduleTypescriptInterfaceFileContent } =
       await generateConciseTsInterface(fileInfo);
-    expect(volitileGeneratedFileContent).toMatchSnapshot();
+    expect(volatileGeneratedFileContent).toMatchSnapshot();
     expect(moduleTypescriptInterfaceFileContent).toMatchSnapshot();
   }
 });

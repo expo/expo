@@ -6,4 +6,3 @@ export type TypeInformationCommandCommonAllArguments = {
     watcher?: boolean;
     appJson?: string;
 };
-//# sourceMappingURL=cli.d.ts.map

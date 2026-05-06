@@ -17,7 +17,7 @@ export declare function mapTypeToTsTypeNode(type: Type): ts.TypeNode;
 export declare function buildViewPropsInterface(view: ViewDeclaration | null, options: {
     exported?: boolean;
 }): ts.Node[];
-export declare function buildFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, omitReturnType, }: {
+export type buildFunctionOptions = {
     functionDeclaration: FunctionDeclaration;
     async?: boolean;
     method?: boolean;
@@ -26,7 +26,8 @@ export declare function buildFunction({ functionDeclaration, async, method, expo
     returnStatement?: null | ts.ReturnStatement[];
     overrideArgumentDeclarations?: ts.ParameterDeclaration[];
     omitReturnType?: boolean;
-}): ts.FunctionDeclaration | ts.MethodDeclaration;
+};
+export declare function buildFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, omitReturnType, }: buildFunctionOptions): ts.FunctionDeclaration | ts.MethodDeclaration;
 export declare function buildConstructor(constructor: ConstructorDeclaration, declaration: boolean): ts.ClassElement;
 export declare function buildClass({ classDeclaration, exported, declaration, getFunctionReturnBlock, }: {
     classDeclaration: ClassDeclaration;
@@ -47,7 +48,7 @@ export declare function generateViewTypesFileContent(fileTypeInformation: FileTy
 export declare function generateJSXIntrinsicsFileContent(fileTypeInformation: FileTypeInformation): Promise<string | null>;
 export declare function generateModuleTypesFileContent(fileTypeInformation: FileTypeInformation): Promise<string | null>;
 export declare function generateConciseTsInterface(fileTypeInformation: FileTypeInformation): Promise<{
-    volitileGeneratedFileContent: string;
+    volatileGeneratedFileContent: string;
     moduleTypescriptInterfaceFileContent: string;
 }>;
 export declare function generateFullTsInterface(fileTypeInformation: FileTypeInformation): Promise<{
@@ -56,4 +57,3 @@ export declare function generateFullTsInterface(fileTypeInformation: FileTypeInf
     moduleNativeFile: OutputFile;
     indexFile: OutputFile;
 } | null>;
-//# sourceMappingURL=typescriptGeneration.d.ts.map

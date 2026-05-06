@@ -11,29 +11,30 @@ public class TestModule: Module {
       return 37;
     }
 
-    Constant("UntypedConstant") { () in 98}
+    Constant("UntypedConstant") { () in 98} // Comment 1
 
     Function("SimpleFunction") { (a: Double, b: Int) -> Double in
-      return a + b
+      return a + b // Comment 2
     }
 
     Function("TestUntypedFunction") { () in
       return "string"
     }
 
-    Function("TestUntypedFunction2") { () in
+    Function("TestUntypedFunction2") { /* Comment 3 */ () in
+      // Comment 4
       return TestEnum.simpleCase
     }
     
-    Function("TestUntypedFunction3") {
-      return TestRecord2(field1: 10, "field2")
+    Function("TestUntypedFunction3" /* Comment 5 */) {
+      return TestRecord2(field1: /* Comment 6 */ 10, "field2")
     }
 
-    Function("TestArrays") { (a: [Int]) -> [[String]] in 
+    Function("TestArrays") { (a: [Int]) -> /* Comment 7 */ [[String]] in 
       return ["test"]
     }
 
-    Function("TestDictionaries") { (a: [Int: String], b: [Int : [Float : String]]) -> Any in 
+    Function("TestDictionaries") { (a: [Int: String] /* Comment 8 */, b: [Int : [Float : String]]) -> Any in 
       return "test"
     }
 
@@ -45,7 +46,12 @@ public class TestModule: Module {
       return [["test"]]
     }
 
-    Function("TestFunctionReturningRecord") { () -> TestRecord in
+    Function("TestFunctionReturningRecord") { () -> TestRecord in /* Comment 10
+      multiple
+      lines
+      comment
+      body
+     */
       return ""
     }
 
@@ -57,7 +63,7 @@ public class TestModule: Module {
       return a + b
     }
 
-    AsyncFunction("TestUnderscore") { (url: URL, _: [BarcodeType]) in
+    AsyncFunction("TestUnderscore") { (url: URL, _  /* Comment 10 */: [BarcodeType]) in
     }
 
 
