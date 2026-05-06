@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Allow the on-demand filesystem to follow symlinks out of `watchFolders` to their targets ([#45460](https://github.com/expo/expo/pull/45460) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
