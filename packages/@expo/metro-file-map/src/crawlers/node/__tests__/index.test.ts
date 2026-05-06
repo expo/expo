@@ -343,6 +343,38 @@ describe('node crawler', () => {
     expect(linkMeta[H.SYMLINK]).toBe(1);
   });
 
+  test('applies ignore filter to normal paths for directories', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical/mango.js': 'b',
+      '/project/fruits/tropical/deep/papaya.js': 'c',
+      '/project/fruits/other/pear.js': 'd',
+    });
+
+    // Pattern anchored with ^ only matches normal paths (not absolute paths)
+    const { changedFiles } = await crawl({
+      ignore: (p: string) => /^fruits\/tropical$/.test(p),
+    });
+
+    // The entire 'fruits/tropical' subtree is excluded
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/other/pear.js']);
+  });
+
+  test('ignore on normal paths does not affect files', async () => {
+    vol.fromJSON({
+      '/project/fruits/apple.js': 'a',
+      '/project/fruits/tropical.js': 'b',
+    });
+
+    // Pattern matches the normal path of a file, but the normal-path ignore
+    // check only applies to directories — files are unaffected
+    const { changedFiles } = await crawl({
+      ignore: (p: string) => /^fruits\/tropical\.js$/.test(p),
+    });
+
+    expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/tropical.js']);
+  });
+
   describe('abort signal', () => {
     test('aborts on pre-aborted signal', async () => {
       const err = new Error('aborted for test');

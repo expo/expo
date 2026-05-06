@@ -39,12 +39,13 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
     "babel-preset-expo": "workspace:*",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react": "19.2.3",
     "react-native": "0.85.2"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*"
   }
 }

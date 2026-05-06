@@ -39,11 +39,12 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo-test-runner": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   },
   "jest": {
     "preset": "expo-module-scripts"

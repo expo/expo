@@ -13,16 +13,22 @@ export type IconProps = {
      */
     source: ImageSourcePropType;
     /**
-     * The tint color to apply to the icon.
-     * Accepts hex strings, named colors, or RGB arrays.
+     * The tint color to apply to the icon. Accepts hex strings, named colors,
+     * or RGB arrays.
+     *
+     * - When omitted, the icon inherits the color from the surrounding
+     *   `LocalContentColor` (e.g. the toolbar/FAB content color).
+     * - When set to `null`, no tint is applied — the icon is drawn with its
+     *   original colors (`Color.Unspecified`). Use this for multicolored icons.
      *
      * @example
      * ```tsx
      * <Icon source={require('./assets/star.xml')} tint="#007AFF" />
      * <Icon source={require('./assets/star.xml')} tint="blue" />
+     * <Icon source={require('./assets/multicolor.xml')} tint={null} />
      * ```
      */
-    tint?: ColorValue;
+    tint?: ColorValue | null;
     /**
      * The size of the icon in density-independent pixels (dp).
      * If not specified, the icon will use its intrinsic size.
@@ -66,8 +72,10 @@ export type IconProps = {
 /**
  * @hidden
  */
-export type NativeIconProps = Omit<IconProps, 'source'> & {
+export type NativeIconProps = Omit<IconProps, 'source' | 'tint'> & {
     source: ImageResolvedAssetSource;
+    tint?: ColorValue;
+    inheritTint: boolean;
 };
 /**
  * Displays an icon from an XML vector drawable or other image source.

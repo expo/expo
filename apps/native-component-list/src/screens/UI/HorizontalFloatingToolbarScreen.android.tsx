@@ -41,9 +41,9 @@ export default function HorizontalFloatingToolbarScreen() {
           variant="vibrant"
           colors={{
             toolbarContainerColor: '#1B5E20',
-            // toolbarContentColor: '#FFFFFF',
+            toolbarContentColor: '#AAA',
             fabContainerColor: '#FFB300',
-            // fabContentColor: '#000000',
+            fabContentColor: '#0000FF',
           }}
           modifiers={[align('bottomCenter'), offset(0, -16)]}>
           <HorizontalFloatingToolbar.FloatingActionButton

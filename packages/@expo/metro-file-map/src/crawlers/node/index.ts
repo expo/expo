@@ -73,7 +73,11 @@ function find(
               : dirNormal + path.sep + name;
 
           if (entry.isDirectory()) {
-            search(file, childNormal, isWithinRoot || childNormal === '');
+            // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively based
+            // on their normal paths, so we can exclude using `^...`
+            if (!ignore(childNormal)) {
+              search(file, childNormal, isWithinRoot || childNormal === '');
+            }
             continue;
           }
 

@@ -62,15 +62,16 @@
     "@bacons/xcode": "1.0.0-alpha.29",
     "@expo/spawn-async": "^1.7.2",
     "@types/diff": "^5.2.0",
+    "@types/node": "^22.14.0",
     "@types/prompts": "^2.0.6",
     "@types/react": "~19.2.0",
-    "@types/node": "^22.14.0",
     "create-expo": "workspace:*",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "glob": "^13.0.6"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*"
   }
 }

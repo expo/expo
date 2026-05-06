@@ -41,15 +41,16 @@
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
     "@types/i18n-js": "^3.8.2",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
     "@types/rtl-detect": "^1.0.3",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "i18n-js": "^3.9.2"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*"
   }
 }
