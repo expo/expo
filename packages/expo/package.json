@@ -142,7 +142,9 @@
     "executableFiles": [
       "./scripts/node-binary.sh",
       "./scripts/react-native-xcode.sh",
-      "./scripts/xcode/with-environment.sh"
+      "./scripts/xcode/with-environment.sh",
+      "./scripts/compose-source-maps.js",
+      "scripts/resolveAppEntry.js"
     ]
   }
 }
