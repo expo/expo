@@ -300,6 +300,7 @@ export function generateTSMockForModule(
 
 const directoryPath = process.cwd();
 const swiftFilesGlob = `${directoryPath}/**/*.swift`;
+
 export async function generateMocks(
   files: FileTypeInformation[],
   outputLanguage: 'javascript' | 'typescript' = 'javascript'

@@ -333,7 +333,7 @@ async function generateConciseTsFiles(parsedArgs) {
         ]);
     }
     catch (e) {
-        console.error(`Error writing to a file. `, e);
+        console.error(`Error writing to a file.`, e);
     }
 }
 function generateConciseExpoModuleTSInterfaceCommand(cli) {
@@ -362,7 +362,7 @@ async function writeToStableFile({ filePath, content }) {
         });
     }
     catch (e) {
-        console.error('Error writing to file.', e);
+        console.error('Error writing to a file.', e);
     }
 }
 function generateTypeFilesCommand(cli) {

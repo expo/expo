@@ -43,6 +43,7 @@ function isSourceKittenInstalled(): boolean {
   }
   return sourcekittenInstalled;
 }
+
 interface ParsedArguments {
   realInputPaths: string[];
   realOutputPath?: string;
@@ -448,7 +449,7 @@ async function generateConciseTsFiles(parsedArgs: ParsedArguments) {
       }),
     ]);
   } catch (e) {
-    console.error(`Error writing to a file. `, e);
+    console.error(`Error writing to a file.`, e);
   }
 }
 
@@ -484,7 +485,7 @@ async function writeToStableFile({ filePath, content }: { filePath: string; cont
       encoding: 'utf-8',
     });
   } catch (e) {
-    console.error('Error writing to file.', e);
+    console.error('Error writing to a file.', e);
   }
 }
 

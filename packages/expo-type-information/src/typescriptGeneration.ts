@@ -612,18 +612,20 @@ export function buildConstructor(
   );
 }
 
+type BuildClassOptions = {
+  classDeclaration: ClassDeclaration;
+  exported?: boolean;
+  declaration?: boolean;
+  getFunctionReturnBlock?: (functionDeclaration: FunctionDeclaration) => ts.ReturnStatement[];
+};
+
 // TODO(@HubertBer): figure out what about inheritance, should or should not inherit SharedObject
 export function buildClass({
   classDeclaration,
   exported,
   declaration,
   getFunctionReturnBlock,
-}: {
-  classDeclaration: ClassDeclaration;
-  exported?: boolean;
-  declaration?: boolean;
-  getFunctionReturnBlock?: (functionDeclaration: FunctionDeclaration) => ts.ReturnStatement[];
-}): ts.ClassDeclaration {
+}: BuildClassOptions): ts.ClassDeclaration {
   const getReturnStatement = (method: FunctionDeclaration) =>
     !declaration && getFunctionReturnBlock ? getFunctionReturnBlock(method) : null;
 

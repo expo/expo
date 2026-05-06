@@ -165,9 +165,11 @@ function mapSwiftTypeToTsType(type?: string): Type {
   if (!type) {
     return { kind: TypeKind.BASIC, type: BasicType.UNRESOLVED };
   }
+
   if (isSwiftOptional(type)) {
     return { kind: TypeKind.OPTIONAL, type: mapSwiftTypeToTsType(type.slice(0, -1).trim()) };
   }
+
   if (isSwiftDictionary(type)) {
     const { key, value } = unwrapSwiftDictionary(type);
     const keyType = mapSwiftTypeToTsType(key);
@@ -181,12 +183,14 @@ function mapSwiftTypeToTsType(type?: string): Type {
       },
     };
   }
+
   if (isSwiftArray(type)) {
     return {
       kind: TypeKind.ARRAY,
       type: unwrapSwiftArray(type),
     };
   }
+
   if (isParametrizedType(type)) {
     const parametrizedType = unwrapParametrizedType(type);
     if (isEitherTypeIdentifier(parametrizedType.name)) {
@@ -268,6 +272,7 @@ async function findReturnType(
     // TODO(@HubertBer): this return type inference is really costly
     return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
   }
+
   if (hasSubstructure(structure)) {
     for (const substructure of structure['key.substructure']) {
       const returnType = findReturnType(substructure, file, options);
@@ -284,11 +289,13 @@ function getSDKPath(): string | null {
   if (cachedSDKPath) {
     return cachedSDKPath;
   }
+
   cachedSDKPath = execSync('xcrun --sdk iphoneos --show-sdk-path')?.toString()?.trim();
   if (!cachedSDKPath) {
     console.error(`Couldn't find xcode sdk path!`);
     return null;
   }
+
   return cachedSDKPath;
 }
 
@@ -462,7 +469,7 @@ async function parseModuleConstantStructure(
   };
 }
 
-function getClosureBodySubstructure(structure: Structure): Structure[] | null {
+function getClosureBodyStructure(structure: Structure): Structure | null {
   // Let's look at an example DSL class declaration
   //
   // Class(Blob.self) {
@@ -505,8 +512,7 @@ function getClosureBodySubstructure(structure: Structure): Structure[] | null {
   const classDeclarationClosureArgument = structure['key.substructure']?.[1];
   const classDeclarationClosure = classDeclarationClosureArgument?.['key.substructure']?.[0];
   const classDeclarationClosureBody = classDeclarationClosure?.['key.substructure']?.[0];
-  const classDeclarationDSLFunctionCalls = classDeclarationClosureBody?.['key.substructure'];
-  return classDeclarationDSLFunctionCalls ?? null;
+  return classDeclarationClosureBody ?? null;
 }
 
 async function parseModuleClassStructure(
@@ -514,7 +520,7 @@ async function parseModuleClassStructure(
   file: FileType,
   options: SwiftFileTypeInformationOptions
 ): Promise<ClassDeclaration> {
-  const nestedModuleSubstructure = getClosureBodySubstructure(structure);
+  const nestedModuleSubstructure = getClosureBodyStructure(structure)?.['key.substructure'];
   const nameSubstrucutre = structure['key.substructure']?.[0];
   const name = nameSubstrucutre
     ? getIdentifierFromOffsetObject(nameSubstrucutre, file).replace('.self', '')
@@ -617,8 +623,7 @@ async function parseModuleViewDeclaration(
   }
 
   const name = getIdentifierFromOffsetObject(nameSubstrucutre, file).slice(0, -suffixLength);
-  const viewStructure =
-    substructure?.['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0];
+  const viewStructure = getClosureBodyStructure(substructure);
   const viewSubstructure = viewStructure?.['key.substructure'];
   if (!viewSubstructure) {
     return null;
@@ -652,7 +657,6 @@ function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): bool
       file.content.substring(startIndex, startIndex + length) === '@Field'
     );
   });
-  return false;
 }
 
 async function parseRecordStructure(

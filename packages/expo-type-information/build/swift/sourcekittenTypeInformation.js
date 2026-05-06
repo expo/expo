@@ -356,7 +356,7 @@ async function parseModuleConstantStructure(substructure, file, options) {
         definitionOffset: substructure['key.offset'],
     };
 }
-function getClosureBodySubstructure(structure) {
+function getClosureBodyStructure(structure) {
     // Let's look at an example DSL class declaration
     //
     // Class(Blob.self) {
@@ -399,11 +399,10 @@ function getClosureBodySubstructure(structure) {
     const classDeclarationClosureArgument = structure['key.substructure']?.[1];
     const classDeclarationClosure = classDeclarationClosureArgument?.['key.substructure']?.[0];
     const classDeclarationClosureBody = classDeclarationClosure?.['key.substructure']?.[0];
-    const classDeclarationDSLFunctionCalls = classDeclarationClosureBody?.['key.substructure'];
-    return classDeclarationDSLFunctionCalls ?? null;
+    return classDeclarationClosureBody ?? null;
 }
 async function parseModuleClassStructure(structure, file, options) {
-    const nestedModuleSubstructure = getClosureBodySubstructure(structure);
+    const nestedModuleSubstructure = getClosureBodyStructure(structure)?.['key.substructure'];
     const nameSubstrucutre = structure['key.substructure']?.[0];
     const name = nameSubstrucutre
         ? getIdentifierFromOffsetObject(nameSubstrucutre, file).replace('.self', '')
@@ -482,7 +481,7 @@ async function parseModuleViewDeclaration(substructure, file, options) {
         return null;
     }
     const name = getIdentifierFromOffsetObject(nameSubstrucutre, file).slice(0, -suffixLength);
-    const viewStructure = substructure?.['key.substructure']?.[1]?.['key.substructure']?.[0]?.['key.substructure']?.[0];
+    const viewStructure = getClosureBodyStructure(substructure);
     const viewSubstructure = viewStructure?.['key.substructure'];
     if (!viewSubstructure) {
         return null;
@@ -502,7 +501,6 @@ function hasFieldAttribute(attributes, file) {
         return (length === '@Field'.length &&
             file.content.substring(startIndex, startIndex + length) === '@Field');
     });
-    return false;
 }
 async function parseRecordStructure(recordStructure, usedTypeIdentifiers, inferredTypeParametersCount, file, options) {
     const recordSubstrucutres = recordStructure['key.substructure'].filter((substructure) => substructure['key.kind'] === swiftDeclarationKind.varInstance &&

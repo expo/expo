@@ -29,12 +29,13 @@ export type buildFunctionOptions = {
 };
 export declare function buildFunction({ functionDeclaration, async, method, exported, declaration, returnStatement, overrideArgumentDeclarations, omitReturnType, }: buildFunctionOptions): ts.FunctionDeclaration | ts.MethodDeclaration;
 export declare function buildConstructor(constructor: ConstructorDeclaration, declaration: boolean): ts.ClassElement;
-export declare function buildClass({ classDeclaration, exported, declaration, getFunctionReturnBlock, }: {
+type BuildClassOptions = {
     classDeclaration: ClassDeclaration;
     exported?: boolean;
     declaration?: boolean;
     getFunctionReturnBlock?: (functionDeclaration: FunctionDeclaration) => ts.ReturnStatement[];
-}): ts.ClassDeclaration;
+};
+export declare function buildClass({ classDeclaration, exported, declaration, getFunctionReturnBlock, }: BuildClassOptions): ts.ClassDeclaration;
 export declare function buildUnknownTypeAlias(identifier: string, exported: boolean, inferredTypeParametersCount: Map<string, number>): ts.Statement;
 export declare function buildRecordTypeAlias(recordType: RecordType, exported: boolean): ts.Node;
 export declare function buildEnumTypeDeclaration(enumType: EnumType, exported: boolean, declared: boolean): ts.Node;
@@ -57,3 +58,4 @@ export declare function generateFullTsInterface(fileTypeInformation: FileTypeInf
     moduleNativeFile: OutputFile;
     indexFile: OutputFile;
 } | null>;
+export {};
