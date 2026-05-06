@@ -578,9 +578,9 @@ export type MotionActivityState = {
   detected: boolean;
   /**
    * Confidence level of the detection.
-   * On iOS this is the overall reading confidence from `CMMotionActivityConfidence`, shared by all
-   * detected activities. On Android each activity type has its own confidence derived from the
-   * `DetectedActivity` probability value.
+   * On Android, each activity type has its own confidence derived from the
+   * `DetectedActivity` probability value. On iOS, this is the overall reading confidence from 
+   * `CMMotionActivityConfidence`, shared by all detected activities.
    */
   confidence: MotionActivityConfidence;
 };
