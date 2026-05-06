@@ -8,14 +8,15 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https://developer.apple.com/documentation/swiftui/disclosuregroup) and displays a disclosure indicator that reveals or hides content.
 
-<ContentSpotlight
+<Diagram
+  source="/static/images/expo-ui/disclosuregroup/ios-light.png"
+  darkSource="/static/images/expo-ui/disclosuregroup/ios-dark.png"
   alt="DisclosureGroup expanded inside a Form"
-  src="/static/images/expo-ui/disclosuregroup/ios.png"
-  className="max-w-[480px]"
+  disableSrcSet
 />
 
 ## Installation
