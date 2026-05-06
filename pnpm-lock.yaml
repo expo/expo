@@ -2469,6 +2469,9 @@ importers:
         specifier: ^0.1.10
         version: 0.1.11
     devDependencies:
+      '@expo/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@expo/spawn-async':
         specifier: ^1.7.2
         version: 1.7.2
