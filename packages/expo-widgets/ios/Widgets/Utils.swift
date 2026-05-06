@@ -64,7 +64,7 @@ func getLiveActivityNodes(forName name: String, props: String = "{}", environmen
 
   if let exception = context.exception {
     print("[ExpoWidgets] Layout evaluation failed: \(exception)")
-    return createRedBox(message: exception.toString())
+    return ["banner": createRedBox(message: exception.toString())]
   }
 
   return result?.toObject() as? [String: Any] ?? [:]

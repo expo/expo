@@ -6,6 +6,7 @@ public final class RedBoxViewProps: UIBaseViewProps {
   @Field var message: String
   @Field var source: String?
   @Field var stack: String?
+  var kind: WidgetsKind = .widget
 }
 
 public struct RedBoxView: ExpoSwiftUI.View {
@@ -16,7 +17,7 @@ public struct RedBoxView: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    FullSizeZStack {
+    FullSizeZStack(kind: props.kind) {
       Color.red
       VStack(alignment: .leading, spacing: 2) {
         HStack(spacing: 6) {
@@ -64,21 +65,19 @@ private struct RedBoxBody: ViewModifier {
 }
 
 public struct FullSizeZStack<Content: View>: View {
+  let kind: WidgetsKind
   let content: Content
 
-  init(@ViewBuilder _ content: () -> Content) {
+  init(kind: WidgetsKind = .widget, @ViewBuilder _ content: () -> Content) {
+    self.kind = kind
     self.content = content()
   }
 
   public var body: some View {
-    if #available(iOS 17.0, *) {
-      ZStack {
-        content
-      }.containerRelativeFrame([.horizontal, .vertical])
+    if #available(iOS 17.0, *), kind == .widget {
+      ZStack { content }.containerRelativeFrame([.horizontal, .vertical])
     } else {
-      ZStack {
-        content
-      }
+      ZStack { content }.frame(maxWidth: .infinity)
     }
   }
 }
