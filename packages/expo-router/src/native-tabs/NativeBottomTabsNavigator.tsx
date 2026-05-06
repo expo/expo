@@ -16,6 +16,7 @@ import type {
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
+import { withTabNavigationEvents } from '../navigationEvents/withNavigationEvents';
 import type {
   ParamListBase,
   TabNavigationState,
@@ -167,7 +168,9 @@ export function NativeTabsNavigator({
   );
 }
 
-const createNativeTabNavigator = createNavigatorFactory(NativeTabsNavigator);
+const createNativeTabNavigator = withTabNavigationEvents(
+  createNavigatorFactory(NativeTabsNavigator)
+);
 
 const NativeTabsNavigatorWithContext = withLayoutContext<
   NativeTabOptions,

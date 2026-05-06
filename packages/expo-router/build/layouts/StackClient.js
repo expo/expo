@@ -5,16 +5,17 @@ exports.StackRouter = exports.stackRouterOverride = void 0;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const non_secure_1 = require("nanoid/non-secure");
 const react_1 = require("react");
+const stack_utils_1 = require("./stack-utils");
 const withLayoutContext_1 = require("./withLayoutContext");
 const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
+const withNavigationEvents_1 = require("../navigationEvents/withNavigationEvents");
 const navigationParams_1 = require("../navigationParams");
-const useScreens_1 = require("../useScreens");
-const stack_utils_1 = require("./stack-utils");
 const native_1 = require("../react-navigation/native");
+const useScreens_1 = require("../useScreens");
 const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
-const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
+const NativeStackNavigator = (0, withNavigationEvents_1.withNavigationEvents)(createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
     return (action.type === 'PUSH' ||

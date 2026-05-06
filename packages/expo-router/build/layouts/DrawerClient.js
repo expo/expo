@@ -3,8 +3,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Drawer = void 0;
 const withLayoutContext_1 = require("./withLayoutContext");
+const withNavigationEvents_1 = require("../navigationEvents/withNavigationEvents");
 const drawer_1 = require("../react-navigation/drawer");
-const DrawerNavigator = (0, drawer_1.createDrawerNavigator)().Navigator;
+const DrawerNavigator = (0, withNavigationEvents_1.withTabNavigationEvents)(drawer_1.createDrawerNavigator)().Navigator;
 exports.Drawer = (0, withLayoutContext_1.withLayoutContext)(DrawerNavigator);
 exports.default = exports.Drawer;
 //# sourceMappingURL=DrawerClient.js.map

@@ -46,6 +46,7 @@ const NativeTabsView_1 = require("./NativeTabsView");
 const utils_1 = require("./utils");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const linking_1 = require("../link/linking");
+const withNavigationEvents_1 = require("../navigationEvents/withNavigationEvents");
 const native_1 = require("../react-navigation/native");
 const children_1 = require("../utils/children");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
@@ -130,7 +131,7 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
                 // here is ok.
                 provenance: provenanceRef.current, tabs: visibleTabs, onTabChange: onTabChange }) }) }));
 }
-const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
+const createNativeTabNavigator = (0, withNavigationEvents_1.withTabNavigationEvents)((0, native_1.createNavigatorFactory)(NativeTabsNavigator));
 const NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
 function NativeTabsNavigatorWrapper(props) {
     const triggerChildren = (0, react_2.useMemo)(() => (0, children_1.getAllChildrenOfType)(props.children, NativeTabTrigger_1.NativeTabTrigger), [props.children]);

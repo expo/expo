@@ -1,14 +1,14 @@
-import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
+import type { PageWillAppear, PageAppeared, PageWillDisappear, PageDisappeared } from './types';
 
-export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
+export type { PageWillAppear, PageAppeared, PageWillDisappear, PageDisappeared } from './types';
 
-export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved;
+export type AnalyticsEvent = PageWillAppear | PageAppeared | PageWillDisappear | PageDisappeared;
 
 const availableEvents: AnalyticsEvent['type'][] = [
-  'pageWillRender',
-  'pageFocused',
-  'pageBlurred',
-  'pageRemoved',
+  'pageWillAppear',
+  'pageAppeared',
+  'pageWillDisappear',
+  'pageDisappeared',
 ];
 
 type EventTypeName = AnalyticsEvent['type'];
@@ -63,7 +63,7 @@ export const unstable_navigationEvents = {
   },
   saveCurrentPathname: () => {
     if (!enabled || currentPathnameListener) return;
-    currentPathnameListener = addListener('pageFocused', (event) => {
+    currentPathnameListener = addListener('pageAppeared', (event) => {
       currentPathname = event.pathname;
       currentParams = event.params;
     });

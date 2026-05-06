@@ -4,10 +4,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Stack = void 0;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const withLayoutContext_1 = require("./withLayoutContext");
+const withNavigationEvents_1 = require("../navigationEvents/withNavigationEvents");
 const stack_1 = require("../react-navigation/stack");
 const Protected_1 = require("../views/Protected");
 const Screen_1 = require("../views/Screen");
-const JSStackNavigator = (0, stack_1.createStackNavigator)().Navigator;
+const JSStackNavigator = (0, withNavigationEvents_1.withNavigationEvents)(stack_1.createStackNavigator)().Navigator;
 const JSStack = (0, withLayoutContext_1.withLayoutContext)(JSStackNavigator);
 /**
  * Renders a JavaScript-based stack navigator.

@@ -3,13 +3,14 @@
 import type { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
+import { withNavigationEvents } from '../navigationEvents/withNavigationEvents';
 import type { ParamListBase, StackNavigationState } from '../react-navigation/native';
 import type { StackNavigationEventMap, StackNavigationOptions } from '../react-navigation/stack';
 import { createStackNavigator } from '../react-navigation/stack';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
-const JSStackNavigator = createStackNavigator().Navigator;
+const JSStackNavigator = withNavigationEvents(createStackNavigator)().Navigator;
 
 const JSStack = withLayoutContext<
   StackNavigationOptions,

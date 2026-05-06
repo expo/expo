@@ -3,6 +3,7 @@
 import type { ComponentProps } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
+import { withTabNavigationEvents } from '../navigationEvents/withNavigationEvents';
 import type {
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
@@ -12,7 +13,7 @@ import type { ParamListBase, TabNavigationState } from '../react-navigation/nati
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 
-const MaterialTopTabNavigator = createMaterialTopTabNavigator().Navigator;
+const MaterialTopTabNavigator = withTabNavigationEvents(createMaterialTopTabNavigator)().Navigator;
 
 const MaterialTopTabs = withLayoutContext<
   MaterialTopTabNavigationOptions,

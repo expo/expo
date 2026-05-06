@@ -3,10 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.unstable_navigationEvents = void 0;
 exports.emit = emit;
 const availableEvents = [
-    'pageWillRender',
-    'pageFocused',
-    'pageBlurred',
-    'pageRemoved',
+    'pageWillAppear',
+    'pageAppeared',
+    'pageWillDisappear',
+    'pageDisappeared',
 ];
 const subscribers = {};
 function addListener(eventType, callback) {
@@ -48,7 +48,7 @@ exports.unstable_navigationEvents = {
     saveCurrentPathname: () => {
         if (!enabled || currentPathnameListener)
             return;
-        currentPathnameListener = addListener('pageFocused', (event) => {
+        currentPathnameListener = addListener('pageAppeared', (event) => {
             currentPathname = event.pathname;
             currentParams = event.params;
         });

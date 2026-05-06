@@ -5,10 +5,11 @@ const jsx_runtime_1 = require("react/jsx-runtime");
 const react_native_1 = require("react-native");
 const withLayoutContext_1 = require("./withLayoutContext");
 const Link_1 = require("../link/Link");
+const withNavigationEvents_1 = require("../navigationEvents/withNavigationEvents");
 const bottom_tabs_1 = require("../react-navigation/bottom-tabs");
 const Protected_1 = require("../views/Protected");
 // This is the only way to access the navigator.
-const BottomTabNavigator = (0, bottom_tabs_1.createBottomTabNavigator)().Navigator;
+const BottomTabNavigator = (0, withNavigationEvents_1.withTabNavigationEvents)(bottom_tabs_1.createBottomTabNavigator)().Navigator;
 const ExpoTabs = (0, withLayoutContext_1.withLayoutContext)(BottomTabNavigator, (screens) => {
     // Support the `href` shortcut prop.
     return screens.map((screen) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useEffect, useMemo } from 'react';
+import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
@@ -9,8 +9,6 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
-import { unstable_navigationEvents } from './navigationEvents';
-import { generateStringUrlForState, getPathAndParamsFromStringUrl } from './navigationEvents/utils';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -20,7 +18,6 @@ import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   useStateForPath,
-  type EventConsumer,
   type EventMapBase,
   type NavigationProp,
   type NavigationState,
@@ -357,15 +354,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
-    const isRouteType = value.type === 'route';
-    const hasRouteKey = !!route?.key;
-
     return (
       <Route node={value} params={route?.params}>
         <SuspenseFallbackContext value={providedSuspenseFallback}>
-          {unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && (
-            <AnalyticsListeners navigation={navigation} screenId={route.key} />
-          )}
           <ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler route={route} />
             <React.Suspense
@@ -394,83 +385,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
   qualifiedStore.set(value, BaseRoute);
   return BaseRoute;
-}
-
-function AnalyticsListeners({
-  navigation,
-  screenId,
-}: {
-  navigation: EventConsumer<EventMapBase> & {
-    isFocused(): boolean;
-  };
-  screenId: string;
-}) {
-  const stateForPath = useStateForPath();
-  const isFirstRenderRef = React.useRef(true);
-  const hasBlurredRef = React.useRef(true);
-  const stringUrl = useMemo(() => generateStringUrlForState(stateForPath), [stateForPath]);
-
-  if (isFirstRenderRef.current) {
-    isFirstRenderRef.current = false;
-    if (stringUrl) {
-      unstable_navigationEvents.emit('pageWillRender', {
-        ...getPathAndParamsFromStringUrl(stringUrl),
-        screenId,
-      });
-    }
-  }
-
-  useEffect(() => {
-    if (stringUrl) {
-      return () => {
-        unstable_navigationEvents.emit('pageRemoved', {
-          ...getPathAndParamsFromStringUrl(stringUrl),
-          screenId,
-        });
-      };
-    }
-    return () => {};
-  }, [stringUrl, screenId]);
-
-  const isFocused = navigation.isFocused();
-
-  if (isFocused && stringUrl) {
-    unstable_navigationEvents.emit('pageFocused', {
-      ...getPathAndParamsFromStringUrl(stringUrl),
-      screenId,
-    });
-    hasBlurredRef.current = false;
-  }
-
-  useEffect(() => {
-    if (stringUrl) {
-      const cleanFocus = navigation.addListener('focus', () => {
-        // If the screen was not blurred, don't emit focused again
-        // hasBlurredRef will be false when the screen was initially focused
-        if (hasBlurredRef.current) {
-          unstable_navigationEvents.emit('pageFocused', {
-            ...getPathAndParamsFromStringUrl(stringUrl),
-            screenId,
-          });
-          hasBlurredRef.current = false;
-        }
-      });
-      const cleanBlur = navigation.addListener('blur', () => {
-        unstable_navigationEvents.emit('pageBlurred', {
-          ...getPathAndParamsFromStringUrl(stringUrl),
-          screenId,
-        });
-        hasBlurredRef.current = true;
-      });
-      return () => {
-        cleanFocus();
-        cleanBlur();
-      };
-    }
-    return () => {};
-  }, [navigation, stringUrl, screenId]);
-
-  return null;
 }
 
 export function screenOptionsFactory(

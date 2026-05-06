@@ -4,20 +4,27 @@ export interface BasePageEvent {
     screenId: string;
 }
 /**
- * The rendering of the page started
- *
- * This can happen if screen is to be focused for the first time or when the screen is preloaded
+ * The page is about to appear (start of a navigation transition into it).
  */
-export interface PageWillRender extends BasePageEvent {
-    type: 'pageWillRender';
+export interface PageWillAppear extends BasePageEvent {
+    type: 'pageWillAppear';
 }
-export interface PageFocusedEvent extends BasePageEvent {
-    type: 'pageFocused';
+/**
+ * The page has appeared (end of a navigation transition into it, or focus on a tab navigator).
+ */
+export interface PageAppeared extends BasePageEvent {
+    type: 'pageAppeared';
 }
-export interface PageBlurredEvent extends BasePageEvent {
-    type: 'pageBlurred';
+/**
+ * The page is about to disappear (start of a navigation transition away from it).
+ */
+export interface PageWillDisappear extends BasePageEvent {
+    type: 'pageWillDisappear';
 }
-export interface PageRemoved extends BasePageEvent {
-    type: 'pageRemoved';
+/**
+ * The page has disappeared (end of a navigation transition away from it, or blur on a tab navigator).
+ */
+export interface PageDisappeared extends BasePageEvent {
+    type: 'pageDisappeared';
 }
 //# sourceMappingURL=types.d.ts.map
