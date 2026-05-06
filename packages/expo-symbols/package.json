@@ -41,13 +41,14 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*",
-    "expo-font": "workspace:*"
+    "expo": "workspace:*",
+    "expo-font": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*",
-    "expo-font": "workspace:*"
+    "expo-font": "*"
   }
 }

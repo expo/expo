@@ -33,9 +33,10 @@
   "license": "MIT",
   "dependencies": {},
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

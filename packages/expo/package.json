@@ -113,8 +113,8 @@
     "web-streams-polyfill": "^3.3.2"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "workspace:*",
-    "@expo/metro-runtime": "workspace:*",
+    "@expo/dom-webview": "*",
+    "@expo/metro-runtime": "*",
     "react": "*",
     "react-native": "*",
     "react-dom": "*",

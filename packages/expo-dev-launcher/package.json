@@ -24,10 +24,11 @@
     "expo-manifests": "workspace:~56.0.1"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0"
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*"
   }
 }

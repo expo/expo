@@ -34,10 +34,11 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

@@ -33,11 +33,12 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-constants": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*"
   }
 }

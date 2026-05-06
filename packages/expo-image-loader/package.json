@@ -20,8 +20,10 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-image-loader",
   "dependencies": {},
-  "devDependencies": {},
-  "peerDependencies": {
+  "devDependencies": {
     "expo": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }
