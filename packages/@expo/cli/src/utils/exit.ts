@@ -107,25 +107,27 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     return true;
   });
 
-  // Check if only Timeouts remain (no blocking resources like ProcessWrap/PipeWrap)
+  // Check if there are any resources that block the process from exiting.
+  // CloseReq is always transient and completes on its own.
+  // NOTE: Timeout is NOT excluded — getActiveResourcesInfo() only reports ref'd timers,
+  // so any Timeout in this list will keep the event loop alive indefinitely.
   const hasBlockingResources = unexpectedActiveResources.some(
-    (resource) => resource !== 'Timeout' && resource !== 'CloseReq'
+    (resource) => resource !== 'CloseReq'
   );
 
-  const canExitProcess = !unexpectedActiveResources.length || !hasBlockingResources;
-  if (canExitProcess) {
-    if (unexpectedActiveResources.length && !hasBlockingResources) {
-      debug('only non-blocking resources remain (Timeout/CloseReq), process can safely exit');
-    } else {
-      debug('no active resources detected, process can safely exit');
-    }
-    return;
-  } else {
+  if (!hasBlockingResources) {
     debug(
-      `process is trying to exit, but is stuck on unexpected active resources:`,
-      unexpectedActiveResources
+      unexpectedActiveResources.length
+        ? 'only transient resources remain (CloseReq), process can safely exit'
+        : 'no active resources detected, process can safely exit'
     );
+    return;
   }
+
+  debug(
+    `process is trying to exit, but is stuck on unexpected active resources:`,
+    unexpectedActiveResources
+  );
 
   // Check if the process needs to be force-closed
   const elapsedTime = Date.now() - startedAtMs;

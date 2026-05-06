@@ -46,6 +46,25 @@ describe(ensureProcessExitsAfterDelay, () => {
     expect(exitSpy).not.toHaveBeenCalled();
   });
 
+  it("force-exits when a ref'd timer is leaked", async () => {
+    const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
+
+    // Simulate a library leaking a ref'd timer (e.g. during static rendering).
+    // getActiveResourcesInfo() only reports ref'd timers, so this should be
+    // detected as a blocking resource and eventually force-exited.
+    const leaked = setTimeout(() => {}, 60_000);
+
+    ensureProcessExitsAfterDelay(200);
+
+    // Wait longer than the exit timer
+    await timers.setTimeout(1000);
+
+    expect(exitSpy).toHaveBeenCalledWith(0);
+
+    clearTimeout(leaked);
+    exitSpy.mockRestore();
+  });
+
   it('detects and logs unexpected active child processes and force exits', async () => {
     const exitSpy = jest.spyOn(process, 'exit').mockImplementation();
 
