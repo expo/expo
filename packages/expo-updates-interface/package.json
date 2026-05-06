@@ -21,6 +21,9 @@
   "homepage": "https://docs.expo.dev",
   "dependencies": {},
   "peerDependencies": {
-    "expo": "56.0.0-preview.2"
+    "expo": "*"
+  },
+  "devDependencies": {
+    "expo": "workspace:*"
   }
 }

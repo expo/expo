@@ -54,9 +54,9 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "56.0.0",
-    "@expo/json-file": "10.1.0",
-    "@expo/plist": "0.6.0",
+    "@expo/config-types": "workspace:^56.0.0",
+    "@expo/json-file": "workspace:~10.1.0",
+    "@expo/plist": "workspace:^0.6.0",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
@@ -74,7 +74,7 @@
     "@types/getenv": "^1.0.0",
     "@types/semver": "^7.7.0",
     "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "publishConfig": {
     "access": "public"

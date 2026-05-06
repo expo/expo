@@ -38,7 +38,7 @@
   "devDependencies": {
     "chalk": "^4.1.2",
     "commander": "^12.1.0",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "json-schema-to-typescript": "^15.0.0",
     "semver": "^7.7.4"
   },

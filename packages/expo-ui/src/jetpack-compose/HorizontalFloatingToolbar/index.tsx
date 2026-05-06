@@ -10,20 +10,20 @@ export type HorizontalFloatingToolbarColors = {
    */
   toolbarContainerColor?: ColorValue;
 
-  // Color of the toolbar content (icons/text).
-  // TODO: At the moment IconView's tint color defaults to Color.Unspecified instead of LocalContentColor.current.
-  // Thus the color override will not work.
-  // toolbarContentColor?: ColorValue;
+  /**
+   *  Color of the toolbar content (icons/text).
+   */
+  toolbarContentColor?: ColorValue;
 
   /**
    * Color of the floating action button container (background).
    */
   fabContainerColor?: ColorValue;
 
-  // Color of the floating action button content (icon).
-  // TODO: At the moment IconView's tint color defaults to Color.Unspecified instead of LocalContentColor.current.
-  // Thus the color override will not work.
-  // fabContentColor?: ColorValue;
+  /**
+   *  Color of the floating action button content (icon).
+   */
+  fabContentColor?: ColorValue;
 };
 
 export type HorizontalFloatingToolbarProps = {

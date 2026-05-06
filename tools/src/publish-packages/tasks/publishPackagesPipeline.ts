@@ -14,7 +14,6 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
-import { resolveWorkspaceSpecs } from './resolveWorkspaceSpecs';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
@@ -24,7 +23,6 @@ import { updatePackageVersions } from './updatePackageVersions';
 import { updateProjectTemplates } from './updateProjectTemplates';
 import { updateVersionsEndpoint } from './updateVersionsEndpoint';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
-import { verifyNoWorkspaceSpecs } from './verifyNoWorkspaceSpecs';
 import Git from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
@@ -89,7 +87,6 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateProjectTemplates,
       updateModuleTemplate,
       updateWorkspaceProjects,
-      resolveWorkspaceSpecs,
       updateAndroidProjects,
       updateIosProjects,
       addTemplateTarball,
@@ -98,7 +95,6 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       pushCommittedChanges,
       publishAndroidArtifacts,
       bundleIOSPrebuilds,
-      verifyNoWorkspaceSpecs,
       publishPackages,
       updateVersionsEndpoint,
       grantTeamAccessToPackages,

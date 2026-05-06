@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `blockList` pattern to exclude `.expo/web/cache`, `<root>/ios/Pods`, `<root>/android/app/build`, and `<root>/android/.gradle` ([#45418](https://github.com/expo/expo/pull/45418) by [@kitten](https://github.com/kitten))
+
 ## 56.0.1 — 2026-05-05
 
 _This version does not introduce any user-facing changes._

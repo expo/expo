@@ -29,11 +29,11 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "devDependencies": {
-    "expo-crypto": "56.0.0",
-    "expo-module-scripts": "56.0.0"
+    "expo-crypto": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo-crypto": "56.0.0"
+    "expo-crypto": "workspace:^56.0.0"
   },
   "dependencies": {}
 }
