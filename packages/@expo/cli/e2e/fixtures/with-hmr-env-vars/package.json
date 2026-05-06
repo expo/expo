@@ -2,7 +2,7 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
-    "expo": "^55 || ^55.0.0-0",
+    "expo": "^56 || ^56.0.0-0",
     "react-dom": "19.2.3",
     "react": "19.2.3",
     "react-native": "0.85.2",
@@ -10,6 +10,6 @@
     "react-native-webview": "13.16.0"
   },
   "devDependencies": {
-    "@expo/metro-runtime": "^55"
+    "@expo/metro-runtime": "^56"
   }
 }
