@@ -3,6 +3,9 @@ import ExpoModulesCore
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
     AppMetrics.mainSession.appStartupMonitor.markMain()
+    AppMetricsActor.isolated {
+      NetworkPathMonitor.shared.start()
+    }
   }
 
   public func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
