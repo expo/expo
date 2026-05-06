@@ -81,13 +81,16 @@ public final class ExpoUIModule: Module {
       }
     }
 
-    // MARK: - Views don't support common view modifiers
+    // MARK: - Views that apply common view modifiers internally
+
+    View(HostView.self)
+    View(TextView.self)
+
+    // MARK: - Views that don't support common view modifiers
 
     View(SlotView.self)
     View(NamespaceView.self)
     View(GridRowView.self)
-    View(HostView.self)
-    View(TextView.self)
 
     // MARK: - Expo UI Views
 

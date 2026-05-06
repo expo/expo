@@ -68,6 +68,7 @@ import {
   contentShape,
   shapes,
   resizable,
+  tint,
 } from '@expo/ui/swift-ui/modifiers';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
@@ -131,7 +132,12 @@ export default function ModifiersScreen() {
 
   return (
     <ScrollView>
-      <Host matchContents>
+      <Host
+        matchContents
+        modifiers={[
+          tint('#FF6B6B'),
+          font({ size: 16, weight: 'medium', design: 'rounded' }),
+        ]}>
         <Form
           modifiers={[
             scrollContentBackground(hideScrollBackground ? 'hidden' : 'visible'),
