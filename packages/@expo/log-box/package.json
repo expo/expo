@@ -25,6 +25,7 @@
     "stacktrace-parser": "^0.1.10"
   },
   "devDependencies": {
+    "@expo/cli": "workspace:*",
     "@expo/spawn-async": "^1.7.2",
     "@types/react": "~19.2.0",
     "@types/react-dom": "^19.1.7",
