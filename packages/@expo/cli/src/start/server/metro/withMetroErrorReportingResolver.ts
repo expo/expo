@@ -25,6 +25,13 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
 
   const mutateResolutionError = createMutateResolutionError(config, depGraph);
 
+  // Single-entry cache for the most recent (options, platform, origin) → deps map.
+  // Metro resolves depth-first, so the same origin repeats for consecutive calls.
+  let _prevOptions: Record<string, unknown> | null | undefined;
+  let _prevPlatform: string | undefined;
+  let _prevOrigin: string | undefined;
+  let _prevDeps: Map<string, string> | undefined;
+
   return {
     ...config,
     resolver: {
@@ -44,14 +51,29 @@ export function withMetroErrorReportingResolver(config: MetroConfig): MetroConfi
           const res = firstResolver(context, moduleName, platform);
 
           const inputPlatform = platform ?? 'null';
-          const key = optionsKeyForContext(context);
-          let mapByTarget = depGraph.get(key);
-          if (!mapByTarget) depGraph.set(key, (mapByTarget = new Map()));
-          let mapByPlatform = mapByTarget.get(inputPlatform);
-          if (!mapByPlatform) mapByTarget.set(inputPlatform, (mapByPlatform = new Map()));
-          let depsForModule = mapByPlatform.get(context.originModulePath);
-          if (!depsForModule)
-            mapByPlatform.set(context.originModulePath, (depsForModule = new Map()));
+          let depsForModule: Map<string, string> | undefined;
+
+          if (
+            context.customResolverOptions === _prevOptions &&
+            inputPlatform === _prevPlatform &&
+            context.originModulePath === _prevOrigin
+          ) {
+            depsForModule = _prevDeps!;
+          } else {
+            const key = optionsKeyForContext(context);
+            let mapByTarget = depGraph.get(key);
+            if (!mapByTarget) depGraph.set(key, (mapByTarget = new Map()));
+            let mapByPlatform = mapByTarget.get(inputPlatform);
+            if (!mapByPlatform) mapByTarget.set(inputPlatform, (mapByPlatform = new Map()));
+            depsForModule = mapByPlatform.get(context.originModulePath);
+            if (!depsForModule)
+              mapByPlatform.set(context.originModulePath, (depsForModule = new Map()));
+            _prevOptions = context.customResolverOptions;
+            _prevPlatform = inputPlatform;
+            _prevOrigin = context.originModulePath;
+            _prevDeps = depsForModule;
+          }
+
           const qualifiedModuleName = res?.type === 'sourceFile' ? res.filePath : moduleName;
           depsForModule.set(qualifiedModuleName, moduleName);
 
