@@ -44,6 +44,9 @@ android {
 
 dependencies { dependencyHandler ->
   implementation 'com.facebook.react:react-android'
+  implementation 'com.squareup.okio:okio:3.16.0'
+  implementation 'com.squareup.zstd:zstd-kmp-okio:0.4.0'
+  implementation 'org.brotli:dec:0.1.2'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.13.5'
