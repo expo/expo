@@ -32,19 +32,19 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu-interface": "56.0.0"
+    "expo-dev-menu-interface": "workspace:56.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
-    "babel-preset-expo": "56.0.1",
-    "expo-module-scripts": "56.0.0",
+    "babel-preset-expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
     "react": "19.2.3",
     "react-native": "0.85.2"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "workspace:*",
     "react-native": "*"
   }
 }

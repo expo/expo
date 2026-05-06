@@ -421,6 +421,7 @@ export class Package {
 
 /**
  * Resolves to a Package instance if the package with given name exists in the repository.
+ * Falls back to scanning the cached package list when the directory name doesn't match.
  */
 export function getPackageByName(packageName: string): Package | null {
   const packageJsonPath = pathToLocalPackageJson(packageName);
@@ -428,7 +429,7 @@ export function getPackageByName(packageName: string): Package | null {
     const packageJson = require(packageJsonPath);
     return new Package(path.dirname(packageJsonPath), packageJson);
   } catch {
-    return null;
+    return cachedPackages?.find((pkg) => pkg.packageName === packageName) ?? null;
   }
 }
 

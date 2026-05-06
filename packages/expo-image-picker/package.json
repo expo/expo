@@ -35,15 +35,15 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "expo-image-loader": "56.0.0"
+    "expo-image-loader": "workspace:~56.0.0"
   },
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0"
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2"
+    "expo": "workspace:*"
   }
 }

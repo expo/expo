@@ -45,7 +45,7 @@
     "@types/invariant": "^2.2.37",
     "@types/micromatch": "^4.0.10",
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   },
   "publishConfig": {

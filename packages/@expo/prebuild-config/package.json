@@ -32,20 +32,20 @@
   ],
   "devDependencies": {
     "@babel/cli": "^7.23.4",
-    "@expo/plist": "0.6.0",
+    "@expo/plist": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/semver": "^7.5.8",
-    "expo-module-scripts": "56.0.0",
+    "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },
   "dependencies": {
-    "@expo/config": "56.0.0",
-    "@expo/config-plugins": "56.0.0",
-    "@expo/config-types": "56.0.0",
-    "@expo/image-utils": "0.9.0",
-    "@expo/json-file": "10.1.0",
+    "@expo/config": "workspace:~56.0.0",
+    "@expo/config-plugins": "workspace:~56.0.0",
+    "@expo/config-types": "workspace:^56.0.0",
+    "@expo/image-utils": "workspace:^0.9.0",
+    "@expo/json-file": "workspace:^10.1.0",
     "@react-native/normalize-colors": "0.85.2",
-    "expo-modules-autolinking": "56.0.0",
+    "expo-modules-autolinking": "workspace:~56.0.0",
     "debug": "^4.3.1",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
