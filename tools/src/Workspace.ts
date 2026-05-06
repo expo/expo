@@ -136,8 +136,11 @@ async function listWorkspaceProjectsAsync(): Promise<PnpmProjectListing[]> {
   ]);
 }
 
+/**
+ * Runs `pnpm install` in the root workspace directory.
+ */
 export async function installAsync(): Promise<void> {
-  await spawnAsync('yarn');
+  await spawnAsync('pnpm', ['install']);
 }
 
 export function getNativeApps(): Package[] {
