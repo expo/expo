@@ -6113,17 +6113,17 @@ importers:
         specifier: 2.21.1
         version: 2.21.1
       '@expo/json-file':
-        specifier: ^8.3.3
-        version: 8.3.3
+        specifier: workspace:*
+        version: link:../packages/@expo/json-file
       '@expo/multipart-body-parser':
         specifier: ^1.1.0
         version: 1.1.0
       '@expo/osascript':
-        specifier: ^2.2.4
+        specifier: workspace:*
         version: link:../packages/@expo/osascript
       '@expo/plist':
-        specifier: ^0.3.4
-        version: 0.3.5
+        specifier: workspace:*
+        version: link:../packages/@expo/plist
       '@expo/spawn-async':
         specifier: ^1.7.2
         version: 1.7.2
@@ -6314,9 +6314,6 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/code-frame@7.10.4':
-    resolution: {integrity: sha512-vG6SvB6oYEhvgisZNFRmRCUkLz11c7rp+tbNTynGqc6mS1d5ATd/sGyV6W0KZZnXRKMTzZDRgQT3Ou9jhpAfUg==}
-
   '@babel/code-frame@7.29.0':
     resolution: {integrity: sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw==}
     engines: {node: '>=6.9.0'}
@@ -6418,10 +6415,6 @@ packages:
 
   '@babel/helpers@7.29.2':
     resolution: {integrity: sha512-HoGuUs4sCZNezVEKdVcwqmZN8GoHirLUcLaYVNBK2J0DadGtdcqgr3BCbvH8+XUo4NGjNl3VOtSjEKNzqfFgKw==}
-    engines: {node: '>=6.9.0'}
-
-  '@babel/highlight@7.25.9':
-    resolution: {integrity: sha512-llL88JShoCsth8fF8R4SJnIn+WLvR6ccFxu1H3FlMhDontdcmZWf2HgIZ7AIqV3Xcck1idlohrN4EUBQz6klbw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/parser@7.29.2':
@@ -7460,9 +7453,6 @@ packages:
   '@expo/expo-modules-macros-plugin@0.0.8':
     resolution: {integrity: sha512-ZHH+Hgle/ZyVfTSd9L+ON/0a7BouMEQ3wJKGmOilPLYMTjx5NOcbNZVaJ3iAHKCplvDIHHjPdmqVPorWMHm19A==}
 
-  '@expo/json-file@8.3.3':
-    resolution: {integrity: sha512-eZ5dld9AD0PrVRiIWpRkm5aIoWBw3kAyd8VkuWEy92sEthBKDDDHAnK2a0dw0Eil6j7rK7lS/Qaq/Zzngv2h5A==}
-
   '@expo/material-symbols@0.1.1':
     resolution: {integrity: sha512-ruA6hZATOPKxo1qSd1NE3HI9FrmEDwcMDhsvzTAdMkP9AapdHfJ/0tKmBMWFJir85voxs1twYxLVrGW9OLGaOg==}
     hasBin: true
@@ -7546,9 +7536,6 @@ packages:
 
   '@expo/plist@0.0.18':
     resolution: {integrity: sha512-+48gRqUiz65R21CZ/IXa7RNBXgAI/uPSdvJqoN9x1hfL44DNbUoWHgHiEXTx7XelcATpDwNTz6sHLfy0iNqf+w==}
-
-  '@expo/plist@0.3.5':
-    resolution: {integrity: sha512-9RYVU1iGyCJ7vWfg3e7c/NVyMFs8wbl+dMWZphtFtsqyN9zppGREU3ctlD3i8KUE0sCUTVnLjCWr+VeUIDep2g==}
 
   '@expo/react-native-action-sheet@4.1.1':
     resolution: {integrity: sha512-4KRaba2vhqDRR7ObBj6nrD5uJw8ePoNHdIOMETTpgGTX7StUbrF4j/sfrP1YUyaPEa1P8FXdwG6pB+2WtrJd1A==}
@@ -15947,9 +15934,6 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  write-file-atomic@2.4.3:
-    resolution: {integrity: sha512-GaETH5wwsX+GcnzhPgKcKjJ6M2Cq3/iZp1WyY/X1CSqrW+jVNM9Y7D8EC2sM4ZG/V8wZlSniJnCKWPmBYAucRQ==}
-
   write-file-atomic@4.0.2:
     resolution: {integrity: sha512-7KxauUdBmSdWnmpaGFg+ppNjKF8uNLry8LyzjauQDOVONfFLNKrKvQOxZ/VuTIcS/gge/YNahf5RIIQWTSarlg==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
@@ -16127,10 +16111,6 @@ snapshots:
       '@nicolo-ribaudo/chokidar-2': 2.1.8-no-fsevents.3
       chokidar: 3.6.0
 
-  '@babel/code-frame@7.10.4':
-    dependencies:
-      '@babel/highlight': 7.25.9
-
   '@babel/code-frame@7.29.0':
     dependencies:
       '@babel/helper-validator-identifier': 7.28.5
@@ -16284,13 +16264,6 @@ snapshots:
     dependencies:
       '@babel/template': 7.28.6
       '@babel/types': 7.29.0
-
-  '@babel/highlight@7.25.9':
-    dependencies:
-      '@babel/helper-validator-identifier': 7.28.5
-      chalk: 2.4.2
-      js-tokens: 4.0.0
-      picocolors: 1.1.1
 
   '@babel/parser@7.29.2':
     dependencies:
@@ -17328,12 +17301,6 @@ snapshots:
 
   '@expo/expo-modules-macros-plugin@0.0.8': {}
 
-  '@expo/json-file@8.3.3':
-    dependencies:
-      '@babel/code-frame': 7.10.4
-      json5: 2.2.3
-      write-file-atomic: 2.4.3
-
   '@expo/material-symbols@0.1.1': {}
 
   '@expo/mcp-tunnel@0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))':
@@ -17436,12 +17403,6 @@ snapshots:
       '@xmldom/xmldom': 0.7.13
       base64-js: 1.5.1
       xmlbuilder: 14.0.0
-
-  '@expo/plist@0.3.5':
-    dependencies:
-      '@xmldom/xmldom': 0.8.11
-      base64-js: 1.5.1
-      xmlbuilder: 15.1.1
 
   '@expo/react-native-action-sheet@4.1.1(@types/react@19.2.14)(react@19.2.3)':
     dependencies:
@@ -27530,12 +27491,6 @@ snapshots:
       strip-ansi: 7.2.0
 
   wrappy@1.0.2: {}
-
-  write-file-atomic@2.4.3:
-    dependencies:
-      graceful-fs: 4.2.11
-      imurmurhash: 0.1.4
-      signal-exit: 3.0.7
 
   write-file-atomic@4.0.2:
     dependencies:
