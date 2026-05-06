@@ -312,7 +312,7 @@ export function getDefaultConfig(
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
         // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
-        exclusionList(['.expo/types']),
+        exclusionList(['.expo/types', '.expo/web/cache']),
         // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
         // pattern is reapplied to normal paths during the Node crawling phase
         /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
