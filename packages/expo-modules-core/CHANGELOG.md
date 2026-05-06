@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix unsetting border width on views with border radius causing views to disappear ([#45467](https://github.com/expo/expo/pull/45467) by [@fractalbeauty](https://github.com/fractalbeauty))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-06
