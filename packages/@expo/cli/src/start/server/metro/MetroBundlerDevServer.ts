@@ -985,13 +985,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     const scriptContents = wrapBundle(bundle);
 
-    if (map) {
-      debug('Registering SSR source map for:', filename);
-      cachedSourceMaps.set(filename, { url: this.projectRoot, map });
-    } else {
-      debug('No SSR source map found for:', filename);
-    }
-
     return {
       ...rest,
       src: scriptContents,

@@ -23,30 +23,6 @@ const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
-export const cachedSourceMaps: Map<string, { url: string; map: string }> = new Map();
-
-// Support unhandled rejections
-
-declare global {
-  namespace NodeJS {
-    interface Process {
-      isBun?: boolean;
-    }
-  }
-}
-
-// Detect if running in Bun
-if (!process.isBun) {
-  require('source-map-support').install({
-    retrieveSourceMap(source: string) {
-      if (cachedSourceMaps.has(source)) {
-        return cachedSourceMaps.get(source);
-      }
-      return null;
-    },
-  });
-}
-
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
   // Cannot be accessed using Metro's server API, we need to move the file
   // into the project root and try again.
