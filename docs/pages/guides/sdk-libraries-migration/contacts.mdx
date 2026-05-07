@@ -13,7 +13,7 @@ The `expo-contacts/next` API is now stable. The legacy `expo-contacts` module is
 
 The new API replaces the function-based API with a `Contact` class. Contacts are represented as class instances that hold only the ID of the native contact. Key changes:
 
-- Contact properties (name, company, birthday, etc.) are async getters and setters instead of plain object properties.
+- Contact properties (name, company, birthday, and more) are async getters and setters instead of plain object properties.
 - Sub-records (phones, emails, addresses, ...) are managed via dedicated `add*`/`get*`/`update*`/`delete*` methods instead of re-writing the entire array.
 - Two update methods are now available: `patch` for partial updates and `update` for full replacement.
 

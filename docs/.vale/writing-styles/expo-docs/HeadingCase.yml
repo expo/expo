@@ -82,6 +82,7 @@ exceptions:
   - '.*EAS Insights.*'
   - '.*Element Inspector.*'
   - '.*Environment Variables.*'
+  - '.*EXIF.*'
   - '.*ESLint.*'
   - '.*Expo.*'
   - '.*ExpoKit.*'
