@@ -1837,8 +1837,8 @@ importers:
         specifier: ^1.0.1
         version: 1.0.6
       '@expo/xcpretty':
-        specifier: ^4.4.0
-        version: 4.4.1
+        specifier: ^4.4.4
+        version: 4.4.4
       '@react-native/dev-middleware':
         specifier: 0.85.3
         version: 0.85.3(patch_hash=563dd3c12ac9064f72bebd975abb206061af92d430d10341a2fce54810b5128f)
@@ -6131,8 +6131,8 @@ importers:
         specifier: ^0.57.1
         version: 0.57.1
       '@expo/xcpretty':
-        specifier: ^4.4.0
-        version: 4.4.1
+        specifier: ^4.4.4
+        version: 4.4.4
       '@linear/sdk':
         specifier: ^2.6.0
         version: 2.6.0(encoding@0.1.13)
@@ -7577,8 +7577,8 @@ packages:
   '@expo/ws-tunnel@1.0.6':
     resolution: {integrity: sha512-nDRbLmSrJar7abvUjp3smDwH8HcbZcoOEa5jVPUv9/9CajgmWw20JNRwTuBRzWIWIkEJDkz20GoNA+tSwUqk0Q==}
 
-  '@expo/xcpretty@4.4.1':
-    resolution: {integrity: sha512-KZNxZvnGCtiM2aYYZ6Wz0Ix5r47dAvpNLApFtZWnSoERzAdOMzVBOPysBoM0JlF6FKWZ8GPqgn6qt3dV/8Zlpg==}
+  '@expo/xcpretty@4.4.4':
+    resolution: {integrity: sha512-4aQzz9vgxcNXFfo/iyNgDDYfsU5XGKKxWxZopw0cVotHiW+U8IJbIxMaxsINs6bHhtkG3StKNPcOrn3eBuxKPw==}
     hasBin: true
 
   '@firebase/analytics-compat@0.2.6':
@@ -17429,7 +17429,7 @@ snapshots:
 
   '@expo/ws-tunnel@1.0.6': {}
 
-  '@expo/xcpretty@4.4.1':
+  '@expo/xcpretty@4.4.4':
     dependencies:
       '@babel/code-frame': 7.29.0
       chalk: 4.1.2
