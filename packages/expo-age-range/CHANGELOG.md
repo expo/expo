@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `isEligibleForAgeFeaturesAsync` to expose Apple's `AgeRangeService.isEligibleForAgeFeatures` (iOS 26.2+). Resolves with `null` on unsupported OS versions, other platforms, or errors.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

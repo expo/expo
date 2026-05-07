@@ -55,5 +55,18 @@ export type AgeRangeResponse = {
 };
 export interface ExpoAgeRangeModule extends NativeModule {
     requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+    /**
+     * Returns whether the current Apple Account is in scope of an age-assurance
+     * regulation that Apple recognizes (e.g. Utah, Louisiana, and select non-US
+     * regions). Use this to short-circuit age gating outside of those jurisdictions
+     * without implementing custom geo-tracking.
+     *
+     * Resolves with `null` on iOS versions earlier than 26.2, on platforms other
+     * than iOS, or when the underlying call throws — callers should treat `null`
+     * as "unknown / not supported" rather than as a definitive `false`.
+     *
+     * @platform ios 26.2+
+     */
+    isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
 }
 //# sourceMappingURL=ExpoAgeRange.types.d.ts.map

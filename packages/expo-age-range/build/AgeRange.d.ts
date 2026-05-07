@@ -10,4 +10,22 @@ import type { AgeRangeRequest, AgeRangeResponse } from './ExpoAgeRange.types';
  * @platform ios 26.0+
  */
 export declare function requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+/**
+ * Asks the OS whether age-assurance regulation applies to the current user. Apple
+ * uses this to signal that the account region is covered by a law such as
+ * Utah's or Louisiana's age-assurance requirements, so apps can avoid gating
+ * users in jurisdictions where the rules do not apply.
+ *
+ * - Resolves with `true` only when Apple confirms regulation applies.
+ * - Resolves with `false` when the OS confirms regulation does not apply.
+ * - Resolves with `null` on iOS earlier than 26.2, on Android and web, or when
+ *   the underlying call throws. Treat `null` as "unknown" rather than a
+ *   definitive `false`.
+ *
+ * Recommended pattern: call this first and short-circuit your age gate when
+ * the result is `false` before invoking {@link requestAgeRangeAsync}.
+ *
+ * @platform ios 26.2+
+ */
+export declare function isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
 //# sourceMappingURL=AgeRange.d.ts.map
