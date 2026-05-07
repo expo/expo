@@ -48,7 +48,7 @@ export function HeaderContainer({
   const { buildHref } = useLinkBuilder();
 
   return (
-    <View pointerEvents="box-none" style={style}>
+    <View style={[styles.boxNone, style]}>
       {/* We render header only on two top-most headers as
          a workaround for https://github.com/react-navigation/react-navigation/issues/12456.
          If the header is persisted, it might be placed incorrectly when navigating back. */}
@@ -152,13 +152,14 @@ export function HeaderContainer({
                     }
                   : undefined
               }
-              pointerEvents={isFocused ? 'box-none' : 'none'}
               aria-hidden={!isFocused}
-              style={
-                // Avoid positioning the focused header absolutely
+              style={[
+                {
+                  pointerEvents: isFocused ? 'box-none' : 'none',
+                }, // Avoid positioning the focused header absolutely
                 // Otherwise accessibility tools don't seem to be able to find it
-                (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null
-              }>
+                (mode === 'float' && !isFocused) || headerTransparent ? styles.header : null,
+              ]}>
               {header !== undefined ? header(props) : <Header {...props} />}
             </View>
           </NavigationProvider>
@@ -169,6 +170,9 @@ export function HeaderContainer({
 }
 
 const styles = StyleSheet.create({
+  boxNone: {
+    pointerEvents: 'box-none',
+  },
   header: {
     position: 'absolute',
     top: 0,

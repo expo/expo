@@ -135,7 +135,11 @@ function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus = true, au
         return null;
     }
     const textColor = tintColor ?? colors.text;
-    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { pointerEvents: visible ? 'auto' : 'none', "aria-live": "polite", "aria-hidden": !visible, style: [styles.container, { opacity: visibleAnim }, style], children: [(0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.searchbarContainer, children: [(0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: search_icon_png_1.default, tintColor: textColor, style: styles.inputSearchIcon }), (0, jsx_runtime_1.jsx)(react_native_1.TextInput, { ...rest, ref: inputRef, onChange: onChangeText, onChangeText: setValue, autoFocus: autoFocus, autoCapitalize: autoCapitalize === 'systemDefault' ? undefined : autoCapitalize, inputMode: INPUT_TYPE_TO_MODE[inputType ?? 'text'], enterKeyHint: enterKeyHint, placeholder: placeholder, placeholderTextColor: (0, color_1.Color)(textColor)?.alpha(0.5).string(), cursorColor: colors.primary, selectionHandleColor: colors.primary, selectionColor: (0, color_1.Color)(colors.primary)?.alpha(0.3).string(), style: [
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { "aria-live": "polite", "aria-hidden": !visible, style: [
+            styles.container,
+            { pointerEvents: visible ? 'auto' : 'none', opacity: visibleAnim },
+            style,
+        ], children: [(0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.searchbarContainer, children: [(0, jsx_runtime_1.jsx)(HeaderIcon_1.HeaderIcon, { source: search_icon_png_1.default, tintColor: textColor, style: styles.inputSearchIcon }), (0, jsx_runtime_1.jsx)(react_native_1.TextInput, { ...rest, ref: inputRef, onChange: onChangeText, onChangeText: setValue, autoFocus: autoFocus, autoCapitalize: autoCapitalize === 'systemDefault' ? undefined : autoCapitalize, inputMode: INPUT_TYPE_TO_MODE[inputType ?? 'text'], enterKeyHint: enterKeyHint, placeholder: placeholder, placeholderTextColor: (0, color_1.Color)(textColor)?.alpha(0.5).string(), cursorColor: colors.primary, selectionHandleColor: colors.primary, selectionColor: (0, color_1.Color)(colors.primary)?.alpha(0.3).string(), style: [
                             fonts.regular,
                             styles.searchbar,
                             {

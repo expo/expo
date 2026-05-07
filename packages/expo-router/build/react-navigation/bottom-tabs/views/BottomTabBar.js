@@ -49,7 +49,7 @@ const TABBAR_HEIGHT_UIKIT_COMPACT = 32;
 const SPACING_UIKIT = 15;
 const SPACING_MATERIAL = 12;
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
-const useNativeDriver = react_native_1.Platform.OS !== 'web';
+const useNativeDriver = process.env.EXPO_OS !== 'web';
 const shouldUseHorizontalLabels = ({ state, descriptors, dimensions }) => {
     const { tabBarLabelPosition } = descriptors[state.routes[state.index].key].options;
     if (tabBarLabelPosition) {
@@ -197,17 +197,18 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
     const minSidebarWidth = (0, elements_1.useFrameSize)((size) => sidebar && hasHorizontalLabels ? (0, elements_1.getDefaultSidebarWidth)(size) : 0);
     const tabBarBackgroundElement = tabBarBackground?.();
     return ((0, jsx_runtime_1.jsxs)(react_native_1.Animated.View, { style: [
+            { pointerEvents: isTabBarHidden ? 'none' : 'auto' },
             tabBarPosition === 'left'
                 ? styles.start
                 : tabBarPosition === 'right'
                     ? styles.end
                     : styles.bottom,
-            (react_native_1.Platform.OS === 'web'
+            (process.env.EXPO_OS === 'web'
                 ? tabBarPosition === 'right'
                 : (direction === 'rtl' && tabBarPosition === 'left') ||
                     (direction !== 'rtl' && tabBarPosition === 'right'))
                 ? { borderLeftWidth: react_native_1.StyleSheet.hairlineWidth }
-                : (react_native_1.Platform.OS === 'web'
+                : (process.env.EXPO_OS === 'web'
                     ? tabBarPosition === 'left'
                     : (direction === 'rtl' && tabBarPosition === 'right') ||
                         (direction !== 'rtl' && tabBarPosition === 'left'))
@@ -254,7 +255,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                     },
                 ],
             tabBarStyle,
-        ], pointerEvents: isTabBarHidden ? 'none' : 'auto', onLayout: sidebar ? undefined : handleLayout, children: [(0, jsx_runtime_1.jsx)(react_native_1.View, { pointerEvents: "none", style: react_native_1.StyleSheet.absoluteFill, children: tabBarBackgroundElement }), (0, jsx_runtime_1.jsx)(react_native_1.View, { role: "tablist", style: sidebar ? styles.sideContent : styles.bottomContent, children: routes.map((route, index) => {
+        ], onLayout: sidebar ? undefined : handleLayout, children: [(0, jsx_runtime_1.jsx)(react_native_1.View, { style: [react_native_1.StyleSheet.absoluteFill, styles.pointerEventsNone], children: tabBarBackgroundElement }), (0, jsx_runtime_1.jsx)(react_native_1.View, { role: "tablist", style: sidebar ? styles.sideContent : styles.bottomContent, children: routes.map((route, index) => {
                     const focused = index === state.index;
                     const { options } = descriptors[route.key];
                     const onPress = () => {
@@ -281,7 +282,7 @@ function BottomTabBar({ state, navigation, descriptors, insets, style }) {
                         : (0, elements_1.getLabel)({ label: options.tabBarLabel, title: options.title }, route.name);
                     const accessibilityLabel = options.tabBarAccessibilityLabel !== undefined
                         ? options.tabBarAccessibilityLabel
-                        : typeof label === 'string' && react_native_1.Platform.OS === 'ios'
+                        : typeof label === 'string' && process.env.EXPO_OS === 'ios'
                             ? `${label}, tab, ${index + 1} of ${routes.length}`
                             : undefined;
                     return ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: route, navigation: descriptors[route.key].navigation, children: (0, jsx_runtime_1.jsx)(BottomTabItem_1.BottomTabItem, { href: buildHref(route.name, route.params), route: route, descriptor: descriptors[route.key], focused: focused, horizontal: hasHorizontalLabels, compact: compact, sidebar: sidebar, variant: tabBarVariant, onPress: onPress, onLongPress: onLongPress, accessibilityLabel: accessibilityLabel, testID: options.tabBarButtonTestID, allowFontScaling: options.tabBarAllowFontScaling, activeTintColor: tabBarActiveTintColor, inactiveTintColor: tabBarInactiveTintColor, activeBackgroundColor: tabBarActiveBackgroundColor, inactiveBackgroundColor: tabBarInactiveBackgroundColor, button: options.tabBarButton, icon: options.tabBarIcon ??
@@ -326,6 +327,9 @@ const styles = react_native_1.StyleSheet.create({
     },
     bottomItem: {
         flex: 1,
+    },
+    pointerEventsNone: {
+        pointerEvents: 'none',
     },
 });
 //# sourceMappingURL=BottomTabBar.js.map

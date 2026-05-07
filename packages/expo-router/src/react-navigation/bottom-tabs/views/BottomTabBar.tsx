@@ -36,7 +36,7 @@ const SPACING_UIKIT = 15;
 const SPACING_MATERIAL = 12;
 const DEFAULT_MAX_TAB_ITEM_WIDTH = 125;
 
-const useNativeDriver = Platform.OS !== 'web';
+const useNativeDriver = process.env.EXPO_OS !== 'web';
 
 type Options = {
   state: TabNavigationState<ParamListBase>;
@@ -271,20 +271,21 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
   return (
     <Animated.View
       style={[
+        { pointerEvents: isTabBarHidden ? 'none' : 'auto' },
         tabBarPosition === 'left'
           ? styles.start
           : tabBarPosition === 'right'
             ? styles.end
             : styles.bottom,
         (
-          Platform.OS === 'web'
+          process.env.EXPO_OS === 'web'
             ? tabBarPosition === 'right'
             : (direction === 'rtl' && tabBarPosition === 'left') ||
               (direction !== 'rtl' && tabBarPosition === 'right')
         )
           ? { borderLeftWidth: StyleSheet.hairlineWidth }
           : (
-                Platform.OS === 'web'
+                process.env.EXPO_OS === 'web'
                   ? tabBarPosition === 'left'
                   : (direction === 'rtl' && tabBarPosition === 'right') ||
                     (direction !== 'rtl' && tabBarPosition === 'left')
@@ -333,9 +334,8 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
             ],
         tabBarStyle,
       ]}
-      pointerEvents={isTabBarHidden ? 'none' : 'auto'}
       onLayout={sidebar ? undefined : handleLayout}>
-      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+      <View style={[StyleSheet.absoluteFill, styles.pointerEventsNone]}>
         {tabBarBackgroundElement}
       </View>
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
@@ -373,7 +373,7 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
           const accessibilityLabel =
             options.tabBarAccessibilityLabel !== undefined
               ? options.tabBarAccessibilityLabel
-              : typeof label === 'string' && Platform.OS === 'ios'
+              : typeof label === 'string' && process.env.EXPO_OS === 'ios'
                 ? `${label}, tab, ${index + 1} of ${routes.length}`
                 : undefined;
 
@@ -459,5 +459,8 @@ const styles = StyleSheet.create({
   },
   bottomItem: {
     flex: 1,
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none',
   },
 });
