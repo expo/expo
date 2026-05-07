@@ -78,11 +78,7 @@ import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { getFreePortAsync } from '../../../utils/port';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
-import {
-  cachedSourceMaps,
-  evalMetroAndWrapFunctions,
-  evalMetroNoHandling,
-} from '../getStaticRenderFunctions';
+import { evalMetroAndWrapFunctions, evalMetroNoHandling } from '../getStaticRenderFunctions';
 import {
   fromRuntimeManifestRoute,
   fromServerManifestRoute,
@@ -831,6 +827,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.projectRoot,
       res.src,
       res.filename,
+      res.map,
       specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
     );
   };
@@ -1804,7 +1801,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!apiRoute?.src) {
         return null;
       }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
+      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename, apiRoute.map);
     } catch (error) {
       // Format any errors that were thrown in the global scope of the evaluation.
       if (error instanceof Error) {

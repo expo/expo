@@ -75,10 +75,11 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   projectRoot: string,
   script: string,
   filename: string,
+  sourceMap: string | undefined,
   isExporting: boolean
 ): T {
   // TODO: Add back stack trace logic that hides traces from metro-runtime and other internal modules.
-  const contents = evalMetroNoHandling(projectRoot, script, filename);
+  const contents = evalMetroNoHandling(projectRoot, script, filename, sourceMap);
 
   if (!contents) {
     // This can happen if ErrorUtils isn't working correctly on web and failing to throw an error when a module throws.
@@ -112,7 +113,12 @@ export function evalMetroAndWrapFunctions<T = Record<string, any>>(
   }, {} as any);
 }
 
-export function evalMetroNoHandling(projectRoot: string, src: string, filename: string) {
+export function evalMetroNoHandling(
+  projectRoot: string,
+  src: string,
+  filename: string,
+  sourceMap?: string
+) {
   augmentLogs(projectRoot);
 
   // NOTE(@kitten): `require-from-string` derives a base path from the filename we pass it,
@@ -124,5 +130,5 @@ export function evalMetroNoHandling(projectRoot: string, src: string, filename: 
     debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return profile(evalModule, 'eval-metro-bundle')(src, filename);
+  return profile(evalModule, 'eval-metro-bundle')(src, filename, { sourceMap });
 }
