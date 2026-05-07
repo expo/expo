@@ -1,7 +1,7 @@
+import type { ComponentProps } from 'react';
 import { StyleSheet, unstable_createElement, View, type ViewProps } from 'react-native';
 
 import type { SliderProps } from './types';
-import type { ComponentProps } from 'react';
 
 const styles = StyleSheet.create({
   view: {

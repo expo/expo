@@ -1,4 +1,4 @@
-import { Text as RNText, StyleSheet, useColorScheme, type TextStyle } from 'react-native';
+import { Text as RNText, StyleSheet, useColorScheme } from 'react-native';
 
 import type { TextProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
