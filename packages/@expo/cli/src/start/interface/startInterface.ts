@@ -10,8 +10,6 @@ import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
 import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
-import type { DependencyCheckResult } from '../checkDependenciesOnStart';
-import { printDependencyCheckResult } from '../checkDependenciesOnStart';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import type { DevServerManager } from '../server/DevServerManager';
 
@@ -39,45 +37,22 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckPromise'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckRef'>
 ) {
+  // Spend one-tick waiting for the dependency check result
+  if (options.dependencyCheckRef) {
+    await Promise.race([options.dependencyCheckRef.promise, Promise.resolve(null)]);
+  }
+
   const actions = new DevServerManagerActions(devServerManager, options);
-
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
-
   const usageOptions = {
     isWebSocketsEnabled,
     devClient: devServerManager.options.devClient,
     ...options,
   };
 
-  // Print the dependency check if it completed (it runs in the background since early startup).
-  // With a warm fetch cache this resolves near-instantly, so we defer by a tick
-  // On cold starts it may not be ready, in which case it will appear on the next reprint or restart
-  let dependencyCheckResult: DependencyCheckResult | null | undefined;
-  if (options.dependencyCheckPromise) {
-    dependencyCheckResult = await Promise.race([
-      options.dependencyCheckPromise,
-      Promise.resolve(null),
-    ]);
-    if (!dependencyCheckResult) {
-      // Not ready yet — capture once resolved for display on next reprint
-      options.dependencyCheckPromise.then((result) => {
-        if (result) {
-          dependencyCheckResult = result;
-        }
-      });
-    }
-  }
-
-  const printDependencyCheckIfAvailable = () => {
-    if (dependencyCheckResult) {
-      printDependencyCheckResult(dependencyCheckResult);
-    }
-  };
-
   actions.printDevServerInfo(usageOptions);
-  printDependencyCheckIfAvailable();
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -173,7 +148,6 @@ export async function startInterfaceAsync(
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
           actions.printDevServerInfo(usageOptions);
-          printDependencyCheckIfAvailable();
           return;
         }
         break;
@@ -219,7 +193,6 @@ export async function startInterfaceAsync(
       case 'c':
         Log.clear();
         actions.printDevServerInfo(usageOptions);
-        printDependencyCheckIfAvailable();
         return;
       case 'j':
         return actions.openJsInspectorAsync();

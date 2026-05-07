@@ -2,8 +2,11 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { getLogFile, shouldReduceLogs } from '../events';
-import type { DependencyCheckResult } from './checkDependenciesOnStart';
-import { checkDependenciesAsync, printDependencyCheckResult } from './checkDependenciesOnStart';
+import {
+  checkDependencies,
+  printDependencyCheckResult,
+  type DependencyCheckRef,
+} from './checkDependenciesOnStart';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
@@ -84,9 +87,9 @@ export async function startAsync(
 
   // Start dependency version check in the background as early as possible (non-blocking).
   // The result will be displayed in the TUI once it resolves.
-  let dependencyCheckPromise: Promise<DependencyCheckResult | null> | undefined;
+  let dependencyCheckRef: DependencyCheckRef | undefined;
   if (!env.EXPO_OFFLINE && !env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly) {
-    dependencyCheckPromise = checkDependenciesAsync(projectRoot, exp, pkg).catch(() => null);
+    dependencyCheckRef = checkDependencies(projectRoot, exp, pkg);
   }
 
   if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
@@ -140,7 +143,7 @@ export async function startAsync(
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
-      dependencyCheckPromise,
+      dependencyCheckRef,
     });
   } else {
     // Display the server location in CI...
@@ -151,10 +154,9 @@ export async function startAsync(
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
     }
-    // In non-interactive mode, await the check and print if available.
-    const result = await dependencyCheckPromise;
-    if (result) {
-      printDependencyCheckResult(result);
+    // In non-interactive mode, print the check outside of an interface, if it's available
+    if (dependencyCheckRef?.result) {
+      printDependencyCheckResult(dependencyCheckRef.result);
     }
   }
 
