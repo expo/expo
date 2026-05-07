@@ -363,8 +363,7 @@ export const findScheme = (): string | undefined => {
           if (entry.isDirectory()) {
             directories.push(childPath);
           } else if (entry.isFile()) {
-            if (entry.name === 'ReactNativeHostManager.swift')
-              return true;
+            if (entry.name === 'ReactNativeHostManager.swift') return true;
           }
         }
       }

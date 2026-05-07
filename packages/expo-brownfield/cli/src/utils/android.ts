@@ -34,8 +34,7 @@ export const findBrownfieldLibrary = (): string | undefined => {
           if (entry.isDirectory()) {
             directories.push(childPath);
           } else if (entry.isFile()) {
-            if (entry.name === 'ReactNativeHostManager.kt')
-              return true;
+            if (entry.name === 'ReactNativeHostManager.kt') return true;
           }
         }
       }
