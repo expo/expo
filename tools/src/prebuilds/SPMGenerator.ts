@@ -3,13 +3,13 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct, SPMTarget } from './SPMConfig.types';
 import { SPMPackage } from './SPMPackage';
 import { createAsyncSpinner, hasFileContentChanged } from './Utils';
-import logger from '../Logger';
 
 /**
  * Writes content to file only if it differs from existing content.
@@ -42,7 +42,7 @@ export const SPMGenerator = {
     buildType: BuildFlavor,
     artifacts?: DownloadedDependencies
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `📦 Generating Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
     );
     // Use SPMPackage to generate Package.swift
@@ -73,7 +73,7 @@ export const SPMGenerator = {
    */
   generateIsolatedSourcesForTargetsAsync: async (pkg: SPMPackageSource, product: SPMProduct) => {
     const loggerTitle = `${chalk.green(pkg.packageName)}/${chalk.green(product.name)}`;
-    logger.info(`📂 Generating files for ${loggerTitle}`);
+    logger.verbose(`📂 Generating files for ${loggerTitle}`);
 
     // Walk through all targets for the product and collect source files to copy into spm code structure
     for (const target of product.targets) {
@@ -357,7 +357,7 @@ ${allImports.join('\n')}
     pkg: SPMPackageSource,
     product: SPMProduct
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `🧹 Cleaning generated source code for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
     );
 

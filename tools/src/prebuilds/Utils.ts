@@ -5,7 +5,7 @@ import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
-import logger from '../Logger';
+import logger, { isVerbose } from '../Logger';
 import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
 import {
   discoverExternalPackagesAsync,
@@ -38,6 +38,7 @@ export function isNonInteractive(): boolean {
 export function setForceNonInteractive(value: boolean): void {
   _forceNonInteractive = value;
 }
+
 
 const _logPrefixStorage = new AsyncLocalStorage<string>();
 
@@ -546,6 +547,7 @@ export const createAsyncSpinner = (
         logger.log(`${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`);
       },
       info: (text?: string) => {
+        if (!isVerbose()) return;
         logger.log(`${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
       },
     };

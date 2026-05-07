@@ -35,7 +35,11 @@ export default (program: Command) => {
       'Generates `.xcframework` artifacts for iOS packages. If no package names are provided, discovers all packages with spm.config.json.'
     )
     .alias('prebuild')
-    .option('-v, --verbose', 'Enable verbose output (full build logs instead of spinners).', false)
+    .option(
+      '-v, --verbose',
+      'Print every build step and the full xcodebuild line stream. Off by default; in CI only success/failure lines, compile warnings/errors, and the run summary are printed.',
+      false
+    )
     .option(
       '--react-native-version <version>',
       'Provides the current React Native version. Auto-detected from bare-expo if not set.'

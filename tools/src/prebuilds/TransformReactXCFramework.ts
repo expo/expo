@@ -52,7 +52,7 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
   // When present, use it directly instead of generating our own.
   const bundledTemplatePath = path.join(xcframeworkPath, 'React-VFS-template.yaml');
   if (fs.existsSync(bundledTemplatePath)) {
-    logger.info('  Using bundled React-VFS-template.yaml from xcframework (RN 0.85+)');
+    logger.verbose('  Using bundled React-VFS-template.yaml from xcframework (RN 0.85+)');
 
     // Copy bundled template to expected location (where resolveVFSOverlayTemplate reads it)
     fs.copyFileSync(bundledTemplatePath, path.join(outputPath, 'React-VFS-template.yaml'));
@@ -61,7 +61,7 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
     const stagingDir = path.join(outputPath, 'React-extra-headers');
     if (fs.existsSync(stagingDir)) {
       fs.removeSync(stagingDir);
-      logger.info('  Removed stale React-extra-headers/ directory');
+      logger.verbose('  Removed stale React-extra-headers/ directory');
     }
 
     // Write version stamp for cache invalidation
@@ -70,23 +70,23 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
     ).version;
     VersionStamp.write(outputPath, { reactNativeVersion: rnVersion }, VFS_STAMP_FILENAME);
 
-    logger.info('  VFS overlay setup complete (using bundled template).');
+    logger.verbose('  VFS overlay setup complete (using bundled template).');
     return;
   }
 
-  logger.info('  Collecting header mappings from podspecs...');
+  logger.verbose('  Collecting header mappings from podspecs...');
   const headerMappings = getHeaderFilesFromPodspecs(reactNativePath);
 
-  logger.info('  Inventorying stock xcframework headers...');
+  logger.verbose('  Inventorying stock xcframework headers...');
   const stockHeaders = inventoryStockHeaders(xcframeworkPath);
 
-  logger.info('  Detecting duplicate header basenames...');
+  logger.verbose('  Detecting duplicate header basenames...');
   const duplicateBasenames = findDuplicateBasenames(headerMappings);
 
-  logger.info('  Staging missing headers to React-extra-headers/...');
+  logger.verbose('  Staging missing headers to React-extra-headers/...');
   await stageMissingHeadersAsync(outputPath, headerMappings, stockHeaders, duplicateBasenames);
 
-  logger.info('  Generating VFS overlay template...');
+  logger.verbose('  Generating VFS overlay template...');
   const vfsYaml = createVFSOverlay(reactNativePath, stockHeaders, duplicateBasenames);
   fs.writeFileSync(path.join(outputPath, 'React-VFS-template.yaml'), vfsYaml);
 
@@ -96,7 +96,7 @@ export async function transformReactXCFrameworkAsync(options: TransformOptions):
   ).version;
   VersionStamp.write(outputPath, { reactNativeVersion: rnVersion }, VFS_STAMP_FILENAME);
 
-  logger.info('  VFS overlay generation complete (xcframework untouched).');
+  logger.verbose('  VFS overlay generation complete (xcframework untouched).');
 }
 
 /**
@@ -214,7 +214,7 @@ async function stageMissingHeadersAsync(
     }
   }
 
-  logger.info(`  Staged ${stagedCount} missing headers to React-extra-headers/`);
+  logger.verbose(`  Staged ${stagedCount} missing headers to React-extra-headers/`);
 }
 
 const VFS_STAMP_FILENAME = '.vfs-version-stamp';

@@ -9,13 +9,33 @@ const CONSOLE_RESOLVER: LoggerResolver = (level: LogLevel, color: Chalk | null, 
   return console[level](...(color ? args.map((arg) => color(arg)) : args));
 };
 
+let _verbose = false;
+
+/**
+ * Enables or disables verbose logging globally. When `false` (default),
+ * `logger.verbose(...)` calls are silently dropped.
+ */
+export function setVerbose(value: boolean): void {
+  _verbose = value;
+}
+
+export function isVerbose(): boolean {
+  return _verbose;
+}
+
 /**
  * Basic logger just for simple console logging with colored output.
  */
 export class Logger {
   constructor(readonly resolver: LoggerResolver = CONSOLE_RESOLVER) {}
 
+  /**
+   * Emits a low-priority detail line. No-op unless `setVerbose(true)` has
+   * been called — used for progress chatter that buries signal in CI logs
+   * (per-step "Cleaning ...", "Generating ...", subprocess line streams, etc).
+   */
   verbose(...args: any[]): void {
+    if (!_verbose) return;
     this.resolver('debug', chalk.dim, args);
   }
 
