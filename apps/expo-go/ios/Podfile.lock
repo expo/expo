@@ -4863,7 +4863,7 @@ SPEC CHECKSUMS:
   ExpoImageManipulator: 6c74cb8a62d50d32ed667b39eded89391448f99a
   ExpoImagePicker: 31deec6605ac794d0455d7ccd03ba9cedd475c71
   ExpoKeepAwake: 45e456e29335bbd400554646a2f29e628c24072e
-  ExpoLinearGradient: f7a3da6577688c5fb627e9ee6b47ed620c169da3
+  ExpoLinearGradient: c5eeb3909d916ff944bbc1bf4509b0df9d134823
   ExpoLinking: 3f7bc30ae456e03e272f6b4ee74f89a58bee63fc
   ExpoLivePhoto: caa5980f5cf00016d39c8268c150c21d2ae565a7
   ExpoLocalAuthentication: 22f5fbc0935bdc7057ec7144fcfad0792ed8a3f2
@@ -4915,7 +4915,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 26a3abef001b6533cf678d3eb38fd3f614b7872d
-  hermes-engine: ca6495d9d859ae100566305c4d0afe7a0c777a46
+  hermes-engine: d59202edb9173c808259b0945bb161d1e24963f0
   libavif: 84bbb62fb232c3018d6f1bab79beea87e35de7b7
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
