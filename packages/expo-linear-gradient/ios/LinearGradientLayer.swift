@@ -60,7 +60,15 @@ final class LinearGradientLayer: CALayer {
       return result || color.cgColor.alpha < 1.0
     }
 
-    #if !os(macOS)
+    #if os(macOS)
+    setLayerContentsMacOS(hasAlpha: hasAlpha)
+    #else
+    setLayerContents(hasAlpha: hasAlpha)
+    #endif
+  }
+
+  #if !os(macOS)
+  private func setLayerContents(hasAlpha: Bool) {
     UIGraphicsBeginImageContextWithOptions(bounds.size, !hasAlpha, 0.0)
 
     guard let contextRef = UIGraphicsGetCurrentContext() else {
@@ -77,7 +85,9 @@ final class LinearGradientLayer: CALayer {
     self.contentsScale = image.scale
 
     UIGraphicsEndImageContext()
-    #else
+  }
+  #else
+  private func setLayerContentsMacOS(hasAlpha: Bool) {
     let scale = contentsScale > 0 ? contentsScale : (NSScreen.main?.backingScaleFactor ?? 2.0)
     let pixelWidth = Int(bounds.size.width * scale)
     let pixelHeight = Int(bounds.size.height * scale)
@@ -103,8 +113,8 @@ final class LinearGradientLayer: CALayer {
     draw(in: ctx)
     self.contents = ctx.makeImage()
     self.contentsScale = scale
-    #endif
   }
+  #endif
 
   override func draw(in ctx: CGContext) {
     super.draw(in: ctx)
