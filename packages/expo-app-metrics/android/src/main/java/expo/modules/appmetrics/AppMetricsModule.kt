@@ -21,6 +21,7 @@ import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 class AppMetricsModule : Module(), UpdatesStateChangeListener {
@@ -68,11 +69,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         appSessionId = sessionManager.createSessionId()
 
-        // Persist the session row eagerly so it's visible to readers
+        // Persist the session row synchronously so it's visible to readers
         // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
-        // metrics arrive. Older app runs are deactivated in the same coroutine
-        // to keep the order well-defined.
-        scope.launch {
+        // metrics arrive, and so `OnDestroy` can rely on the row existing when
+        // it stamps `endTimestamp`. Older app runs are deactivated in the same
+        // block to keep the order well-defined.
+        runBlocking {
           sessionManager.deactivateAllSessionsBefore(moduleCreationTimestamp)
           sessionManager.startSessionWithIdAt(
             sessionId = appSessionId,
@@ -100,6 +102,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       OnActivityDestroys {
         subscription?.remove()
+      }
+
+      OnDestroy {
+        // `modulesQueue` is cancelled immediately after this hook returns, so
+        // run the UPDATE on the calling thread to make sure the end timestamp
+        // is persisted before teardown.
+        runBlocking {
+          sessionManager.stopSession(appSessionId)
+        }
       }
 
       AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }
