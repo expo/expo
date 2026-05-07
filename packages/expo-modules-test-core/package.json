@@ -11,7 +11,10 @@
     "expo-modules-test-core"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "expo-module test",
+    "lint": "expo-module lint",
+    "clean": "expo-module clean"
   },
   "bin": {
     "expo-modules-test-core": "./bin/cli.js"
