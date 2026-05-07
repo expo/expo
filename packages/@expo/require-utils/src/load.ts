@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import * as nodeModule from 'node:module';
+import os from 'node:os';
 import path from 'node:path';
 import url from 'node:url';
 import type * as ts from 'typescript';
@@ -19,6 +20,9 @@ declare global {
         filename: string,
         format?: 'module' | 'commonjs' | 'commonjs-typescript' | 'module-typescript' | 'typescript'
       ): unknown;
+    }
+    export interface Process {
+      isBun?: boolean;
     }
   }
 }
@@ -82,6 +86,7 @@ function toFormat(filename: string, isLegacy: boolean): Format | null {
 
 export interface ModuleOptions {
   paths?: string[];
+  sourceMap?: string;
 }
 
 function toRealDirname(filePath: string): string {
@@ -105,6 +110,76 @@ function toRealDirname(filePath: string): string {
   }
 }
 
+const hasModuleSourceMapsSupport = typeof nodeModule.setSourceMapsSupport === 'function';
+
+function makeSourceMapTempPath(filename: string) {
+  let basename = path.basename(filename);
+  const queryIdx = basename.search(/[?#]/);
+  if (queryIdx >= 0) {
+    basename = basename.slice(0, queryIdx);
+  }
+  return path.join(os.tmpdir(), `require-utils-${process.pid}-${basename}.map`);
+}
+
+function stripSourceMappingURL(code: string): string {
+  return code.replace(/\n\/\/[#@] sourceMappingURL=[^\n]*$/, '');
+}
+
+let stackTraceInstalled = false;
+
+function installSourceMapStackTrace() {
+  if (hasModuleSourceMapsSupport || stackTraceInstalled) {
+    return;
+  }
+  stackTraceInstalled = true;
+
+  // Node 20.x doesn't symbolicate after we disable sourceMaps, so we need to do this manually
+  // in a JS-level hook
+  Error.prepareStackTrace = (error, callSites) => {
+    const name = error.name || 'Error';
+    const message = error.message || '';
+    const lines: string[] = [];
+
+    for (const site of callSites) {
+      const file = site.getFileName() || site.getScriptNameOrSourceURL();
+      const lineNumber = site.getLineNumber();
+      const columnNumber = site.getColumnNumber();
+      const fn = site.getFunctionName();
+
+      if (file && lineNumber != null && columnNumber != null) {
+        const sm = nodeModule.findSourceMap(file);
+        if (sm) {
+          const entry = sm.findEntry(lineNumber - 1, columnNumber - 1);
+          if (entry && 'originalSource' in entry && entry.originalSource) {
+            // `originalSource` is a `file://` URL. `fileURLToPath` correctly handles drive
+            // letters and percent-encoded characters; a naive `file://` strip would yield
+            // `/C:/foo/bar.ts` on Windows, which isn't a valid path.
+            const origFile = entry.originalSource.startsWith('file://')
+              ? url.fileURLToPath(entry.originalSource)
+              : entry.originalSource;
+            // Node's runtime returns a `name` on the entry when the source map provides one,
+            // but @types/node omits it from `SourceMapping`. Read it defensively.
+            const origFn = (entry as { name?: string }).name || fn || '<anonymous>';
+            lines.push(
+              `    at ${origFn} (${origFile}:${entry.originalLine + 1}:${entry.originalColumn + 1})`
+            );
+            continue;
+          }
+        }
+      }
+
+      const displayFn = fn || '<anonymous>';
+      if (file) {
+        lines.push(`    at ${displayFn} (${file}:${lineNumber}:${columnNumber})`);
+      } else {
+        lines.push(`    at ${displayFn}`);
+      }
+    }
+
+    return `${name}: ${message}\n${lines.join('\n')}`;
+  };
+}
+
 function compileModule(code: string, filename: string, opts: ModuleOptions) {
   const format = toFormat(filename, false);
   const prependPaths = opts.paths ?? [];
@@ -113,16 +188,85 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   const basePath = toRealDirname(filename);
   const nodeModulePaths = nodeModule._nodeModulePaths(basePath);
   const paths = [...prependPaths, ...nodeModulePaths];
+
+  let inputCode = code;
+
+  // We may get a Metro SSR relative path here, which isn't a valid absolute path, and we need to normalize
+  // the filename before proceeding
+  let compileFilename = filename;
+  if (opts.sourceMap) {
+    const queryIdx = filename.search(/[?#]/);
+    const basePart = queryIdx >= 0 ? filename.slice(0, queryIdx) : filename;
+    const queryPart = queryIdx >= 0 ? filename.slice(queryIdx) : '';
+    if (!path.isAbsolute(basePart)) {
+      compileFilename = path.resolve(basePart) + queryPart;
+    }
+  }
+
+  let mapPath: string | undefined;
+  if (opts.sourceMap && !process.isBun) {
+    try {
+      mapPath = makeSourceMapTempPath(compileFilename);
+      fs.writeFileSync(mapPath, opts.sourceMap);
+    } catch (error: any) {
+      mapPath = undefined;
+      // If we fail to write the source map, we can still continue without it, but log a warning since it's likely a misconfiguration
+      console.warn(
+        `Warning: Failed to write source map for ${filename} to ${mapPath}. Source maps will be unavailable for this module.\n${error?.message || error}`
+      );
+    }
+
+    if (mapPath) {
+      inputCode = stripSourceMappingURL(code);
+      // NOTE This needs to be a plain absolute path because Node rejects file: URLs
+      inputCode += `\n//# sourceMappingURL=${mapPath}`;
+
+      if (hasModuleSourceMapsSupport) {
+        // In Node >=22, we can just keep sourceMaps enabled, since nodeModules are filtered out
+        nodeModule.setSourceMapsSupport(true, { nodeModules: false });
+      } else {
+        // Node 20.x does support sourceMaps, but doesn't filter by nodeModules, so we'll toggle
+        // it on but will disable it immediately after _comile was called
+        process.setSourceMapsEnabled(true);
+        // Since when sourceMaps are disabled, Node 20.x also doesn't desymbolicate automatically,
+        // we'll add our own shim that does this.
+        installSourceMapStackTrace();
+      }
+    }
+  }
+
   try {
-    const mod = Object.assign(new nodeModule.Module(filename, parent), { filename, paths });
-    mod._compile(code, filename, format != null ? format : undefined);
+    const mod = Object.assign(new nodeModule.Module(compileFilename, parent), {
+      filename: compileFilename,
+      paths,
+    });
+    mod._compile(inputCode, compileFilename, format != null ? format : undefined);
     mod.loaded = true;
-    require.cache[filename] = mod;
+    require.cache[compileFilename] = mod;
+    if (compileFilename !== filename) {
+      require.cache[filename] = mod;
+    }
     parent?.children?.splice(parent.children.indexOf(mod), 1);
     return mod;
   } catch (error: any) {
-    delete require.cache[filename];
+    delete require.cache[compileFilename];
+    if (compileFilename !== filename) {
+      delete require.cache[filename];
+    }
     throw error;
+  } finally {
+    if (mapPath) {
+      // Node 20.x: Disable sourceMap support again, so it doesn't affect nodeModules or other requires
+      if (!hasModuleSourceMapsSupport) {
+        process.setSourceMapsEnabled(false);
+      }
+      // Node immediately parses source maps during _compile, so we can delete it immediately after
+      try {
+        fs.unlinkSync(mapPath);
+      } catch {
+        /* noop */
+      }
+    }
   }
 }
 
