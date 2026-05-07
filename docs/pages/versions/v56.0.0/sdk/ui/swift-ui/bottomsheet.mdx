@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) and presents content from the bottom of the screen.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/bottomsheet/ios-light.webp"
+    darkSource="/static/images/expo-ui/bottomsheet/ios-dark.webp"
+    alt="A BottomSheet at medium detent showing a Sort By list with Most Recent selected"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

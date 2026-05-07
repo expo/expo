@@ -8,8 +8,18 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Slider matches the official SwiftUI [Slider API](https://developer.apple.com/documentation/swiftui/slider) and allows selecting values from a bounded range.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/slider/ios-light.webp"
+    darkSource="/static/images/expo-ui/slider/ios-dark.webp"
+    alt="Slider with brightness icons on either side, in a Form section"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

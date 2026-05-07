@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Picker matches the official SwiftUI [Picker API](https://developer.apple.com/documentation/swiftui/picker) and supports all picker styles via the [`pickerStyle`](modifiers/#pickerstylestyle) modifier.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/picker/ios-light.webp"
+    darkSource="/static/images/expo-ui/picker/ios-dark.webp"
+    alt="Menu-style Picker showing fruit options with the current selection checked"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

@@ -8,8 +8,18 @@ platforms: ['ios', 'tvOS', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Overlay matches the official SwiftUI [overlay](<https://developer.apple.com/documentation/swiftui/view/overlay(alignment:content:)>) modifier and provides a way to layer secondary content on top of a view, positioned with a specified alignment.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/overlay/ios-light.webp"
+    darkSource="/static/images/expo-ui/overlay/ios-dark.webp"
+    alt="A bell icon with a red 3 notification badge overlaid at the top-trailing corner"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI ScrollView matches the official SwiftUI [ScrollView API](https://developer.apple.com/documentation/swiftui/scrollview) and provides a scrollable container for its children.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/scrollview/ios-light.webp"
+    darkSource="/static/images/expo-ui/scrollview/ios-dark.webp"
+    alt="A horizontal ScrollView with colored Featured cards extending off the right edge"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

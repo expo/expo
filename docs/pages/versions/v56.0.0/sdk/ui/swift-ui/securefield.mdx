@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI SecureField matches the official SwiftUI [SecureField API](https://developer.apple.com/documentation/swiftui/securefield) and provides a text field that masks user input for passwords and other sensitive text.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/securefield/ios-light.webp"
+    darkSource="/static/images/expo-ui/securefield/ios-dark.webp"
+    alt="Three SecureField rows for changing a password"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

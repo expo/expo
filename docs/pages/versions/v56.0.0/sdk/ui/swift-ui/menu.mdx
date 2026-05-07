@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com/documentation/swiftui/menu) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle) modifier. Menu opens on a single tap. For long-press interactions, use [`ContextMenu`](contextmenu) instead.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/menu/ios-light.webp"
+    darkSource="/static/images/expo-ui/menu/ios-dark.webp"
+    alt="Open Menu showing Settings, Profile and a destructive Delete item"
+    disableSrcSet
+  />
+</div>
 
 > **Note:** On tvOS, Menu requires tvOS 17.0 or later.
 

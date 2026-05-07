@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI ControlGroup matches the official SwiftUI [ControlGroup API](https://developer.apple.com/documentation/swiftui/controlgroup). When placed inside a [`Menu`](menu), the children are rendered as a compact horizontal row of buttons.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/controlgroup/ios-light.webp"
+    darkSource="/static/images/expo-ui/controlgroup/ios-dark.webp"
+    alt="An open Menu showing a ControlGroup row of Add, Favorite, Share icon buttons above Rename and Delete entries"
+    disableSrcSet
+  />
+</div>
 
 > **Note:** On tvOS, `ControlGroup` requires tvOS 17.0 or later.
 

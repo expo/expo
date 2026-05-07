@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI Section matches the official SwiftUI [Section API](https://developer.apple.com/documentation/swiftui/section) and is used to group related content within [`List`](list), [`Form`](form) or [`Picker`](picker) components.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/section/ios-light.webp"
+    darkSource="/static/images/expo-ui/section/ios-dark.webp"
+    alt="Two Sections within a Form, each with a header and grouped Toggles"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

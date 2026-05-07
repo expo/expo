@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI TabView matches the official SwiftUI [TabView API](https://developer.apple.com/documentation/swiftui/tabview) and switches between styles via the [`tabViewStyle`](modifiers/#tabviewstyleconfig) modifier.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/tabview/ios-light.webp"
+    darkSource="/static/images/expo-ui/tabview/ios-dark.webp"
+    alt="A TabView with a bottom tab bar showing Home, Search, and Profile tabs in iOS 26 Liquid Glass style"
+    disableSrcSet
+  />
+</div>
 
 > **Note:** For routed bottom-tab navigation across full-screen routes, use [expo-router/unstable-native-tabs`](/router/advanced/native-tabs/) instead.
 

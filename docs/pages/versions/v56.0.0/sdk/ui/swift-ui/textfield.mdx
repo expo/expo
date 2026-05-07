@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI TextField matches the official SwiftUI [TextField API](https://developer.apple.com/documentation/swiftui/textfield) and supports single-line and multiline input, keyboard configuration, submit handling, and an imperative `ref` for programmatic control.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/textfield/ios-light.webp"
+    darkSource="/static/images/expo-ui/textfield/ios-dark.webp"
+    alt="TextField and SecureField inside a Form"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 
