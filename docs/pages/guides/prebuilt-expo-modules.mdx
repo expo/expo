@@ -4,6 +4,7 @@ description: Learn how prebuilt Expo Modules reduce native build times on Androi
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 Native build times can slow down your development workflow. Expo provides prebuilt versions of its most complex modules so your project links pre-compiled binaries instead of recompiling them from source on every build. On Android, those binaries ship as `.aar` files linked through Gradle; on iOS, they ship as `XCFrameworks` linked through CocoaPods. Both are bundled into the regular Expo npm packages, and packages that aren't yet precompiled fall back to building from source automatically — precompiled and source-built modules coexist in the same project.
 
@@ -16,19 +17,17 @@ Native build times can slow down your development workflow. Expo provides prebui
 
 Set `EXPO_USE_PRECOMPILED_MODULES` to `0`. For local builds, export the env var in your shell.
 
-For EAS Build, create an [EAS environment variable](https://docs.expo.dev/eas/environment-variables/manage/):
+For EAS Build, create an [EAS environment variable](/eas/environment-variables/manage/):
 
-```sh
-$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext
-```
+<Terminal cmd={['$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']} />
 
 The CLI will prompt you to select which environment(s) (`development`, `preview`, `production`) the variable applies to.
 
 </Collapsible>
 
-<Collapsible summary="Disabling on Android">
+<Collapsible summary="Disabling specific modules via Expo Autolinking">
 
-Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"` to opt out of every prebuilt module, or list specific package names:
+Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"` to opt out of every prebuilt module, or list specific package names. The same setting is available for both `android` and `ios`:
 
 {/* prettier-ignore */}
 ```json package.json
@@ -37,6 +36,9 @@ Configure Expo Autolinking with `buildFromSource` in **package.json**. Use `".*"
   "expo": {
     "autolinking": {
       "android": {
+        "buildFromSource": [".*"]
+      },
+      "ios": {
         "buildFromSource": [".*"]
       }
     }
