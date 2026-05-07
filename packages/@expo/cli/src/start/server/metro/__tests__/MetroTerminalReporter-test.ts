@@ -22,6 +22,8 @@ import {
 } from './fixtures/terminal-logs';
 
 const asBundleDetails = (value: any) => value as BundleDetails;
+const DARK_BLOCK_CHAR = '\u2593';
+const LIGHT_BLOCK_CHAR = '\u2591';
 
 jest.useFakeTimers();
 
@@ -407,6 +409,176 @@ describe(formatUsingNodeStandardLibraryError, () => {
       It failed because the native React runtime does not include the Node standard library.
       Learn more: https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries"
     `);
+  });
+});
+
+describe('non-interactive terminal output', () => {
+  /**
+   * Reproduces the bug where progress bar status lines interleave with "Bundled" log messages
+   * in non-TTY mode. In TTY mode, status lines are overwritten in-place by the Terminal class.
+   * In non-TTY mode, Terminal.log() writes immediately while Terminal.status() writes through
+   * a 3500ms throttle (#writeStatusThrottled), causing progress bars to appear as permanent
+   * output between "Bundled" completion messages:
+   *
+   *   Web Bundled 2967ms node_modules/expo-router/entry.js (964 modules)
+   *   Web node_modules/expo-router/entry.js ▓▓▓░░░░░░░░░░░░░ 21.3% ( 97/210)
+   *   Web Bundled 1185ms node_modules/expo-router/entry.js (965 modules)
+   */
+
+  const buildID1 = 'build-1';
+  const buildID2 = 'build-2';
+  const entryFile = 'node_modules/expo-router/entry.js';
+  const bundleDetails = asBundleDetails({
+    entryFile,
+    platform: 'web',
+    bundleType: 'bundle',
+  });
+
+  function createNonInteractiveReporter() {
+    const terminal = {
+      log: jest.fn(),
+      persistStatus: jest.fn(),
+      status: jest.fn(),
+      flush: jest.fn(),
+    } satisfies Partial<Terminal>;
+
+    const reporter = new MetroTerminalReporter('/', terminal as any);
+    reporter._getElapsedTime = jest.fn(() => BigInt(2_967_000_000));
+    return { reporter, terminal };
+  }
+
+  /**
+   * Helper that collects the interleaved order of terminal.log and terminal.status calls.
+   * Each entry records the call type and stripped content to make assertions readable.
+   */
+  function collectOutputOrder(terminal: { log: jest.Mock; status: jest.Mock }) {
+    const output: { type: 'log' | 'status'; content: string }[] = [];
+    terminal.log.mockImplementation((...args: any[]) => {
+      output.push({ type: 'log', content: stripAnsi(args.join(' ')) });
+    });
+    terminal.status.mockImplementation((...args: any[]) => {
+      const content = stripAnsi(args.join(' '));
+      if (content) {
+        output.push({ type: 'status', content });
+      }
+    });
+    return output;
+  }
+
+  it('progress bar status should not interleave with Bundled log messages', () => {
+    const { reporter, terminal } = createNonInteractiveReporter();
+    const output = collectOutputOrder(terminal);
+
+    // Simulate first bundle: start → progress → done
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...bundleDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+
+    // Progress updates (normally throttled at 100ms, we simulate the throttled event directly)
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 500,
+      totalFileCount: 964,
+    } as any);
+
+    // First bundle completes
+    reporter.update({
+      type: 'bundle_build_done',
+      buildID: buildID1,
+      bundleDetails: { ...bundleDetails, buildID: buildID1 },
+    } as any);
+
+    // Second bundle starts immediately (e.g. HMR rebuild)
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID2,
+      bundleDetails: { ...bundleDetails, buildID: buildID2 },
+      isPrefetch: false,
+    } as any);
+
+    // Progress update for second bundle
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID2,
+      transformedFileCount: 97,
+      totalFileCount: 210,
+    } as any);
+
+    // Second bundle completes
+    reporter._getElapsedTime = jest.fn(() => BigInt(1_185_000_000));
+    reporter.update({
+      type: 'bundle_build_done',
+      buildID: buildID2,
+      bundleDetails: { ...bundleDetails, buildID: buildID2 },
+    } as any);
+
+    // Extract only the log calls (what gets permanently written in non-TTY mode)
+    const logMessages = output.filter((o) => o.type === 'log');
+
+    // Both "Bundled" messages should appear in the logs
+    expect(logMessages).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ content: expect.stringContaining('Bundled') }),
+        expect.objectContaining({ content: expect.stringContaining('Bundled') }),
+      ])
+    );
+
+    // No progress bar should appear in the log output (progress bars belong only in status)
+    for (const msg of logMessages) {
+      expect(msg.content).not.toContain(DARK_BLOCK_CHAR);
+      expect(msg.content).not.toContain(LIGHT_BLOCK_CHAR);
+    }
+
+    // Now check the status calls: in non-TTY mode, these become permanent output.
+    // After a bundle completes, the status should not contain progress bars for completed bundles.
+    const statusMessages = output.filter((o) => o.type === 'status');
+
+    // Find the status call that happens right after the first "Bundled" log
+    const firstBundledIndex = output.findIndex(
+      (o) => o.type === 'log' && o.content.includes('Bundled')
+    );
+    const statusAfterFirstBundled = output
+      .slice(firstBundledIndex + 1)
+      .filter((o) => o.type === 'status');
+
+    // The status after the first "Bundled" should not contain a progress bar for the completed bundle
+    for (const msg of statusAfterFirstBundled) {
+      // If there's a progress bar, it should only be for bundle 2 (not stale data from bundle 1)
+      if (msg.content.includes(DARK_BLOCK_CHAR) || msg.content.includes(LIGHT_BLOCK_CHAR)) {
+        // This is the bug: a progress bar status appears in the output stream
+        // between the two "Bundled" messages, which in non-TTY mode is permanent output.
+        // The status should be empty or suppressed in non-interactive mode.
+        expect(msg.content).not.toContain(DARK_BLOCK_CHAR);
+      }
+    }
+  });
+
+  it('_getStatusMessage returns empty string in non-interactive mode', () => {
+    const { reporter } = createNonInteractiveReporter();
+
+    // Start a bundle so there's an active bundle
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...bundleDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+
+    // Add some progress
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 50,
+      totalFileCount: 100,
+    } as any);
+
+    // In non-interactive mode, _getStatusMessage() should return empty
+    // since status lines can't be overwritten and would produce permanent noise.
+    expect(reporter._getStatusMessage()).toBe('');
   });
 });
 

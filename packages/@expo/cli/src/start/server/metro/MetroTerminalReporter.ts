@@ -22,6 +22,7 @@ import {
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
 import { events, shouldReduceLogs } from '../../../events';
 import { stripAnsi } from '../../../utils/ansi';
+import { isInteractive } from '../../../utils/interactive';
 
 type ClientLogLevel =
   | 'trace'
@@ -97,6 +98,19 @@ export class MetroTerminalReporter extends TerminalReporter {
     terminal: Terminal
   ) {
     super(terminal);
+  }
+
+  /**
+   * Suppress status messages in non-interactive mode.
+   * In TTY mode, Terminal overwrites status lines in-place (progress bars).
+   * In non-TTY mode, Terminal writes status via a 3500ms throttle, producing
+   * permanent output that interleaves with log messages like "Bundled Xms".
+   */
+  _getStatusMessage(): string {
+    if (!isInteractive()) {
+      return '';
+    }
+    return super._getStatusMessage();
   }
 
   _log(event: TerminalReportableEvent): void {
