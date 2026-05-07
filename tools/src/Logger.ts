@@ -9,25 +9,27 @@ const CONSOLE_RESOLVER: LoggerResolver = (level: LogLevel, color: Chalk | null, 
   return console[level](...(color ? args.map((arg) => color(arg)) : args));
 };
 
+// Process-wide verbose flag. All Logger instances (including LoggerBatch)
+// share this — verbosity is a property of the run, not of a logger object.
 let _verbose = false;
-
-/**
- * Enables or disables verbose logging globally. When `false` (default),
- * `logger.verbose(...)` calls are silently dropped.
- */
-export function setVerbose(value: boolean): void {
-  _verbose = value;
-}
-
-export function isVerbose(): boolean {
-  return _verbose;
-}
 
 /**
  * Basic logger just for simple console logging with colored output.
  */
 export class Logger {
   constructor(readonly resolver: LoggerResolver = CONSOLE_RESOLVER) {}
+
+  /**
+   * Enables or disables verbose logging globally. When `false` (default),
+   * `logger.verbose(...)` calls are silently dropped.
+   */
+  setVerbose(value: boolean): void {
+    _verbose = value;
+  }
+
+  isVerbose(): boolean {
+    return _verbose;
+  }
 
   /**
    * Emits a low-priority detail line. No-op unless `setVerbose(true)` has

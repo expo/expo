@@ -14,7 +14,7 @@ import path from 'path';
 
 import { PACKAGES_DIR } from '../../Constants';
 import { getPrecompileDir } from '../../Directories';
-import logger, { setVerbose } from '../../Logger';
+import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
 import { Artifacts } from '../Artifacts';
 import { Dependencies } from '../Dependencies';
@@ -385,7 +385,7 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     // Verbose widens what gets logged but doesn't change interactive vs.
     // non-interactive — TTY users can opt into the full per-step trace and
     // still see spinners. CI is non-interactive on its own.
-    setVerbose(request.verbose);
+    logger.setVerbose(request.verbose);
 
     // Force non-interactive when building in parallel — ora spinners from
     // concurrent packages would overwrite each other's terminal lines.

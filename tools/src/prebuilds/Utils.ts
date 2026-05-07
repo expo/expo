@@ -5,7 +5,7 @@ import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
-import logger, { isVerbose } from '../Logger';
+import logger from '../Logger';
 import { getListOfPackagesAsync, getPackageByName, Package } from '../Packages';
 import {
   discoverExternalPackagesAsync,
@@ -546,7 +546,7 @@ export const createAsyncSpinner = (
         logger.log(`${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`);
       },
       info: (text?: string) => {
-        if (!isVerbose()) return;
+        if (!logger.isVerbose()) return;
         logger.log(`${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
       },
     };
