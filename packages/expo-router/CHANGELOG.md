@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Upgrade react-native-screens version to 4.25.0-beta.3.
+- Upgrade react-native-screens version to 4.25.0-beta.3. ([#45482](https://github.com/expo/expo/pull/45482) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
