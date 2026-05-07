@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The `expo-calendar/next` API is now stable. The legacy `expo-calendar` module is deprecated. Migrate to `expo-calendar/next` to benefit from the new API and future fixes.
 
-The new API replaces free functions that accepted IDs with methods on class instances. Calendars, events, reminders, and attendees are now represented as class instances that hold only the ID of the native object. Key changes:
+The new API replaces free functions that accepted IDs with methods on class instances. Calendars, events, reminders, and attendees are now represented as class instances with their own methods. Key changes:
 
 - Operations on calendars, events, reminders, and attendees are now methods on the corresponding instance instead of free functions that accept an ID.
 - `createCalendar`, `createEvent`, and `createReminder` return class instances instead of string IDs.
