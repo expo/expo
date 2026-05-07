@@ -19,7 +19,9 @@ Set `EXPO_USE_PRECOMPILED_MODULES` to `0`. For local builds, export the env var 
 
 For EAS Build, create an [EAS environment variable](/eas/environment-variables/manage/):
 
-<Terminal cmd={['$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']} />
+<Terminal
+  cmd={['$ eas env:create --name EXPO_USE_PRECOMPILED_MODULES --value 0 --visibility plaintext']}
+/>
 
 The CLI will prompt you to select which environment(s) (`development`, `preview`, `production`) the variable applies to.
 
