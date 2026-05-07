@@ -1,5 +1,6 @@
 import type { ComponentProps } from 'react';
 import { StyleSheet, Text, unstable_createElement, View, type ViewProps } from 'react-native';
+
 import type { CheckboxProps } from './types';
 
 const styles = StyleSheet.create({
@@ -27,7 +28,7 @@ const NativeCheckbox = (
 /**
  * A toggle control that represents a checked or unchecked state.
  */
-export function Checkbox({ value, onValueChange, label, disabled, testID }: CheckboxProps) {
+export function Checkbox({ value, onValueChange, label, disabled = false, testID }: CheckboxProps) {
   return (
     <View role="label" aria-disabled={disabled} style={[styles.label, disabled && styles.disabled]}>
       <NativeCheckbox

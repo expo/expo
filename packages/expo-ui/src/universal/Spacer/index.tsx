@@ -1,4 +1,4 @@
-import { StyleSheet, View, type ViewStyle } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 import type { SpacerProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
