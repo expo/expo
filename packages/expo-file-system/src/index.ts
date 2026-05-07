@@ -4,6 +4,7 @@ export {
   DEFAULT_DEBOUNCE_MS,
   type FileCreateOptions,
   type DirectoryCreateOptions,
+  type RelocationOptions,
   type FileHandle,
   type FileInfo,
   type FileWriteOptions,

@@ -223,7 +223,17 @@ async function collectTaggedDeclarations(
       disableSources: true,
       hideGenerator: true,
       excludeExternals: true,
-      blockTags: [...Configuration.OptionDefaults.blockTags, DOCS_INLINE_TAG],
+      blockTags: [
+        ...Configuration.OptionDefaults.blockTags,
+        DOCS_INLINE_TAG,
+        '@alias',
+        '@deprecated',
+        '@docsMissing',
+        '@header',
+        '@hideType',
+        '@needsAudit',
+        '@platform',
+      ],
     } as unknown as TypeDocOptions,
     [new TSConfigReader(), new TypeDocReader()]
   );
