@@ -43,6 +43,7 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/node": "^22.14.0",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",
