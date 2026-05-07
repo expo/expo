@@ -12,7 +12,8 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
-    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
+    "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
+    "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
     "expo-module": "expo-module"
   },
   "bin": {
