@@ -130,5 +130,8 @@ export function evalMetroNoHandling(
     debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
   }
 
-  return profile(evalModule, 'eval-metro-bundle')(src, filename, { sourceMap });
+  return profile(evalModule, 'eval-metro-bundle')(src, filename, {
+    cache: false,
+    sourceMap,
+  });
 }
