@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Drop obsolete webview installation check ([#45489](https://github.com/expo/expo/pull/45489) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-06
