@@ -571,16 +571,36 @@ function applyConsoleFormatting(data: unknown[]): unknown[] {
 
 /** @returns formatted platform name for a client log event, or null if no prefix should be shown */
 function getPlatformTagForClientLog(mode?: string): string | null {
-  if (!mode) return null;
-  const formatted: Record<string, string> = { ios: 'iOS', android: 'Android', web: 'Web' };
-  return formatted[mode] ?? null;
+  switch (mode) {
+    case 'ios':
+      return 'iOS';
+    case 'android':
+      return 'Android';
+    case 'web':
+      return 'Web';
+    default:
+      return null;
+  }
 }
 
 /** @returns platform specific tag for a `BundleDetails` object */
 function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): string {
   const platform = bundleDetails?.platform ?? null;
   if (platform) {
-    const formatted = { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform;
+    let formatted: string;
+    switch (platform) {
+      case 'ios':
+        formatted = 'iOS';
+        break;
+      case 'android':
+        formatted = 'Android';
+        break;
+      case 'web':
+        formatted = 'Web';
+        break;
+      default:
+        formatted = platform;
+    }
     return `${chalk.bold(formatted)} `;
   }
 
