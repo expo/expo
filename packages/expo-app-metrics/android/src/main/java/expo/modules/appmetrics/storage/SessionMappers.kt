@@ -27,7 +27,10 @@ data class JsSession(
   @Field val type: String,
   @Field val startDate: String,
   @Field val endDate: String?,
-  @Field val metrics: List<JsMetric>
+  @Field val metrics: List<JsMetric>,
+  // Android doesn't collect log events yet; emitted as an empty list so
+  // consumers can rely on the same shape iOS produces.
+  @Field val logs: List<Any> = emptyList()
 ) : Record {
   companion object {
     fun fromSessionWithMetrics(value: SessionWithMetrics): JsSession =
