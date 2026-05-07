@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Prevent Metro loading indicator from showing broken states in headless runs.
+- Fix `--port 0` exiting silently in `expo start` when the port is busy.
 - Drop obsolete webview installation check ([#45489](https://github.com/expo/expo/pull/45489) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
