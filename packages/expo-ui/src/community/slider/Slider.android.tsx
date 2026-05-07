@@ -7,12 +7,14 @@ import { Slider as ComposeSlider } from '../../jetpack-compose/Slider';
  * Renders a Material 3 `Slider` wrapped in a Host.
  */
 export function Slider(props: SliderProps) {
-  const { value, minimumValue, maximumValue, step, disabled, onValueChange, style } = props;
+  const { value, minimumValue, maximumValue, step, disabled, inverted, onValueChange, style } =
+    props;
   const min = minimumValue ?? 0;
   const max = maximumValue ?? 1;
   const steps = step && step > 0 ? Math.max(0, Math.round((max - min) / step) - 1) : 0;
+  const hostStyle = inverted ? [style, { transform: [{ scaleX: -1 }] }] : style;
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host matchContents={{ vertical: true }} style={hostStyle}>
       <ComposeSlider
         value={value}
         min={minimumValue}

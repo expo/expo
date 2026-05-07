@@ -27,6 +27,7 @@ export default function CommunitySliderScreen() {
   const [widthIndex, setWidthIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
   const [disabled, setDisabled] = useState(false);
+  const [inverted, setInverted] = useState(false);
   const [value, setValue] = useState(0.5);
 
   const range = RANGES[rangeIndex];
@@ -48,6 +49,7 @@ export default function CommunitySliderScreen() {
           maximumValue={range.max}
           step={step}
           disabled={disabled}
+          inverted={inverted}
           onValueChange={setValue}
           style={width ? { width, alignSelf: 'center' } : { alignSelf: 'stretch' }}
         />
@@ -61,6 +63,10 @@ export default function CommunitySliderScreen() {
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Disabled</Text>
           <Switch value={disabled} onValueChange={setDisabled} />
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.rowLabel}>Inverted</Text>
+          <Switch value={inverted} onValueChange={setInverted} />
         </View>
       </View>
     </Page>

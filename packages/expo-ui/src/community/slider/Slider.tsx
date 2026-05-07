@@ -8,7 +8,16 @@ import { type SliderProps } from './types';
  * Renders a native HTML `<input type="range">` element.
  */
 export function Slider(props: SliderProps) {
-  const { value, minimumValue = 0, maximumValue = 1, step, disabled, onValueChange, style } = props;
+  const {
+    value,
+    minimumValue = 0,
+    maximumValue = 1,
+    step,
+    disabled,
+    inverted,
+    onValueChange,
+    style,
+  } = props;
   return (
     <input
       type="range"
@@ -18,7 +27,10 @@ export function Slider(props: SliderProps) {
       value={value ?? 0}
       disabled={disabled}
       onChange={(e) => onValueChange?.(e.target.valueAsNumber)}
-      style={StyleSheet.flatten(style) as React.CSSProperties}
+      style={{
+        ...(StyleSheet.flatten(style) as React.CSSProperties),
+        ...(inverted && { transform: 'scaleX(-1)' }),
+      }}
     />
   );
 }

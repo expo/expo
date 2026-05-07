@@ -8,9 +8,11 @@ import { disabled as disabledModifier } from '../../swift-ui/modifiers';
  * Renders a SwiftUI `Slider` wrapped in a Host.
  */
 export function Slider(props: SliderProps) {
-  const { value, minimumValue, maximumValue, step, disabled, onValueChange, style } = props;
+  const { value, minimumValue, maximumValue, step, disabled, inverted, onValueChange, style } =
+    props;
+  const hostStyle = inverted ? [style, { transform: [{ scaleX: -1 }] }] : style;
   return (
-    <Host matchContents={{ vertical: true }} style={style}>
+    <Host matchContents={{ vertical: true }} style={hostStyle}>
       <SwiftUISlider
         value={value}
         min={minimumValue}

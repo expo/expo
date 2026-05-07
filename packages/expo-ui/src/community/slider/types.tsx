@@ -35,6 +35,12 @@ export type SliderProps = {
    */
   step?: number;
   /**
+   * Reverses the direction of the slider so the maximum value is on the
+   * left and the minimum value is on the right.
+   * @default false
+   */
+  inverted?: boolean;
+  /**
    * Callback continuously called while the user is dragging the slider.
    */
   onValueChange?: (value: number) => void;
