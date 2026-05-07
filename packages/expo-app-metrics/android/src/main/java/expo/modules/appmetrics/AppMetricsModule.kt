@@ -20,6 +20,7 @@ import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -40,6 +41,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val moduleCreationTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
 
   lateinit var sessionManager: SessionManager
+
+  // Tracks the in-flight session-row INSERT kicked off in `OnCreate`. `OnDestroy`
+  // joins it before stamping `endTimestamp` so the UPDATE doesn't race with the
+  // INSERT and silently no-op.
+  private var sessionStartJob: Job? = null
 
   private var didSaveStartupMetrics: Boolean = false
 
@@ -69,12 +75,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         appSessionId = sessionManager.createSessionId()
 
-        // Persist the session row synchronously so it's visible to readers
+        // Persist the session row eagerly so it's visible to readers
         // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
-        // metrics arrive, and so `OnDestroy` can rely on the row existing when
-        // it stamps `endTimestamp`. Older app runs are deactivated in the same
-        // block to keep the order well-defined.
-        runBlocking {
+        // metrics arrive. Older app runs are deactivated in the same coroutine
+        // to keep the order well-defined. The `Job` is captured so `OnDestroy`
+        // can wait for the INSERT before stamping `endTimestamp`.
+        sessionStartJob = scope.launch {
           sessionManager.deactivateAllSessionsBefore(moduleCreationTimestamp)
           sessionManager.startSessionWithIdAt(
             sessionId = appSessionId,
@@ -107,8 +113,11 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       OnDestroy {
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
-        // is persisted before teardown.
+        // is persisted before teardown. Joining `sessionStartJob` first
+        // guarantees the INSERT lands before the UPDATE so the stamp doesn't
+        // silently no-op on a missing row.
         runBlocking {
+          sessionStartJob?.join()
           sessionManager.stopSession(appSessionId)
         }
       }
