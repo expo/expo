@@ -112,6 +112,29 @@ function toRealDirname(filePath: string): string {
 
 const hasModuleSourceMapsSupport = typeof nodeModule.setSourceMapsSupport === 'function';
 
+interface SourceMapsState {
+  enabled: boolean;
+  nodeModules?: boolean;
+  generatedCode?: boolean;
+}
+
+function getSourceMapsState(): SourceMapsState {
+  return typeof nodeModule.getSourceMapsSupport === 'function'
+    ? nodeModule.getSourceMapsSupport()
+    : { enabled: !!process.sourceMapsEnabled };
+}
+
+function setSourceMapsState(state: SourceMapsState): void {
+  if (hasModuleSourceMapsSupport) {
+    nodeModule.setSourceMapsSupport(state.enabled, {
+      nodeModules: state.nodeModules ?? false,
+      generatedCode: state.generatedCode ?? false,
+    });
+  } else {
+    process.setSourceMapsEnabled(state.enabled);
+  }
+}
+
 function makeSourceMapTempPath(filename: string) {
   let basename = path.basename(filename);
   const queryIdx = basename.search(/[?#]/);
@@ -207,6 +230,7 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
   }
 
   let mapPath: string | undefined;
+  let priorSourceMapsState: SourceMapsState | undefined;
   if (opts.sourceMap && !process.isBun) {
     try {
       mapPath = makeSourceMapTempPath(compileFilename);
@@ -224,12 +248,9 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
       // NOTE This needs to be a plain absolute path because Node rejects file: URLs
       inputCode += `\n//# sourceMappingURL=${mapPath}`;
 
+      priorSourceMapsState = getSourceMapsState();
       installSourceMapStackTrace();
-      if (hasModuleSourceMapsSupport) {
-        nodeModule.setSourceMapsSupport(true, { nodeModules: true });
-      } else {
-        process.setSourceMapsEnabled(true);
-      }
+      setSourceMapsState({ enabled: true, nodeModules: true });
     }
   }
 
@@ -254,12 +275,8 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
     throw error;
   } finally {
     if (mapPath) {
-      // Disable so subsequent requires of node_modules don't have their source maps parsed and cached
-      if (hasModuleSourceMapsSupport) {
-        nodeModule.setSourceMapsSupport(false);
-      } else {
-        process.setSourceMapsEnabled(false);
-      }
+      // Restore, so subsequent requires of node_modules won't have their source-maps read
+      setSourceMapsState(priorSourceMapsState ?? { enabled: false });
       // Node parses source maps eagerly during _compile, so the file can be removed now.
       try {
         fs.unlinkSync(mapPath);
