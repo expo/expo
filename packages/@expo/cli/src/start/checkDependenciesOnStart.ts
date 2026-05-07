@@ -43,10 +43,12 @@ export function printDependencyCheckResult(result: DependencyCheckResult): void 
     Log.warn(
       chalk`An update for {bold expo} is available: {red ${result.expo.actualVersion}} {dim →} {green ${result.expo.expectedVersionOrRange}}`
     );
-  }
-  if (result.otherCount > 0) {
     Log.warn(
       chalk`${result.otherCount} other package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`
+    );
+  } else if (result.otherCount > 0) {
+    Log.warn(
+      chalk`${result.otherCount} package${result.otherCount === 1 ? '' : 's'} may need updating. Run {bold npx expo install --check} for details.`
     );
   }
 }
