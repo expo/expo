@@ -91,7 +91,7 @@
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native-reanimated": "4.3.0",
+    "react-native-reanimated": "4.3.1",
     "react-native-worklets": "0.8.3"
   },
   "jest": {

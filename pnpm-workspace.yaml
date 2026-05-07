@@ -45,6 +45,4 @@ minimumReleaseAgeExclude:
   - '@react-native/*'
   - 'react-native'
   - multitars
-  - 'react-native-worklets'
-  - 'react-native-screens'
-  - 'whatwg-url-minimum'
+  - 'react-native-reanimated'
