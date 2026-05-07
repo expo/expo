@@ -62,7 +62,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ### Gradle JVM args
 
-EAS Build sets the `GRADLE_OPTS` environment variable on the build VM before Gradle runs. The values depend on the [resource class](/eas/json/#resourceclass) you select:
+EAS Build sets the `GRADLE_OPTS` environment variable on the build VM (the worker) before Gradle runs. The values depend on the [resource class](/eas/json/#resourceclass) you select:
 
 | Resource class | `-Xmx` (max heap) |
 | -------------- | ----------------- |
@@ -84,7 +84,7 @@ The worker also sets these top-level Gradle properties on `GRADLE_OPTS`:
 
 #### Overriding `GRADLE_OPTS` in eas.json
 
-You can replace the worker default by setting `GRADLE_OPTS` under a build profile's `env` in **eas.json**. Project env values take precedence over the worker default.
+You can replace the worker default by setting `GRADLE_OPTS` under a build profile's `env` in **eas.json**. Project environment values take precedence over the worker's default values.
 
 ```json eas.json
 {
