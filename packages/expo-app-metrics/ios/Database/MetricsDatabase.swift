@@ -10,15 +10,18 @@ import SQLite3
  `SQLITE_OPEN_FULLMUTEX`, but our higher-level data is not — the actor isolation is what guarantees
  consistent reads.
  */
-public final class MetricsDatabase: @unchecked Sendable {
+final class MetricsDatabase {
   /**
-   Schema version stamped into the database on first open. Bumped only when migrations are added.
+   Schema version stamped into the database on first open. Bump this whenever the schema or its
+   semantics change in a way that an older or newer build can't operate on; on a mismatch the
+   database is wiped and recreated (see `openConnection`). We don't ship migrations yet — the data
+   is local-only and short-lived, so wiping is preferable to maintaining migration code.
    */
-  static let currentSchemaVersion = 1
+  static let currentSchemaVersion = 2
 
   let database: SQLiteDatabase
 
-  public let fileUrl: URL
+  let fileUrl: URL
 
   convenience init(fileName: String = "metrics") throws {
     let directoryUrl = try FileManager.default
@@ -38,29 +41,34 @@ public final class MetricsDatabase: @unchecked Sendable {
   }
 
   /**
-   Opens a connection at `fileUrl`. If the existing database was written by a newer schema than this
-   build understands, the file (plus WAL/shm sidecars) is deleted and a fresh empty connection is
-   returned — losing local metrics is preferable to operating on an unknown shape.
+   Opens a connection at `fileUrl`. If the existing database was written by a different schema
+   version than this build understands, the file (plus WAL/shm sidecars) is deleted and a fresh
+   empty connection is returned — losing local metrics is preferable to operating on a schema we
+   can't read or write.
    */
   private static func openConnection(fileUrl: URL) throws -> SQLiteDatabase {
-    let database = try SQLiteDatabase(fileUrl: fileUrl)
-    if try isFromFutureSchema(database: database) {
-      logger.warn("""
-        [AppMetrics] Metrics database at \(fileUrl.path) was created by a newer schema \
-        (> v\(currentSchemaVersion)); recreating to keep this build functional.
-        """)
-      try resetDatabaseFile(at: fileUrl, currentConnection: database)
-      return try SQLiteDatabase(fileUrl: fileUrl)
+    let mismatchedVersion: Int?
+    do {
+      let database = try SQLiteDatabase(fileUrl: fileUrl)
+      mismatchedVersion = try mismatchedSchemaVersion(database: database)
+      // `database` deinits here, releasing the underlying connection before the file is deleted.
     }
-    return database
+    if let mismatchedVersion {
+      logger.warn("""
+        [AppMetrics] Metrics database at \(fileUrl.path) is at schema v\(mismatchedVersion) but \
+        this build expects v\(currentSchemaVersion); recreating to keep this build functional.
+        """)
+      try removeDatabaseFile(at: fileUrl)
+    }
+    return try SQLiteDatabase(fileUrl: fileUrl)
   }
 
   /**
-   Returns true when the connected database has a `schema_version` row whose value is greater than
-   `currentSchemaVersion`. A missing or empty `schema_version` table means the file was created by
-   this build (or an even older one without versioning) — neither counts as "from the future".
+   Returns the on-disk schema version when it differs from `currentSchemaVersion`, or `nil` when the
+   file is fresh (no `schema_version` table) or already at the expected version. A fresh file is
+   handled by `createSchemaIfNeeded`, which stamps the current version on first use.
    */
-  private static func isFromFutureSchema(database: SQLiteDatabase) throws -> Bool {
+  private static func mismatchedSchemaVersion(database: borrowing SQLiteDatabase) throws -> Int? {
     let tableExists = try database.prepare("""
       SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'schema_version' LIMIT 1
       """)
@@ -69,20 +77,20 @@ public final class MetricsDatabase: @unchecked Sendable {
       hasTable = true
     }
     if !hasTable {
-      return false
+      return nil
     }
     guard let onDiskVersion = try readSchemaVersion(database: database) else {
-      return false
+      return nil
     }
-    return onDiskVersion > currentSchemaVersion
+    return onDiskVersion == currentSchemaVersion ? nil : onDiskVersion
   }
 
   /**
-   Closes `currentConnection` and removes the database file along with its WAL/shm sidecars so the
-   caller can open a fresh, empty database in its place.
+   Removes the database file along with its WAL/shm sidecars. The caller must ensure no
+   `SQLiteDatabase` instance for this file is still alive — when one falls out of scope its `deinit`
+   runs `sqlite3_close_v2`, which is what releases the file handle.
    */
-  private static func resetDatabaseFile(at fileUrl: URL, currentConnection: SQLiteDatabase) throws {
-    currentConnection.close()
+  private static func removeDatabaseFile(at fileUrl: URL) throws {
     let fileManager = FileManager.default
     for url in [fileUrl, fileUrl.appendingPathExtension("wal"), fileUrl.appendingPathExtension("shm")] {
       if fileManager.fileExists(atPath: url.path) {
@@ -100,7 +108,7 @@ public final class MetricsDatabase: @unchecked Sendable {
   func insert(session: SessionRow) throws {
     let statement = try database.prepare("""
       INSERT OR IGNORE INTO sessions (
-        id, type, startTimestamp, endTimestamp, isActive, environment,
+        id, type, startDate, endDate, isActive, environment,
         appName, appIdentifier, appVersion, appBuildNumber,
         appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
         deviceOs, deviceOsVersion, deviceModel, deviceName,
@@ -114,7 +122,7 @@ public final class MetricsDatabase: @unchecked Sendable {
       )
       """)
     try statement.bindAll([
-      session.id, session.type, session.startTimestamp, session.endTimestamp, session.isActive, session.environment,
+      session.id, session.type, session.startDate, session.endDate, session.isActive, session.environment,
       session.appName, session.appIdentifier, session.appVersion, session.appBuildNumber,
       session.appUpdateId, session.appUpdateRuntimeVersion, session.appUpdateRequestHeaders, session.appEasBuildId,
       session.deviceOs, session.deviceOsVersion, session.deviceModel, session.deviceName,
@@ -135,18 +143,18 @@ public final class MetricsDatabase: @unchecked Sendable {
   }
 
   @AppMetricsActor
-  func updateSessionActiveStatus(id: String, isActive: Bool, endTimestamp: String?) throws {
+  func updateSessionActiveStatus(id: String, isActive: Bool, endDate: String?) throws {
     let statement = try database.prepare("""
-      UPDATE sessions SET isActive = ?1, endTimestamp = ?2 WHERE id = ?3
+      UPDATE sessions SET isActive = ?1, endDate = ?2 WHERE id = ?3
       """)
-    try statement.bindAll([isActive, endTimestamp, id])
+    try statement.bindAll([isActive, endDate, id])
     try statement.run()
   }
 
   @AppMetricsActor
   func deactivateAllSessionsBefore(timestamp: String) throws {
     let statement = try database.prepare("""
-      UPDATE sessions SET isActive = 0 WHERE isActive = 1 AND startTimestamp < ?1
+      UPDATE sessions SET isActive = 0 WHERE isActive = 1 AND startDate < ?1
       """)
     try statement.bindAll([timestamp])
     try statement.run()
@@ -210,8 +218,8 @@ public final class MetricsDatabase: @unchecked Sendable {
   }
 
   @AppMetricsActor
-  public func getAllSessions() throws -> [SessionRow] {
-    return try collectSessions(sql: "SELECT \(sessionColumns) FROM sessions ORDER BY startTimestamp DESC")
+  func getAllSessions() throws -> [SessionRow] {
+    return try collectSessions(sql: "SELECT \(sessionColumns) FROM sessions ORDER BY startDate DESC")
   }
 
   /**
@@ -219,7 +227,7 @@ public final class MetricsDatabase: @unchecked Sendable {
    JS-facing read APIs and (filtered down) by the dispatch path.
    */
   @AppMetricsActor
-  public func getAllSessionsWithChildren() throws -> [SessionWithChildren] {
+  func getAllSessionsWithChildren() throws -> [SessionWithChildren] {
     return try getAllSessions().map { session in
       let metrics = try getMetrics(sessionId: session.id)
       let logs = try getLogs(sessionId: session.id)
@@ -233,7 +241,7 @@ public final class MetricsDatabase: @unchecked Sendable {
    this with the persisted "last dispatched metric id" cursor to fetch only new rows.
    */
   @AppMetricsActor
-  public func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
+  func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
     let statement = try database.prepare("""
       SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
       FROM metrics WHERE id > ?1 ORDER BY id ASC
@@ -250,7 +258,7 @@ public final class MetricsDatabase: @unchecked Sendable {
    Returns log rows whose `id` is greater than `cursor`, in ascending id order.
    */
   @AppMetricsActor
-  public func getLogs(afterId cursor: Int64) throws -> [LogRow] {
+  func getLogs(afterId cursor: Int64) throws -> [LogRow] {
     let statement = try database.prepare("""
       SELECT id, sessionId, timestamp, severity, name, body, attributes, droppedAttributesCount
       FROM logs WHERE id > ?1 ORDER BY id ASC
@@ -268,7 +276,7 @@ public final class MetricsDatabase: @unchecked Sendable {
    sessions own a set of metric/log rows during dispatch.
    */
   @AppMetricsActor
-  public func getSessions(ids: [String]) throws -> [SessionRow] {
+  func getSessions(ids: [String]) throws -> [SessionRow] {
     if ids.isEmpty {
       return []
     }
@@ -287,7 +295,7 @@ public final class MetricsDatabase: @unchecked Sendable {
   @AppMetricsActor
   func getAllActiveSessions() throws -> [SessionRow] {
     return try collectSessions(sql: """
-      SELECT \(sessionColumns) FROM sessions WHERE isActive = 1 ORDER BY startTimestamp DESC
+      SELECT \(sessionColumns) FROM sessions WHERE isActive = 1 ORDER BY startDate DESC
       """)
   }
 
@@ -302,12 +310,12 @@ public final class MetricsDatabase: @unchecked Sendable {
     try database.transaction {
       let dropCrashReports = try database.prepare("""
         DELETE FROM crash_reports
-        WHERE sessionId IN (SELECT id FROM sessions WHERE startTimestamp < ?1)
+        WHERE sessionId IN (SELECT id FROM sessions WHERE startDate < ?1)
         """)
       try dropCrashReports.bindAll([cutoff])
       try dropCrashReports.run()
 
-      let dropSessions = try database.prepare("DELETE FROM sessions WHERE startTimestamp < ?1")
+      let dropSessions = try database.prepare("DELETE FROM sessions WHERE startDate < ?1")
       try dropSessions.bindAll([cutoff])
       try dropSessions.run()
     }
@@ -462,8 +470,8 @@ public final class MetricsDatabase: @unchecked Sendable {
       CREATE TABLE IF NOT EXISTS sessions (
         id TEXT PRIMARY KEY NOT NULL,
         type TEXT NOT NULL,
-        startTimestamp TEXT NOT NULL,
-        endTimestamp TEXT,
+        startDate TEXT NOT NULL,
+        endDate TEXT,
         isActive INTEGER NOT NULL DEFAULT 1,
         environment TEXT,
         appName TEXT,
@@ -516,7 +524,7 @@ public final class MetricsDatabase: @unchecked Sendable {
       """)
   }
 
-  private static func readSchemaVersion(database: SQLiteDatabase) throws -> Int? {
+  private static func readSchemaVersion(database: borrowing SQLiteDatabase) throws -> Int? {
     let statement = try database.prepare("SELECT version FROM schema_version LIMIT 1")
     var version: Int?
     try statement.forEachRow { row in
@@ -536,7 +544,7 @@ public final class MetricsDatabase: @unchecked Sendable {
   }
 
   private let sessionColumns = """
-    id, type, startTimestamp, endTimestamp, isActive, environment,
+    id, type, startDate, endDate, isActive, environment,
     appName, appIdentifier, appVersion, appBuildNumber,
     appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
     deviceOs, deviceOsVersion, deviceModel, deviceName,

@@ -50,9 +50,9 @@ public struct CrashReport: Codable, Sendable {
    "Simulate MetricKit Payloads" delivers a zero-width window where both timestamps
    equal "now," so we can't rely on the session's start time falling inside it.
 
-   1. Treat each session as the interval `[startTimestamp, endTimestamp ?? .distantFuture]` and
+   1. Treat each session as the interval `[startDate, endDate ?? .distantFuture]` and
       pick sessions that intersect the payload window. Among those, prefer the one
-      that never finished (`endTimestamp == nil`) — an unfinished main session is a strong
+      that never finished (`endDate == nil`) — an unfinished main session is a strong
       signal of a crash. Otherwise pick the intersecting session with the latest start time.
    2. If nothing intersects *and* the window is zero-width (Xcode-simulated payloads
       where intersection is impossible by construction), fall back to the latest
@@ -62,11 +62,11 @@ public struct CrashReport: Codable, Sendable {
       session would hide that.
    */
   func findMatchingSession(in mainSessions: [SessionRow]) -> SessionRow? {
-    let beginTimestamp = timestampBegin.ISO8601Format()
-    let endTimestamp = timestampEnd.ISO8601Format()
+    let payloadBegin = timestampBegin.ISO8601Format()
+    let payloadEnd = timestampEnd.ISO8601Format()
     let intersecting = mainSessions.filter { session in
-      let sessionEnd = session.endTimestamp ?? .distantFutureTimestamp
-      return session.startTimestamp <= endTimestamp && sessionEnd >= beginTimestamp
+      let sessionEnd = session.endDate ?? .distantFutureTimestamp
+      return session.startDate <= payloadEnd && sessionEnd >= payloadBegin
     }
     let candidates: [SessionRow]
     if !intersecting.isEmpty {
@@ -76,11 +76,11 @@ public struct CrashReport: Codable, Sendable {
     } else {
       return nil
     }
-    let unfinished = candidates.filter({ $0.endTimestamp == nil })
-    if let session = unfinished.max(by: { $0.startTimestamp < $1.startTimestamp }) {
+    let unfinished = candidates.filter({ $0.endDate == nil })
+    if let session = unfinished.max(by: { $0.startDate < $1.startDate }) {
       return session
     }
-    return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
+    return candidates.max(by: { $0.startDate < $1.startDate })
   }
 
   /**

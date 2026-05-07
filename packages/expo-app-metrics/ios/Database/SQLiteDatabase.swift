@@ -4,17 +4,14 @@ import Foundation
 import SQLite3
 
 /**
- Owns a SQLite connection. All access must be serialized externally (we rely on `AppMetricsActor`).
+ Owns a SQLite connection. The non-copyable shape encodes that the underlying C handle is an
+ exclusive resource — there can never be two `SQLiteDatabase` values referring to the same open
+ connection — so concurrent access via aliasing is impossible by construction. Callers still need
+ to serialize access through some single owner (we use `AppMetricsActor`) because the C library's
+ statement/transaction state is shared per-connection.
  */
-final class SQLiteDatabase: @unchecked Sendable {
-  private var handle: OpaquePointer?
-
-  var rawHandle: OpaquePointer {
-    guard let handle else {
-      preconditionFailure("SQLite database used after close")
-    }
-    return handle
-  }
+struct SQLiteDatabase: ~Copyable {
+  let rawHandle: OpaquePointer
 
   init(fileUrl: URL) throws {
     try FileManager.default.createDirectory(
@@ -22,49 +19,47 @@ final class SQLiteDatabase: @unchecked Sendable {
       withIntermediateDirectories: true
     )
     let flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX
-    let result = sqlite3_open_v2(fileUrl.path, &handle, flags, nil)
-    if result != SQLITE_OK {
-      let error = SQLiteError(db: handle, code: result)
-      if let handle {
-        sqlite3_close(handle)
+    var openedHandle: OpaquePointer?
+    let result = sqlite3_open_v2(fileUrl.path, &openedHandle, flags, nil)
+    guard result == SQLITE_OK, let openedHandle else {
+      let error = SQLiteError(db: openedHandle, code: result)
+      if let openedHandle {
+        sqlite3_close_v2(openedHandle)
       }
-      handle = nil
       throw error
     }
-    try execute("PRAGMA foreign_keys = ON")
-    try execute("PRAGMA journal_mode = WAL")
+    // Run startup PRAGMAs against the raw handle before binding it to `self`. If we assigned `self`
+    // first and then threw, the non-copyable struct would be in a partially-initialized state that
+    // Swift can't tear down — `deinit` only runs on fully-initialized values.
+    do {
+      try Self.execute("PRAGMA foreign_keys = ON", on: openedHandle)
+      try Self.execute("PRAGMA journal_mode = WAL", on: openedHandle)
+    } catch {
+      sqlite3_close_v2(openedHandle)
+      throw error
+    }
+    self.rawHandle = openedHandle
+  }
+
+  private static func execute(_ sql: String, on handle: OpaquePointer) throws {
+    var errorPointer: UnsafeMutablePointer<CChar>?
+    let result = sqlite3_exec(handle, sql, nil, nil, &errorPointer)
+    if result != SQLITE_OK {
+      let message = errorPointer.map { String(cString: $0) } ?? "unknown error"
+      sqlite3_free(errorPointer)
+      throw SQLiteError(code: result, message: message)
+    }
   }
 
   deinit {
-    if let handle {
-      sqlite3_close_v2(handle)
-    }
-  }
-
-  /**
-   Closes the underlying connection. Idempotent — safe to call from cleanup paths that don't have a
-   meaningful way to react to a close failure. Uses `sqlite3_close_v2` so any outstanding prepared
-   statements zombie the handle instead of blocking the close.
-   */
-  func close() {
-    guard let handle else {
-      return
-    }
-    sqlite3_close_v2(handle)
-    self.handle = nil
+    sqlite3_close_v2(rawHandle)
   }
 
   /**
    Executes one or more SQL statements with no parameters and no result rows.
    */
   func execute(_ sql: String) throws {
-    var errorPointer: UnsafeMutablePointer<CChar>?
-    let result = sqlite3_exec(rawHandle, sql, nil, nil, &errorPointer)
-    if result != SQLITE_OK {
-      let message = errorPointer.map { String(cString: $0) } ?? "unknown error"
-      sqlite3_free(errorPointer)
-      throw SQLiteError(code: result, message: message)
-    }
+    try Self.execute(sql, on: rawHandle)
   }
 
   /**

@@ -55,20 +55,21 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       }
     }
   }
+}
 
-  private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
-    let encoder = JSONEncoder()
-    encoder.dateEncodingStrategy = .iso8601
-    do {
-      let data = try encoder.encode(crashReport)
-      guard let payload = String(data: data, encoding: .utf8) else {
-        logger.warn("[AppMetrics] Crash report payload was not valid UTF-8 — skipping database write")
-        return
-      }
-      try AppMetrics.database.setCrashReport(sessionId: sessionId, payload: payload)
-    } catch {
-      logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
+@AppMetricsActor
+private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
+  let encoder = JSONEncoder()
+  encoder.dateEncodingStrategy = .iso8601
+  do {
+    let data = try encoder.encode(crashReport)
+    guard let payload = String(data: data, encoding: .utf8) else {
+      logger.warn("[AppMetrics] Crash report payload was not valid UTF-8 — skipping database write")
+      return
     }
+    try AppMetrics.database.setCrashReport(sessionId: sessionId, payload: payload)
+  } catch {
+    logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
   }
 }
 

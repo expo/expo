@@ -5,7 +5,7 @@ import Foundation
 extension String {
   /**
    Sentinel ISO-8601 timestamp that sorts after any realistic value. Used in time-window
-   intersection logic where a missing `endTimestamp` means "still active, treat as far future".
+   intersection logic where a missing `endDate` means "still active, treat as far future".
    */
   static let distantFutureTimestamp = "9999-12-31T23:59:59Z"
 }
@@ -14,18 +14,11 @@ extension String {
  A session paired with its child metrics, logs, and (optional) crash report payload — the shape
  dispatch and the JS bridge consume.
  */
-public struct SessionWithChildren: Sendable {
-  public let session: SessionRow
-  public let metrics: [MetricRow]
-  public let logs: [LogRow]
-  public let crashReportJSON: String?
-
-  public init(session: SessionRow, metrics: [MetricRow], logs: [LogRow], crashReportJSON: String?) {
-    self.session = session
-    self.metrics = metrics
-    self.logs = logs
-    self.crashReportJSON = crashReportJSON
-  }
+struct SessionWithChildren: Sendable {
+  let session: SessionRow
+  let metrics: [MetricRow]
+  let logs: [LogRow]
+  let crashReportJSON: String?
 }
 
 /**
@@ -35,8 +28,8 @@ public struct SessionWithChildren: Sendable {
 public struct SessionRow: Sendable {
   public let id: String
   public let type: String
-  public let startTimestamp: String
-  public let endTimestamp: String?
+  public let startDate: String
+  public let endDate: String?
   public let isActive: Bool
   public let environment: String?
 
@@ -63,8 +56,8 @@ public struct SessionRow: Sendable {
   public init(
     id: String,
     type: String,
-    startTimestamp: String,
-    endTimestamp: String?,
+    startDate: String,
+    endDate: String?,
     isActive: Bool,
     environment: String?,
     appName: String?,
@@ -86,8 +79,8 @@ public struct SessionRow: Sendable {
   ) {
     self.id = id
     self.type = type
-    self.startTimestamp = startTimestamp
-    self.endTimestamp = endTimestamp
+    self.startDate = startDate
+    self.endDate = endDate
     self.isActive = isActive
     self.environment = environment
     self.appName = appName
@@ -114,8 +107,8 @@ extension SessionRow {
     self.init(
       id: row.string(at: 0) ?? "",
       type: row.string(at: 1) ?? "unknown",
-      startTimestamp: row.string(at: 2) ?? "",
-      endTimestamp: row.string(at: 3),
+      startDate: row.string(at: 2) ?? "",
+      endDate: row.string(at: 3),
       isActive: row.bool(at: 4) ?? false,
       environment: row.string(at: 5),
       appName: row.string(at: 6),

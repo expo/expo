@@ -33,24 +33,26 @@ struct MetricsDatabaseTests {
   }
 
   @Test
-  func `wipes the file when its schema version is newer than this build`() throws {
-    try withTemporaryDirectory { directoryUrl in
-      // Simulate a database written by a future build: insert a session, then bump schema_version
-      // past whatever this build understands.
-      do {
-        let database = try MetricsDatabase(directoryUrl: directoryUrl)
-        try database.insert(session: makeSessionRow(id: "from-the-future"))
-        let bump = try database.database.prepare("UPDATE schema_version SET version = ?1")
-        try bump.bindAll([MetricsDatabase.currentSchemaVersion + 1])
-        try bump.run()
-      }
+  func `wipes the file when its schema version differs from this build`() throws {
+    for offset in [-1, 1] {
+      try withTemporaryDirectory { directoryUrl in
+        // Simulate a database written by a different build: insert a session, then nudge
+        // schema_version to a value this build doesn't recognise.
+        do {
+          let database = try MetricsDatabase(directoryUrl: directoryUrl)
+          try database.insert(session: makeSessionRow(id: "from-another-build"))
+          let bump = try database.database.prepare("UPDATE schema_version SET version = ?1")
+          try bump.bindAll([MetricsDatabase.currentSchemaVersion + offset])
+          try bump.run()
+        }
 
-      // Reopening should detect the future version, wipe the file, and start fresh.
-      let database = try MetricsDatabase(directoryUrl: directoryUrl)
-      let restoredSession = try database.getSession(id: "from-the-future")
-      let restoredVersion = try readSchemaVersion(database: database)
-      #expect(restoredSession == nil)
-      #expect(restoredVersion == MetricsDatabase.currentSchemaVersion)
+        // Reopening should detect the mismatch, wipe the file, and start fresh.
+        let database = try MetricsDatabase(directoryUrl: directoryUrl)
+        let restoredSession = try database.getSession(id: "from-another-build")
+        let restoredVersion = try readSchemaVersion(database: database)
+        #expect(restoredSession == nil)
+        #expect(restoredVersion == MetricsDatabase.currentSchemaVersion)
+      }
     }
   }
 
@@ -65,8 +67,8 @@ struct MetricsDatabaseTests {
       let fetched = try #require(try database.getSession(id: "session-1"))
       #expect(fetched.id == row.id)
       #expect(fetched.type == row.type)
-      #expect(fetched.startTimestamp == row.startTimestamp)
-      #expect(fetched.endTimestamp == nil)
+      #expect(fetched.startDate == row.startDate)
+      #expect(fetched.endDate == nil)
       #expect(fetched.isActive == true)
       #expect(fetched.environment == row.environment)
       #expect(fetched.appName == row.appName)
@@ -122,20 +124,20 @@ struct MetricsDatabaseTests {
       try database.updateSessionActiveStatus(
         id: "session-active",
         isActive: false,
-        endTimestamp: "2026-05-07T12:00:00Z"
+        endDate: "2026-05-07T12:00:00Z"
       )
 
       let fetched = try #require(try database.getSession(id: "session-active"))
       #expect(fetched.isActive == false)
-      #expect(fetched.endTimestamp == "2026-05-07T12:00:00Z")
+      #expect(fetched.endDate == "2026-05-07T12:00:00Z")
     }
   }
 
   @Test
   func `deactivates active sessions started before the cutoff`() throws {
     try withTemporaryDatabase { database in
-      try database.insert(session: makeSessionRow(id: "old", startTimestamp: "2026-05-01T00:00:00Z"))
-      try database.insert(session: makeSessionRow(id: "new", startTimestamp: "2026-05-07T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "old", startDate: "2026-05-01T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "new", startDate: "2026-05-07T00:00:00Z"))
 
       try database.deactivateAllSessionsBefore(timestamp: "2026-05-05T00:00:00Z")
 
@@ -162,7 +164,7 @@ struct MetricsDatabaseTests {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "active", environment: "development"))
       try database.insert(session: makeSessionRow(id: "inactive", environment: "development"))
-      try database.updateSessionActiveStatus(id: "inactive", isActive: false, endTimestamp: nil)
+      try database.updateSessionActiveStatus(id: "inactive", isActive: false, endDate: nil)
 
       try database.updateEnvironmentForActiveSessions(environment: "staging")
 
@@ -176,8 +178,8 @@ struct MetricsDatabaseTests {
   @Test
   func `getAllSessions returns rows ordered by start timestamp descending`() throws {
     try withTemporaryDatabase { database in
-      try database.insert(session: makeSessionRow(id: "older", startTimestamp: "2026-05-01T00:00:00Z"))
-      try database.insert(session: makeSessionRow(id: "newer", startTimestamp: "2026-05-07T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "older", startDate: "2026-05-01T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "newer", startDate: "2026-05-07T00:00:00Z"))
 
       let rows = try database.getAllSessions()
       #expect(rows.map(\.id) == ["newer", "older"])
@@ -189,7 +191,7 @@ struct MetricsDatabaseTests {
     try withTemporaryDatabase { database in
       try database.insert(session: makeSessionRow(id: "active"))
       try database.insert(session: makeSessionRow(id: "inactive"))
-      try database.updateSessionActiveStatus(id: "inactive", isActive: false, endTimestamp: nil)
+      try database.updateSessionActiveStatus(id: "inactive", isActive: false, endDate: nil)
 
       let rows = try database.getAllActiveSessions()
       #expect(rows.map(\.id) == ["active"])
@@ -222,12 +224,12 @@ struct MetricsDatabaseTests {
     try withTemporaryDatabase { database in
       // `old-active` simulates a session whose process crashed before it could be marked inactive —
       // it must still be cleaned up once it is past the cutoff.
-      try database.insert(session: makeSessionRow(id: "old-inactive", startTimestamp: "2026-05-01T00:00:00Z"))
-      try database.insert(session: makeSessionRow(id: "old-active", startTimestamp: "2026-05-01T00:00:00Z"))
-      try database.insert(session: makeSessionRow(id: "new-active", startTimestamp: "2026-05-07T00:00:00Z"))
-      try database.insert(session: makeSessionRow(id: "new-inactive", startTimestamp: "2026-05-07T00:00:00Z"))
-      try database.updateSessionActiveStatus(id: "old-inactive", isActive: false, endTimestamp: nil)
-      try database.updateSessionActiveStatus(id: "new-inactive", isActive: false, endTimestamp: nil)
+      try database.insert(session: makeSessionRow(id: "old-inactive", startDate: "2026-05-01T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "old-active", startDate: "2026-05-01T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "new-active", startDate: "2026-05-07T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "new-inactive", startDate: "2026-05-07T00:00:00Z"))
+      try database.updateSessionActiveStatus(id: "old-inactive", isActive: false, endDate: nil)
+      try database.updateSessionActiveStatus(id: "new-inactive", isActive: false, endDate: nil)
 
       try database.cleanupSessions(olderThan: "2026-05-05T00:00:00Z")
 
@@ -479,7 +481,7 @@ struct MetricsDatabaseTests {
   @Test
   func `cleanupSessions removes the matching crash report`() throws {
     try withTemporaryDatabase { database in
-      try database.insert(session: makeSessionRow(id: "old", startTimestamp: "2026-05-01T00:00:00Z"))
+      try database.insert(session: makeSessionRow(id: "old", startDate: "2026-05-01T00:00:00Z"))
       try database.setCrashReport(sessionId: "old", payload: "{}")
 
       try database.cleanupSessions(olderThan: "2026-05-05T00:00:00Z")
@@ -530,15 +532,15 @@ private func withTemporaryDirectory(_ body: (URL) throws -> Void) throws {
 private func makeSessionRow(
   id: String,
   type: String = "main",
-  startTimestamp: String = "2026-05-07T12:00:00Z",
+  startDate: String = "2026-05-07T12:00:00Z",
   environment: String? = "test",
   appName: String? = "TestApp"
 ) -> SessionRow {
   return SessionRow(
     id: id,
     type: type,
-    startTimestamp: startTimestamp,
-    endTimestamp: nil,
+    startDate: startDate,
+    endDate: nil,
     isActive: true,
     environment: environment,
     appName: appName,

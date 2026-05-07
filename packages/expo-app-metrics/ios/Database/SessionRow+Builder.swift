@@ -17,8 +17,8 @@ extension SessionRow {
     return SessionRow(
       id: session.id,
       type: session.type.rawValue,
-      startTimestamp: session.startDate.ISO8601Format(),
-      endTimestamp: session.endDate?.ISO8601Format(),
+      startDate: session.startDate.ISO8601Format(),
+      endDate: session.endDate?.ISO8601Format(),
       isActive: session.isActive,
       environment: environment,
       appName: app.appName,
