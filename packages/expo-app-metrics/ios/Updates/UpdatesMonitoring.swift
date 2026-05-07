@@ -26,7 +26,15 @@ internal class UpdatesMonitoring: MetricReporter {
             updatesInfo: updatesInfo
           )
           AppInfo.current = patched
-          AppMetrics.storage.currentEntry.app = patched
+          do {
+            try AppMetrics.database.updateAppUpdatesInfoForActiveSessions(
+              updateId: updatesInfo.updateId,
+              runtimeVersion: updatesInfo.runtimeVersion,
+              requestHeadersJSON: UpdatesMonitoring.encodeAsJSONString(updatesInfo.requestHeaders)
+            )
+          } catch {
+            logger.warn("[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)")
+          }
         }
       }
     }
@@ -54,6 +62,13 @@ internal class UpdatesMonitoring: MetricReporter {
       runtimeVersion: runtimeVersion,
       requestHeaders: requestHeaders
     )
+  }
+
+  fileprivate static func encodeAsJSONString(_ value: [String: String]?) -> String? {
+    guard let value, let data = try? JSONSerialization.data(withJSONObject: value) else {
+      return nil
+    }
+    return String(data: data, encoding: .utf8)
   }
 
   nonisolated func downloadTimeMetric(_ subscription: UpdatesStateChangeSubscription?) -> Metric? {

@@ -10,7 +10,7 @@ import SQLite3
  `SQLITE_OPEN_FULLMUTEX`, but our higher-level data is not — the actor isolation is what guarantees
  consistent reads.
  */
-public final class MetricsDatabase {
+public final class MetricsDatabase: @unchecked Sendable {
   /**
    Schema version stamped into the database on first open. Bumped only when migrations are added.
    */
@@ -167,6 +167,26 @@ public final class MetricsDatabase {
   }
 
   /**
+   Patches the OTA-related app columns on every active session. Called when the launched-update id
+   becomes known after the session row has already been written (e.g. an update finishes downloading
+   mid-session, or `getUpdatesMetricsInfo()` initially returned nil).
+   */
+  @AppMetricsActor
+  func updateAppUpdatesInfoForActiveSessions(
+    updateId: String?,
+    runtimeVersion: String?,
+    requestHeadersJSON: String?
+  ) throws {
+    let statement = try database.prepare("""
+      UPDATE sessions
+      SET appUpdateId = ?1, appUpdateRuntimeVersion = ?2, appUpdateRequestHeaders = ?3
+      WHERE isActive = 1
+      """)
+    try statement.bindAll([updateId, runtimeVersion, requestHeadersJSON])
+    try statement.run()
+  }
+
+  /**
    Deletes a session and any crash report keyed by its id. Metrics and logs cascade via FK; crash
    reports do not (they're allowed to outlive their session, since a crash can be attributed to a
    session we never managed to record).
@@ -190,8 +210,78 @@ public final class MetricsDatabase {
   }
 
   @AppMetricsActor
-  func getAllSessions() throws -> [SessionRow] {
+  public func getAllSessions() throws -> [SessionRow] {
     return try collectSessions(sql: "SELECT \(sessionColumns) FROM sessions ORDER BY startTimestamp DESC")
+  }
+
+  /**
+   Returns every session along with its metrics, logs, and crash report — newest first. Used by the
+   JS-facing read APIs and (filtered down) by the dispatch path.
+   */
+  @AppMetricsActor
+  public func getAllSessionsWithChildren() throws -> [SessionWithChildren] {
+    return try getAllSessions().map { session in
+      let metrics = try getMetrics(sessionId: session.id)
+      let logs = try getLogs(sessionId: session.id)
+      let crash = try getCrashReport(sessionId: session.id)
+      return SessionWithChildren(session: session, metrics: metrics, logs: logs, crashReportJSON: crash)
+    }
+  }
+
+  /**
+   Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Dispatch uses
+   this with the persisted "last dispatched metric id" cursor to fetch only new rows.
+   */
+  @AppMetricsActor
+  public func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
+    let statement = try database.prepare("""
+      SELECT id, sessionId, timestamp, category, name, value, routeName, updateId, params
+      FROM metrics WHERE id > ?1 ORDER BY id ASC
+      """)
+    try statement.bindAll([cursor])
+    var rows: [MetricRow] = []
+    try statement.forEachRow { row in
+      rows.append(MetricRow(row: row))
+    }
+    return rows
+  }
+
+  /**
+   Returns log rows whose `id` is greater than `cursor`, in ascending id order.
+   */
+  @AppMetricsActor
+  public func getLogs(afterId cursor: Int64) throws -> [LogRow] {
+    let statement = try database.prepare("""
+      SELECT id, sessionId, timestamp, severity, name, body, attributes, droppedAttributesCount
+      FROM logs WHERE id > ?1 ORDER BY id ASC
+      """)
+    try statement.bindAll([cursor])
+    var rows: [LogRow] = []
+    try statement.forEachRow { row in
+      rows.append(LogRow(row: row))
+    }
+    return rows
+  }
+
+  /**
+   Fetches a batch of sessions by id. Used to hydrate session metadata after looking up which
+   sessions own a set of metric/log rows during dispatch.
+   */
+  @AppMetricsActor
+  public func getSessions(ids: [String]) throws -> [SessionRow] {
+    if ids.isEmpty {
+      return []
+    }
+    let placeholders = ids.indices.map { "?\($0 + 1)" }.joined(separator: ", ")
+    let statement = try database.prepare("""
+      SELECT \(sessionColumns) FROM sessions WHERE id IN (\(placeholders))
+      """)
+    try statement.bindAll(ids.map { $0 as SQLiteBindable })
+    var rows: [SessionRow] = []
+    try statement.forEachRow { row in
+      rows.append(SessionRow(row: row))
+    }
+    return rows
   }
 
   @AppMetricsActor

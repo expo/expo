@@ -6,7 +6,7 @@ import SQLite3
 /**
  Owns a SQLite connection. All access must be serialized externally (we rely on `AppMetricsActor`).
  */
-final class SQLiteDatabase {
+final class SQLiteDatabase: @unchecked Sendable {
   private var handle: OpaquePointer?
 
   var rawHandle: OpaquePointer {

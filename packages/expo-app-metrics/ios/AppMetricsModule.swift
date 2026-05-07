@@ -68,23 +68,23 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     AsyncFunction("getStoredEntries") { () -> [Any] in
-      let entries = await AppMetrics.storage.getAllEntries()
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(entries)
-      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
+      return try await AppMetricsActor.isolated {
+        let sessions = try AppMetrics.database.getAllSessionsWithChildren()
+        return sessions.map { encodeSessionWithChildren($0) }
+      }.value
     }
 
     AsyncFunction("clearStoredEntries") {
-      return try await AppMetrics.storage.clear()
+      try await AppMetricsActor.isolated {
+        try AppMetrics.database.deleteAllSessions()
+      }.value
     }
 
     AsyncFunction("getAllSessions") { () -> [Any] in
-      let sessions = await AppMetrics.storage.getAllSessions()
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(sessions.map(SessionCoder.init))
-      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
+      return try await AppMetricsActor.isolated {
+        let sessions = try AppMetrics.database.getAllSessionsWithChildren()
+        return sessions.map { encodeSessionWithChildren($0) }
+      }.value
     }
 
     AsyncFunction("addCustomMetricToSession") { (metric: JsMetric) in
@@ -142,6 +142,87 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
   }
+}
+
+/**
+ Serializes a session row with its children into the `[String: Any]` shape JS expects. Mirrors the
+ fields the JSON-era `Entry`+`Session` Codable encoding produced, so the JS bridge contract stays
+ stable across the SQLite cutover.
+ */
+private func encodeSessionWithChildren(_ row: SessionWithChildren) -> [String: Any] {
+  let session = row.session
+  var dict: [String: Any] = [
+    "id": session.id,
+    "type": session.type,
+    "startTimestamp": session.startTimestamp,
+    "isActive": session.isActive,
+    "metrics": row.metrics.map { encodeMetric($0) },
+    "logs": row.logs.map { encodeLog($0) }
+  ]
+  if let endTimestamp = session.endTimestamp {
+    dict["endTimestamp"] = endTimestamp
+  }
+  if let environment = session.environment {
+    dict["environment"] = environment
+  }
+  if let appName = session.appName { dict["appName"] = appName }
+  if let appIdentifier = session.appIdentifier { dict["appIdentifier"] = appIdentifier }
+  if let appVersion = session.appVersion { dict["appVersion"] = appVersion }
+  if let appBuildNumber = session.appBuildNumber { dict["appBuildNumber"] = appBuildNumber }
+  if let appUpdateId = session.appUpdateId { dict["appUpdateId"] = appUpdateId }
+  if let appUpdateRuntimeVersion = session.appUpdateRuntimeVersion { dict["appUpdateRuntimeVersion"] = appUpdateRuntimeVersion }
+  if let appEasBuildId = session.appEasBuildId { dict["appEasBuildId"] = appEasBuildId }
+  if let deviceOs = session.deviceOs { dict["deviceOs"] = deviceOs }
+  if let deviceOsVersion = session.deviceOsVersion { dict["deviceOsVersion"] = deviceOsVersion }
+  if let deviceModel = session.deviceModel { dict["deviceModel"] = deviceModel }
+  if let deviceName = session.deviceName { dict["deviceName"] = deviceName }
+  if let expoSdkVersion = session.expoSdkVersion { dict["expoSdkVersion"] = expoSdkVersion }
+  if let reactNativeVersion = session.reactNativeVersion { dict["reactNativeVersion"] = reactNativeVersion }
+  if let clientVersion = session.clientVersion { dict["clientVersion"] = clientVersion }
+  if let languageTag = session.languageTag { dict["languageTag"] = languageTag }
+  if let crashReportJSON = row.crashReportJSON,
+     let data = crashReportJSON.data(using: .utf8),
+     let parsed = try? JSONSerialization.jsonObject(with: data) {
+    dict["crashReport"] = parsed
+  }
+  return dict
+}
+
+private func encodeMetric(_ metric: MetricRow) -> [String: Any] {
+  var dict: [String: Any] = [
+    "id": metric.id ?? -1,
+    "sessionId": metric.sessionId,
+    "name": metric.name,
+    "value": metric.value,
+    "timestamp": metric.timestamp
+  ]
+  if let category = metric.category { dict["category"] = category }
+  if let routeName = metric.routeName { dict["routeName"] = routeName }
+  if let updateId = metric.updateId { dict["updateId"] = updateId }
+  if let params = metric.params,
+     let data = params.data(using: .utf8),
+     let parsed = try? JSONSerialization.jsonObject(with: data) {
+    dict["params"] = parsed
+  }
+  return dict
+}
+
+private func encodeLog(_ log: LogRow) -> [String: Any] {
+  var dict: [String: Any] = [
+    "id": log.id ?? -1,
+    "sessionId": log.sessionId,
+    "name": log.name,
+    "severity": log.severity,
+    "timestamp": log.timestamp,
+    "droppedAttributesCount": log.droppedAttributesCount
+  ]
+  if let body = log.body { dict["body"] = body }
+  if let attributes = log.attributes,
+     let data = attributes.data(using: .utf8),
+     let parsed = try? JSONSerialization.jsonObject(with: data) {
+    dict["attributes"] = parsed
+  }
+  return dict
 }
 
 struct MetricAttributes: Record {

@@ -39,19 +39,35 @@ final class MetricKitSubscriber: NSObject, MXMetricManagerSubscriber, Sendable {
       }
     }
     AppMetricsActor.isolated {
-      let mainSessions = AppMetrics.storage.getAllMainSessions()
-      var didStoreAny = false
+      let mainSessions: [SessionRow]
+      do {
+        mainSessions = try AppMetrics.database.getAllSessions().filter { $0.type == Session.SessionType.main.rawValue }
+      } catch {
+        logger.warn("[AppMetrics] Failed to load main sessions for crash attribution: \(error.localizedDescription)")
+        return
+      }
       for crashReport in crashReports {
         if let session = crashReport.findMatchingSession(in: mainSessions) {
-          session.storeCrashReport(crashReport)
-          didStoreAny = true
+          persistCrashReport(crashReport, sessionId: session.id)
         } else {
           logger.warn("[AppMetrics] Received crash report with no matching session:\n\(crashReport)")
         }
       }
-      if didStoreAny {
-        try? AppMetrics.storage.commit()
+    }
+  }
+
+  private func persistCrashReport(_ crashReport: CrashReport, sessionId: String) {
+    let encoder = JSONEncoder()
+    encoder.dateEncodingStrategy = .iso8601
+    do {
+      let data = try encoder.encode(crashReport)
+      guard let payload = String(data: data, encoding: .utf8) else {
+        logger.warn("[AppMetrics] Crash report payload was not valid UTF-8 — skipping database write")
+        return
       }
+      try AppMetrics.database.setCrashReport(sessionId: sessionId, payload: payload)
+    } catch {
+      logger.warn("[AppMetrics] Failed to persist crash report for session \(sessionId): \(error.localizedDescription)")
     }
   }
 }

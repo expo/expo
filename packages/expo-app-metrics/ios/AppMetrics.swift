@@ -23,7 +23,14 @@ public struct AppMetrics {
   }
   #endif
 
-  public static let storage = MetricsStorage()
+  public static let database: MetricsDatabase = {
+    do {
+      return try MetricsDatabase()
+    } catch {
+      logger.error("[AppMetrics] Failed to open the metrics database: \(error.localizedDescription)")
+      preconditionFailure("MetricsDatabase failed to open: \(error)")
+    }
+  }()
 
   // Make the initializer private to prevent non-singleton usage.
   private init() {}
@@ -32,10 +39,13 @@ public struct AppMetrics {
 
   @AppMetricsActor
   public static func setEnvironment(_ environment: String) {
-    storage.currentEntry.environment = environment
     guard AppMetricsUserDefaults.environment != environment else { return }
     AppMetricsUserDefaults.environment = environment
-    try? storage.commit()
+    do {
+      try database.updateEnvironmentForActiveSessions(environment: environment)
+    } catch {
+      logger.warn("[AppMetrics] Failed to propagate environment to active sessions: \(error.localizedDescription)")
+    }
   }
 
   // MARK: - Main session

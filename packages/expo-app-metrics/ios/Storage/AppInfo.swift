@@ -25,6 +25,12 @@ public struct AppInfo: Codable, Equatable, Sendable {
         return requestHeaders?["expo-channel-name"]
       }
     }
+
+    public init(updateId: String?, runtimeVersion: String?, requestHeaders: [String: String]?) {
+      self.updateId = updateId
+      self.runtimeVersion = runtimeVersion
+      self.requestHeaders = requestHeaders
+    }
   }
 
   public init(
