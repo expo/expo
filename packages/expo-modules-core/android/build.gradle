@@ -1,6 +1,5 @@
-import com.android.build.gradle.tasks.ExternalNativeBuildJsonTask
-import expo.modules.plugin.gradle.ExpoModuleExtension
 import groovy.json.JsonSlurper
+import expo.modules.plugin.gradle.ExpoModuleExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
@@ -17,7 +16,6 @@ buildscript {
       classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
     }
 
-    classpath("org.apache.commons:commons-text:1.14.0")
   }
 }
 
@@ -265,55 +263,56 @@ if (shouldTurnWarningsIntoErrors) {
   }
 }
 
-// Generates the PCH file during sync if it doesn't exist yet
-def generatePCHTask = tasks.register("generatePCH") {
-  def configureTaskName = "configureCMakeDebug"
-  dependsOn(configureTaskName)
+// Generates minimal stub PCH files from an empty header so the IDE's C++ engine
+// doesn't fail during sync. Near-instant unlike the full ExpoHeader.pch.
+// The actual build regenerates proper PCH files via ninja.
+def cxxDir = project.file(".cxx")
+def generateStubPCHTask = tasks.register("generateStubPCH") {
+  dependsOn("configureCMakeDebug")
 
   doLast {
-    reactNativeArchitectures().each { abi ->
-      def configureTaskNameForAbi = configureTaskName + "[" + abi + "]"
-      ExternalNativeBuildJsonTask configureTask = tasks.named(configureTaskNameForAbi).get() as ExternalNativeBuildJsonTask
+    if (!cxxDir.exists()) {
+      return
+    }
 
-      // Gets CxxModel for the given ABI
-      File cxxBuildFolder = configureTask.abi.cxxBuildFolder
-
-      // Gets compile_commands.json file to find the command to generate the PCH file
-      File compileCommandsFile = new File(cxxBuildFolder, "compile_commands.json")
-      if (!compileCommandsFile.exists()) {
+    cxxDir.eachFileRecurse { file ->
+      if (file.name != "compile_commands.json") {
         return
       }
 
-      def parsedJson = new JsonSlurper().parseText(compileCommandsFile.text)
-      for (int i = 0; i < parsedJson.size(); i++) {
-        def commandObj = parsedJson[i]
-
-        def path = commandObj.file
-        if (!path.endsWith("cmake_pch.hxx.cxx")) {
-          continue
+      new JsonSlurper().parseText(file.text).each { entry ->
+        if (!entry.file.endsWith("cmake_pch.hxx.cxx")) {
+          return
         }
 
-        def generatedFilePath = path.substring(0, path.length() - ".cxx".length()) + ".pch"
-        // Checks if the file already exists, and skip if so
-        if (new File(generatedFilePath).exists()) {
-          continue
+        def pchFile = new File(entry.file.substring(0, entry.file.length() - ".cxx".length()) + ".pch")
+
+        if (!pchFile.exists() || pchFile.length() == 0) {
+          def stubHeader = new File(entry.directory, "stub_pch.hxx")
+          stubHeader.text = ""
+
+          def cmd = entry.command
+            // Replace the forced-include path: `-Xclang -include -Xclang <path>/cmake_pch.hxx`
+            .replaceAll(/-Xclang -include -Xclang [^\s]+cmake_pch\.hxx(?=\s)/, "-Xclang -include -Xclang ${stubHeader.absolutePath}")
+            // Replace the source file operand: `<path>/cmake_pch.hxx.cxx`
+            .replaceAll(/[^\s]+cmake_pch\.hxx\.cxx/, stubHeader.absolutePath)
+
+          def process = new ProcessBuilder(cmd.split(" ").toList())
+            .directory(new File(entry.directory))
+            .redirectErrorStream(true)
+            .start()
+          if (process.waitFor() != 0) {
+            throw new GradleException("Stub PCH generation failed: ${process.inputStream.text}")
+          }
         }
 
-        def tokenizer = new org.apache.commons.text.StringTokenizer(commandObj.command, " ")
-        def tokens = tokenizer.tokenList
-
-        def workingDirFile = new File(commandObj.directory)
-
-        providers.exec {
-          workingDir(providers.provider { workingDirFile }.get())
-          commandLine(tokens)
-        }.getResult().get().assertNormalExitValue()
+        // Ensure PCH is older than source so ninja rebuilds the real one during build
+        pchFile.setLastModified(new File(entry.file).lastModified() - 1)
       }
     }
   }
 }
 
-// This task will run on the IDE project sync, ensuring the PCH file is generated early enough
 tasks.register("prepareKotlinBuildScriptModel") {
-  dependsOn(generatePCHTask)
+  dependsOn(generateStubPCHTask)
 }
