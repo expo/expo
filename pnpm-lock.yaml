@@ -1932,9 +1932,6 @@ importers:
       slugify:
         specifier: ^1.3.4
         version: 1.6.8
-      source-map-support:
-        specifier: ~0.5.21
-        version: 0.5.21
       stacktrace-parser:
         specifier: ^0.1.10
         version: 0.1.11
@@ -2035,9 +2032,6 @@ importers:
       '@types/send':
         specifier: ^0.17.1
         version: 0.17.6
-      '@types/source-map-support':
-        specifier: ^0.5.10
-        version: 0.5.10
       '@types/webpack':
         specifier: ~4.41.32
         version: 4.41.40
@@ -9426,9 +9420,6 @@ packages:
 
   '@types/source-list-map@0.1.6':
     resolution: {integrity: sha512-5JcVt1u5HDmlXkwOD2nslZVllBBc7HDuOICfiZah2Z0is8M8g+ddAEawbmd3VjedfDHBzxCaXLs07QEmb7y54g==}
-
-  '@types/source-map-support@0.5.10':
-    resolution: {integrity: sha512-tgVP2H469x9zq34Z0m/fgPewGhg/MLClalNOiPIzQlXrSS2YrKu/xCdSCKnEDwkFha51VKEKB6A9wW26/ZNwzA==}
 
   '@types/ssri@7.1.5':
     resolution: {integrity: sha512-odD/56S3B51liILSk5aXJlnYt99S6Rt9EFDDqGtJM26rKHApHcwyU/UoYHrzKkdkHMAIquGWCuHtQTbes+FRQw==}
@@ -19546,10 +19537,6 @@ snapshots:
       '@types/node': 22.19.15
 
   '@types/source-list-map@0.1.6': {}
-
-  '@types/source-map-support@0.5.10':
-    dependencies:
-      source-map: 0.6.1
 
   '@types/ssri@7.1.5':
     dependencies:
