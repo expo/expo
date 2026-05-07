@@ -1,6 +1,11 @@
 import * as ReactNative from 'react-native';
 
 declare module 'react-native' {
+  export const unstable_createElement: <P>(
+    type: React.ElementType,
+    props?: P
+  ) => React.ReactElement<P>;
+
   type DisplayValue = ReactNative.FlexStyle['display'] | 'inline-flex';
 
   type WebRole =
@@ -31,7 +36,7 @@ declare module 'react-native' {
     | 'region' // <section />
     | 'strong'; // <strong />
 
-  export interface WebAccessibilityProps {
+  interface WebAccessibilityProps {
     /**
      * Additional accessibility props
      */
