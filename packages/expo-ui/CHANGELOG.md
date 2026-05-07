@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.2 — 2026-05-06
+
+### 🐛 Bug fixes
+
 - Fix Compose `TextField` selection state synchronization. ([#45424](https://github.com/expo/expo/pull/45424) by [@nishan](https://github.com/intergalacticspacehighway))
 - Fixed dynamic sizing regression for `@expo/ui/community/bottom-sheet`. ([#45412](https://github.com/expo/expo/pull/45412) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 56.0.1 — 2026-05-05
 

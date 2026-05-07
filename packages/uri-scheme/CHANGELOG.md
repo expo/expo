@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 2.0.22 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.21 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 2.0.20 — 2026-05-05
 
 _This version does not introduce any user-facing changes._

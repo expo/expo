@@ -1,13 +1,9 @@
 import assert from 'node:assert/strict';
-import { before, describe, it } from 'node:test';
+import { describe, it } from 'node:test';
 
-import { getListOfPackagesAsync, getPackageByName } from './Packages';
+import { getPackageByName } from './Packages';
 
 describe('getPackageByName', () => {
-  before(async () => {
-    await getListOfPackagesAsync();
-  });
-
   it('resolves packages whose directory matches their name', () => {
     const pkg = getPackageByName('expo-router');
     assert.ok(pkg);

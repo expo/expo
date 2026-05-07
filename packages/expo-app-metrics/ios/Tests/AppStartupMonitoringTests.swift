@@ -26,6 +26,16 @@ struct AppStartupMonitoringTests {
     monitoring.launchType = .cold
     monitoring.markers.finishedLaunching = 0
     monitoring.addReceiver(receiver)
+    // Seed `NetworkPathMonitor.shared` so `markInteractive` doesn't suspend
+    // forever waiting for the OS to deliver a real path in the test process.
+    NetworkPathMonitor.shared.onNetworkPathUpdate(NetworkPath(
+      status: .satisfied,
+      interfaceType: .wifi,
+      isExpensive: false,
+      isConstrained: false,
+      unsatisfiedReason: nil,
+      timestamp: 0
+    ))
     return monitoring
   }
 

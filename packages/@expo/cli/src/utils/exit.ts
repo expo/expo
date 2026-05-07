@@ -86,7 +86,7 @@ function attachMasterListener() {
  *
  * @see https://nodejs.org/docs/latest-v18.x/api/process.html#processgetactiveresourcesinfo
  */
-export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtMs = Date.now()) {
+export function ensureProcessExitsAfterDelay(waitUntilExitMs = 4_000, startedAtMs = Date.now()) {
   // Create a list of the expected active resources before exiting.
   // Note, the order is undeterministic
   const expectedResources = [
@@ -107,25 +107,27 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
     return true;
   });
 
-  // Check if only Timeouts remain (no blocking resources like ProcessWrap/PipeWrap)
+  // Check if there are any resources that block the process from exiting.
+  // CloseReq is always transient and completes on its own.
+  // NOTE: Timeout is NOT excluded — getActiveResourcesInfo() only reports ref'd timers,
+  // so any Timeout in this list will keep the event loop alive indefinitely.
   const hasBlockingResources = unexpectedActiveResources.some(
-    (resource) => resource !== 'Timeout' && resource !== 'CloseReq'
+    (resource) => resource !== 'CloseReq'
   );
 
-  const canExitProcess = !unexpectedActiveResources.length || !hasBlockingResources;
-  if (canExitProcess) {
-    if (unexpectedActiveResources.length && !hasBlockingResources) {
-      debug('only non-blocking resources remain (Timeout/CloseReq), process can safely exit');
-    } else {
-      debug('no active resources detected, process can safely exit');
-    }
-    return;
-  } else {
+  if (!hasBlockingResources) {
     debug(
-      `process is trying to exit, but is stuck on unexpected active resources:`,
-      unexpectedActiveResources
+      unexpectedActiveResources.length
+        ? 'only transient resources remain (CloseReq), process can safely exit'
+        : 'no active resources detected, process can safely exit'
     );
+    return;
   }
+
+  debug(
+    `process is trying to exit, but is stuck on unexpected active resources:`,
+    unexpectedActiveResources
+  );
 
   // Check if the process needs to be force-closed
   const elapsedTime = Date.now() - startedAtMs;
@@ -136,10 +138,9 @@ export function ensureProcessExitsAfterDelay(waitUntilExitMs = 10000, startedAtM
   }
 
   const timeoutId = setTimeout(() => {
-    // Ensure the timeout is cleared before checking the active resources
-    clearTimeout(timeoutId);
-    // Check if the process can exit
-    ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs);
+    // Delay the next check by one tick so the current timer is fully cleaned up
+    // and doesn't appear in the active resources list.
+    process.nextTick(() => ensureProcessExitsAfterDelay(waitUntilExitMs, startedAtMs));
 
     // setTimeout is using the global definitions from React Native which is missing the unref method in Node.js.
   }, 100) as unknown as NodeJS.Timeout;

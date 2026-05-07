@@ -1,6 +1,6 @@
 {
   "name": "expo-env-info",
-  "version": "2.0.13",
+  "version": "2.0.14",
   "preferGlobal": true,
   "bin": "./bin/expo-env-info.js",
   "main": "./build/main.js",

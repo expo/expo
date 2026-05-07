@@ -1,6 +1,6 @@
 {
   "name": "@expo/dom-webview",
-  "version": "56.0.1",
+  "version": "56.0.4",
   "description": "A WebView specifically designed for Expo DOM components",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
