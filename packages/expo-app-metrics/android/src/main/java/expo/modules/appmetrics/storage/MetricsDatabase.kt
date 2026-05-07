@@ -135,9 +135,6 @@ interface MetricDao {
 
   @Delete
   suspend fun delete(metrics: List<Metric>)
-
-  @Query("DELETE FROM metrics WHERE timestamp < :cutoffTimestamp")
-  suspend fun deleteMetricsOlderThan(cutoffTimestamp: String)
 }
 
 @Dao

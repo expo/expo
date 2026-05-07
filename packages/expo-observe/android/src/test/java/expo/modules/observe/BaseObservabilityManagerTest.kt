@@ -753,7 +753,7 @@ class BaseObservabilityManagerTest {
   // region Cleanup tests
 
   @Test
-  fun `cleanup prunes pending metrics, stale metrics, and stale sessions`() =
+  fun `cleanup prunes pending metrics and stale sessions`() =
     runTest {
       // Arrange
       val manager = createManager()
@@ -763,7 +763,6 @@ class BaseObservabilityManagerTest {
 
       // Assert
       coVerify(exactly = 1) { mockPendingMetricsManager.cleanupOldPendingMetrics() }
-      coVerify(exactly = 1) { mockSessionManager.cleanupOldMetrics() }
       coVerify(exactly = 1) { mockSessionManager.cleanupOldSessions() }
     }
 
