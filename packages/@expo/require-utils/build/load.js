@@ -20,6 +20,13 @@ function nodeModule() {
   };
   return data;
 }
+function _nodeOs() {
+  const data = _interopRequireDefault(require("node:os"));
+  _nodeOs = function () {
+    return data;
+  };
+  return data;
+}
 function _nodePath() {
   const data = _interopRequireDefault(require("node:path"));
   _nodePath = function () {
@@ -37,6 +44,13 @@ function _nodeUrl() {
 function _codeframe() {
   const data = require("./codeframe");
   _codeframe = function () {
+    return data;
+  };
+  return data;
+}
+function _stacktrace() {
+  const data = require("./stacktrace");
+  _stacktrace = function () {
     return data;
   };
   return data;
@@ -118,6 +132,33 @@ function toRealDirname(filePath) {
     return normalized;
   }
 }
+const hasModuleSourceMapsSupport = typeof nodeModule().setSourceMapsSupport === 'function';
+function getSourceMapsState() {
+  return typeof nodeModule().getSourceMapsSupport === 'function' ? nodeModule().getSourceMapsSupport() : {
+    enabled: !!process.sourceMapsEnabled
+  };
+}
+function setSourceMapsState(state) {
+  if (hasModuleSourceMapsSupport) {
+    nodeModule().setSourceMapsSupport(state.enabled, {
+      nodeModules: state.nodeModules ?? false,
+      generatedCode: state.generatedCode ?? false
+    });
+  } else {
+    process.setSourceMapsEnabled(state.enabled);
+  }
+}
+function makeSourceMapTempPath(filename) {
+  let basename = _nodePath().default.basename(filename);
+  const queryIdx = basename.search(/[?#]/);
+  if (queryIdx >= 0) {
+    basename = basename.slice(0, queryIdx);
+  }
+  return _nodePath().default.join(_nodeOs().default.tmpdir(), `require-utils-${process.pid}-${basename}.map`);
+}
+function stripSourceMappingURL(code) {
+  return code.replace(/^[ \t]*\/\/[#@][ \t]+sourceMappingURL=.*$/gm, '');
+}
 function compileModule(code, filename, opts) {
   const format = toFormat(filename, false);
   const prependPaths = opts.paths ?? [];
@@ -126,19 +167,74 @@ function compileModule(code, filename, opts) {
   const basePath = toRealDirname(filename);
   const nodeModulePaths = nodeModule()._nodeModulePaths(basePath);
   const paths = [...prependPaths, ...nodeModulePaths];
+  let inputCode = code;
+
+  // We may get a Metro SSR relative path here, which isn't a valid absolute path, and we need to normalize
+  // the filename before proceeding
+  let compileFilename = filename;
+  if (opts.sourceMap) {
+    const queryIdx = filename.search(/[?#]/);
+    const basePart = queryIdx >= 0 ? filename.slice(0, queryIdx) : filename;
+    const queryPart = queryIdx >= 0 ? filename.slice(queryIdx) : '';
+    if (!_nodePath().default.isAbsolute(basePart)) {
+      compileFilename = _nodePath().default.resolve(basePart) + queryPart;
+    }
+  }
+  let mapPath;
+  let priorSourceMapsState;
+  if (opts.sourceMap && !process.isBun) {
+    try {
+      mapPath = makeSourceMapTempPath(compileFilename);
+      _nodeFs().default.writeFileSync(mapPath, opts.sourceMap);
+    } catch (error) {
+      mapPath = undefined;
+      // If we fail to write the source map, we can still continue without it, but log a warning since it's likely a misconfiguration
+      console.warn(`Warning: Failed to write source map for ${filename} to ${mapPath}. Source maps will be unavailable for this module.\n${error?.message || error}`);
+    }
+    if (mapPath) {
+      inputCode = stripSourceMappingURL(code);
+      // NOTE This needs to be a plain absolute path because Node rejects file: URLs
+      inputCode += `\n//# sourceMappingURL=${mapPath}`;
+      priorSourceMapsState = getSourceMapsState();
+      (0, _stacktrace().installSourceMapStackTrace)();
+      setSourceMapsState({
+        enabled: true,
+        nodeModules: true
+      });
+    }
+  }
   try {
-    const mod = Object.assign(new (nodeModule().Module)(filename, parent), {
-      filename,
+    const mod = Object.assign(new (nodeModule().Module)(compileFilename, parent), {
+      filename: compileFilename,
       paths
     });
-    mod._compile(code, filename, format != null ? format : undefined);
+    mod._compile(inputCode, compileFilename, format != null ? format : undefined);
     mod.loaded = true;
-    require.cache[filename] = mod;
+    require.cache[compileFilename] = mod;
+    if (compileFilename !== filename) {
+      require.cache[filename] = mod;
+    }
     parent?.children?.splice(parent.children.indexOf(mod), 1);
     return mod;
   } catch (error) {
-    delete require.cache[filename];
+    delete require.cache[compileFilename];
+    if (compileFilename !== filename) {
+      delete require.cache[filename];
+    }
     throw error;
+  } finally {
+    if (mapPath) {
+      // Restore, so subsequent requires of node_modules won't have their source-maps read
+      setSourceMapsState(priorSourceMapsState ?? {
+        enabled: false
+      });
+      // Node parses source maps eagerly during _compile, so the file can be removed now.
+      try {
+        _nodeFs().default.unlinkSync(mapPath);
+      } catch {
+        /* noop */
+      }
+    }
   }
 }
 const hasStripTypeScriptTypes = typeof nodeModule().stripTypeScriptTypes === 'function';
