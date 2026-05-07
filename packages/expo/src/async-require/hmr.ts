@@ -111,8 +111,7 @@ const HMRClient = {
       const webMetadata =
         process.env.EXPO_OS === 'web'
           ? {
-              platform: 'web',
-              mode: 'BRIDGE',
+              mode: 'web',
             }
           : undefined;
       hmrClient.send(

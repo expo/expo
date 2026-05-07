@@ -199,6 +199,92 @@ describe('symbolicate React stacks', () => {
   });
 });
 
+describe('client log platform prefix and format substitution', () => {
+  const terminal = {
+    log: jest.fn(),
+    persistStatus: jest.fn(),
+    status: jest.fn(),
+    flush: jest.fn(),
+    _update: jest.fn(),
+  } satisfies Partial<Terminal>;
+
+  const reporter = new MetroTerminalReporter('/', terminal as any);
+
+  beforeEach(() => {
+    terminal.log.mockReset();
+  });
+
+  it(`prefixes web client logs with "Web"`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['hello world'],
+      mode: 'web',
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).toMatch(/^Web /);
+    expect(output).toContain('LOG');
+    expect(output).toContain('hello world');
+  });
+
+  it(`does not prefix native client logs (NOBRIDGE)`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['hello world'],
+      mode: 'NOBRIDGE',
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).not.toMatch(/^(Web|iOS|Android) /);
+    expect(output).toContain('LOG');
+  });
+
+  it(`does not prefix client logs without mode`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['hello world'],
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).not.toMatch(/^(Web|iOS|Android) /);
+  });
+
+  it(`applies printf-style %s format substitution`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'warn',
+      data: ['%s\n\n%s', 'An error occurred.', 'Visit https://react.dev for more info.'],
+      mode: 'web',
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const output = stripVTControlCharacters(terminal.log.mock.calls[0].join(''));
+    expect(output).not.toContain('%s');
+    expect(output).toContain('An error occurred.');
+    expect(output).toContain('Visit https://react.dev for more info.');
+  });
+
+  it(`does not apply format substitution when first arg has no specifiers`, () => {
+    reporter._log({
+      type: 'client_log',
+      level: 'log',
+      data: ['plain message', 'extra arg'],
+    } as any);
+
+    expect(terminal.log).toHaveBeenCalledTimes(1);
+    const args = terminal.log.mock.calls[0];
+    // Both items should be passed through as separate arguments
+    expect(args).toContain('plain message');
+    expect(args).toContain('extra arg');
+  });
+});
+
 describe('_getBundleStatusMessage', () => {
   const buildID = '1';
   const reporter = new MetroTerminalReporter('/', {

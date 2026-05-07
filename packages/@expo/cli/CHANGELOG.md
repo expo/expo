@@ -6,11 +6,13 @@
 
 ### 🎉 New features
 
+- Prefix web client logs with platform name in Metro terminal output. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 - Prevent Metro loading indicator from showing broken states in headless runs. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `--port 0` exiting silently in `expo start` when the port is busy. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
-
+- Apply printf-style format substitution for web client logs forwarded from the browser. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
 ### 💡 Others
 
 - Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
