@@ -578,6 +578,8 @@ function getPlatformTagForClientLog(mode?: string): string | null {
       return 'Android';
     case 'web':
       return 'Web';
+    case 'dom':
+      return 'DOM';
     default:
       return null;
   }
@@ -597,6 +599,9 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
         break;
       case 'web':
         formatted = 'Web';
+        break;
+      case 'dom':
+        formatted = 'DOM';
         break;
       default:
         formatted = platform;
