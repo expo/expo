@@ -349,7 +349,9 @@ export const Dependencies = {
    * @param pkg Package
    */
   cleanDependenciesFolderAsync: async (pkg: SPMPackageSource): Promise<void> => {
-    logger.verbose(`🧹 Cleaning dependencies folder for package ${chalk.green(pkg.packageName)}...`);
+    logger.verbose(
+      `🧹 Cleaning dependencies folder for package ${chalk.green(pkg.packageName)}...`
+    );
     const buildFolderToClean = Dependencies.getPackageDependenciesPath(pkg);
     await fs.remove(buildFolderToClean);
   },

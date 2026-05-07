@@ -39,7 +39,6 @@ export function setForceNonInteractive(value: boolean): void {
   _forceNonInteractive = value;
 }
 
-
 const _logPrefixStorage = new AsyncLocalStorage<string>();
 
 /**
