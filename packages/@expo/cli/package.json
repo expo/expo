@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "56.0.5",
+  "version": "56.0.6",
   "description": "The Expo CLI",
   "main": "main.js",
   "bin": {
@@ -57,9 +57,9 @@
     "@expo/image-utils": "workspace:^0.9.0",
     "@expo/inline-modules": "workspace:0.0.4",
     "@expo/json-file": "workspace:^10.1.0",
-    "@expo/log-box": "workspace:56.0.4",
+    "@expo/log-box": "workspace:56.0.5",
     "@expo/metro": "~56.0.0",
-    "@expo/metro-config": "workspace:~56.0.3",
+    "@expo/metro-config": "workspace:~56.0.4",
     "@expo/metro-file-map": "workspace:56.0.0-2",
     "@expo/osascript": "workspace:^2.5.0",
     "@expo/package-manager": "workspace:^1.11.0",

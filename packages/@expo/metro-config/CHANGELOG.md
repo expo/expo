@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-07
+
+### 💡 Others
+
 - Drop obsolete `EXPO_USE_EXOTIC` flag warning ([#45494](https://github.com/expo/expo/pull/45494) by [@kitten](https://github.com/kitten))
 - Fall back to our own Babel cache key with custom Babel transformer ([#45495](https://github.com/expo/expo/pull/45495) by [@kitten](https://github.com/kitten))
 
