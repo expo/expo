@@ -151,7 +151,7 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
       return ts.factory.createUnionTypeNode((type.type as SumType).types.map(mapTypeToTsTypeNode));
     case TypeKind.ARRAY:
       return ts.factory.createArrayTypeNode(mapTypeToTsTypeNode(type.type as ArrayType));
-    case TypeKind.DICTIONARY:
+    case TypeKind.DICTIONARY: {
       const dictionaryType = type.type as DictionaryType;
       const name = 'key';
       const typeNode = mapTypeToTsTypeNode(dictionaryType.key);
@@ -163,7 +163,7 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
           valueType
         ),
       ]);
-
+    }
     // Technically this one should only be the top one and it should be handled somewhere else
     // for example when creating arguemnt adding the '?' token.
     //
@@ -353,7 +353,7 @@ function createTypeAlias({
   type: ts.TypeNode;
 }) {
   return ts.factory.createTypeAliasDeclaration(
-    constructModifiersArray({ exported: exported }),
+    constructModifiersArray({ exported }),
     alias,
     typeParams,
     type
@@ -690,7 +690,7 @@ export function buildUnknownTypeAlias(
   for (let i = 0; i < (paramCount ?? 0); i += 1) {
     typeParamsList.push(ts.factory.createTypeParameterDeclaration(undefined, 'T' + i));
   }
-  const typeParams = (paramCount ?? 0) == 0 ? undefined : typeParamsList;
+  const typeParams = (paramCount ?? 0) === 0 ? undefined : typeParamsList;
   return createTypeAlias({ exported, alias: identifier, type: unknownKeywordType(), typeParams });
 }
 
@@ -715,7 +715,7 @@ export function buildEnumTypeDeclaration(
   declared: boolean
 ): ts.Node {
   return ts.factory.createEnumDeclaration(
-    constructModifiersArray({ exported: exported, declare: declared }),
+    constructModifiersArray({ exported, declare: declared }),
     enumType.name,
     enumType.cases.map((enumcase) => ts.factory.createEnumMember(enumcase))
   );

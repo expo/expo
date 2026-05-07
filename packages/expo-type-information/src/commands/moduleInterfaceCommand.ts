@@ -1,4 +1,6 @@
 import commander from 'commander';
+import path from 'path';
+
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -8,7 +10,6 @@ import {
   writeToStableFile,
 } from './commandUtils';
 import { generateFullTsInterface } from '../typescriptGeneration';
-import path from 'path';
 
 export function moduleInterfaceCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('module-interface'))

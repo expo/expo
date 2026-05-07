@@ -1,9 +1,7 @@
 import { execSync, exec } from 'child_process';
 import fs from 'fs';
-import YAML from 'yaml';
 import { promisify } from 'util';
-
-const execAsync = promisify(exec);
+import YAML from 'yaml';
 
 import {
   Argument,
@@ -32,6 +30,8 @@ import {
 } from '../typeInformation';
 import { Attribute, FileType, Structure } from '../types';
 import { taskAll } from '../utils';
+
+const execAsync = promisify(exec);
 
 type SourcekittenClosure = {
   parameters: { name: string; typename: string }[];
@@ -770,34 +770,38 @@ async function parseModuleStructure(
     }
 
     switch (structure['key.name']) {
-      case 'Name':
+      case 'Name': {
         const nameSubstrucutre = structure['key.substructure']?.[0];
         if (nameSubstrucutre) {
           moduleClassDeclaration.name = getIdentifierFromOffsetObject(nameSubstrucutre, file);
         }
         break;
-      case 'Function':
+      }
+      case 'Function': {
         moduleClassDeclaration.functions.push(
           await parseModuleFunctionSubstructure(structure, file, options)
         );
         break;
-      case 'Constant':
+      }
+      case 'Constant': {
         const constantDeclaration = await parseModuleConstantStructure(structure, file, options);
         if (constantDeclaration) {
           moduleClassDeclaration.constants.push(constantDeclaration);
         }
         break;
+      }
       case 'Class':
         moduleClassDeclaration.classes.push(
           await parseModuleClassStructure(structure, file, options)
         );
         break;
-      case 'Property':
+      case 'Property': {
         const propertyDeclaration = await parseModulePropertyStructure(structure, file, options);
         if (propertyDeclaration) {
           moduleClassDeclaration.properties.push(propertyDeclaration);
         }
         break;
+      }
       case 'AsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
           await parseModuleFunctionSubstructure(structure, file, options)
@@ -815,12 +819,13 @@ async function parseModuleStructure(
           await parseModulePropDeclaration(structure, file, options)
         );
         break;
-      case 'View':
+      case 'View': {
         const viewDeclaration = await parseModuleViewDeclaration(structure, file, options);
         if (viewDeclaration) {
           moduleClassDeclaration.views.push(viewDeclaration);
         }
         break;
+      }
       case 'Events':
         parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
         break;

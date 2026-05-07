@@ -1,4 +1,5 @@
 import commander from 'commander';
+
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,

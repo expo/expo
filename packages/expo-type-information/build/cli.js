@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const commander_1 = require("commander");
 const commandUtils_1 = require("./commands/commandUtils");
+const generateJSXIntrinsicsCommand_1 = require("./commands/generateJSXIntrinsicsCommand");
 const generateMocksForFileCommand_1 = require("./commands/generateMocksForFileCommand");
-const inlineModulesInterfaceCommand_1 = require("./commands/inlineModulesInterfaceCommand");
-const typeInformationCommand_1 = require("./commands/typeInformationCommand");
 const generateModuleTypesCommand_1 = require("./commands/generateModuleTypesCommand");
 const generateViewTypesCommand_1 = require("./commands/generateViewTypesCommand");
-const generateJSXIntrinsicsCommand_1 = require("./commands/generateJSXIntrinsicsCommand");
-const shortModuleInterfaceCommand_1 = require("./commands/shortModuleInterfaceCommand");
+const inlineModulesInterfaceCommand_1 = require("./commands/inlineModulesInterfaceCommand");
 const moduleInterfaceCommand_1 = require("./commands/moduleInterfaceCommand");
+const shortModuleInterfaceCommand_1 = require("./commands/shortModuleInterfaceCommand");
+const typeInformationCommand_1 = require("./commands/typeInformationCommand");
 async function main(args) {
     if (!(0, commandUtils_1.isSourceKittenInstalled)()) {
         console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');

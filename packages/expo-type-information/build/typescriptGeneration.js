@@ -114,7 +114,7 @@ function mapTypeToTsTypeNode(type) {
             return typescript_1.default.factory.createUnionTypeNode(type.type.types.map(mapTypeToTsTypeNode));
         case typeInformation_1.TypeKind.ARRAY:
             return typescript_1.default.factory.createArrayTypeNode(mapTypeToTsTypeNode(type.type));
-        case typeInformation_1.TypeKind.DICTIONARY:
+        case typeInformation_1.TypeKind.DICTIONARY: {
             const dictionaryType = type.type;
             const name = 'key';
             const typeNode = mapTypeToTsTypeNode(dictionaryType.key);
@@ -122,6 +122,7 @@ function mapTypeToTsTypeNode(type) {
             return typescript_1.default.factory.createTypeLiteralNode([
                 typescript_1.default.factory.createIndexSignature(undefined, [createParameter({ name, type: typeNode })], valueType),
             ]);
+        }
         // Technically this one should only be the top one and it should be handled somewhere else
         // for example when creating arguemnt adding the '?' token.
         //
@@ -177,7 +178,7 @@ function createExportDefaultAsDeclaration({ exportAsName, importFromName, }) {
     ];
 }
 function createTypeAlias({ exported, alias, typeParams, type, }) {
-    return typescript_1.default.factory.createTypeAliasDeclaration(constructModifiersArray({ exported: exported }), alias, typeParams, type);
+    return typescript_1.default.factory.createTypeAliasDeclaration(constructModifiersArray({ exported }), alias, typeParams, type);
 }
 function createRequireNativeViewDeclaration(module, view) {
     return [
@@ -357,7 +358,7 @@ function buildUnknownTypeAlias(identifier, exported, inferredTypeParametersCount
     for (let i = 0; i < (paramCount ?? 0); i += 1) {
         typeParamsList.push(typescript_1.default.factory.createTypeParameterDeclaration(undefined, 'T' + i));
     }
-    const typeParams = (paramCount ?? 0) == 0 ? undefined : typeParamsList;
+    const typeParams = (paramCount ?? 0) === 0 ? undefined : typeParamsList;
     return createTypeAlias({ exported, alias: identifier, type: unknownKeywordType(), typeParams });
 }
 function buildRecordTypeAlias(recordType, exported) {
@@ -373,7 +374,7 @@ function buildRecordTypeAlias(recordType, exported) {
     });
 }
 function buildEnumTypeDeclaration(enumType, exported, declared) {
-    return typescript_1.default.factory.createEnumDeclaration(constructModifiersArray({ exported: exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
+    return typescript_1.default.factory.createEnumDeclaration(constructModifiersArray({ exported, declare: declared }), enumType.name, enumType.cases.map((enumcase) => typescript_1.default.factory.createEnumMember(enumcase)));
 }
 function buildMissingTypesDeclarations(ctx) {
     if (ctx.missingTypes.size === 0) {

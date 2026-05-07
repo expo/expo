@@ -1,9 +1,9 @@
 import chalk from 'chalk';
+import { execSync } from 'child_process';
 import commander from 'commander';
+import { createHash } from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
-import { createHash } from 'crypto';
 
 import {
   FileTypeInformation,
@@ -30,7 +30,7 @@ export function isSourceKittenInstalled(): boolean {
   try {
     execSync('which sourcekitten', { stdio: 'ignore' });
     sourcekittenInstalled = true;
-  } catch (e) {
+  } catch {
     sourcekittenInstalled = false;
   }
   return sourcekittenInstalled;
@@ -89,6 +89,7 @@ export async function runCommandOnWatch(parsedArgs: ParsedArguments, command: ()
   }
 
   await taskAll(parsedArgs.realInputPaths, async (realInputPath) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for await (const _ of fs.promises.watch(realInputPath)) {
       if (!fs.existsSync(realInputPath)) {
         return;
@@ -111,7 +112,7 @@ export function getFilesForGlobPattern(globPattern: string): string[] | null {
       .map((entry) => path.resolve(entry.parentPath, entry.name));
 
     return resolvedPaths.length > 0 ? resolvedPaths : null;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
@@ -193,7 +194,7 @@ export function parseCommandArguments(
   isOutputFile: boolean = true
 ): ParsedArguments | null {
   const appJsonPath = options.appJson ?? undefined;
-  let realInputPaths: string[] = (options.inputPaths ?? Array<never>())
+  let realInputPaths: string[] = (options.inputPaths ?? [])
     .flatMap(getFilesForGlobPattern)
     .filter((p) => p != null);
 

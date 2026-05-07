@@ -77,6 +77,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }) {
     await setupWatchedDirectoriesWatchers();
     const appJsonWatcher = fs_1.default.watch(appJsonPath, 'utf-8', async (event) => {
         if (event === 'rename' && !fs_1.default.existsSync(appJsonPath)) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
             for (const [_, watcher] of watchedDirectoriesWatchers) {
                 watcher.close();
             }

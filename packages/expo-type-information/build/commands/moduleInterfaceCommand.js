@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.moduleInterfaceCommand = moduleInterfaceCommand;
+const path_1 = __importDefault(require("path"));
 const commandUtils_1 = require("./commandUtils");
 const typescriptGeneration_1 = require("../typescriptGeneration");
-const path_1 = __importDefault(require("path"));
 function moduleInterfaceCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('module-interface'))
         .summary('Generates a full ts interface for a Swift module.')

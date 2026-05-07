@@ -7,11 +7,11 @@ exports.getSwiftFileTypeInformation = getSwiftFileTypeInformation;
 exports.preprocessSwiftFile = preprocessSwiftFile;
 const child_process_1 = require("child_process");
 const fs_1 = __importDefault(require("fs"));
-const yaml_1 = __importDefault(require("yaml"));
 const util_1 = require("util");
-const execAsync = (0, util_1.promisify)(child_process_1.exec);
+const yaml_1 = __importDefault(require("yaml"));
 const typeInformation_1 = require("../typeInformation");
 const utils_1 = require("../utils");
+const execAsync = (0, util_1.promisify)(child_process_1.exec);
 const swiftDeclarationKind = {
     enum: 'source.lang.swift.decl.enum',
     struct: 'source.lang.swift.decl.struct',
@@ -579,30 +579,34 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
             return;
         }
         switch (structure['key.name']) {
-            case 'Name':
+            case 'Name': {
                 const nameSubstrucutre = structure['key.substructure']?.[0];
                 if (nameSubstrucutre) {
                     moduleClassDeclaration.name = getIdentifierFromOffsetObject(nameSubstrucutre, file);
                 }
                 break;
-            case 'Function':
+            }
+            case 'Function': {
                 moduleClassDeclaration.functions.push(await parseModuleFunctionSubstructure(structure, file, options));
                 break;
-            case 'Constant':
+            }
+            case 'Constant': {
                 const constantDeclaration = await parseModuleConstantStructure(structure, file, options);
                 if (constantDeclaration) {
                     moduleClassDeclaration.constants.push(constantDeclaration);
                 }
                 break;
+            }
             case 'Class':
                 moduleClassDeclaration.classes.push(await parseModuleClassStructure(structure, file, options));
                 break;
-            case 'Property':
+            case 'Property': {
                 const propertyDeclaration = await parseModulePropertyStructure(structure, file, options);
                 if (propertyDeclaration) {
                     moduleClassDeclaration.properties.push(propertyDeclaration);
                 }
                 break;
+            }
             case 'AsyncFunction':
                 moduleClassDeclaration.asyncFunctions.push(await parseModuleFunctionSubstructure(structure, file, options));
                 break;
@@ -612,12 +616,13 @@ async function parseModuleStructure(moduleStructure, file, name, definitionOffse
             case 'Prop':
                 moduleClassDeclaration.props.push(await parseModulePropDeclaration(structure, file, options));
                 break;
-            case 'View':
+            case 'View': {
                 const viewDeclaration = await parseModuleViewDeclaration(structure, file, options);
                 if (viewDeclaration) {
                     moduleClassDeclaration.views.push(viewDeclaration);
                 }
                 break;
+            }
             case 'Events':
                 parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
                 break;

@@ -1,14 +1,14 @@
 import { Command } from 'commander';
 
 import { isSourceKittenInstalled } from './commands/commandUtils';
+import { generateJsxIntrinsics } from './commands/generateJSXIntrinsicsCommand';
 import { generateMocksForFileCommand } from './commands/generateMocksForFileCommand';
-import { inlineModulesInterfaceCommand } from './commands/inlineModulesInterfaceCommand';
-import { typeInformationCommand } from './commands/typeInformationCommand';
 import { generateModuleTypesCommand } from './commands/generateModuleTypesCommand';
 import { generateViewTypesCommand } from './commands/generateViewTypesCommand';
-import { generateJsxIntrinsics } from './commands/generateJSXIntrinsicsCommand';
-import { shortModuleInterfaceCommand } from './commands/shortModuleInterfaceCommand';
+import { inlineModulesInterfaceCommand } from './commands/inlineModulesInterfaceCommand';
 import { moduleInterfaceCommand } from './commands/moduleInterfaceCommand';
+import { shortModuleInterfaceCommand } from './commands/shortModuleInterfaceCommand';
+import { typeInformationCommand } from './commands/typeInformationCommand';
 
 async function main(args: string[]) {
   if (!isSourceKittenInstalled()) {

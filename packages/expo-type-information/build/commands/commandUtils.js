@@ -23,10 +23,10 @@ exports.insertFileHashComment = insertFileHashComment;
 exports.writeToStableFile = writeToStableFile;
 exports.generateConciseTsFiles = generateConciseTsFiles;
 const chalk_1 = __importDefault(require("chalk"));
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
 const child_process_1 = require("child_process");
 const crypto_1 = require("crypto");
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const typeInformation_1 = require("../typeInformation");
 const typescriptGeneration_1 = require("../typescriptGeneration");
 const utils_1 = require("../utils");
@@ -39,7 +39,7 @@ function isSourceKittenInstalled() {
         (0, child_process_1.execSync)('which sourcekitten', { stdio: 'ignore' });
         sourcekittenInstalled = true;
     }
-    catch (e) {
+    catch {
         sourcekittenInstalled = false;
     }
     return sourcekittenInstalled;
@@ -74,6 +74,7 @@ async function runCommandOnWatch(parsedArgs, command) {
         return;
     }
     await (0, utils_1.taskAll)(parsedArgs.realInputPaths, async (realInputPath) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _ of fs_1.default.promises.watch(realInputPath)) {
             if (!fs_1.default.existsSync(realInputPath)) {
                 return;
@@ -93,7 +94,7 @@ function getFilesForGlobPattern(globPattern) {
             .map((entry) => path_1.default.resolve(entry.parentPath, entry.name));
         return resolvedPaths.length > 0 ? resolvedPaths : null;
     }
-    catch (error) {
+    catch {
         return null;
     }
 }
@@ -157,7 +158,7 @@ function uniqueStrings(strings) {
 }
 function parseCommandArguments(options, isOutputFile = true) {
     const appJsonPath = options.appJson ?? undefined;
-    let realInputPaths = (options.inputPaths ?? Array())
+    let realInputPaths = (options.inputPaths ?? [])
         .flatMap(getFilesForGlobPattern)
         .filter((p) => p != null);
     if (options.modulePath) {

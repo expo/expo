@@ -103,9 +103,10 @@ function getMockedValueForType(type, fileTypeInformation) {
             return getBasicTypeMockLiteral(type.type);
         case typeInformation_1.TypeKind.IDENTIFIER:
             return getMockValueForIdentifier(type.type, fileTypeInformation);
-        case typeInformation_1.TypeKind.SUM:
+        case typeInformation_1.TypeKind.SUM: {
             const firstType = type.type.types[0];
             return getMockedValueForType(firstType ?? { kind: typeInformation_1.TypeKind.BASIC, type: typeInformation_1.BasicType.UNDEFINED }, fileTypeInformation);
+        }
         case typeInformation_1.TypeKind.PARAMETRIZED:
             return typescript_1.default.factory.createNull();
         case typeInformation_1.TypeKind.OPTIONAL:

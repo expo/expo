@@ -1,14 +1,15 @@
 import commander from 'commander';
 import fs from 'fs';
 import path from 'path';
+
 import {
   debounce,
   generateConciseTsFiles,
   parseCommandArguments,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { scanFilesRecursively, taskAll } from '../utils';
 import { TypeInferenceOption } from '../typeInformation';
+import { scanFilesRecursively, taskAll } from '../utils';
 
 async function getResolvedWatchedDirectoriesFromAppJson(
   appJsonPath: string
@@ -106,6 +107,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }: InlineModule
 
   const appJsonWatcher = fs.watch(appJsonPath, 'utf-8', async (event) => {
     if (event === 'rename' && !fs.existsSync(appJsonPath)) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       for (const [_, watcher] of watchedDirectoriesWatchers) {
         watcher.close();
       }

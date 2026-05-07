@@ -1,5 +1,6 @@
-import commander from 'commander';
 import chalk from 'chalk';
+import commander from 'commander';
+
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
