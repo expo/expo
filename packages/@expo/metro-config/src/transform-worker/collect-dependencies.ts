@@ -17,6 +17,7 @@ const MAGIC_IMPORT_COMMENTS = [
   '@metro-ignore',
   // Add support for Webpack ignore comment which is used in many different React libraries.
   'webpackIgnore: true',
+  'webpackIgnore:true',
 ];
 
 // asserts non-null

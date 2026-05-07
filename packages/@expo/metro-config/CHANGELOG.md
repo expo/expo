@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Support minified `/* webpackIgnore: true */` comments ([#45475](https://github.com/expo/expo/pull/45475) by [@bradleyayers](https://github.com/bradleyayers))
+
 ### 💡 Others
 
 ## 56.0.3 — 2026-05-06
