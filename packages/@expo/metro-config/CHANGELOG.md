@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Thread `excludeSource` through to source map serialization ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
+
 ## 56.0.4 — 2026-05-07
 
 ### 💡 Others

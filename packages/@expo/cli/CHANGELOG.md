@@ -21,6 +21,7 @@
 - Replace deprecated `url.parse()` with WHATWG `URL` API in Metro dev server. ([#45524](https://github.com/expo/expo/pull/45524) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
 - Adopt `experiments.onDemandFilesystem` on `@expo/config-types` ([#45555](https://github.com/expo/expo/pull/45555) by [@kitten](https://github.com/kitten))
+- Replace `source-map-support` package with `@expo/require-utils`'s built-in Node source-map support for reduced memory usage ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
 
 ## 56.0.6 — 2026-05-07
 

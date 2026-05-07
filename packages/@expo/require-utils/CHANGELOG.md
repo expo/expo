@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Node built-in source-map support to `evalModule` ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
