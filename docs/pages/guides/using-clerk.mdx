@@ -20,11 +20,11 @@ This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvi
 
 `@clerk/expo` supports three approaches. Pick the one that matches your needs — you can change later without rewriting your app.
 
-| Approach | What you build | Runs in Expo Go | Best for |
-| --- | --- | --- | --- |
-| JavaScript only | Your own React Native screens that call `useSignIn()` and `useSignUp()` | <YesIcon /> | Maximum UI control, prototyping in Expo Go |
-| JavaScript with native sign-in | Your own screens plus native Sign in with Google and Sign in with Apple buttons | <NoIcon /> | Apps that want a custom look but native social sign-in |
-| Native UI components | Drop in `<AuthView />`, `<UserButton />`, and `<UserProfileView />` from `@clerk/expo/native` | <NoIcon /> | The fastest path to a complete sign-in and account management UI |
+| Approach                       | What you build                                                                                | Runs in Expo Go | Best for                                                         |
+| ------------------------------ | --------------------------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------- |
+| JavaScript only                | Your own React Native screens that call `useSignIn()` and `useSignUp()`                       | <YesIcon />     | Maximum UI control, prototyping in Expo Go                       |
+| JavaScript with native sign-in | Your own screens plus native Sign in with Google and Sign in with Apple buttons               | <NoIcon />      | Apps that want a custom look but native social sign-in           |
+| Native UI components           | Drop in `<AuthView />`, `<UserButton />`, and `<UserProfileView />` from `@clerk/expo/native` | <NoIcon />      | The fastest path to a complete sign-in and account management UI |
 
 > **info** The native UI components in `@clerk/expo/native` are currently in beta. They render with Jetpack Compose on Android and SwiftUI on iOS and they synchronize the signed-in session back to the JavaScript SDK so all `@clerk/expo` hooks (such as `useAuth()` and `useUser()`) stay in sync.
 
@@ -105,7 +105,7 @@ The `EXPO_PUBLIC_` prefix is required because [Expo inlines these values at buil
 
 ### Wrap your app in `<ClerkProvider>`
 
-In your root layout file (**src/app/_layout.tsx** with Expo Router), wrap your app in `<ClerkProvider>` and pass the Publishable Key. Passing `tokenCache` explicitly is recommended:
+In your root layout file (**src/app/\_layout.tsx** with Expo Router), wrap your app in `<ClerkProvider>` and pass the Publishable Key. Passing `tokenCache` explicitly is recommended:
 
 ```tsx src/app/_layout.tsx
 import { ClerkProvider } from '@clerk/expo';
@@ -310,12 +310,8 @@ export default function SignInScreen() {
       <TouchableOpacity onPress={onSignInPress} disabled={fetchStatus === 'fetching'}>
         <Text>Sign in</Text>
       </TouchableOpacity>
-      {errors?.fields?.identifier ? (
-        <Text>{errors.fields.identifier.message}</Text>
-      ) : null}
-      {errors?.fields?.password ? (
-        <Text>{errors.fields.password.message}</Text>
-      ) : null}
+      {errors?.fields?.identifier ? <Text>{errors.fields.identifier.message}</Text> : null}
+      {errors?.fields?.password ? <Text>{errors.fields.password.message}</Text> : null}
     </View>
   );
 }
