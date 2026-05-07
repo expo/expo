@@ -726,7 +726,7 @@ const versionsReference = VERSIONS.reduce(
         'Expo SDK',
         shiftEntryToFront(
           pagesFromDir(`versions/${version}/sdk`).filter(
-            entry => !entry.inExpoGo && entry.name !== 'Router' && entry.name !== 'UI'
+            entry => !entry.inExpoGo && !['Router', 'UI'].includes(entry.name)
           ),
           entry => entry.name === 'Expo'
         ),
