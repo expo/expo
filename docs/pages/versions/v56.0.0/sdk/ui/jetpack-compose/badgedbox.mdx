@@ -1,0 +1,84 @@
+---
+title: BadgedBox
+description: A Jetpack Compose BadgedBox component for overlaying badges on content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI BadgedBox matches the official Jetpack Compose [`BadgedBox`](https://developer.android.com/develop/ui/compose/components/badges) API. It overlays a badge on top of content such as an icon.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Icon with badge count
+
+```tsx IconWithBadge.tsx
+import { Host, Badge, BadgedBox, Icon, Text } from '@expo/ui/jetpack-compose';
+
+// Replace with your own vector drawable asset
+const mailIcon = require('./assets/mail.xml');
+
+export default function IconWithBadge() {
+  return (
+    <Host matchContents>
+      <BadgedBox>
+        <BadgedBox.Badge>
+          <Badge>
+            <Text>5</Text>
+          </Badge>
+        </BadgedBox.Badge>
+        <Icon source={mailIcon} size={24} />
+      </BadgedBox>
+    </Host>
+  );
+}
+```
+
+### Interactive counter
+
+```tsx InteractiveBadge.tsx
+import { useState } from 'react';
+import { Host, Badge, BadgedBox, Icon, Button, Text, Column } from '@expo/ui/jetpack-compose';
+
+// Replace with your own vector drawable asset
+const cartIcon = require('./assets/cart.xml');
+
+export default function InteractiveBadge() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <Host matchContents>
+      <Column>
+        <BadgedBox>
+          <BadgedBox.Badge>
+            {count > 0 ? (
+              <Badge>
+                <Text>{String(count)}</Text>
+              </Badge>
+            ) : null}
+          </BadgedBox.Badge>
+          <Icon source={cartIcon} size={24} />
+        </BadgedBox>
+        <Button onClick={() => setCount(c => c + 1)}>
+          <Text>Add item</Text>
+        </Button>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { BadgedBox } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/badgedbox" apiName="BadgedBox" />

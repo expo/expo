@@ -8,6 +8,20 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.0.5 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+### 🐛 Bug fixes
+
 - Prevent dangling timeouts (e.g. set in Metro config) from hanging `expo export` ([#45445](https://github.com/expo/expo/pull/45445) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

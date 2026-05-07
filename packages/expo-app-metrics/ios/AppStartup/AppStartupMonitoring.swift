@@ -112,7 +112,7 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         for (key, value) in await DeviceConditions.deviceParams() {
           params[key] = value
         }
-        for (key, value) in DeviceConditions.networkParams() {
+        for (key, value) in await DeviceConditions.networkParams() {
           params[key] = value
         }
         let metric = Metric(

@@ -102,9 +102,17 @@ export const updateWorkspaceProjects = new Task<TaskArgs>(
             }
 
             // Leave tilde and caret as they are, just replace the version.
+            // For workspace: forms with an embedded version, preserve the
+            // workspace: prefix and any caret/tilde modifier so the source
+            // continues to declare the workspace protocol.
             const newVersionRange = options.canary
               ? state.releaseVersion
-              : currentVersionRange.replace(/([\^~]?).*/, `$1${state.releaseVersion}`);
+              : currentVersionRange.startsWith('workspace:')
+                ? currentVersionRange.replace(
+                    /^workspace:([\^~]?).*/,
+                    `workspace:$1${state.releaseVersion}`
+                  )
+                : currentVersionRange.replace(/([\^~]?).*/, `$1${state.releaseVersion}`);
 
             dependenciesObject[pkg.packageName] = newVersionRange;
 
@@ -146,12 +154,20 @@ function shouldUpdateDependencyVersion(context: {
     return false;
   }
 
-  // Skip workspace: specs entirely. pnpm resolves them to concrete versions
-  // at pack time, so the published artifact gets the right version while the
-  // source stays as the workspace-protocol declaration. Rewriting source
-  // would flush the prefix and propagate concrete pins back into the repo.
+  // For workspace: specs, distinguish between auto-resolving forms (no
+  // embedded version — pnpm pack picks the local version at pack time) and
+  // embedded-version forms (workspace:1.2.3, workspace:^1.2.3 — pnpm pack
+  // ships the embedded version verbatim). Auto-resolving forms must NOT be
+  // mutated in source, otherwise the workspace: protocol gets flushed.
+  // Embedded-version forms DO need refreshing when their target is in the
+  // current parcel set, otherwise expo and similar packages keep pointing at
+  // stale versions of their workspace deps.
   if (context.currentVersionRange.startsWith('workspace:')) {
-    return false;
+    const rest = context.currentVersionRange.slice('workspace:'.length);
+    if (rest === '*' || rest === '' || rest === '^' || rest === '~') {
+      return false;
+    }
+    return true;
   }
 
   // Only update the peerDependencies & optionalDependencies, where the version is `*`, during canary releases
