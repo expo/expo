@@ -1,25 +1,17 @@
 import chalk from 'chalk';
-import commander, { Command } from 'commander';
+import commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 import { execSync } from 'child_process';
 import { createHash } from 'crypto';
 
-import { generateMocks } from '../mockgen';
 import {
   FileTypeInformation,
   getFileTypeInformation,
-  serializeTypeInformation,
   TypeInferenceOption,
 } from '../typeInformation';
-import {
-  generateFullTsInterface,
-  generateJSXIntrinsicsFileContent,
-  generateConciseTsInterface,
-  generateModuleTypesFileContent,
-  generateViewTypesFileContent,
-} from '../typescriptGeneration';
-import { scanFilesRecursively, taskAll } from '../utils';
+import { generateConciseTsInterface } from '../typescriptGeneration';
+import { taskAll } from '../utils';
 
 export type TypeInformationCommandCommonAllArguments = {
   inputPaths?: string[];

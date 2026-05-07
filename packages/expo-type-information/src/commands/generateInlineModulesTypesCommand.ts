@@ -8,6 +8,7 @@ import {
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
 import { scanFilesRecursively, taskAll } from '../utils';
+import { TypeInferenceOption } from '../typeInformation';
 
 async function getResolvedWatchedDirectoriesFromAppJson(
   appJsonPath: string
@@ -27,6 +28,93 @@ async function getResolvedWatchedDirectoriesFromAppJson(
     console.error(`Couldn't read ${appJsonPath}.`, e);
   }
   return null;
+}
+
+type GenerateInlineModulesTSFilesOptions = {
+  filePath: string;
+  dirPath: string;
+  typeInference: TypeInferenceOption;
+};
+
+async function generateInlineModuleTSFiles({
+  filePath,
+  dirPath,
+  typeInference,
+}: GenerateInlineModulesTSFilesOptions) {
+  return await generateConciseTsFiles({
+    realInputPaths: [filePath],
+    realOutputPath: dirPath,
+    typeInference,
+    watcher: false,
+  });
+}
+
+type InlineModulesWatcherOptions = {
+  appJsonPath: string;
+  typeInference: TypeInferenceOption;
+};
+
+async function inlineModulesWatcher({ appJsonPath, typeInference }: InlineModulesWatcherOptions) {
+  const debouncedInlineModulesTsGeneration = debounce(generateInlineModuleTSFiles);
+  const watchedDirectoriesWatchers: Map<string, fs.FSWatcher> = new Map<string, fs.FSWatcher>();
+
+  const setupWatchedDirectoriesWatchers = async () => {
+    const watchedDirectories = await getResolvedWatchedDirectoriesFromAppJson(appJsonPath);
+
+    // Merge new watchers with old watchers.
+    // Let's first find and remove the obsolete ones.
+    const watchedDirsSet = new Set(watchedDirectories ?? []);
+    const obsoleteWatchersKeys = [];
+    for (const [key] of watchedDirectoriesWatchers) {
+      if (!watchedDirsSet.has(key)) {
+        obsoleteWatchersKeys.push(key);
+      }
+    }
+
+    for (const key of obsoleteWatchersKeys) {
+      const watcher = watchedDirectoriesWatchers.get(key);
+      watcher?.close();
+      watchedDirectoriesWatchers.delete(key);
+    }
+
+    // Now let's create and add new watchers
+    const createWatcherForDir = (dir: string) => {
+      return fs.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
+        if (!fileName) {
+          return;
+        }
+
+        const resolvedFilePath = path.resolve(dir, fileName);
+        if (fs.existsSync(resolvedFilePath)) {
+          debouncedInlineModulesTsGeneration({
+            filePath: resolvedFilePath,
+            dirPath: path.dirname(resolvedFilePath),
+            typeInference,
+          });
+        }
+      });
+    };
+
+    for (const dir of watchedDirectories ?? []) {
+      const watcher = watchedDirectoriesWatchers.get(dir);
+      if (!watcher) {
+        watchedDirectoriesWatchers.set(dir, createWatcherForDir(dir));
+      }
+    }
+  };
+  await setupWatchedDirectoriesWatchers();
+
+  const appJsonWatcher = fs.watch(appJsonPath, 'utf-8', async (event) => {
+    if (event === 'rename' && !fs.existsSync(appJsonPath)) {
+      for (const [_, watcher] of watchedDirectoriesWatchers) {
+        watcher.close();
+      }
+      appJsonWatcher.close();
+      return;
+    }
+
+    await setupWatchedDirectoriesWatchers();
+  });
 }
 
 export async function generateInlineModulesTypesCommand(cli: commander.Command) {
@@ -53,15 +141,6 @@ export async function generateInlineModulesTypesCommand(cli: commander.Command) 
         return;
       }
 
-      const generateInlineModuleTSFiles = async (filePath: string, dirPath: string) => {
-        await generateConciseTsFiles({
-          realInputPaths: [filePath],
-          realOutputPath: dirPath,
-          typeInference: parsedArgs.typeInference,
-          watcher: false,
-        });
-      };
-
       const dirents = [];
       for (const dir of watchedDirectories) {
         for await (const dirent of scanFilesRecursively(dir)) {
@@ -75,68 +154,16 @@ export async function generateInlineModulesTypesCommand(cli: commander.Command) 
 
       await taskAll(
         dirents,
-        async (dirent) => await generateInlineModuleTSFiles(dirent.path, dirent.parentPath)
+        async (dirent) =>
+          await generateInlineModuleTSFiles({
+            filePath: dirent.path,
+            dirPath: dirent.parentPath,
+            typeInference: parsedArgs.typeInference,
+          })
       );
 
-      if (!watcher) {
-        return;
+      if (watcher) {
+        await inlineModulesWatcher({ appJsonPath, typeInference: parsedArgs.typeInference });
       }
-
-      const debouncedInlineModulesTsGeneration = debounce(generateInlineModuleTSFiles);
-      const watchedDirectoriesWatchers: Map<string, fs.FSWatcher> = new Map<string, fs.FSWatcher>();
-
-      const setupWatchedDirectoriesWatchers = async () => {
-        const watchedDirectories = await getResolvedWatchedDirectoriesFromAppJson(appJsonPath);
-
-        // Merge new watchers with old watchers.
-        // Let's first find and remove the obsolete ones.
-        const watchedDirsSet = new Set(watchedDirectories ?? []);
-        const obsoleteWatchersKeys = [];
-        for (const [key] of watchedDirectoriesWatchers) {
-          if (!watchedDirsSet.has(key)) {
-            obsoleteWatchersKeys.push(key);
-          }
-        }
-
-        for (const key of obsoleteWatchersKeys) {
-          const watcher = watchedDirectoriesWatchers.get(key);
-          watcher?.close();
-          watchedDirectoriesWatchers.delete(key);
-        }
-
-        // Now let's create and add new watchers
-        const createWatcherForDir = (dir: string) => {
-          return fs.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
-            if (!fileName) {
-              return;
-            }
-
-            const resolvedFilePath = path.resolve(dir, fileName);
-            if (fs.existsSync(resolvedFilePath)) {
-              debouncedInlineModulesTsGeneration(resolvedFilePath, path.dirname(resolvedFilePath));
-            }
-          });
-        };
-
-        for (const dir of watchedDirectories ?? []) {
-          const watcher = watchedDirectoriesWatchers.get(dir);
-          if (!watcher) {
-            watchedDirectoriesWatchers.set(dir, createWatcherForDir(dir));
-          }
-        }
-      };
-      await setupWatchedDirectoriesWatchers();
-
-      const appJsonWatcher = fs.watch(appJsonPath, 'utf-8', async (event) => {
-        if (event === 'rename' && !fs.existsSync(appJsonPath)) {
-          for (const [_, watcher] of watchedDirectoriesWatchers) {
-            watcher.close();
-          }
-          appJsonWatcher.close();
-          return;
-        }
-
-        await setupWatchedDirectoriesWatchers();
-      });
     });
 }
