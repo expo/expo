@@ -82,7 +82,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/getenv": "^1.0.3",
     "@types/inquirer": "^8.2.10",
-    "@types/node": "~22.13.17",
+    "@types/node": "^22.14.0",
     "@types/npm-registry-fetch": "^8.0.7",
     "@types/semver": "^7.5.8",
     "@types/uuid": "^9.0.2",
