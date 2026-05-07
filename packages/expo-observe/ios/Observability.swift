@@ -23,7 +23,7 @@ internal struct ObservabilityManager {
     let cursor = ObserveUserDefaults.lastDispatchedMetricId
     let pendingMetrics: [MetricRow]
     do {
-      pendingMetrics = try AppMetrics.database.getMetrics(afterId: cursor)
+      pendingMetrics = try AppMetrics.getMetrics(afterId: cursor)
     } catch {
       observeLogger.warn("[EAS Observe] Failed to read pending metrics: \(error.localizedDescription)")
       return
@@ -73,7 +73,7 @@ internal struct ObservabilityManager {
     let cursor = ObserveUserDefaults.lastDispatchedLogId
     let pendingLogs: [LogRow]
     do {
-      pendingLogs = try AppMetrics.database.getLogs(afterId: cursor)
+      pendingLogs = try AppMetrics.getLogs(afterId: cursor)
     } catch {
       observeLogger.warn("[EAS Observe] Failed to read pending logs: \(error.localizedDescription)")
       return
@@ -123,7 +123,7 @@ internal struct ObservabilityManager {
   private static func buildEvents(forMetrics metrics: [MetricRow]) throws -> [Event] {
     let metricsBySession = Dictionary(grouping: metrics, by: \.sessionId)
     let sessionIds = Array(metricsBySession.keys)
-    let sessions = try AppMetrics.database.getSessions(ids: sessionIds)
+    let sessions = try AppMetrics.getSessions(ids: sessionIds)
     return sessions.compactMap { session in
       guard let sessionMetrics = metricsBySession[session.id] else {
         return nil
@@ -135,7 +135,7 @@ internal struct ObservabilityManager {
   private static func buildEvents(forLogs logs: [LogRow]) throws -> [Event] {
     let logsBySession = Dictionary(grouping: logs, by: \.sessionId)
     let sessionIds = Array(logsBySession.keys)
-    let sessions = try AppMetrics.database.getSessions(ids: sessionIds)
+    let sessions = try AppMetrics.getSessions(ids: sessionIds)
     return sessions.compactMap { session in
       guard let sessionLogs = logsBySession[session.id] else {
         return nil

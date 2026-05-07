@@ -23,7 +23,8 @@ public struct AppMetrics {
   }
   #endif
 
-  public static let database: MetricsDatabase = {
+  @AppMetricsActor
+  static let database: MetricsDatabase = {
     do {
       return try MetricsDatabase()
     } catch {
@@ -34,6 +35,34 @@ public struct AppMetrics {
 
   // Make the initializer private to prevent non-singleton usage.
   private init() {}
+
+  // MARK: - Read API for downstream consumers (e.g. expo-observe)
+
+  /**
+   Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Consumers persist
+   the largest seen id and pass it back on subsequent calls to fetch only newer rows.
+   */
+  @AppMetricsActor
+  public static func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
+    return try database.getMetrics(afterId: cursor)
+  }
+
+  /**
+   Returns log rows whose `id` is greater than `cursor`, in ascending id order.
+   */
+  @AppMetricsActor
+  public static func getLogs(afterId cursor: Int64) throws -> [LogRow] {
+    return try database.getLogs(afterId: cursor)
+  }
+
+  /**
+   Hydrates session rows for the given ids. Used to attach session metadata to a batch of metrics
+   or logs that have already been read past a cursor.
+   */
+  @AppMetricsActor
+  public static func getSessions(ids: [String]) throws -> [SessionRow] {
+    return try database.getSessions(ids: ids)
+  }
 
   // MARK: - Environment
 
