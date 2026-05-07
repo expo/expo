@@ -1,16 +1,27 @@
 ---
-title: Migrate to Contacts@Next
-sidebar_title: Contacts@Next
-description: Migrate from the legacy expo-contacts API to the new class-based @Next API.
+title: Migrate to expo-contacts/next
+sidebar_title: expo-contacts/next
+description: Migrate from the legacy expo-contacts API to the new class-based expo-contacts/next API.
 ---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
 
 The `expo-contacts/next` API is now stable. The legacy `expo-contacts` module is deprecated. Migrate to `expo-contacts/next` to benefit from the new API and future fixes.
 
-The new API replaces the function-based API with a `Contact` class. Contacts are represented as class instances that hold only the id of the native contact. Key changes:
+The new API replaces the function-based API with a `Contact` class. Contacts are represented as class instances that hold only the ID of the native contact. Key changes:
 
 - Contact properties (name, company, birthday, etc.) are async getters and setters instead of plain object properties.
 - Sub-records (phones, emails, addresses, ...) are managed via dedicated `add*`/`get*`/`update*`/`delete*` methods instead of re-writing the entire array.
 - Two update methods are now available: `patch` for partial updates and `update` for full replacement.
+
+## Installation
+
+Install the SDK-compatible package that includes `expo-contacts/next`:
+
+<Terminal cmd={['$ npx expo install expo-contacts']} />
 
 ## Importing the new API
 
@@ -32,7 +43,7 @@ const id = await Contacts.addContactAsync({ firstName: 'John', lastName: 'Doe' }
 const contact = await Contact.create({ givenName: 'John', familyName: 'Doe' });
 ```
 
-`Contact.create` returns a `Contact` instance, not just an id.
+`Contact.create` returns a `Contact` instance, not just an ID.
 
 ### Get all contacts
 
@@ -63,7 +74,7 @@ const contacts = await Contact.getAllDetails([ContactField.FULL_NAME, ContactFie
 
 ### Get a contact by ID
 
-Results from `getAllDetails` include the contact id. If you want to call methods on a contact returned from `getAllDetails`, wrap it in a `Contact` instance using the constructor:
+Results from `getAllDetails` include the contact ID. If you want to call methods on a contact returned from `getAllDetails`, wrap it in a `Contact` instance using the constructor:
 
 ```ts
 const results = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES]);
@@ -93,7 +104,7 @@ await Contacts.updateContactAsync({ ...contact, firstName: 'Andrew' });
 // After, partial update (only changes provided fields)
 await contact.patch({ givenName: 'Andrew' });
 
-// After, full replacement — all fields not provided will be cleared
+// After, full replacement - all fields not provided will be cleared
 await contact.update({
   givenName: 'John',
   familyName: 'Doe',
@@ -297,4 +308,9 @@ removeAllContactsChangeListeners();
 
 ## Reference
 
-See the full API at [Contacts (next)](/versions/latest/sdk/contacts-next/).
+<BoxLink
+  title="Contacts (next)"
+  description="See the full API reference for expo-contacts/next."
+  href="/versions/latest/sdk/contacts-next/"
+  Icon={BookOpen02Icon}
+/>

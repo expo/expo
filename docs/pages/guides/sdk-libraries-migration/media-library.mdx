@@ -1,12 +1,23 @@
 ---
-title: Migrate to MediaLibrary@Next
-sidebar_title: MediaLibrary@Next
-description: Migrate from the legacy expo-media-library API to the new class-based @Next API with Asset, Album, and Query.
+title: Migrate to expo-media-library/next
+sidebar_title: expo-media-library/next
+description: Migrate from the legacy expo-media-library API to the new class-based expo-media-library/next API with Asset, Album, and Query.
 ---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
 
 The `expo-media-library/next` API is now stable. The legacy `expo-media-library` module is deprecated. Migrate to `expo-media-library/next` to benefit from the new API and future fixes.
 
-The new API replaces the function-based `MediaLibrary.getAssetsAsync({ ... })` style with `Asset`, `Album`, and `Query` classes. Albums and assets are now represented as class instances that hold only the id of the native asset. Asset properties are async getters instead of pre-fetched fields. `Query` replaces the `getAssetsAsync` function with a chainable builder pattern.
+The new API replaces the function-based `MediaLibrary.getAssetsAsync({ ... })` style with `Asset`, `Album`, and `Query` classes. Albums and assets are now represented as class instances that hold only the ID of the native asset. Asset properties are async getters instead of pre-fetched fields. `Query` replaces the `getAssetsAsync` function with a chainable builder pattern.
+
+## Installation
+
+Install the SDK-compatible package that includes `expo-media-library/next`:
+
+<Terminal cmd={['$ npx expo install expo-media-library']} />
 
 ## Importing the new API
 
@@ -220,10 +231,15 @@ The listener event shape is unchanged.
 - Asset properties are now async getters (`getFilename()`, `getWidth()`, ...) instead of synchronous fields on a result object. Use `asset.getInfo()` to retrieve all properties at once.
 - The `Async` suffix is dropped. The entire library is asynchronous.
 - `Query` replaces the `getAssetsAsync` options bag. There is no `endCursor`/`hasNextPage`. Use `.limit()` and `.offset()` for pagination.
-- Operations on albums and assets are now methods on `Album` and `Asset` instances instead of free functions that accept an id or reference.
+- Operations on albums and assets are now methods on `Album` and `Asset` instances instead of free functions that accept an ID or reference.
 - `saveToLibraryAsync` is replaced by `Asset.create`, which returns an `Asset` instance.
 - `getMomentsAsync`, `albumNeedsMigrationAsync`, and `migrateAlbumIfNeededAsync` are removed with no replacement. You can safely delete any calls to these functions.
 
 ## Reference
 
-See the full API at [MediaLibrary (next)](/versions/latest/sdk/media-library-next/).
+<BoxLink
+  title="MediaLibrary (next)"
+  description="See the full API reference for expo-media-library/next."
+  href="/versions/latest/sdk/media-library-next/"
+  Icon={BookOpen02Icon}
+/>
