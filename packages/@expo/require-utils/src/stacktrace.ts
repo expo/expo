@@ -188,8 +188,11 @@ function cloneCallSite(site: NodeJS.CallSite): ClonedCallSite {
  * V8's `CallSite.prototype.toString`, reimplemented in JS so it consults overridden
  * getters on a cloned call site. Mirrors the C++ implementation in V8's `messages.cc`
  * (which is also what `evanw/node-source-map-support` ports).
+ *
+ * Exported for tests, which need a working `toString` on mock plain-object call sites
+ * (real V8 CallSites have one natively; plain objects don't).
  */
-function callSiteToString(this: NodeJS.CallSite): string {
+export function callSiteToString(this: NodeJS.CallSite): string {
   let fileLocation = '';
   if (this.isNative()) {
     fileLocation = 'native';
