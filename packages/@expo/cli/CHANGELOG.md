@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Replace deprecated `url.parse()` with WHATWG `URL` API in Metro dev server. ([#45524](https://github.com/expo/expo/pull/XXXX) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 56.0.6 — 2026-05-07
 
 ### 🐛 Bug fixes
