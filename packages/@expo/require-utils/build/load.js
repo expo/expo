@@ -161,6 +161,7 @@ function stripSourceMappingURL(code) {
 }
 function compileModule(code, filename, opts) {
   const format = toFormat(filename, false);
+  const shouldCache = opts.cache ?? true;
   const prependPaths = opts.paths ?? [];
   // See: https://github.com/nodejs/node/blob/ff080948666f28fbd767548d26bea034d30bc277/lib/internal/modules/cjs/loader.js#L767
   // If we get a symlinked path instead of the realpath, we assume the realpath is needed for Node module resolution
@@ -203,23 +204,30 @@ function compileModule(code, filename, opts) {
       });
     }
   }
+  const mod = Object.assign(new (nodeModule().Module)(compileFilename, parent), {
+    filename: compileFilename,
+    paths
+  });
+  const childIdx = parent?.children?.indexOf(mod) ?? -1;
+  if (childIdx >= 0) {
+    parent.children.splice(childIdx, 1);
+  }
   try {
-    const mod = Object.assign(new (nodeModule().Module)(compileFilename, parent), {
-      filename: compileFilename,
-      paths
-    });
     mod._compile(inputCode, compileFilename, format != null ? format : undefined);
     mod.loaded = true;
-    require.cache[compileFilename] = mod;
-    if (compileFilename !== filename) {
-      require.cache[filename] = mod;
+    if (shouldCache) {
+      require.cache[compileFilename] = mod;
+      if (compileFilename !== filename) {
+        require.cache[filename] = mod;
+      }
     }
-    parent?.children?.splice(parent.children.indexOf(mod), 1);
     return mod;
   } catch (error) {
-    delete require.cache[compileFilename];
-    if (compileFilename !== filename) {
-      delete require.cache[filename];
+    if (shouldCache) {
+      delete require.cache[compileFilename];
+      if (compileFilename !== filename) {
+        delete require.cache[filename];
+      }
     }
     throw error;
   } finally {
@@ -239,6 +247,7 @@ function compileModule(code, filename, opts) {
 }
 const hasStripTypeScriptTypes = typeof nodeModule().stripTypeScriptTypes === 'function';
 function evalModule(code, filename, opts = {}, format = toFormat(filename, true)) {
+  const shouldCache = opts.cache ?? true;
   let inputCode = code;
   let inputFilename = filename;
   let diagnostic;
@@ -295,7 +304,7 @@ function evalModule(code, filename, opts = {}, format = toFormat(filename, true)
   }
   try {
     const mod = compileModule(inputCode, inputFilename, opts);
-    if (inputFilename !== filename) {
+    if (shouldCache && inputFilename !== filename) {
       require.cache[filename] = mod;
     }
     return mod.exports;

@@ -15,6 +15,7 @@ type Format = 'commonjs' | 'module' | 'module-typescript' | 'commonjs-typescript
 export interface ModuleOptions {
     paths?: string[];
     sourceMap?: string;
+    cache?: boolean;
 }
 declare function evalModule(code: string, filename: string, opts?: ModuleOptions, format?: Format): any;
 declare function loadModule(filename: string): Promise<any>;
