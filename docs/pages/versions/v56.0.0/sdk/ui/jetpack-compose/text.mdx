@@ -1,0 +1,174 @@
+---
+title: Text
+description: A Jetpack Compose Text component for displaying styled text.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Text matches the official Jetpack Compose [Text styling](https://developer.android.com/develop/ui/compose/text/style-text) API and displays text with Material 3 typography styles, custom fonts, and text formatting options.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text
+
+```tsx BasicTextExample.tsx
+import { Host, Text } from '@expo/ui/jetpack-compose';
+
+export default function BasicTextExample() {
+  return (
+    <Host matchContents>
+      <Text>Hello, world!</Text>
+    </Host>
+  );
+}
+```
+
+### Typography styles
+
+Use the `style` prop with `typography` to apply Material 3 typography presets.
+
+```tsx TypographyExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function TypographyExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Text style={{ typography: 'displayLarge' }}>Display Large</Text>
+        <Text style={{ typography: 'headlineMedium' }}>Headline Medium</Text>
+        <Text style={{ typography: 'bodySmall' }}>Body Small</Text>
+        <Text style={{ typography: 'labelLarge' }}>Label Large</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Text with maxLines and overflow
+
+Control text truncation with `maxLines` and `overflow`.
+
+```tsx TextOverflowExample.tsx
+import { Host, Text } from '@expo/ui/jetpack-compose';
+import { width } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function TextOverflowExample() {
+  return (
+    <Host matchContents>
+      <Text maxLines={2} overflow="ellipsis" modifiers={[width(200)]}>
+        This is a long paragraph of text that will be truncated after two lines with an ellipsis at
+        the end to indicate there is more content.
+      </Text>
+    </Host>
+  );
+}
+```
+
+### Styled text
+
+Apply custom text styles including font weight, style, size, and decoration.
+
+```tsx StyledTextExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function StyledTextExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Text style={{ fontWeight: 'bold', fontSize: 20 }}>Bold text</Text>
+        <Text style={{ fontStyle: 'italic' }}>Italic text</Text>
+        <Text style={{ textDecoration: 'underline' }}>Underlined text</Text>
+        <Text style={{ letterSpacing: 4 }}>Spaced out text</Text>
+        <Text color="#E91E63" style={{ fontSize: 18, textAlign: 'center' }}>
+          Colored and centered
+        </Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Nested text
+
+Nest `<Text>` components to apply inline styles to parts of a sentence. Child spans inherit styles from their parent. For example, a bold parent with an italic child renders the child as bold and italic.
+
+```tsx NestedTextExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function NestedTextExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        {/* Bold parent, italic child inherits bold */}
+        <Text style={{ fontWeight: 'bold' }}>
+          Hello <Text style={{ fontStyle: 'italic' }}>world</Text>!
+        </Text>
+
+        {/* Mixed inline styles */}
+        <Text style={{ fontSize: 16 }}>
+          Normal, <Text style={{ fontStyle: 'italic' }}>italic</Text>,{' '}
+          <Text style={{ fontWeight: 'bold' }}>bold</Text>, and{' '}
+          <Text style={{ textDecoration: 'underline' }}>underlined</Text>
+        </Text>
+
+        {/* Color and background overrides per span */}
+        <Text style={{ fontSize: 18 }}>
+          Click{' '}
+          <Text color="#007AFF" style={{ fontWeight: 'bold' }}>
+            here
+          </Text>{' '}
+          or <Text style={{ background: '#FFEB3B' }}>highlighted</Text>
+        </Text>
+
+        {/* Deep nesting — styles accumulate */}
+        <Text style={{ fontWeight: 'bold' }}>
+          Bold{' '}
+          <Text style={{ fontStyle: 'italic' }}>
+            bold+italic <Text style={{ textDecoration: 'underline' }}>bold+italic+underline</Text>
+          </Text>
+        </Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Custom fonts
+
+Use fonts loaded via [`expo-font`](/versions/latest/sdk/font/) by passing the font family name to `style.fontFamily`.
+
+```tsx CustomFontExample.tsx
+import { Host, Text, Column } from '@expo/ui/jetpack-compose';
+import { paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function CustomFontExample() {
+  return (
+    <Host matchContents>
+      <Column modifiers={[paddingAll(16)]}>
+        <Text style={{ fontFamily: 'serif', fontSize: 16 }}>System serif font</Text>
+        <Text style={{ fontFamily: 'monospace', fontSize: 16 }}>System monospace font</Text>
+        <Text style={{ fontFamily: 'Inter-Bold', fontSize: 16 }}>Custom Inter Bold font</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Text } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/text" apiName="Text" />

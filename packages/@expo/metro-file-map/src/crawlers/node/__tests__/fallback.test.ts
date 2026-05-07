@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import { RootPathUtils } from '../../../lib/RootPathUtils';
 import type { FallbackFilesystem } from '../../../types';
-import createFallbackFilesystem from '../fallback';
+import createFallbackFilesystem, { isFallbackDir } from '../fallback';
 
 const rootDir = '/project';
 
@@ -215,6 +215,85 @@ describe('createFallbackFilesystem', () => {
       const result = fallback.readdir('src', '/project/src', existing);
 
       expect(result!.get('file.js')?.[0]).toBe(999); // preserved
+    });
+  });
+
+  describe('directory marking (isFallbackDir)', () => {
+    test('readdir result is marked as a fallback dir', () => {
+      vol.fromJSON({ '/project/src/a.js': 'a' });
+      const fallback = createFallback();
+      const result = fallback.readdir('src', '/project/src', undefined);
+
+      expect(isFallbackDir(result)).toBe(true);
+    });
+
+    test('readdir child directories are marked as fallback dirs', () => {
+      vol.fromJSON({ '/project/src/sub/file.js': 'content' });
+      const fallback = createFallback();
+      const result = fallback.readdir('src', '/project/src', undefined);
+
+      const sub = result!.get('sub');
+      expect(sub).toBeInstanceOf(Map);
+      expect(isFallbackDir(sub)).toBe(true);
+    });
+
+    test('lookup-returned directory (crawled) is marked as a fallback dir', () => {
+      vol.fromJSON({ '/project/dir/file.js': 'content' });
+      const fallback = createFallback();
+      const node = fallback.lookup('dir', '/project/dir', undefined);
+
+      expect(isFallbackDir(node)).toBe(true);
+    });
+
+    test('lookup-returned directory (non-crawled) is marked as a fallback dir', () => {
+      vol.fromJSON({ '/project/node_modules/pkg/index.js': 'content' });
+      const fallback = createFallback();
+      const node = fallback.lookup('node_modules', '/project/node_modules', undefined);
+
+      expect(node).toBeInstanceOf(Map);
+      expect((node as Map<string, any>).size).toBe(0);
+      expect(isFallbackDir(node)).toBe(true);
+    });
+
+    test('readdir skips CRAWLED dirs but not VISITED dirs', () => {
+      vol.fromJSON({
+        '/project/src/a.js': 'a',
+        '/project/src/sub/b.js': 'b',
+      });
+      const fallback = createFallback();
+
+      // First readdir returns the parent (CRAWLED) with child sub (VISITED)
+      const parent = fallback.readdir('src', '/project/src', undefined);
+      const sub = parent!.get('sub') as Map<string, any>;
+      expect(sub.size).toBe(0); // VISITED, not yet populated
+
+      // readdir on the VISITED child should populate it (not skip)
+      const populated = fallback.readdir('src/sub', '/project/src/sub', sub);
+      expect(populated).toBe(sub); // same reference, mutated in place
+      expect(sub.has('b.js')).toBe(true);
+
+      // readdir again on the now-CRAWLED child should skip
+      vol.fromJSON({
+        '/project/src/a.js': 'a',
+        '/project/src/sub/b.js': 'b',
+        '/project/src/sub/c.js': 'c',
+      });
+      const skipped = fallback.readdir('src/sub', '/project/src/sub', sub);
+      expect(skipped).toBe(sub);
+      expect(sub.has('c.js')).toBe(false); // not re-read
+    });
+
+    test('unmarked Maps are not fallback dirs', () => {
+      expect(isFallbackDir(new Map())).toBe(false);
+    });
+
+    test('non-directory lookup results are not marked', () => {
+      vol.fromJSON({ '/project/file.js': 'content' });
+      const fallback = createFallback();
+      const node = fallback.lookup('file.js', '/project/file.js', undefined);
+
+      expect(Array.isArray(node)).toBe(true);
+      expect(isFallbackDir(node)).toBe(false);
     });
   });
 });

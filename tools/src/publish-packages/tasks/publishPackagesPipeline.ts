@@ -14,6 +14,7 @@ import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
+import { refreshPnpmLockfile } from './refreshPnpmLockfile';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
@@ -91,6 +92,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       updateIosProjects,
       addTemplateTarball,
       cutOffChangelogs,
+      refreshPnpmLockfile,
       commitStagedChanges,
       pushCommittedChanges,
       publishAndroidArtifacts,

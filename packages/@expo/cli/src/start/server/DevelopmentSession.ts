@@ -15,6 +15,8 @@ export class DevelopmentSession {
   /** If the `startAsync` was successfully called */
   private hasActiveSession = false;
 
+  private abortController: AbortController | undefined;
+
   constructor(
     /** Project root directory. */
     private projectRoot: string,
@@ -37,38 +39,48 @@ export class DevelopmentSession {
     exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
     runtime: 'native' | 'web';
   }): Promise<void> {
-    try {
-      if (env.CI || env.EXPO_OFFLINE) {
-        debug(
-          env.CI
-            ? 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in CI.'
-            : 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
-        );
-        return;
-      }
-
-      const deviceIds = await this.getDeviceInstallationIdsAsync();
-
-      if (!hasCredentials() && !deviceIds?.length) {
-        debug(
-          'Development session will not ping because the user is not authenticated and there are no devices.'
-        );
-        return;
-      }
-
-      if (this.url) {
-        debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
-        await updateDevelopmentSessionAsync({
-          url: this.url,
-          runtime,
-          exp,
-          deviceIds,
-        });
-        this.hasActiveSession = true;
-      }
-    } catch (error: any) {
-      debug(`Error updating development session API: ${error}`);
+    if (env.CI || env.EXPO_OFFLINE) {
+      debug(
+        env.CI
+          ? 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in CI.'
+          : 'This project will not be suggested in Expo Go or Dev Clients because Expo CLI is running in offline-mode.'
+      );
+      return;
     }
+
+    const fireAndForget = async () => {
+      try {
+        const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+        if (!hasCredentials() && !deviceIds?.length) {
+          debug(
+            'Development session will not ping because the user is not authenticated and there are no devices.'
+          );
+          return;
+        }
+
+        if (this.url) {
+          debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
+          this.abortController = new AbortController();
+          await updateDevelopmentSessionAsync({
+            url: this.url,
+            runtime,
+            exp,
+            deviceIds,
+            signal: this.abortController.signal,
+          });
+          this.hasActiveSession = true;
+        }
+      } catch (error: any) {
+        debug(`Error updating development session API: ${error}`);
+      } finally {
+        this.abortController = undefined;
+      }
+    };
+
+    // NOTE(@kitten): We never want to wait for this call, as it's not essential to the CLI startup
+    // But we do add a tick delay, for testing
+    await Promise.race([fireAndForget(), Promise.resolve()]);
   }
 
   /** Get all recent devices for the project. */
@@ -79,7 +91,12 @@ export class DevelopmentSession {
 
   /** Try to close any pending development sessions, but always resolve */
   public async closeAsync(): Promise<boolean> {
-    if (env.CI || env.EXPO_OFFLINE || !this.hasActiveSession) {
+    if (env.CI || env.EXPO_OFFLINE) {
+      return false;
+    } else if (this.abortController) {
+      this.abortController.abort();
+      return false;
+    } else if (!this.hasActiveSession) {
       return false;
     }
 

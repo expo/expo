@@ -2,7 +2,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
 import { File, Directory, Paths } from 'expo-file-system';
 import * as FileSystem from 'expo-file-system/legacy';
-// import * as Progress from 'expo-progress';
 import type {
   DownloadProgressData,
   DownloadResumable,
@@ -355,8 +354,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
             Download progress: {this.state.downloadProgress * 100}%
           </Text>
         ) : null}
-        {/* Add back progress bar once deprecation warnings from reanimated 2 are resolved */}
-        {/* <Progress.Bar style={styles.progress} isAnimated progress={this.state.downloadProgress} /> */}
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._cancel} title="Cancel Download" />

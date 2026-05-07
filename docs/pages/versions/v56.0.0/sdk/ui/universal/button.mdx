@@ -1,0 +1,102 @@
+---
+title: Button
+description: A pressable button with multiple visual variants.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A pressable button that renders consistently across Android, iOS, and web. Supports `filled`, `outlined`, and `text` visual variants.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic button
+
+```tsx BasicButtonExample.tsx
+import { Host, Button } from '@expo/ui';
+
+export default function BasicButtonExample() {
+  return (
+    <Host matchContents>
+      <Button label="Press me" onPress={() => alert('Pressed!')} />
+    </Host>
+  );
+}
+```
+
+### Variants
+
+Pick a visual variant with the [`variant`](#variant) prop.
+
+```tsx ButtonVariantsExample.tsx
+import { Host, Column, Button } from '@expo/ui';
+
+export default function ButtonVariantsExample() {
+  return (
+    <Host matchContents>
+      <Column spacing={8}>
+        <Button variant="filled" label="Filled" onPress={() => {}} />
+        <Button variant="outlined" label="Outlined" onPress={() => {}} />
+        <Button variant="text" label="Text" onPress={() => {}} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Custom content
+
+Pass [`children`](#children) for fully custom button contents. The [`label`](#label) prop is ignored when `children` is provided.
+
+```tsx CustomButtonExample.tsx
+import { Host, Button, Row, Icon, Text } from '@expo/ui';
+
+export default function CustomButtonExample() {
+  return (
+    <Host matchContents>
+      <Button onPress={() => {}}>
+        <Row spacing={6} alignment="center">
+          <Icon
+            name={Icon.select({
+              ios: 'star.fill',
+              android: require('@expo/material-symbols/star.xml'),
+            })}
+            size={16}
+            color="#FFFFFF"
+          />
+          <Text textStyle={{ color: '#FFFFFF' }}>Favorite</Text>
+        </Row>
+      </Button>
+    </Host>
+  );
+}
+```
+
+### Disabled
+
+```tsx DisabledButtonExample.tsx
+import { Host, Button } from '@expo/ui';
+
+export default function DisabledButtonExample() {
+  return (
+    <Host matchContents>
+      <Button label="Disabled" onPress={() => {}} disabled />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Button } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/button" apiName="Button" />

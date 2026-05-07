@@ -485,5 +485,12 @@ function readExpoModuleConfigJson(expoModuleConfigJsonPath: string) {
 }
 
 function pathToLocalPackageJson(packageName: string): string {
+  if (packageName.startsWith('@')) {
+    try {
+      return require.resolve(`${packageName}/package.json`, { paths: [PACKAGES_DIR] });
+    } catch {
+      // Fall through — caller's cachedPackages fallback still applies.
+    }
+  }
   return path.join(PACKAGES_DIR, packageName, 'package.json');
 }

@@ -10,7 +10,8 @@ const appearance_1 = require("./appearance");
 const types_1 = require("./types");
 const optionsIconConverter_1 = require("./utils/optionsIconConverter");
 function NativeTabsView(props) {
-    const { disableIndicator, tabs } = props;
+    const { disableIndicator, tabs, unstable_nativeProps } = props;
+    const { android: rawAndroidProps, ios: _ignoredRawIosProps, ...rawHostRestProps } = unstable_nativeProps ?? {};
     const { selectedScreenKey, provenance } = (0, NativeTabsView_shared_1.useSelectedScreenKey)(props);
     const onTabSelected = (0, NativeTabsView_shared_1.useOnTabSelectedHandler)(props.onTabChange);
     // TODO(@ubax): add per screen labelVisibilityMode + validation function
@@ -30,9 +31,11 @@ function NativeTabsView(props) {
     if (children.length === 0) {
         return null;
     }
-    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Host, { navState: { selectedScreenKey, provenance }, 
+    return ((0, jsx_runtime_1.jsx)(react_native_screens_1.Tabs.Host
+    // TODO(@ubax): Adjust docs and add support for tabBarRespectsIMEInsets
+    , { 
         // TODO(@ubax): Adjust docs and add support for tabBarRespectsIMEInsets
-        android: {}, tabBarHidden: props.hidden, onTabSelected: onTabSelected, children: children }));
+        android: { ...rawAndroidProps }, tabBarHidden: props.hidden, ...rawHostRestProps, navState: { selectedScreenKey, provenance }, onTabSelected: onTabSelected, children: children }));
 }
 function Screen(props) {
     const { options, androidAppearance, contentRenderer } = props;

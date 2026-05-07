@@ -1,7 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import Network
 
 /**
  Snapshots of the device's environment (power, thermals, connectivity) attached
@@ -64,38 +63,19 @@ enum DeviceConditions {
   }
 
   /**
-   Reads the current network path synchronously via a short-lived `NWPathMonitor`
-   and returns `expo.network.connected` and `expo.network.type`. The monitor is
-   cancelled before returning so the helper holds no system resources.
+   Reads `expo.network.connected` and `expo.network.type` from the snapshot
+   maintained by `NetworkPathMonitor`. Awaits the monitor's first path
+   delivery if it hasn't arrived yet — the TTI value is captured from a
+   synchronously-recorded timestamp before we get here, so the await only
+   delays the local-storage write, not the metric itself.
    */
-  static func networkParams() -> [String: any Sendable] {
-    let path = currentNetworkPath()
-    var params: [String: any Sendable] = [
-      "expo.network.connected": path?.status == .satisfied
+  @AppMetricsActor
+  static func networkParams() async -> [String: any Sendable] {
+    let path = await NetworkPathMonitor.shared.waitForFirstPath()
+    return [
+      "expo.network.connected": path?.status == .satisfied,
+      "expo.network.type": networkTypeString(path)
     ]
-    params["expo.network.type"] = networkTypeString(path)
-    return params
-  }
-
-  private static func currentNetworkPath() -> NWPath? {
-    let monitor = NWPathMonitor()
-    let semaphore = DispatchSemaphore(value: 0)
-    let queue = DispatchQueue(label: "expo.appmetrics.networkSnapshot")
-    nonisolated(unsafe) var snapshot: NWPath?
-    monitor.pathUpdateHandler = { path in
-      snapshot = path
-      semaphore.signal()
-    }
-    monitor.start(queue: queue)
-    // NWPathMonitor delivers the initial path almost immediately (typically
-    // sub-millisecond). 5ms is a generous upper bound that still keeps TTI
-    // reporting on a tight budget.
-    // TODO: Replace this short-lived monitor with a long-lived one started at
-    // module init so the snapshot read is free and we don't block a
-    // cooperative-pool thread.
-    _ = semaphore.wait(timeout: .now() + .milliseconds(5))
-    monitor.cancel()
-    return snapshot
   }
 
   private static func thermalStateString(_ state: ProcessInfo.ThermalState) -> String {
@@ -113,27 +93,22 @@ enum DeviceConditions {
     }
   }
 
-  private static func networkTypeString(_ path: NWPath?) -> String {
+  private static func networkTypeString(_ path: NetworkPath?) -> String {
     guard let path else {
       return "unknown"
     }
     if path.status != .satisfied {
       return "none"
     }
-    if path.usesInterfaceType(.wifi) {
+    switch path.interfaceType {
+    case .wifi:
       return "wifi"
-    }
-    if path.usesInterfaceType(.cellular) {
+    case .cellular:
       return "cellular"
-    }
-    if path.usesInterfaceType(.wiredEthernet) {
+    case .ethernet:
       return "ethernet"
+    case .other, .none:
+      return "other"
     }
-    // `.loopback` is folded into `other`. The OS only reports loopback as the
-    // primary interface when no real network is up (in which case the path is
-    // already `.unsatisfied` above and we returned `none`) or in unusual
-    // simulator configurations — neither case is operationally meaningful for
-    // TTI, and dropping the value keeps the platform enums aligned.
-    return "other"
   }
 }

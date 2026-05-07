@@ -51,14 +51,14 @@ export async function startInterfaceAsync(
     ...options,
   };
 
-  // Wait briefly for the dependency check to resolve (it runs in the background since early startup).
-  // With a warm fetch cache this resolves near-instantly; on cold starts it may not be ready,
-  // in which case it will appear on the next TUI re-print (e.g. pressing 'c').
+  // Print the dependency check if it completed (it runs in the background since early startup).
+  // With a warm fetch cache this resolves near-instantly, so we defer by a tick
+  // On cold starts it may not be ready, in which case it will appear on the next reprint or restart
   let dependencyCheckResult: DependencyCheckResult | null | undefined;
   if (options.dependencyCheckPromise) {
     dependencyCheckResult = await Promise.race([
       options.dependencyCheckPromise,
-      new Promise<undefined>((resolve) => setTimeout(resolve, 100)),
+      Promise.resolve(null),
     ]);
     if (!dependencyCheckResult) {
       // Not ready yet — capture once resolved for display on next reprint

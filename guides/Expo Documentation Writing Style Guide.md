@@ -241,7 +241,7 @@ Only apply inline code formatting using back-ticks (``) on programming words and
 
 ### Use `&mdash;`
 
-In some scenarios, when you split two sentences and use `-` or `--`, instead use `&mdash;`. Markdown renders that em dash nicely instead of a hyphen (`-`).
+In some scenarios, when you split two sentences and use `-`, `--`, or a literal em-dash character (`—`, U+2014), instead use `&mdash;`. Markdown renders that em dash nicely instead of a hyphen (`-`). The literal `—` character is the most common variant inserted by AI-assisted writing, so watch for it during review.
 
 ### Referencing Keyboard shortcuts
 

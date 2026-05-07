@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Fix `useFonts` from `@expo-google-fonts/material-symbols` using an undeclared dependency on `expo-font` and `react` ([#45471](https://github.com/expo/expo/pull/45471) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.1 — 2026-05-05
 

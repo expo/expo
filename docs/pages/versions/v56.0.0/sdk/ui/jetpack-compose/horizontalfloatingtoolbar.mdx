@@ -1,0 +1,96 @@
+---
+title: HorizontalFloatingToolbar
+description: A Jetpack Compose HorizontalFloatingToolbar component for displaying a floating action bar.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI HorizontalFloatingToolbar wraps the official Jetpack Compose [`HorizontalFloatingToolbar`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-horizontal-floating-toolbar.html) and displays a horizontal toolbar that floats above content, containing action buttons.
+
+> **Note:** If you only need a single floating button, use [`FloatingActionButton`](/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/) instead.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Floating toolbar over scrollable content
+
+Place the toolbar inside a `Box` with `floatingToolbarExitAlwaysScrollBehavior` to get scroll-driven hide/show behavior. Use `align('bottomCenter')` to position the toolbar at the bottom of the screen. The entire layout stays within the Compose layer — no React Native absolute positioning needed.
+
+```tsx FloatingToolbarExample.tsx
+import {
+  Box,
+  HorizontalFloatingToolbar,
+  Host,
+  Icon,
+  IconButton,
+  LazyColumn,
+  ListItem,
+} from '@expo/ui/jetpack-compose';
+import { align, fillMaxSize, fillMaxWidth, offset } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function FloatingToolbarExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Box modifiers={[fillMaxSize()]} floatingToolbarExitAlwaysScrollBehavior="bottom">
+        <LazyColumn modifiers={[fillMaxSize()]}>{/* ...list items... */}</LazyColumn>
+
+        <HorizontalFloatingToolbar
+          variant="vibrant"
+          modifiers={[align('bottomCenter'), offset(0, -16)]}>
+          <IconButton onClick={() => console.log('Edit pressed')}>
+            <Icon source={require('./assets/edit.xml')} />
+          </IconButton>
+          <HorizontalFloatingToolbar.FloatingActionButton
+            onClick={() => console.log('Add pressed')}>
+            <Icon source={require('./assets/add.xml')} />
+          </HorizontalFloatingToolbar.FloatingActionButton>
+        </HorizontalFloatingToolbar>
+      </Box>
+    </Host>
+  );
+}
+```
+
+### Toolbar with FloatingActionButton
+
+Use `IconButton` as direct children for toolbar items, and `HorizontalFloatingToolbar.FloatingActionButton` for the primary action.
+
+```tsx ToolbarWithFABExample.tsx
+import { Host, HorizontalFloatingToolbar, IconButton, Icon } from '@expo/ui/jetpack-compose';
+
+export default function ToolbarWithFABExample() {
+  return (
+    <Host matchContents>
+      <HorizontalFloatingToolbar>
+        <IconButton onClick={() => console.log('Edit pressed')}>
+          <Icon source={require('./assets/edit.xml')} contentDescription="Edit" />
+        </IconButton>
+        <IconButton onClick={() => console.log('Share pressed')}>
+          <Icon source={require('./assets/share.xml')} contentDescription="Share" />
+        </IconButton>
+        <HorizontalFloatingToolbar.FloatingActionButton onPress={() => console.log('Add pressed')}>
+          <Icon source={require('./assets/add.xml')} contentDescription="Add" />
+        </HorizontalFloatingToolbar.FloatingActionButton>
+      </HorizontalFloatingToolbar>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { HorizontalFloatingToolbar } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/horizontalfloatingtoolbar"
+  apiName="HorizontalFloatingToolbar"
+/>
