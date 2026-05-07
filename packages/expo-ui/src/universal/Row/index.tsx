@@ -38,8 +38,8 @@ export function Row({
   onPress,
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: RowProps) {
   useUniversalLifecycle(onAppear, onDisappear);
@@ -48,6 +48,9 @@ export function Row({
 
   return (
     <Container
+      onPress={onPress}
+      disabled={disabled}
+      testID={testID}
       style={[
         styles.row,
         alignmentStyles[alignment],
@@ -55,10 +58,7 @@ export function Row({
         style,
         hidden && styles.hidden,
         disabled && styles.disabled,
-      ]}
-      onPress={onPress}
-      disabled={disabled}
-      testID={testID}>
+      ]}>
       {children}
     </Container>
   );

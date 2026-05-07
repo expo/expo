@@ -15,8 +15,8 @@ export function ScrollView({
   // API compatibility but silently ignored (RN ScrollView has no press handler).
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: ScrollViewProps) {
   useUniversalLifecycle(onAppear, onDisappear);

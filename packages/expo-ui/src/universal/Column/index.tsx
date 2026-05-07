@@ -30,8 +30,8 @@ export function Column({
   onPress,
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: ColumnProps) {
   useUniversalLifecycle(onAppear, onDisappear);

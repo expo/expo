@@ -47,8 +47,8 @@ export function Button({
   style,
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: ButtonProps) {
   useUniversalLifecycle(onAppear, onDisappear);
