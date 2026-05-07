@@ -117,9 +117,13 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }: InlineModule
   });
 }
 
-export async function generateInlineModulesTypesCommand(cli: commander.Command) {
+export async function inlineModulesInterfaceCommand(cli: commander.Command) {
   return cli
-    .command('inline-modules-types')
+    .command('inline-modules-interface')
+    .summary('Creates ts interface for every Swift inline module in the project.')
+    .description(
+      'Creates ts interface for every Swift inline module in the project. The ts interface consists of two files Module.generated.ts and Module.tsx, the first one is regenerated with each run of the command and the second one will not be regenerated if user changes it.'
+    )
     .requiredOption(
       '-a --app-json <appJsonPathPath>',
       'A path to the `app.json` where the inline.modules.watchedDirectories are defined.'

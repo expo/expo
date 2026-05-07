@@ -7,13 +7,13 @@ import {
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
 
-export function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
+export function shortModuleInterfaceCommand(cli: commander.Command) {
   addCommonOptions(
     cli
-      .command('generate-concise-ts')
-      .summary('Creates concise ts interface, great with inline-modules.')
+      .command('short-module-interface')
+      .summary('Creates a short ts interface, great with inline-modules.')
       .description(
-        'Creates concise ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.'
+        'Creates a short ts interface for an expo module. Overrites `ModuleName.generated.ts` and creates `ModuleName.ts` if not present. Can be used with inline-modules.'
       )
   ).action(async (options: TypeInformationCommandCommonAllArguments) => {
     const parsedArgs = await parseCommandArguments(options, false);

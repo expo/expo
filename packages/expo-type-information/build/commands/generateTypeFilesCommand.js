@@ -3,12 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateTypeFilesCommand = generateTypeFilesCommand;
+exports.moduleInterfaceCommand = moduleInterfaceCommand;
 const commandUtils_1 = require("./commandUtils");
 const typescriptGeneration_1 = require("../typescriptGeneration");
 const path_1 = __importDefault(require("path"));
-function generateTypeFilesCommand(cli) {
-    return (0, commandUtils_1.addCommonOptions)(cli.command('generate-type-files')).action(async (options) => {
+function moduleInterfaceCommand(cli) {
+    return (0, commandUtils_1.addCommonOptions)(cli.command('module-interface')).action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options, false);
         if (!parsedArgs) {
             return;
