@@ -46,3 +46,4 @@ minimumReleaseAgeExclude:
   - 'react-native'
   - multitars
   - 'react-native-worklets'
+  - 'react-native-screens'

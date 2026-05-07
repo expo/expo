@@ -35,7 +35,7 @@ function NativeTabsView(props) {
     // TODO(@ubax): Adjust docs and add support for tabBarRespectsIMEInsets
     , { 
         // TODO(@ubax): Adjust docs and add support for tabBarRespectsIMEInsets
-        android: { ...rawAndroidProps }, tabBarHidden: props.hidden, ...rawHostRestProps, navState: { selectedScreenKey, provenance }, onTabSelected: onTabSelected, children: children }));
+        android: { ...rawAndroidProps }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, children: children }));
 }
 function Screen(props) {
     const { options, androidAppearance, contentRenderer } = props;

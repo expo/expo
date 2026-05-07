@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Upgrade react-native-screens version to 4.25.0-beta.3.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

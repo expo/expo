@@ -65,7 +65,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       android={{ ...rawAndroidProps }}
       tabBarHidden={props.hidden}
       {...rawHostRestProps}
-      navState={{ selectedScreenKey, provenance }}
+      navStateRequest={{ selectedScreenKey, baseProvenance: provenance }}
       onTabSelected={onTabSelected}>
       {children}
     </Tabs.Host>

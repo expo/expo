@@ -23,7 +23,10 @@ function useSelectedScreenKey({ focusedIndex, provenance, tabs, }) {
     };
 }
 function useOnTabSelectedHandler(onTabChange) {
-    return (0, react_1.useCallback)(({ nativeEvent: { selectedScreenKey, provenance, isNativeAction } }) => {
+    return (0, react_1.useCallback)(({ nativeEvent: { selectedScreenKey, provenance, actionOrigin } }) => {
+        // Treat anything other than a JS-driven echo as a native action so the
+        // navigator emits `tabPress` and dispatches `JUMP_TO`.
+        const isNativeAction = actionOrigin !== 'programmatic-js';
         onTabChange({ selectedKey: selectedScreenKey, provenance, isNativeAction });
     }, [onTabChange]);
 }
