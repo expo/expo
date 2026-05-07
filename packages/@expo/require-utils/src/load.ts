@@ -6,6 +6,7 @@ import url from 'node:url';
 import type * as ts from 'typescript';
 
 import { annotateError, formatDiagnostic } from './codeframe';
+import { installSourceMapStackTrace } from './stacktrace';
 import { toCommonJS } from './transform';
 
 declare module 'node:module' {
@@ -146,64 +147,6 @@ function makeSourceMapTempPath(filename: string) {
 
 function stripSourceMappingURL(code: string): string {
   return code.replace(/^[ \t]*\/\/[#@][ \t]+sourceMappingURL=.*$/gm, '');
-}
-
-let stackTraceInstalled = false;
-
-function installSourceMapStackTrace() {
-  if (stackTraceInstalled) {
-    return;
-  } else {
-    stackTraceInstalled = true;
-  }
-
-  // Node disables automatic stack symbolication when source maps are disabled. Since we toggle
-  // source maps on only during `_compile` (to keep the cache scoped to our bundles, not every
-  // require()'d package), we install our own JS-level prepareStackTrace so that errors thrown
-  // by the bundle still surface original positions when their stack is formatted later.
-  Error.prepareStackTrace = (error, callSites) => {
-    const name = error.name || 'Error';
-    const message = error.message || '';
-    const lines: string[] = [];
-
-    for (const site of callSites) {
-      const file = site.getFileName() || site.getScriptNameOrSourceURL();
-      const lineNumber = site.getLineNumber();
-      const columnNumber = site.getColumnNumber();
-      const fn = site.getFunctionName();
-
-      if (file && lineNumber != null && columnNumber != null) {
-        const sm = nodeModule.findSourceMap(file);
-        if (sm) {
-          const entry = sm.findEntry(lineNumber - 1, columnNumber - 1);
-          if (entry && 'originalSource' in entry && entry.originalSource) {
-            // `originalSource` is a `file://` URL. `fileURLToPath` correctly handles drive
-            // letters and percent-encoded characters; a naive `file://` strip would yield
-            // `/C:/foo/bar.ts` on Windows, which isn't a valid path.
-            const origFile = entry.originalSource.startsWith('file://')
-              ? url.fileURLToPath(entry.originalSource)
-              : entry.originalSource;
-            // Node's runtime returns a `name` on the entry when the source map provides one,
-            // but @types/node omits it from `SourceMapping`. Read it defensively.
-            const origFn = (entry as { name?: string }).name || fn || '<anonymous>';
-            lines.push(
-              `    at ${origFn} (${origFile}:${entry.originalLine + 1}:${entry.originalColumn + 1})`
-            );
-            continue;
-          }
-        }
-      }
-
-      const displayFn = fn || '<anonymous>';
-      if (file) {
-        lines.push(`    at ${displayFn} (${file}:${lineNumber}:${columnNumber})`);
-      } else {
-        lines.push(`    at ${displayFn}`);
-      }
-    }
-
-    return `${name}: ${message}\n${lines.join('\n')}`;
-  };
 }
 
 function compileModule(code: string, filename: string, opts: ModuleOptions) {
