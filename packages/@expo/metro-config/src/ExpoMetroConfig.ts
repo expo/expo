@@ -56,7 +56,7 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-let hasWarnedAboutExotic = false;
+const hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -195,17 +195,6 @@ export function getDefaultConfig(
 
   if (isCSSEnabled) {
     patchMetroGraphToSupportUncachedModules();
-  }
-
-  const isExotic = mode === 'exotic' || env.EXPO_USE_EXOTIC;
-
-  if (isExotic && !hasWarnedAboutExotic) {
-    hasWarnedAboutExotic = true;
-    console.log(
-      chalk.gray(
-        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
-      )
-    );
   }
 
   const reactNativePath = path.dirname(
