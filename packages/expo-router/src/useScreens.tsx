@@ -369,6 +369,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           <ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler route={route} />
             <React.Suspense
+              name={route ? `Route(${route.name})` : undefined}
               fallback={
                 <ResolvedSuspenseFallback
                   route={value.contextKey}
