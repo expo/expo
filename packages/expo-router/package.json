@@ -88,7 +88,7 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/log-box": "workspace:56.0.5",
+    "@expo/log-box": "workspace:^56.0.5",
     "@expo/metro-runtime": "workspace:^56.0.4",
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",

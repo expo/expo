@@ -268,7 +268,7 @@ importers:
         version: link:../../packages/expo-module-scripts
       jest:
         specifier: ^29.3.1
-        version: 29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
+        version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
 
   apps/bare-expo/e2e/image-comparison:
     dependencies:
@@ -1792,13 +1792,13 @@ importers:
         specifier: workspace:^0.9.0
         version: link:../image-utils
       '@expo/inline-modules':
-        specifier: workspace:0.0.4
+        specifier: workspace:^0.0.4
         version: link:../inline-modules
       '@expo/json-file':
         specifier: workspace:^10.1.0
         version: link:../json-file
       '@expo/log-box':
-        specifier: workspace:56.0.5
+        specifier: workspace:^56.0.5
         version: link:../log-box
       '@expo/metro':
         specifier: ~56.0.0
@@ -1807,7 +1807,7 @@ importers:
         specifier: workspace:~56.0.4
         version: link:../metro-config
       '@expo/metro-file-map':
-        specifier: workspace:56.0.0-2
+        specifier: workspace:^56.0.0-2
         version: link:../metro-file-map
       '@expo/osascript':
         specifier: workspace:^2.5.0
@@ -2655,7 +2655,7 @@ importers:
   packages/@expo/metro-runtime:
     dependencies:
       '@expo/log-box':
-        specifier: workspace:56.0.5
+        specifier: workspace:^56.0.5
         version: link:../log-box
       anser:
         specifier: ^1.4.9
@@ -3122,7 +3122,7 @@ importers:
         version: link:../expo-splash-screen
       jest:
         specifier: ^29.2.1
-        version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
+        version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
       react-refresh:
         specifier: ^0.14.2
         version: 0.14.2
@@ -3428,7 +3428,7 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:56.0.6
+        specifier: workspace:^56.0.6
         version: link:../@expo/cli
       '@expo/config':
         specifier: workspace:~56.0.2
@@ -3437,25 +3437,25 @@ importers:
         specifier: workspace:~56.0.2
         version: link:../@expo/config-plugins
       '@expo/devtools':
-        specifier: workspace:56.0.2
+        specifier: workspace:~56.0.2
         version: link:../@expo/devtools
       '@expo/dom-webview':
         specifier: workspace:~56.0.4
         version: link:../@expo/dom-webview
       '@expo/fingerprint':
-        specifier: workspace:0.17.3
+        specifier: workspace:^0.17.3
         version: link:../@expo/fingerprint
       '@expo/local-build-cache-provider':
-        specifier: workspace:56.0.2
+        specifier: workspace:^56.0.2
         version: link:../@expo/local-build-cache-provider
       '@expo/log-box':
-        specifier: workspace:56.0.5
+        specifier: workspace:^56.0.5
         version: link:../@expo/log-box
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
       '@expo/metro-config':
-        specifier: workspace:56.0.4
+        specifier: workspace:~56.0.4
         version: link:../@expo/metro-config
       '@expo/vector-icons':
         specifier: ^15.0.2
@@ -3482,10 +3482,10 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-keep-awake
       expo-modules-autolinking:
-        specifier: workspace:56.0.2
+        specifier: workspace:~56.0.2
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:56.0.4
+        specifier: workspace:~56.0.4
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3630,7 +3630,7 @@ importers:
     devDependencies:
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4089,13 +4089,13 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:56.0.4
+        specifier: workspace:~56.0.4
         version: link:../expo-dev-launcher
       expo-dev-menu:
-        specifier: workspace:56.0.4
+        specifier: workspace:~56.0.4
         version: link:../expo-dev-menu
       expo-dev-menu-interface:
-        specifier: workspace:56.0.0
+        specifier: workspace:~56.0.0
         version: link:../expo-dev-menu-interface
       expo-manifests:
         specifier: workspace:~56.0.1
@@ -4123,7 +4123,7 @@ importers:
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
       expo-dev-menu:
-        specifier: workspace:56.0.4
+        specifier: workspace:~56.0.4
         version: link:../expo-dev-menu
       expo-manifests:
         specifier: workspace:~56.0.1
@@ -4142,7 +4142,7 @@ importers:
   packages/expo-dev-menu:
     dependencies:
       expo-dev-menu-interface:
-        specifier: workspace:56.0.0
+        specifier: workspace:~56.0.0
         version: link:../expo-dev-menu-interface
     devDependencies:
       '@babel/preset-typescript':
@@ -4150,7 +4150,7 @@ importers:
         version: 7.28.5(@babel/core@7.29.0)
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -4331,7 +4331,7 @@ importers:
     devDependencies:
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/fontfaceobserver':
         specifier: ^2.1.3
         version: 2.1.3
@@ -5047,7 +5047,7 @@ importers:
   packages/expo-processing:
     dependencies:
       expo-gl:
-        specifier: workspace:56.0.3
+        specifier: workspace:~56.0.3
         version: link:../expo-gl
       processing-js:
         specifier: ^1.6.6
@@ -5060,7 +5060,7 @@ importers:
   packages/expo-router:
     dependencies:
       '@expo/log-box':
-        specifier: workspace:56.0.5
+        specifier: workspace:^56.0.5
         version: link:../@expo/log-box
       '@expo/metro-runtime':
         specifier: workspace:^56.0.4
@@ -5173,7 +5173,7 @@ importers:
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@tsd/typescript':
         specifier: ^5.9.3
         version: 5.9.3
@@ -5407,7 +5407,7 @@ importers:
     devDependencies:
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/better-sqlite3':
         specifier: ^7.6.6
         version: 7.6.13
@@ -5459,7 +5459,7 @@ importers:
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/node':
         specifier: ^22.14.0
         version: 22.19.15
@@ -5654,10 +5654,10 @@ importers:
         version: link:../expo-module-scripts
       jest:
         specifier: ^29.3.1
-        version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
+        version: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
       ts-jest:
         specifier: ^29.1.2
-        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(typescript@6.0.3)
+        version: 29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(typescript@6.0.3)
 
   packages/expo-ui:
     dependencies:
@@ -5682,7 +5682,7 @@ importers:
         version: 7.29.0
       '@testing-library/react-native':
         specifier: ^13.3.0
-        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
       '@types/babel__core':
         specifier: ^7.20.5
         version: 7.20.5
@@ -18003,7 +18003,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - ts-node
-    optional: true
 
   '@jest/core@29.7.0(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))':
     dependencies:
@@ -18877,9 +18876,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -19183,18 +19180,6 @@ snapshots:
       redent: 3.0.0
     optionalDependencies:
       jest: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
-
-  '@testing-library/react-native@13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)':
-    dependencies:
-      jest-matcher-utils: 30.3.0
-      picocolors: 1.1.1
-      pretty-format: 30.3.0
-      react: 19.2.3
-      react-native: 0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
-      react-test-renderer: 19.2.3(react@19.2.3)
-      redent: 3.0.0
-    optionalDependencies:
-      jest: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
 
   '@testing-library/react-native@13.3.3(jest@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)':
     dependencies:
@@ -20903,22 +20888,6 @@ snapshots:
       exit: 0.1.2
       graceful-fs: 4.2.11
       jest-config: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
-      jest-util: 29.7.0
-      prompts: 2.4.2
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - supports-color
-      - ts-node
-    optional: true
-
-  create-jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)):
-    dependencies:
-      '@jest/types': 29.6.3
-      chalk: 4.1.2
-      exit: 0.1.2
-      graceful-fs: 4.2.11
-      jest-config: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
       jest-util: 29.7.0
       prompts: 2.4.2
     transitivePeerDependencies:
@@ -23174,26 +23143,6 @@ snapshots:
       - babel-plugin-macros
       - supports-color
       - ts-node
-    optional: true
-
-  jest-cli@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)):
-    dependencies:
-      '@jest/core': 29.7.0(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
-      '@jest/test-result': 29.7.0
-      '@jest/types': 29.6.3
-      chalk: 4.1.2
-      create-jest: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
-      exit: 0.1.2
-      import-local: 3.2.0
-      jest-config: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
-      jest-util: 29.7.0
-      jest-validate: 29.7.0
-      yargs: 17.7.2
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - supports-color
-      - ts-node
 
   jest-cli@29.7.0(@types/node@25.5.0)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)):
     dependencies:
@@ -23244,7 +23193,6 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
       - supports-color
-    optional: true
 
   jest-config@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)):
     dependencies:
@@ -23592,19 +23540,6 @@ snapshots:
       '@jest/types': 29.6.3
       import-local: 3.2.0
       jest-cli: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
-    transitivePeerDependencies:
-      - '@types/node'
-      - babel-plugin-macros
-      - supports-color
-      - ts-node
-    optional: true
-
-  jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)):
-    dependencies:
-      '@jest/core': 29.7.0(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
-      '@jest/types': 29.6.3
-      import-local: 3.2.0
-      jest-cli: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
     transitivePeerDependencies:
       - '@types/node'
       - babel-plugin-macros
@@ -26608,12 +26543,12 @@ snapshots:
 
   ts-interface-checker@0.1.13: {}
 
-  ts-jest@29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3)))(typescript@6.0.3):
+  ts-jest@29.4.9(@babel/core@7.29.0)(@jest/transform@29.7.0)(@jest/types@29.6.3)(babel-jest@29.7.0(@babel/core@7.29.0))(jest-util@29.7.0)(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(typescript@6.0.3):
     dependencies:
       bs-logger: 0.2.6
       fast-json-stable-stringify: 2.1.0
       handlebars: 4.7.9
-      jest: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@25.5.0)(typescript@6.0.3))
+      jest: 29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3))
       json5: 2.2.3
       lodash.memoize: 4.1.2
       make-error: 1.3.6
