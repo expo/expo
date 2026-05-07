@@ -28,7 +28,7 @@ type EasCliReferenceData = {
 };
 
 const SubsectionLabel = ({ children }: { children: ReactNode }) => (
-  <p className="text-base font-semibold leading-relaxed tracking-[-0.011rem] mt-0 mb-2">
+  <p className="mt-0 mb-2 text-base leading-relaxed font-semibold tracking-[-0.011rem]">
     {children}
   </p>
 );
@@ -96,9 +96,7 @@ const CommandSection = ({ command }: { command: CommandData }) => {
 
       {argumentsList.length > 0 && (
         <div className="mb-6">
-          <SubsectionLabel>
-            {argumentsList.length === 1 ? 'Argument' : 'Arguments'}
-          </SubsectionLabel>
+          <SubsectionLabel>{argumentsList.length === 1 ? 'Argument' : 'Arguments'}</SubsectionLabel>
           <ListSection entries={argumentsList} />
         </div>
       )}
