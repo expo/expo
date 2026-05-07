@@ -123,3 +123,4 @@ async function generateInlineModulesTypesCommand(cli) {
         }
     });
 }
+//# sourceMappingURL=generateInlineModulesTypesCommand.js.map

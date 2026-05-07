@@ -29,3 +29,4 @@ function generateModuleTypesCommand(cli) {
         (0, commandUtils_1.runCommandOnWatch)(parsedArgs, command);
     });
 }
+//# sourceMappingURL=generateModuleTypesCommand.js.map

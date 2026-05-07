@@ -270,3 +270,4 @@ async function generateConciseTsFiles(parsedArgs) {
         console.error(`Error writing to a file.`, e);
     }
 }
+//# sourceMappingURL=commandUtils.js.map

@@ -1,9 +1,4 @@
-import chalk from 'chalk';
-import commander, { Command } from 'commander';
-import fs from 'fs';
-import path from 'path';
-import { execSync } from 'child_process';
-import { createHash } from 'crypto';
+import { Command } from 'commander';
 
 import { isSourceKittenInstalled } from './commands/commandUtils';
 import { generateConciseExpoModuleTSInterfaceCommand } from './commands/generateConciseTSCommand';

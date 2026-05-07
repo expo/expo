@@ -25,3 +25,4 @@ function generateViewTypesCommand(cli) {
         (0, commandUtils_1.runCommandOnWatch)(parsedArgs, command);
     });
 }
+//# sourceMappingURL=generateViewTypesCommand.js.map

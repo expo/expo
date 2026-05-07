@@ -21,3 +21,4 @@ function typeInformationCommand(cli) {
         (0, commandUtils_1.runCommandOnWatch)(parsedArgs, command);
     });
 }
+//# sourceMappingURL=typeInformationCommand.js.map

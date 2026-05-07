@@ -25,3 +25,4 @@ Object.defineProperty(exports, "generateFullTsInterface", { enumerable: true, ge
 Object.defineProperty(exports, "generateModuleTypesFileContent", { enumerable: true, get: function () { return typescriptGeneration_1.generateModuleTypesFileContent; } });
 Object.defineProperty(exports, "generateViewTypesFileContent", { enumerable: true, get: function () { return typescriptGeneration_1.generateViewTypesFileContent; } });
 Object.defineProperty(exports, "generateJSXIntrinsicsFileContent", { enumerable: true, get: function () { return typescriptGeneration_1.generateJSXIntrinsicsFileContent; } });
+//# sourceMappingURL=index.js.map

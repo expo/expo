@@ -41,3 +41,4 @@ async function* scanFilesRecursively(parentPath, includeDirectory, sort = !fs_1.
         }
     }
 }
+//# sourceMappingURL=utils.js.map

@@ -200,3 +200,4 @@ async function getAllExpoModulesInWorkingDirectory() {
         input: { type: 'file', inputFileAbsolutePaths: [fs_1.default.realpathSync(file)] },
     })))).filter((f) => f);
 }
+//# sourceMappingURL=mockgen.js.map

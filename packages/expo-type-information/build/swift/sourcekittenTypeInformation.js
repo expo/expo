@@ -867,3 +867,4 @@ function preprocessSwiftFile(originalFileContent) {
     newFileContent.push(fileContent.substring(prevEnd, fileContent.length));
     return newFileContent.join('');
 }
+//# sourceMappingURL=sourcekittenTypeInformation.js.map

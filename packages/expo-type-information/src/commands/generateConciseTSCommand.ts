@@ -2,15 +2,10 @@ import commander from 'commander';
 import {
   addCommonOptions,
   generateConciseTsFiles,
-  getFileTypeInformationFromArgs,
   parseCommandArguments,
-  ParsedArguments,
   runCommandOnWatch,
   TypeInformationCommandCommonAllArguments,
-  writeToStableFile,
 } from './commandUtils';
-import { generateConciseTsInterface } from '../typescriptGeneration';
-import path from 'path';
 
 export function generateConciseExpoModuleTSInterfaceCommand(cli: commander.Command) {
   addCommonOptions(

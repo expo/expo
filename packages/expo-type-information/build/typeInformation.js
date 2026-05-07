@@ -154,3 +154,4 @@ async function getFileTypeInformation({ input, typeInference, }) {
         });
     });
 }
+//# sourceMappingURL=typeInformation.js.map

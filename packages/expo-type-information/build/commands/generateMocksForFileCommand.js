@@ -19,3 +19,4 @@ function generateMocksForFileCommand(cli) {
         (0, commandUtils_1.runCommandOnWatch)(parsedArgs, command);
     });
 }
+//# sourceMappingURL=generateMocksForFileCommand.js.map

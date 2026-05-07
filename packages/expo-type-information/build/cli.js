@@ -32,3 +32,4 @@ async function main(args) {
     await cli.parseAsync(args, { from: 'user' });
 }
 main(process.argv.slice(2));
+//# sourceMappingURL=cli.js.map

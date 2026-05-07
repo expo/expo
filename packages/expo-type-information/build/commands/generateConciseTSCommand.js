@@ -14,3 +14,4 @@ function generateConciseExpoModuleTSInterfaceCommand(cli) {
         (0, commandUtils_1.runCommandOnWatch)(parsedArgs, command);
     });
 }
+//# sourceMappingURL=generateConciseTSCommand.js.map

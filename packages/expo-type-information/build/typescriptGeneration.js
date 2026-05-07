@@ -692,3 +692,4 @@ async function generateFullTsInterface(fileTypeInformation) {
         indexFile,
     };
 }
+//# sourceMappingURL=typescriptGeneration.js.map
