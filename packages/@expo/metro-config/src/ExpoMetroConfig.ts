@@ -56,7 +56,6 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-const hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables

@@ -29,7 +29,6 @@ const filePath_1 = require("./utils/filePath");
 const getPkgVersion_1 = require("./utils/getPkgVersion");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -133,11 +132,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const { getDefaultConfig: getDefaultMetroConfig, mergeConfig, } = require('@expo/metro/metro-config');
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
-    }
-    const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
-    if (isExotic && !hasWarnedAboutExotic) {
-        hasWarnedAboutExotic = true;
-        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
     }
     const reactNativePath = path_1.default.dirname(resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json');
     if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
