@@ -294,13 +294,7 @@ export interface ExpoAppMetricsModuleType {
      * @private This API is unstable and may change without notice.
      * @platform android
      */
-    addCustomMetricToSession(sessionId: string, metric: {
-        category: string;
-        name: string;
-        value: number;
-        routeName?: string;
-        params?: Record<string, unknown>;
-    }): Promise<void>;
+    addCustomMetricToSession(metric: Metric): Promise<void>;
     /**
      * Returns the current main session, including its metrics. Resolves to
      * `null` if the session row hasn't been persisted yet.

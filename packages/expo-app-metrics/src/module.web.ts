@@ -1,14 +1,11 @@
 import { NativeModule, registerWebModule } from 'expo';
 
-import type { ExpoAppMetricsModuleType, LogEventOptions, MetricAttributes } from './types';
+import type { ExpoAppMetricsModuleType, LogEventOptions, Metric, MetricAttributes } from './types';
 
 export * from './types';
 
 class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {
-  addCustomMetricToSession(
-    sessionId: string,
-    metric: { category: string; name: string; value: number }
-  ): Promise<void> {
+  addCustomMetricToSession(metric: Metric): Promise<void> {
     throw new Error('Method not implemented.');
   }
   async markFirstRender() {}

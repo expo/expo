@@ -48,11 +48,11 @@ const react_2 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
+const hooks_1 = require("./hooks");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
 const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
 const navigationEvents_1 = require("./navigationEvents");
-const utils_2 = require("./navigationEvents/utils");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const native_1 = require("./react-navigation/native");
@@ -260,46 +260,49 @@ function getQualifiedRouteComponent(value) {
     return BaseRoute;
 }
 function AnalyticsListeners({ navigation, screenId, }) {
-    const stateForPath = (0, native_1.useStateForPath)();
     const isFirstRenderRef = react_2.default.useRef(true);
     const hasBlurredRef = react_2.default.useRef(true);
-    const stringUrl = (0, react_2.useMemo)(() => (0, utils_2.generateStringUrlForState)(stateForPath), [stateForPath]);
+    const routeInfo = (0, hooks_1.useCurrentRouteInfo)();
     if (isFirstRenderRef.current) {
         isFirstRenderRef.current = false;
-        if (stringUrl) {
+        if (routeInfo) {
             navigationEvents_1.unstable_navigationEvents.emit('pageWillRender', {
-                ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                pathname: routeInfo.pathname,
+                params: routeInfo.params,
                 screenId,
             });
         }
     }
     (0, react_2.useEffect)(() => {
-        if (stringUrl) {
+        if (routeInfo) {
             return () => {
                 navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
-                    ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                    pathname: routeInfo.pathname,
+                    params: routeInfo.params,
                     screenId,
                 });
             };
         }
         return () => { };
-    }, [stringUrl, screenId]);
+    }, [routeInfo?.params, routeInfo?.pathname, screenId]);
     const isFocused = navigation.isFocused();
-    if (isFocused && stringUrl) {
+    if (isFocused && routeInfo) {
         navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
-            ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+            pathname: routeInfo.pathname,
+            params: routeInfo.params,
             screenId,
         });
         hasBlurredRef.current = false;
     }
     (0, react_2.useEffect)(() => {
-        if (stringUrl) {
+        if (routeInfo) {
             const cleanFocus = navigation.addListener('focus', () => {
                 // If the screen was not blurred, don't emit focused again
                 // hasBlurredRef will be false when the screen was initially focused
                 if (hasBlurredRef.current) {
                     navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
-                        ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                        pathname: routeInfo.pathname,
+                        params: routeInfo.params,
                         screenId,
                     });
                     hasBlurredRef.current = false;
@@ -307,7 +310,8 @@ function AnalyticsListeners({ navigation, screenId, }) {
             });
             const cleanBlur = navigation.addListener('blur', () => {
                 navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
-                    ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                    pathname: routeInfo.pathname,
+                    params: routeInfo.params,
                     screenId,
                 });
                 hasBlurredRef.current = true;
@@ -318,7 +322,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             };
         }
         return () => { };
-    }, [navigation, stringUrl, screenId]);
+    }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
     return null;
 }
 function screenOptionsFactory(route, options) {

@@ -1,8 +1,10 @@
 package expo.modules.appmetrics.storage
 
 import expo.modules.appmetrics.utils.JsonAny
+import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import java.util.UUID
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
@@ -39,16 +41,29 @@ data class JsSession(
 }
 
 data class JsMetric(
-  @Field val metricId: String,
   @Field val sessionId: String,
-  @Field val timestamp: String,
   @Field val category: String,
   @Field val name: String,
   @Field val value: Double,
-  @Field val routeName: String?,
-  @Field val updateId: String?,
-  @Field val params: Map<String, Any?>?
+  @Field val metricId: String? = UUID.randomUUID().toString(),
+  @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
+  @Field val routeName: String? = null,
+  @Field val updateId: String? = null,
+  @Field val params: Map<String, Any?>? = null
 ) : Record {
+  fun toMetric(): Metric =
+    Metric(
+      metricId = metricId ?: UUID.randomUUID().toString(),
+      sessionId = sessionId,
+      timestamp = timestamp,
+      category = category,
+      name = name,
+      value = value,
+      routeName = routeName,
+      updateId = updateId,
+      params = params?.let { JsonAny.encodeMapToJsonString(it) }
+    )
+
   companion object {
     fun fromMetric(metric: Metric): JsMetric =
       JsMetric(

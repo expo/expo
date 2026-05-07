@@ -107,6 +107,14 @@ class OpenTelemetryTest {
   }
 
   @Test
+  fun `toOTMetric maps every known navigation pair to its OTel name`() {
+    val navigation = MetricCategory.Navigation.categoryName
+
+    assertEquals("expo.navigation.tti", nameFor(navigation, "tti"))
+    assertEquals("expo.navigation.ttr", nameFor(navigation, "ttr"))
+  }
+
+  @Test
   fun `toOTMetric falls back to expo_unknown for an unmapped name in a known category`() {
     // Known category, name is not in the map.
     assertEquals(
@@ -137,6 +145,30 @@ class OpenTelemetryTest {
       "expo.unknown.somethingElse",
       nameFor(MetricCategory.Updates.categoryName, "somethingElse")
     )
+  }
+
+  fun `navigation metric carries route name and custom params attributes`() {
+    val metric = EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = "navigation",
+      name = "ttr",
+      value = 0.25,
+      routeName = "/home",
+      customParams = JsonObject(
+        mapOf(
+          "isInitial" to JsonPrimitive(true),
+          "isAppLaunch" to JsonPrimitive(false)
+        )
+      )
+    )
+    val attrs = metric.toOTMetric().gauge.dataPoints[0].attributes
+      .associate { it.key to it.value.stringValue }
+
+    assertEquals("/home", attrs["expo.route_name"])
+    val parsed = Json.parseToJsonElement(attrs["expo.custom_params"]!!).jsonObject
+    assertEquals(true, parsed["isInitial"]!!.jsonPrimitive.content.toBoolean())
+    assertEquals(false, parsed["isAppLaunch"]!!.jsonPrimitive.content.toBoolean())
   }
 
   // -- Metric structure --

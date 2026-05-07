@@ -1,5 +1,7 @@
 import { type PropsWithChildren } from 'react';
 
+import { ObserveRouterIntegrationProvider } from './integrations/expo-router/ObserveRouterIntegrationProvider';
+
 export function ObserveProvider({ children }: PropsWithChildren) {
-  return <>{children}</>;
+  return <ObserveRouterIntegrationProvider>{children}</ObserveRouterIntegrationProvider>;
 }

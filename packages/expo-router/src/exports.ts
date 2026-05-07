@@ -67,6 +67,14 @@ export {
 } from './primitives';
 
 export { unstable_navigationEvents } from './navigationEvents';
+export type {
+  PageWillRender,
+  PageFocusedEvent,
+  PageBlurredEvent,
+  PageRemoved,
+  ActionDispatchedEvent,
+  AnalyticsEvent,
+} from './navigationEvents';
 
 /**
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
