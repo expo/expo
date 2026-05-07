@@ -47,3 +47,4 @@ minimumReleaseAgeExclude:
   - multitars
   - 'react-native-worklets'
   - 'react-native-screens'
+  - 'whatwg-url-minimum'

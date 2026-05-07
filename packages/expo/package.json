@@ -97,7 +97,7 @@
     "expo-modules-core": "workspace:~56.0.4",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
-    "whatwg-url-minimum": "^0.1.1"
+    "whatwg-url-minimum": "^0.1.2"
   },
   "devDependencies": {
     "@expo/dom-webview": "workspace:*",
