@@ -127,11 +127,7 @@ class LogRespectingTerminal extends Terminal {
     console.error = sendStderr;
   }
 
-  /**
-   * Write to stderr without corrupting Terminal's cursor tracking.
-   * Uses Terminal's public API: status() to clear/restore progress bars,
-   * and flush() to ensure the clear is applied before the stderr write.
-   */
+  /** Write to stderr without corrupting Terminal's cursor tracking. */
   logStderr(line: string): void {
     if (!(process.stdout as any).isTTY) {
       process.stderr.write(line + '\n');
