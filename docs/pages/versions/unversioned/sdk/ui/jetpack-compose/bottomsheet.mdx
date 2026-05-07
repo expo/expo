@@ -8,8 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI ModalBottomSheet matches the official Jetpack Compose [Bottom Sheet API](https://developer.android.com/develop/ui/compose/components/bottom-sheets) and displays content in a modal sheet that slides up from the bottom.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/bottomsheet/android-light.webp"
+    darkSource="/static/images/expo-ui/bottomsheet/android-dark.webp"
+    alt="Modal bottom sheet with title, description, and action buttons"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 
