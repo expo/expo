@@ -3,9 +3,9 @@ package expo.modules.appmetrics
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.storage.JsSession
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
-import expo.modules.appmetrics.storage.toJsSession
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.TimeUtils
@@ -116,7 +116,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }
 
       AsyncFunction("getAllSessions") Coroutine { ->
-        sessionManager.getAllSessions().map { it.toJsSession() }
+        sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->

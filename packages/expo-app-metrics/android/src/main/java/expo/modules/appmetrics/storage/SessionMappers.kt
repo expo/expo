@@ -1,5 +1,7 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -11,38 +13,59 @@ import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.longOrNull
 
 /**
- * Reshapes a [SessionWithMetrics] into the JS-facing `Session` shape. The
- * Room schema uses different field names (`startTimestamp` / `endTimestamp`)
- * and nests the entity under `session`; we flatten and rename here so JS code
- * consumes the same shape it would expect from any other consumer.
+ * JS-facing shape of a session. Field names mirror the TypeScript `Session`
+ * type (`startDate` / `endDate`), distinct from the Room column names
+ * (`startTimestamp` / `endTimestamp`).
  *
  * `type` is hard-coded to `"main"` since the per-launch session opened in
  * `AppMetricsModule.OnCreate` is the only one we track. A future change
  * should add a real `type` column and lifecycle hooks for
  * foreground/screen/custom sessions.
  */
-internal fun SessionWithMetrics.toJsSession(): Map<String, Any?> {
-  return mapOf(
-    "id" to session.id,
-    "type" to "main",
-    "startDate" to session.startTimestamp,
-    "endDate" to session.endTimestamp,
-    "metrics" to metrics.map { it.toJsMap() }
-  )
+data class JsSession(
+  @Field val id: String,
+  @Field val type: String,
+  @Field val startDate: String,
+  @Field val endDate: String?,
+  @Field val metrics: List<JsMetric>
+) : Record {
+  companion object {
+    fun fromSessionWithMetrics(value: SessionWithMetrics): JsSession =
+      JsSession(
+        id = value.session.id,
+        type = "main",
+        startDate = value.session.startTimestamp,
+        endDate = value.session.endTimestamp,
+        metrics = value.metrics.map { JsMetric.fromMetric(it) }
+      )
+  }
 }
 
-private fun Metric.toJsMap(): Map<String, Any?> {
-  return mapOf(
-    "metricId" to metricId,
-    "sessionId" to sessionId,
-    "timestamp" to timestamp,
-    "category" to category,
-    "name" to name,
-    "value" to value,
-    "routeName" to routeName,
-    "updateId" to updateId,
-    "params" to decodeJsonObject(params)
-  )
+data class JsMetric(
+  @Field val metricId: String,
+  @Field val sessionId: String,
+  @Field val timestamp: String,
+  @Field val category: String,
+  @Field val name: String,
+  @Field val value: Double,
+  @Field val routeName: String?,
+  @Field val updateId: String?,
+  @Field val params: Map<String, Any?>?
+) : Record {
+  companion object {
+    fun fromMetric(metric: Metric): JsMetric =
+      JsMetric(
+        metricId = metric.metricId,
+        sessionId = metric.sessionId,
+        timestamp = metric.timestamp,
+        category = metric.category,
+        name = metric.name,
+        value = metric.value,
+        routeName = metric.routeName,
+        updateId = metric.updateId,
+        params = decodeJsonObject(metric.params)
+      )
+  }
 }
 
 /**

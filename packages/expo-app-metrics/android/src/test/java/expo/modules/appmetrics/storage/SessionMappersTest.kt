@@ -1,9 +1,7 @@
 package expo.modules.appmetrics.storage
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -38,94 +36,68 @@ class SessionMappersTest {
   )
 
   @Test
-  fun `toJsSession exposes the JS-facing field names`() {
+  fun `JsSession_fromSessionWithMetrics exposes the JS-facing field names`() {
     val swm = SessionWithMetrics(
       session = makeSession(id = "abc", startTimestamp = "2025-06-15T10:00:00.000Z"),
       metrics = emptyList()
     )
 
-    val js = swm.toJsSession()
+    val js = JsSession.fromSessionWithMetrics(swm)
 
-    assertEquals("abc", js["id"])
-    assertEquals("main", js["type"])
-    assertEquals("2025-06-15T10:00:00.000Z", js["startDate"])
-    assertNull(js["endDate"])
-    assertEquals(emptyList<Any>(), js["metrics"])
+    assertEquals("abc", js.id)
+    assertEquals("main", js.type)
+    assertEquals("2025-06-15T10:00:00.000Z", js.startDate)
+    assertNull(js.endDate)
+    assertEquals(emptyList<JsMetric>(), js.metrics)
   }
 
   @Test
-  fun `toJsSession surfaces endDate when set`() {
+  fun `JsSession_fromSessionWithMetrics surfaces endDate when set`() {
     val swm = SessionWithMetrics(
       session = makeSession(endTimestamp = "2025-01-02T00:00:00.000Z"),
       metrics = emptyList()
     )
 
-    val js = swm.toJsSession()
+    val js = JsSession.fromSessionWithMetrics(swm)
 
-    assertEquals("2025-01-02T00:00:00.000Z", js["endDate"])
+    assertEquals("2025-01-02T00:00:00.000Z", js.endDate)
   }
 
   @Test
-  fun `toJsSession decodes Metric_params from JSON`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(),
-      metrics = listOf(
-        makeMetric(params = """{"screen":"Home","attempt":3,"flag":true}""")
-      )
-    )
+  fun `JsMetric_fromMetric decodes params from JSON`() {
+    val metric = makeMetric(params = """{"screen":"Home","attempt":3,"flag":true}""")
 
-    @Suppress("UNCHECKED_CAST")
-    val metrics = swm.toJsSession()["metrics"] as List<Map<String, Any?>>
-    assertEquals(1, metrics.size)
+    val js = JsMetric.fromMetric(metric)
 
-    @Suppress("UNCHECKED_CAST")
-    val params = metrics.single()["params"] as Map<String, Any?>
-    assertEquals("Home", params["screen"])
-    assertEquals(3L, params["attempt"])
-    assertEquals(true, params["flag"])
+    val params = js.params
+    assertEquals("Home", params?.get("screen"))
+    assertEquals(3L, params?.get("attempt"))
+    assertEquals(true, params?.get("flag"))
   }
 
   @Test
-  fun `toJsSession yields null params when storage column is null`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(),
-      metrics = listOf(makeMetric(params = null))
-    )
+  fun `JsMetric_fromMetric yields null params when storage column is null`() {
+    val js = JsMetric.fromMetric(makeMetric(params = null))
 
-    @Suppress("UNCHECKED_CAST")
-    val metrics = swm.toJsSession()["metrics"] as List<Map<String, Any?>>
-    assertNull(metrics.single()["params"])
+    assertNull(js.params)
   }
 
   @Test
-  fun `toJsSession yields null params when storage column is malformed JSON`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(),
-      metrics = listOf(makeMetric(params = "{ this is not valid json"))
-    )
+  fun `JsMetric_fromMetric yields null params when storage column is malformed JSON`() {
+    val js = JsMetric.fromMetric(makeMetric(params = "{ this is not valid json"))
 
-    @Suppress("UNCHECKED_CAST")
-    val metrics = swm.toJsSession()["metrics"] as List<Map<String, Any?>>
-    assertNull(metrics.single()["params"])
+    assertNull(js.params)
   }
 
   @Test
-  fun `toJsSession copies metric scalar fields verbatim`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(),
-      metrics = listOf(
-        makeMetric(metricId = "m-42", sessionId = "session-1")
-      )
-    )
+  fun `JsMetric_fromMetric copies scalar fields verbatim`() {
+    val js = JsMetric.fromMetric(makeMetric(metricId = "m-42", sessionId = "session-1"))
 
-    @Suppress("UNCHECKED_CAST")
-    val metric = (swm.toJsSession()["metrics"] as List<Map<String, Any?>>).single()
-    assertEquals("m-42", metric["metricId"])
-    assertEquals("session-1", metric["sessionId"])
-    assertEquals("appStartup", metric["category"])
-    assertEquals("timeToInteractive", metric["name"])
-    assertEquals(1.5, metric["value"])
-    assertEquals("2025-01-01T00:00:01.000Z", metric["timestamp"])
-    assertTrue("metricId key should be present", metric.containsKey("metricId"))
+    assertEquals("m-42", js.metricId)
+    assertEquals("session-1", js.sessionId)
+    assertEquals("appStartup", js.category)
+    assertEquals("timeToInteractive", js.name)
+    assertEquals(1.5, js.value, 0.0)
+    assertEquals("2025-01-01T00:00:01.000Z", js.timestamp)
   }
 }
