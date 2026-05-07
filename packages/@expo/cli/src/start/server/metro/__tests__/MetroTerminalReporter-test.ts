@@ -27,6 +27,11 @@ const LIGHT_BLOCK_CHAR = '\u2591';
 
 jest.useFakeTimers();
 
+const mockIsInteractive = jest.fn(() => false);
+jest.mock('../../../../utils/interactive', () => ({
+  isInteractive: () => mockIsInteractive(),
+}));
+
 jest.mock('../../serverLogLikeMetro', () => {
   const original = jest.requireActual('../../serverLogLikeMetro');
   return {
@@ -579,6 +584,153 @@ describe('non-interactive terminal output', () => {
     // In non-interactive mode, _getStatusMessage() should return empty
     // since status lines can't be overwritten and would produce permanent noise.
     expect(reporter._getStatusMessage()).toBe('');
+  });
+});
+
+describe('status cleared before log lines', () => {
+  beforeEach(() => mockIsInteractive.mockReturnValue(true));
+  afterEach(() => mockIsInteractive.mockReturnValue(false));
+
+  /**
+   * Metro's Terminal.#update() is async and snapshots #nextStatusStr when it starts.
+   * When _log() calls terminal.log(), Terminal starts #update() which captures
+   * whatever status is currently set. If it's a progress bar, that progress bar
+   * gets written as permanent output between log lines (it can't be reliably
+   * cleared before more output arrives).
+   *
+   * The fix: update() clears the status to empty before _log() runs, so Terminal's
+   * #update() captures an empty status and writes no progress bars alongside log lines.
+   */
+
+  const buildID1 = 'build-1';
+  const buildID2 = 'build-2';
+  const entryFile = 'node_modules/expo-router/entry.js';
+  const serverEntry = 'packages/@expo/router-server/node/render.js';
+  const webDetails = asBundleDetails({
+    entryFile,
+    platform: 'web',
+    bundleType: 'bundle',
+  });
+  const serverDetails = asBundleDetails({
+    entryFile: serverEntry,
+    platform: 'web',
+    bundleType: 'bundle',
+    customTransformOptions: { environment: 'node' },
+  });
+
+  function createReporter() {
+    const callOrder: { type: 'log' | 'status'; content: string }[] = [];
+
+    const terminal = {
+      log: jest.fn((...args: any[]) => {
+        const content = stripAnsi(args.join(' '));
+        callOrder.push({ type: 'log', content });
+      }),
+      persistStatus: jest.fn(),
+      status: jest.fn((...args: any[]) => {
+        const content = stripAnsi(args.join(' '));
+        callOrder.push({ type: 'status', content });
+      }),
+      flush: jest.fn(),
+    } satisfies Partial<Terminal>;
+
+    const reporter = new MetroTerminalReporter('/', terminal as any);
+    reporter._getElapsedTime = jest.fn(() => BigInt(100_000_000));
+    return { reporter, terminal, callOrder };
+  }
+
+  it('clears status before any log call during bundle_build_done', () => {
+    const { reporter, callOrder } = createReporter();
+
+    // Start a bundle and add progress
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 50,
+      totalFileCount: 100,
+    } as any);
+
+    callOrder.length = 0;
+
+    // Bundle completes
+    reporter.update({
+      type: 'bundle_build_done',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+    } as any);
+
+    // The FIRST call should be status('') to clear progress bars
+    expect(callOrder[0]).toEqual({ type: 'status', content: '' });
+
+    // The log should come after the clear
+    const bundledLog = callOrder.find((c) => c.type === 'log' && c.content.includes('Bundled'));
+    expect(bundledLog).toBeDefined();
+  });
+
+  it('clears status before server log warnings', () => {
+    const { reporter, callOrder } = createReporter();
+
+    // Start a bundle (web) and add progress
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 883,
+      totalFileCount: 886,
+    } as any);
+
+    callOrder.length = 0;
+
+    // A server log (WARN) comes in while web bundle is still active
+    reporter.update({
+      type: 'unstable_server_log',
+      level: 'warn',
+      data: ['Deep imports from react-native are deprecated'],
+    } as any);
+
+    // The FIRST call should be status('') to clear the web progress bar
+    expect(callOrder[0]).toEqual({ type: 'status', content: '' });
+
+    // Status should be restored at the end (web bundle still active)
+    const lastStatus = [...callOrder].reverse().find((c) => c.type === 'status');
+    expect(lastStatus?.content).toContain(entryFile);
+  });
+
+  it('does not clear status for progress events', () => {
+    const { reporter, callOrder } = createReporter();
+
+    // Start a bundle
+    reporter.update({
+      type: 'bundle_build_started',
+      buildID: buildID1,
+      bundleDetails: { ...webDetails, buildID: buildID1 },
+      isPrefetch: false,
+    } as any);
+
+    callOrder.length = 0;
+
+    // Progress event should NOT clear the status
+    reporter.update({
+      type: 'bundle_transform_progressed_throttled',
+      buildID: buildID1,
+      transformedFileCount: 50,
+      totalFileCount: 100,
+    } as any);
+
+    // Should not start with a clear
+    const firstStatus = callOrder.find((c) => c.type === 'status');
+    expect(firstStatus?.content).not.toBe('');
   });
 });
 

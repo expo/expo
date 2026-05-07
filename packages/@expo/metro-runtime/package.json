@@ -38,6 +38,7 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
+    "@expo/log-box": "workspace:^56.0.5",
     "expo": "*",
     "react": "*",
     "react-dom": "*",
@@ -49,7 +50,7 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "workspace:56.0.5",
+    "@expo/log-box": "workspace:^56.0.5",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",
