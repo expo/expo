@@ -131,6 +131,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},
@@ -232,14 +240,6 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
-    },
-  },
-  {
-    name: 'Mask component',
-    route: 'ui/mask',
-    options: {},
-    getComponent() {
-      return optionalRequire(() => require('./MaskScreen'));
     },
   },
   {

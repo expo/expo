@@ -1,7 +1,7 @@
 import type { MaskedViewProps } from './types';
 /**
  * Android implementation of `MaskedView`. Bridges arbitrary React Native children
- * (and `maskElement`) into a Compose-based mask via `RNHostView`.
+ * (and `maskElement`) into the Compose `MaskView` primitive via `RNHostView`.
  */
 export declare function MaskedView(props: MaskedViewProps): import("react/jsx-runtime").JSX.Element;
 export default MaskedView;
