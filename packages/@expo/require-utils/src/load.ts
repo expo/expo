@@ -122,19 +122,22 @@ function makeSourceMapTempPath(filename: string) {
 }
 
 function stripSourceMappingURL(code: string): string {
-  return code.replace(/\n\/\/[#@] sourceMappingURL=[^\n]*$/, '');
+  return code.replace(/^[ \t]*\/\/[#@][ \t]+sourceMappingURL=.*$/gm, '');
 }
 
 let stackTraceInstalled = false;
 
 function installSourceMapStackTrace() {
-  if (hasModuleSourceMapsSupport || stackTraceInstalled) {
+  if (stackTraceInstalled) {
     return;
+  } else {
+    stackTraceInstalled = true;
   }
-  stackTraceInstalled = true;
 
-  // Node 20.x doesn't symbolicate after we disable sourceMaps, so we need to do this manually
-  // in a JS-level hook
+  // Node disables automatic stack symbolication when source maps are disabled. Since we toggle
+  // source maps on only during `_compile` (to keep the cache scoped to our bundles, not every
+  // require()'d package), we install our own JS-level prepareStackTrace so that errors thrown
+  // by the bundle still surface original positions when their stack is formatted later.
   Error.prepareStackTrace = (error, callSites) => {
     const name = error.name || 'Error';
     const message = error.message || '';
@@ -221,16 +224,11 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
       // NOTE This needs to be a plain absolute path because Node rejects file: URLs
       inputCode += `\n//# sourceMappingURL=${mapPath}`;
 
+      installSourceMapStackTrace();
       if (hasModuleSourceMapsSupport) {
-        // In Node >=22, we can just keep sourceMaps enabled, since nodeModules are filtered out
-        nodeModule.setSourceMapsSupport(true, { nodeModules: false });
+        nodeModule.setSourceMapsSupport(true, { nodeModules: true });
       } else {
-        // Node 20.x does support sourceMaps, but doesn't filter by nodeModules, so we'll toggle
-        // it on but will disable it immediately after _comile was called
         process.setSourceMapsEnabled(true);
-        // Since when sourceMaps are disabled, Node 20.x also doesn't desymbolicate automatically,
-        // we'll add our own shim that does this.
-        installSourceMapStackTrace();
       }
     }
   }
@@ -256,11 +254,13 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
     throw error;
   } finally {
     if (mapPath) {
-      // Node 20.x: Disable sourceMap support again, so it doesn't affect nodeModules or other requires
-      if (!hasModuleSourceMapsSupport) {
+      // Disable so subsequent requires of node_modules don't have their source maps parsed and cached
+      if (hasModuleSourceMapsSupport) {
+        nodeModule.setSourceMapsSupport(false);
+      } else {
         process.setSourceMapsEnabled(false);
       }
-      // Node immediately parses source maps during _compile, so we can delete it immediately after
+      // Node parses source maps eagerly during _compile, so the file can be removed now.
       try {
         fs.unlinkSync(mapPath);
       } catch {
