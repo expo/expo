@@ -1,6 +1,6 @@
 'use strict';
 import prettier from 'prettier';
-import ts, { KeywordTypeSyntaxKind, MethodDeclaration } from 'typescript';
+import ts from 'typescript';
 
 import {
   Argument,
@@ -128,7 +128,7 @@ function mapBasicTypeToTypeNode(basicType: BasicType): ts.TypeNode {
     );
   }
 
-  const BASIC_TYPE_MAP: Record<BasicType, KeywordTypeSyntaxKind> = {
+  const BASIC_TYPE_MAP: Record<BasicType, ts.KeywordTypeSyntaxKind> = {
     [BasicType.ANY]: ts.SyntaxKind.AnyKeyword,
     [BasicType.BOOLEAN]: ts.SyntaxKind.BooleanKeyword,
     [BasicType.NUMBER]: ts.SyntaxKind.NumberKeyword,
@@ -491,7 +491,7 @@ function buildNativeModuleClassDeclaration({
       functionDeclaration,
       method: true,
       declaration: true,
-    }) as MethodDeclaration;
+    }) as ts.MethodDeclaration;
 
   const buildAsyncMethod = (functionDeclaration: FunctionDeclaration): ts.MethodDeclaration =>
     buildFunction({
@@ -499,7 +499,7 @@ function buildNativeModuleClassDeclaration({
       async: true,
       method: true,
       declaration: true,
-    }) as MethodDeclaration;
+    }) as ts.MethodDeclaration;
 
   return [
     ts.factory.createClassDeclaration(
