@@ -7,14 +7,16 @@ import Foundation
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let podsRoot = resolvePodsRoot()
 
-// Header roots needed by ExpoModulesJSI and ExpoModulesJSI-Cxx. The
-// Pods/Headers/Public paths cover no-frameworks and prebuilt-RN; the
-// trailing entries point at canonical sources for the static + source-built
-// RN combo, where each React-X / third-party-deps pod compiles as a static
-// framework and its headers don't get mirrored to Pods/Headers/Public.
-// Clang ignores missing `-I` paths, so the fallbacks are no-ops elsewhere.
+// Header roots for ExpoModulesJSI and ExpoModulesJSI-Cxx. The
+// Pods/Headers/Public paths cover no-frameworks and prebuilt-RN; the trailing
+// entries fall back to canonical sources for the static + source-built RN
+// combo, where each React-X / third-party-deps pod compiles as a static
+// framework and its headers don't get mirrored to Pods/Headers/Public. Clang
+// ignores missing `-I` paths, so they're no-ops elsewhere. `RN_ROOT` is
+// forwarded from build-xcframework.sh (Node-resolved for hoisted monorepos).
 let publicHeaders = "\(podsRoot)/Headers/Public"
-let reactNative = "\(podsRoot)/../../node_modules/react-native"
+let reactNative = ProcessInfo.processInfo.environment["RN_ROOT"]
+  ?? "\(podsRoot)/../../node_modules/react-native"
 let headerSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",

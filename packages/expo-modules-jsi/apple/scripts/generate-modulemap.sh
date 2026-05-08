@@ -37,7 +37,10 @@ GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
 mkdir -p "$GENERATED_DIR"
 
 JSI_UMBRELLA="${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
-[[ -f "$JSI_UMBRELLA" ]] || JSI_UMBRELLA="${PODS_ROOT}/../../node_modules/react-native/ReactCommon/jsi/jsi/jsi.h"
+if [[ ! -f "$JSI_UMBRELLA" ]]; then
+  RN="${RN_ROOT:-$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null || echo "${PODS_ROOT}/../../node_modules/react-native")}"
+  JSI_UMBRELLA="${RN}/ReactCommon/jsi/jsi/jsi.h"
+fi
 [[ -f "$JSI_UMBRELLA" ]] || { echo "error: cannot locate jsi.h" >&2; exit 1; }
 
 # Avoid touching the file when contents would be identical, so the xcframework
