@@ -1,0 +1,9 @@
+{
+  "libraryVersion": "56.0.3",
+  "reactNativeVersion": "0.85.3",
+  "variant": "release",
+  "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+  "soFiles": ["libexpo-gl.so"],
+  "stripped": true,
+  "cachedAt": "2026-05-13T21:03:33.068238Z"
+}

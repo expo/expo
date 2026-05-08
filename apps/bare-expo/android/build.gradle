@@ -64,3 +64,18 @@ subprojects { project ->
 
 apply plugin: "expo-root-project"
 apply plugin: "com.facebook.react.rootproject"
+apply plugin: "expo-prebuilt-natives"
+
+prebuiltNatives {
+  libraries = [
+    "react-native-reanimated",
+    "shopify_react-native-skia",
+    "react-native-worklets",
+    "expo-gl",
+    "react-native-screens",
+    "react-native-gesture-handler",
+    "expo-modules-core",
+    "expo-sqlite",
+    "expo-updates"
+  ]
+}

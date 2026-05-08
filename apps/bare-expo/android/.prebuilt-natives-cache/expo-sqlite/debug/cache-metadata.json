@@ -1,0 +1,9 @@
+{
+  "libraryVersion": "56.0.3",
+  "reactNativeVersion": "0.85.3",
+  "variant": "debug",
+  "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+  "soFiles": ["libexpo-sqlite.so"],
+  "stripped": true,
+  "cachedAt": "2026-05-13T22:13:47.937515Z"
+}
