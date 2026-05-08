@@ -22,7 +22,7 @@
 #   PLATFORM_NAME   (optional) Build for a specific platform (e.g. iphoneos, iphonesimulator).
 #                   When unset, builds for both iphoneos and iphonesimulator.
 
-set -eo pipefail
+set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
@@ -73,6 +73,7 @@ SOURCE_DIRS=(
 SOURCE_FILES=(
   "${PACKAGE_DIR}/Package.swift"
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
+  "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
   "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 )
 
@@ -276,7 +277,7 @@ if [[ "$CLEAN" == true ]]; then
 fi
 
 # Determine which platforms to build.
-if [[ -n "$PLATFORM_NAME" ]]; then
+if [[ -n "${PLATFORM_NAME:-}" ]]; then
   PLATFORMS=("$PLATFORM_NAME")
 else
   PLATFORMS=("iphoneos" "iphonesimulator")

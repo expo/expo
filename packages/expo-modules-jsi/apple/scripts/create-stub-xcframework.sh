@@ -10,7 +10,7 @@
 # missing required slices are stamped. Info.plist is rewritten from whatever
 # slices are on disk so additional slices built via Xcode survive.
 
-set -eo pipefail
+set -euo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
