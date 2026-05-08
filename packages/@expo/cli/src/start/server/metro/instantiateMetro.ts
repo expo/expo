@@ -248,7 +248,7 @@ export async function loadMetroConfigAsync(
 
   // On-Demand Filesystem is enabled by default
   // TODO(@kitten): Add to config-types JSON schema
-  const onDemandFilesystem = (exp.experiments as any)?.onDemandFilesystem ?? true;
+  const onDemandFilesystem = exp.experiments?.onDemandFilesystem ?? true;
   asWritable(config.resolver).unstable_onDemandFilesystem = onDemandFilesystem;
 
   // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
