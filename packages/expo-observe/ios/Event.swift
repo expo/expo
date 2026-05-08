@@ -71,6 +71,11 @@ struct Event: Codable, Sendable {
    separately so a partial dispatch (only the rows past a cursor) can still produce a valid event.
    */
   static func from(session: SessionRow, metrics: [MetricRow], logs: [LogRow]) -> Event {
+    let updatesInfo = AppInfo.UpdatesInfo(
+      updateId: session.appUpdateId,
+      runtimeVersion: session.appUpdateRuntimeVersion,
+      requestHeaders: decodeRequestHeaders(session.appUpdateRequestHeaders)
+    )
     return Event(
       metadata: Metadata(
         appName: session.appName,
@@ -78,11 +83,7 @@ struct Event: Codable, Sendable {
         appVersion: session.appVersion,
         appBuildNumber: session.appBuildNumber,
         appEasBuildId: session.appEasBuildId,
-        appUpdatesInfo: AppInfo.UpdatesInfo(
-          updateId: session.appUpdateId,
-          runtimeVersion: session.appUpdateRuntimeVersion,
-          requestHeaders: decodeRequestHeaders(session.appUpdateRequestHeaders)
-        ),
+        appUpdatesInfo: updatesInfo.isEmpty ? nil : updatesInfo,
         deviceName: session.deviceName ?? "",
         deviceModel: session.deviceModel ?? "",
         deviceOs: session.deviceOs ?? "",

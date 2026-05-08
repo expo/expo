@@ -33,7 +33,6 @@ export default function SessionsList() {
 
   const refresh = useCallback(async () => {
     const result = await AppMetrics.getAllSessions();
-    console.log(JSON.stringify(result, null, 2));
     const sorted = [...result].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
     setSessions(sorted);
     setLoaded(true);

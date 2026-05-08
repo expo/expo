@@ -34,7 +34,10 @@ enum OTAnyValue: Codable, Sendable {
     case .string(let value):
       try container.encode(value, forKey: .stringValue)
     case .int(let value):
-      try container.encode(String(value), forKey: .intValue)
+      // OTLP/JSON spec encodes int64 as a stringified number to avoid loss in JS-style number
+      // handling, but the EAS observability backend (ClickHouse) rejects strings here and requires
+      // a JSON number. Emit as a number to match the server contract.
+      try container.encode(value, forKey: .intValue)
     case .double(let value):
       try container.encode(value, forKey: .doubleValue)
     case .bool(let value):
@@ -50,8 +53,8 @@ enum OTAnyValue: Codable, Sendable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     if let value = try container.decodeIfPresent(String.self, forKey: .stringValue) {
       self = .string(value)
-    } else if let value = try container.decodeIfPresent(String.self, forKey: .intValue), let parsed = Int64(value) {
-      self = .int(parsed)
+    } else if let value = try container.decodeIfPresent(Int64.self, forKey: .intValue) {
+      self = .int(value)
     } else if let value = try container.decodeIfPresent(Double.self, forKey: .doubleValue) {
       self = .double(value)
     } else if let value = try container.decodeIfPresent(Bool.self, forKey: .boolValue) {
@@ -299,7 +302,10 @@ func otAttributesFromUserDict(_ dict: [String: Any]) -> (attributes: [OTAttribut
  and would otherwise be matched as `Int` first.
  */
 func otAnyValue(from value: Any) -> OTAnyValue? {
-  if let bool = value as? Bool {
+  // `as? Bool` succeeds for any NSNumber holding 0 or 1 — including `Int(0)` / `Int(1)` from JS,
+  // which would otherwise quietly emit as `boolValue` instead of `intValue`. Distinguish real
+  // booleans by checking against `CFBoolean`'s type id, which only the actual boxed Bool matches.
+  if CFGetTypeID(value as CFTypeRef) == CFBooleanGetTypeID(), let bool = value as? Bool {
     return .bool(bool)
   }
   if let int = value as? Int64 {
