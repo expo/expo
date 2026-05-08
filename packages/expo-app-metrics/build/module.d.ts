@@ -17,6 +17,7 @@ declare const _default: {
         routeName?: string;
         params?: Record<string, unknown>;
     }): Promise<void>;
+    getMainSession(): Promise<import("./types").MainSession | null>;
 };
 export default _default;
 //# sourceMappingURL=module.d.ts.map

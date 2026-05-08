@@ -312,6 +312,7 @@ export interface ExpoAppMetricsModuleType {
   /**
    * Starts a new app metrics session. Returns the session ID.
    *
+   * @private This API is unstable and may change without notice.
    * @platform android
    */
   startSession(): string;
@@ -322,6 +323,7 @@ export interface ExpoAppMetricsModuleType {
    */
   stopSession(sessionId: string): void;
   /**
+   * @private This API is unstable and may change without notice.
    * @platform android
    */
   addCustomMetricToSession(
@@ -334,4 +336,12 @@ export interface ExpoAppMetricsModuleType {
       params?: Record<string, unknown>;
     }
   ): Promise<void>;
+  /**
+   * Returns the current main session, including its metrics. Resolves to
+   * `null` if the session row hasn't been persisted yet.
+   *
+   * @private This API is unstable and may change without notice.
+   * @platform android
+   */
+  getMainSession(): Promise<MainSession | null>;
 }

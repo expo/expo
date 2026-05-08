@@ -114,6 +114,8 @@ class SessionManager(
 
   suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
 
+  suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
+
   suspend fun getAllActiveSessions(): List<SessionWithMetrics> = database.sessionDao().getAllActiveSessions()
 
   suspend fun removeSessions(session: List<SessionWithMetrics>) {

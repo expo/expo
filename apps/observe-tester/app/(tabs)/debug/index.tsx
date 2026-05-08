@@ -36,6 +36,11 @@ export default function Debug() {
         theme="secondary"
       />
       {showAnimation && <JSAnimation />}
+      <Button
+        title="Log main session to console"
+        onPress={() => AppMetrics.getMainSession().then(JSON.stringify).then(console.log)}
+        theme="secondary"
+      />
     </ScrollView>
   );
 }

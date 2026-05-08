@@ -188,6 +188,10 @@ interface SessionDao {
   suspend fun getAll(): List<SessionWithMetrics>
 
   @Transaction
+  @Query("SELECT * FROM sessions WHERE id = :id")
+  suspend fun getSessionWithMetricsBySessionId(id: String): SessionWithMetrics?
+
+  @Transaction
   @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN metrics m ON s.id = m.sessionId WHERE m.metricId IN (:metricIds)")
   suspend fun getSessionsWithMetricsByMetricIds(metricIds: List<String>): List<SessionWithMetrics>
 }

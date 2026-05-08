@@ -159,6 +159,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       AsyncFunction("addCustomMetricToSession") Coroutine { sessionId: String, metric: PartialMetric ->
         sessionManager.addMetrics(listOf(metric.toMetric(sessionId)), sessionId = sessionId)
       }
+
+      AsyncFunction("getMainSession") Coroutine { ->
+        sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
+      }
     }
 
   fun setEnvironment(environment: String) {
