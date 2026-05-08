@@ -787,8 +787,8 @@ class TreeFS {
         }
         return null;
     }
-    *metadataIterator(opts) {
-        yield* this.#metadataIterator(this.#rootNode, opts);
+    metadataIterator(opts) {
+        return this.#metadataIterator(this.#rootNode, opts);
     }
     *#metadataIterator(rootNode, opts, prefix = '') {
         for (const [name, node] of rootNode) {

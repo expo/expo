@@ -32,7 +32,7 @@ function rootRelativeCacheKeys(buildParameters) {
             case 'retainAllFiles':
                 return buildParameters[key] ?? null;
             case 'ignorePattern':
-                return buildParameters[key].toString();
+                return buildParameters[key]?.toString() ?? null;
             case 'forceNodeFilesystemAPI':
                 return null;
             default:
