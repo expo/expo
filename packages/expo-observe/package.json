@@ -36,11 +36,14 @@
     "expo-eas-client": "workspace:~56.0.0"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
+    "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",
+    "react": "*",
     "react-native": "*"
   }
 }

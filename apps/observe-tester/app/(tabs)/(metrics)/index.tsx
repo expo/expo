@@ -1,5 +1,6 @@
 import AppMetrics, { type Metric } from 'expo-app-metrics';
-import ExpoObserve from 'expo-observe';
+import ExpoObserve, { useObserve } from 'expo-observe';
+import { Link } from 'expo-router';
 import { checkForUpdateAsync, fetchUpdateAsync, reloadAsync, useUpdates } from 'expo-updates';
 import { useCallback, useEffect, useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -7,7 +8,6 @@ import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Button } from '@/components/Button';
 import { Divider } from '@/components/Divider';
 import { JSONView } from '@/components/JSONView';
-import { useRouterMetricsHelpers } from '@/router-metrics-integration';
 import { useTheme } from '@/utils/theme';
 
 export default function Index() {
@@ -16,7 +16,7 @@ export default function Index() {
   const [showEntries, setShowEntries] = useState(false);
   const { isUpdateAvailable, isUpdatePending, availableUpdate, currentlyRunning } = useUpdates();
 
-  const { markPageInteractive } = useRouterMetricsHelpers();
+  const { markInteractive } = useObserve();
 
   const updateStoredEntries = useCallback(async () => {
     const events = await AppMetrics.getStoredEntries();
@@ -29,7 +29,7 @@ export default function Index() {
 
   async function handleMarkInteractive() {
     await AppMetrics.markInteractive();
-    await markPageInteractive();
+    await markInteractive();
     await updateStoredEntries();
   }
 

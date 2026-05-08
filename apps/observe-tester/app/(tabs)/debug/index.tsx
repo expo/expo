@@ -1,4 +1,5 @@
 import AppMetrics from 'expo-app-metrics';
+import { useObserve } from 'expo-observe';
 import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -7,20 +8,19 @@ import { CrashReportsSection } from '@/components/CrashReportsSection';
 import { Divider } from '@/components/Divider';
 import { JSAnimation } from '@/components/JSAnimation';
 import { LogEventsSection } from '@/components/LogEventsSection';
-import { useRouterMetricsHelpers } from '@/router-metrics-integration';
 import { useTheme } from '@/utils/theme';
 
 export default function Debug() {
   const theme = useTheme();
   const [showAnimation, setShowAnimation] = useState(false);
 
-  const { markPageInteractive } = useRouterMetricsHelpers();
+  const { markInteractive } = useObserve();
 
   useEffect(() => {
     setTimeout(() => {
-      markPageInteractive();
+      markInteractive();
     }, 1000);
-  }, [markPageInteractive]);
+  }, []);
 
   return (
     <ScrollView

@@ -5017,10 +5017,19 @@ importers:
       expo-eas-client:
         specifier: workspace:~56.0.0
         version: link:../expo-eas-client
+      react:
+        specifier: 19.2.3
+        version: 19.2.3
       react-native:
         specifier: 0.85.3
         version: 0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
     devDependencies:
+      '@testing-library/react-native':
+        specifier: ^13.3.0
+        version: 13.3.3(jest@29.7.0(@types/node@22.19.15)(ts-node@10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)))(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react-test-renderer@19.2.3(react@19.2.3))(react@19.2.3)
+      '@types/react':
+        specifier: ~19.2.0
+        version: 19.2.14
       expo:
         specifier: workspace:*
         version: link:../expo
