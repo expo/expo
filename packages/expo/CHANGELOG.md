@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Reexport permission hooks and permission types from `expo-modules-core` ([#45564](https://github.com/expo/expo/pull/45564) by [@Wenszel](https://github.com/Wenszel))
+
 ## 56.0.0-preview.9 — 2026-05-12
 
 _This version does not introduce any user-facing changes._
