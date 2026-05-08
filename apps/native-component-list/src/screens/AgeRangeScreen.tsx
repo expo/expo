@@ -43,6 +43,10 @@ export default function AgeRangeScreen() {
           : `isEligibleForAgeFeatures: ${eligible}`
       );
     } catch (err: any) {
+      if (err?.code === 'ERR_AGE_RANGE_NOT_AVAILABLE') {
+        setResult('ERR_AGE_RANGE_NOT_AVAILABLE');
+        return;
+      }
       setError(err.message || 'Unknown error occurred');
       Alert.alert('Error', err.message || 'Unknown error occurred');
     }
