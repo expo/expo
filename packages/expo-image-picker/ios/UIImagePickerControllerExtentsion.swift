@@ -2,22 +2,66 @@
 
 extension UIImagePickerController {
   func fixCannotMoveEditingBox() {
-    if let cropView = cropView,
-      let scrollView = scrollView,
-      scrollView.contentOffset.y == 0 {
-      let top = cropView.frame.minY + self.view.safeAreaInsets.top
-      let bottom = scrollView.frame.height - cropView.frame.height - top
-      scrollView.contentInset = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
-
-      var offset: CGFloat = 0
-      if scrollView.contentSize.height > scrollView.contentSize.width {
-        offset = 0.5 * (scrollView.contentSize.height - scrollView.contentSize.width)
+    defer {
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
+        self?.fixCannotMoveEditingBox()
       }
-      scrollView.contentOffset = CGPoint(x: 0, y: -top + offset)
     }
 
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-      self?.fixCannotMoveEditingBox()
+    guard let cropView = cropView,
+      let scrollView = scrollView,
+      let scrollSuperview = scrollView.superview,
+      scrollView.contentSize.width > 0,
+      scrollView.contentSize.height > 0 else {
+      return
+    }
+
+    let cropFrame = cropView.convert(cropView.bounds, to: scrollSuperview)
+    let scrollFrame = scrollView.frame
+    let cropSize = cropFrame.size
+    let baseWidth = scrollView.contentSize.width / scrollView.zoomScale
+    let baseHeight = scrollView.contentSize.height / scrollView.zoomScale
+    let minZoomForFill = max(cropSize.width / baseWidth, cropSize.height / baseHeight)
+    let edgeInset = UIEdgeInsets(
+      top: max(0, cropFrame.minY - scrollFrame.minY),
+      left: max(0, cropFrame.minX - scrollFrame.minX),
+      bottom: max(0, scrollFrame.maxY - cropFrame.maxY),
+      right: max(0, scrollFrame.maxX - cropFrame.maxX)
+    )
+
+    let isInitialLayout = scrollView.contentOffset.y == 0 || scrollView.contentInset == .zero
+    let needsFix = scrollView.zoomScale < minZoomForFill - 0.001
+
+    if scrollView.isZooming || scrollView.isZoomBouncing || !(isInitialLayout || needsFix) {
+      return
+    }
+
+    UIView.performWithoutAnimation {
+      let previousOffset = scrollView.contentOffset
+      let shouldCenterContent = scrollView.contentInset == .zero
+
+      if scrollView.zoomScale < minZoomForFill {
+        scrollView.minimumZoomScale = minZoomForFill
+        scrollView.zoomScale = minZoomForFill
+      }
+
+      scrollView.contentInset = edgeInset
+      if shouldCenterContent {
+        scrollView.contentOffset = CGPoint(
+          x: -edgeInset.left + max(0, scrollView.contentSize.width - cropSize.width) / 2,
+          y: -edgeInset.top + max(0, scrollView.contentSize.height - cropSize.height) / 2
+        )
+      } else {
+        let minOffset = CGPoint(x: -edgeInset.left, y: -edgeInset.top)
+        let maxOffset = CGPoint(
+          x: max(minOffset.x, scrollView.contentSize.width - scrollView.bounds.width + edgeInset.right),
+          y: max(minOffset.y, scrollView.contentSize.height - scrollView.bounds.height + edgeInset.bottom)
+        )
+        scrollView.contentOffset = CGPoint(
+          x: min(max(previousOffset.x, minOffset.x), maxOffset.x),
+          y: min(max(previousOffset.y, minOffset.y), maxOffset.y)
+        )
+      }
     }
   }
 
@@ -30,28 +74,19 @@ extension UIImagePickerController {
   }
 
   func findCropView(from view: UIView) -> UIView? {
-    let width = UIScreen.main.bounds.width
+    let shorterEdge = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
     let size = view.bounds.size
-    if width == size.height, width == size.height {
+    let tolerance = 1 / UIScreen.main.scale
+    if abs(shorterEdge - size.width) <= tolerance, abs(shorterEdge - size.height) <= tolerance {
       return view
     }
-    for view in view.subviews {
-      if let cropView = findCropView(from: view) {
-        return cropView
-      }
-    }
-    return nil
+    return view.subviews.lazy.compactMap { self.findCropView(from: $0) }.first
   }
 
   func findScrollView(from view: UIView) -> UIScrollView? {
     if let scrollView = view as? UIScrollView {
       return scrollView
     }
-    for view in view.subviews {
-      if let scrollView = findScrollView(from: view) {
-        return scrollView
-      }
-    }
-    return nil
+    return view.subviews.lazy.compactMap { self.findScrollView(from: $0) }.first
   }
 }
