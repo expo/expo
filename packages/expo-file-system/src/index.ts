@@ -1,4 +1,7 @@
-export * from './FileSystem';
+export * from './Paths';
+export * from './File';
+export * from './Directory';
+export * from './NetworkTasks';
 
 export {
   DEFAULT_DEBOUNCE_MS,
@@ -37,6 +40,6 @@ export {
   type WatchEvent,
   type WatchOptions,
   type WatchSubscription,
-} from './ExpoFileSystem.types';
+} from './FileSystem.types';
 
 export * from './legacyWarnings';
