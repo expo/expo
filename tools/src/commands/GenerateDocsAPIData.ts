@@ -160,6 +160,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/fieldgroup': ['universal/FieldGroup/index.ts', 'expo-ui'],
   'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
   'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
