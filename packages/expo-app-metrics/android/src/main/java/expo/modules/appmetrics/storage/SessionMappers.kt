@@ -74,17 +74,17 @@ data class JsMetric(
  * JS-facing shape of a log event. Mirrors the TypeScript `LogRecord` type and
  * decodes the storage-only JSON `attributes` column into a typed map.
  *
- * `logId` and `sessionId` are storage-only — JS consumers see the record under
- * its parent `Session.logs`, so the parent ID is implicit and the row's
- * primary key isn't useful.
+ * `logId`, `sessionId`, and `droppedAttributesCount` are storage- and
+ * dispatch-side concerns: JS consumers see the record under its parent
+ * `Session.logs` (so the parent ID is implicit), and the dropped-attribute
+ * bookkeeping is only meaningful on the OTel wire payload.
  */
 data class JsLogRecord(
   @Field val timestamp: String,
   @Field val name: String,
   @Field val body: String?,
   @Field val severity: String,
-  @Field val attributes: Map<String, Any?>?,
-  @Field val droppedAttributesCount: Int
+  @Field val attributes: Map<String, Any?>?
 ) : Record {
   companion object {
     fun fromLogRecord(log: LogRecord): JsLogRecord =
@@ -93,8 +93,7 @@ data class JsLogRecord(
         name = log.name,
         body = log.body,
         severity = log.severity,
-        attributes = decodeJsonObject(log.attributes),
-        droppedAttributesCount = log.droppedAttributesCount
+        attributes = decodeJsonObject(log.attributes)
       )
   }
 }

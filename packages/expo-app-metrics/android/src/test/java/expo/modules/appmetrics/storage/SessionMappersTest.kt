@@ -39,8 +39,7 @@ class SessionMappersTest {
     logId: String = "log-1",
     sessionId: String = "session-1",
     name: String = "auth.login_failed",
-    attributes: String? = null,
-    droppedAttributesCount: Int = 0
+    attributes: String? = null
   ): LogRecord = LogRecord(
     logId = logId,
     sessionId = sessionId,
@@ -48,8 +47,7 @@ class SessionMappersTest {
     name = name,
     body = "invalid_credentials",
     severity = "warn",
-    attributes = attributes,
-    droppedAttributesCount = droppedAttributesCount
+    attributes = attributes
   )
 
   @Test
@@ -164,13 +162,12 @@ class SessionMappersTest {
 
   @Test
   fun `JsLogRecord_fromLogRecord copies scalar fields verbatim`() {
-    val js = JsLogRecord.fromLogRecord(makeLog(droppedAttributesCount = 3))
+    val js = JsLogRecord.fromLogRecord(makeLog())
 
     assertEquals("auth.login_failed", js.name)
     assertEquals("invalid_credentials", js.body)
     assertEquals("warn", js.severity)
     assertEquals("2025-01-01T00:00:02.000Z", js.timestamp)
-    assertEquals(3, js.droppedAttributesCount)
   }
 
   @Test

@@ -165,12 +165,6 @@ export type LogRecord = {
    * Severity of the event.
    */
   severity: LogSeverity;
-  /**
-   * Number of attributes the SDK dropped while accepting this record (caller
-   * tried to use a reserved key, exceeded the per-record cap, etc.). `0` when
-   * nothing was dropped.
-   */
-  droppedAttributesCount: number;
 };
 
 /**
