@@ -1,10 +1,10 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 extension UIImagePickerController {
-  func fixCannotMoveEditingBox() {
+  func fixCannotMoveEditingBox(contentFit: ContentFit = .fill) {
     defer {
       DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
-        self?.fixCannotMoveEditingBox()
+        self?.fixCannotMoveEditingBox(contentFit: contentFit)
       }
     }
 
@@ -22,6 +22,8 @@ extension UIImagePickerController {
     let baseWidth = scrollView.contentSize.width / scrollView.zoomScale
     let baseHeight = scrollView.contentSize.height / scrollView.zoomScale
     let minZoomForFill = max(cropSize.width / baseWidth, cropSize.height / baseHeight)
+    let minZoomForContain = min(cropSize.width / baseWidth, cropSize.height / baseHeight)
+    let isContain = contentFit == .contain
     let edgeInset = UIEdgeInsets(
       top: max(0, cropFrame.minY - scrollFrame.minY),
       left: max(0, cropFrame.minX - scrollFrame.minX),
@@ -29,8 +31,42 @@ extension UIImagePickerController {
       right: max(0, scrollFrame.maxX - cropFrame.maxX)
     )
 
+    func targetInset(for contentSize: CGSize) -> UIEdgeInsets {
+      guard isContain else {
+        return edgeInset
+      }
+
+      let extraX = max(0, (cropSize.width - contentSize.width) / 2)
+      let extraY = max(0, (cropSize.height - contentSize.height) / 2)
+      return UIEdgeInsets(
+        top: edgeInset.top + extraY,
+        left: edgeInset.left + extraX,
+        bottom: edgeInset.bottom + extraY,
+        right: edgeInset.right + extraX
+      )
+    }
+
     let isInitialLayout = scrollView.contentOffset.y == 0 || scrollView.contentInset == .zero
-    let needsFix = scrollView.zoomScale < minZoomForFill - 0.001
+    let inset = targetInset(for: scrollView.contentSize)
+    let insetDelta = max(
+      max(abs(scrollView.contentInset.top - inset.top), abs(scrollView.contentInset.left - inset.left)),
+      max(abs(scrollView.contentInset.bottom - inset.bottom), abs(scrollView.contentInset.right - inset.right))
+    )
+    let insetTolerance = 1 / UIScreen.main.scale
+    let needsMinimumZoomFix = abs(scrollView.minimumZoomScale - minZoomForContain) > 0.001
+    let centeredOffset = CGPoint(
+      x: -inset.left + max(0, scrollView.contentSize.width - cropSize.width) / 2,
+      y: -inset.top + max(0, scrollView.contentSize.height - cropSize.height) / 2
+    )
+    let offsetDelta = max(
+      abs(scrollView.contentOffset.x - centeredOffset.x),
+      abs(scrollView.contentOffset.y - centeredOffset.y)
+    )
+    let isAtContainMinimum = isContain && scrollView.zoomScale <= minZoomForContain + 0.001
+    let needsCenteringAtMinimum = isAtContainMinimum && offsetDelta > insetTolerance
+    let needsFix = isContain
+      ? insetDelta > insetTolerance || needsMinimumZoomFix || needsCenteringAtMinimum
+      : scrollView.zoomScale < minZoomForFill - 0.001
 
     if scrollView.isZooming || scrollView.isZoomBouncing || !(isInitialLayout || needsFix) {
       return
@@ -38,24 +74,35 @@ extension UIImagePickerController {
 
     UIView.performWithoutAnimation {
       let previousOffset = scrollView.contentOffset
+      let shouldZoomToContain = isContain
+        && (isInitialLayout || needsMinimumZoomFix)
+        && scrollView.zoomScale > minZoomForContain
       let shouldCenterContent = scrollView.contentInset == .zero
+        || shouldZoomToContain
+        || needsCenteringAtMinimum
 
-      if scrollView.zoomScale < minZoomForFill {
+      if isContain {
+        scrollView.minimumZoomScale = minZoomForContain
+        if shouldZoomToContain {
+          scrollView.zoomScale = minZoomForContain
+        }
+      } else if scrollView.zoomScale < minZoomForFill {
         scrollView.minimumZoomScale = minZoomForFill
         scrollView.zoomScale = minZoomForFill
       }
 
-      scrollView.contentInset = edgeInset
+      let adjustedInset = targetInset(for: scrollView.contentSize)
+      scrollView.contentInset = adjustedInset
       if shouldCenterContent {
         scrollView.contentOffset = CGPoint(
-          x: -edgeInset.left + max(0, scrollView.contentSize.width - cropSize.width) / 2,
-          y: -edgeInset.top + max(0, scrollView.contentSize.height - cropSize.height) / 2
+          x: -adjustedInset.left + max(0, scrollView.contentSize.width - cropSize.width) / 2,
+          y: -adjustedInset.top + max(0, scrollView.contentSize.height - cropSize.height) / 2
         )
       } else {
-        let minOffset = CGPoint(x: -edgeInset.left, y: -edgeInset.top)
+        let minOffset = CGPoint(x: -adjustedInset.left, y: -adjustedInset.top)
         let maxOffset = CGPoint(
-          x: max(minOffset.x, scrollView.contentSize.width - scrollView.bounds.width + edgeInset.right),
-          y: max(minOffset.y, scrollView.contentSize.height - scrollView.bounds.height + edgeInset.bottom)
+          x: max(minOffset.x, scrollView.contentSize.width - scrollView.bounds.width + adjustedInset.right),
+          y: max(minOffset.y, scrollView.contentSize.height - scrollView.bounds.height + adjustedInset.bottom)
         )
         scrollView.contentOffset = CGPoint(
           x: min(max(previousOffset.x, minOffset.x), maxOffset.x),

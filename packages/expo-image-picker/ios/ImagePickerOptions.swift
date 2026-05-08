@@ -58,6 +58,9 @@ internal struct ImagePickerOptions: Record {
   @Field
   var shouldDownloadFromNetwork: Bool = false
 
+  @Field
+  var contentFit: ContentFit = .fill
+
   func toMediaTypesArray() -> [String] {
     var mediaTypesArray = mediaTypes.map { mediaType in
       mediaType.toUTTypeString()
@@ -256,4 +259,9 @@ internal enum VideoExportPreset: Int, Enumerable {
 internal enum CameraType: String, Enumerable {
   case back
   case front
+}
+
+internal enum ContentFit: String, Enumerable {
+  case fill
+  case contain
 }

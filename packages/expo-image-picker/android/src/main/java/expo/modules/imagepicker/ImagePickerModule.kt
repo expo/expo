@@ -117,7 +117,6 @@ class ImagePickerModule : Module() {
     get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
 
   private val mediaHandler = MediaHandler(this)
-
   private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
   private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult>
   private lateinit var cropImageLauncher: AppContextActivityResultLauncher<CropImageContractOptions, ImagePickerContractResult>
@@ -217,7 +216,15 @@ class ImagePickerModule : Module() {
         val compressFormat = mediaType?.toBitmapCompressFormat() ?: Bitmap.CompressFormat.JPEG
         val outputFile = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension())
         result = launchPicker {
-          cropImageLauncher.launch(CropImageContractOptions(sourceUri.toString(), options, outputFile, compressFormat))
+          cropImageLauncher.launch(
+            CropImageContractOptions(
+              sourceUri = sourceUri.toString(),
+              exifSourceUri = sourceUri.toString(),
+              options = options,
+              outputFile = outputFile,
+              compressFormat = compressFormat
+            )
+          )
         }
       }
       mediaHandler.readExtras(result.data, options)

@@ -102,7 +102,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     let options = pickingContext.options
 
     let picker = UIImagePickerController()
-    picker.fixCannotMoveEditingBox()
+    picker.fixCannotMoveEditingBox(contentFit: options.contentFit)
 
     if sourceType == .camera {
 #if targetEnvironment(simulator)

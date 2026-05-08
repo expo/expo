@@ -49,6 +49,9 @@ internal class ImagePickerOptions : Record, Serializable {
   var shape: CropShape = CropShape.RECTANGLE
 
   @Field
+  var contentFit: ContentFit = ContentFit.FILL
+
+  @Field
   var cameraType: CameraType = CameraType.BACK
 
   @Field
@@ -80,6 +83,11 @@ internal enum class JSMediaTypes(val value: String) : Enumerable {
 internal enum class CropShape(val value: String) : Enumerable {
   RECTANGLE("rectangle"),
   OVAL("oval")
+}
+
+internal enum class ContentFit(val value: String) : Enumerable {
+  FILL("fill"),
+  CONTAIN("contain")
 }
 
 internal enum class MediaTypes(val value: String) : Enumerable {

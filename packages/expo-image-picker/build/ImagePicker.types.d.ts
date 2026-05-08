@@ -372,6 +372,10 @@ export type ImagePickerMultipleResult = ImagePickerResult;
  * The shape of the crop area.
  */
 export type CropShape = 'rectangle' | 'oval';
+/**
+ * How the image should initially fit within the crop area.
+ */
+export type ContentFit = 'fill' | 'contain';
 export type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
@@ -400,6 +404,15 @@ export type ImagePickerOptions = {
      * @platform android
      */
     shape?: CropShape;
+    /**
+     * Specify how the image should initially fit within the crop area if the user is allowed to edit
+     * the image (by passing `allowsEditing: true`).
+     *
+     * @default 'fill'
+     * @platform android
+     * @platform ios
+     */
+    contentFit?: ContentFit;
     /**
      * Specify the quality of compression, from `0` to `1`. `0` means compress for small size,
      * `1` means compress for maximum quality.

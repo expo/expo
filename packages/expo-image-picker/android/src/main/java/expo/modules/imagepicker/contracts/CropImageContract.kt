@@ -11,6 +11,7 @@ import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import expo.modules.imagepicker.CropShape
+import expo.modules.imagepicker.ExpoCropImageActivity
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
@@ -26,6 +27,11 @@ internal class CropImageContract(
 ) : AppContextActivityResultContract<CropImageContractOptions, ImagePickerContractResult> {
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, expo.modules.imagepicker.ExpoCropImageActivity::class.java).apply {
     val outputUri = input.outputFile.getContentUri(context)
+    val (contentFitAspectX, contentFitAspectY) = input.options.aspect ?: (0 to 0)
+
+    putExtra(ExpoCropImageActivity.CONTENT_FIT_KEY, input.options.contentFit.value)
+    putExtra(ExpoCropImageActivity.CONTENT_FIT_ASPECT_X_KEY, contentFitAspectX)
+    putExtra(ExpoCropImageActivity.CONTENT_FIT_ASPECT_Y_KEY, contentFitAspectY)
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
@@ -65,13 +71,14 @@ internal class CropImageContract(
     }
     val targetUri = requireNotNull(result.uriContent)
     val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
-    runBlocking { copyExifData(input.sourceUri.toUri(), input.outputFile, contentResolver) }
+    runBlocking { copyExifData(input.exifSourceUri.toUri(), input.outputFile, contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
 
 internal data class CropImageContractOptions(
   val sourceUri: String,
+  val exifSourceUri: String,
   val options: ImagePickerOptions,
   val outputFile: File,
   val compressFormat: Bitmap.CompressFormat

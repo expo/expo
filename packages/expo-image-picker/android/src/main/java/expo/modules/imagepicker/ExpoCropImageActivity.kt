@@ -1,19 +1,35 @@
 package expo.modules.imagepicker
 
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
+import android.view.Gravity
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ProgressBar
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updateLayoutParams
+import androidx.lifecycle.lifecycleScope
 import com.canhub.cropper.CropImageActivity
 import com.canhub.cropper.CropImageOptions
 import com.canhub.cropper.CropImageView
 import expo.modules.imagepicker.ExpoCropImageUtils.getColorResource
 import expo.modules.imagepicker.ExpoCropImageUtils.getThemeColor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.File
+import java.io.FileOutputStream
 
 /**
  * A wrapper around `CropImageActivity` to provide custom theming and functionality.
@@ -26,9 +42,20 @@ import expo.modules.imagepicker.ExpoCropImageUtils.getThemeColor
 class ExpoCropImageActivity : CropImageActivity() {
   private var currentIconColor: Int = Color.BLACK
   private var cropImageViewRef: CropImageView? = null
+  private var contentFit: ContentFit = ContentFit.FILL
+  private var contentFitAspectX: Int = 0
+  private var contentFitAspectY: Int = 0
+  private var isApplyingContentFit = false
+  private var didApplyContentFit = false
+  private var contentFitFile: File? = null
+  private var contentFitLoadingOverlay: View? = null
 
   // region Lifecycle Methods
   override fun onCreate(savedInstanceState: android.os.Bundle?) {
+    contentFit = ContentFit.entries.find { it.value == intent.getStringExtra(CONTENT_FIT_KEY) } ?: ContentFit.FILL
+    contentFitAspectX = intent.getIntExtra(CONTENT_FIT_ASPECT_X_KEY, 0)
+    contentFitAspectY = intent.getIntExtra(CONTENT_FIT_ASPECT_Y_KEY, 0)
+
     super.onCreate(savedInstanceState)
     // Fetch the private cropImageOptions and apply the palette as early as possible so
     // the toolbar and menu icons are tinted correctly on first render.
@@ -45,6 +72,9 @@ class ExpoCropImageActivity : CropImageActivity() {
 
     cropImageViewRef?.let { ViewCompat.setOnApplyWindowInsetsListener(it, null) }
     cropImageViewRef = null
+    contentFitLoadingOverlay = null
+    contentFitFile?.delete()
+    contentFitFile = null
 
     super.onDestroy()
   }
@@ -80,7 +110,124 @@ class ExpoCropImageActivity : CropImageActivity() {
     }
   }
 
+  override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
+    if (error == null && shouldApplyContainContentFit()) {
+      applyContainContentFit(view, uri)
+      return
+    }
+
+    hideContentFitLoadingIndicator()
+    super.onSetImageUriComplete(view, uri, error)
+  }
+
   // endregion
+
+  private fun shouldApplyContainContentFit(): Boolean {
+    return contentFit == ContentFit.CONTAIN &&
+      contentFitAspectX > 0 &&
+      contentFitAspectY > 0 &&
+      !isApplyingContentFit &&
+      !didApplyContentFit
+  }
+
+  private fun applyContainContentFit(view: CropImageView, uri: Uri) {
+    isApplyingContentFit = true
+    showContentFitLoadingIndicator()
+
+    lifecycleScope.launch {
+      val paddedFile = runCatching {
+        withContext(Dispatchers.Default) {
+          createPaddedContentFitFile(uri, contentFitAspectX, contentFitAspectY)
+        }
+      }.getOrNull()
+
+      isApplyingContentFit = false
+      didApplyContentFit = true
+
+      if (paddedFile == null) {
+        hideContentFitLoadingIndicator()
+        super@ExpoCropImageActivity.onSetImageUriComplete(view, uri, null)
+        return@launch
+      }
+
+      contentFitFile?.delete()
+      contentFitFile = paddedFile
+      view.setImageUriAsync(Uri.fromFile(paddedFile))
+    }
+  }
+
+  private fun showContentFitLoadingIndicator() {
+    cropImageViewRef?.visibility = View.INVISIBLE
+
+    if (contentFitLoadingOverlay == null) {
+      contentFitLoadingOverlay = FrameLayout(this).apply {
+        addView(
+          ProgressBar(context).apply {
+            isIndeterminate = true
+            indeterminateTintList = ColorStateList.valueOf(getLoadingIndicatorColor())
+          },
+          FrameLayout.LayoutParams(
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            FrameLayout.LayoutParams.WRAP_CONTENT,
+            Gravity.CENTER
+          )
+        )
+      }
+
+      addContentView(
+        contentFitLoadingOverlay,
+        ViewGroup.LayoutParams(
+          ViewGroup.LayoutParams.MATCH_PARENT,
+          ViewGroup.LayoutParams.MATCH_PARENT
+        )
+      )
+    }
+
+    contentFitLoadingOverlay?.visibility = View.VISIBLE
+  }
+
+  private fun hideContentFitLoadingIndicator() {
+    cropImageViewRef?.visibility = View.VISIBLE
+    contentFitLoadingOverlay?.visibility = View.GONE
+  }
+
+  private fun getLoadingIndicatorColor(): Int {
+    val isNight = (resources.configuration.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) ==
+      android.content.res.Configuration.UI_MODE_NIGHT_YES
+
+    return if (isNight) Color.WHITE else Color.BLACK
+  }
+
+  private fun createPaddedContentFitFile(uri: Uri, aspectX: Int, aspectY: Int): File? {
+    val bitmap = readBitmap(uri)
+    val paddedBitmap = bitmap.createPaddedBitmap(aspectX, aspectY)
+    if (paddedBitmap == null) {
+      bitmap.recycle()
+      return null
+    }
+
+    try {
+      val outputFile = createOutputFile(cacheDir, Bitmap.CompressFormat.PNG.toImageFileExtension())
+      FileOutputStream(outputFile).use { outputStream ->
+        paddedBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+      }
+      return outputFile
+    } finally {
+      bitmap.recycle()
+      paddedBitmap.recycle()
+    }
+  }
+
+  private fun readBitmap(uri: Uri): Bitmap {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, uri)) { decoder, _, _ ->
+        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+      }
+    } else {
+      @Suppress("DEPRECATION")
+      MediaStore.Images.Media.getBitmap(contentResolver, uri)
+    }
+  }
 
   private fun applyCustomization(isNight: Boolean, options: CropImageOptions) {
     val defaultBackgroundColor = if (isNight) Color.BLACK else Color.WHITE
@@ -169,4 +316,47 @@ class ExpoCropImageActivity : CropImageActivity() {
     }
   }
   // endregion
+
+  companion object {
+    const val CONTENT_FIT_KEY = "expo.modules.imagepicker.CONTENT_FIT"
+    const val CONTENT_FIT_ASPECT_X_KEY = "expo.modules.imagepicker.CONTENT_FIT_ASPECT_X"
+    const val CONTENT_FIT_ASPECT_Y_KEY = "expo.modules.imagepicker.CONTENT_FIT_ASPECT_Y"
+  }
+}
+
+private fun Bitmap.createPaddedBitmap(aspectX: Int, aspectY: Int): Bitmap? {
+  val (paddedWidth, paddedHeight) = calculatePaddedSize(width, height, aspectX, aspectY) ?: return null
+  val paddedBitmap = Bitmap.createBitmap(paddedWidth, paddedHeight, Bitmap.Config.ARGB_8888)
+  val left = (paddedWidth - width) / 2
+  val top = (paddedHeight - height) / 2
+
+  Canvas(paddedBitmap).apply {
+    drawColor(Color.BLACK)
+    drawBitmap(this@createPaddedBitmap, left.toFloat(), top.toFloat(), null)
+  }
+
+  return paddedBitmap
+}
+
+private fun calculatePaddedSize(width: Int, height: Int, aspectX: Int, aspectY: Int): Pair<Int, Int>? {
+  val widthScaledByTargetHeight = width.toLong() * aspectY
+  val heightScaledByTargetWidth = height.toLong() * aspectX
+
+  return when {
+    widthScaledByTargetHeight == heightScaledByTargetWidth -> null
+    widthScaledByTargetHeight > heightScaledByTargetWidth -> {
+      width to ceilToBalancedPadding(widthScaledByTargetHeight, aspectX, height)
+    }
+    else -> {
+      ceilToBalancedPadding(heightScaledByTargetWidth, aspectY, width) to height
+    }
+  }
+}
+
+private fun ceilToBalancedPadding(value: Long, divisor: Int, originalSize: Int): Int {
+  var paddedSize = ((value + divisor - 1) / divisor).toInt()
+  if ((paddedSize - originalSize) % 2 != 0) {
+    paddedSize += 1
+  }
+  return paddedSize
 }
