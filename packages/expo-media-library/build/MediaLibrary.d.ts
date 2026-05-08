@@ -1,4 +1,5 @@
-import { type PermissionResponse as EXPermissionResponse, type EventSubscription } from 'expo-modules-core';
+import { type PermissionResponse as EXPermissionResponse } from 'expo';
+import { type EventSubscription } from 'expo-modules-core';
 export type PermissionResponse = EXPermissionResponse & {
     /**
      * Indicates if your app has access to the whole or only part of the photo library. Possible values are:

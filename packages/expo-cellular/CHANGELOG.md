@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated permission hooks and permission status imports to be imported from `expo` instead of `expo-modules-core`.
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

@@ -1,10 +1,5 @@
-import {
-  UnavailabilityError,
-  type PermissionResponse,
-  PermissionStatus,
-  createPermissionHook,
-  type EventSubscription,
-} from 'expo-modules-core';
+import { createPermissionHook, type PermissionResponse, PermissionStatus } from 'expo';
+import { UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import { useEffect } from 'react';
 
 import ExpoScreenCapture from './ExpoScreenCapture';

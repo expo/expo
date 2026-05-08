@@ -1,4 +1,5 @@
-import { type PermissionResponse, type EventSubscription } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { type EventSubscription } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
