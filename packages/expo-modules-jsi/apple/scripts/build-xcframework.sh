@@ -240,7 +240,7 @@ PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
 RN_ROOT="$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null \
   || echo "${PODS_ROOT}/../../node_modules/react-native")"
 
-# TEMPORARY: log detected configuration to verify the fallback path triggers.
+# log detected configuration to verify the fallback path triggers.
 mode="$( [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]] && echo "prebuilt RN" || echo "source-built RN")"
 [[ -f "${PODS_ROOT}/Target Support Files/React-jsi/React-jsi-umbrella.h" ]] && mode="${mode}, static frameworks"
 log "Detected: ${mode} (RN_ROOT=${RN_ROOT})"
