@@ -57,25 +57,25 @@ public struct SessionRow: Sendable {
     id: String,
     type: String,
     startTimestamp: String,
-    endTimestamp: String?,
+    endTimestamp: String? = nil,
     isActive: Bool,
-    environment: String?,
-    appName: String?,
-    appIdentifier: String?,
-    appVersion: String?,
-    appBuildNumber: String?,
-    appUpdateId: String?,
-    appUpdateRuntimeVersion: String?,
-    appUpdateRequestHeaders: String?,
-    appEasBuildId: String?,
-    deviceOs: String?,
-    deviceOsVersion: String?,
-    deviceModel: String?,
-    deviceName: String?,
-    expoSdkVersion: String?,
-    reactNativeVersion: String?,
-    clientVersion: String?,
-    languageTag: String?
+    environment: String? = nil,
+    appName: String? = nil,
+    appIdentifier: String? = nil,
+    appVersion: String? = nil,
+    appBuildNumber: String? = nil,
+    appUpdateId: String? = nil,
+    appUpdateRuntimeVersion: String? = nil,
+    appUpdateRequestHeaders: String? = nil,
+    appEasBuildId: String? = nil,
+    deviceOs: String? = nil,
+    deviceOsVersion: String? = nil,
+    deviceModel: String? = nil,
+    deviceName: String? = nil,
+    expoSdkVersion: String? = nil,
+    reactNativeVersion: String? = nil,
+    clientVersion: String? = nil,
+    languageTag: String? = nil
   ) {
     self.id = id
     self.type = type
@@ -150,15 +150,15 @@ public struct MetricRow: Sendable {
   public let params: String?
 
   public init(
-    id: Int64?,
+    id: Int64? = nil,
     sessionId: String,
     timestamp: String,
-    category: String?,
+    category: String? = nil,
     name: String,
     value: Double,
-    routeName: String?,
-    updateId: String?,
-    params: String?
+    routeName: String? = nil,
+    updateId: String? = nil,
+    params: String? = nil
   ) {
     self.id = id
     self.sessionId = sessionId
@@ -205,14 +205,14 @@ public struct LogRow: Sendable {
   public let droppedAttributesCount: Int
 
   public init(
-    id: Int64?,
+    id: Int64? = nil,
     sessionId: String,
     timestamp: String,
     severity: String,
     name: String,
-    body: String?,
-    attributes: String?,
-    droppedAttributesCount: Int
+    body: String? = nil,
+    attributes: String? = nil,
+    droppedAttributesCount: Int = 0
   ) {
     self.id = id
     self.sessionId = sessionId

@@ -9,7 +9,6 @@ extension MetricRow {
    */
   static func from(metric: Metric, sessionId: String) -> MetricRow {
     return MetricRow(
-      id: nil,
       sessionId: sessionId,
       timestamp: metric.timestamp,
       category: metric.category?.rawValue,
@@ -25,7 +24,6 @@ extension MetricRow {
 extension LogRow {
   static func from(log: LogRecord, sessionId: String) -> LogRow {
     return LogRow(
-      id: nil,
       sessionId: sessionId,
       timestamp: log.timestamp,
       severity: log.severity.rawValue,

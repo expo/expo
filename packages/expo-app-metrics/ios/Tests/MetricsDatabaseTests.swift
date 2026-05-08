@@ -540,17 +540,12 @@ private func makeSessionRow(
     id: id,
     type: type,
     startTimestamp: startTimestamp,
-    endTimestamp: nil,
     isActive: true,
     environment: environment,
     appName: appName,
     appIdentifier: "dev.expo.test",
     appVersion: "1.0.0",
     appBuildNumber: "1",
-    appUpdateId: nil,
-    appUpdateRuntimeVersion: nil,
-    appUpdateRequestHeaders: nil,
-    appEasBuildId: nil,
     deviceOs: "iOS",
     deviceOsVersion: "26.0",
     deviceModel: "iPhone",
@@ -573,7 +568,6 @@ private func makeMetricRow(
   params: String? = nil
 ) -> MetricRow {
   return MetricRow(
-    id: nil,
     sessionId: sessionId,
     timestamp: timestamp,
     category: category,
@@ -595,7 +589,6 @@ private func makeLogRow(
   droppedAttributesCount: Int = 0
 ) -> LogRow {
   return LogRow(
-    id: nil,
     sessionId: sessionId,
     timestamp: timestamp,
     severity: severity,
