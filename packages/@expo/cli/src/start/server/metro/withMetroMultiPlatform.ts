@@ -634,6 +634,24 @@ export function withExtendedResolver(
         if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
           const filePath = context.originModulePath;
           if (!filePath.includes('node_modules')) {
+            if (
+              moduleName === '@react-navigation/native-stack' ||
+              moduleName === '@react-navigation/drawer'
+            ) {
+              throw new Error(
+                [
+                  'As of SDK 56, expo-router is no longer compatible with react-navigation.',
+                  '',
+                  `Instead of ${moduleName}, use Stack or Drawer from expo-router instead:`,
+                  '',
+                  "  import { Stack } from 'expo-router';",
+                  "  import { Drawer } from 'expo-router/drawer';",
+                  '',
+                  'For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/.',
+                  'You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.',
+                ].join('\n')
+              );
+            }
             throw new Error(
               'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
             );
