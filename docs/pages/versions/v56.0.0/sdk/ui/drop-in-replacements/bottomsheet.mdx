@@ -8,6 +8,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses a [vaul](https://github.com/emilkowalski/vaul) drawer.
 
@@ -137,20 +138,20 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 
 ## Supported exports
 
-| Export                     | Supported | Notes                                                     |
-| -------------------------- | --------- | --------------------------------------------------------- |
-| `BottomSheet`              | Yes       | Modal on Android and iOS, drawer on web                   |
-| `BottomSheetModal`         | Yes       | Starts closed and opens with `present()`                  |
-| `BottomSheetModalProvider` | Yes       | Renders children directly for compatibility               |
-| `BottomSheetView`          | Yes       | Wraps sheet content                                       |
-| `BottomSheetScrollView`    | Yes       | Re-export of React Native `ScrollView`                    |
-| `BottomSheetFlatList`      | Yes       | Re-export of React Native `FlatList`                      |
-| `BottomSheetSectionList`   | Yes       | Re-export of React Native `SectionList`                   |
-| `BottomSheetTextInput`     | Yes       | Re-export of React Native `TextInput`                     |
-| `useBottomSheet`           | Yes       | Returns the sheet ref methods from context                |
-| `BottomSheetBackdrop`      | No        | The native sheet or web drawer handles the backdrop       |
-| `BottomSheetHandle`        | No        | The native sheet or web drawer handles the drag indicator |
-| `BottomSheetFooter`        | No        | No equivalent in this implementation                      |
+| Export                     | Supported   | Notes                                                     |
+| -------------------------- | ----------- | --------------------------------------------------------- |
+| `BottomSheet`              | <YesIcon /> | Modal on Android and iOS, drawer on web                   |
+| `BottomSheetModal`         | <YesIcon /> | Starts closed and opens with `present()`                  |
+| `BottomSheetModalProvider` | <YesIcon /> | Renders children directly for compatibility               |
+| `BottomSheetView`          | <YesIcon /> | Wraps sheet content                                       |
+| `BottomSheetScrollView`    | <YesIcon /> | Re-export of React Native `ScrollView`                    |
+| `BottomSheetFlatList`      | <YesIcon /> | Re-export of React Native `FlatList`                      |
+| `BottomSheetSectionList`   | <YesIcon /> | Re-export of React Native `SectionList`                   |
+| `BottomSheetTextInput`     | <YesIcon /> | Re-export of React Native `TextInput`                     |
+| `useBottomSheet`           | <YesIcon /> | Returns the sheet ref methods from context                |
+| `BottomSheetBackdrop`      | <NoIcon />  | The native sheet or web drawer handles the backdrop       |
+| `BottomSheetHandle`        | <NoIcon />  | The native sheet or web drawer handles the drag indicator |
+| `BottomSheetFooter`        | <NoIcon />  | No equivalent in this implementation                      |
 
 ## Compatibility notes
 
