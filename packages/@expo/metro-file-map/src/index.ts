@@ -538,7 +538,9 @@ export default class FileMap extends EventEmitter {
       enableSymlinks,
       extensions,
       forceNodeFilesystemAPI,
-      healthCheckFilePrefix: this.#options.healthCheck.filePrefix,
+      healthCheckFilePrefix: this.#options.healthCheck.enabled
+        ? this.#options.healthCheck.filePrefix
+        : null,
       ignoreForCrawl,
       ignorePatternForWatch: ignorePattern,
       perfLogger: this.#startupPerfLogger,
