@@ -277,13 +277,9 @@ export default class FileMap extends EventEmitter {
       this.#startupPerfLogger?.point('constructor_start');
     }
 
-    let ignorePattern: RegExp | null = null;
-    if (options.ignorePattern) {
-      if (options.ignorePattern instanceof RegExp) {
-        ignorePattern = options.ignorePattern;
-      } else {
-        throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
-      }
+    const ignorePattern: RegExp | null = options.ignorePattern ?? null;
+    if (ignorePattern && !(ignorePattern instanceof RegExp)) {
+      throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
     }
 
     this.#console = options.console || globalThis.console;
