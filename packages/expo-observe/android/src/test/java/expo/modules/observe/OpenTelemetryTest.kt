@@ -1,5 +1,7 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.AppStartupMetric
+import expo.modules.appmetrics.MetricCategory
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -43,11 +45,12 @@ class OpenTelemetryTest {
   private fun makeMetric(
     name: String,
     value: Double,
-    timestamp: String
+    timestamp: String,
+    category: String = "appStartup"
   ) = EASMetric(
     sessionId = testSessionId,
     timestamp = timestamp,
-    category = "appStartup",
+    category = category,
     name = name,
     value = value
   )
@@ -66,26 +69,74 @@ class OpenTelemetryTest {
 
   // -- Metric name mapping --
 
+  private fun nameFor(category: String, name: String): String =
+    EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = category,
+      name = name,
+      value = 1.0
+    ).toOTMetric().name
+
   @Test
-  fun `known metric names are mapped correctly`() {
-    assertEquals("expo.app_startup.ttr", makeMetric("timeToFirstRender", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.tti", makeMetric("timeToInteractive", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.bundle_load_time", makeMetric("bundleLoadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.cold_launch_time", makeMetric("coldLaunchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.warm_launch_time", makeMetric("warmLaunchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
+  fun `toOTMetric maps every known app startup pair to its OTel name`() {
+    val appStartup = MetricCategory.AppStartup.categoryName
 
-    // Legacy metrics
-    assertEquals("expo.app_startup.load_time", makeMetric("loadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.launch_time", makeMetric("launchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-
-    // Updates
-    assertEquals("expo.updates.download_time", makeMetric("updateDownloadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
+    assertEquals("expo.app_startup.tti", nameFor(appStartup, AppStartupMetric.TimeToInteractive.metricName))
+    assertEquals("expo.app_startup.ttr", nameFor(appStartup, AppStartupMetric.TimeToFirstRender.metricName))
+    assertEquals("expo.app_startup.cold_launch_time", nameFor(appStartup, AppStartupMetric.ColdLaunchTime.metricName))
+    assertEquals("expo.app_startup.warm_launch_time", nameFor(appStartup, AppStartupMetric.WarmLaunchTime.metricName))
+    assertEquals("expo.app_startup.bundle_load_time", nameFor(appStartup, AppStartupMetric.BundleLoadTime.metricName))
   }
 
   @Test
-  fun `unknown metric names use fallback pattern`() {
-    val metric = makeMetric("customMetric", 1.0, "2026-01-01T00:00:00.000Z")
-    assertEquals("expo.app_startup.customMetric", metric.toOTMetric().name)
+  fun `toOTMetric maps legacy app startup names to their OTel names`() {
+    val appStartup = MetricCategory.AppStartup.categoryName
+
+    // Legacy names emitted only by older clients — kept in the map for back-compat.
+    assertEquals("expo.app_startup.load_time", nameFor(appStartup, "loadTime"))
+    assertEquals("expo.app_startup.launch_time", nameFor(appStartup, "launchTime"))
+  }
+
+  @Test
+  fun `toOTMetric maps the updates download_time pair to its OTel name`() {
+    assertEquals(
+      "expo.updates.download_time",
+      nameFor(MetricCategory.Updates.categoryName, "updateDownloadTime")
+    )
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown for an unmapped name in a known category`() {
+    // Known category, name is not in the map.
+    assertEquals(
+      "expo.unknown.customMetric",
+      nameFor(MetricCategory.AppStartup.categoryName, "customMetric")
+    )
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown when category mismatches a known name`() {
+    // The pair (frameRate, timeToInteractive) is not in the map, so even though
+    // `timeToInteractive` is a known metric name under `appStartup`, it falls back.
+    assertEquals(
+      "expo.unknown.timeToInteractive",
+      nameFor(MetricCategory.FrameRate.categoryName, AppStartupMetric.TimeToInteractive.metricName)
+    )
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown for a fully unknown category and name`() {
+    assertEquals("expo.unknown.someValue", nameFor("somethingNew", "someValue"))
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown for the updates category with an unmapped name`() {
+    // `updates` is in the map only for `updateDownloadTime`; anything else under it falls back.
+    assertEquals(
+      "expo.unknown.somethingElse",
+      nameFor(MetricCategory.Updates.categoryName, "somethingElse")
+    )
   }
 
   // -- Metric structure --

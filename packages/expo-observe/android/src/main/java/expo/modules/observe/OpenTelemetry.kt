@@ -1,5 +1,7 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.AppStartupMetric
+import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.utils.TimeUtils.timestampToDateNS
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -83,18 +85,20 @@ data class OTRequestBody(
 // This must be kept in sync with the INTERNAL_TO_OTEL map in universe
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
 private val metricNameMap = mapOf(
-  "timeToInteractive" to "expo.app_startup.tti",
-  "timeToFirstRender" to "expo.app_startup.ttr",
-  "coldLaunchTime" to "expo.app_startup.cold_launch_time",
-  "warmLaunchTime" to "expo.app_startup.warm_launch_time",
-  "bundleLoadTime" to "expo.app_startup.bundle_load_time",
+  // App startup
+  (MetricCategory.AppStartup.categoryName to AppStartupMetric.TimeToInteractive.metricName) to "expo.app_startup.tti",
+  (MetricCategory.AppStartup.categoryName to AppStartupMetric.TimeToFirstRender.metricName) to "expo.app_startup.ttr",
+  (MetricCategory.AppStartup.categoryName to AppStartupMetric.ColdLaunchTime.metricName) to "expo.app_startup.cold_launch_time",
+  (MetricCategory.AppStartup.categoryName to AppStartupMetric.WarmLaunchTime.metricName) to "expo.app_startup.warm_launch_time",
+  (MetricCategory.AppStartup.categoryName to AppStartupMetric.BundleLoadTime.metricName) to "expo.app_startup.bundle_load_time",
 
-  // Legacy metrics - will be removed in a future release
-  "loadTime" to "expo.app_startup.load_time",
-  "launchTime" to "expo.app_startup.launch_time",
+  // Legacy app startup metrics - will be removed in a future release.
+  // Not in `AppStartupMetric` since they're emitted by older clients only.
+  (MetricCategory.AppStartup.categoryName to "loadTime") to "expo.app_startup.load_time",
+  (MetricCategory.AppStartup.categoryName to "launchTime") to "expo.app_startup.launch_time",
 
   // Updates
-  "updateDownloadTime" to "expo.updates.download_time"
+  (MetricCategory.Updates.categoryName to "updateDownloadTime") to "expo.updates.download_time",
 )
 
 fun EASMetric.toOTMetric(): OTMetric {
@@ -113,7 +117,7 @@ fun EASMetric.toOTMetric(): OTMetric {
 
   return OTMetric(
     unit = "s",
-    name = metricNameMap[name] ?: "expo.app_startup.$name",
+    name = metricNameMap[category to name] ?: "expo.unknown.$name",
     gauge = OTGauge(
       dataPoints = listOf(
         OTDataPoint(
