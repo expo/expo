@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+
+## 56.1.0 — 2026-05-07
+
+### 🎉 New features
+
+- Upgrade react-native-screens version to 4.25.0-beta.3. ([#45482](https://github.com/expo/expo/pull/45482) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Move `@jest/globals` to `devDependencies` ([#45469](https://github.com/expo/expo/pull/45469) by [@kitten](https://github.com/kitten))
+
 ## 56.0.4 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

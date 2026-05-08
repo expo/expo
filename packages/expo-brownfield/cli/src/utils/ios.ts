@@ -352,11 +352,23 @@ export const findScheme = (): string | undefined => {
       .readdirSync(iosPath, { withFileTypes: true })
       .filter((item) => item.isDirectory());
     const scheme = subdirectories.find((directory) => {
-      const directoryPath = path.join(iosPath, directory.name);
-      const files = fs.readdirSync(directoryPath, { recursive: true });
-      return files.some(
-        (file) => typeof file === 'string' && file.endsWith('ReactNativeHostManager.swift')
-      );
+      const directoryPath = path.resolve(iosPath, directory.name);
+      const directories = [directoryPath];
+
+      let target: string | undefined;
+      while ((target = directories.shift()) != null) {
+        const entries = fs.readdirSync(target, { withFileTypes: true });
+        for (const entry of entries) {
+          const childPath = path.join(target, entry.name);
+          if (entry.isDirectory()) {
+            directories.push(childPath);
+          } else if (entry.isFile()) {
+            if (entry.name === 'ReactNativeHostManager.swift') return true;
+          }
+        }
+      }
+
+      return false;
     });
 
     if (scheme) {

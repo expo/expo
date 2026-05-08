@@ -142,7 +142,7 @@ export const offset = (x: number, y: number) => createModifier('offset', { x, y 
 
 /**
  * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
  */
 export const background = (color: ColorValue) => createModifier('background', { color });
 

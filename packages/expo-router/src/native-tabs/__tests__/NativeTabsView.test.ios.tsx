@@ -147,12 +147,13 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost.mock.calls[0][0].tabBarHidden).toBe(false);
   });
 
-  it('does not let raw props override navState or onTabSelected', () => {
+  it('does not let raw props override navStateRequest or onTabSelected', () => {
     const userOnTabSelected = jest.fn();
-    // Cast to bypass the type — navState/onTabSelected are intentionally excluded
-    // from NativeTabsHostNativeProps, but a user could still pass them at runtime.
+    // Cast to bypass the type — navStateRequest/onTabSelected are intentionally
+    // excluded from NativeTabsHostNativeProps, but a user could still pass them
+    // at runtime.
     const rawProps = {
-      navState: { selectedScreenKey: 'foo', provenance: 999 },
+      navStateRequest: { selectedScreenKey: 'foo', baseProvenance: 999 },
       onTabSelected: userOnTabSelected,
     } as unknown as NativeTabsProps['unstable_nativeProps'];
     renderRouter({
@@ -166,10 +167,10 @@ describe('unstable_nativeProps', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
-    // navState should be the router-managed one (initial provenance is 0, screenKey is the route key, not "foo")
-    expect(TabsHost.mock.calls[0][0].navState).toEqual({
+    // navStateRequest should be the router-managed one (initial baseProvenance is 0, screenKey is the route key, not "foo")
+    expect(TabsHost.mock.calls[0][0].navStateRequest).toEqual({
       selectedScreenKey: expect.not.stringMatching('foo'),
-      provenance: 0,
+      baseProvenance: 0,
     });
     // onTabSelected should be the router-managed handler, not the user's spy
     expect(TabsHost.mock.calls[0][0].onTabSelected).not.toBe(userOnTabSelected);

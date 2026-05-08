@@ -57,6 +57,7 @@ exceptions:
   - '.*CDN.*'
   - '.*Chrome.*'
   - '.*CLI.*'
+  - '.*TTI.*'
   - '.*Classic Updates.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'

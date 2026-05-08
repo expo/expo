@@ -201,11 +201,15 @@ export async function listEvents(calendars, startDate, endDate) {
 }
 /**
  * Asks the user to grant permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to request write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export const requestCalendarPermissions = InternalExpoCalendar.requestCalendarPermissions;
 /**
  * Checks user's permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to check write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermissions;
@@ -229,6 +233,8 @@ export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, 
  * Check or request permissions to access the user's calendars.
  * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
  * with the permissions.
+ * On iOS, `writeOnly` requests permission to create calendar events without reading
+ * existing calendars or events. It does not grant permission to create, update, or delete calendars.
  *
  * @example
  * ```ts
@@ -236,8 +242,8 @@ export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, 
  * ```
  */
 export const useCalendarPermissions = createPermissionHook({
-    getMethod: getCalendarPermissions,
-    requestMethod: requestCalendarPermissions,
+    getMethod: (options) => getCalendarPermissions(options?.writeOnly),
+    requestMethod: (options) => requestCalendarPermissions(options?.writeOnly),
 });
 /**
  * Check or request permissions to access the user's reminders.

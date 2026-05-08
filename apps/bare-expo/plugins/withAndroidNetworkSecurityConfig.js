@@ -39,10 +39,16 @@ const withAndroidNetworkSecurityConfigXml = (config) => {
 `
       );
 
-      await fs.mkdir(path.join(projectPath, 'app/src/debug/res/xml'), { recursive: true });
-      await fs.writeFile(
-        path.join(projectPath, 'app/src/debug/res/xml/network_security_config.xml'),
-        `\
+      for (const debuggableBuildTypes in ['debug', 'debugOptimized']) {
+        await fs.mkdir(path.join(projectPath, `app/src/${debuggableBuildTypes}/res/xml`), {
+          recursive: true,
+        });
+        await fs.writeFile(
+          path.join(
+            projectPath,
+            `app/src/${debuggableBuildTypes}/res/xml/network_security_config.xml`
+          ),
+          `\
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config xmlns:tools="http://schemas.android.com/tools">
   <base-config
@@ -50,7 +56,8 @@ const withAndroidNetworkSecurityConfigXml = (config) => {
     tools:ignore="InsecureBaseConfiguration" />
 </network-security-config>
 `
-      );
+        );
+      }
       return config;
     },
   ]);

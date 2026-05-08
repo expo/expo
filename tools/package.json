@@ -35,7 +35,7 @@
     "@expo/multipart-body-parser": "^1.1.0",
     "@expo/osascript": "workspace:*",
     "@expo/plist": "workspace:*",
-    "@expo/xcpretty": "^4.4.0",
+    "@expo/xcpretty": "^4.4.4",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",
     "@linear/sdk": "^2.6.0",

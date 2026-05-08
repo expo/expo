@@ -40,7 +40,7 @@ let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
 export function logLikeMetro(
   originalLogFunction: (...args: any[]) => void,
   level: ConsoleMethod,
-  platform: 'BRIDGE' | 'NOBRIDGE' | 'λ' | null,
+  platform: string | null,
   ...data: any[]
 ) {
   const logFunction = console[level] && level !== 'trace' ? level : 'log';

@@ -62,7 +62,7 @@ function tabSelectedEvent(selectedScreenKey: string): NativeSyntheticEvent<TabSe
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>;
 }

@@ -14,7 +14,7 @@ type Props = {
 
 const ASPECT_CLASS = {
   landscape: 'aspect-[3/2] w-[540px]',
-  portrait: 'aspect-[9/16] w-[202px]',
+  portrait: 'aspect-[9/16] w-[220px]',
 } as const;
 
 export const ComponentDiagram = ({ source, darkSource, alt, mode }: Props) => {
