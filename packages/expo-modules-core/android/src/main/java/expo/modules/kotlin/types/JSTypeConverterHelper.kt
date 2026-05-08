@@ -10,6 +10,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.records.formatters.ValueOrSkip
+import io.github.lukmccall.pika.PIntrospectionData
+import io.github.lukmccall.pika.PIntrospectionProvider
+import io.github.lukmccall.pika.PProperty
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -20,22 +23,63 @@ import kotlin.reflect.full.memberProperties
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 
-fun Record.toJSValueExperimental(): Map<String, Any?> {
+/**
+ * Returns field key if property is annotated with [Field]
+ */
+private fun PProperty<Record, *>.asFieldKey(): String? {
+  val fieldAnnotation = annotations
+    .firstOrNull { annotation -> annotation.jClass == Field::class.java }
+    ?: return null
+
+  val propertyName = (
+    fieldAnnotation
+      .arguments
+      .getOrDefault("key", name) as String
+    )
+    .ifEmpty { name }
+
+  return propertyName
+}
+
+private fun Record.getIntrospectionData(): PIntrospectionData<Record>? {
+  return if (this is PIntrospectionProvider) {
+    @Suppress("UNCHECKED_CAST")
+    getIntrospectionData() as? PIntrospectionData<Record>
+  } else {
+    null
+  }
+}
+
+fun Record.toJSValueExperimental(
+  introspectionData: PIntrospectionData<Record>? = this.getIntrospectionData()
+): Map<String, Any?> {
   val result = mutableMapOf<String, Any?>()
 
-  javaClass
-    .kotlin
-    .memberProperties
-    .forEach { property ->
-      val fieldInformation = property.findAnnotation<Field>() ?: return@forEach
-      val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
+  if (introspectionData == null) {
+    javaClass
+      .kotlin
+      .memberProperties
+      .forEach { property ->
+        val fieldInformation = property.findAnnotation<Field>() ?: return@forEach
+        val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
 
-      property.isAccessible = true
+        property.isAccessible = true
 
-      val value = property.get(this)
-      val convertedValue = JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
-      result[jsKey] = convertedValue
-    }
+        val value = property.get(this)
+        val convertedValue = JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
+        result[jsKey] = convertedValue
+      }
+  } else {
+    introspectionData
+      .properties
+      .forEach { property ->
+        val propertyKey = property.asFieldKey() ?: return@forEach
+
+        val propValue = property.get(this)
+        val convertedValue = JSTypeConverterProvider.convertToJSValue(propValue, useExperimentalConverter = true)
+        result[propertyKey] = convertedValue
+      }
+  }
 
   return result
 }
@@ -74,21 +118,37 @@ fun FormattedRecord<*>.toJSValueExperimental(): Map<String, Any?> {
   return result
 }
 
-fun Record.toJSValue(containerProvider: JSTypeConverterProvider.ContainerProvider): WritableMap {
+fun Record.toJSValue(
+  containerProvider: JSTypeConverterProvider.ContainerProvider,
+  introspectionData: PIntrospectionData<Record>? = this.getIntrospectionData()
+): WritableMap {
   val result = containerProvider.createMap()
 
-  javaClass
-    .kotlin
-    .memberProperties.map { property ->
-      val fieldInformation = property.findAnnotation<Field>() ?: return@map
-      val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
+  if (introspectionData == null) {
+    javaClass
+      .kotlin
+      .memberProperties
+      .forEach { property ->
+        val fieldInformation = property.findAnnotation<Field>() ?: return@forEach
+        val jsKey = fieldInformation.key.takeUnless { it == "" } ?: property.name
 
-      property.isAccessible = true
+        property.isAccessible = true
 
-      val value = property.get(this)
-      val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
-      result.putGeneric(jsKey, convertedValue)
-    }
+        val value = property.get(this)
+        val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
+        result.putGeneric(jsKey, convertedValue)
+      }
+  } else {
+    introspectionData
+      .properties
+      .forEach { property ->
+        val propertyKey = property.asFieldKey() ?: return@forEach
+
+        val value = property.get(this)
+        val convertedValue = JSTypeConverterProvider.legacyConvertToJSValue(value, containerProvider)
+        result.putGeneric(propertyKey, convertedValue)
+      }
+  }
 
   return result
 }

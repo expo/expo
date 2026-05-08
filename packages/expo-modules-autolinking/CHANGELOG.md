@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+### 🐛 Bug fixes
+
+- [iOS] Avoid logging the precompiled modules React Native fallback as a CocoaPods warning. ([#45431](https://github.com/expo/expo/pull/45431) by [@chrfalch](https://github.com/chrfalch))
+
+### 💡 Others
+
+- [iOS] Reduce prominence of expected source-build fallback logs for missing external precompiled XCFrameworks. ([#45435](https://github.com/expo/expo/pull/45435) by [@chrfalch](https://github.com/chrfalch))
+
 ## 56.0.0 — 2026-05-05
 
 ### 🎉 New features

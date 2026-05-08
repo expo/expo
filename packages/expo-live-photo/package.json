@@ -1,7 +1,7 @@
 {
   "name": "expo-live-photo",
   "title": "Expo Video",
-  "version": "56.0.0",
+  "version": "56.0.3",
   "description": "Library, which makes it possible to display live photos on iOS",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -39,10 +39,11 @@
   "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

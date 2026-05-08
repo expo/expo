@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 3.7.3 — 2026-05-07
+
+### 💡 Others
+
+- Drop automatically setting `node-linker=hoisted` for pnpm ([#45491](https://github.com/expo/expo/pull/45491) by [@kitten](https://github.com/kitten))
+
+## 3.7.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 3.7.0 — 2026-05-05
 
 ### 🎉 New features

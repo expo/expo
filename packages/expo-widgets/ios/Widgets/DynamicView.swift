@@ -104,11 +104,21 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
     case "LinkView":
       render(LinkView.self, LinkViewProps.self, updateProps: updateChildren)
+#if DEBUG
+    case "RedBoxView":
+      render(RedBoxView.self, RedBoxViewProps.self) { redBoxProps in
+        redBoxProps.source = name
+        redBoxProps.kind = kind
+      }
     default:
       ZStack {
         Color.red.opacity(0.5)
         Text("Unable to get the view for: \(node["type"] as? String ?? "undefined")")
       }
+#else
+    default:
+      EmptyView()
+#endif
     }
   }
 

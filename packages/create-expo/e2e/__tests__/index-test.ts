@@ -93,12 +93,6 @@ it('uses pnpm', async () => {
   expectFileExists(projectName, '.gitignore');
   // Check if it skipped install
   expectFileNotExists(projectName, 'node_modules');
-
-  // Check if `pnpm` node linker is set
-  const { stdout } = expectExecutePassing(
-    await spawnAsync('pnpm', ['config', 'get', 'node-linker'], { cwd: getTestPath(projectName) })
-  );
-  expect(stdout).toContain('hoisted');
 });
 
 it('uses Bun', async () => {

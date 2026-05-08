@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.0 — 2026-05-05
 
 ### 🛠 Breaking changes
@@ -18,6 +34,7 @@
 
 ### 🎉 New features
 
+- [iOS][next] Add support for writeOnly permissions ([#44967](https://github.com/expo/expo/pull/44967) by [@Wenszel](https://github.com/Wenszel))
 - [iOS][next] Add `calendar.addEventWithForm()` ([#44966](https://github.com/expo/expo/pull/44966) by [@Wenszel](https://github.com/Wenszel))
 - [iOS][next] Add `presentPicker()` ([#44965](https://github.com/expo/expo/pull/44965) by [@Wenszel](https://github.com/Wenszel))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))

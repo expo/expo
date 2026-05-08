@@ -10,6 +10,7 @@ exports.getDefaultConfig = getDefaultConfig;
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const metro_cache_1 = require("@expo/metro/metro-cache");
+const exclusionList_1 = __importDefault(require("@expo/metro/metro-config/defaults/exclusionList"));
 const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -28,7 +29,6 @@ const filePath_1 = require("./utils/filePath");
 const getPkgVersion_1 = require("./utils/getPkgVersion");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -133,11 +133,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
     }
-    const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
-    if (isExotic && !hasWarnedAboutExotic) {
-        hasWarnedAboutExotic = true;
-        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
-    }
     const reactNativePath = path_1.default.dirname(resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json');
     if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
         hasWarnedAboutReactNative = true;
@@ -224,8 +219,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.
-                /\.expo[\\/]types/,
-            ].concat(metroDefaultValues.resolver.blockList ?? []),
+                // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+                (0, exclusionList_1.default)(['.expo/types', '.expo/web/cache']),
+                // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+                // pattern is reapplied to normal paths during the Node crawling phase
+                /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+            ],
         },
         cacheStores: [cacheStore],
         watcher: {

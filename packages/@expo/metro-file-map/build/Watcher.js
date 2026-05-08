@@ -60,8 +60,23 @@ class Watcher extends events_1.default {
     async #crawl(crawlOptions) {
         const options = this.#options;
         const { useWatchman, subpath } = crawlOptions;
-        const ignoreForCrawl = (filePath) => options.ignoreForCrawl(filePath) ||
-            path_1.default.basename(filePath).startsWith(this.#options.healthCheckFilePrefix);
+        const ignoreForCrawl = (() => {
+            if (options.ignoreForCrawl && options.healthCheckFilePrefix) {
+                const baseIgnore = options.ignoreForCrawl;
+                const prefix = options.healthCheckFilePrefix;
+                return (filePath) => baseIgnore(filePath) || filePath.startsWith(prefix, filePath.lastIndexOf(path_1.default.sep) + 1);
+            }
+            else if (options.ignoreForCrawl) {
+                return options.ignoreForCrawl;
+            }
+            else if (options.healthCheckFilePrefix) {
+                const prefix = options.healthCheckFilePrefix;
+                return (filePath) => filePath.startsWith(prefix, filePath.lastIndexOf(path_1.default.sep) + 1);
+            }
+            else {
+                return () => false;
+            }
+        })();
         const crawl = useWatchman ? watchman_1.default : node_1.default;
         let crawler = crawl === watchman_1.default ? 'watchman' : 'node';
         options.abortSignal.throwIfAborted();
@@ -146,14 +161,17 @@ class Watcher extends events_1.default {
             const watcher = new WatcherImpl(root, watcherOptions);
             return new Promise(async (resolve, reject) => {
                 const rejectTimeout = setTimeout(() => reject(new Error('Failed to start watch mode.')), MAX_WAIT_TIME);
+                const healthCheckFilePrefix = this.#options.healthCheckFilePrefix;
                 watcher.onFileEvent((change) => {
-                    const basename = path_1.default.basename(change.relativePath);
-                    if (basename.startsWith(this.#options.healthCheckFilePrefix)) {
-                        if (change.event === common_1.TOUCH_EVENT) {
-                            debug('Observed possible health check cookie: %s in %s', change.relativePath, root);
-                            this.#handleHealthCheckObservation(basename);
+                    if (healthCheckFilePrefix) {
+                        const isHealthCheckFile = change.relativePath.startsWith(healthCheckFilePrefix, change.relativePath.lastIndexOf(path_1.default.sep) + 1);
+                        if (isHealthCheckFile) {
+                            if (change.event === common_1.TOUCH_EVENT) {
+                                debug('Observed possible health check cookie: %s in %s', change.relativePath, root);
+                                this.#handleHealthCheckObservation(path_1.default.basename(change.relativePath));
+                            }
+                            return;
                         }
-                        return;
                     }
                     // Watchman handles recrawls internally - receiving a recrawl event
                     // when using Watchman would indicate a bug. Log an error and ignore.

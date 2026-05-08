@@ -3,11 +3,13 @@
 # Writes `.generated/module.modulemap` for the `jsi` Clang module.
 #
 # The umbrella header is referenced by absolute path so the modulemap works
-# regardless of where Pods lives. The same Pods/Headers/Public/React-jsi/jsi/jsi.h
-# path exists in both prebuilt and source-built React Native layouts. Stored
-# outside `.build/` so SwiftPM state can be wiped without losing this file.
+# regardless of where Pods lives. The `Pods/Headers/Public` path exists in
+# non-frameworks and prebuilt-RN layouts; under static frameworks +
+# source-built RN it doesn't, so we fall back to the canonical RN source.
+# Stored outside `.build/` so SwiftPM state can be wiped without losing this
+# file.
 #
-# Idempotent: re-running with the same PODS_ROOT rewrites identical content.
+# Idempotent: re-running with the same inputs rewrites identical content.
 # Switching PODS_ROOT updates the umbrella header path.
 #
 # Used by build-xcframework.sh and test.sh; can also be run manually before
@@ -34,10 +36,17 @@ GENERATED_DIR="${PACKAGE_DIR}/.generated"
 GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
 mkdir -p "$GENERATED_DIR"
 
+JSI_UMBRELLA="${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
+if [[ ! -f "$JSI_UMBRELLA" ]]; then
+  RN="${RN_ROOT:-$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null || echo "${PODS_ROOT}/../../node_modules/react-native")}"
+  JSI_UMBRELLA="${RN}/ReactCommon/jsi/jsi/jsi.h"
+fi
+[[ -f "$JSI_UMBRELLA" ]] || { echo "error: cannot locate jsi.h" >&2; exit 1; }
+
 # Avoid touching the file when contents would be identical, so the xcframework
-# hash cache and Xcode don't see a spurious change when PODS_ROOT is unchanged.
+# hash cache and Xcode don't see a spurious change when inputs are unchanged.
 NEW_CONTENT="module jsi {
-  umbrella header \"${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h\"
+  umbrella header \"${JSI_UMBRELLA}\"
 
   export *
   module * { export * }

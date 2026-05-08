@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Card matches the official Jetpack Compose [Card API](https://developer.android.com/develop/ui/compose/components/card) and displays content inside a styled surface container with optional elevation and outline. The `Card` component renders a [filled card](https://developer.android.com/develop/ui/compose/components/card#filled), while `ElevatedCard` and `OutlinedCard` provide raised and bordered variants respectively.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/card/android-light.webp"
+  darkSource="/static/images/expo-ui/card/android-dark.webp"
+  alt="Filled, elevated, and outlined Material 3 cards"
+/>
 
 ## Installation
 

@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.1 — 2026-05-05
 
 _This version does not introduce any user-facing changes._
@@ -27,6 +39,7 @@ _This version does not introduce any user-facing changes._
 - Support `PlatformColor`. ([#44193](https://github.com/expo/expo/pull/44193) by [@jakex7](https://github.com/jakex7))
 - [plugin] Make incremental prebuilds work ([#45157](https://github.com/expo/expo/pull/45157) by [@jakex7](https://github.com/jakex7))
 - [android] Add stub methods. ([#45335](https://github.com/expo/expo/pull/45335) by [@jakex7](https://github.com/jakex7))
+- Add widget RedBox. ([#45402](https://github.com/expo/expo/pull/45402) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 

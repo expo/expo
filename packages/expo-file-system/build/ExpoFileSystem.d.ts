@@ -13,13 +13,31 @@ type DownloadTaskEvents = {
     progress: (data: DownloadProgress) => void;
 };
 declare class FileSystemUploadTask extends SharedObject<UploadTaskEvents> {
+    /**
+     * @hidden
+     */
     start(url: string, file: File, options: Record<string, any>): Promise<UploadResult>;
+    /**
+     * @hidden
+     */
     cancel(): void;
 }
 declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEvents> {
+    /**
+     * @hidden
+     */
     start(url: string, to: File | Directory, options?: Record<string, any>): Promise<string | null>;
+    /**
+     * @hidden
+     */
     pause(): any;
+    /**
+     * @hidden
+     */
     resume(url: string, to: File | Directory, resumeData: string, options?: Record<string, any>): Promise<string | null>;
+    /**
+     * @hidden
+     */
     cancel(): void;
 }
 type FileSystemWatcherEvent = {

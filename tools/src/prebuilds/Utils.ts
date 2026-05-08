@@ -546,6 +546,7 @@ export const createAsyncSpinner = (
         logger.log(`${Prefix} ${chalk.yellow('⚠')} ${effectivePrefix(chalk.yellow)}${text ?? ''}`);
       },
       info: (text?: string) => {
+        if (!logger.isVerbose()) return;
         logger.log(`${Prefix} ${chalk.blue('ℹ')} ${effectivePrefix(chalk.green)}${text ?? ''}`);
       },
     };

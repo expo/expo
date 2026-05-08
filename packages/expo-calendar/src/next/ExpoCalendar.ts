@@ -37,8 +37,8 @@ declare class ExpoCalendarNextModule extends NativeModule {
   getEventById(eventId: string): Promise<ExpoCalendarEvent>;
   getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
 
-  requestCalendarPermissions(): Promise<PermissionResponse>;
-  getCalendarPermissions(): Promise<PermissionResponse>;
+  requestCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
+  getCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
   requestRemindersPermissions(): Promise<PermissionResponse>;
   getRemindersPermissions(): Promise<PermissionResponse>;
 

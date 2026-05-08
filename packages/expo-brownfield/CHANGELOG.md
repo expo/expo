@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-07
+
+### 🐛 Bug fixes
+
+- Adjust CLI Android/iOS library file discovery to remove symlink following ([#44280](https://github.com/expo/expo/pull/44280) by [@kitten](https://github.com/kitten))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.0 — 2026-05-05
 
 ### 🛠 Breaking changes

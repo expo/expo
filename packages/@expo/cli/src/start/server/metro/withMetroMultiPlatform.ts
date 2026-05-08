@@ -640,7 +640,7 @@ export function withExtendedResolver(
           }
           if (moduleName === '@react-navigation/core') {
             // We already checked if expo-router resolves
-            return doResolve('expo-router');
+            return doResolve('expo-router/react-navigation');
           }
         }
       }

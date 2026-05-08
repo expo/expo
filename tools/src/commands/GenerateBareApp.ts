@@ -258,7 +258,7 @@ async function runExpoPrebuild({
   if (useLocalTemplate) {
     const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
     const templateVersion = require(path.join(pathToBareTemplate, 'package.json')).version;
-    await spawnAsync('npm', ['pack', '--pack-destination', projectDir], {
+    await spawnAsync('pnpm', ['pack', '--pack-destination', projectDir], {
       cwd: pathToBareTemplate,
       stdio: 'ignore',
     });

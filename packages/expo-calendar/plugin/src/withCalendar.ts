@@ -3,6 +3,7 @@ import { AndroidConfig, ConfigPlugin, IOSConfig, createRunOncePlugin } from 'exp
 const pkg = require('../../package.json');
 
 const CALENDARS_USAGE = 'Allow $(PRODUCT_NAME) to access your calendars';
+const CALENDARS_WRITE_ONLY_USAGE = 'Allow $(PRODUCT_NAME) to add events to your calendars';
 const REMINDERS_USAGE = 'Allow $(PRODUCT_NAME) to access your reminders';
 
 export type Props = {
@@ -13,29 +14,55 @@ export type Props = {
    */
   calendarPermission?: string | false;
   /**
+   * A string to set the `NSCalendarsWriteOnlyAccessUsageDescription` permission message,
+   * shown when requesting write-only calendar access (iOS 17+).
+   * Only used when `writeOnlyAccess` is `true`.
+   * @default "Allow $(PRODUCT_NAME) to add events to your calendars"
+   * @platform ios
+   */
+  writeOnlyCalendarPermission?: string | false;
+  /**
    * A string to set the `NSRemindersUsageDescription` permission message.
    * @default "Allow $(PRODUCT_NAME) to access your reminders"
    * @platform ios
    */
   remindersPermission?: string | false;
+  /**
+   * When `true`, requests write-only calendar access (iOS 17+). Sets
+   * `NSCalendarsWriteOnlyAccessUsageDescription` and omits `NSCalendarsFullAccessUsageDescription`.
+   * @default false
+   * @platform ios
+   */
+  writeOnlyAccess?: boolean;
 };
 
 const withCalendar: ConfigPlugin<Props | void> = (
   config,
-  { calendarPermission, remindersPermission } = {}
+  { calendarPermission, writeOnlyCalendarPermission, remindersPermission, writeOnlyAccess } = {}
 ) => {
-  IOSConfig.Permissions.createPermissionsPlugin({
+  const defaultDescriptions = {
     NSCalendarsUsageDescription: CALENDARS_USAGE,
     NSRemindersUsageDescription: REMINDERS_USAGE,
-    NSCalendarsFullAccessUsageDescription: CALENDARS_USAGE,
     NSRemindersFullAccessUsageDescription: REMINDERS_USAGE,
-  })(config, {
+    ...(writeOnlyAccess
+      ? { NSCalendarsWriteOnlyAccessUsageDescription: CALENDARS_WRITE_ONLY_USAGE }
+      : {
+          NSCalendarsFullAccessUsageDescription: CALENDARS_USAGE,
+        }),
+  };
+
+  const customDescriptions = {
     NSCalendarsUsageDescription: calendarPermission,
     NSRemindersUsageDescription: remindersPermission,
-    NSCalendarsFullAccessUsageDescription: calendarPermission,
     NSRemindersFullAccessUsageDescription: remindersPermission,
-  });
+    ...(writeOnlyAccess
+      ? { NSCalendarsWriteOnlyAccessUsageDescription: writeOnlyCalendarPermission }
+      : {
+          NSCalendarsFullAccessUsageDescription: calendarPermission,
+        }),
+  };
 
+  IOSConfig.Permissions.createPermissionsPlugin(defaultDescriptions)(config, customDescriptions);
   return AndroidConfig.Permissions.withPermissions(config, [
     'android.permission.READ_CALENDAR',
     'android.permission.WRITE_CALENDAR',

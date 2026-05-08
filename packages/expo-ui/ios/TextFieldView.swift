@@ -204,21 +204,6 @@ private struct StatefulSelectableTextField: View {
         isFocused = true
       }
     }
-    .onChange(of: state.value as? String) { newValue in
-      if let max = props.maxLength, let str = newValue, str.count > max {
-        state.value = String(str.prefix(max))
-        return
-      }
-      props.onTextChange(["value": newValue])
-      props.onTextChangeSync?.invoke(arguments: [newValue])
-    }
-    .onChange(of: textManager.isFocused) { newValue in
-      isFocused = newValue
-    }
-    .onChange(of: isFocused) { newValue in
-      textManager.isFocused = newValue
-      props.onFocusChange(["value": newValue])
-    }
     .onChange(of: localSelection) { newSel in
       let text = (state.value as? String) ?? ""
       var start = text.count
@@ -234,6 +219,21 @@ private struct StatefulSelectableTextField: View {
       if prevStart == start && prevEnd == end { return }
       selection.value = ["start": start, "end": end]
       props.onSelectionChange(["start": start, "end": end])
+    }
+    .onChange(of: state.value as? String) { newValue in
+      if let max = props.maxLength, let str = newValue, str.count > max {
+        state.value = String(str.prefix(max))
+        return
+      }
+      props.onTextChange(["value": newValue])
+      props.onTextChangeSync?.invoke(arguments: [newValue])
+    }
+    .onChange(of: textManager.isFocused) { newValue in
+      isFocused = newValue
+    }
+    .onChange(of: isFocused) { newValue in
+      textManager.isFocused = newValue
+      props.onFocusChange(["value": newValue])
     }
     .onChange(of: selection.value as? NSDictionary) { _ in
       guard let start = extractInt(selection.value, "start"),

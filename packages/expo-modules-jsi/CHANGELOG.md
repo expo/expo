@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `ExpoModulesJSI.xcframework` build failing under `useFrameworks: "static"` + `buildReactNativeFromSource: true` due to missing header search paths. ([#45508](https://github.com/expo/expo/pull/45508) by [@chrfalch](https://github.com/chrfalch))
+
 ### 💡 Others
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.0 — 2026-05-05
 

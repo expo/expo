@@ -7,15 +7,16 @@ import Foundation
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let podsRoot = resolvePodsRoot()
 
-// Header roots needed by ExpoModulesJSI and ExpoModulesJSI-Cxx. The same paths
-// exist in both prebuilt and source-built React Native layouts, so we don't
-// need to detect the mode.
+// Header roots for ExpoModulesJSI and ExpoModulesJSI-Cxx. The
+// Pods/Headers/Public paths cover no-frameworks and prebuilt-RN; the trailing
+// entries fall back to canonical sources for the static + source-built RN
+// combo, where each React-X / third-party-deps pod compiles as a static
+// framework and its headers don't get mirrored to Pods/Headers/Public. Clang
+// ignores missing `-I` paths, so they're no-ops elsewhere. `RN_ROOT` is
+// forwarded from build-xcframework.sh (Node-resolved for hoisted monorepos).
 let publicHeaders = "\(podsRoot)/Headers/Public"
-// In source-built RN, third-party deps (folly, boost, etc.) live under
-// per-pod dirs like RCT-Folly/folly/. In prebuilt RN they're bundled into
-// ReactNativeDependencies. Some pods nest their headers (e.g. RCT-Folly/folly/),
-// others place them directly (e.g. boost/preprocessor/), so we include both
-// the Headers/Public root and the per-pod dirs for the nested ones.
+let reactNative = ProcessInfo.processInfo.environment["RN_ROOT"]
+  ?? "\(podsRoot)/../../node_modules/react-native"
 let headerSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
@@ -33,6 +34,14 @@ let headerSearchPaths = [
   "\(publicHeaders)/DoubleConversion",
   "\(publicHeaders)/fmt",
   "\(publicHeaders)/fast_float",
+  "\(reactNative)/ReactCommon",
+  "\(reactNative)/ReactCommon/jsi",
+  "\(reactNative)/ReactCommon/runtimeexecutor",
+  "\(reactNative)/ReactCommon/callinvoker",
+  "\(podsRoot)/RCT-Folly",
+  "\(podsRoot)/fmt/include",
+  "\(podsRoot)/glog/src",
+  "\(podsRoot)/DoubleConversion",
 ]
 
 // Path to the generated module map for the `jsi` Clang module. The

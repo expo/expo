@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-05-04T10:53:40.373Z",
-    "cliVersion": "18.10.0"
+    "fetchedAt": "2026-05-06T07:28:30.145Z",
+    "cliVersion": "18.11.0"
   },
   "totalCommands": 114,
   "commands": [
@@ -84,7 +84,7 @@
     {
       "command": "eas build:dev",
       "description": "run dev client simulator/emulator build with matching fingerprint or create a new one",
-      "usage": "USAGE\n  $ eas build:dev [-p ios|android] [-e PROFILE_NAME] [--skip-build-if-not-found] [--skip-bundler]\n\nFLAGS\n  -e, --profile=PROFILE_NAME     Name of the build profile from eas.json. It must be a profile allowing to create\n                                 emulator/simulator internal distribution dev client builds. The \"development-simulator\"\n                                 build profile will be selected by default.\n  -p, --platform=<option>        <options: ios|android>\n      --skip-build-if-not-found  Skip build if no successful build with matching fingerprint is found.\n      --skip-bundler             Install and run the development build without starting the bundler server.\n\nDESCRIPTION\n  run dev client simulator/emulator build with matching fingerprint or create a new one"
+      "usage": "USAGE\n  $ eas build:dev [-p ios|android] [-e PROFILE_NAME] [--skip-build-if-not-found] [--skip-bundler] [--simulator\n    <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME     Name of the build profile from eas.json. It must be a profile allowing to create\n                                 emulator/simulator internal distribution dev client builds. The \"development-simulator\"\n                                 build profile will be selected by default.\n  -p, --platform=<option>        <options: ios|android>\n      --simulator=<value>        iOS simulator name or UDID to install and run the development build on. If no value is\n                                 provided, you will be prompted to select a simulator.\n      --skip-build-if-not-found  Skip build if no successful build with matching fingerprint is found.\n      --skip-bundler             Install and run the development build without starting the bundler server.\n\nDESCRIPTION\n  run dev client simulator/emulator build with matching fingerprint or create a new one"
     },
     {
       "command": "eas build:download",
@@ -109,7 +109,7 @@
     {
       "command": "eas build:run",
       "description": "run simulator/emulator builds from eas-cli",
-      "usage": "USAGE\n  $ eas build:run [--latest | --id <value> | --path <value> | --url <value>] [-p android|ios] [-e PROFILE_NAME]\n    [--offset <value>] [--limit <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME  Name of the build profile used to create the build to run. When specified, only builds\n                              created with the specified build profile will be queried.\n  -p, --platform=<option>     <options: android|ios>\n      --id=<value>            ID of the simulator/emulator build to run\n      --latest                Run the latest simulator/emulator build for specified platform\n      --limit=<value>         The number of items to fetch each query. Defaults to 50 and is capped at 100.\n      --offset=<value>        Start queries from specified index. Use for paginating results. Defaults to 0.\n      --path=<value>          Path to the simulator/emulator build archive or app\n      --url=<value>           Simulator/Emulator build archive url\n\nDESCRIPTION\n  run simulator/emulator builds from eas-cli"
+      "usage": "USAGE\n  $ eas build:run [--latest | --id <value> | --path <value> | --url <value>] [-p android|ios] [-e PROFILE_NAME]\n    [--simulator <value>] [--offset <value>] [--limit <value>]\n\nFLAGS\n  -e, --profile=PROFILE_NAME  Name of the build profile used to create the build to run. When specified, only builds\n                              created with the specified build profile will be queried.\n  -p, --platform=<option>     <options: android|ios>\n      --id=<value>            ID of the simulator/emulator build to run\n      --latest                Run the latest simulator/emulator build for specified platform\n      --limit=<value>         The number of items to fetch each query. Defaults to 50 and is capped at 100.\n      --offset=<value>        Start queries from specified index. Use for paginating results. Defaults to 0.\n      --path=<value>          Path to the simulator/emulator build archive or app\n      --simulator=<value>     iOS simulator name or UDID to install and run the build on. If no value is provided, you\n                              will be prompted to select a simulator.\n      --url=<value>           Simulator/Emulator build archive url\n\nDESCRIPTION\n  run simulator/emulator builds from eas-cli"
     },
     {
       "command": "eas build:submit",

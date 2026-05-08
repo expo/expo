@@ -32,6 +32,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.AsyncFunctionHandle
+import expo.modules.kotlin.views.AsyncFunctionHandle2
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
@@ -265,27 +266,10 @@ private fun String?.toImeAction(): ImeAction = when (this) {
 
 // region Value helpers
 
-private fun Any?.extractText(): String = when (this) {
-  is String -> this
-  is Map<*, *> -> (this["text"] as? String) ?: ""
-  else -> ""
-}
-
-private fun getSelection(
-  raw: Any?,
-  isStringMode: Boolean,
-  textLength: Int,
-  localSelection: TextRange
-): TextRange {
-  if (isStringMode) {
-    return TextRange(
-      localSelection.start.coerceIn(0, textLength),
-      localSelection.end.coerceIn(0, textLength)
-    )
-  }
-  val selMap = (raw as? Map<*, *>)?.get("selection") as? Map<*, *>
-  val start = (selMap?.get("start") as? Number)?.toInt()?.coerceIn(0, textLength) ?: textLength
-  val end = (selMap?.get("end") as? Number)?.toInt()?.coerceIn(0, textLength) ?: textLength
+private fun ObservableState.extractSelection(textLength: Int): TextRange {
+  val selMap = value as? Map<*, *>
+  val start = (selMap?.get("start") as? Number)?.toInt()?.coerceIn(0, textLength) ?: 0
+  val end = (selMap?.get("end") as? Number)?.toInt()?.coerceIn(0, textLength) ?: 0
   return TextRange(start, end)
 }
 
@@ -297,7 +281,7 @@ private fun getSelection(
 fun FunctionalComposableScope.TextFieldContent(
   props: TextFieldProps,
   setText: AsyncFunctionHandle<String>,
-  setSelection: AsyncFunctionHandle<TextFieldSelectionPayload>,
+  setSelection: AsyncFunctionHandle2<Int, Int>,
   clear: AsyncFunctionHandle<Unit>,
   focus: AsyncFunctionHandle<Unit>,
   blur: AsyncFunctionHandle<Unit>,
@@ -310,18 +294,10 @@ fun FunctionalComposableScope.TextFieldContent(
   val focusRequester = remember { FocusRequester() }
   val state = props.value
 
-  val isStringMode = state.value is String
   setText.handle { text ->
-    state.value = if (isStringMode) {
-      text
-    } else {
-      mapOf(
-        "text" to text,
-        // on setting text, we set the selection to the end
-        // TODO: add a setValue function to allow setting selection and text
-        "selection" to mapOf("start" to text.length, "end" to text.length)
-      )
-    }
+    state.value = text
+    // setText moves the cursor to the end; use setSelection afterwards to override.
+    props.selection.value = mapOf("start" to text.length, "end" to text.length)
   }
   focus.handle {
     focusRequester.requestFocus()
@@ -329,18 +305,15 @@ fun FunctionalComposableScope.TextFieldContent(
   blur.handle {
     focusManager.clearFocus()
   }
-  setSelection.handle { req ->
-    val text = state.value.extractText()
-    val clampedStart = req.start.coerceIn(0, text.length)
-    val clampedEnd = req.end.coerceIn(0, text.length)
+  setSelection.handle { start, end ->
+    val text = state.value as? String ?: ""
+    val clampedStart = start.coerceIn(0, text.length)
+    val clampedEnd = end.coerceIn(0, text.length)
     props.selection.value = mapOf("start" to clampedStart, "end" to clampedEnd)
   }
   clear.handle {
-    state.value = if (isStringMode) {
-      ""
-    } else {
-      mapOf("text" to "", "selection" to mapOf("start" to 0, "end" to 0))
-    }
+    state.value = ""
+    props.selection.value = mapOf("start" to 0, "end" to 0)
   }
 
   // Slots
@@ -360,7 +333,7 @@ fun FunctionalComposableScope.TextFieldContent(
     capitalization = kbOpts?.capitalization.toCapitalization(),
     imeAction = kbOpts?.imeAction.toImeAction()
   )
-  val currentText = { state.value.extractText() }
+  val currentText = { state.value as? String ?: "" }
   val keyboardActions = KeyboardActions(
     onDone = {
       defaultKeyboardAction(ImeAction.Done)
@@ -425,28 +398,12 @@ fun FunctionalComposableScope.TextFieldContent(
     }
   } ?: baseColors
 
-  val localSelection = remember { mutableStateOf(TextRange.Zero) }
-  val raw = state.value
-  val text = raw.extractText()
-  val selection = getSelection(raw, isStringMode, text.length, localSelection.value)
+  val text = state.value as? String ?: ""
+  val selection = props.selection.extractSelection(text.length)
 
   val localValue = remember { mutableStateOf(TextFieldValue(text, selection)) }
   if (localValue.value.text != text || localValue.value.selection != selection) {
     localValue.value = TextFieldValue(text, selection)
-  }
-
-  props.selection.value?.let { rawSel ->
-    val selMap = rawSel as? Map<*, *>
-    val externalStart = (selMap?.get("start") as? Number)?.toInt()
-    val externalEnd = (selMap?.get("end") as? Number)?.toInt()
-    if (externalStart != null && externalEnd != null) {
-      val cur = localValue.value
-      val clampedStart = externalStart.coerceIn(0, cur.text.length)
-      val clampedEnd = externalEnd.coerceIn(0, cur.text.length)
-      if (cur.selection.start != clampedStart || cur.selection.end != clampedEnd) {
-        localValue.value = cur.copy(selection = TextRange(clampedStart, clampedEnd))
-      }
-    }
   }
 
   val value = localValue.value
@@ -468,25 +425,6 @@ fun FunctionalComposableScope.TextFieldContent(
     } ?: incoming
     val prev = localValue.value
     localValue.value = new
-    if (new.text != prev.text || new.selection != prev.selection) {
-      val payload = TextFieldValuePayload(
-        text = new.text,
-        selection = TextFieldSelectionPayload(new.selection.start, new.selection.end)
-      )
-      if (isStringMode) {
-        state.value = new.text
-        localSelection.value = new.selection
-        onValueChanged(payload)
-        props.onValueChangeSync?.invoke(new.text)
-      } else {
-        state.value = mapOf(
-          "text" to new.text,
-          "selection" to mapOf("start" to new.selection.start, "end" to new.selection.end)
-        )
-        onValueChanged(payload)
-        props.onValueChangeSync?.invoke(payload)
-      }
-    }
     if (new.selection != prev.selection) {
       val cur = props.selection.value as? Map<*, *>
       val curStart = (cur?.get("start") as? Number)?.toInt()
@@ -498,6 +436,15 @@ fun FunctionalComposableScope.TextFieldContent(
         )
       }
       onSelectionChanged(TextFieldSelectionPayload(new.selection.start, new.selection.end))
+    }
+    if (new.text != prev.text) {
+      state.value = new.text
+      val payload = TextFieldValuePayload(
+        text = new.text,
+        selection = TextFieldSelectionPayload(new.selection.start, new.selection.end)
+      )
+      onValueChanged(payload)
+      props.onValueChangeSync?.invoke(new.text)
     }
   }
 

@@ -101,4 +101,5 @@ export declare namespace TextField {
         children: React.ReactNode;
     }) => import("react/jsx-runtime").JSX.Element;
 }
+export { type ObservableState };
 //# sourceMappingURL=index.d.ts.map

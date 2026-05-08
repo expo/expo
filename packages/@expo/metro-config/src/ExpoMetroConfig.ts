@@ -10,6 +10,7 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
 import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -55,7 +56,6 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -196,17 +196,6 @@ export function getDefaultConfig(
     patchMetroGraphToSupportUncachedModules();
   }
 
-  const isExotic = mode === 'exotic' || env.EXPO_USE_EXOTIC;
-
-  if (isExotic && !hasWarnedAboutExotic) {
-    hasWarnedAboutExotic = true;
-    console.log(
-      chalk.gray(
-        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
-      )
-    );
-  }
-
   const reactNativePath = path.dirname(
     resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'
   );
@@ -310,8 +299,12 @@ export function getDefaultConfig(
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
-        /\.expo[\\/]types/,
-      ].concat(metroDefaultValues.resolver.blockList ?? []),
+        // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+        exclusionList(['.expo/types', '.expo/web/cache']),
+        // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+        // pattern is reapplied to normal paths during the Node crawling phase
+        /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+      ],
     },
     cacheStores: [cacheStore],
     watcher: {

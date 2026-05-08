@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "56.0.0",
+  "version": "56.0.3",
   "description": "Provides function that let you generate an image from video.",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",
@@ -33,9 +33,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/video-thumbnails/",
   "dependencies": {},
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

@@ -8,7 +8,29 @@
 
 ### 🐛 Bug fixes
 
+- Bump to `whatwg-url-minimum@0.1.2` to fix missing `Symbol.toStringTag`s on `URL` and `URLSearchParams` ([#45521](https://github.com/expo/expo/pull/45521) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+- Send platform as HMR log mode for terminal log prefixing. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove redundant log messages from web HMR setup. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 56.0.0-preview.6 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0-preview.5 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0-preview.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0-preview.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.0-preview.2 — 2026-05-05
 

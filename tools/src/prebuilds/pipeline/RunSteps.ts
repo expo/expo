@@ -382,10 +382,14 @@ export const prepareInputsStep: Step<PrebuildContext> = {
   async run(ctx) {
     const { request } = ctx;
 
-    // Enable verbose output (full build logs instead of spinners).
-    // Also force non-interactive when building in parallel — ora spinners
-    // from concurrent packages would overwrite each other's terminal lines.
-    if (request.verbose || request.concurrency > 1) {
+    // Verbose widens what gets logged but doesn't change interactive vs.
+    // non-interactive — TTY users can opt into the full per-step trace and
+    // still see spinners. CI is non-interactive on its own.
+    logger.setVerbose(request.verbose);
+
+    // Force non-interactive when building in parallel — ora spinners from
+    // concurrent packages would overwrite each other's terminal lines.
+    if (request.concurrency > 1) {
       setForceNonInteractive(true);
     }
 

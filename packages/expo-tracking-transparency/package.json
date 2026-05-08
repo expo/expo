@@ -1,6 +1,6 @@
 {
   "name": "expo-tracking-transparency",
-  "version": "56.0.0",
+  "version": "56.0.3",
   "description": "A library for tracking app users and managing tracking permissions",
   "main": "build/TrackingTransparency.js",
   "types": "build/TrackingTransparency.d.ts",
@@ -30,10 +30,11 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/tracking-transparency",
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*"
   },
   "jest": {

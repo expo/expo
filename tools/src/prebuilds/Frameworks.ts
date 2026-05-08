@@ -41,7 +41,7 @@ const signXCFramework = (
   identity: string,
   useTimestamp: boolean = true
 ): void => {
-  logger.info(`🔏 Signing XCFramework with identity "${identity}"...`);
+  logger.verbose(`🔏 Signing XCFramework with identity "${identity}"...`);
 
   const timestampFlag = useTimestamp ? '--timestamp' : '';
   const command = `codesign ${timestampFlag} --sign "${identity}" "${xcframeworkPath}"`.trim();
@@ -74,7 +74,7 @@ export const Frameworks = {
   ): Promise<void> => {
     const spmConfig = pkg.getSwiftPMConfiguration();
 
-    logger.info(
+    logger.verbose(
       `🧩 Composing XCFramework for ${chalk.green(pkg.packageName) + '/' + chalk.green(product.name)}...`
     );
 
@@ -484,7 +484,7 @@ const copySPMDependencyXCFrameworksAsync = async (
 
       const sharedPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
       const destPath = path.join(outputDir, `${productName}.xcframework`);
-      logger.info(
+      logger.verbose(
         `📦 Copying shared SPM dep ${chalk.cyan(productName)} from shared location → ${path.relative(pkg.path, destPath)}`
       );
       await fs.remove(destPath);
@@ -552,7 +552,7 @@ const copySPMDependencyXCFrameworksAsync = async (
       const sourceXCFrameworkPath = path.join(artifactsDir, xcframeworkName);
 
       if (await fs.pathExists(sourceXCFrameworkPath)) {
-        logger.info(
+        logger.verbose(
           `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
         );
         await fs.remove(destXCFrameworkPath);
@@ -569,7 +569,7 @@ const copySPMDependencyXCFrameworksAsync = async (
     }
 
     // Compose the dependency xcframework with only the relevant slices
-    logger.info(
+    logger.verbose(
       `📦 Composing SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
     );
     await fs.remove(destXCFrameworkPath);
@@ -648,7 +648,7 @@ const createProductTarballAsync = async (
     }
   }
 
-  logger.info(
+  logger.verbose(
     `📦 Creating tarball for ${chalk.green(product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
   );
 

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- Improved public API docs. ([#45530](https://github.com/expo/expo/pull/45530) by [@barthap](https://github.com/barthap))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.1 — 2026-05-05
 
 _This version does not introduce any user-facing changes._
