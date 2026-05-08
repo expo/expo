@@ -105,7 +105,7 @@ module Pod
       system('./scripts/create-stub-xcframework.sh', chdir: pod_dir.to_s)
     end
 
-    # Slice IDs declared by `apple/scripts/xcframework-lib.sh`
+    # Slice IDs declared by `apple/scripts/xcframework-helpers.sh`
     # (EXPO_MODULES_JSI_REQUIRED_SLICE_IDS). Keep in sync.
     EXPO_MODULES_JSI_REQUIRED_SLICES = %w[
       ios-arm64

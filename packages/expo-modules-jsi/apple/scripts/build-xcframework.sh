@@ -34,8 +34,8 @@ SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
 SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
-# shellcheck source=./xcframework-lib.sh
-source "${PACKAGE_DIR}/scripts/xcframework-lib.sh"
+# shellcheck source=./xcframework-helpers.sh
+source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
 CLEAN=false
 
@@ -73,7 +73,7 @@ SOURCE_DIRS=(
 SOURCE_FILES=(
   "${PACKAGE_DIR}/Package.swift"
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
-  "${PACKAGE_DIR}/scripts/xcframework-lib.sh"
+  "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 )
 
 compute_hash() {
