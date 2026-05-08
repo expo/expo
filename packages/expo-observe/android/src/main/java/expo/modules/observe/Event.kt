@@ -105,8 +105,14 @@ data class EASMetric(
   }
 }
 
+/**
+ * Wire shape of a log event ready for dispatch. Distinct from the storage-side
+ * `LogRecord`: this form has the JSON `attributes` blob already parsed back
+ * into a structured object (so the OTel encoder can map values to typed
+ * `OTAnyValue`s) and drops storage-only columns like `logId`.
+ */
 @Serializable
-data class EASLogRecord(
+data class LogEvent(
   val sessionId: String,
   val timestamp: String,
   val name: String,
@@ -116,8 +122,8 @@ data class EASLogRecord(
   val droppedAttributesCount: Int = 0
 ) {
   companion object {
-    fun fromLogRecord(log: LogRecord): EASLogRecord =
-      EASLogRecord(
+    fun fromLogRecord(log: LogRecord): LogEvent =
+      LogEvent(
         sessionId = log.sessionId,
         timestamp = log.timestamp,
         name = log.name,
@@ -137,5 +143,5 @@ data class EASLogRecord(
 data class Event(
   val metadata: Metadata,
   val metrics: List<EASMetric>,
-  val logs: List<EASLogRecord> = emptyList()
+  val logs: List<LogEvent> = emptyList()
 )

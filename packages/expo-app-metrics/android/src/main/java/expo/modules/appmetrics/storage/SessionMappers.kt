@@ -73,10 +73,12 @@ data class JsMetric(
 /**
  * JS-facing shape of a log event. Mirrors the TypeScript `LogRecord` type and
  * decodes the storage-only JSON `attributes` column into a typed map.
+ *
+ * `logId` and `sessionId` are storage-only — JS consumers see the record under
+ * its parent `Session.logs`, so the parent ID is implicit and the row's
+ * primary key isn't useful.
  */
 data class JsLogRecord(
-  @Field val logId: String,
-  @Field val sessionId: String,
   @Field val timestamp: String,
   @Field val name: String,
   @Field val body: String?,
@@ -87,8 +89,6 @@ data class JsLogRecord(
   companion object {
     fun fromLogRecord(log: LogRecord): JsLogRecord =
       JsLogRecord(
-        logId = log.logId,
-        sessionId = log.sessionId,
         timestamp = log.timestamp,
         name = log.name,
         body = log.body,

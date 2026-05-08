@@ -78,9 +78,10 @@ class EventDispatcher(
         continuation.resume(false)
         return@suspendCancellableCoroutine Unit
       }
+      val easId = EASClientID(context).uuid.toString()
       val resourceLogs = events
         .filter { it.logs.isNotEmpty() }
-        .map { it.toOTResourceLogs(EASClientID(context).uuid.toString()) }
+        .map { it.toOTResourceLogs(easId) }
       if (resourceLogs.isEmpty()) {
         continuation.resume(false)
         return@suspendCancellableCoroutine Unit

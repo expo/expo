@@ -38,13 +38,14 @@ class SessionMappersTest {
   private fun makeLog(
     logId: String = "log-1",
     sessionId: String = "session-1",
+    name: String = "auth.login_failed",
     attributes: String? = null,
     droppedAttributesCount: Int = 0
   ): LogRecord = LogRecord(
     logId = logId,
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:02.000Z",
-    name = "auth.login_failed",
+    name = name,
     body = "invalid_credentials",
     severity = "warn",
     attributes = attributes,
@@ -123,16 +124,16 @@ class SessionMappersTest {
       session = makeSession(),
       metrics = emptyList(),
       logs = listOf(
-        makeLog(logId = "l-1"),
-        makeLog(logId = "l-2")
+        makeLog(logId = "l-1", name = "first.event"),
+        makeLog(logId = "l-2", name = "second.event")
       )
     )
 
     val js = JsSession.fromSessionWithMetrics(swm)
 
     assertEquals(2, js.logs.size)
-    assertEquals("l-1", js.logs[0].logId)
-    assertEquals("l-2", js.logs[1].logId)
+    assertEquals("first.event", js.logs[0].name)
+    assertEquals("second.event", js.logs[1].name)
   }
 
   @Test
@@ -163,10 +164,8 @@ class SessionMappersTest {
 
   @Test
   fun `JsLogRecord_fromLogRecord copies scalar fields verbatim`() {
-    val js = JsLogRecord.fromLogRecord(makeLog(logId = "l-42", droppedAttributesCount = 3))
+    val js = JsLogRecord.fromLogRecord(makeLog(droppedAttributesCount = 3))
 
-    assertEquals("l-42", js.logId)
-    assertEquals("session-1", js.sessionId)
     assertEquals("auth.login_failed", js.name)
     assertEquals("invalid_credentials", js.body)
     assertEquals("warn", js.severity)

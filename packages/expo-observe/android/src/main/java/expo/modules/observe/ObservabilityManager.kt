@@ -135,10 +135,16 @@ class BaseObservabilityManager(
   /**
    * Dispatches log events to `/v1/logs`. Independent from the metrics path —
    * a logs failure doesn't affect the metrics pending table and vice versa.
-   * Logs are only sent in OpenTelemetry mode (the dispatcher short-circuits
-   * otherwise), so non-OTel installs accumulate nothing on this path.
+   * Logs are only sent in OpenTelemetry mode (no legacy logs endpoint exists);
+   * skip the work entirely in non-OTel mode so any leftover `pending_logs`
+   * rows from an earlier OTel-enabled run don't trigger a wasted session join
+   * + event build every dispatch cycle.
    */
   suspend fun dispatchUnsentLogs() {
+    if (!useOpenTelemetry) {
+      return
+    }
+
     val pendingIds = pendingLogsManager.getAllPendingLogIds()
     if (pendingIds.isEmpty()) {
       return
@@ -151,7 +157,8 @@ class BaseObservabilityManager(
 
     val sessionsWithPendingLogs = sessionManager.getSessionsWithLogs(pendingIds)
 
-    // Clean up orphaned pending IDs (logs deleted from MetricsDatabase but still in pending table).
+    // Clean up orphaned pending IDs (logs deleted from the `logs` table but
+    // still tracked in `pending_logs`).
     val resolvedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }.toSet()
     val orphanedIds = pendingIds.filter { it !in resolvedLogIds }
     if (orphanedIds.isNotEmpty()) {
@@ -166,7 +173,7 @@ class BaseObservabilityManager(
       Event(
         metadata = Metadata.fromSessionMetadata(sessionWithLogs.session),
         metrics = emptyList(),
-        logs = sessionWithLogs.logs.map { EASLogRecord.fromLogRecord(it) }
+        logs = sessionWithLogs.logs.map { LogEvent.fromLogRecord(it) }
       )
     }
 

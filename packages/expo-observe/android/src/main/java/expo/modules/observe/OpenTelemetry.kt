@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.MetricCategory
+import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.utils.TimeUtils.timestampToDateNS
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -424,7 +425,7 @@ internal fun otAttributesFromJsonObject(
  * a typed `OTAnyValue`. Returns `null` for `JsonNull` and for any element we
  * cannot represent, so the caller can fold it into `droppedAttributesCount`.
  */
-fun EASLogRecord.toOTLogRecord(): OTLogRecord {
+fun LogEvent.toOTLogRecord(): OTLogRecord {
   val attributes = mutableListOf(
     OTAttribute.of(key = "session.id", rawValue = sessionId),
     OTAttribute.of(key = "event.name", rawValue = name)
@@ -439,12 +440,16 @@ fun EASLogRecord.toOTLogRecord(): OTLogRecord {
 
   val totalDrops = droppedAttributesCount + encodeTimeDrops
   val timeNs = timestampToDateNS(timestamp)
-  val severityNumber = severityNumberForRaw(severity)
+  // Both `severityNumber` and `severityText` come off the same enum case so
+  // they can't disagree. Unknown raw values (e.g. a future case shipped on JS
+  // ahead of the native side) fall back to INFO rather than producing an
+  // internally-inconsistent OTel record.
+  val resolvedSeverity = Severity.fromRawValue(severity) ?: Severity.INFO
   return OTLogRecord(
     timeUnixNano = timeNs,
     observedTimeUnixNano = timeNs,
-    severityNumber = severityNumber,
-    severityText = severity.uppercase(),
+    severityNumber = resolvedSeverity.severityNumber,
+    severityText = resolvedSeverity.severityText,
     body = OTStringValue(stringValue = body ?: ""),
     attributes = attributes,
     droppedAttributesCount = if (totalDrops > 0) totalDrops else null
@@ -462,23 +467,6 @@ fun Event.toOTResourceLogs(easClientId: String): OTResourceLogs {
     ),
     schemaUrl = SEMCONV_SCHEMA_URL
   )
-}
-
-/**
- * Maps a stored severity rawValue (lowercase: `trace`, `debug`, …) to the
- * matching OpenTelemetry severity number. Falls back to `INFO` (9) for
- * unrecognized values so a future enum case isn't a hard failure.
- */
-private fun severityNumberForRaw(raw: String): Int {
-  return when (raw) {
-    "trace" -> 1
-    "debug" -> 5
-    "info" -> 9
-    "warn" -> 13
-    "error" -> 17
-    "fatal" -> 21
-    else -> 9
-  }
 }
 
 internal fun otAnyValueFromJsonElement(element: JsonElement): OTAnyValue? {

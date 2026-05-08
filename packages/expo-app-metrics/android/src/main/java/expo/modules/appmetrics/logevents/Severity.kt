@@ -4,32 +4,19 @@ import expo.modules.kotlin.types.Enumerable
 
 /**
  * Severity of a log event. Each case carries its OpenTelemetry severity number
- * via `severityNumber` and is sent as `severityText` (uppercased) on the wire.
+ * (see https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber)
+ * and is sent as `severityText` (uppercased `rawValue`) on the wire.
  *
- * The single `rawValue: String` constructor parameter is required by Expo's
+ * The `rawValue: String` constructor parameter is required by Expo's
  * `Enumerable` converter — it matches incoming JS strings against this value.
  */
-enum class Severity(val rawValue: String) : Enumerable {
-  TRACE("trace"),
-  DEBUG("debug"),
-  INFO("info"),
-  WARN("warn"),
-  ERROR("error"),
-  FATAL("fatal");
-
-  /**
-   * OpenTelemetry severity number that matches this case.
-   * See https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber.
-   */
-  val severityNumber: Int
-    get() = when (this) {
-      TRACE -> 1
-      DEBUG -> 5
-      INFO -> 9
-      WARN -> 13
-      ERROR -> 17
-      FATAL -> 21
-    }
+enum class Severity(val rawValue: String, val severityNumber: Int) : Enumerable {
+  TRACE("trace", 1),
+  DEBUG("debug", 5),
+  INFO("info", 9),
+  WARN("warn", 13),
+  ERROR("error", 17),
+  FATAL("fatal", 21);
 
   /** Severity text suitable for the OpenTelemetry `severityText` field. */
   val severityText: String
