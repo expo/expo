@@ -185,12 +185,12 @@ export enum ContentType {
 
 ## Return Value Language
 
-Use "fulfilled" not "resolves" when describing promise results:
+Use **"resolves to"** in `@returns` tags, following MDN's convention:
 
-- **Correct:** "A promise fulfilled with a `CameraPhoto` object"
-- **Incorrect:** "A promise that resolves to a `CameraPhoto` object"
+- **Preferred:** `@returns A promise that resolves to a CameraPhoto object.`
+- **Also acceptable:** `@returns A promise fulfilled with a CameraPhoto object.`
 
-The developer cares about `await fn()`, not the internal resolution mechanism.
+In inline prose, "resolves with" is acceptable (e.g. "The promise resolves with the parsed result").
 
 ## Type Export Patterns
 
