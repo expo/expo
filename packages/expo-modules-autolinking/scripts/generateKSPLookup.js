@@ -2,7 +2,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 
-const minKotlinVersion = '2.0.0';
+const minKotlinVersion = '1.9.0';
 const maxKotlinVersion = '2.3.10';
 
 const groupId = 'com.google.devtools.ksp';
