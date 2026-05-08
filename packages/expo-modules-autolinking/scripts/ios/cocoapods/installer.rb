@@ -105,8 +105,11 @@ module Pod
       system('./scripts/create-stub-xcframework.sh', chdir: pod_dir.to_s)
     end
 
-    # Slice IDs declared by `apple/scripts/xcframework-helpers.sh`
-    # (EXPO_MODULES_JSI_REQUIRED_SLICE_IDS). Keep in sync.
+    # Must match `EXPO_MODULES_JSI_REQUIRED_SLICE_IDS` in
+    # `apple/scripts/xcframework-helpers.sh`, which is the list of slices
+    # `create-stub-xcframework.sh` materializes on `pod install`. If the two
+    # drift, the completeness check below could pass without verifying every
+    # stamped slice and the self-healing guarantee breaks.
     EXPO_MODULES_JSI_REQUIRED_SLICES = %w[
       ios-arm64
       ios-arm64_x86_64-simulator
