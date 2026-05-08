@@ -48,7 +48,7 @@ interface WatcherOptions {
   forceNodeFilesystemAPI?: boolean;
   healthCheckFilePrefix: string;
   ignoreForCrawl: (filePath: string) => boolean;
-  ignorePatternForWatch: RegExp;
+  ignorePatternForWatch: RegExp | null;
   previousState: CrawlerOptions['previousState'];
   perfLogger: PerfLogger | undefined | null;
   roots: readonly string[];
@@ -122,9 +122,11 @@ export class Watcher extends EventEmitter {
     const options = this.#options;
     const { useWatchman, subpath } = crawlOptions;
 
+    const baseIgnoreForCrawl = options.ignoreForCrawl;
+    const healthCheckFilePrefix = options.healthCheckFilePrefix;
     const ignoreForCrawl = (filePath: string) =>
-      options.ignoreForCrawl(filePath) ||
-      path.basename(filePath).startsWith(this.#options.healthCheckFilePrefix);
+      baseIgnoreForCrawl(filePath) ||
+      filePath.startsWith(healthCheckFilePrefix, filePath.lastIndexOf(path.sep) + 1);
     const crawl = useWatchman ? watchmanCrawl : nodeCrawl;
     let crawler = crawl === watchmanCrawl ? 'watchman' : 'node';
 
