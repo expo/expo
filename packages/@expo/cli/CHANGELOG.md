@@ -14,6 +14,8 @@
 - Prevent Metro loading indicator from showing broken states in headless runs. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `--port 0` exiting silently in `expo start` when the port is busy. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
 - Apply printf-style format substitution for web client logs forwarded from the browser. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix @react-navigation/core rewrite to expo-router/react-navigation ([#45543](https://github.com/expo/expo/pull/45543) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - Replace deprecated `url.parse()` with WHATWG `URL` API in Metro dev server. ([#45524](https://github.com/expo/expo/pull/45524) by [@EvanBacon](https://github.com/EvanBacon))
