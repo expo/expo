@@ -85,6 +85,70 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoAgeRange (56.0.3):
+    - ExpoModulesCore
+  - ExpoAppleAuthentication (56.0.3):
+    - ExpoModulesCore
+  - ExpoAppMetrics (56.0.4):
+    - boost
+    - DoubleConversion
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - ExpoAppMetrics/Tests (56.0.4):
+    - boost
+    - DoubleConversion
+    - ExpoModulesCore
+    - EXUpdatesInterface
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - ExpoAsset (56.0.5):
     - ExpoModulesCore
   - ExpoAudio (56.0.3):
@@ -169,6 +233,8 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (56.0.3):
     - ExpoModulesCore
+  - ExpoLivePhoto (56.0.3):
+    - ExpoModulesCore
   - ExpoLocalAuthentication (56.0.3):
     - ExpoModulesCore
   - ExpoLocalization (56.0.3):
@@ -186,6 +252,8 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
     - React-Core
+  - ExpoMeshGradient (56.0.3):
+    - ExpoModulesCore
   - ExpoModulesCore (56.0.4):
     - boost
     - DoubleConversion
@@ -275,6 +343,68 @@ PODS:
   - ExpoNotifications/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
+  - ExpoObserve (56.0.4):
+    - boost
+    - DoubleConversion
+    - EASClient
+    - ExpoAppMetrics
+    - ExpoModulesCore
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - ExpoObserve/Tests (56.0.4):
+    - boost
+    - DoubleConversion
+    - EASClient
+    - ExpoAppMetrics
+    - ExpoModulesCore
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - ExpoPrint (56.0.3):
     - ExpoModulesCore
   - ExpoRouter (56.1.0):
@@ -4064,6 +4194,10 @@ DEPENDENCIES:
   - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
   - Expo/Tests (from `../../../packages/expo`)
+  - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
+  - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
+  - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
+  - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -4096,6 +4230,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
+  - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoLocation (from `../../../packages/expo-location/ios`)
@@ -4103,6 +4238,7 @@ DEPENDENCIES:
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
+  - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
@@ -4113,6 +4249,8 @@ DEPENDENCIES:
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
+  - ExpoObserve (from `../../../packages/expo-observe/ios`)
+  - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
@@ -4310,6 +4448,12 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-manifests/ios"
   Expo:
     :path: "../../../packages/expo"
+  ExpoAgeRange:
+    :path: "../../../packages/expo-age-range/ios"
+  ExpoAppleAuthentication:
+    :path: "../../../packages/expo-apple-authentication/ios"
+  ExpoAppMetrics:
+    :path: "../../../packages/expo-app-metrics/ios"
   ExpoAsset:
     :path: "../../../packages/expo-asset/ios"
   ExpoAudio:
@@ -4368,6 +4512,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-linear-gradient/ios"
   ExpoLinking:
     :path: "../../../packages/expo-linking/ios"
+  ExpoLivePhoto:
+    :path: "../../../packages/expo-live-photo/ios"
   ExpoLocalAuthentication:
     :path: "../../../packages/expo-local-authentication/ios"
   ExpoLocalization:
@@ -4380,6 +4526,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-mail-composer/ios"
   ExpoMediaLibrary:
     :path: "../../../packages/expo-media-library/ios"
+  ExpoMeshGradient:
+    :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
@@ -4394,6 +4542,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-network/ios"
   ExpoNotifications:
     :path: "../../../packages/expo-notifications/ios"
+  ExpoObserve:
+    :path: "../../../packages/expo-observe/ios"
   ExpoPrint:
     :path: "../../../packages/expo-print/ios"
   ExpoRouter:
@@ -4646,6 +4796,9 @@ SPEC CHECKSUMS:
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: e20226d12c44cb2d27fca73c274287ff0012b40b
   Expo: 29cfaf3d3f20824e35554c8123ee583ad4483fd1
+  ExpoAgeRange: c3e104dedb469958077d56961cbc1d4aaf7a858a
+  ExpoAppleAuthentication: 47f6f6c6722a7facef29d15397635b785086bc5e
+  ExpoAppMetrics: 8b55fdfe83dd618769bf83f56e92ebf5b7c0749b
   ExpoAsset: 45b495ad7c9ee655ac727eab9195ab69db9615ab
   ExpoAudio: fc809158cb86bdad608e8a224331cfb5481d8ea3
   ExpoBackgroundFetch: 7ef18d566281354dd3cee6310fbabfb03c8517f8
@@ -4675,12 +4828,14 @@ SPEC CHECKSUMS:
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinearGradient: 16c2b9c6105444883d34958d573725de1293b8d0
   ExpoLinking: 4ff9681a924c3dd4f4e5a2f32a33085e6a3ec7f1
+  ExpoLivePhoto: 3c2bd665a63afa8a465b16b564e4c9ab83ea60eb
   ExpoLocalAuthentication: 64e8c5756df07c8a89f078293ec17899c1325a43
   ExpoLocalization: 74b7a2319781fd14f5db01e932c7c3a075ea1b4b
   ExpoLocation: 8d9edece087b82fe9ff2fee8923bf14d357b074c
   ExpoLogBox: 3d06486e52b87bd361e05c993b96bc9a6ecdedec
   ExpoMailComposer: e202b670f62063851ed74c964034037312d523a8
   ExpoMediaLibrary: ee2d74d5e52154305b8229dcb5c4319c84f30311
+  ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
   ExpoModulesCore: 0d77a2de27d2358598cbc93c721fa951bd6c8424
   ExpoModulesJSI: 15a25b2948cdfe04bced3e08566a34877fe3cc1e
   ExpoModulesTestCore: 5660ab6b5928747366d4946580622a578865696a
@@ -4688,6 +4843,7 @@ SPEC CHECKSUMS:
   ExpoModulesWorkletsAdapter: 1c95f525648e755df7407311d4ef20cf7791f891
   ExpoNetwork: 6c8e0cc425a2c7f6591fabcab16417506441242c
   ExpoNotifications: f860fc3daa5585b31fc128e3368ac20b42536ee8
+  ExpoObserve: 475b5f7703e7da1335387ce95d8d9931de4dbd84
   ExpoPrint: 6b5bcac4492908b7e28144c2e7265c1c5ee4ade0
   ExpoRouter: 0df827bda2ade565926bbe47463462289a4ad57e
   ExpoScreenCapture: f23a26d9fda8c42c77e7a818a1e20e3e8b94134b
@@ -4721,11 +4877,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
-  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
+  glog: 5683914934d5b6e4240e497e0f4a3b42d1854183
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 971c315ad976a4dcbf09795cb72e85ea3f7200d9
+  hermes-engine: 020d7dbf64ea2ac7f2dc43408d80cc6035c4b3e8
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4737,7 +4893,7 @@ SPEC CHECKSUMS:
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
   Quick: 83e25bf349dd84f894b024f48033274512d6129b
-  RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
+  RCT-Folly: 121436bcc4611f6bde5c09bf35f0a7a82cef1969
   RCTDeprecation: 225e022b85a206cf0883a909c4a114159783363c
   RCTRequired: 827a95c181af0886a11e21bc66c084088cf87839
   RCTSwiftUI: 7babb07156ae0a8e5ea97f77e43959ddaca2c6f2

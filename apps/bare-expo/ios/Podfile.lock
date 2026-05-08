@@ -409,6 +409,8 @@ PODS:
     - ExpoModulesCore
   - ExpoCameraBarcodeScanning (56.0.3):
     - ExpoCamera
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - ExpoCellular (56.0.3):
     - ExpoModulesCore
   - ExpoClipboard (56.0.3):
@@ -440,8 +442,22 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (56.0.4):
     - ExpoModulesCore
+    - libavif/libdav1d
+    - SDWebImage (~> 5.21.0)
+    - SDWebImageAVIFCoder (~> 0.11.0)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.14.6)
+  - ExpoImage/Tests (56.0.4):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - libavif/libdav1d
+    - SDWebImage (~> 5.21.0)
+    - SDWebImageAVIFCoder (~> 0.11.0)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (56.0.4):
     - ExpoModulesCore
+    - SDWebImageWebPCoder
   - ExpoImagePicker (56.0.4):
     - ExpoModulesCore
   - ExpoInsights (56.0.4):
@@ -491,10 +507,39 @@ PODS:
   - ExpoMediaLibrary (56.0.3):
     - ExpoModulesCore
     - React-Core
+  - ExpoMediaLibrary/Tests (56.0.3):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - React-Core
   - ExpoMeshGradient (56.0.3):
     - ExpoModulesCore
   - ExpoModulesCore (56.0.4):
     - ExpoModulesJSI
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-jsinspector
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
+  - ExpoModulesCore/Tests (56.0.4):
+    - ExpoModulesJSI
+    - ExpoModulesTestCore
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -729,6 +774,23 @@ PODS:
   - hermes-engine (250829098.0.10):
     - hermes-engine/Pre-built (= 250829098.0.10)
   - hermes-engine/Pre-built (250829098.0.10)
+  - libavif/core (1.0.0)
+  - libavif/libdav1d (1.0.0):
+    - libavif/core
+    - libdav1d (>= 0.6.0)
+  - libdav1d (1.2.0)
+  - libwebp (1.5.0):
+    - libwebp/demux (= 1.5.0)
+    - libwebp/mux (= 1.5.0)
+    - libwebp/sharpyuv (= 1.5.0)
+    - libwebp/webp (= 1.5.0)
+  - libwebp/demux (1.5.0):
+    - libwebp/webp
+  - libwebp/mux (1.5.0):
+    - libwebp/demux
+  - libwebp/sharpyuv (1.5.0)
+  - libwebp/webp (1.5.0):
+    - libwebp/sharpyuv
   - lottie-ios (4.6.0)
   - lottie-react-native (7.3.6):
     - hermes-engine
@@ -3179,6 +3241,17 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - SDWebImage (5.21.7):
+    - SDWebImage/Core (= 5.21.7)
+  - SDWebImage/Core (5.21.7)
+  - SDWebImageAVIFCoder (0.11.1):
+    - libavif/core (>= 0.11.0)
+    - SDWebImage (~> 5.10)
+  - SDWebImageSVGCoder (1.7.0):
+    - SDWebImage/Core (~> 5.6)
+  - SDWebImageWebPCoder (0.14.6):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.17)
   - TestExpoUi (1.0.0):
     - ExpoModulesCore
     - ExpoUI
@@ -3210,6 +3283,11 @@ PODS:
     - ReactNativeDependencies
     - Yoga
   - Yoga (0.0.0)
+  - ZXingObjC/Core (3.6.9)
+  - ZXingObjC/OneD (3.6.9):
+    - ZXingObjC/Core
+  - ZXingObjC/PDF417 (3.6.9):
+    - ZXingObjC/Core
 
 DEPENDENCIES:
   - BenchmarkingModule (from `../modules/benchmarking/ios`)
@@ -3244,55 +3322,58 @@ DEPENDENCIES:
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
-  - ExpoBrownfield (from `../../../packages/expo-brownfield/ios/ExpoBrownfield.podspec`)
+  - ExpoBrownfield (from `../../../packages/expo-brownfield/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
-  - ExpoCamera (from `../../../packages/expo-camera/ios/ExpoCamera.podspec`)
-  - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios/ExpoCameraBarcodeScanning.podspec`)
+  - ExpoCamera (from `../../../packages/expo-camera/ios`)
+  - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
-  - ExpoContacts (from `../../../packages/expo-contacts/ios/ExpoContacts.podspec`)
+  - ExpoContacts (from `../../../packages/expo-contacts/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
-  - ExpoFileSystem (from `../../../packages/expo-file-system/ios/ExpoFileSystem.podspec`)
-  - ExpoFont (from `../../../packages/expo-font/ios/ExpoFont.podspec`)
+  - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
+  - ExpoFont (from `../../../packages/expo-font/ios`)
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoGlassEffect (from `../../../packages/expo-glass-effect/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
-  - ExpoImage (from `../../../packages/expo-image/ios/ExpoImage.podspec`)
-  - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios/ExpoImageManipulator.podspec`)
+  - ExpoImage (from `../../../packages/expo-image/ios`)
+  - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
+  - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoInsights (from `../../../packages/expo-insights/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
-  - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios/ExpoLivePhoto.podspec`)
+  - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
-  - ExpoLocation (from `../../../packages/expo-location/ios/ExpoLocation.podspec`)
+  - ExpoLocation (from `../../../packages/expo-location/ios`)
   - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
-  - ExpoMaps (from `../../../packages/expo-maps/ios/ExpoMaps.podspec`)
-  - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios/ExpoMediaLibrary.podspec`)
+  - ExpoMaps (from `../../../packages/expo-maps/ios`)
+  - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
+  - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
-  - ExpoModulesCore (from `../../../packages/expo-modules-core/ExpoModulesCore.podspec`)
+  - ExpoModulesCore (from `../../../packages/expo-modules-core`)
+  - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
-  - ExpoModulesWorklets (from `../../../packages/expo-modules-core/ExpoModulesWorklets.podspec`)
+  - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
-  - ExpoPrint (from `../../../packages/expo-print/ios/ExpoPrint.podspec`)
+  - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
-  - ExpoSensors (from `../../../packages/expo-sensors/ios/ExpoSensors.podspec`)
+  - ExpoSensors (from `../../../packages/expo-sensors/ios`)
   - ExpoSharing (from `../../../packages/expo-sharing/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
@@ -3304,8 +3385,8 @@ DEPENDENCIES:
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
   - ExpoTaskManager/Tests (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
-  - ExpoUI (from `../../../packages/expo-ui/ios/ExpoUI.podspec`)
-  - ExpoVideo (from `../../../packages/expo-video/ios/ExpoVideo.podspec`)
+  - ExpoUI (from `../../../packages/expo-ui/ios`)
+  - ExpoVideo (from `../../../packages/expo-video/ios`)
   - ExpoVideoDashSupportModule (from `../modules/expo-video-dash-support-module/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -3415,11 +3496,19 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - libavif
+    - libdav1d
+    - libwebp
     - lottie-ios
     - Nimble
     - OHHTTPStubs
     - Quick
     - ReachabilitySwift
+    - SDWebImage
+    - SDWebImageAVIFCoder
+    - SDWebImageSVGCoder
+    - SDWebImageWebPCoder
+    - ZXingObjC
 
 EXTERNAL SOURCES:
   BenchmarkingModule:
@@ -3492,15 +3581,15 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-brightness/ios"
   ExpoBrownfield:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-brownfield/ios/ExpoBrownfield.podspec"
+    :path: "../../../packages/expo-brownfield/ios"
   ExpoCalendar:
     inhibit_warnings: false
     :path: "../../../packages/expo-calendar/ios"
   ExpoCamera:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-camera/ios/ExpoCamera.podspec"
+    :path: "../../../packages/expo-camera/ios"
   ExpoCameraBarcodeScanning:
-    :podspec: "../../../packages/expo-camera/ios/ExpoCameraBarcodeScanning.podspec"
+    :path: "../../../packages/expo-camera/ios"
   ExpoCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"
@@ -3509,7 +3598,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-clipboard/ios"
   ExpoContacts:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-contacts/ios/ExpoContacts.podspec"
+    :path: "../../../packages/expo-contacts/ios"
   ExpoCrypto:
     inhibit_warnings: false
     :path: "../../../packages/expo-crypto/ios"
@@ -3524,10 +3613,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/@expo/dom-webview/ios"
   ExpoFileSystem:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-file-system/ios/ExpoFileSystem.podspec"
+    :path: "../../../packages/expo-file-system/ios"
   ExpoFont:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-font/ios/ExpoFont.podspec"
+    :path: "../../../packages/expo-font/ios"
   ExpoGL:
     inhibit_warnings: false
     :path: "../../../packages/expo-gl"
@@ -3539,10 +3628,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-haptics/ios"
   ExpoImage:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-image/ios/ExpoImage.podspec"
+    :path: "../../../packages/expo-image/ios"
   ExpoImageManipulator:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-image-manipulator/ios/ExpoImageManipulator.podspec"
+    :path: "../../../packages/expo-image-manipulator/ios"
   ExpoImagePicker:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-picker/ios"
@@ -3560,7 +3649,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-linking/ios"
   ExpoLivePhoto:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-live-photo/ios/ExpoLivePhoto.podspec"
+    :path: "../../../packages/expo-live-photo/ios"
   ExpoLocalAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-local-authentication/ios"
@@ -3569,7 +3658,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-localization/ios"
   ExpoLocation:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-location/ios/ExpoLocation.podspec"
+    :path: "../../../packages/expo-location/ios"
   ExpoLogBox:
     inhibit_warnings: false
     :path: "../../../packages/@expo/log-box"
@@ -3578,16 +3667,16 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-mail-composer/ios"
   ExpoMaps:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-maps/ios/ExpoMaps.podspec"
+    :path: "../../../packages/expo-maps/ios"
   ExpoMediaLibrary:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-media-library/ios/ExpoMediaLibrary.podspec"
+    :path: "../../../packages/expo-media-library/ios"
   ExpoMeshGradient:
     inhibit_warnings: false
     :path: "../../../packages/expo-mesh-gradient/ios"
   ExpoModulesCore:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-modules-core/ExpoModulesCore.podspec"
+    :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-jsi/apple"
@@ -3595,7 +3684,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-test-core/ios"
   ExpoModulesWorklets:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-modules-core/ExpoModulesWorklets.podspec"
+    :path: "../../../packages/expo-modules-core"
   ExpoModulesWorkletsAdapter:
     :path: "../../../packages/expo-modules-core"
   ExpoNetwork:
@@ -3609,7 +3698,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-observe/ios"
   ExpoPrint:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-print/ios/ExpoPrint.podspec"
+    :path: "../../../packages/expo-print/ios"
   ExpoScreenCapture:
     inhibit_warnings: false
     :path: "../../../packages/expo-screen-capture/ios"
@@ -3621,7 +3710,7 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-secure-store/ios"
   ExpoSensors:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-sensors/ios/ExpoSensors.podspec"
+    :path: "../../../packages/expo-sensors/ios"
   ExpoSharing:
     inhibit_warnings: false
     :path: "../../../packages/expo-sharing/ios"
@@ -3654,10 +3743,10 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-tracking-transparency/ios"
   ExpoUI:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-ui/ios/ExpoUI.podspec"
+    :path: "../../../packages/expo-ui/ios"
   ExpoVideo:
     inhibit_warnings: false
-    :podspec: "../../../packages/expo-video/ios/ExpoVideo.podspec"
+    :path: "../../../packages/expo-video/ios"
   ExpoVideoDashSupportModule:
     inhibit_warnings: false
     :path: "../modules/expo-video-dash-support-module/ios"
@@ -3929,7 +4018,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 7fd43313b3be943c93df66df7dd09e6337703a37
   ExpoMediaLibrary: ee2d74d5e52154305b8229dcb5c4319c84f30311
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
-  ExpoModulesCore: a4f8c4c24dcf030ab15903a84bce2e3e125cfb13
+  ExpoModulesCore: c7911bfad0c6279605ef8c58c4f2b878c6cb8970
   ExpoModulesJSI: 15a25b2948cdfe04bced3e08566a34877fe3cc1e
   ExpoModulesTestCore: 5660ab6b5928747366d4946580622a578865696a
   ExpoModulesWorklets: d607309c356375d45e919a12a94f15e418603adc
@@ -3962,6 +4051,9 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: 24e62c765683b8d89006a88a2c8f5cf019f0074d
   hermes-engine: 725fd85144e1348879039099a6be950c471a4f2c
+  libavif: 5f8e715bea24debec477006f21ef9e95432e254d
+  libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
+  libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
   lottie-react-native: 615e5f4651bee144ea991ad8e900630b6b3daf5d
   Nimble: 97d90931cca412a23224ff29e258809f75c258f7
@@ -4057,10 +4149,15 @@ SPEC CHECKSUMS:
   RNScreens: 9d8bbdc7185cc51e594567e50d87c674ccee3e9c
   RNSVG: 04044c3abcf177fd674a1a3d13097efa1adebcbe
   RNWorklets: edcd0af162eba9fb81af89a4761f1af35086d1cc
+  SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
+  SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
+  SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
+  SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   TestExpoUi: e376582270047f880c7e44afc7f912c97b14da54
   UMAppLoader: b7d22886a244871c20b5a8f2fcea13c18534e677
   WorkletsTester: 15a12097d67f73fd107ab7dc8236cab805e472b0
   Yoga: 77dfa8673de2874e1855002ae59c68b8be9b007b
+  ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
 PODFILE CHECKSUM: d12a3110d7abf3249571bb761eb2f7d3d67e6a3d
 
