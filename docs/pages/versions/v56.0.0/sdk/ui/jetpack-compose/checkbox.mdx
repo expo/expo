@@ -8,18 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Checkbox matches the official Jetpack Compose [Checkbox](https://developer.android.com/develop/ui/compose/components/checkbox) API.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/checkbox/android-light.webp"
-    darkSource="/static/images/expo-ui/checkbox/android-dark.webp"
-    alt="Checked and unchecked Material 3 checkboxes"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/checkbox/android-light.webp"
+  darkSource="/static/images/expo-ui/checkbox/android-dark.webp"
+  alt="Checked and unchecked Material 3 checkboxes"
+/>
 
 ## Installation
 

@@ -8,18 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Switch matches the official Jetpack Compose [Switch](https://developer.android.com/develop/ui/compose/components/switch) API.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/switch/android-light.webp"
-    darkSource="/static/images/expo-ui/switch/android-dark.webp"
-    alt="Two Material 3 switches showing on and off states"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/switch/android-light.webp"
+  darkSource="/static/images/expo-ui/switch/android-dark.webp"
+  alt="Two Material 3 switches showing on and off states"
+/>
 
 ## Installation
 
