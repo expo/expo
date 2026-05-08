@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed `ExpoModulesJSI.xcframework` build failing under `useFrameworks: "static"` + `buildReactNativeFromSource: true` due to missing header search paths. ([#45508](https://github.com/expo/expo/pull/45508) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] `pod install` now self-heals an incomplete `ExpoModulesJSI.xcframework`, and `build-xcframework.sh` rebuilds slices independently so building one platform no longer wipes another. ([#45542](https://github.com/expo/expo/pull/45542) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
