@@ -34,7 +34,6 @@ SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
 SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
-# shellcheck source=./xcframework-helpers.sh
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
 CLEAN=false

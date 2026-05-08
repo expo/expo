@@ -16,7 +16,6 @@ PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
 XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
 
-# shellcheck source=./xcframework-helpers.sh
 source "$(dirname "${BASH_SOURCE[0]}")/xcframework-helpers.sh"
 
 BLUE=""; RESET=""
