@@ -42,8 +42,8 @@ public class AgeRangeModule: Module, @unchecked Sendable {
       }
       do {
         return try await AgeRangeService.shared.isEligibleForAgeFeatures
-      } catch {
-        return nil
+      } catch AgeRangeService.Error.notAvailable {
+        throw AgeRangeNotAvailableException()
       }
     }
   }
