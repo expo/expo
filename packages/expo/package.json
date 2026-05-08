@@ -85,7 +85,6 @@
     "@expo/log-box": "workspace:^56.0.7",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:~56.0.6",
-    "@expo/vector-icons": "^15.0.2",
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "workspace:~56.0.6",
     "expo-asset": "workspace:~56.0.7",
