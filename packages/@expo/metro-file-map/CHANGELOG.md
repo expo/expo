@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Reduce crawl time further by embedding VCS check and reducing redundant checks ([#45550](https://github.com/expo/expo/pull/45550) by [@kitten](https://github.com/kitten))
+
 ## 56.0.0-2 — 2026-05-06
 
 ### 🎉 New features
