@@ -6,8 +6,10 @@
 # but can also be invoked manually with PODS_ROOT set.
 #
 # Features:
-#   - Hash-based caching: skips rebuild if source files haven't changed
-#   - Additive slices: builds only the requested platform, preserves others
+#   - Per-slice hash-based caching: a slice is rebuilt only when its own
+#     recorded source hash differs from the current one. Other slices —
+#     including those built for other platforms in earlier runs — are left
+#     untouched.
 #   - Reads React/JSI/Hermes headers directly from Pods/Headers/Public, so the
 #     same configuration works for both prebuilt and source-built React Native
 #   - Cleans .swiftinterface files for cross-compiler compatibility
@@ -25,14 +27,15 @@ set -eo pipefail
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PACKAGE_NAME="ExpoModulesJSI"
 XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
-SLICES_DIR="${PACKAGE_DIR}/.xcframework-slices"
-HASH_FILE="${SLICES_DIR}/.build-hash"
 
 CONFIGURATION="Release"
 DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
 SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
 SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
+
+# shellcheck source=./xcframework-lib.sh
+source "${PACKAGE_DIR}/scripts/xcframework-lib.sh"
 
 CLEAN=false
 
@@ -49,7 +52,6 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Use colors only when stdout is a terminal.
 if [[ -t 1 ]]; then
   BLUE="\033[34m"
   RESET="\033[0m"
@@ -71,9 +73,9 @@ SOURCE_DIRS=(
 SOURCE_FILES=(
   "${PACKAGE_DIR}/Package.swift"
   "${PACKAGE_DIR}/scripts/build-xcframework.sh"
+  "${PACKAGE_DIR}/scripts/xcframework-lib.sh"
 )
 
-# Computes a SHA256 hash of all source files.
 compute_hash() {
   local all_files
   all_files=$(
@@ -111,11 +113,30 @@ platform_destination() {
   esac
 }
 
-# Builds a single framework slice for a given platform and stages it.
+# Resolves the xcframework slice ID that a built platform should land in.
+# Mirrors the slice IDs xcodebuild -create-xcframework would have assigned for
+# a single-arch device build / dual-arch simulator build.
+platform_slice_id() {
+  case "$1" in
+    iphoneos)         echo "ios-arm64" ;;
+    iphonesimulator)  echo "ios-arm64_x86_64-simulator" ;;
+    appletvos)        echo "tvos-arm64" ;;
+    appletvsimulator) echo "tvos-arm64_x86_64-simulator" ;;
+    *)
+      log "error: No slice mapping for platform: $1"
+      exit 1
+      ;;
+  esac
+}
+
+# Builds a single framework slice for the given platform and replaces the
+# matching slice inside XCFRAMEWORK_PATH. Other slices on disk are untouched.
 build_slice() {
   local platform="$1"
   local destination
   destination=$(platform_destination "$platform")
+  local slice_id
+  slice_id=$(platform_slice_id "$platform")
   local build_dir_name="${CONFIGURATION}-${platform}"
 
   log "Building framework slice for ${platform}..."
@@ -148,22 +169,29 @@ build_slice() {
   )
 
   local product_path="${BUILD_PRODUCTS_PATH}/${build_dir_name}"
-  local framework_path="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
+  local framework_src="${product_path}/PackageFrameworks/${PACKAGE_NAME}.framework"
   local swiftmodule_src="${product_path}/${PACKAGE_NAME}.swiftmodule"
   local generated_maps="${DERIVED_DATA_PATH}/Build/Intermediates.noindex/GeneratedModuleMaps-${platform}"
 
-  # Stage the built slice for this platform.
-  local slice_staging="${SLICES_DIR}/${platform}"
-  rm -rf "$slice_staging"
-  mkdir -p "$slice_staging"
+  if [[ ! -d "$framework_src" ]]; then
+    log "error: xcodebuild did not produce ${framework_src}"
+    exit 1
+  fi
 
-  cp -r "$framework_path" "$slice_staging/"
+  # Replace the slice in place. Stage to a temp location first so a partial
+  # write can't leave the xcframework in a broken state.
+  local slice_dir="${XCFRAMEWORK_PATH}/${slice_id}"
+  local staging_dir="${XCFRAMEWORK_PATH}/.${slice_id}.new"
+  rm -rf "$staging_dir"
+  mkdir -p "$staging_dir"
+
+  cp -r "$framework_src" "$staging_dir/"
   if [[ -d "${product_path}/${PACKAGE_NAME}.framework.dSYM" ]]; then
-    cp -r "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$slice_staging/"
+    cp -r "${product_path}/${PACKAGE_NAME}.framework.dSYM" "$staging_dir/"
   fi
 
   # Copy Swift module interfaces and generated headers into the staged framework.
-  local modules_dir="${slice_staging}/${PACKAGE_NAME}.framework/Modules"
+  local modules_dir="${staging_dir}/${PACKAGE_NAME}.framework/Modules"
   mkdir -p "$modules_dir"
   cp -r "$swiftmodule_src/" "${modules_dir}/${PACKAGE_NAME}.swiftmodule"
   rm -rf "${modules_dir}/${PACKAGE_NAME}.swiftmodule/Project"
@@ -185,33 +213,15 @@ build_slice() {
   find "${modules_dir}/${PACKAGE_NAME}.swiftmodule" -name '*.swiftinterface' \
     -exec sed -i '' '/^extension __ObjC\./,/^}/d;/^@usableFromInline$/{N;/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d;};/_ConstraintThatIsNotPartOfTheAPIOfThisLibrary/d' {} +
 
-  local headers_dir="${slice_staging}/${PACKAGE_NAME}.framework/Headers"
+  local headers_dir="${staging_dir}/${PACKAGE_NAME}.framework/Headers"
   mkdir -p "$headers_dir"
   cp "${generated_maps}/${PACKAGE_NAME}-Swift.h" "$headers_dir/"
   cp "${generated_maps}/${PACKAGE_NAME}.modulemap" "$headers_dir/module.modulemap"
-}
 
-# Assembles the xcframework from all staged slices.
-assemble_xcframework() {
-  rm -rf "$XCFRAMEWORK_PATH"
+  echo "$current_hash" > "${staging_dir}/.build-hash"
 
-  local xcframework_args=()
-  for slice_dir in "${SLICES_DIR}"/*/; do
-    local framework="${slice_dir}${PACKAGE_NAME}.framework"
-    local dsym="${slice_dir}${PACKAGE_NAME}.framework.dSYM"
-    if [[ -d "$framework" ]]; then
-      xcframework_args+=(-framework "$framework")
-      if [[ -d "$dsym" ]]; then
-        xcframework_args+=(-debug-symbols "$(cd "$dsym" && pwd)")
-      fi
-    fi
-  done
-
-  xcodebuild -create-xcframework "${xcframework_args[@]}" -output "$XCFRAMEWORK_PATH"
-
-  # Write the hash so subsequent builds can skip if nothing changed.
-  mkdir -p "$SLICES_DIR"
-  echo "$current_hash" > "$HASH_FILE"
+  rm -rf "$slice_dir"
+  mv "$staging_dir" "$slice_dir"
 }
 
 # --- Main ---
@@ -240,7 +250,6 @@ PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
 RN_ROOT="$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null \
   || echo "${PODS_ROOT}/../../node_modules/react-native")"
 
-# log detected configuration to verify the fallback path triggers.
 mode="$( [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]] && echo "prebuilt RN" || echo "source-built RN")"
 [[ -f "${PODS_ROOT}/Target Support Files/React-jsi/React-jsi-umbrella.h" ]] && mode="${mode}, static frameworks"
 log "Detected: ${mode} (RN_ROOT=${RN_ROOT})"
@@ -258,8 +267,12 @@ GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
-  rm -rf "$XCFRAMEWORK_PATH" "$SLICES_DIR" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
-  log "Cleaned existing xcframework, staged slices, DerivedData, and SwiftPM state"
+  rm -rf "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+  log "Cleaned existing xcframework, DerivedData, and SwiftPM state"
+  # Re-stamp stub slices so the post-clean state matches a fresh `pod install`:
+  # CocoaPods reads Info.plist before this script runs, and would fail to
+  # resolve any slice not declared there.
+  "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
 fi
 
 # Determine which platforms to build.
@@ -271,34 +284,23 @@ fi
 
 current_hash=$(compute_hash)
 
-# Check if sources have changed since the last build.
-if [[ -f "$HASH_FILE" ]]; then
-  previous_hash=$(cat "$HASH_FILE")
-  if [[ "$current_hash" == "$previous_hash" ]]; then
-    # Sources haven't changed — filter out platforms that already have a staged slice.
-    platforms_to_build=()
-    for platform in "${PLATFORMS[@]}"; do
-      if [[ ! -d "${SLICES_DIR}/${platform}/${PACKAGE_NAME}.framework" ]]; then
-        platforms_to_build+=("$platform")
-      fi
-    done
-
-    if [[ ${#platforms_to_build[@]} -eq 0 ]]; then
-      log "xcframework is up to date, skipping build"
-      exit 0
-    fi
-
-    PLATFORMS=("${platforms_to_build[@]}")
-  else
-    # Sources changed — remove all staged slices so they get rebuilt.
-    # Also wipe DerivedData and .build because Swift Package Manager caches
-    # the resolved package graph there and Package.swift reads PODS_ROOT at
-    # resolve time; without this, switching PODS_ROOT (e.g. between apps)
-    # leaks paths from the previous resolution into the new build.
-    log "Source files changed, rebuilding all slices"
-    rm -rf "$SLICES_DIR" "$XCFRAMEWORK_PATH" "$DERIVED_DATA_PATH" "$SPM_BUILD_PATH" "$SPM_WORKSPACE_PATH"
+# Filter out platforms whose slice is already up to date.
+platforms_to_build=()
+for platform in "${PLATFORMS[@]}"; do
+  slice_id=$(platform_slice_id "$platform")
+  slice_hash_file="${XCFRAMEWORK_PATH}/${slice_id}/.build-hash"
+  if [[ -f "$slice_hash_file" ]] && [[ "$(cat "$slice_hash_file")" == "$current_hash" ]]; then
+    continue
   fi
+  platforms_to_build+=("$platform")
+done
+
+if [[ ${#platforms_to_build[@]} -eq 0 ]]; then
+  log "xcframework slices up to date, skipping build"
+  exit 0
 fi
+
+PLATFORMS=("${platforms_to_build[@]}")
 
 SECONDS=0
 
@@ -306,7 +308,7 @@ for platform in "${PLATFORMS[@]}"; do
   build_slice "$platform"
 done
 
-assemble_xcframework
+write_xcframework_plist "$XCFRAMEWORK_PATH" "$PACKAGE_NAME"
 
-SLICE_NAMES=$(for d in "${XCFRAMEWORK_PATH}"/*/; do basename "$d"; done | paste -sd', ' - | sed 's/,/, /g')
+SLICE_NAMES=$(for d in "${XCFRAMEWORK_PATH}"/*/; do basename "$d"; done | LC_ALL=C sort | tr '\n' ',' | sed 's/,$//;s/,/, /g')
 log "Built xcframework successfully in ${SECONDS}s (${SLICE_NAMES})"
