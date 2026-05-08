@@ -37,7 +37,7 @@ export default function UncontrolledTextInputExample() {
           ref={inputRef}
           defaultValue="hello"
           placeholder="Type here"
-          onChangeText={(value) => console.log(value)}
+          onChangeText={value => console.log(value)}
         />
         <Button label="Clear" onPress={() => inputRef.current?.clear()} />
       </Column>
