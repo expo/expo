@@ -83,7 +83,7 @@ public class Session: MetricsReceiver, @unchecked Sendable {
         try AppMetrics.database.updateSessionActiveStatus(
           id: self.id,
           isActive: false,
-          endDate: endDate.ISO8601Format()
+          endTimestamp: endDate.ISO8601Format()
         )
         try AppMetrics.database.insert(metric: MetricRow.from(metric: durationMetric, sessionId: self.id))
       } catch {

@@ -32,8 +32,8 @@ public struct StoredSession: Codable, Sendable {
     let session = row.session
     self.id = session.id
     self.type = Session.SessionType(rawValue: session.type) ?? .unknown
-    self.startDate = session.startDate
-    self.endDate = session.endDate
+    self.startDate = session.startTimestamp
+    self.endDate = session.endTimestamp
     self.isActive = session.isActive
     self.environment = session.environment
     self.languageTag = session.languageTag

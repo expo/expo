@@ -65,8 +65,8 @@ public struct CrashReport: Codable, Sendable {
     let payloadBegin = timestampBegin.ISO8601Format()
     let payloadEnd = timestampEnd.ISO8601Format()
     let intersecting = mainSessions.filter { session in
-      let sessionEnd = session.endDate ?? .distantFutureTimestamp
-      return session.startDate <= payloadEnd && sessionEnd >= payloadBegin
+      let sessionEnd = session.endTimestamp ?? .distantFutureTimestamp
+      return session.startTimestamp <= payloadEnd && sessionEnd >= payloadBegin
     }
     let candidates: [SessionRow]
     if !intersecting.isEmpty {
@@ -76,11 +76,11 @@ public struct CrashReport: Codable, Sendable {
     } else {
       return nil
     }
-    let unfinished = candidates.filter({ $0.endDate == nil })
-    if let session = unfinished.max(by: { $0.startDate < $1.startDate }) {
+    let unfinished = candidates.filter({ $0.endTimestamp == nil })
+    if let session = unfinished.max(by: { $0.startTimestamp < $1.startTimestamp }) {
       return session
     }
-    return candidates.max(by: { $0.startDate < $1.startDate })
+    return candidates.max(by: { $0.startTimestamp < $1.startTimestamp })
   }
 
   /**

@@ -17,7 +17,7 @@ final class MetricsDatabase {
    database is wiped and recreated (see `openConnection`). We don't ship migrations yet — the data
    is local-only and short-lived, so wiping is preferable to maintaining migration code.
    */
-  static let currentSchemaVersion = 2
+  static let currentSchemaVersion = 3
 
   let database: SQLiteDatabase
 
@@ -108,7 +108,7 @@ final class MetricsDatabase {
   func insert(session: SessionRow) throws {
     let statement = try database.prepare("""
       INSERT OR IGNORE INTO sessions (
-        id, type, startDate, endDate, isActive, environment,
+        id, type, startTimestamp, endTimestamp, isActive, environment,
         appName, appIdentifier, appVersion, appBuildNumber,
         appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
         deviceOs, deviceOsVersion, deviceModel, deviceName,
@@ -122,7 +122,7 @@ final class MetricsDatabase {
       )
       """)
     try statement.bindAll([
-      session.id, session.type, session.startDate, session.endDate, session.isActive, session.environment,
+      session.id, session.type, session.startTimestamp, session.endTimestamp, session.isActive, session.environment,
       session.appName, session.appIdentifier, session.appVersion, session.appBuildNumber,
       session.appUpdateId, session.appUpdateRuntimeVersion, session.appUpdateRequestHeaders, session.appEasBuildId,
       session.deviceOs, session.deviceOsVersion, session.deviceModel, session.deviceName,
@@ -143,18 +143,18 @@ final class MetricsDatabase {
   }
 
   @AppMetricsActor
-  func updateSessionActiveStatus(id: String, isActive: Bool, endDate: String?) throws {
+  func updateSessionActiveStatus(id: String, isActive: Bool, endTimestamp: String?) throws {
     let statement = try database.prepare("""
-      UPDATE sessions SET isActive = ?1, endDate = ?2 WHERE id = ?3
+      UPDATE sessions SET isActive = ?1, endTimestamp = ?2 WHERE id = ?3
       """)
-    try statement.bindAll([isActive, endDate, id])
+    try statement.bindAll([isActive, endTimestamp, id])
     try statement.run()
   }
 
   @AppMetricsActor
   func deactivateAllSessionsBefore(timestamp: String) throws {
     let statement = try database.prepare("""
-      UPDATE sessions SET isActive = 0 WHERE isActive = 1 AND startDate < ?1
+      UPDATE sessions SET isActive = 0 WHERE isActive = 1 AND startTimestamp < ?1
       """)
     try statement.bindAll([timestamp])
     try statement.run()
@@ -219,7 +219,7 @@ final class MetricsDatabase {
 
   @AppMetricsActor
   func getAllSessions() throws -> [SessionRow] {
-    return try collectSessions(sql: "SELECT \(sessionColumns) FROM sessions ORDER BY startDate DESC")
+    return try collectSessions(sql: "SELECT \(sessionColumns) FROM sessions ORDER BY startTimestamp DESC")
   }
 
   /**
@@ -295,7 +295,7 @@ final class MetricsDatabase {
   @AppMetricsActor
   func getAllActiveSessions() throws -> [SessionRow] {
     return try collectSessions(sql: """
-      SELECT \(sessionColumns) FROM sessions WHERE isActive = 1 ORDER BY startDate DESC
+      SELECT \(sessionColumns) FROM sessions WHERE isActive = 1 ORDER BY startTimestamp DESC
       """)
   }
 
@@ -310,12 +310,12 @@ final class MetricsDatabase {
     try database.transaction {
       let dropCrashReports = try database.prepare("""
         DELETE FROM crash_reports
-        WHERE sessionId IN (SELECT id FROM sessions WHERE startDate < ?1)
+        WHERE sessionId IN (SELECT id FROM sessions WHERE startTimestamp < ?1)
         """)
       try dropCrashReports.bindAll([cutoff])
       try dropCrashReports.run()
 
-      let dropSessions = try database.prepare("DELETE FROM sessions WHERE startDate < ?1")
+      let dropSessions = try database.prepare("DELETE FROM sessions WHERE startTimestamp < ?1")
       try dropSessions.bindAll([cutoff])
       try dropSessions.run()
     }
@@ -470,8 +470,8 @@ final class MetricsDatabase {
       CREATE TABLE IF NOT EXISTS sessions (
         id TEXT PRIMARY KEY NOT NULL,
         type TEXT NOT NULL,
-        startDate TEXT NOT NULL,
-        endDate TEXT,
+        startTimestamp TEXT NOT NULL,
+        endTimestamp TEXT,
         isActive INTEGER NOT NULL DEFAULT 1,
         environment TEXT,
         appName TEXT,
@@ -544,7 +544,7 @@ final class MetricsDatabase {
   }
 
   private let sessionColumns = """
-    id, type, startDate, endDate, isActive, environment,
+    id, type, startTimestamp, endTimestamp, isActive, environment,
     appName, appIdentifier, appVersion, appBuildNumber,
     appUpdateId, appUpdateRuntimeVersion, appUpdateRequestHeaders, appEasBuildId,
     deviceOs, deviceOsVersion, deviceModel, deviceName,
