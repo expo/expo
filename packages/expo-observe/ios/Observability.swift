@@ -20,6 +20,8 @@ internal struct ObservabilityManager {
   }
 
   private static func dispatchMetrics(shouldDispatch: Bool) async {
+    repairMetricCursorIfStale()
+
     let cursor = ObserveUserDefaults.lastDispatchedMetricId
     let pendingMetrics: [MetricRow]
     do {
@@ -70,6 +72,8 @@ internal struct ObservabilityManager {
     guard useOpenTelemetry else {
       return
     }
+    repairLogCursorIfStale()
+
     let cursor = ObserveUserDefaults.lastDispatchedLogId
     let pendingLogs: [LogRow]
     do {
@@ -218,3 +222,4 @@ internal struct ObservabilityManager {
     return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }
+

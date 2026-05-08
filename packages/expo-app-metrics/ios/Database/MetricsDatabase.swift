@@ -367,6 +367,16 @@ final class MetricsDatabase {
     return rows
   }
 
+  /**
+   Returns the highest `id` currently in the metrics table, or `nil` if it's empty. Useful for
+   detecting that an externally-held cursor (e.g. expo-observe's dispatch progress) has fallen out
+   of sync with the table — usually because the database was wiped on a schema mismatch.
+   */
+  @AppMetricsActor
+  func getMaxMetricId() throws -> Int64? {
+    return try selectMaxId(table: "metrics")
+  }
+
   // MARK: - Logs
 
   @AppMetricsActor
@@ -408,6 +418,11 @@ final class MetricsDatabase {
       rows.append(LogRow(row: row))
     }
     return rows
+  }
+
+  @AppMetricsActor
+  func getMaxLogId() throws -> Int64? {
+    return try selectMaxId(table: "logs")
   }
 
   // MARK: - Crash reports
@@ -541,6 +556,18 @@ final class MetricsDatabase {
       rows.append(SessionRow(row: row))
     }
     return rows
+  }
+
+  @AppMetricsActor
+  private func selectMaxId(table: String) throws -> Int64? {
+    // The table name is a literal we control (`metrics` / `logs`), so interpolating into the SQL
+    // text is safe — SQLite has no parameter placeholder for identifiers.
+    let statement = try database.prepare("SELECT MAX(id) FROM \(table)")
+    var maxId: Int64?
+    try statement.forEachRow { row in
+      maxId = row.int64(at: 0)
+    }
+    return maxId
   }
 
   private let sessionColumns = """

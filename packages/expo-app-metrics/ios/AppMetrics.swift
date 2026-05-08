@@ -64,6 +64,24 @@ public struct AppMetrics {
     return try database.getSessions(ids: ids)
   }
 
+  /**
+   The largest metric id currently in the database, or `nil` if the metrics table is empty.
+   Consumers can compare a persisted dispatch cursor against this to detect that the database was
+   wiped (or never reached the cursor's value) and reset their cursor accordingly.
+   */
+  @AppMetricsActor
+  public static func getMaxMetricId() throws -> Int64? {
+    return try database.getMaxMetricId()
+  }
+
+  /**
+   The largest log id currently in the database, or `nil` if the logs table is empty.
+   */
+  @AppMetricsActor
+  public static func getMaxLogId() throws -> Int64? {
+    return try database.getMaxLogId()
+  }
+
   // MARK: - Environment
 
   @AppMetricsActor
