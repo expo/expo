@@ -10,35 +10,11 @@ import FileMap, { DependencyPlugin, DiskCacheManager, HastePlugin } from '@expo/
 import ciInfo from 'ci-info';
 import path from 'node:path';
 
+import { composeMetroIgnorePatterns } from '../../../utils/composeMetroIgnorePatterns';
+
 function getIgnorePattern(config: ConfigT): RegExp {
   const { blockList, blacklistRE } = config.resolver;
-  const ignorePattern = blacklistRE || blockList;
-  if (!ignorePattern) {
-    return / ^/;
-  }
-  const combine = (regexes: RegExp[]) =>
-    new RegExp(
-      regexes
-        .map((regex, index) => {
-          if (regex.flags !== regexes[0]!.flags) {
-            throw new Error(
-              'Cannot combine blockList patterns, because they have different flags:\n' +
-                ' - Pattern 0: ' +
-                regexes[0]!.toString() +
-                '\n' +
-                ` - Pattern ${index}: ` +
-                regexes[index]!.toString()
-            );
-          }
-          return '(' + regex.source + ')';
-        })
-        .join('|'),
-      regexes[0]?.flags ?? ''
-    );
-  if (Array.isArray(ignorePattern)) {
-    return combine(ignorePattern);
-  }
-  return ignorePattern;
+  return composeMetroIgnorePatterns(blacklistRE || blockList);
 }
 
 interface CreateFileMapOptions {
