@@ -84,14 +84,19 @@ module Pod
 
     private
 
-    # Creates the stub xcframework for ExpoModulesJSI if it's missing or
-    # incomplete. CocoaPods only runs prepare_command when a pod is freshly
-    # downloaded or its podspec changes, so CI cache hits skip it. This method
-    # runs on every pod install to guarantee every declared slice is present —
-    # an xcframework with only some slices (e.g. simulator-only after a prior
-    # Debug build) breaks the per-slice copy script CocoaPods generates from
-    # Info.plist, which then leaves XCFrameworkIntermediates empty for the
-    # missing slice and surfaces as `No such module 'ExpoModulesJSI'`.
+    # Ensures every slice declared by ExpoModulesJSI's podspec exists in
+    # `Products/ExpoModulesJSI.xcframework`. CocoaPods only runs
+    # prepare_command when a pod is freshly downloaded or its podspec
+    # changes, so CI cache hits skip it. This method runs on every pod
+    # install to guarantee every declared slice is present — an xcframework
+    # with only some slices (e.g. simulator-only after a prior Debug build)
+    # breaks the per-slice copy script CocoaPods generates from Info.plist,
+    # which then leaves XCFrameworkIntermediates empty for the missing slice
+    # and surfaces as `No such module 'ExpoModulesJSI'`.
+    #
+    # The script itself is idempotent and only stamps slices that are
+    # missing, so always invoking it is cheaper than maintaining a separate
+    # completeness check that would have to mirror the script's slice list.
     def ensure_expo_modules_jsi_stub_xcframework
       jsi_target = self.pod_targets.find { |t| t.name == 'ExpoModulesJSI' }
       return if jsi_target.nil?
@@ -99,29 +104,7 @@ module Pod
       pod_dir = jsi_target.sandbox.pod_dir('ExpoModulesJSI')
       return unless File.directory?(pod_dir)
 
-      xcframework_path = File.join(pod_dir, 'Products', 'ExpoModulesJSI.xcframework')
-      return if expo_modules_jsi_xcframework_complete?(xcframework_path)
-
       system('./scripts/create-stub-xcframework.sh', chdir: pod_dir.to_s)
-    end
-
-    # Must match `EXPO_MODULES_JSI_REQUIRED_SLICE_IDS` in
-    # `apple/scripts/xcframework-helpers.sh`, which is the list of slices
-    # `create-stub-xcframework.sh` materializes on `pod install`. If the two
-    # drift, the completeness check below could pass without verifying every
-    # stamped slice and the self-healing guarantee breaks.
-    EXPO_MODULES_JSI_REQUIRED_SLICES = %w[
-      ios-arm64
-      ios-arm64_x86_64-simulator
-      tvos-arm64
-      tvos-arm64_x86_64-simulator
-    ].freeze
-
-    def expo_modules_jsi_xcframework_complete?(xcframework_path)
-      return false unless File.directory?(xcframework_path)
-      EXPO_MODULES_JSI_REQUIRED_SLICES.all? do |slice_id|
-        File.file?(File.join(xcframework_path, slice_id, 'ExpoModulesJSI.framework', 'ExpoModulesJSI'))
-      end
     end
 
     # We should only disable USE_FRAMEWORKS for specific pods when:
