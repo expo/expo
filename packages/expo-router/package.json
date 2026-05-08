@@ -101,6 +101,7 @@
     "react-native-reanimated": "*",
     "react-native-safe-area-context": ">= 5.4.0",
     "react-native-screens": "^4.25.0",
+    "react-native-tab-view": "^4.3.0",
     "react-native-web": "*",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
@@ -115,6 +116,9 @@
       "optional": true
     },
     "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-tab-view": {
       "optional": true
     },
     "react-native-web": {

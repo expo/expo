@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Improve the error message for missing dependencies of js-top-tabs ([#45547](https://github.com/expo/expo/pull/45547) by [@Ubax](https://github.com/Ubax))
+
 ## 56.2.0 — 2026-05-13
 
 ### 🎉 New features
@@ -31,6 +33,7 @@
 ### 💡 Others
 
 - expose `pagePreloaded` listener ([#45725](https://github.com/expo/expo/pull/45725) by [@Ubax](https://github.com/Ubax))
+- Move `pointerEvents` from component prop to style property in react-navigation views. ([#45519](https://github.com/expo/expo/pull/45519) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 56.1.4 — 2026-05-13
 
@@ -66,7 +69,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
-- Move `pointerEvents` from component prop to style property in react-navigation views. ([#45519](https://github.com/expo/expo/pull/45519) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 56.1.0 — 2026-05-07
 
 ### 🎉 New features
