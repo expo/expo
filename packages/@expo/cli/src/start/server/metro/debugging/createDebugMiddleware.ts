@@ -59,23 +59,49 @@ export function createDebugMiddleware({
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
   websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
 
-  // Explicitly limit debugger websocket to loopback requests
-  debuggerWebsocketEndpoint.on('connection', (socket, request) => {
-    if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
-      // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
-      // `socket.terminate` instead forcefully closes down the socket
-      socket.terminate();
-    }
-  });
+  const allowRemoteDebugging = env.EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING;
+
+  if (!allowRemoteDebugging) {
+    // Explicitly limit debugger websocket to loopback requests
+    debuggerWebsocketEndpoint.on('connection', (socket, request) => {
+      if (!isLocalSocket(request.socket) || !isMatchingOrigin(request, serverBaseUrl)) {
+        // NOTE: `socket.close` nicely closes the websocket, which will still allow incoming messages
+        // `socket.terminate` instead forcefully closes down the socket
+        socket.terminate();
+      }
+    });
+  } else {
+    debuggerWebsocketEndpoint.on('connection', (socket, request) => {
+      if (!isLocalSocket(request.socket)) {
+        const remoteAddress = request.socket.remoteAddress ?? 'unknown';
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'warn',
+          data: [
+            `Remote debugger connection accepted from non-local address: ${remoteAddress}. This is allowed because EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING is enabled.`,
+          ],
+        });
+      }
+    });
+  }
 
   return {
     debugMiddleware(req, res, next) {
-      // The debugger middleware is skipped entirely if the connection isn't a loopback request
       if (isLocalSocket(req.socket)) {
         return middleware(req, res, next);
-      } else {
-        return next();
       }
+      if (allowRemoteDebugging) {
+        const remoteAddress = req.socket.remoteAddress ?? 'unknown';
+        reporter.update({
+          type: 'unstable_server_log',
+          level: 'warn',
+          data: [
+            `Remote debugger request accepted from non-local address: ${remoteAddress}. This is allowed because EXPO_DANGEROUSLY_ALLOW_REMOTE_DEBUGGING is enabled.`,
+          ],
+        });
+        return middleware(req, res, next);
+      }
+      return next();
     },
     debugWebsocketEndpoints: websocketEndpoints,
   };
