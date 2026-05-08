@@ -141,7 +141,9 @@ public struct Conversions {
     return try anyToJavaScriptValue(value, appContext: appContext, in: appContext.runtime)
   }
 
-  /// Variant that creates JS values in the given `runtime`, used by the worklet conversion
+  /**
+   Variant that creates JS values in the given `runtime`, used by the worklet conversion.
+   */
   static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if ValueType.self is AnyOptional.Type, Optional.isNil(value) {
       return .null
@@ -161,8 +163,10 @@ public struct Conversions {
     return try unknownToJavaScriptValue(value, appContext: appContext, in: appContext.runtime)
   }
 
-  /// Variant that creates JS values in the given `runtime` — used by the worklet conversion
-  /// path so produced dicts/arrays live in the calling runtime, not the main runtime.
+  /**
+   Variant that creates JS values in the given `runtime` — used by the worklet conversion
+   path so produced dicts/arrays live in the calling runtime, not the main runtime.
+   */
   static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if let value = value as? JavaScriptRepresentable {
       return .representing(value: value, in: runtime)

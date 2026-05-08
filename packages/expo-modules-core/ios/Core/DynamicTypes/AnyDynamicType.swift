@@ -36,7 +36,9 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
 
-  /// Runtime-aware `castToJS`.
+  /**
+   Runtime-aware `castToJS`.
+   */
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue
 
   /**
@@ -46,7 +48,9 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
    */
   func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
 
-  /// Runtime-aware `convertToJS`.
+  /**
+   Runtime-aware `convertToJS`.
+   */
   func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue
 
   /**

@@ -43,7 +43,9 @@ public struct MainValueConverter: ~Copyable {
     return try type.convertToJS(value, appContext: appContext)
   }
 
-  /// `toJS` variant that targets a specific runtime. Useful for Worklet runtime conversions
+  /**
+   `toJS` variant that targets a specific runtime. Useful for Worklet runtime conversions.
+   */
   @JavaScriptActor
   public func toJS(_ value: Any, _ type: AnyDynamicType, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     return try type.convertToJS(value, appContext: appContext, in: runtime)
