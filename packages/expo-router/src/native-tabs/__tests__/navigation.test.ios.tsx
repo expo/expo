@@ -41,7 +41,7 @@ describe('Native Bottom Tabs Navigation', () => {
 
   function lastHostSelectedKey() {
     const calls = TabsHost.mock.calls;
-    return calls[calls.length - 1][0].navState.selectedScreenKey;
+    return calls[calls.length - 1][0].navStateRequest.selectedScreenKey;
   }
 
   function expectIndexTabFocused(renderNumber = 1) {

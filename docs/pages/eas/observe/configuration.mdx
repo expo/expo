@@ -71,6 +71,8 @@ ExpoObserve.configure({
 });
 ```
 
+A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value (see [Environments](#environments)).
+
 `dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](#configure) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
 
 > **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
@@ -97,6 +99,6 @@ The endpoint URL is baked into the native layer of the app at build time, so cha
 
 ## Environments
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default. To override it, use [`configure({ environment })`](#configure).
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset). To override it, use [`configure({ environment })`](#configure).
 
-Metrics collected from debug builds are dropped before dispatching unless [`dispatchInDebug` is set to `true`](#enable-metrics-in-development) via `configure()`. You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+The environment is a metadata tag attached to each metric and is independent of how the bundle was built. To control whether debug-build metrics are dispatched, see [Enable metrics in development](#enable-metrics-in-development). To disable all dispatching globally, use `configure({ dispatchingEnabled: false })`.

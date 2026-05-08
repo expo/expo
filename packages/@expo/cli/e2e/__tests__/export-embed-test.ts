@@ -389,13 +389,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     'output.js.map',
     'raw/__e2e___staticrendering_sweet.ttf',
 
-    expect.stringMatching(/raw\/.*_100thin\.ttf$/),
-    expect.stringMatching(/raw\/.*_200extralight\.ttf$/),
-    expect.stringMatching(/raw\/.*_300light\.ttf$/),
     expect.stringMatching(/raw\/.*_400regular\.ttf$/),
-    expect.stringMatching(/raw\/.*_500medium\.ttf$/),
-    expect.stringMatching(/raw\/.*_600semibold\.ttf$/),
-    expect.stringMatching(/raw\/.*_700bold\.ttf$/),
     expect.stringMatching(/raw\/.*_evilicons\.ttf$/),
 
     'raw/keep.xml',

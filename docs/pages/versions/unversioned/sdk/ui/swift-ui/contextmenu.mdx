@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI ContextMenu matches the official SwiftUI [contextMenu API](<https://developer.apple.com/documentation/swiftui/view/contextmenu(menuitems:)>) and displays a menu when long-pressed. For single-tap menu interactions, use [`Menu`](menu) instead.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/contextmenu/ios-light.webp"
+    darkSource="/static/images/expo-ui/contextmenu/ios-dark.webp"
+    alt="A long-pressed tile shown as an enlarged preview with a Share, Favorite, Delete menu beneath it"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

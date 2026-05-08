@@ -628,7 +628,13 @@ function getCacheKey(config, opts) {
         require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
         ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
     ]);
-    const babelTransformer = require(babelTransformerPath);
+    let babelTransformer = require(babelTransformerPath);
+    // NOTE(@kitten): Many custom Babel transformers won't have `getCacheKey` yet and won't
+    // pass ours through. We should still try to derive a cache key though, since the default
+    // looks at a user's Babel config, if they have one
+    if (config.extendsBabelConfigPath && !babelTransformer.getCacheKey) {
+        babelTransformer = require('../babel-transformer');
+    }
     const babelTransformerCacheKey = babelTransformer.getCacheKey
         ? babelTransformer.getCacheKey({
             projectRoot: opts?.projectRoot,

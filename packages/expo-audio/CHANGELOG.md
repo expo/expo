@@ -12,6 +12,18 @@
 
 - [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`).([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
 
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.0 — 2026-05-05
 
 ### 🛠 Breaking changes

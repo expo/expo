@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-orientation",
-  "version": "56.0.0",
+  "version": "56.0.3",
   "description": "Expo universal module for managing device's screen orientation",
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",
@@ -36,10 +36,11 @@
   },
   "devDependencies": {
     "@types/node": "^22.14.0",
-    "expo-module-scripts": "56.0.0"
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "*",
     "react-native": "*"
   }
 }

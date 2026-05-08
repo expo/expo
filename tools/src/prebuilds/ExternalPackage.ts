@@ -114,7 +114,7 @@ export class ExternalPackage implements SPMPackageSource {
     if (!fs.existsSync(this.path)) {
       throw new Error(
         `External package "${packageName}" not found in node_modules. ` +
-          `Expected at: ${this.path}. Please run yarn install.`
+          `Expected at: ${this.path}. Please run pnpm install.`
       );
     }
 

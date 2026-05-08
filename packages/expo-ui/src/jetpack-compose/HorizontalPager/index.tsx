@@ -2,8 +2,10 @@ import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 
 import { type ModifierConfig, type ViewEvent } from '../../types';
-import type { PaddingValuesRecord } from '../Carousel';
+import { type PaddingValuesRecord } from '../Carousel';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+export type { PaddingValuesRecord };
 
 export type HorizontalPagerHandle = {
   /**

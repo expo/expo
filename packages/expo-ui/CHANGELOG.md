@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+### 🐛 Bug fixes
+
+- Fix Compose `TextField` selection state synchronization. ([#45424](https://github.com/expo/expo/pull/45424) by [@nishan](https://github.com/intergalacticspacehighway))
+- Fixed dynamic sizing regression for `@expo/ui/community/bottom-sheet`. ([#45412](https://github.com/expo/expo/pull/45412) by [@kudo](https://github.com/kudo))
+
 ## 56.0.1 — 2026-05-05
 
 _This version does not introduce any user-facing changes._
@@ -26,11 +37,13 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [android] Use `LocalContentColor` when `tint` is omitted ([#45329](https://github.com/expo/expo/pull/45329) by [@Ubax](https://github.com/Ubax))
 - [universal] Added `TextInput` component that mirrors RN's `TextInput` API but routes to SwiftUI on iOS, Compose on Android, and RN's `TextInput` on web. ([#45205](https://github.com/expo/expo/pull/45205) by [@nishan](https://github.com/intergalacticspacehighway))
 - [compose] Exposed extension utilities for third-party modules: `ModifierRegistry.unregister`, and re-exported `createModifier` / `createModifierWithEventListener` / `createViewModifierEventListener` from `@expo/ui/jetpack-compose/modifiers`. Exported `PrimitiveBaseProps` from `@expo/ui/jetpack-compose`. ([#45122](https://github.com/expo/expo/pull/45122) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `colors` prop to `HorizontalFloatingToolbar` to override the variant's default toolbar and FAB container/content colors. ([#45244](https://github.com/expo/expo/pull/45244) by [@Ubax](https://github.com/Ubax))
 - [android] Added `HorizontalPager` component wrapping Compose's `HorizontalPager`. ([#45163](https://github.com/expo/expo/pull/45163) by [@vonovak](https://github.com/vonovak))
 - [compose] Added worklet and `ObservableState` support to `TextField`. Added `value` prop accepting `ObservableState<string | TextFieldValue>` (create via `useNativeState`). `onValueChange` now supports worklets for synchronous UI-thread updates. Added `TextFieldValue` type with `text` + `selection` for worklet-driven caret control. Replaced `defaultValue`, callers pass state via `useNativeState` or omit for an empty field. ([#45024](https://github.com/expo/expo/pull/45024) by [@nishan](https://github.com/intergalacticspacehighway))
+- Added `@expo/ui/community/masked-view` — a drop-in replacement for `@react-native-masked-view/masked-view`. ([#45488](https://github.com/expo/expo/pull/45488) by [@vonovak](https://github.com/vonovak))
 - [android] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44681](https://github.com/expo/expo/pull/44681) by [@nishan](https://github.com/intergalacticspacehighway))
 - [android] Add `ObservableState` shared object and `useNativeState` hook for controlling native Compose state from JS. ([#44655](https://github.com/expo/expo/pull/44655) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Mask` component wrapping SwiftUI's `.mask(alignment:_:)` modifier, with a `Mask.Content` slot for the mask element. ([#44934](https://github.com/expo/expo/pull/44934) by [@vonovak](https://github.com/vonovak))

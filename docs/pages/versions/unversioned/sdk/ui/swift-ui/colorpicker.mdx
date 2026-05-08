@@ -8,8 +8,18 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI ColorPicker matches the official SwiftUI [ColorPicker API](https://developer.apple.com/documentation/swiftui/colorpicker) and allows app users to select colors from a palette.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/colorpicker/ios-light.webp"
+    darkSource="/static/images/expo-ui/colorpicker/ios-dark.webp"
+    alt="ColorPicker row inside a Form, showing the current color swatch"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

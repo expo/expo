@@ -8,8 +8,18 @@ platforms: ['ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https://developer.apple.com/documentation/swiftui/disclosuregroup) and displays a disclosure indicator that reveals or hides content.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/disclosuregroup/ios-light.webp"
+    darkSource="/static/images/expo-ui/disclosuregroup/ios-dark.webp"
+    alt="DisclosureGroup expanded inside a Form"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 
@@ -19,15 +29,28 @@ Expo UI DisclosureGroup matches the official SwiftUI [DisclosureGroup API](https
 
 ### Basic disclosure group
 
+`DisclosureGroup` is most commonly used inside a [`Form`](form) so it picks up the standard iOS list styling with a chevron indicator.
+
 ```tsx BasicDisclosureGroupExample.tsx
-import { Host, DisclosureGroup, Text } from '@expo/ui/swift-ui';
+import { useState } from 'react';
+import { DisclosureGroup, Form, Host, Section, Text } from '@expo/ui/swift-ui';
 
 export default function BasicDisclosureGroupExample() {
+  const [isExpanded, setIsExpanded] = useState(true);
   return (
-    <Host matchContents>
-      <DisclosureGroup label="More Information">
-        <Text>This content is revealed when the disclosure group is expanded.</Text>
-      </DisclosureGroup>
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section>
+          <DisclosureGroup
+            label="Advanced settings"
+            isExpanded={isExpanded}
+            onIsExpandedChange={setIsExpanded}>
+            <Text>Auto-update apps</Text>
+            <Text>App downloads</Text>
+            <Text>Offload unused apps</Text>
+          </DisclosureGroup>
+        </Section>
+      </Form>
     </Host>
   );
 }

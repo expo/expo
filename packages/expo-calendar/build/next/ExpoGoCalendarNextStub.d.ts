@@ -19,8 +19,8 @@ declare class ExpoGoCalendarNextStub {
     getCalendars(): Promise<void>;
     listEvents(): Promise<void>;
     presentPicker(): Promise<void>;
-    requestCalendarPermissions(): Promise<PermissionResponse>;
-    getCalendarPermissions(): Promise<PermissionResponse>;
+    requestCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
+    getCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
     requestRemindersPermissions(): Promise<PermissionResponse>;
     getRemindersPermissions(): Promise<PermissionResponse>;
     getSourcesSync(): void;

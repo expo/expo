@@ -6,12 +6,6 @@ func createWidgetContext(layout: String) -> JSContext? {
     return nil
   }
 
-  context.exceptionHandler = { _, exception in
-    if let exception {
-      print("[ExpoWidgets] Layout evaluation failed: \(exception)")
-    }
-  }
-
   // Inject ExpoUI bundle
   guard let bundleURL = Bundle.main.url(forResource: "ExpoWidgets", withExtension: "bundle"),
         let bundle = Bundle(url: bundleURL),

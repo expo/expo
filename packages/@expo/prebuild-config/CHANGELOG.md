@@ -8,7 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Remove unnecessary warning when no icon is defined in the Expo config. ([#45515](https://github.com/expo/expo/pull/45515) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.0 — 2026-05-05
 

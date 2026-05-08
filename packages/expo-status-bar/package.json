@@ -1,6 +1,6 @@
 {
   "name": "expo-status-bar",
-  "version": "56.0.1",
+  "version": "56.0.4",
   "description": "Provides the same interface as the React Native StatusBar API, but with slightly different defaults to work great in Expo environments.",
   "main": "src/StatusBar",
   "types": "build/StatusBar.d.ts",
@@ -44,10 +44,11 @@
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "56.0.0"
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "56.0.0-preview.2",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   },

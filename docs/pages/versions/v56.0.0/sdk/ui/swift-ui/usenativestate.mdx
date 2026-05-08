@@ -1,0 +1,75 @@
+---
+title: useNativeState
+description: A React hook that creates observable state shared between JavaScript and native SwiftUI views.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui/src/State/useNativeState.ts'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+`useNativeState` returns an [`ObservableState`](#observablestate) that maps to a SwiftUI [`ObservableObject`](https://developer.apple.com/documentation/combine/observableobject) on the native side, so reads and writes to `.value` are observed directly by SwiftUI without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+> **Note:** Using worklets requires installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) in your project. `useNativeState` itself works without them, but the synchronous UI-thread updates shown below depend on the worklet runtime.
+
+The example below masks a phone number as the user types. The formatting and the write to `maskedPhone.value` both happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
+
+```tsx WorkletPhoneMaskExample.tsx
+import { Host, TextField, TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
+import { keyboardType } from '@expo/ui/swift-ui/modifiers';
+import { useCallback, useRef } from 'react';
+import { runOnJS } from 'react-native-worklets';
+
+export default function WorkletPhoneMaskExample() {
+  const phoneRef = useRef<TextFieldRef>(null);
+  const maskedPhone = useNativeState('');
+
+  const setPhoneCursor = useCallback((position: number) => {
+    phoneRef.current?.setSelection(position, position);
+  }, []);
+
+  return (
+    <Host matchContents>
+      <TextField
+        ref={phoneRef}
+        text={maskedPhone}
+        placeholder="(555) 123-4567"
+        modifiers={[keyboardType('phone-pad')]}
+        onTextChange={v => {
+          'worklet';
+          const digits = v.replace(/\D/g, '').slice(0, 10);
+          let formatted: string;
+          if (digits.length === 0) {
+            formatted = '';
+          } else if (digits.length <= 3) {
+            formatted = digits;
+          } else if (digits.length <= 6) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+          } else {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+          }
+          if (formatted !== v) {
+            maskedPhone.value = formatted;
+            runOnJS(setPhoneCursor)(formatted.length);
+          }
+        }}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { useNativeState } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/usenativestate" apiName="useNativeState" />

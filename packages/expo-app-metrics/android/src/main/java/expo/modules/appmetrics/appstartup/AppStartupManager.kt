@@ -9,8 +9,10 @@ import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.TAG
+import expo.modules.appmetrics.frames.FrameMetricsRecord
 import expo.modules.appmetrics.frames.FrameMetricsRecorder
 import expo.modules.appmetrics.storage.Metric
+import expo.modules.appmetrics.utils.DeviceConditions
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
@@ -203,23 +205,36 @@ object AppStartupManager {
     }
   }
 
-  fun markInteractive(routeName: String? = null, params: Map<String, Any>? = null) {
+  fun markInteractive(context: Context, routeName: String? = null, params: Map<String, Any>? = null) {
     if (startupState != StartupState.LAUNCHING || hasRecordedInteractive) return
     hasRecordedInteractive = true
 
     val frameMetrics = frameMetricsRecorder.stop()
-    val mergedParams = if (frameMetrics.expectedFrames > 0) {
-      params.orEmpty() + mapOf(
-        "frameRate.slowFrames" to frameMetrics.slowFrames,
-        "frameRate.frozenFrames" to frameMetrics.frozenFrames,
-        "frameRate.totalDelay" to frameMetrics.freezeTimeMs.toDouble() / 1000.0
-      )
-    } else {
-      params
-    }
+    val merged = buildInteractiveParams(context, frameMetrics, params)
 
-    addMetricSinceLaunch(AppStartupMetric.TimeToInteractive, routeName, mergedParams)
+    addMetricSinceLaunch(
+      AppStartupMetric.TimeToInteractive,
+      routeName,
+      if (merged.isEmpty()) null else merged
+    )
     startupState = StartupState.LAUNCHED
+  }
+
+  private fun buildInteractiveParams(
+    context: Context,
+    frameMetrics: FrameMetricsRecord,
+    userParams: Map<String, Any>?
+  ): Map<String, Any> {
+    val merged = mutableMapOf<String, Any>()
+    userParams?.let { merged.putAll(it) }
+    if (frameMetrics.expectedFrames > 0) {
+      merged["expo.frameRate.slowFrames"] = frameMetrics.slowFrames
+      merged["expo.frameRate.frozenFrames"] = frameMetrics.frozenFrames
+      merged["expo.frameRate.totalDelay"] = frameMetrics.freezeTimeMs.toDouble() / 1000.0
+    }
+    merged.putAll(DeviceConditions.deviceParams(context))
+    merged.putAll(DeviceConditions.networkParams(context))
+    return merged
   }
 
   fun markFirstRender() {

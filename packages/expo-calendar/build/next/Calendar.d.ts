@@ -1,4 +1,4 @@
-import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus } from '../Calendar';
+import type { Calendar, Attendee, DialogEventResult, EntityTypes, Event, RecurringEventOptions, Reminder, ReminderStatus, PermissionResponse } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
 import type { ModifiableEventProperties, ModifiableReminderProperties, ModifiableCalendarProperties, ModifiableAttendeeProperties, AddEventWithFormOptions } from './ExpoCalendar.types';
 /**
@@ -78,24 +78,28 @@ export declare function presentPicker(): Promise<ExpoCalendar | null>;
 export declare function listEvents(calendars: (string | ExpoCalendar)[], startDate: Date, endDate: Date): Promise<ExpoCalendarEvent[]>;
 /**
  * Asks the user to grant permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to request write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const requestCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const requestCalendarPermissions: (writeOnly?: boolean) => Promise<PermissionResponse>;
 /**
  * Checks user's permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to check write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const getCalendarPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getCalendarPermissions: (writeOnly?: boolean) => Promise<PermissionResponse>;
 /**
  * Asks the user to grant permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const requestRemindersPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const requestRemindersPermissions: () => Promise<PermissionResponse>;
 /**
  * Checks user's permissions for accessing user's reminders.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
-export declare const getRemindersPermissions: () => Promise<import("expo-modules-core").PermissionResponse>;
+export declare const getRemindersPermissions: () => Promise<PermissionResponse>;
 /**
  * Gets an array of Source objects with details about the different sources stored on the device.
  * @returns An array of Source objects representing the sources found.
@@ -108,13 +112,17 @@ export { AlarmMethod, AttendeeRole, AttendeeStatus, AttendeeType, Availability, 
  * Check or request permissions to access the user's calendars.
  * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
  * with the permissions.
+ * On iOS, `writeOnly` requests permission to create calendar events without reading
+ * existing calendars or events. It does not grant permission to create, update, or delete calendars.
  *
  * @example
  * ```ts
  * const [status, requestPermission] = Calendar.useCalendarPermissions();
  * ```
  */
-export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [import("expo-modules-core").PermissionResponse | null, () => Promise<import("expo-modules-core").PermissionResponse>, () => Promise<import("expo-modules-core").PermissionResponse>];
+export declare const useCalendarPermissions: (options?: import("expo-modules-core").PermissionHookOptions<{
+    writeOnly?: boolean;
+}> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 /**
  * Check or request permissions to access the user's reminders.
  * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
@@ -125,5 +133,5 @@ export declare const useCalendarPermissions: (options?: import("expo-modules-cor
  * const [status, requestPermission] = Calendar.useRemindersPermissions();
  * ```
  */
-export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [import("expo-modules-core").PermissionResponse | null, () => Promise<import("expo-modules-core").PermissionResponse>, () => Promise<import("expo-modules-core").PermissionResponse>];
+export declare const useRemindersPermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 //# sourceMappingURL=Calendar.d.ts.map

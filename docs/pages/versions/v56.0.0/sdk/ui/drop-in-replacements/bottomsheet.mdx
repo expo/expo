@@ -1,0 +1,168 @@
+---
+title: BottomSheet
+description: A bottom sheet compatible with @gorhom/bottom-sheet.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A `BottomSheet` component with an API compatible with `@gorhom/bottom-sheet`. It wraps the platform-specific `@expo/ui` primitives: [Jetpack Compose ModalBottomSheet](../jetpack-compose/bottomsheet) on Android and [SwiftUI BottomSheet](../swift-ui/bottomsheet) on iOS. On web, it uses a [vaul](https://github.com/emilkowalski/vaul) drawer.
+
+If you need lower-level control over platform-specific styling, modifiers, or layout behavior, use the native primitives directly.
+
+## Installation
+
+<APIInstallSection />
+
+## Migrating from `@gorhom/bottom-sheet`
+
+- Update imports from:
+
+  ```tsx
+  import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+  ```
+
+  To use `@expo/ui/community/bottom-sheet`:
+
+  ```tsx
+  import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
+  ```
+
+- `GestureHandlerRootView` from `react-native-gesture-handler` is not required by this implementation. You can leave it in place if other parts of your app need it.
+- Component and hook exports such as `BottomSheetBackdrop`, `BottomSheetHandle`, `BottomSheetFooter`, `BottomSheetDraggableView`, `BottomSheetVirtualizedList`, `BottomSheetFlashList`, `useBottomSheetModal`, `useBottomSheetSpringConfigs`, and `useBottomSheetTimingConfigs` are not supported. Some related prop types are exported for API compatibility.
+
+## Basic usage
+
+```tsx BottomSheetExample.tsx
+import { useRef } from 'react';
+import { Button, Text, View } from 'react-native';
+import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
+
+export default function BottomSheetExample() {
+  const sheetRef = useRef<BottomSheet>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Open" onPress={() => sheetRef.current?.snapToIndex(0)} />
+
+      <BottomSheet
+        ref={sheetRef}
+        snapPoints={['25%', '50%', '90%']}
+        index={-1}
+        onChange={index => {
+          console.log('onChange', index);
+        }}
+        onClose={() => {
+          console.log('closed');
+        }}
+        enablePanDownToClose>
+        <BottomSheetView style={{ flex: 1, padding: 24, alignItems: 'center' }}>
+          <Text>Sheet content</Text>
+        </BottomSheetView>
+      </BottomSheet>
+    </View>
+  );
+}
+```
+
+## `BottomSheetModal`
+
+Use `BottomSheetModal` when migrating from `@gorhom/bottom-sheet` modal APIs. It starts closed and opens with `present()`.
+
+```tsx BottomSheetModalExample.tsx
+import { useRef } from 'react';
+import { Button, Text, View } from 'react-native';
+import { BottomSheetModal, BottomSheetView } from '@expo/ui/community/bottom-sheet';
+
+export default function BottomSheetModalExample() {
+  const modalRef = useRef<BottomSheetModal>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Present" onPress={() => modalRef.current?.present()} />
+
+      <BottomSheetModal ref={modalRef} snapPoints={['50%', '90%']} enablePanDownToClose>
+        <BottomSheetView style={{ padding: 24 }}>
+          <Text>Modal content</Text>
+          <Button title="Dismiss" onPress={() => modalRef.current?.dismiss()} />
+        </BottomSheetView>
+      </BottomSheetModal>
+    </View>
+  );
+}
+```
+
+## Dynamic sizing
+
+When `snapPoints` is not provided, the sheet sizes to fit its content by default. Use `BottomSheetView` for the sheet content wrapper.
+
+```tsx DynamicBottomSheetExample.tsx
+import { useRef } from 'react';
+import { Button, Text, View } from 'react-native';
+import BottomSheet, { BottomSheetView } from '@expo/ui/community/bottom-sheet';
+
+export default function DynamicBottomSheetExample() {
+  const sheetRef = useRef<BottomSheet>(null);
+
+  return (
+    <View style={{ flex: 1 }}>
+      <Button title="Open" onPress={() => sheetRef.current?.present()} />
+
+      <BottomSheet ref={sheetRef} index={-1} enablePanDownToClose>
+        <BottomSheetView style={{ padding: 24 }}>
+          <Text>This sheet sizes itself to its content.</Text>
+        </BottomSheetView>
+      </BottomSheet>
+    </View>
+  );
+}
+```
+
+## Platform behavior
+
+`@gorhom/bottom-sheet` renders inline at the bottom of its parent view. This component uses native modal presentation on Android and iOS, and a drawer overlay on web.
+
+This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and animation layer through `react-native-gesture-handler` and `react-native-reanimated`, while `@expo/ui/community/bottom-sheet` delegates those behaviors to Jetpack Compose, SwiftUI, and the web drawer primitive. As a result, this component is best suited for modal bottom sheet flows, including callsites that use the `BottomSheet` API rather than `BottomSheetModal`.
+
+| Feature                | Android                                        | iOS                               | Web                           |
+| ---------------------- | ---------------------------------------------- | --------------------------------- | ----------------------------- |
+| Presentation           | Jetpack Compose modal bottom sheet             | SwiftUI sheet                     | vaul drawer                   |
+| Snap points            | Maps to partial and expanded states            | Supports provided snap points     | Supports provided snap points |
+| No `snapPoints`        | Fits content                                   | Fits content                      | Fits content                  |
+| Pan down to close      | Also enables back button and scrim tap dismiss | Also enables backdrop tap dismiss | Enables drawer dismiss        |
+| Persistent inline peek | Not supported                                  | Not supported                     | Not supported                 |
+
+## Supported exports
+
+| Export                     | Supported | Notes                                                     |
+| -------------------------- | --------- | --------------------------------------------------------- |
+| `BottomSheet`              | Yes       | Modal on Android and iOS, drawer on web                   |
+| `BottomSheetModal`         | Yes       | Starts closed and opens with `present()`                  |
+| `BottomSheetModalProvider` | Yes       | Renders children directly for compatibility               |
+| `BottomSheetView`          | Yes       | Wraps sheet content                                       |
+| `BottomSheetScrollView`    | Yes       | Re-export of React Native `ScrollView`                    |
+| `BottomSheetFlatList`      | Yes       | Re-export of React Native `FlatList`                      |
+| `BottomSheetSectionList`   | Yes       | Re-export of React Native `SectionList`                   |
+| `BottomSheetTextInput`     | Yes       | Re-export of React Native `TextInput`                     |
+| `useBottomSheet`           | Yes       | Returns the sheet ref methods from context                |
+| `BottomSheetBackdrop`      | No        | The native sheet or web drawer handles the backdrop       |
+| `BottomSheetHandle`        | No        | The native sheet or web drawer handles the drag indicator |
+| `BottomSheetFooter`        | No        | No equivalent in this implementation                      |
+
+## Compatibility notes
+
+- `snapPoints`, `index`, `onChange`, `onClose`, `onDismiss`, `enablePanDownToClose`, and `enableDynamicSizing` are supported.
+- `handleComponent={null}` hides the native or web drag indicator. Custom handle components are not rendered on native platforms.
+- `backgroundStyle` applies fully on web. On Android, `backgroundColor` is used for the native container color. On iOS, the system sheet background is used.
+- Animation, over-drag, content panning, handle panning, keyboard behavior, custom backdrop, custom background, custom footer, animated value, and detached props are accepted for API compatibility but do not change behavior.
+
+## API
+
+```tsx
+import BottomSheet from '@expo/ui/community/bottom-sheet';
+```
+
+<APISection packageName="expo-ui/community/bottom-sheet" apiName="BottomSheet" />

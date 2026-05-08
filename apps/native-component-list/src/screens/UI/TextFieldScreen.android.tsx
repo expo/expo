@@ -4,7 +4,6 @@ import {
   TextFieldKeyboardType,
   TextFieldImeAction,
   TextFieldCapitalization,
-  TextFieldValue,
   OutlinedTextField,
   Button,
   Host,
@@ -28,10 +27,8 @@ export default function TextFieldScreen() {
   const [lastAction, setLastAction] = React.useState('');
   const textRef = React.useRef<TextFieldRef>(null);
 
-  const maskedPhone = useNativeState<TextFieldValue>({
-    text: '',
-    selection: { start: 0, end: 0 },
-  });
+  const maskedPhoneText = useNativeState('');
+  const maskedPhoneSelection = useNativeState({ start: 0, end: 0 });
 
   const imperativeText = useNativeState('Select me!');
   const imperativeSelection = useNativeState<{ start: number; end: number }>({ start: 0, end: 0 });
@@ -151,12 +148,13 @@ export default function TextFieldScreen() {
           <Column modifiers={[p]} verticalArrangement={{ spacedBy: 8 }}>
             <ComposeText style={{ typography: 'labelLarge' }}>Worklet Phone Masking</ComposeText>
             <TextField
-              value={maskedPhone}
+              value={maskedPhoneText}
+              selection={maskedPhoneSelection}
               keyboardOptions={{ keyboardType: 'phone' }}
               modifiers={[fillMaxWidth()]}
               onValueChange={(v) => {
                 'worklet';
-                const digits = v.text.replace(/\D/g, '').slice(0, 10);
+                const digits = v.replace(/\D/g, '').slice(0, 10);
                 let formatted: string;
                 if (digits.length === 0) {
                   formatted = '';
@@ -167,11 +165,9 @@ export default function TextFieldScreen() {
                 } else {
                   formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
                 }
-                if (formatted !== v.text) {
-                  maskedPhone.value = {
-                    text: formatted,
-                    selection: { start: formatted.length, end: formatted.length },
-                  };
+                if (formatted !== v) {
+                  maskedPhoneText.value = formatted;
+                  maskedPhoneSelection.value = { start: formatted.length, end: formatted.length };
                 }
               }}>
               <TextField.Placeholder>

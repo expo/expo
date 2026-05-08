@@ -714,11 +714,19 @@ const versionsReference = VERSIONS.reduce(
             }),
           ]
         : []),
+      ...(fs.existsSync(path.resolve(PAGES_DIR, `versions/${version}/sdk/ui`))
+        ? [
+            makeSection('Expo UI', pagesFromDir(`versions/${version}/sdk/ui`), {
+              expanded: true,
+              hideIcon: true,
+            }),
+          ]
+        : []),
       makeSection(
         'Expo SDK',
         shiftEntryToFront(
           pagesFromDir(`versions/${version}/sdk`).filter(
-            entry => !entry.inExpoGo && entry.name !== 'Router'
+            entry => !entry.inExpoGo && !['Router', 'UI'].includes(entry.name)
           ),
           entry => entry.name === 'Expo'
         ),

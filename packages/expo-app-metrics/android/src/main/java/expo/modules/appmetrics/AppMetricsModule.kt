@@ -55,7 +55,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("markInteractive") { attributes: MetricAttributes? ->
-        AppStartupManager.markInteractive(attributes?.routeName, attributes?.params)
+        AppStartupManager.markInteractive(context, attributes?.routeName, attributes?.params)
 
         scope.launch {
           saveStartupMetricsIfNotSaved()

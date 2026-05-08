@@ -8,8 +8,18 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { Diagram } from '~/ui/components/Diagram';
 
 Expo UI ConfirmationDialog matches the official SwiftUI [confirmationDialog API](<https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:message:)>) and presents an action sheet-style dialog with a title, actions, and an optional message.
+
+<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
+  <Diagram
+    source="/static/images/expo-ui/confirmationdialog/ios-light.webp"
+    darkSource="/static/images/expo-ui/confirmationdialog/ios-dark.webp"
+    alt="ConfirmationDialog asking the user to confirm a destructive action"
+    disableSrcSet
+  />
+</div>
 
 ## Installation
 

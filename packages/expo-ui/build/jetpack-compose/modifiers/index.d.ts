@@ -82,7 +82,7 @@ export declare const imePadding: () => import("./createModifier").ModifierConfig
 export declare const offset: (x: number, y: number) => import("./createModifier").ModifierConfig;
 /**
  * Sets the background color.
- * @param color - Color string (hex, e.g., '#FF0000').
+ * @param color - A color string (hex, e.g., `'#FF0000'`).
  */
 export declare const background: (color: ColorValue) => import("./createModifier").ModifierConfig;
 /**

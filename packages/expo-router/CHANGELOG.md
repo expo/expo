@@ -10,6 +10,35 @@
 
 ### 💡 Others
 
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+
+## 56.1.0 — 2026-05-07
+
+### 🎉 New features
+
+- Upgrade react-native-screens version to 4.25.0-beta.3. ([#45482](https://github.com/expo/expo/pull/45482) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Move `@jest/globals` to `devDependencies` ([#45469](https://github.com/expo/expo/pull/45469) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+### 🎉 New features
+
+- Add unstable_nativeProps to NativeTabs host ([#45408](https://github.com/expo/expo/pull/45408) by [@Ubax](https://github.com/Ubax))
+- [android] forward `accessibilityLabel` on `Stack.Toolbar.Button` and `Stack.Toolbar.Menu` to the icon's `contentDescription`, so TalkBack reads the icon-only toolbar buttons. ([#45433](https://github.com/expo/expo/pull/45433) by [@Ubax](https://github.com/Ubax))
+
+## 56.0.2 — 2026-05-06
+
+### 🐛 Bug fixes
+
+- Pin `react-native-screens` to exact version ([#45421](https://github.com/expo/expo/pull/45421) by [@Ubax](https://github.com/Ubax))
+
 ## 56.0.1 — 2026-05-05
 
 _This version does not introduce any user-facing changes._

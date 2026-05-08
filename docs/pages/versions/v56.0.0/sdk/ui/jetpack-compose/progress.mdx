@@ -1,0 +1,131 @@
+---
+title: Progress Indicators
+description: Jetpack Compose progress indicator components for displaying operation status.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Progress Indicators match the official Jetpack Compose [Progress Indicator API](https://developer.android.com/develop/ui/compose/components/progress).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Linear progress
+
+A horizontal bar that fills to indicate progress. Provide a `progress` value between `0` and `1` for determinate mode.
+
+```tsx LinearExample.tsx
+import { Host, LinearProgressIndicator } from '@expo/ui/jetpack-compose';
+
+export default function LinearExample() {
+  return (
+    <Host matchContents>
+      <LinearProgressIndicator progress={0.5} />
+    </Host>
+  );
+}
+```
+
+### Circular progress
+
+A spinning circle whose stroke grows to indicate progress.
+
+```tsx CircularExample.tsx
+import { Host, CircularProgressIndicator } from '@expo/ui/jetpack-compose';
+
+export default function CircularExample() {
+  return (
+    <Host matchContents>
+      <CircularProgressIndicator progress={0.75} />
+    </Host>
+  );
+}
+```
+
+### Indeterminate
+
+Omit the `progress` prop to animate continuously without indicating a specific completion level.
+
+```tsx IndeterminateExample.tsx
+import {
+  CircularProgressIndicator,
+  CircularWavyProgressIndicator,
+  Column,
+  Host,
+  LinearProgressIndicator,
+  LinearWavyProgressIndicator,
+} from '@expo/ui/jetpack-compose';
+
+export default function IndeterminateExample() {
+  return (
+    <Host matchContents>
+      <Column verticalArrangement={{ spacedBy: 16 }}>
+        <LinearProgressIndicator />
+        <CircularProgressIndicator />
+        <CircularWavyProgressIndicator />
+        <LinearWavyProgressIndicator />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Custom colors
+
+Use `color` for the indicator and `trackColor` for the background track.
+
+```tsx ColorsExample.tsx
+import { Host, CircularProgressIndicator } from '@expo/ui/jetpack-compose';
+
+export default function ColorsExample() {
+  return (
+    <Host matchContents>
+      <CircularProgressIndicator progress={0.6} color="red" trackColor="#cccccc" />
+    </Host>
+  );
+}
+```
+
+### Wavy variants
+
+`LinearWavyProgressIndicator` and `CircularWavyProgressIndicator` add an expressive wave animation from Material 3 Expressive.
+
+```tsx WavyExample.tsx
+import {
+  Host,
+  LinearWavyProgressIndicator,
+  CircularWavyProgressIndicator,
+  Column,
+} from '@expo/ui/jetpack-compose';
+
+export default function WavyExample() {
+  return (
+    <Host matchContents>
+      <Column verticalArrangement={{ spacedBy: 16 }}>
+        <LinearWavyProgressIndicator progress={0.6} />
+        <CircularWavyProgressIndicator progress={0.6} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import {
+  LinearProgressIndicator,
+  CircularProgressIndicator,
+  LinearWavyProgressIndicator,
+  CircularWavyProgressIndicator,
+} from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/progress" />

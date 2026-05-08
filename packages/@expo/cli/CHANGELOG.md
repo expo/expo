@@ -6,9 +6,48 @@
 
 ### 🎉 New features
 
+- Prefix web client logs with platform name in Metro terminal output. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
+- Fix Metro progress bars appearing as permanent output due to cursor corruption from stderr writes and stale status snapshots. ([#45523](https://github.com/expo/expo/pull/45523) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent Metro loading indicator from showing broken states in headless runs. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix `--port 0` exiting silently in `expo start` when the port is busy. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
+- Apply printf-style format substitution for web client logs forwarded from the browser. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
 ### 💡 Others
+
+- Replace deprecated `url.parse()` with WHATWG `URL` API in Metro dev server. ([#45524](https://github.com/expo/expo/pull/45524) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+
+## 56.0.6 — 2026-05-07
+
+### 🐛 Bug fixes
+
+- Drop obsolete webview installation check ([#45489](https://github.com/expo/expo/pull/45489) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/xcpretty@^4.4.4` ([#45473](https://github.com/expo/expo/pull/45473) by [@EvanBacon](https://github.com/EvanBacon))
+- Tweak dependency check message and placement on `expo start` ([#45487](https://github.com/expo/expo/pull/45487) by [@kitten](https://github.com/kitten))
+- Reduce memory pressure/usage from `withMetroErrorReportingResolver` ([#45446](https://github.com/expo/expo/pull/45446) by [@kitten](https://github.com/kitten))
+
+## 56.0.5 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+### 🐛 Bug fixes
+
+- Prevent dangling timeouts (e.g. set in Metro config) from hanging `expo export` ([#45445](https://github.com/expo/expo/pull/45445) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Run `DevelopmentSession` API call and dependencies check without any startup delays ([#45417](https://github.com/expo/expo/pull/45417) by [@kitten](https://github.com/kitten))
 
 ## 56.0.2 — 2026-05-05
 

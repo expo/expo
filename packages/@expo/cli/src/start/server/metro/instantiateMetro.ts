@@ -84,8 +84,20 @@ function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
   return input;
 }
 
-// Wrap terminal and polyfill console.log so we can log during bundling without breaking the indicator.
+/**
+ * Extends Metro's Terminal to intercept all console methods so they don't
+ * corrupt the progress bar status lines.
+ *
+ * console.log/info are routed through terminal.log() (stdout, managed).
+ * console.warn/error are routed through logStderr() which clears the
+ * status from stdout before writing to stderr, then restores it.
+ * Without this, unmanaged stderr writes shift the cursor and cause
+ * progress bars to get stuck as permanent output.
+ */
 class LogRespectingTerminal extends Terminal {
+  #stderrQueue: string[] = [];
+  #drainingStderr = false;
+
   constructor(stream: import('node:net').Socket | import('node:stream').Writable) {
     super(stream, { ttyPrint: true });
 
@@ -100,8 +112,49 @@ class LogRespectingTerminal extends Terminal {
       this.flush();
     };
 
+    const sendStderr = (...msg: any[]) => {
+      if (!msg.length) {
+        this.logStderr('');
+      } else {
+        const [format, ...args] = msg;
+        this.logStderr(require('util').format(format, ...args));
+      }
+    };
+
     console.log = sendLog;
     console.info = sendLog;
+    console.warn = sendStderr;
+    console.error = sendStderr;
+  }
+
+  /** Write to stderr without corrupting Terminal's cursor tracking. */
+  logStderr(line: string): void {
+    if (!(process.stdout as any).isTTY) {
+      process.stderr.write(line + '\n');
+      return;
+    }
+    this.#stderrQueue.push(line);
+    this.#drainStderr();
+  }
+
+  async #drainStderr(): Promise<void> {
+    if (this.#drainingStderr) return;
+    this.#drainingStderr = true;
+
+    while (this.#stderrQueue.length > 0) {
+      // Clear status, flush to ensure it's removed from screen
+      const prev = this.status('');
+      await this.flush();
+
+      // Write to stderr while status is cleared
+      const lines = this.#stderrQueue.splice(0);
+      process.stderr.write(lines.join('\n') + '\n');
+
+      // Restore status
+      this.status(prev);
+    }
+
+    this.#drainingStderr = false;
   }
 }
 
