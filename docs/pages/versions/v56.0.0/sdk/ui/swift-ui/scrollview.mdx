@@ -118,7 +118,7 @@ export default function ScrollViewSharedPositionExample() {
         <ScrollView
           modifiers={[
             scrollPosition(activeID, {
-              onChange: (newID) => {
+              onChange: newID => {
                 console.log('[JS thread] leading target:', newID);
               },
             }),
