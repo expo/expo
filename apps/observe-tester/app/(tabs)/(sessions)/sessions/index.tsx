@@ -27,7 +27,6 @@ export default function SessionsList() {
   const { markInteractive } = useObserve();
   useEffect(() => {
     setTimeout(() => {
-      console.log('Calling markInteractive');
       markInteractive();
     }, 100);
   }, []);

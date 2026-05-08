@@ -203,4 +203,10 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> = T extends LoaderFunct
  * }
  */
 export declare function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T>;
+/**
+ * Returns route info for a screen it is called from.
+ *
+ * @experimental
+ */
+export declare function useCurrentRouteInfo(): import("./global-state/getRouteInfoFromState").UrlObject | undefined;
 //# sourceMappingURL=hooks.d.ts.map

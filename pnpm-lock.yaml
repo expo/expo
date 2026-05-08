@@ -5017,6 +5017,9 @@ importers:
       expo-eas-client:
         specifier: workspace:~56.0.0
         version: link:../expo-eas-client
+      expo-router:
+        specifier: '*'
+        version: link:../expo-router
       react:
         specifier: 19.2.3
         version: 19.2.3

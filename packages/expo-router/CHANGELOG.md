@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- export new useCurrentRouteInfo hook ([#45566](https://github.com/expo/expo/pull/45566) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Fix drawer toggle asset path. ([#45170](https://github.com/expo/expo/pull/45170) by [@sleda](https://github.com/sleda))

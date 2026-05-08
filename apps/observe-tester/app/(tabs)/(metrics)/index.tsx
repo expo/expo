@@ -28,7 +28,6 @@ export default function Index() {
   }, [updateStoredEntries]);
 
   async function handleMarkInteractive() {
-    await AppMetrics.markInteractive();
     await markInteractive();
     await updateStoredEntries();
   }

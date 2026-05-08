@@ -46,10 +46,12 @@ exports.useGlobalSearchParams = useGlobalSearchParams;
 exports.useLocalSearchParams = useLocalSearchParams;
 exports.useSearchParams = useSearchParams;
 exports.useLoaderData = useLoaderData;
+exports.useCurrentRouteInfo = useCurrentRouteInfo;
 const react_1 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const constants_1 = require("./constants");
 const getRouteInfoFromState_1 = require("./global-state/getRouteInfoFromState");
+const routeInfoCache_1 = require("./global-state/routeInfoCache");
 const router_store_1 = require("./global-state/router-store");
 Object.defineProperty(exports, "useRouteInfo", { enumerable: true, get: function () { return router_store_1.useRouteInfo; } });
 const imperative_api_1 = require("./imperative-api");
@@ -297,5 +299,15 @@ function useLoaderData() {
         return (0, react_1.use)(result);
     }
     return result;
+}
+/**
+ * Returns route info for a screen it is called from.
+ *
+ * @experimental
+ */
+function useCurrentRouteInfo() {
+    const state = (0, native_1.useStateForPath)();
+    const routeInfo = (0, react_1.useMemo)(() => (state ? (0, routeInfoCache_1.getCachedRouteInfo)(state) : undefined), [state]);
+    return routeInfo;
 }
 //# sourceMappingURL=hooks.js.map

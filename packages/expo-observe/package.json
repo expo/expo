@@ -44,6 +44,12 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "expo-router": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo-router": {
+      "optional": true
+    }
   }
 }
