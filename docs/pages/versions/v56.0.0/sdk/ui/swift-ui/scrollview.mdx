@@ -8,7 +8,6 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI ScrollView matches the official SwiftUI [ScrollView API](https://developer.apple.com/documentation/swiftui/scrollview) and provides a scrollable container for its children.
 
@@ -119,7 +118,7 @@ export default function ScrollViewSharedPositionExample() {
         <ScrollView
           modifiers={[
             scrollPosition(activeID, {
-              onChange: newID => {
+              onChange: (newID) => {
                 console.log('[JS thread] leading target:', newID);
               },
             }),
