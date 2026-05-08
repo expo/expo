@@ -375,6 +375,58 @@ describe('node crawler', () => {
     expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/tropical.js']);
   });
 
+  describe('VCS directories', () => {
+    test('skips .git and .hg directories without consulting ignore', async () => {
+      const ignore = jest.fn(() => false);
+
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+        '/project/fruits/.git/HEAD': 'ref',
+        '/project/fruits/.git/objects/abc': 'binary',
+        '/project/fruits/.hg/store/data': 'binary',
+      });
+
+      const { changedFiles } = await crawl({ ignore });
+
+      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+      // The early-skip happens before any `ignore()` call for the .git/.hg
+      // directory entries, so the matcher is never asked about those paths.
+      const seenPaths = ignore.mock.calls.map((args) => args[0] as string);
+      expect(seenPaths.some((p) => p.includes('.git'))).toBe(false);
+      expect(seenPaths.some((p) => p.includes('.hg'))).toBe(false);
+    });
+
+    test('skips .git directory even when ignore would otherwise allow it', async () => {
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+        '/project/fruits/.git/HEAD': 'ref',
+      });
+
+      const { changedFiles } = await crawl({
+        // ignore returns false for everything, including .git contents
+        ignore: () => false,
+      });
+
+      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+    });
+
+    test('does not skip files merely named .git or .hg', async () => {
+      // A *file* named `.git` (e.g. a git submodule pointer file) matches the
+      // basename equality but `entry.isDirectory()` is false, so it falls
+      // through to the regular ignore/extension pipeline.
+      vol.fromJSON({
+        '/project/fruits/apple.js': 'a',
+        '/project/fruits/.git': 'gitdir: ../.git/modules/fruits',
+      });
+
+      const { changedFiles } = await crawl({ extensions: ['js'] });
+
+      // The `.git` file has no matching extension, so it isn't included; but
+      // the directory traversal didn't bail out either.
+      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+    });
+  });
+
   describe('abort signal', () => {
     test('aborts on pre-aborted signal', async () => {
       const err = new Error('aborted for test');
