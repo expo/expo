@@ -106,55 +106,12 @@ export class PackedMap {
   }
 }
 
-// Dev-only counter that warns if a single PackedMap is materializing
-// tuples in bulk — a sign that some consumer is iterating the Proxy on a
-// hot path (e.g. `JSON.stringify(data.map)` would call tupleAt for every
-// segment, defeating the storage win). The threshold of 1000 is well
-// above a realistic symbolicate-frame burst (a few hundred lookups per
-// frame) but well below a typical ~5k-segment-per-module iteration.
-const CANARY_THRESHOLD = 1000;
-const isProductionLike =
-  process.env.NODE_ENV === 'production' || process.env.EXPO_DISABLE_PACKED_MAP_CANARY === '1';
-
-const canaryState = new WeakMap<PackedMap, { count: number; tickArmed: boolean }>();
-function recordTupleMaterialization(p: PackedMap): void {
-  if (isProductionLike) return;
-  let s = canaryState.get(p);
-  if (!s) {
-    s = { count: 0, tickArmed: false };
-    canaryState.set(p, s);
-  }
-  s.count++;
-  // Reset the count at the start of the next microtask tick. If the same
-  // PackedMap blows past the threshold within a single tick, that's the
-  // signature of a hot consumer.
-  if (!s.tickArmed) {
-    s.tickArmed = true;
-    queueMicrotask(() => {
-      const cur = canaryState.get(p);
-      if (cur) {
-        if (cur.count >= CANARY_THRESHOLD) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `[expo-metro-config] PackedMap materialized ${cur.count} tuples in a single tick. ` +
-              `Some consumer is iterating module sourcemap segments on a hot path — ` +
-              `this defeats the in-memory storage win. Set EXPO_DISABLE_PACKED_MAP_CANARY=1 to silence.`
-          );
-        }
-        cur.count = 0;
-        cur.tickArmed = false;
-      }
-    });
-  }
-}
-
 // Returns the variable-length form (2, 4, or 5) that matches Metro's
 // tuple union. A fixed-length-5 tuple with `-1` sentinels would fool
 // `symbolicate.js`'s `mapping.length < 4` sourceless-check and resolve to
 // garbage source positions.
 export function tupleAt(p: PackedMap, i: number): MetroSourceMapSegmentTuple | undefined {
   if (i < 0 || i >= p.count) return undefined;
-  recordTupleMaterialization(p);
   const buf = p.buf;
   const off = i * STRIDE;
   const genL = buf[off]!;
