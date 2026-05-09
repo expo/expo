@@ -297,7 +297,7 @@ export const GROUPS: Group[] = [
     id: 'passthrough',
     title: 'passthrough({ x, y })',
     description:
-      'Synchronous round-trip of a 2D point represented in three different ways. Compares `[String: Any]` dictionary, `Record`, and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
+      'Synchronous round-trip of a 2D point represented in four different ways. Compares `[String: Any]` dictionary, `Record` (Mirror-based field discovery), `@Record` (compile-time field discovery via macro), and `SharedObject` decoding/encoding within Expo Modules. TurboModule and BridgeModule provide a dictionary baseline.',
     benchmarks: [
       {
         id: 'expo-dict',
@@ -320,6 +320,18 @@ export const GROUPS: Group[] = [
           ExpoModule.passthroughRecord(point);
           return timeSync(iterations, () => {
             ExpoModule.passthroughRecord(point);
+          });
+        },
+      },
+      {
+        id: 'expo-record-optimized',
+        label: 'ExpoModule (@Record)',
+        available: ExpoModule?.passthroughOptimizedRecord != null,
+        async run(iterations) {
+          const point = { x: 1.5, y: 2.5 };
+          ExpoModule.passthroughOptimizedRecord(point);
+          return timeSync(iterations, () => {
+            ExpoModule.passthroughOptimizedRecord(point);
           });
         },
       },

@@ -17,6 +17,7 @@ declare class BenchmarkingExpoModule extends NativeModule {
   foldArray(array: number[]): number;
   passthroughDict(point: { x: number; y: number }): { x: number; y: number };
   passthroughRecord(point: { x: number; y: number }): { x: number; y: number };
+  passthroughOptimizedRecord(point: { x: number; y: number }): { x: number; y: number };
   passthroughSharedObject(point: SharedPoint): SharedPoint;
   SharedPoint: typeof SharedPoint;
   addNumbersAsync(a: number, b: number): Promise<number>;

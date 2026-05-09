@@ -8,6 +8,15 @@ struct Point: Record {
   var y: Double = 0
 }
 
+@Record
+struct OptimizedPoint {
+  @Field
+  var x: Double = 0
+
+  @Field
+  var y: Double = 0
+}
+
 final class SharedPoint: SharedObject {
   var x: Double = 0
   var y: Double = 0
@@ -57,6 +66,10 @@ public final class BenchmarkingExpoModule: Module {
     }
 
     Function("passthroughRecord") { (point: Point) in
+      return point
+    }
+
+    Function("passthroughOptimizedRecord") { (point: OptimizedPoint) in
       return point
     }
 
