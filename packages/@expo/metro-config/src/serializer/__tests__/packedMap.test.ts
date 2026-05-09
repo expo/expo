@@ -1,0 +1,444 @@
+import {
+  PackedMap,
+  installPackedMap,
+  isPackedWire,
+  makeProxy,
+  materializeMap,
+  packTuples,
+  tupleAt,
+  wrapTransformResultMaps,
+  type PackedMapWire,
+} from '../packedMap';
+
+const STRIDE = 5;
+const SENTINEL = -1;
+
+// Build a wire object directly so byte-level tests have full control,
+// rather than going through `packTuples`.
+function wire(opts: {
+  segments: (
+    | [number, number]
+    | [number, number, number, number]
+    | [number, number, number, number, string]
+  )[];
+}): PackedMapWire {
+  const names = new Map<string, number>();
+  const out: number[] = new Array(opts.segments.length * STRIDE);
+  let off = 0;
+  for (const seg of opts.segments) {
+    out[off] = seg[0];
+    out[off + 1] = seg[1];
+    if (seg.length === 2) {
+      out[off + 2] = SENTINEL;
+      out[off + 3] = SENTINEL;
+      out[off + 4] = SENTINEL;
+    } else {
+      out[off + 2] = seg[2];
+      out[off + 3] = seg[3];
+      if (seg.length === 5) {
+        let idx = names.get(seg[4]);
+        if (idx === undefined) {
+          idx = names.size;
+          names.set(seg[4], idx);
+        }
+        out[off + 4] = idx;
+      } else {
+        out[off + 4] = SENTINEL;
+      }
+    }
+    off += STRIDE;
+  }
+  return {
+    __version: 1,
+    __count: opts.segments.length,
+    __names: [...names.keys()],
+    __packed: out,
+  };
+}
+
+describe('isPackedWire', () => {
+  it('accepts a valid wire object', () => {
+    expect(isPackedWire(wire({ segments: [[1, 0]] }))).toBe(true);
+  });
+
+  it('rejects plain values', () => {
+    expect(isPackedWire(null)).toBe(false);
+    expect(isPackedWire(undefined)).toBe(false);
+    expect(isPackedWire('foo')).toBe(false);
+    expect(isPackedWire([])).toBe(false);
+    expect(isPackedWire([[1, 0]])).toBe(false);
+  });
+
+  it('rejects objects with the wrong version', () => {
+    const w = wire({ segments: [[1, 0]] });
+    expect(isPackedWire({ ...w, __version: 0 })).toBe(false);
+    expect(isPackedWire({ ...w, __version: 2 })).toBe(false);
+  });
+
+  it('rejects malformed wire objects', () => {
+    const w = wire({ segments: [[1, 0]] });
+    expect(isPackedWire({ ...w, __packed: 'not-array' })).toBe(false);
+    expect(isPackedWire({ ...w, __names: 'not-array' })).toBe(false);
+    expect(isPackedWire({ ...w, __count: 'not-number' })).toBe(false);
+  });
+});
+
+describe('PackedMap', () => {
+  it('round-trips through the wire form', () => {
+    const original = wire({
+      segments: [
+        [1, 0],
+        [1, 5, 3, 2, 'foo'],
+        [2, 0, 4, 0],
+      ],
+    });
+    const p = PackedMap.fromWire(original);
+    expect(p.toWire()).toEqual(original);
+  });
+
+  it('lazy-materializes the Int32Array on first access and caches it', () => {
+    const original = wire({ segments: [[1, 0, 1, 0]] });
+    const p = PackedMap.fromWire(original);
+    expect(p.buf).toBeInstanceOf(Int32Array);
+    expect(p.buf).toBe(p.buf);
+  });
+
+  it('round-trips through wire even after the Int32Array is materialized', () => {
+    const original = wire({
+      segments: [
+        [1, 0, 5, 0, 'foo'],
+        [2, 0],
+      ],
+    });
+    const p = PackedMap.fromWire(original);
+    p.buf;
+    const out = p.toWire();
+    expect(out.__count).toBe(original.__count);
+    expect(out.__names).toEqual(original.__names);
+    expect(out.__packed).toEqual(original.__packed);
+  });
+});
+
+describe('tupleAt', () => {
+  it('returns length-2 for sourceless segments', () => {
+    const p = PackedMap.fromWire(wire({ segments: [[7, 4]] }));
+    expect(tupleAt(p, 0)).toEqual([7, 4]);
+    expect(tupleAt(p, 0)!.length).toBe(2);
+  });
+
+  it('returns length-4 for sourced-without-name segments', () => {
+    const p = PackedMap.fromWire(wire({ segments: [[7, 4, 2, 0]] }));
+    expect(tupleAt(p, 0)).toEqual([7, 4, 2, 0]);
+    expect(tupleAt(p, 0)!.length).toBe(4);
+  });
+
+  it('returns length-5 for sourced+named segments', () => {
+    const p = PackedMap.fromWire(wire({ segments: [[7, 4, 2, 0, 'greet']] }));
+    expect(tupleAt(p, 0)).toEqual([7, 4, 2, 0, 'greet']);
+    expect(tupleAt(p, 0)!.length).toBe(5);
+  });
+
+  it('returns undefined for out-of-bounds indices (does not throw)', () => {
+    const p = PackedMap.fromWire(wire({ segments: [[1, 0]] }));
+    expect(tupleAt(p, -1)).toBeUndefined();
+    expect(tupleAt(p, 1)).toBeUndefined();
+    expect(tupleAt(p, 100)).toBeUndefined();
+  });
+
+  it('throws a clear error for a corrupt name index (out-of-range)', () => {
+    // The packer would never produce this, but a corrupt cache entry could.
+    const corrupt: PackedMapWire = {
+      __version: 1,
+      __count: 1,
+      __names: ['only-name'],
+      __packed: [1, 0, 1, 0, 5],
+    };
+    const p = PackedMap.fromWire(corrupt);
+    expect(() => tupleAt(p, 0)).toThrow(/wire entry is corrupt|name index/);
+  });
+});
+
+describe('makeProxy', () => {
+  function buildProxy(segments: Parameters<typeof wire>[0]['segments']) {
+    return makeProxy(PackedMap.fromWire(wire({ segments })));
+  }
+
+  it('Array.isArray returns true', () => {
+    expect(Array.isArray(buildProxy([[1, 0]]))).toBe(true);
+  });
+
+  it('length matches __count', () => {
+    expect(buildProxy([]).length).toBe(0);
+    expect(buildProxy([[1, 0]]).length).toBe(1);
+    expect(
+      buildProxy([
+        [1, 0],
+        [2, 0],
+        [3, 0],
+      ]).length
+    ).toBe(3);
+  });
+
+  it('numeric indexing returns variable-length tuples', () => {
+    const p = buildProxy([
+      [1, 0],
+      [1, 5, 3, 2],
+      [2, 0, 4, 0, 'foo'],
+    ]);
+    expect(p[0]).toEqual([1, 0]);
+    expect(p[1]).toEqual([1, 5, 3, 2]);
+    expect(p[2]).toEqual([2, 0, 4, 0, 'foo']);
+  });
+
+  it("symbolicate's `mapping.length < 4` check sees sourceless mappings correctly", () => {
+    const p = buildProxy([
+      [1, 0],
+      [2, 0, 4, 0],
+    ]);
+    expect(p[0]!.length < 4).toBe(true);
+    expect(p[1]!.length < 4).toBe(false);
+  });
+
+  it('Symbol.iterator yields the same sequence as direct indexing', () => {
+    const p = buildProxy([
+      [1, 0],
+      [2, 0, 4, 0],
+      [3, 0, 5, 1, 'x'],
+    ]);
+    expect([...p]).toEqual([p[0], p[1], p[2]]);
+  });
+
+  it('spread produces a plain Array of variable-length tuples', () => {
+    const p = buildProxy([
+      [1, 0],
+      [2, 0, 4, 0],
+    ]);
+    const arr = [...p];
+    expect(Array.isArray(arr)).toBe(true);
+    expect(arr).toEqual([
+      [1, 0],
+      [2, 0, 4, 0],
+    ]);
+  });
+
+  it('Array.from produces the same plain Array', () => {
+    const p = buildProxy([
+      [1, 0],
+      [2, 0, 4, 0],
+    ]);
+    expect(Array.from(p)).toEqual([
+      [1, 0],
+      [2, 0, 4, 0],
+    ]);
+  });
+
+  it('JSON.stringify returns the wire shape, not materialized tuples', () => {
+    // A downstream consumer that stringifies and re-feeds through the
+    // wrapper must see the wire form, so the `__packed` detector fires
+    // on the round-trip rather than treating the materialized tuples as
+    // a fresh plain-tuple Array.
+    const original = wire({
+      segments: [
+        [1, 0],
+        [2, 0, 4, 0, 'foo'],
+      ],
+    });
+    const p = makeProxy(PackedMap.fromWire(original));
+    const json = JSON.stringify(p);
+    const parsed = JSON.parse(json);
+    expect(isPackedWire(parsed)).toBe(true);
+    expect(parsed).toEqual(original);
+  });
+
+  it('util.inspect.custom produces a friendly representation', () => {
+    const p = buildProxy([
+      [1, 0],
+      [2, 0],
+      [3, 0],
+    ]);
+    const fn = (p as unknown as Record<symbol, () => string>)[
+      Symbol.for('nodejs.util.inspect.custom')
+    ];
+    expect(typeof fn).toBe('function');
+    expect(fn.call(p)).toBe('PackedMap(count=3)');
+  });
+
+  it('write attempts throw', () => {
+    const p = buildProxy([[1, 0]]);
+    expect(() => {
+      (p as any)[0] = [9, 9];
+    }).toThrow(/read-only/);
+    expect(() => {
+      (p as any).length = 0;
+    }).toThrow(/read-only/);
+    expect(() => {
+      (p as any).push([5, 5]);
+    }).toThrow(/read-only/);
+  });
+
+  it('Object.keys returns numeric-string keys with length === count', () => {
+    const p = buildProxy([
+      [1, 0],
+      [2, 0],
+      [3, 0],
+    ]);
+    expect(Object.keys(p)).toEqual(['0', '1', '2']);
+    expect(Object.keys(p).length).toBe(p.length);
+  });
+
+  describe('edge cases', () => {
+    it('zero-segment module', () => {
+      const p = buildProxy([]);
+      expect(p.length).toBe(0);
+      expect([...p]).toEqual([]);
+      expect(Object.keys(p)).toEqual([]);
+      expect(JSON.parse(JSON.stringify(p)).__count).toBe(0);
+    });
+
+    it('single sourceless segment', () => {
+      const p = buildProxy([[1, 0]]);
+      expect(p.length).toBe(1);
+      expect(p[0]).toEqual([1, 0]);
+      expect([...p]).toEqual([[1, 0]]);
+    });
+  });
+});
+
+describe('packTuples', () => {
+  it('packs metro tuples to wire shape', () => {
+    const w = packTuples([
+      [1, 0],
+      [1, 5, 3, 2],
+      [2, 0, 5, 0, 'foo'],
+    ]);
+    expect(w.__count).toBe(3);
+    expect(w.__names).toEqual(['foo']);
+    const p = PackedMap.fromWire(w);
+    expect(tupleAt(p, 0)).toEqual([1, 0]);
+    expect(tupleAt(p, 1)).toEqual([1, 5, 3, 2]);
+    expect(tupleAt(p, 2)).toEqual([2, 0, 5, 0, 'foo']);
+  });
+});
+
+describe('materializeMap', () => {
+  it('materializes wire to plain tuples', () => {
+    const w = wire({
+      segments: [
+        [1, 0],
+        [2, 0, 4, 0, 'foo'],
+      ],
+    });
+    expect(materializeMap(w)).toEqual([
+      [1, 0],
+      [2, 0, 4, 0, 'foo'],
+    ]);
+  });
+
+  it('materializes a Proxy to plain tuples (via Symbol.iterator)', () => {
+    const p = makeProxy(PackedMap.fromWire(wire({ segments: [[1, 0]] })));
+    expect(materializeMap(p)).toEqual([[1, 0]]);
+  });
+
+  it('passes through plain tuple arrays', () => {
+    const tuples: any = [
+      [1, 0],
+      [2, 0, 4, 0],
+    ];
+    expect(materializeMap(tuples)).toEqual(tuples);
+  });
+
+  it('handles null/undefined gracefully', () => {
+    expect(materializeMap(null)).toEqual([]);
+    expect(materializeMap(undefined)).toEqual([]);
+  });
+});
+
+describe('installPackedMap', () => {
+  it('installs from wire input', () => {
+    const data: any = {};
+    installPackedMap(data, wire({ segments: [[1, 0, 1, 0]] }));
+    expect(Array.isArray(data.map)).toBe(true);
+    expect(data.map[0]).toEqual([1, 0, 1, 0]);
+    expect(data.__packedMap).toBeInstanceOf(PackedMap);
+  });
+
+  it('installs from tuple input (the reconcile path)', () => {
+    const data: any = {};
+    installPackedMap(data, [
+      [1, 0],
+      [2, 0, 4, 0, 'foo'],
+    ]);
+    expect(data.map.length).toBe(2);
+    expect(data.map[0]).toEqual([1, 0]);
+    expect(data.map[1]).toEqual([2, 0, 4, 0, 'foo']);
+    expect(data.__packedMap).toBeInstanceOf(PackedMap);
+  });
+
+  it('attaches __packedMap as non-enumerable so it survives spread cleanly', () => {
+    const data: any = {};
+    installPackedMap(data, [[1, 0, 1, 0]]);
+    expect(Object.keys(data)).toEqual(['map']);
+    expect({ ...data }.__packedMap).toBeUndefined();
+  });
+
+  it('is idempotent — replaces a previously-installed map cleanly', () => {
+    const data: any = {};
+    installPackedMap(data, [[1, 0, 1, 0]]);
+    const firstPacked = data.__packedMap;
+    installPackedMap(data, [
+      [1, 0],
+      [2, 0],
+    ]);
+    expect(data.map.length).toBe(2);
+    expect(data.__packedMap).not.toBe(firstPacked);
+  });
+});
+
+describe('wrapTransformResultMaps', () => {
+  it('replaces wire `data.map` with a Proxy + non-enumerable __packedMap', () => {
+    const result = {
+      output: [
+        {
+          type: 'js/module',
+          data: {
+            code: 'foo',
+            lineCount: 1,
+            map: wire({ segments: [[1, 0, 1, 0]] }),
+            functionMap: null,
+          },
+        },
+      ],
+    };
+    const wrapped = wrapTransformResultMaps(result);
+    const data = wrapped.output[0]!.data as any;
+    expect(Array.isArray(data.map)).toBe(true);
+    expect(data.map.length).toBe(1);
+    expect(data.map[0]).toEqual([1, 0, 1, 0]);
+
+    // __packedMap is attached non-enumerably, so spread/Object.keys ignore it.
+    expect(data.__packedMap).toBeInstanceOf(PackedMap);
+    expect(Object.keys(data)).not.toContain('__packedMap');
+    expect({ ...data }.__packedMap).toBeUndefined();
+  });
+
+  it('leaves non-wire `data.map` (legacy plain tuples) alone', () => {
+    const tuples: [number, number, number, number][] = [[1, 0, 1, 0]];
+    const result = {
+      output: [
+        {
+          type: 'js/module',
+          data: { code: 'foo', lineCount: 1, map: tuples, functionMap: null },
+        },
+      ],
+    };
+    const wrapped = wrapTransformResultMaps(result);
+    const data = wrapped.output[0]!.data as any;
+    expect(data.map).toBe(tuples); // same reference, unchanged
+    expect(data.__packedMap).toBeUndefined();
+  });
+
+  it('handles results with no output gracefully', () => {
+    expect(wrapTransformResultMaps({ output: null as any })).toEqual({ output: null });
+    expect(wrapTransformResultMaps({} as any)).toEqual({});
+  });
+});

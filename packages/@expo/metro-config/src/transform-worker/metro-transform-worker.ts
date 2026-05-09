@@ -45,6 +45,7 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import { packTuples } from '../serializer/packedMap';
 import {
   decodedMapToTuples,
   rawMappingsToTuples,
@@ -558,7 +559,11 @@ async function transformJS(
       data: {
         code,
         lineCount,
-        map,
+        // Emit the wire form. The main thread's `Bundler.transformFile`
+        // wrapper detects this on the way back from the worker / cache
+        // and swaps in the Array-compatible Proxy + non-enumerable
+        // `__packedMap` for the encoder fast path.
+        map: packTuples(map),
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
@@ -717,7 +722,7 @@ async function transformJSON(
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount, map, functionMap: null },
+      data: { code, lineCount, map: packTuples(map), functionMap: null },
       type: jsType,
     },
   ];

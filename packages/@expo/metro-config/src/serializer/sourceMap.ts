@@ -21,6 +21,9 @@ import type {
 } from '@expo/metro/metro-source-map';
 import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
 
+import type { ModuleSourceMap } from './jsOutput';
+import { PackedMap, SENTINEL, STRIDE } from './packedMap';
+
 export type {
   BabelSourceMapSegment,
   BasicSourceMap,
@@ -92,22 +95,14 @@ function loadGenerator(): GeneratorCtor {
 // `.js` suffix required for jest's resolver to find the file under
 // `@expo/metro`'s `exports` map (see `getCssDeps.ts`/`getAssets.ts` for
 // the same pattern).
-type GetSourceMapInfo =
-  typeof import('@expo/metro/metro/DeltaBundler/Serializers/helpers/getSourceMapInfo').default;
 type IsJsModule = typeof import('@expo/metro/metro/DeltaBundler/Serializers/helpers/js').isJsModule;
 
-let _getSourceMapInfo: GetSourceMapInfo | undefined;
 let _isJsModule: IsJsModule | undefined;
-function loadMetroSerializerHelpers(): {
-  getSourceMapInfo: GetSourceMapInfo;
-  isJsModule: IsJsModule;
-} {
-  if (!_getSourceMapInfo || !_isJsModule) {
-    _getSourceMapInfo =
-      require('@expo/metro/metro/DeltaBundler/Serializers/helpers/getSourceMapInfo.js').default;
+function loadMetroSerializerHelpers(): { isJsModule: IsJsModule } {
+  if (!_isJsModule) {
     _isJsModule = require('@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js').isJsModule;
   }
-  return { getSourceMapInfo: _getSourceMapInfo!, isJsModule: _isJsModule! };
+  return { isJsModule: _isJsModule! };
 }
 
 function feedModuleSegments(
@@ -129,22 +124,103 @@ function feedModuleSegments(
   }
 }
 
+// Encoder fast path: read the `Int32Array` directly, skipping the Proxy
+// and the tuple-per-segment allocation that Proxy iteration would incur.
+// Without this, encoding a large bundle would allocate millions of
+// transient tuples per pass — defeating the in-memory storage win.
+function feedModuleSegmentsPacked(
+  generator: GeneratorClass,
+  packed: PackedMap,
+  carryOver: number
+): void {
+  const buf = packed.buf;
+  const names = packed.names;
+  const count = packed.count;
+  for (let i = 0; i < count; i++) {
+    const off = i * STRIDE;
+    const line = buf[off]! + carryOver;
+    const column = buf[off + 1]!;
+    const srcLine = buf[off + 2]!;
+    if (srcLine === SENTINEL) {
+      generator.addSimpleMapping(line, column);
+      continue;
+    }
+    const srcCol = buf[off + 3]!;
+    const nameIdx = buf[off + 4]!;
+    if (nameIdx === SENTINEL) {
+      generator.addSourceMapping(line, column, srcLine, srcCol);
+    } else {
+      generator.addNamedSourceMapping(line, column, srcLine, srcCol, names[nameIdx]!);
+    }
+  }
+}
+
+// Inlined rather than going through Metro's `getSourceMapInfo` because
+// it spreads `data` and drops the non-enumerable `__packedMap`,
+// silently forcing the encoder onto the slow Proxy path.
+function readSourceMapInfo(
+  module: Module,
+  options: SourceMapGeneratorOptions
+): {
+  path: string;
+  source: string;
+  functionMap: FBSourceFunctionMap | null | undefined;
+  isIgnored: boolean;
+  map: ModuleSourceMap | null | undefined;
+  packed: PackedMap | undefined;
+  lineCount: number;
+} {
+  const data = getModuleJsData(module);
+  return {
+    path: options.getSourceUrl?.(module) ?? module.path,
+    source:
+      options.excludeSource || data.type === 'js/module/asset' ? '' : module.getSource().toString(),
+    functionMap: data.data.functionMap,
+    isIgnored: options.shouldAddToIgnoreList(module),
+    map: data.data.map,
+    packed: data.data.__packedMap,
+    lineCount: data.data.lineCount,
+  };
+}
+
+function getModuleJsData(module: Module): { data: JsOutputData; type: string } {
+  for (const out of module.output) {
+    const type = (out as { type?: string }).type;
+    if (typeof type === 'string' && type.startsWith('js/')) {
+      return out as { data: JsOutputData; type: string };
+    }
+  }
+  throw new Error(
+    `[expo-metro-config] Module "${module.path}" has no JS output. Cannot build a sourcemap entry.`
+  );
+}
+
+// Local shape rather than importing from `jsOutput.ts` to avoid a cycle
+// through the transformer.
+interface JsOutputData {
+  code: string;
+  lineCount: number;
+  map: ModuleSourceMap | null | undefined;
+  functionMap: FBSourceFunctionMap | null | undefined;
+  readonly __packedMap?: PackedMap;
+}
+
 function processModuleIntoGenerator(
   generator: GeneratorClass,
   module: Module,
   options: SourceMapGeneratorOptions,
   carryOver: number
 ): number {
-  const { getSourceMapInfo } = loadMetroSerializerHelpers();
-  const info = getSourceMapInfo(module, {
-    excludeSource: options.excludeSource,
-    shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-    getSourceUrl: options.getSourceUrl,
-  });
-  generator.startFile(info.path, info.source, info.functionMap, {
+  const info = readSourceMapInfo(module, options);
+  generator.startFile(info.path, info.source, info.functionMap ?? null, {
     addToIgnoreList: info.isIgnored,
   });
-  if (info.map != null) {
+  if (info.packed) {
+    feedModuleSegmentsPacked(generator, info.packed, carryOver);
+  } else if (Array.isArray(info.map)) {
+    // Legacy plain-tuple path — hits for cache entries written before
+    // `data.map` switched to the wire shape, and for modules from custom
+    // transformers that don't emit packed format.
     feedModuleSegments(generator, info.map, carryOver);
   }
   generator.endFile();

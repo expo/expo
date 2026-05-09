@@ -22,6 +22,7 @@ import util from 'node:util';
 
 import type { ExpoJsOutput } from './jsOutput';
 import { isExpoJsOutput } from './jsOutput';
+import { installPackedMap } from './packedMap';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
 import { rawMappingsToTuples, type BabelSourceMapSegment } from './sourceMap';
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
@@ -317,21 +318,23 @@ export async function reconcileTransformSerializerPlugin(
     let lineCount;
     ({ lineCount, map } = countLinesAndTerminateMap(code, map));
 
-    return {
-      ...outputItem,
-      data: {
-        ...outputItem.data,
-        code,
-        map,
-        lineCount,
-        functionMap:
-          // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
-          ast.metadata?.metro?.functionMap ??
-          // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
-          ast.functionMap ??
-          outputItem.data.functionMap ??
-          null,
-      },
+    const newData = {
+      ...outputItem.data,
+      code,
+      lineCount,
+      functionMap:
+        // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
+        ast.metadata?.metro?.functionMap ??
+        // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
+        ast.functionMap ??
+        outputItem.data.functionMap ??
+        null,
     };
+    // Reconcile runs post-graph-build, so it bypasses the
+    // `Bundler.transformFile` wrapper that normally installs the packed
+    // shape from worker output. Install it here directly so the encoder
+    // fast path stays live for reconciled modules.
+    installPackedMap(newData, map);
+    return { ...outputItem, data: newData };
   }
 }

@@ -13,6 +13,7 @@ import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-conf
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
+import { wrapTransformResultMaps } from '@expo/metro-config/build/serializer/packedMap';
 import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
@@ -476,7 +477,7 @@ export async function instantiateMetroAsync(
     transformOptions: TransformOptions,
     fileBuffer?: Buffer
   ) {
-    return originalTransformFile(
+    const result = await originalTransformFile(
       filePath,
       pruneCustomTransformOptions(
         projectRoot,
@@ -492,6 +493,10 @@ export async function instantiateMetroAsync(
       ),
       fileBuffer
     );
+
+    // Both fresh worker results and cache hits flow through
+    // `Bundler.transformFile`, so wrapping here covers both.
+    return wrapTransformResultMaps(result);
   };
 
   setEventReporter(eventsSocket.reportMetroEvent);
