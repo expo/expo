@@ -232,6 +232,17 @@ export function wrapTransformResultMaps<T extends { output?: readonly unknown[] 
   return result;
 }
 
+// Idempotent: chaining is safe because `installPackedMap` only fires
+// when `data.map` is still a wire object.
+export function patchTransformFileForPackedMaps(bundler: {
+  transformFile: (...args: any[]) => Promise<unknown>;
+}): void {
+  const originalTransformFile = bundler.transformFile.bind(bundler);
+  bundler.transformFile = async (...args: any[]) => {
+    return wrapTransformResultMaps((await originalTransformFile(...args)) as any);
+  };
+}
+
 // Materialize any `data.map` shape (wire, Proxy, or plain tuples) into a
 // plain `MetroSourceMapSegmentTuple[]`. NOT a hot path — allocates a
 // fresh tuple per segment; production readers go through the Proxy or

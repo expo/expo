@@ -22,7 +22,7 @@ import type {
 import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
 
 import type { ModuleSourceMap } from './jsOutput';
-import { PackedMap, SENTINEL, STRIDE } from './packedMap';
+import { PackedMap, SENTINEL, STRIDE, isPackedWire } from './packedMap';
 
 export type {
   BabelSourceMapSegment,
@@ -171,6 +171,14 @@ function readSourceMapInfo(
   lineCount: number;
 } {
   const data = getModuleJsData(module);
+  // Defence in case a wire-shape `data.map` reached us without going
+  // through `patchTransformFileForPackedMaps` — without this we'd miss
+  // the encoder fast path AND fall through to `Array.isArray`, silently
+  // emitting no segments.
+  let packed = data.data.__packedMap;
+  if (!packed && isPackedWire(data.data.map)) {
+    packed = PackedMap.fromWire(data.data.map);
+  }
   return {
     path: options.getSourceUrl?.(module) ?? module.path,
     source:
@@ -178,7 +186,7 @@ function readSourceMapInfo(
     functionMap: data.data.functionMap,
     isIgnored: options.shouldAddToIgnoreList(module),
     map: data.data.map,
-    packed: data.data.__packedMap,
+    packed,
     lineCount: data.data.lineCount,
   };
 }

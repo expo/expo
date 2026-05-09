@@ -5,6 +5,7 @@ import {
   makeProxy,
   materializeMap,
   packTuples,
+  patchTransformFileForPackedMaps,
   tupleAt,
   wrapTransformResultMaps,
   type PackedMapWire,
@@ -374,7 +375,7 @@ describe('installPackedMap', () => {
     expect(data.__packedMap).toBeInstanceOf(PackedMap);
   });
 
-  it('attaches __packedMap as non-enumerable so it survives spread cleanly', () => {
+  it('attaches __packedMap as non-enumerable', () => {
     const data: any = {};
     installPackedMap(data, [[1, 0, 1, 0]]);
     expect(Object.keys(data)).toEqual(['map']);
@@ -433,12 +434,86 @@ describe('wrapTransformResultMaps', () => {
     };
     const wrapped = wrapTransformResultMaps(result);
     const data = wrapped.output[0]!.data as any;
-    expect(data.map).toBe(tuples); // same reference, unchanged
+    expect(data.map).toBe(tuples);
     expect(data.__packedMap).toBeUndefined();
   });
 
   it('handles results with no output gracefully', () => {
     expect(wrapTransformResultMaps({ output: null as any })).toEqual({ output: null });
     expect(wrapTransformResultMaps({} as any)).toEqual({});
+  });
+});
+
+describe('patchTransformFileForPackedMaps', () => {
+  it('wraps every result returned by the patched bundler', async () => {
+    const result1 = {
+      output: [
+        {
+          type: 'js/module',
+          data: {
+            map: wire({ segments: [[1, 0, 1, 0]] }),
+            code: '',
+            lineCount: 1,
+            functionMap: null,
+          },
+        },
+      ],
+    };
+    const result2 = {
+      output: [
+        {
+          type: 'js/module',
+          data: {
+            map: wire({ segments: [[2, 0, 2, 0]] }),
+            code: '',
+            lineCount: 1,
+            functionMap: null,
+          },
+        },
+      ],
+    };
+    const calls: any[] = [];
+    const bundler: any = {
+      async transformFile(...args: unknown[]) {
+        calls.push(args);
+        return calls.length === 1 ? result1 : result2;
+      },
+    };
+    patchTransformFileForPackedMaps(bundler);
+
+    const r1 = await bundler.transformFile('/a.js');
+    const r2 = await bundler.transformFile('/b.js');
+
+    expect(Array.isArray(r1.output[0].data.map)).toBe(true);
+    expect(r1.output[0].data.__packedMap).toBeInstanceOf(PackedMap);
+    expect(Array.isArray(r2.output[0].data.map)).toBe(true);
+    expect(r2.output[0].data.__packedMap).toBeInstanceOf(PackedMap);
+    expect(calls).toEqual([['/a.js'], ['/b.js']]);
+  });
+
+  it('chains cleanly with a pre-existing patch (no double-wrap on the second pass)', async () => {
+    const bundler: any = {
+      async transformFile() {
+        return {
+          output: [
+            {
+              type: 'js/module',
+              data: {
+                map: wire({ segments: [[1, 0, 1, 0]] }),
+                code: '',
+                lineCount: 1,
+                functionMap: null,
+              },
+            },
+          ],
+        };
+      },
+    };
+    patchTransformFileForPackedMaps(bundler);
+    patchTransformFileForPackedMaps(bundler);
+
+    const r = await bundler.transformFile('/a.js');
+    expect(r.output[0].data.__packedMap).toBeInstanceOf(PackedMap);
+    expect(r.output[0].data.map.length).toBe(1);
   });
 });
