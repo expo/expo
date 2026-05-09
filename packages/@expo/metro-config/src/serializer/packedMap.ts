@@ -200,8 +200,10 @@ export function installPackedMap(
   data: { map?: unknown; __packedMap?: PackedMap },
   source: PackedMapWire | readonly MetroSourceMapSegmentTuple[]
 ): void {
-  const wire = isPackedWire(source) ? source : packTuples(source);
-  const packed = PackedMap.fromWire(wire);
+  // Tuple input goes straight to a typed-array-backed `PackedMap` — going
+  // via `packTuples` would allocate a `number[]` that
+  // `PackedMap.fromWire` would then drop on first `.buf` access.
+  const packed = isPackedWire(source) ? PackedMap.fromWire(source) : packTuplesToPackedMap(source);
   Object.defineProperty(data, 'map', {
     value: makeProxy(packed),
     enumerable: true,
@@ -295,6 +297,31 @@ export function packTuples(tuples: readonly MetroSourceMapSegmentTuple[]): Packe
     __names: [...names.keys()],
     __packed: out,
   };
+}
+
+// Pack tuples straight into an `Int32Array`-backed `PackedMap`, skipping
+// the wire form. Used by `installPackedMap` when the caller already lives
+// on the main thread (reconcile, in-memory refits) and never needs the
+// JSON-faithful wire shape for IPC.
+function packTuplesToPackedMap(tuples: readonly MetroSourceMapSegmentTuple[]): PackedMap {
+  const names = new Map<string, number>();
+  const buf = new Int32Array(tuples.length * STRIDE);
+  let off = 0;
+  for (const tuple of tuples) {
+    buf[off] = tuple[0];
+    buf[off + 1] = tuple[1];
+    if (tuple.length === 2) {
+      buf[off + 2] = SENTINEL;
+      buf[off + 3] = SENTINEL;
+      buf[off + 4] = SENTINEL;
+    } else {
+      buf[off + 2] = tuple[2];
+      buf[off + 3] = tuple[3];
+      buf[off + 4] = tuple.length === 5 ? indexOrInsert(names, tuple[4]) : SENTINEL;
+    }
+    off += STRIDE;
+  }
+  return PackedMap.fromInts(buf, [...names.keys()], tuples.length);
 }
 
 // Target is `[]` (a real Array) so `Array.isArray(proxy)` returns true

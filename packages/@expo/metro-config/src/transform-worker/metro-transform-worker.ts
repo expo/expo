@@ -559,11 +559,11 @@ async function transformJS(
       data: {
         code,
         lineCount,
-        // Emit the wire form. The main thread's `Bundler.transformFile`
-        // wrapper detects this on the way back from the worker / cache
-        // and swaps in the Array-compatible Proxy + non-enumerable
-        // `__packedMap` for the encoder fast path.
-        map: packTuples(map),
+        // Skip packing on reconcile-bound modules — reconcile re-runs
+        // Babel codegen and replaces `data.map` via `installPackedMap`
+        // before any reader sees it, so packing here is wasted work and
+        // GC pressure on optimize builds.
+        map: possibleReconcile ? [] : packTuples(map),
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
