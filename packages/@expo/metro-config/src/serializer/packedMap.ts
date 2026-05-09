@@ -204,10 +204,19 @@ export function installPackedMap(
   // via `packTuples` would allocate a `number[]` that
   // `PackedMap.fromWire` would then drop on first `.buf` access.
   const packed = isPackedWire(source) ? PackedMap.fromWire(source) : packTuplesToPackedMap(source);
+
+  // Lazy accessor for `data.map`: builds that never symbolicate (typical
+  // CI / quiet dev sessions) read `data.__packedMap` exclusively via the
+  // encoder fast path, so the Proxy is never allocated. Cached on first
+  // read so consumers that hold onto `data.map` (e.g.
+  // `getExplodedSourceMap`) see a stable identity.
+  let cachedProxy: MetroSourceMapSegmentTuple[] | undefined;
   Object.defineProperty(data, 'map', {
-    value: makeProxy(packed),
+    get() {
+      if (!cachedProxy) cachedProxy = makeProxy(packed);
+      return cachedProxy;
+    },
     enumerable: true,
-    writable: false,
     configurable: true,
   });
   Object.defineProperty(data, '__packedMap', {
@@ -227,7 +236,11 @@ export function wrapTransformResultMaps<T extends { output?: readonly unknown[] 
   if (!result || !Array.isArray(result.output)) return result;
   for (const out of result.output) {
     const data = (out as { data?: { map?: unknown; __packedMap?: PackedMap } } | null)?.data;
-    if (data && isPackedWire(data.map)) {
+    if (!data) continue;
+    // Skip without touching `data.map` — reading it would fire the lazy
+    // getter and materialize a Proxy we don't need.
+    if (data.__packedMap) continue;
+    if (isPackedWire(data.map)) {
       installPackedMap(data, data.map);
     }
   }

@@ -1,6 +1,7 @@
 import { GenMapping, addMapping, toEncodedMap } from '@jridgewell/gen-mapping';
 import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
 
+import { installPackedMap } from '../packedMap';
 import {
   appendDebugIdToSourceMap,
   composeSourceMaps,
@@ -611,6 +612,33 @@ function defaultOptions() {
 }
 
 describe('sourceMapString', () => {
+  it('does not fire the lazy `data.map` getter when `__packedMap` is present', () => {
+    // Reading `data.map` would allocate a Proxy per module per encode
+    // pass for nothing — the fast path goes through `__packedMap`.
+    const mod = fakeJsModule({
+      path: '/foo.js',
+      map: [
+        [1, 0, 1, 0],
+        [1, 5, 2, 0, 'foo'],
+      ],
+    });
+    installPackedMap(mod.output[0].data, mod.output[0].data.map);
+
+    let getCount = 0;
+    const descriptor = Object.getOwnPropertyDescriptor(mod.output[0].data, 'map')!;
+    Object.defineProperty(mod.output[0].data, 'map', {
+      get() {
+        getCount++;
+        return descriptor.get!.call(mod.output[0].data);
+      },
+      enumerable: true,
+      configurable: true,
+    });
+
+    sourceMapString([mod], defaultOptions());
+    expect(getCount).toBe(0);
+  });
+
   it('produces a sourcemap byte-equivalent to Metros for the same input', () => {
     // We feed Metro's `Generator` the same segments in the same order,
     // so the serialized output should match byte-for-byte. Tests cover

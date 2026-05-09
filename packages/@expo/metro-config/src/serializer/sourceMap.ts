@@ -171,13 +171,18 @@ function readSourceMapInfo(
   lineCount: number;
 } {
   const data = getModuleJsData(module);
-  // Defence in case a wire-shape `data.map` reached us without going
-  // through `patchTransformFileForPackedMaps` — without this we'd miss
-  // the encoder fast path AND fall through to `Array.isArray`, silently
-  // emitting no segments.
+  // Don't read `data.map` when `__packedMap` is set — `data.map` is a
+  // lazy accessor that materializes the Proxy on first read, and the
+  // fast path below doesn't need it.
   let packed = data.data.__packedMap;
-  if (!packed && isPackedWire(data.data.map)) {
-    packed = PackedMap.fromWire(data.data.map);
+  let map: ModuleSourceMap | null | undefined;
+  if (!packed) {
+    map = data.data.map;
+    // Self-heal a wire-shape `data.map` that bypassed the wrapper.
+    if (isPackedWire(map)) {
+      packed = PackedMap.fromWire(map);
+      map = undefined;
+    }
   }
   return {
     path: options.getSourceUrl?.(module) ?? module.path,
@@ -185,7 +190,7 @@ function readSourceMapInfo(
       options.excludeSource || data.type === 'js/module/asset' ? '' : module.getSource().toString(),
     functionMap: data.data.functionMap,
     isIgnored: options.shouldAddToIgnoreList(module),
-    map: data.data.map,
+    map,
     packed,
     lineCount: data.data.lineCount,
   };

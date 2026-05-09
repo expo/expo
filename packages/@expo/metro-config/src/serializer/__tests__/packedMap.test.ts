@@ -393,6 +393,23 @@ describe('installPackedMap', () => {
     expect(data.map.length).toBe(2);
     expect(data.__packedMap).not.toBe(firstPacked);
   });
+
+  it('exposes `data.map` as a lazy accessor (Proxy not allocated until first read)', () => {
+    const data: any = {};
+    installPackedMap(data, [[1, 0, 1, 0]]);
+    const descriptor = Object.getOwnPropertyDescriptor(data, 'map')!;
+    expect(typeof descriptor.get).toBe('function');
+    expect('value' in descriptor).toBe(false);
+    expect(data.__packedMap).toBeInstanceOf(PackedMap);
+  });
+
+  it('caches the Proxy on first read so identity is stable', () => {
+    const data: any = {};
+    installPackedMap(data, [[1, 0, 1, 0]]);
+    const first = data.map;
+    expect(data.map).toBe(first);
+    expect({ ...data }.map).toBe(first);
+  });
 });
 
 describe('wrapTransformResultMaps', () => {
@@ -441,6 +458,38 @@ describe('wrapTransformResultMaps', () => {
   it('handles results with no output gracefully', () => {
     expect(wrapTransformResultMaps({ output: null as any })).toEqual({ output: null });
     expect(wrapTransformResultMaps({} as any)).toEqual({});
+  });
+
+  it('short-circuits on already-wrapped data without invoking the lazy `data.map` getter', () => {
+    const result: any = {
+      output: [
+        {
+          type: 'js/module',
+          data: {
+            code: '',
+            lineCount: 1,
+            map: wire({ segments: [[1, 0, 1, 0]] }),
+            functionMap: null,
+          },
+        },
+      ],
+    };
+    wrapTransformResultMaps(result);
+
+    const data = result.output[0].data;
+    let getInvocations = 0;
+    const originalDescriptor = Object.getOwnPropertyDescriptor(data, 'map')!;
+    Object.defineProperty(data, 'map', {
+      get() {
+        getInvocations++;
+        return originalDescriptor.get!.call(data);
+      },
+      enumerable: true,
+      configurable: true,
+    });
+
+    wrapTransformResultMaps(result);
+    expect(getInvocations).toBe(0);
   });
 });
 
