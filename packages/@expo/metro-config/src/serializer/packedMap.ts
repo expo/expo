@@ -18,7 +18,10 @@
 // `metro-cache` writes it to disk; the `Int32Array` is materialized
 // lazily on the main thread on first access.
 
-import type { MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import type {
+  BabelSourceMapSegment,
+  MetroSourceMapSegmentTuple,
+} from '@expo/metro/metro-source-map';
 
 // Layout per segment, starting at `i * STRIDE`. Fixed stride so segments
 // are indexable in O(1); missing fields use sentinel `-1`. Lines are
@@ -223,30 +226,132 @@ function indexOrInsert(names: Map<string, number>, name: string): number {
   return idx;
 }
 
-export function packTuples(tuples: readonly MetroSourceMapSegmentTuple[]): PackedMapWire {
+export function emptyWire(): PackedMapWire {
+  return { __version: 1, __count: 0, __names: [], __packed: [] };
+}
+
+// Convert Babel's `result.rawMappings` directly to the wire form. The
+// worker's terminal storage is `PackedMapWire`, so going via an
+// intermediate `MetroSourceMapSegmentTuple[]` (one heap-allocated Array
+// per segment) is wasted work; for an N-module bundle averaging M
+// segments per module that's N×M transient tuple allocations per
+// transform pass. `BabelSourceMapSegment` lines are 1-based (matching
+// the wire shape).
+export function packRawMappings(rawMappings: readonly BabelSourceMapSegment[]): PackedMapWire {
   const names = new Map<string, number>();
-  const out: number[] = new Array(tuples.length * STRIDE);
+  const out: number[] = new Array(rawMappings.length * STRIDE);
   let off = 0;
-  for (const tuple of tuples) {
-    out[off] = tuple[0];
-    out[off + 1] = tuple[1];
-    if (tuple.length === 2) {
+  for (const m of rawMappings) {
+    out[off] = m.generated.line;
+    out[off + 1] = m.generated.column;
+    if (m.original == null) {
       out[off + 2] = SENTINEL;
       out[off + 3] = SENTINEL;
       out[off + 4] = SENTINEL;
     } else {
-      out[off + 2] = tuple[2];
-      out[off + 3] = tuple[3];
-      out[off + 4] = tuple.length === 5 ? indexOrInsert(names, tuple[4]) : SENTINEL;
+      out[off + 2] = m.original.line;
+      out[off + 3] = m.original.column;
+      out[off + 4] = typeof m.name === 'string' ? indexOrInsert(names, m.name) : SENTINEL;
     }
     off += STRIDE;
   }
   return {
     __version: 1,
-    __count: tuples.length,
+    __count: rawMappings.length,
     __names: [...names.keys()],
     __packed: out,
   };
+}
+
+// Decode a minifier's encoded sourcemap straight to wire. `decode`
+// returns 0-based outer indices and 0-based source lines; the wire is
+// 1-based for both — adjust at the boundary. The minifier already
+// deduplicates names, so `input.names` becomes the wire's `__names`
+// directly without re-interning.
+export function packDecodedMappings(input: {
+  mappings: string;
+  names: readonly string[];
+}): PackedMapWire {
+  const decoded = loadSourceMapCodec().decode(input.mappings);
+  let total = 0;
+  for (const line of decoded) total += line.length;
+  const out: number[] = new Array(total * STRIDE);
+  let off = 0;
+  let count = 0;
+  for (let lineIdx = 0; lineIdx < decoded.length; lineIdx++) {
+    const genLine = lineIdx + 1;
+    for (const seg of decoded[lineIdx]!) {
+      out[off] = genLine;
+      out[off + 1] = seg[0]!;
+      if (seg.length === 1) {
+        out[off + 2] = SENTINEL;
+        out[off + 3] = SENTINEL;
+        out[off + 4] = SENTINEL;
+      } else {
+        out[off + 2] = (seg[2] as number) + 1;
+        out[off + 3] = seg[3] as number;
+        out[off + 4] = seg.length === 5 ? (seg[4] as number) : SENTINEL;
+      }
+      off += STRIDE;
+      count++;
+    }
+  }
+  return {
+    __version: 1,
+    __count: count,
+    __names: input.names.slice(),
+    __packed: out,
+  };
+}
+
+// Append the trailing `(lineCount+1, lastLineLength)` terminator to the
+// wire's `__packed` if it isn't already there. Without this, an
+// out-of-bounds lookup at the tail of the bundle would alias to the
+// last real mapping rather than resolving to nothing — same invariant
+// as the legacy tuple-array form, but applied in place on the flat
+// `number[]` storage.
+//
+// ASSUMPTION: Mappings are generated in order of increasing line and
+// column.
+export function countLinesAndTerminateWire(
+  code: string,
+  wire: PackedMapWire
+): { lineCount: number; wire: PackedMapWire } {
+  const NEWLINE = /\r\n?|\n|\u2028|\u2029/g;
+  let lineCount = 1;
+  let lastLineStart = 0;
+  for (const match of code.matchAll(NEWLINE)) {
+    if (match.index == null) continue;
+    lineCount++;
+    lastLineStart = match.index + match[0].length;
+  }
+  const lastLineLength = code.length - lastLineStart;
+
+  const lastIdx = wire.__count - 1;
+  if (lastIdx >= 0) {
+    const off = lastIdx * STRIDE;
+    if (wire.__packed[off] === lineCount && wire.__packed[off + 1] === lastLineLength) {
+      return { lineCount, wire };
+    }
+  }
+  return {
+    lineCount,
+    wire: {
+      __version: 1,
+      __count: wire.__count + 1,
+      __names: wire.__names,
+      __packed: [...wire.__packed, lineCount, lastLineLength, SENTINEL, SENTINEL, SENTINEL],
+    },
+  };
+}
+
+type SourceMapCodecModule = typeof import('@jridgewell/sourcemap-codec');
+let _sourceMapCodec: SourceMapCodecModule | undefined;
+function loadSourceMapCodec(): SourceMapCodecModule {
+  if (!_sourceMapCodec) {
+    _sourceMapCodec = require('@jridgewell/sourcemap-codec');
+  }
+  return _sourceMapCodec!;
 }
 
 // Pack tuples straight into an `Int32Array`-backed `PackedMap`, skipping

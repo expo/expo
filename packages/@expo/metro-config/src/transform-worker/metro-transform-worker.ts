@@ -21,7 +21,7 @@ import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-b
 import { stableHash } from '@expo/metro/metro-cache';
 import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
 import { functionMapBabelPlugin } from '@expo/metro/metro-source-map';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import type { FBSourceFunctionMap } from '@expo/metro/metro-source-map';
 import * as metroTransformPlugins from '@expo/metro/metro-transform-plugins';
 import type {
   JsTransformerConfig,
@@ -42,16 +42,16 @@ import type {
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
-import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import { packTuples } from '../serializer/packedMap';
 import {
-  decodedMapToTuples,
-  rawMappingsToTuples,
-  tuplesToEncodedMap,
-  type BabelSourceMapSegment,
-} from '../serializer/sourceMap';
+  countLinesAndTerminateWire,
+  emptyWire,
+  packDecodedMappings,
+  packRawMappings,
+  type PackedMapWire,
+} from '../serializer/packedMap';
+import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -136,13 +136,13 @@ export const minifyCode = async (
   filename: string,
   code: string,
   source: string,
-  map: MetroSourceMapSegmentTuple[],
+  rawMappings: readonly BabelSourceMapSegment[],
   reserved: string[] = []
 ): Promise<{
   code: string;
-  map: MetroSourceMapSegmentTuple[];
+  wire: PackedMapWire;
 }> => {
-  const sourceMap = tuplesToEncodedMap({ filename, source, tuples: map });
+  const sourceMap = rawMappingsToEncodedMap({ filename, source, rawMappings });
 
   const minify = getMinifier(config.minifierPath);
 
@@ -157,9 +157,9 @@ export const minifyCode = async (
 
     return {
       code: minified.code,
-      map: minified.map
-        ? decodedMapToTuples({ mappings: minified.map.mappings, names: minified.map.names })
-        : [],
+      wire: minified.map
+        ? packDecodedMappings({ mappings: minified.map.mappings, names: minified.map.names })
+        : emptyWire(),
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -509,21 +509,23 @@ async function transformJS(
 
   // `rawMappings` is omitted from `@types/babel__generator`'s
   // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
-  let map = rawMappingsToTuples(
-    (result as { rawMappings?: BabelSourceMapSegment[] } | null)?.rawMappings ?? []
-  );
+  const rawMappings =
+    (result as { rawMappings?: BabelSourceMapSegment[] } | null)?.rawMappings ?? [];
   let code = result.code;
+  let wire: PackedMapWire;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    ({ map, code } = await minifyCode(
+    ({ wire, code } = await minifyCode(
       config,
       file.filename,
       result.code,
       file.code,
-      map,
+      rawMappings,
       reserved
     ));
+  } else {
+    wire = packRawMappings(rawMappings);
   }
 
   const possibleReconcile: ReconcileTransformSettings | undefined =
@@ -550,7 +552,7 @@ async function transformJS(
       : undefined;
 
   let lineCount;
-  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+  ({ lineCount, wire } = countLinesAndTerminateWire(code, wire));
 
   // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
   // that React Compiler and other Babel plugins may add.
@@ -559,11 +561,11 @@ async function transformJS(
       data: {
         code,
         lineCount,
-        // Skip packing on reconcile-bound modules — reconcile re-runs
-        // Babel codegen and replaces `data.map` via `installPackedMap`
-        // before any reader sees it, so packing here is wasted work and
-        // GC pressure on optimize builds.
-        map: possibleReconcile ? [] : packTuples(map),
+        // Reconcile re-runs Babel codegen and replaces `data.map` via
+        // `installPackedMap` before any reader sees it, so the wire emitted
+        // here would be discarded — short-circuit to an empty Array to skip
+        // the work and avoid GC pressure on optimize builds.
+        map: possibleReconcile ? [] : wire,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
@@ -699,12 +701,12 @@ async function transformJSON(
     config.unstable_disableModuleWrapping === true
       ? JsFileWrapping.jsonToCommonJS(file.code)
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
-  let map: MetroSourceMapSegmentTuple[] = [];
+  let wire: PackedMapWire = emptyWire();
 
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ map, code } = await minifyCode(config, file.filename, code, file.code, map));
+    ({ wire, code } = await minifyCode(config, file.filename, code, file.code, []));
   }
 
   let jsType: JSFileType;
@@ -718,11 +720,11 @@ async function transformJSON(
   }
 
   let lineCount;
-  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+  ({ lineCount, wire } = countLinesAndTerminateWire(code, wire));
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount, map: packTuples(map), functionMap: null },
+      data: { code, lineCount, map: wire, functionMap: null },
       type: jsType,
     },
   ];

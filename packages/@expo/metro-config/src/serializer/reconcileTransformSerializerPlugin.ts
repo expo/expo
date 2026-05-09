@@ -22,16 +22,20 @@ import util from 'node:util';
 
 import type { ExpoJsOutput } from './jsOutput';
 import { isExpoJsOutput } from './jsOutput';
-import { installPackedMap } from './packedMap';
+import {
+  countLinesAndTerminateWire,
+  installPackedMap,
+  packRawMappings,
+  type PackedMapWire,
+} from './packedMap';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { rawMappingsToTuples, type BabelSourceMapSegment } from './sourceMap';
+import { type BabelSourceMapSegment } from './sourceMap';
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
   getKeyForDependency,
   hashKey,
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from '../transform-worker/collect-dependencies';
-import { countLinesAndTerminateMap } from '../transform-worker/count-lines';
 import {
   applyImportSupport,
   InvalidRequireCallError,
@@ -297,26 +301,27 @@ export async function reconcileTransformSerializerPlugin(
 
     // `rawMappings` is omitted from `@types/babel__generator`'s
     // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
-    let map = rawMappingsToTuples(
-      (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? []
-    );
+    const rawMappings = (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? [];
     let code = result.code;
+    let wire: PackedMapWire;
 
     if (reconcile.minify) {
       const source = value.getSource().toString('utf-8');
 
-      ({ map, code } = await minifyCode(
+      ({ wire, code } = await minifyCode(
         reconcile.minify,
         value.path,
         result.code,
         source,
-        map,
+        rawMappings,
         reserved
       ));
+    } else {
+      wire = packRawMappings(rawMappings);
     }
 
     let lineCount;
-    ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+    ({ lineCount, wire } = countLinesAndTerminateWire(code, wire));
 
     const newData = {
       ...outputItem.data,
@@ -334,7 +339,7 @@ export async function reconcileTransformSerializerPlugin(
     // `Bundler.transformFile` wrapper that normally installs the packed
     // shape from worker output. Install it here directly so the encoder
     // fast path stays live for reconciled modules.
-    installPackedMap(newData, map);
+    installPackedMap(newData, wire);
     return { ...outputItem, data: newData };
   }
 }

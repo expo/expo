@@ -1,10 +1,15 @@
+import { encode } from '@jridgewell/sourcemap-codec';
+
 import {
   PackedMap,
+  countLinesAndTerminateWire,
+  emptyWire,
   installPackedMap,
   isPackedWire,
   makeProxy,
   materializeMap,
-  packTuples,
+  packDecodedMappings,
+  packRawMappings,
   patchTransformFileForPackedMaps,
   tupleAt,
   wrapTransformResultMaps,
@@ -14,8 +19,7 @@ import {
 const STRIDE = 5;
 const SENTINEL = -1;
 
-// Build a wire object directly so byte-level tests have full control,
-// rather than going through `packTuples`.
+// Build a wire object directly so byte-level tests have full control.
 function wire(opts: {
   segments: (
     | [number, number]
@@ -290,12 +294,28 @@ describe('makeProxy', () => {
   });
 });
 
-describe('packTuples', () => {
-  it('packs metro tuples to wire shape', () => {
-    const w = packTuples([
-      [1, 0],
-      [1, 5, 3, 2],
-      [2, 0, 5, 0, 'foo'],
+describe('emptyWire', () => {
+  it('returns a fresh empty wire object each call', () => {
+    const a = emptyWire();
+    const b = emptyWire();
+    expect(a).toEqual({ __version: 1, __count: 0, __names: [], __packed: [] });
+    expect(a).not.toBe(b);
+    expect(a.__packed).not.toBe(b.__packed);
+    expect(a.__names).not.toBe(b.__names);
+  });
+});
+
+describe('packRawMappings', () => {
+  it('packs Babel rawMappings directly to wire (sourceless / sourced / named)', () => {
+    const w = packRawMappings([
+      { generated: { line: 1, column: 0 } },
+      { generated: { line: 1, column: 5 }, original: { line: 3, column: 2 }, source: 'a.js' },
+      {
+        generated: { line: 2, column: 0 },
+        original: { line: 5, column: 0 },
+        source: 'a.js',
+        name: 'foo',
+      },
     ]);
     expect(w.__count).toBe(3);
     expect(w.__names).toEqual(['foo']);
@@ -303,6 +323,125 @@ describe('packTuples', () => {
     expect(tupleAt(p, 0)).toEqual([1, 0]);
     expect(tupleAt(p, 1)).toEqual([1, 5, 3, 2]);
     expect(tupleAt(p, 2)).toEqual([2, 0, 5, 0, 'foo']);
+  });
+
+  it('treats a non-string name as no name (length-4 tuple)', () => {
+    const w = packRawMappings([
+      // `name: null` shows up in some Babel paths for sourced-without-name.
+      { generated: { line: 1, column: 0 }, original: { line: 1, column: 0 }, name: null } as any,
+    ]);
+    const p = PackedMap.fromWire(w);
+    expect(tupleAt(p, 0)).toEqual([1, 0, 1, 0]);
+    expect(w.__names).toEqual([]);
+  });
+
+  it('returns an empty wire for empty input', () => {
+    const w = packRawMappings([]);
+    expect(w.__count).toBe(0);
+    expect(w.__names).toEqual([]);
+    expect(w.__packed).toEqual([]);
+  });
+
+  it('deduplicates names in the output array', () => {
+    const w = packRawMappings([
+      {
+        generated: { line: 1, column: 0 },
+        original: { line: 1, column: 0 },
+        source: 'a',
+        name: 'foo',
+      },
+      {
+        generated: { line: 2, column: 0 },
+        original: { line: 2, column: 0 },
+        source: 'a',
+        name: 'foo',
+      },
+      {
+        generated: { line: 3, column: 0 },
+        original: { line: 3, column: 0 },
+        source: 'a',
+        name: 'bar',
+      },
+    ]);
+    expect(w.__names).toEqual(['foo', 'bar']);
+  });
+});
+
+describe('packDecodedMappings', () => {
+  it('decodes a VLQ mappings string straight to wire (1-based line conversion)', () => {
+    // Mappings authored at 0-based lines: line 0 col 0 -> src 0 / line 0 / col 0
+    //                                     line 1 col 0 -> src 0 / line 1 / col 0 / name 0
+    const mappings = encode([[[0, 0, 0, 0]], [[0, 0, 1, 0, 0]]]);
+    const w = packDecodedMappings({ mappings, names: ['greet'] });
+    expect(w.__count).toBe(2);
+    expect(w.__names).toEqual(['greet']);
+    const p = PackedMap.fromWire(w);
+    // Output is 1-based for source line/col
+    expect(tupleAt(p, 0)).toEqual([1, 0, 1, 0]);
+    expect(tupleAt(p, 1)).toEqual([2, 0, 2, 0, 'greet']);
+  });
+
+  it('handles sourceless segments (length-1 in decoded form → length-2 tuple)', () => {
+    const mappings = encode([[[0]]]);
+    const w = packDecodedMappings({ mappings, names: [] });
+    expect(w.__count).toBe(1);
+    const p = PackedMap.fromWire(w);
+    expect(tupleAt(p, 0)).toEqual([1, 0]);
+  });
+
+  it('returns an empty wire for an empty mappings string', () => {
+    const w = packDecodedMappings({ mappings: '', names: [] });
+    expect(w.__count).toBe(0);
+    expect(w.__packed).toEqual([]);
+  });
+
+  it('clones the names input rather than aliasing it', () => {
+    const names = ['foo'];
+    const w = packDecodedMappings({ mappings: '', names });
+    expect(w.__names).not.toBe(names);
+    expect(w.__names).toEqual(['foo']);
+  });
+});
+
+describe('countLinesAndTerminateWire', () => {
+  it('returns lineCount=1 for an empty string', () => {
+    const w = emptyWire();
+    const r = countLinesAndTerminateWire('', w);
+    expect(r.lineCount).toBe(1);
+    expect(r.wire.__count).toBe(1);
+    // Terminator at (line 1, col 0)
+    expect(r.wire.__packed.slice(0, 5)).toEqual([1, 0, SENTINEL, SENTINEL, SENTINEL]);
+  });
+
+  it('counts \\n / \\r\\n / U+2028 / U+2029', () => {
+    expect(countLinesAndTerminateWire('a\nb', emptyWire()).lineCount).toBe(2);
+    expect(countLinesAndTerminateWire('a\r\nb\rc', emptyWire()).lineCount).toBe(3);
+    expect(countLinesAndTerminateWire('a b', emptyWire()).lineCount).toBe(2);
+    expect(countLinesAndTerminateWire('a b', emptyWire()).lineCount).toBe(2);
+  });
+
+  it('appends a terminator when the last segment is not at (lastLine, lastCol)', () => {
+    const w = packRawMappings([
+      { generated: { line: 1, column: 0 }, original: { line: 1, column: 0 }, source: 'a' },
+    ]);
+    const r = countLinesAndTerminateWire('abc\nxyz', w);
+    expect(r.lineCount).toBe(2);
+    expect(r.wire.__count).toBe(2);
+    // Terminator: line=2, col=3 (length of "xyz")
+    const off = STRIDE; // second segment starts at offset 5
+    expect(r.wire.__packed.slice(off, off + 5)).toEqual([2, 3, SENTINEL, SENTINEL, SENTINEL]);
+  });
+
+  it('does not append a redundant terminator when the last segment already ends at the position', () => {
+    // Last segment ends at (line 2, col 3); for "abc\nxyz" that's the end-of-file.
+    const w = packRawMappings([
+      { generated: { line: 1, column: 0 }, original: { line: 1, column: 0 }, source: 'a' },
+      { generated: { line: 2, column: 3 } },
+    ]);
+    const r = countLinesAndTerminateWire('abc\nxyz', w);
+    expect(r.lineCount).toBe(2);
+    expect(r.wire.__count).toBe(2);
+    expect(r.wire).toBe(w);
   });
 });
 
