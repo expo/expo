@@ -2,6 +2,7 @@ import { GenMapping, addMapping, toEncodedMap } from '@jridgewell/gen-mapping';
 import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
 
 import {
+  appendDebugIdToSourceMap,
   composeSourceMaps,
   decodedMapToTuples,
   rawMappingsToTuples,
@@ -662,6 +663,50 @@ describe('sourceMapString', () => {
     const sync = sourceMapString(modules, defaultOptions());
     const async = await sourceMapStringNonBlocking(modules, defaultOptions());
     expect(async).toEqual(sync);
+  });
+
+  describe('debugId emission', () => {
+    const fixture = () =>
+      fakeJsModule({
+        path: '/foo.js',
+        code: 'a\n',
+        map: [[1, 0, 1, 0]],
+      });
+
+    it('emits debugId inline during build (no JSON.parse roundtrip needed)', () => {
+      const json = sourceMapString([fixture()], { ...defaultOptions(), debugId: 'abc-123' });
+      const map = JSON.parse(json);
+      expect(map.debugId).toBe('abc-123');
+      expect(typeof map.mappings).toBe('string');
+      expect(Array.isArray(map.sources)).toBe(true);
+    });
+
+    it('omits debugId when option is not provided', () => {
+      const json = sourceMapString([fixture()], defaultOptions());
+      const map = JSON.parse(json);
+      expect('debugId' in map).toBe(false);
+    });
+
+    it('escapes special characters in debugId via JSON.stringify', () => {
+      const id = 'has "quote" and \\ backslash';
+      const json = sourceMapString([fixture()], { ...defaultOptions(), debugId: id });
+      expect(JSON.parse(json).debugId).toBe(id);
+    });
+
+    it('produces output identical to a manual JSON.parse + add + JSON.stringify roundtrip', () => {
+      const baseline = sourceMapString([fixture()], defaultOptions());
+      const baselineWithId = JSON.stringify({ ...JSON.parse(baseline), debugId: 'roundtrip' });
+      const ours = sourceMapString([fixture()], { ...defaultOptions(), debugId: 'roundtrip' });
+      expect(JSON.parse(ours)).toEqual(JSON.parse(baselineWithId));
+    });
+
+    it('appendDebugIdToSourceMap injects without parsing', () => {
+      const baseline = sourceMapString([fixture()], defaultOptions());
+      const injected = appendDebugIdToSourceMap(baseline, 'after-the-fact');
+      const map = JSON.parse(injected);
+      expect(map.debugId).toBe('after-the-fact');
+      expect(JSON.parse(baseline).debugId).toBeUndefined();
+    });
   });
 
   describe('CI guard: @expo/metro/metro-source-map/Generator import shape', () => {

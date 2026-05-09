@@ -165,10 +165,29 @@ function filterModules(
   return out;
 }
 
-export function sourceMapString(
-  modules: readonly Module[],
-  options: SourceMapGeneratorOptions
+// Adds `debugId`, which is emitted during JSON construction so callers
+// don't pay for a parse + re-stringify roundtrip on a freshly-built
+// sourcemap.
+export interface ExpoSourceMapOptions extends SourceMapGeneratorOptions {
+  debugId?: string;
+}
+
+// Splice `,"debugId":"..."` in front of the trailing `}` of an already
+// JSON-encoded sourcemap. Used for Hermes output where we don't control
+// the JSON producer.
+export function appendDebugIdToSourceMap(sourceMap: string, debugId: string): string {
+  return sourceMap.slice(0, -1) + `,"debugId":${JSON.stringify(debugId)}}`;
+}
+
+function emitGeneratorJson(
+  generator: GeneratorClass,
+  options: ExpoSourceMapOptions
 ): string {
+  const json = generator.toString(undefined, { excludeSource: options.excludeSource });
+  return options.debugId ? appendDebugIdToSourceMap(json, options.debugId) : json;
+}
+
+export function sourceMapString(modules: readonly Module[], options: ExpoSourceMapOptions): string {
   const Generator = loadGenerator();
   const generator = new Generator();
   const filtered = filterModules(modules, options.processModuleFilter);
@@ -176,7 +195,7 @@ export function sourceMapString(
   for (const mod of filtered) {
     carryOver = processModuleIntoGenerator(generator, mod, options, carryOver);
   }
-  return generator.toString(undefined, { excludeSource: options.excludeSource });
+  return emitGeneratorJson(generator, options);
 }
 
 // Yields back to the event loop every ~50 ms so the node server stays
@@ -184,7 +203,7 @@ export function sourceMapString(
 // pacing.
 export async function sourceMapStringNonBlocking(
   modules: readonly Module[],
-  options: SourceMapGeneratorOptions
+  options: ExpoSourceMapOptions
 ): Promise<string> {
   const Generator = loadGenerator();
   const generator = new Generator();
@@ -212,7 +231,7 @@ export async function sourceMapStringNonBlocking(
     tick();
   });
 
-  return generator.toString(undefined, { excludeSource: options.excludeSource });
+  return emitGeneratorJson(generator, options);
 }
 
 // `maps[0]` is the original-most transform; `maps[maps.length - 1]` is
