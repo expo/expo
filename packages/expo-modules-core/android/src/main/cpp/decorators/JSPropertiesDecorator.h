@@ -1,8 +1,6 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
-#include <fbjni/fbjni.h>
-
-#include <unordered_map>
+#include "../ExpoHeader.pch"
 
 #include "../MethodMetadata.h"
 #include "../JNIFunctionBody.h"
