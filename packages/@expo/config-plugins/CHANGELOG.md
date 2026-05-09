@@ -3,6 +3,7 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
+- Fixed iOS project name sanitization so names with decomposable accented characters are normalized correctly before stripping invalid characters.
 
 ### 🎉 New features
 
