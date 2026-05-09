@@ -25,6 +25,7 @@ module.exports = function (_api: ConfigAPI, _options: HermesV1ConfigOptions) {
     [require('@babel/plugin-transform-block-scoping')],
     [require('@babel/plugin-transform-class-static-block'), { loose }],
     [require('@babel/plugin-transform-async-generator-functions')],
+    [require('@babel/plugin-transform-async-to-generator')],
   ];
 
   return {

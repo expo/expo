@@ -19,6 +19,7 @@ module.exports = function (_api, _options) {
         [require('@babel/plugin-transform-block-scoping')],
         [require('@babel/plugin-transform-class-static-block'), { loose }],
         [require('@babel/plugin-transform-async-generator-functions')],
+        [require('@babel/plugin-transform-async-to-generator')],
     ];
     return {
         comments: false,
