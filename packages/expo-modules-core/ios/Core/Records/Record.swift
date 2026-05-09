@@ -26,6 +26,49 @@ public protocol Record: Convertible {
   func toDictionary(appContext: AppContext?) -> Dict
 }
 
+/**
+ Describes a single `@Field` of a record at decoding/encoding time. The `key` and
+ `isRequired` are pre-computed by the `@Record` macro (or filled in by the `Mirror`
+ fallback) so the framework doesn't have to re-derive them from the field's runtime
+ options on every record decode.
+
+ `field` is typed as the public `AnyField` because instances of this struct flow back
+ from user modules through the `_RecordFieldsProvider` requirement, and a public
+ protocol can't reference the internal `AnyFieldInternal`. The `internalField`
+ accessor below recovers the internal-only view for use inside this module.
+ */
+public struct RecordFieldDescriptor {
+  public let key: String
+  public let isRequired: Bool
+  public let field: AnyField
+
+  public init(key: String, isRequired: Bool, field: AnyField) {
+    self.key = key
+    self.isRequired = isRequired
+    self.field = field
+  }
+
+  /**
+   Internal access to the `AnyFieldInternal` view of the field. Safe by construction:
+   `Field<T>` is the only type that conforms to either `AnyField` or `AnyFieldInternal`,
+   and it conforms to both, so the cast cannot fail in well-formed code.
+   */
+  internal var internalField: AnyFieldInternal {
+    return field as! AnyFieldInternal
+  }
+}
+
+/**
+ Implementation detail of the `@Record` macro. The macro adds conformance to this protocol
+ with a compile-time-generated `_recordFields(of:)`, letting `fieldDescriptorsOf` skip reflection.
+ Types that don't opt into `@Record` simply don't conform; `fieldDescriptorsOf` falls back to a `Mirror`
+ walk for them. The protocol is `public` only because user-defined records live in modules
+ that depend on `expo-modules-core` and need to be able to conform — treat it as private API.
+ */
+public protocol _RecordFieldsProvider {
+  static func _recordFields(of instance: Self) -> [RecordFieldDescriptor]
+}
+
 internal protocol RecordJavaScriptValueConvertible {
   @JavaScriptActor
   func toJSValue(appContext: AppContext) throws -> JavaScriptValue
@@ -55,13 +98,9 @@ public extension Record {
   func update(withDict dict: Dict, appContext: AppContext) throws {
     let dictKeys = dict.keys
 
-    try fieldsOf(self).forEach { field in
-      guard let key = field.key else {
-        // This should never happen, but just in case skip fields without the key.
-        return
-      }
-      if dictKeys.contains(key) || field.isRequired {
-        try field.set(dict[key], appContext: appContext)
+    try fieldDescriptorsOf(self).forEach { descriptor in
+      if dictKeys.contains(descriptor.key) || descriptor.isRequired {
+        try descriptor.internalField.set(dict[descriptor.key], appContext: appContext)
       }
     }
   }
@@ -71,31 +110,26 @@ public extension Record {
     // Using a set keeps declared-field lookups O(1) when selectively hydrating the record.
     let propertyNames = Set(object.getPropertyNames())
 
-    try fieldsOf(self).forEach { field in
-      guard let key = field.key else {
-        return
-      }
-      if propertyNames.contains(key) {
-        let property = object.getProperty(key)
+    try fieldDescriptorsOf(self).forEach { descriptor in
+      if propertyNames.contains(descriptor.key) {
+        let property = object.getProperty(descriptor.key)
 
         if property.isUndefined() {
-          if field.isRequired {
-            try field.set(nil, appContext: appContext)
+          if descriptor.isRequired {
+            try descriptor.internalField.set(nil, appContext: appContext)
           }
           return
         }
-        try field.set(jsValue: property, appContext: appContext)
-      } else if field.isRequired {
-        try field.set(nil, appContext: appContext)
+        try descriptor.internalField.set(jsValue: property, appContext: appContext)
+      } else if descriptor.isRequired {
+        try descriptor.internalField.set(nil, appContext: appContext)
       }
     }
   }
 
   func toDictionary(appContext: AppContext? = nil) -> Dict {
-    return fieldsOf(self).reduce(into: Dict()) { result, field in
-      if let key = field.key {
-        result[key] = Conversions.convertFunctionResult(field.get(), appContext: appContext)
-      }
+    return fieldDescriptorsOf(self).reduce(into: Dict()) { result, descriptor in
+      result[descriptor.key] = Conversions.convertFunctionResult(descriptor.field.get(), appContext: appContext)
     }
   }
 
@@ -110,12 +144,13 @@ public extension Record {
   func toJSValue(appContext: AppContext) throws -> JavaScriptValue {
     let object = try appContext.runtime.createObject()
 
-    for field in fieldsOf(self) {
-      guard let key = field.key else {
-        continue
-      }
-      let value = try recordFieldValueToJSValue(field.get(), dynamicType: field.fieldType, appContext: appContext)
-      object.setProperty(key, value: value)
+    for descriptor in fieldDescriptorsOf(self) {
+      let value = try recordFieldValueToJSValue(
+        descriptor.field.get(),
+        dynamicType: descriptor.internalField.fieldType,
+        appContext: appContext
+      )
+      object.setProperty(descriptor.key, value: value)
     }
     return object.asValue()
   }
@@ -133,11 +168,34 @@ internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
 }
 
 /**
- Returns an array of fields found in record's mirror. If the field is missing the `key`,
- it gets assigned to the property label, so after all it's safe to enforce unwrapping it (using `key!`).
- This function now supports inheritance by recursively traversing the superclass hierarchy.
+ Returns each `@Field` of a record as a `RecordFieldDescriptor`. Records annotated with
+ `@Record` conform to `_RecordFieldsProvider` and use a compile-time-generated method that
+ skips reflection and pre-computes `isRequired`. Records that aren't annotated fall back to
+ a `Mirror` walk that lazily inserts `.keyed(...)` into each field's options.
  */
-internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
+internal func fieldDescriptorsOf(_ record: Record) -> [RecordFieldDescriptor] {
+  if let provider = record as? any _RecordFieldsProvider {
+    return _recordFieldsFromProvider(provider)
+  }
+  return _recordFieldsFromMirror(record)
+}
+
+/**
+ Calls `_recordFields(of:)` on the dynamic type of the provider. Pulled out so the existential
+ can be opened via the generic helper, which is required to call a `Self`-taking static method
+ through `any _RecordFieldsProvider`.
+ */
+private func _recordFieldsFromProvider<T: _RecordFieldsProvider>(_ provider: T) -> [RecordFieldDescriptor] {
+  return T._recordFields(of: provider)
+}
+
+/**
+ `Mirror`-based fallback for records that aren't annotated with `@Record`. Lazily inserts
+ `.keyed(key)` into each field's options under the per-field `Mutex`, matching the historical
+ behavior so callers that read `field.key` afterwards keep working. Reads `isRequired` from
+ the field's options under the same lock — the macro path skips this entirely.
+ */
+private func _recordFieldsFromMirror(_ record: Record) -> [RecordFieldDescriptor] {
   let mirror = Mirror(reflecting: record)
   return allMirrorChildren(mirror).compactMap { (label: String?, value: Any) in
     guard let field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
@@ -149,7 +207,7 @@ internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
         options.insert(.keyed(key))
       }
     }
-    return field
+    return RecordFieldDescriptor(key: key, isRequired: field.isRequired, field: field)
   }
 }
 

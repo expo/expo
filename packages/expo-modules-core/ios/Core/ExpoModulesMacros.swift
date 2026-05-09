@@ -25,3 +25,24 @@
 @attached(peer, names: arbitrary)
 public macro OptimizedFunction() =
   #externalMacro(module: "ExpoModulesMacros", type: "OptimizedFunctionAttachedMacro")
+
+/// An attached macro that generates `_recordFields(of:)` on a `Record` type, replacing
+/// the runtime `Mirror` walk used to discover `@Field`-annotated properties. Each entry
+/// pairs a compile-time-resolved dictionary key with the underlying `AnyFieldInternal`
+/// instance, so field lookup no longer needs reflection or per-field locking.
+///
+/// Usage:
+///
+///     @Record
+///     struct Options: Record {
+///       @Field var name: String = ""
+///       @Field("custom_key") var flag: Bool = false
+///       @Field(.required) var count: Int = 0
+///     }
+///
+/// For class-based records that inherit from another `@Record` type, the generated
+/// method overrides its superclass and prepends inherited fields via `super`.
+@attached(member, names: named(_recordFields))
+@attached(extension, conformances: Record, _RecordFieldsProvider)
+public macro Record() =
+  #externalMacro(module: "ExpoModulesMacros", type: "RecordMacro")

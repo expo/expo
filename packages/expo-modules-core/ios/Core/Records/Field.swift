@@ -23,7 +23,9 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
 
   /**
    Additional options of the field, such is if providing the value is required (`FieldOption.required`).
-   Locked because `fieldsOf` lazily writes the keyed option while other threads may read. Access only via `withOptions`.
+   Locked because the `Mirror`-based fallback in `Record._recordFields(of:)` lazily writes the keyed
+   option while other threads may read. Records annotated with `@Record` resolve keys at compile time
+   and never trigger that write. Access only via `withOptions`.
    */
   private let _options: Mutex<Set<FieldOption>>
 
