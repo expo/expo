@@ -268,10 +268,7 @@ export function appendDebugIdToSourceMap(sourceMap: string, debugId: string): st
   return sourceMap.slice(0, -1) + `,"debugId":${JSON.stringify(debugId)}}`;
 }
 
-function emitGeneratorJson(
-  generator: GeneratorClass,
-  options: ExpoSourceMapOptions
-): string {
+function emitGeneratorJson(generator: GeneratorClass, options: ExpoSourceMapOptions): string {
   const json = generator.toString(undefined, { excludeSource: options.excludeSource });
   return options.debugId ? appendDebugIdToSourceMap(json, options.debugId) : json;
 }
@@ -321,6 +318,16 @@ export async function sourceMapStringNonBlocking(
   });
 
   return emitGeneratorJson(generator, options);
+}
+
+// Metro's `Server._processSourceMapRequest` calls
+// `sourceMapStringNonBlocking` directly, bypassing the `customSerializer`
+// chain — so without rerouting it, every dev `.map` fetch iterates the
+// `data.map` Proxy and the encoder fast path is unreachable.
+export function patchMetroSourceMapStringForPackedMaps(): void {
+  const stock = require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
+  stock.sourceMapString = sourceMapString;
+  stock.sourceMapStringNonBlocking = sourceMapStringNonBlocking;
 }
 
 // `maps[0]` is the original-most transform; `maps[maps.length - 1]` is

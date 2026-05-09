@@ -6,6 +6,7 @@ import {
   appendDebugIdToSourceMap,
   composeSourceMaps,
   decodedMapToTuples,
+  patchMetroSourceMapStringForPackedMaps,
   rawMappingsToTuples,
   sourceMapString,
   sourceMapStringNonBlocking,
@@ -753,6 +754,41 @@ describe('sourceMapString', () => {
       ]) {
         expect(typeof proto[m]).toBe('function');
       }
+    });
+  });
+
+  describe('patchMetroSourceMapStringForPackedMaps', () => {
+    const STOCK_PATH = '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
+
+    afterEach(() => {
+      // Repair the live module so other tests asserting against Metro's
+      // stock implementation don't see the patched references.
+      jest.resetModules();
+    });
+
+    it('replaces both stock exports with Expo`s encoder', () => {
+      const stock = require(STOCK_PATH);
+      const originalSync = stock.sourceMapString;
+      const originalAsync = stock.sourceMapStringNonBlocking;
+      expect(originalSync).not.toBe(sourceMapString);
+      expect(originalAsync).not.toBe(sourceMapStringNonBlocking);
+
+      patchMetroSourceMapStringForPackedMaps();
+
+      expect(stock.sourceMapString).toBe(sourceMapString);
+      expect(stock.sourceMapStringNonBlocking).toBe(sourceMapStringNonBlocking);
+    });
+
+    it('is idempotent — repeat calls leave the references unchanged', () => {
+      patchMetroSourceMapStringForPackedMaps();
+      const after1 = require(STOCK_PATH);
+      const sync1 = after1.sourceMapString;
+      const async1 = after1.sourceMapStringNonBlocking;
+
+      patchMetroSourceMapStringForPackedMaps();
+
+      expect(after1.sourceMapString).toBe(sync1);
+      expect(after1.sourceMapStringNonBlocking).toBe(async1);
     });
   });
 });

@@ -14,6 +14,7 @@ import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
 import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
@@ -499,6 +500,7 @@ export async function instantiateMetroAsync(
   // and cache hits flow through `Bundler.transformFile`, so wrapping
   // here covers both.
   patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
 
   setEventReporter(eventsSocket.reportMetroEvent);
 
