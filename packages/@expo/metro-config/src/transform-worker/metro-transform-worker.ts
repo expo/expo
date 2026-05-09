@@ -20,12 +20,7 @@ import {
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import { stableHash } from '@expo/metro/metro-cache';
 import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
-import {
-  fromRawMappings,
-  functionMapBabelPlugin,
-  toBabelSegments,
-  toSegmentTuple,
-} from '@expo/metro/metro-source-map';
+import { functionMapBabelPlugin } from '@expo/metro/metro-source-map';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import * as metroTransformPlugins from '@expo/metro/metro-transform-plugins';
 import type {
@@ -50,6 +45,7 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import { getFromRawMappings, getToBabelSegments, getToSegmentTuple } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -140,7 +136,7 @@ export const minifyCode = async (
   code: string;
   map: MetroSourceMapSegmentTuple[];
 }> => {
-  const sourceMap = fromRawMappings([
+  const sourceMap = getFromRawMappings()([
     {
       code,
       source,
@@ -166,7 +162,7 @@ export const minifyCode = async (
 
     return {
       code: minified.code,
-      map: minified.map ? toBabelSegments(minified.map).map(toSegmentTuple) : [],
+      map: minified.map ? getToBabelSegments()(minified.map).map(getToSegmentTuple()) : [],
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -515,7 +511,7 @@ async function transformJS(
   );
 
   // NOTE: incorrectly typed upstream
-  let map = (result as any)?.rawMappings.map(toSegmentTuple) ?? [];
+  let map = (result as any)?.rawMappings.map(getToSegmentTuple()) ?? [];
   let code = result.code;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.

@@ -18,19 +18,10 @@ import {
 } from './environmentVariableSerializerPlugin';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
+import { getSourceMapString } from './sourceMap';
 import { env } from '../env';
 
 export type { SerialAsset } from './serializerAssets';
-
-// Lazy-loaded to avoid pulling in metro-source-map and @babel/traverse at startup (~100ms savings)
-let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-function getSourceMapString() {
-  if (!_sourceMapString) {
-    _sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-  }
-  return _sourceMapString;
-}
 
 // Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
 let _reconcileTransformSerializerPlugin: typeof import('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;

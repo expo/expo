@@ -70,6 +70,10 @@
     "@expo/json-file": "workspace:~10.1.0",
     "@expo/metro": "~56.0.0",
     "@expo/spawn-async": "^1.7.2",
+    "@jridgewell/gen-mapping": "^0.3.13",
+    "@jridgewell/remapping": "^2.3.5",
+    "@jridgewell/sourcemap-codec": "^1.5.5",
+    "@jridgewell/trace-mapping": "^0.3.31",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
@@ -91,7 +95,6 @@
     }
   },
   "devDependencies": {
-    "@jridgewell/trace-mapping": "^0.3.20",
     "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",

@@ -22,6 +22,7 @@ import { getExportPathForDependencyWithOptions } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
+import { getSourceMapString } from './sourceMap';
 import type { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
@@ -33,16 +34,6 @@ function getBuildHermesBundleAsync() {
     _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
   }
   return _buildHermesBundleAsync;
-}
-
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
-let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-function getSourceMapString() {
-  if (!_sourceMapString) {
-    _sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-  }
-  return _sourceMapString;
 }
 
 let _baseJSBundleWithDependencies: typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies;

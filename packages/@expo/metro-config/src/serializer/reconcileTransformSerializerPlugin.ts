@@ -16,7 +16,6 @@ import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrap
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { toSegmentTuple } from '@expo/metro/metro-source-map';
 import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import assert from 'assert';
 import util from 'node:util';
@@ -24,6 +23,7 @@ import util from 'node:util';
 import type { ExpoJsOutput } from './jsOutput';
 import { isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
+import { getToSegmentTuple } from './sourceMap';
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
   getKeyForDependency,
@@ -295,7 +295,7 @@ export async function reconcileTransformSerializerPlugin(
     );
 
     // @ts-expect-error: incorrectly typed upstream
-    let map = result.rawMappings ? result.rawMappings.map(toSegmentTuple) : [];
+    let map = result.rawMappings ? result.rawMappings.map(getToSegmentTuple()) : [];
     let code = result.code;
 
     if (reconcile.minify) {
