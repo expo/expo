@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import EXManifests
 import EXUpdates
 
 /**
@@ -15,15 +16,17 @@ import EXUpdates
 final class ExpoGoExpoUpdatesModule: Module {
   private let scopeKey: String
   private let updatesKernelService: UpdatesBindingDelegate
+  private let manifest: Manifest
 
   // swiftlint:disable:next unavailable_function
   required init(appContext: AppContext) {
-    fatalError("Initializer not implemented, use init(appContext:updatesKernelService:scopeKey:) instead")
+    fatalError("Initializer not implemented, use init(appContext:updatesKernelService:scopeKey:manifest:) instead")
   }
 
-  required init(appContext: AppContext, updatesKernelService: UpdatesBindingDelegate, scopeKey: String) {
+  required init(appContext: AppContext, updatesKernelService: UpdatesBindingDelegate, scopeKey: String, manifest: Manifest) {
     self.updatesKernelService = updatesKernelService
     self.scopeKey = scopeKey
+    self.manifest = manifest
 
     super.init(appContext: appContext)
   }
@@ -33,8 +36,13 @@ final class ExpoGoExpoUpdatesModule: Module {
 
     Constants {
       let config = updatesKernelService.configForScopeKey(scopeKey)
-      return UpdatesModuleConstants(
-        launchedUpdate: updatesKernelService.launchedUpdateForScopeKey(scopeKey),
+      // Use the launcher's update if available, otherwise construct the
+      // manifest constants directly from the manifest that was passed at
+      // construction time. This avoids a race where the JS bridge evaluates
+      // module constants before the app launcher has finished initializing.
+      let launchedUpdate = updatesKernelService.launchedUpdateForScopeKey(scopeKey)
+      var constants = UpdatesModuleConstants(
+        launchedUpdate: launchedUpdate,
         launchDuration: updatesKernelService.launchDurationForScopeKey(scopeKey)?.doubleValue,
         embeddedUpdate: nil,
         emergencyLaunchException: nil,
@@ -47,6 +55,16 @@ final class ExpoGoExpoUpdatesModule: Module {
         shouldDeferToNativeForAPIMethodAvailabilityInDevelopment: true,
         initialContext: UpdatesStateContext()
       ).toModuleConstantsMap()
+
+      if launchedUpdate == nil {
+        if let expoUpdatesManifest = manifest as? ExpoUpdatesManifest {
+          constants["updateId"] = expoUpdatesManifest.rawId()
+          constants["commitTime"] = expoUpdatesManifest.createdAt()
+        }
+        constants["manifest"] = manifest.rawManifestJSON()
+      }
+
+      return constants
     }
 
     AsyncFunction("reload") { (promise: Promise) in

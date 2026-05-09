@@ -121,7 +121,8 @@ final class VersionManager: EXVersionManagerObjC {
     appContext.moduleRegistry.register(module: ExpoGoExpoUpdatesModule(
       appContext: appContext,
       updatesKernelService: updatesKernelService,
-      scopeKey: manifest.scopeKey()
+      scopeKey: manifest.scopeKey(),
+      manifest: manifest
     ), name: nil, preventModuleOverriding: true)
 
     // Override expo-notifications modules
