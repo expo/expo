@@ -18,7 +18,7 @@ import {
 } from './environmentVariableSerializerPlugin';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
-import { getSourceMapString } from './sourceMap';
+import { sourceMapString } from './sourceMap';
 import { env } from '../env';
 
 export type { SerialAsset } from './serializerAssets';
@@ -41,7 +41,7 @@ function getTreeShakeSerializer() {
   return _treeShakeSerializer;
 }
 
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString chain at startup
+// Lazy-loaded to avoid pulling in metro's getAppendScripts at startup
 let _baseJSBundle: typeof import('./fork/baseJSBundle').baseJSBundle;
 function getBaseJSBundle() {
   if (!_baseJSBundle) {
@@ -202,7 +202,7 @@ export function createDefaultExportCustomSerializer(
     }
 
     const getEnsuredMaps = () => {
-      bundleMap ??= getSourceMapString()(
+      bundleMap ??= sourceMapString(
         [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
         {
           excludeSource: options.serializerOptions?.excludeSource ?? false,

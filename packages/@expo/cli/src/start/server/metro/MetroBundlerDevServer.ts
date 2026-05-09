@@ -20,7 +20,7 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import { getSourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
+import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
@@ -2232,7 +2232,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           prepend = [];
         }
 
-        bundleMap = await getSourceMapStringNonBlocking()(
+        bundleMap = await sourceMapStringNonBlocking(
           [
             //
             ...prepend,

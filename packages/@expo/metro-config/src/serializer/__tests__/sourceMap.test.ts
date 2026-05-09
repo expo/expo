@@ -5,6 +5,8 @@ import {
   composeSourceMaps,
   decodedMapToTuples,
   rawMappingsToTuples,
+  sourceMapString,
+  sourceMapStringNonBlocking,
   tuplesToEncodedMap,
   type ComposableSourceMap,
   type MetroSourceMapSegmentTuple,
@@ -565,5 +567,119 @@ describe('rawMappingsToTuples', () => {
 
   it('returns an empty array for empty input', () => {
     expect(rawMappingsToTuples([])).toEqual([]);
+  });
+});
+
+// Minimal `Module<JsOutput>`-shaped fake: only the fields the encoder
+// reads (`output[].data.{code,map,functionMap,lineCount}`, `path`,
+// `getSource()`) are populated.
+function fakeJsModule(opts: {
+  path: string;
+  code?: string;
+  source?: string;
+  map: MetroSourceMapSegmentTuple[];
+  lineCount?: number;
+}): any {
+  const code = opts.code ?? `// ${opts.path}\n`;
+  const source = opts.source ?? code;
+  return {
+    path: opts.path,
+    output: [
+      {
+        type: 'js/module',
+        data: {
+          code,
+          lineCount: opts.lineCount ?? code.split(/\r\n?|\n/).length,
+          map: opts.map,
+          functionMap: null,
+        },
+      },
+    ],
+    dependencies: new Map(),
+    inverseDependencies: new Set(),
+    getSource: () => Buffer.from(source),
+  };
+}
+
+function defaultOptions() {
+  return {
+    excludeSource: true,
+    processModuleFilter: () => true,
+    shouldAddToIgnoreList: () => false,
+  };
+}
+
+describe('sourceMapString', () => {
+  it('produces a sourcemap byte-equivalent to Metros for the same input', () => {
+    // We feed Metro's `Generator` the same segments in the same order,
+    // so the serialized output should match byte-for-byte. Tests cover
+    // adjacents on the same line, sourceless mappings, named mappings,
+    // and module-boundary transitions.
+    const metroSourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString =
+      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString.js').sourceMapString;
+
+    const modules = [
+      fakeJsModule({
+        path: '/a.js',
+        code: 'A1\nA2\nA3\n',
+        map: [
+          [1, 0, 1, 0],
+          [1, 4, 1, 0],
+          [2, 0, 2, 0, 'foo'],
+          [3, 0],
+          [3, 4, 3, 4],
+        ],
+      }),
+      fakeJsModule({
+        path: '/b.js',
+        code: 'B1\n',
+        map: [[1, 0, 10, 0, 'bar']],
+      }),
+    ];
+
+    const ours = JSON.parse(sourceMapString(modules, defaultOptions()));
+    const theirs = JSON.parse(metroSourceMapString(modules, defaultOptions()));
+    expect(ours).toEqual(theirs);
+  });
+
+  it('sourceMapStringNonBlocking returns the same output as sourceMapString', async () => {
+    const modules = [
+      fakeJsModule({
+        path: '/a.js',
+        code: 'a\nb\nc\n',
+        map: [
+          [1, 0, 1, 0],
+          [2, 0, 2, 0],
+        ],
+      }),
+      fakeJsModule({
+        path: '/b.js',
+        code: 'd\n',
+        map: [[1, 0, 1, 0]],
+      }),
+    ];
+
+    const sync = sourceMapString(modules, defaultOptions());
+    const async = await sourceMapStringNonBlocking(modules, defaultOptions());
+    expect(async).toEqual(sync);
+  });
+
+  describe('CI guard: @expo/metro/metro-source-map/Generator import shape', () => {
+    it('exposes Generator via .default and the prototype methods we use', () => {
+      const Generator: any = require('@expo/metro/metro-source-map/Generator').default;
+      expect(typeof Generator).toBe('function');
+      const proto = Generator.prototype;
+      for (const m of [
+        'addSimpleMapping',
+        'addSourceMapping',
+        'addNamedSourceMapping',
+        'startFile',
+        'endFile',
+        'toString',
+        'toMap',
+      ]) {
+        expect(typeof proto[m]).toBe('function');
+      }
+    });
   });
 });

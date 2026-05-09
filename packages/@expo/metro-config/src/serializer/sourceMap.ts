@@ -10,6 +10,7 @@
 // (and its transitive `@babel/traverse`) at top level adds ~100ms to
 // `@expo/cli` startup.
 import type { SourceMapGeneratorOptions } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
+import type { Module } from '@expo/metro/metro/DeltaBundler/types';
 import type {
   BabelSourceMapSegment,
   BasicSourceMap,
@@ -18,6 +19,7 @@ import type {
   MetroSourceMapSegmentTuple,
   MixedSourceMap,
 } from '@expo/metro/metro-source-map';
+import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
 
 export type {
   BabelSourceMapSegment,
@@ -45,9 +47,6 @@ export interface ComposableSourceMap {
   x_hermes_function_offsets?: HermesFunctionOffsets;
 }
 
-type SourceMapStringModule =
-  typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
-
 // `@jridgewell/remapping`'s CJS types use `export = function remapping(...)`,
 // which TypeScript 6 rejects as a syntax error — load via `require()` and
 // declare the function shape locally.
@@ -73,20 +72,147 @@ function loadRemapping(): Remapping {
   return _remapping!;
 }
 
-let _sourceMapStringModule: SourceMapStringModule | undefined;
-function loadSourceMapStringModule(): SourceMapStringModule {
-  if (!_sourceMapStringModule) {
-    _sourceMapStringModule = require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
+// NOTE(@kitten): @jridgewell/gen-mapping has no streaming encoder — its
+// `addSegment` buffers every segment into `_mappings` until
+// `toEncodedMap` runs VLQ encoding at the end (~100 MB transient on a
+// large bundle). Metro's own `Generator` is already a streaming VLQ
+// encoder, so peak memory stays at roughly the size of the final
+// `mappings` string. We use it directly here.
+
+type GeneratorCtor = new () => GeneratorClass;
+
+let _Generator: GeneratorCtor | undefined;
+function loadGenerator(): GeneratorCtor {
+  if (!_Generator) {
+    _Generator = require('@expo/metro/metro-source-map/Generator').default;
   }
-  return _sourceMapStringModule!;
+  return _Generator!;
 }
 
-export function getSourceMapString(): SourceMapStringModule['sourceMapString'] {
-  return loadSourceMapStringModule().sourceMapString;
+// `.js` suffix required for jest's resolver to find the file under
+// `@expo/metro`'s `exports` map (see `getCssDeps.ts`/`getAssets.ts` for
+// the same pattern).
+type GetSourceMapInfo =
+  typeof import('@expo/metro/metro/DeltaBundler/Serializers/helpers/getSourceMapInfo').default;
+type IsJsModule = typeof import('@expo/metro/metro/DeltaBundler/Serializers/helpers/js').isJsModule;
+
+let _getSourceMapInfo: GetSourceMapInfo | undefined;
+let _isJsModule: IsJsModule | undefined;
+function loadMetroSerializerHelpers(): {
+  getSourceMapInfo: GetSourceMapInfo;
+  isJsModule: IsJsModule;
+} {
+  if (!_getSourceMapInfo || !_isJsModule) {
+    _getSourceMapInfo =
+      require('@expo/metro/metro/DeltaBundler/Serializers/helpers/getSourceMapInfo.js').default;
+    _isJsModule = require('@expo/metro/metro/DeltaBundler/Serializers/helpers/js.js').isJsModule;
+  }
+  return { getSourceMapInfo: _getSourceMapInfo!, isJsModule: _isJsModule! };
 }
 
-export function getSourceMapStringNonBlocking(): SourceMapStringModule['sourceMapStringNonBlocking'] {
-  return loadSourceMapStringModule().sourceMapStringNonBlocking;
+function feedModuleSegments(
+  generator: GeneratorClass,
+  tuples: readonly MetroSourceMapSegmentTuple[],
+  carryOver: number
+): void {
+  for (let i = 0, n = tuples.length; i < n; i++) {
+    const tuple = tuples[i]!;
+    const line = tuple[0] + carryOver;
+    const column = tuple[1];
+    if (tuple.length === 2) {
+      generator.addSimpleMapping(line, column);
+    } else if (tuple.length === 4) {
+      generator.addSourceMapping(line, column, tuple[2], tuple[3]);
+    } else {
+      generator.addNamedSourceMapping(line, column, tuple[2], tuple[3], tuple[4]);
+    }
+  }
+}
+
+function processModuleIntoGenerator(
+  generator: GeneratorClass,
+  module: Module,
+  options: SourceMapGeneratorOptions,
+  carryOver: number
+): number {
+  const { getSourceMapInfo } = loadMetroSerializerHelpers();
+  const info = getSourceMapInfo(module, {
+    excludeSource: options.excludeSource,
+    shouldAddToIgnoreList: options.shouldAddToIgnoreList,
+    getSourceUrl: options.getSourceUrl,
+  });
+  generator.startFile(info.path, info.source, info.functionMap, {
+    addToIgnoreList: info.isIgnored,
+  });
+  if (info.map != null) {
+    feedModuleSegments(generator, info.map, carryOver);
+  }
+  generator.endFile();
+  return carryOver + info.lineCount;
+}
+
+function filterModules(
+  modules: readonly Module[],
+  processModuleFilter: SourceMapGeneratorOptions['processModuleFilter']
+): Module[] {
+  const { isJsModule } = loadMetroSerializerHelpers();
+  const out: Module[] = [];
+  for (const m of modules) {
+    if (isJsModule(m) && processModuleFilter(m)) {
+      out.push(m);
+    }
+  }
+  return out;
+}
+
+export function sourceMapString(
+  modules: readonly Module[],
+  options: SourceMapGeneratorOptions
+): string {
+  const Generator = loadGenerator();
+  const generator = new Generator();
+  const filtered = filterModules(modules, options.processModuleFilter);
+  let carryOver = 0;
+  for (const mod of filtered) {
+    carryOver = processModuleIntoGenerator(generator, mod, options, carryOver);
+  }
+  return generator.toString(undefined, { excludeSource: options.excludeSource });
+}
+
+// Yields back to the event loop every ~50 ms so the node server stays
+// responsive on very large bundles. Matches Metro's `getSourceMapInfosImpl`
+// pacing.
+export async function sourceMapStringNonBlocking(
+  modules: readonly Module[],
+  options: SourceMapGeneratorOptions
+): Promise<string> {
+  const Generator = loadGenerator();
+  const generator = new Generator();
+  const filtered = filterModules(modules, options.processModuleFilter);
+
+  const NS_IN_MS = 1_000_000;
+  const SLICE_NS = 50 * NS_IN_MS;
+  let carryOver = 0;
+  let i = 0;
+
+  await new Promise<void>((resolve) => {
+    const tick = () => {
+      const start = process.hrtime();
+      while (i < filtered.length) {
+        carryOver = processModuleIntoGenerator(generator, filtered[i]!, options, carryOver);
+        i++;
+        const diff = process.hrtime(start);
+        if (diff[1] > SLICE_NS || diff[0] > 0) {
+          setImmediate(tick);
+          return;
+        }
+      }
+      resolve();
+    };
+    tick();
+  });
+
+  return generator.toString(undefined, { excludeSource: options.excludeSource });
 }
 
 // `maps[0]` is the original-most transform; `maps[maps.length - 1]` is
