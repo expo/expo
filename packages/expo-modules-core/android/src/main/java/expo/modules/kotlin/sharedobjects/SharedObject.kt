@@ -63,7 +63,7 @@ open class SharedObject(runtime: Runtime? = null) {
     emitInternal(event, args)
   }
 
-  private fun emitInternal(event: String, payload: Array<Any?>) {
+  private fun emitInternal(event: String, payload: Array<out Any?>) {
     val jsObject = getJavaScriptObject() ?: return
     val jniInterop = runtime?.jsiContext ?: return
     try {
