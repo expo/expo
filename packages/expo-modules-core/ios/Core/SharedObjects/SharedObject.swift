@@ -136,17 +136,17 @@ open class SharedObject: AnySharedObject, @unchecked Sendable {
  */
 @JavaScriptActor
 private func dispatch(event: String, payload: JavaScriptValue, to value: JavaScriptValue, in runtime: JavaScriptRuntime) {
-  let argumentsBuffer = JavaScriptValuesBuffer.copying(in: runtime, values: [payload])
-
   runtime.withUnsafePointee { runtimePtr in
     value.withUnsafePointee { objectPtr in
-      JSUtils.emitEvent(
-        event,
-        runtimePointer: runtimePtr,
-        objectPointer: objectPtr,
-        argumentsPointer: argumentsBuffer.rawBaseAddress,
-        argumentCount: UInt(argumentsBuffer.count)
-      )
+      payload.withUnsafePointee { payloadPtr in
+        JSUtils.emitEvent(
+          event,
+          runtimePointer: runtimePtr,
+          objectPointer: objectPtr,
+          argumentsPointer: payloadPtr,
+          argumentCount: 1
+        )
+      }
     }
   }
 }
