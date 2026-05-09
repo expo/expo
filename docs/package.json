@@ -134,7 +134,7 @@
     "tailwindcss": "^4.2.2",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
-    "typescript": "~5.8.3",
+    "typescript": "^6.0.3",
     "unist-builder": "^4.0.0",
     "unist-util-visit": "^5.1.0",
     "user-agent-data-types": "^0.4.2",
