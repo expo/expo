@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Deserialize new `@expo/metro-config` packed source-map format and update to use new source-map representation internally ([#45594](https://github.com/expo/expo/pull/45594) by [@kitten](https://github.com/kitten))
+
 ## 56.1.0 — 2026-05-08
 
 ### 🎉 New features
