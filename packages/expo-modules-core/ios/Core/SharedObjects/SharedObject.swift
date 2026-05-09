@@ -12,7 +12,7 @@ extension AnySharedObject {
   }
 }
 
-open class SharedObject: AnySharedObject, @unchecked Sendable {
+open class SharedObject: AnySharedObject {
   /**
    An identifier of the native shared object that maps to the JavaScript object.
    When the object is not linked with any JavaScript object, its value is 0.
