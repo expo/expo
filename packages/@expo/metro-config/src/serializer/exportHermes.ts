@@ -6,7 +6,7 @@ import path from 'path';
 import process from 'process';
 import resolveFrom from 'resolve-from';
 
-import { getComposeSourceMaps } from './sourceMap';
+import { composeSourceMaps } from './sourceMap';
 
 const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 
@@ -148,5 +148,5 @@ async function createHermesSourcemapAsync(
   const bundlerSourcemap = JSON.parse(sourcemap);
   const hermesSourcemapContent = await fs.promises.readFile(hermesMapFile, 'utf8');
   const hermesSourcemap = JSON.parse(hermesSourcemapContent);
-  return JSON.stringify(getComposeSourceMaps()([bundlerSourcemap, hermesSourcemap]));
+  return JSON.stringify(composeSourceMaps([bundlerSourcemap, hermesSourcemap]));
 }
