@@ -1571,6 +1571,9 @@ importers:
       '@react-navigation/native':
         specifier: ^7.1.33
         version: 7.1.33(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      '@react-navigation/native-stack':
+        specifier: ^7.14.5
+        version: 7.14.5(e6b77e6971707d55b305242378ff9e6b)
       '@react-navigation/stack':
         specifier: ^7.8.5
         version: 7.8.5(5f603fd5b7fdee282854d7921c603411)

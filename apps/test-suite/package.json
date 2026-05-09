@@ -16,6 +16,7 @@
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-navigation/native": "^7.1.33",
+    "@react-navigation/native-stack": "^7.14.5",
     "@react-navigation/stack": "^7.8.5",
     "async-retry": "^1.1.4",
     "expo": "workspace:*",
@@ -81,8 +82,8 @@
   },
   "devDependencies": {
     "@types/getenv": "^1.0.0",
-    "@types/jasmine": "^5.1.15",
     "@types/invariant": "^2.2.35",
+    "@types/jasmine": "^5.1.15",
     "@types/react": "~19.2.0",
     "@types/semver": "^7.7.1"
   },
