@@ -23,7 +23,7 @@ import util from 'node:util';
 import type { ExpoJsOutput } from './jsOutput';
 import { isExpoJsOutput } from './jsOutput';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { getToSegmentTuple } from './sourceMap';
+import { rawMappingsToTuples, type BabelSourceMapSegment } from './sourceMap';
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
   getKeyForDependency,
@@ -294,8 +294,11 @@ export async function reconcileTransformSerializerPlugin(
       outputItem.data.code
     );
 
-    // @ts-expect-error: incorrectly typed upstream
-    let map = result.rawMappings ? result.rawMappings.map(getToSegmentTuple()) : [];
+    // `rawMappings` is omitted from `@types/babel__generator`'s
+    // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+    let map = rawMappingsToTuples(
+      (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? []
+    );
     let code = result.code;
 
     if (reconcile.minify) {

@@ -47,7 +47,6 @@ export interface ComposableSourceMap {
 
 type SourceMapStringModule =
   typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
-type MetroSourceMapModule = typeof import('@expo/metro/metro-source-map');
 
 // `@jridgewell/remapping`'s CJS types use `export = function remapping(...)`,
 // which TypeScript 6 rejects as a syntax error — load via `require()` and
@@ -80,14 +79,6 @@ function loadSourceMapStringModule(): SourceMapStringModule {
     _sourceMapStringModule = require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString');
   }
   return _sourceMapStringModule!;
-}
-
-let _metroSourceMap: MetroSourceMapModule | undefined;
-function loadMetroSourceMap(): MetroSourceMapModule {
-  if (!_metroSourceMap) {
-    _metroSourceMap = require('@expo/metro/metro-source-map');
-  }
-  return _metroSourceMap!;
 }
 
 export function getSourceMapString(): SourceMapStringModule['sourceMapString'] {
@@ -166,14 +157,138 @@ export function composeSourceMaps(maps: readonly ComposableSourceMap[]): Composa
   return result;
 }
 
-export function getFromRawMappings(): MetroSourceMapModule['fromRawMappings'] {
-  return loadMetroSourceMap().fromRawMappings;
+// Replaces the mozilla `source-map` round-trip the worker would
+// otherwise do for minifier and Babel codegen sourcemaps.
+type GenMappingModule = typeof import('@jridgewell/gen-mapping');
+type SourceMapCodecModule = typeof import('@jridgewell/sourcemap-codec');
+
+let _genMapping: GenMappingModule | undefined;
+function loadGenMapping(): GenMappingModule {
+  if (!_genMapping) {
+    _genMapping = require('@jridgewell/gen-mapping');
+  }
+  return _genMapping!;
 }
 
-export function getToBabelSegments(): MetroSourceMapModule['toBabelSegments'] {
-  return loadMetroSourceMap().toBabelSegments;
+let _sourceMapCodec: SourceMapCodecModule | undefined;
+function loadSourceMapCodec(): SourceMapCodecModule {
+  if (!_sourceMapCodec) {
+    _sourceMapCodec = require('@jridgewell/sourcemap-codec');
+  }
+  return _sourceMapCodec!;
 }
 
-export function getToSegmentTuple(): MetroSourceMapModule['toSegmentTuple'] {
-  return loadMetroSourceMap().toSegmentTuple;
+// Matches what `metro-minify-terser` (and equivalents) accept as their
+// `map` input — nullable fields from `gen-mapping.toEncodedMap` are
+// normalized away.
+export interface EncodedTransformerSourceMap {
+  version: 3;
+  file?: string;
+  mappings: string;
+  names: string[];
+  sources: string[];
+  sourcesContent?: (string | null)[];
+}
+
+// Convert a Metro-style tuple array (single source) to an encoded
+// sourcemap suitable for feeding into a minifier.
+// `MetroSourceMapSegmentTuple` lines are 1-based; `gen-mapping`'s
+// `addSegment` is 0-based — subtract 1 at this boundary.
+export function tuplesToEncodedMap(opts: {
+  filename: string;
+  source: string;
+  tuples: readonly MetroSourceMapSegmentTuple[];
+}): EncodedTransformerSourceMap {
+  const { GenMapping, addSegment, setSourceContent, toEncodedMap } = loadGenMapping();
+  const map = new GenMapping({ file: opts.filename });
+  setSourceContent(map, opts.filename, opts.source);
+
+  for (const tuple of opts.tuples) {
+    const genLine = tuple[0] - 1;
+    const genCol = tuple[1];
+    if (tuple.length === 2) {
+      addSegment(map, genLine, genCol);
+    } else if (tuple.length === 4) {
+      addSegment(map, genLine, genCol, opts.filename, tuple[2] - 1, tuple[3]);
+    } else {
+      addSegment(map, genLine, genCol, opts.filename, tuple[2] - 1, tuple[3], tuple[4]);
+    }
+  }
+
+  const encoded = toEncodedMap(map);
+  // gen-mapping always registers `opts.filename` as the single source, so
+  // hard-coding avoids a `.map(...)` allocation and a `(string | null)[]`
+  // narrowing.
+  return {
+    version: encoded.version,
+    file: encoded.file ?? undefined,
+    mappings: encoded.mappings,
+    names: encoded.names as string[],
+    sources: [opts.filename],
+    sourcesContent: encoded.sourcesContent as (string | null)[] | undefined,
+  };
+}
+
+// Convert an encoded sourcemap (from a minifier, etc.) back to Metro's
+// tuple representation. `sourcemap-codec.decode` returns 0-based outer
+// indices and 0-based source lines; Metro tuples are 1-based for both —
+// add 1 at this boundary. The per-segment source identity is dropped:
+// Metro tuples are per-module so the source is implicit.
+//
+// The segment arrays returned by `decode` already have the same length
+// as the corresponding metro tuple (1, 4, or 5), so we re-use them in
+// place rather than allocating fresh tuples.
+export function decodedMapToTuples(input: {
+  mappings: string;
+  names: readonly string[];
+}): MetroSourceMapSegmentTuple[] {
+  const { decode } = loadSourceMapCodec();
+  const decoded = decode(input.mappings);
+  const tuples: MetroSourceMapSegmentTuple[] = [];
+
+  for (let lineIdx = 0; lineIdx < decoded.length; lineIdx++) {
+    const line = decoded[lineIdx]!;
+    const genLine = lineIdx + 1;
+    for (const seg of line) {
+      // Source layout: `[genCol]`, `[genCol, srcIdx, srcLine0, srcCol]`,
+      // or `[genCol, srcIdx, srcLine0, srcCol, nameIdx]`. Rewrite in
+      // place to `[genLine, genCol, srcLine, srcCol, name?]`.
+      const segMut = seg as unknown as (number | string)[];
+      if (segMut.length === 1) {
+        segMut[1] = segMut[0]!;
+        segMut[0] = genLine;
+      } else {
+        const genCol = segMut[0] as number;
+        segMut[0] = genLine;
+        segMut[1] = genCol;
+        segMut[2] = (segMut[2] as number) + 1;
+        if (segMut.length === 5) {
+          segMut[4] = input.names[segMut[4] as number]!;
+        }
+      }
+      tuples.push(segMut as unknown as MetroSourceMapSegmentTuple);
+    }
+  }
+
+  return tuples;
+}
+
+// Convert Babel's `result.rawMappings` to Metro tuples. Pure shape
+// transformation — no encode/decode round-trip needed.
+export function rawMappingsToTuples(
+  rawMappings: readonly BabelSourceMapSegment[]
+): MetroSourceMapSegmentTuple[] {
+  const tuples: MetroSourceMapSegmentTuple[] = [];
+  for (const m of rawMappings) {
+    const genLine = m.generated.line;
+    const genCol = m.generated.column;
+    if (m.original == null) {
+      tuples.push([genLine, genCol]);
+    } else if (typeof m.name !== 'string') {
+      tuples.push([genLine, genCol, m.original.line, m.original.column]);
+    } else {
+      tuples.push([genLine, genCol, m.original.line, m.original.column, m.name]);
+    }
+  }
+  return tuples;
 }

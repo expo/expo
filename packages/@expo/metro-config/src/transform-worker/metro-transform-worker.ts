@@ -45,7 +45,12 @@ import collectDependencies, {
 import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import { getFromRawMappings, getToBabelSegments, getToSegmentTuple } from '../serializer/sourceMap';
+import {
+  decodedMapToTuples,
+  rawMappingsToTuples,
+  tuplesToEncodedMap,
+  type BabelSourceMapSegment,
+} from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -136,18 +141,7 @@ export const minifyCode = async (
   code: string;
   map: MetroSourceMapSegmentTuple[];
 }> => {
-  const sourceMap = getFromRawMappings()([
-    {
-      code,
-      source,
-      map,
-      // functionMap is overridden by the serializer
-      functionMap: null,
-      path: filename,
-      // isIgnored is overriden by the serializer
-      isIgnored: false,
-    },
-  ]).toMap(undefined, {});
+  const sourceMap = tuplesToEncodedMap({ filename, source, tuples: map });
 
   const minify = getMinifier(config.minifierPath);
 
@@ -162,7 +156,9 @@ export const minifyCode = async (
 
     return {
       code: minified.code,
-      map: minified.map ? getToBabelSegments()(minified.map).map(getToSegmentTuple()) : [],
+      map: minified.map
+        ? decodedMapToTuples({ mappings: minified.map.mappings, names: minified.map.names })
+        : [],
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -510,8 +506,11 @@ async function transformJS(
     file.code
   );
 
-  // NOTE: incorrectly typed upstream
-  let map = (result as any)?.rawMappings.map(getToSegmentTuple()) ?? [];
+  // `rawMappings` is omitted from `@types/babel__generator`'s
+  // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+  let map = rawMappingsToTuples(
+    (result as { rawMappings?: BabelSourceMapSegment[] } | null)?.rawMappings ?? []
+  );
   let code = result.code;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.

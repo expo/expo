@@ -1,7 +1,14 @@
 import { GenMapping, addMapping, toEncodedMap } from '@jridgewell/gen-mapping';
 import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
 
-import { composeSourceMaps, type ComposableSourceMap } from '../sourceMap';
+import {
+  composeSourceMaps,
+  decodedMapToTuples,
+  rawMappingsToTuples,
+  tuplesToEncodedMap,
+  type ComposableSourceMap,
+  type MetroSourceMapSegmentTuple,
+} from '../sourceMap';
 
 function buildMap(opts: {
   file?: string;
@@ -369,5 +376,194 @@ describe('composeSourceMaps', () => {
         expect({ probe, ...oursPos }).toEqual({ probe, ...metroPos });
       }
     });
+  });
+});
+
+describe('tuplesToEncodedMap', () => {
+  it('encodes a tuple array so positions trace back through the encoded map', () => {
+    const tuples: MetroSourceMapSegmentTuple[] = [
+      [1, 0, 3, 0],
+      [1, 5, 3, 8, 'greet'],
+      [2, 0, 5, 0],
+    ];
+
+    const encoded = tuplesToEncodedMap({
+      filename: 'helloworld.js',
+      source: 'console.log(1)\nconsole.log(2)\nconsole.log(3)\n',
+      tuples,
+    });
+
+    expect(encoded.version).toBe(3);
+    expect(encoded.sources).toEqual(['helloworld.js']);
+    expect(encoded.sourcesContent).toEqual(['console.log(1)\nconsole.log(2)\nconsole.log(3)\n']);
+
+    const tracer = new TraceMap(encoded);
+    expect(originalPositionFor(tracer, { line: 1, column: 0 })).toMatchObject({
+      source: 'helloworld.js',
+      line: 3,
+      column: 0,
+    });
+    expect(originalPositionFor(tracer, { line: 1, column: 5 })).toMatchObject({
+      source: 'helloworld.js',
+      line: 3,
+      column: 8,
+      name: 'greet',
+    });
+    expect(originalPositionFor(tracer, { line: 2, column: 0 })).toMatchObject({
+      source: 'helloworld.js',
+      line: 5,
+      column: 0,
+    });
+  });
+
+  it('encodes sourceless tuples (length 2) as sourceless mappings', () => {
+    const tuples: MetroSourceMapSegmentTuple[] = [
+      [1, 0],
+      [1, 4, 1, 0],
+    ];
+    const encoded = tuplesToEncodedMap({
+      filename: 'a.js',
+      source: 'foo\n',
+      tuples,
+    });
+    const tracer = new TraceMap(encoded);
+    expect(originalPositionFor(tracer, { line: 1, column: 0 })).toMatchObject({
+      source: null,
+      line: null,
+      column: null,
+    });
+    expect(originalPositionFor(tracer, { line: 1, column: 4 })).toMatchObject({
+      source: 'a.js',
+      line: 1,
+      column: 0,
+    });
+  });
+});
+
+describe('decodedMapToTuples', () => {
+  it('round-trips with tuplesToEncodedMap on a known fixture', () => {
+    const tuples: MetroSourceMapSegmentTuple[] = [
+      [1, 0, 3, 0],
+      [1, 5, 3, 8, 'greet'],
+      [2, 0],
+      [2, 7, 5, 0, 'farewell'],
+    ];
+
+    const encoded = tuplesToEncodedMap({
+      filename: 'src.js',
+      source: 'a\nb\nc\nd\ne\nf\n',
+      tuples,
+    });
+
+    const roundTripped = decodedMapToTuples({
+      mappings: encoded.mappings,
+      names: encoded.names,
+    });
+
+    expect(roundTripped).toEqual(tuples);
+  });
+
+  it('drops the source identifier (matches Metro tuple semantics)', () => {
+    // Metro tuples have no per-segment source — it's implicit in the
+    // surrounding module — so the decoder must drop sourceIdx.
+    const gen = new GenMapping({ file: 'multi.js' });
+    addMapping(gen, {
+      generated: { line: 1, column: 0 },
+      source: 'a.js',
+      original: { line: 1, column: 0 },
+    });
+    addMapping(gen, {
+      generated: { line: 2, column: 0 },
+      source: 'b.js',
+      original: { line: 4, column: 0 },
+    });
+    const encoded = toEncodedMap(gen);
+
+    const tuples = decodedMapToTuples({
+      mappings: encoded.mappings,
+      names: encoded.names as string[],
+    });
+
+    expect(tuples).toEqual([
+      [1, 0, 1, 0],
+      [2, 0, 4, 0],
+    ]);
+  });
+
+  it('handles 1-based <-> 0-based line conversion at the boundary', () => {
+    // Both ends pin to line 1 — any off-by-one at the boundary would
+    // shift this away from `[1, 0, 1, 0]`.
+    const tuples: MetroSourceMapSegmentTuple[] = [[1, 0, 1, 0]];
+    const encoded = tuplesToEncodedMap({
+      filename: 'a.js',
+      source: 'x',
+      tuples,
+    });
+    const decoded = decodedMapToTuples({
+      mappings: encoded.mappings,
+      names: encoded.names,
+    });
+    expect(decoded).toEqual([[1, 0, 1, 0]]);
+  });
+
+  it('preserves names from the input map', () => {
+    const tuples: MetroSourceMapSegmentTuple[] = [
+      [1, 0, 1, 0, 'first'],
+      [1, 5, 2, 0, 'second'],
+    ];
+    const encoded = tuplesToEncodedMap({
+      filename: 'a.js',
+      source: 'x\ny\n',
+      tuples,
+    });
+    const decoded = decodedMapToTuples({
+      mappings: encoded.mappings,
+      names: encoded.names,
+    });
+    expect(decoded).toEqual(tuples);
+  });
+
+  it('handles an empty mappings string', () => {
+    expect(decodedMapToTuples({ mappings: '', names: [] })).toEqual([]);
+  });
+});
+
+describe('rawMappingsToTuples', () => {
+  it('flattens generated/original/name into 2/4/5-tuples', () => {
+    const rawMappings = [
+      { generated: { line: 1, column: 0 } } as any,
+      {
+        generated: { line: 1, column: 5 },
+        original: { line: 3, column: 0 },
+        source: 'a.js',
+      } as any,
+      {
+        generated: { line: 2, column: 0 },
+        original: { line: 5, column: 2 },
+        source: 'a.js',
+        name: 'greet',
+      } as any,
+    ];
+    expect(rawMappingsToTuples(rawMappings)).toEqual([
+      [1, 0],
+      [1, 5, 3, 0],
+      [2, 0, 5, 2, 'greet'],
+    ]);
+  });
+
+  it('treats a non-string name as no name (length-4 tuple)', () => {
+    const rawMappings = [
+      {
+        generated: { line: 1, column: 0 },
+        original: { line: 1, column: 0 },
+        source: 'a.js',
+        name: null,
+      } as any,
+    ];
+    expect(rawMappingsToTuples(rawMappings)).toEqual([[1, 0, 1, 0]]);
+  });
+
+  it('returns an empty array for empty input', () => {
+    expect(rawMappingsToTuples([])).toEqual([]);
   });
 });
