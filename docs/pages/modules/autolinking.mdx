@@ -126,7 +126,7 @@ A list of additional package names to verify for deduplication. This is useful f
 }
 ```
 
-Unlike other options, per-platform `include` lists are merged with the root list rather than overridden. The configuration below verifies a third-party library on every platform and additionally checks `some-android-utility` only on Android:
+Unlike other options, per-platform `include` lists are merged with the root list rather than overridden. The configuration below verifies a third-party library on every platform and additionally checks for platform-specific library only on Android:
 
 ```json package.json
 {
@@ -134,7 +134,7 @@ Unlike other options, per-platform `include` lists are merged with the root list
     "autolinking": {
       "include": ["third-party-expo-module"],
       "android": {
-        "include": ["some-android-utility"]
+        "include": ["third-party-android-module"]
       }
     }
   }
