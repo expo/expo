@@ -137,28 +137,108 @@ struct SharedObjectTests {
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
       .asObject()
 
-    // Add a listener that adds three arguments
-    try runtime.eval([
-      "result = null",
-      "sharedObject.addListener('test event', (number, string, record) => { result = { number, string, record } })"
-    ])
+    try runtime.eval(
+      """
+      result = null;
+      sharedObject.addListener('test event', (payload) => { result = payload });      
+      """
+    )
 
-    // Get the native instance
     let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
 
-    struct EventRecord: Record {
+    struct EventPayload: Record {
+      @Field var number: Int = 123
+      @Field var string: String = "test"
       @Field var boolean: Bool = true
     }
 
-    // Emit an event from the native object to JS
-    nativeObject?.emit(event: "test event", arguments: 123, "test", EventRecord())
+    nativeObject?.emit(event: "test event", payload: EventPayload())
 
-    // Check the value that is set by the listener
     let result = try runtime.eval("result").asObject()
 
     #expect(try result.getProperty("number").asInt() == 123)
     #expect(try result.getProperty("string").asString() == "test")
-    #expect(try result.getProperty("record").asObject().getProperty("boolean").asBool() == true)
+    #expect(try result.getProperty("boolean").asBool() == true)
+  }
+
+  @Test
+  func `emits events with no payload`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      callCount = 0;
+      receivedPayload = 'not called';
+      sharedObject.addListener('ping', (payload) => { callCount += 1; receivedPayload = payload });      
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "ping")
+
+    #expect(try runtime.eval("callCount").asInt() == 1)
+    #expect(try runtime.eval("receivedPayload").isUndefined() == true)
+  }
+
+  @Test
+  func `emits events with a pre-converted JavaScriptValue payload`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      result = null;
+      sharedObject.addListener('test event', (payload) => { result = payload });      
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+
+    let prebuiltPayload = try runtime.eval("({ kind: 'prebuilt', count: 7 })")
+    nativeObject?.emit(event: "test event", payload: prebuiltPayload)
+
+    let result = try runtime.eval("result").asObject()
+    #expect(try result.getProperty("kind").asString() == "prebuilt")
+    #expect(try result.getProperty("count").asInt() == 7)
+  }
+
+  @Test
+  func `emits primitive payloads`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval(
+      """
+      results = [];
+      sharedObject.addListener('primitive', (payload) => { results.push(payload) });
+      """
+    )
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+    nativeObject?.emit(event: "primitive", payload: 42)
+    nativeObject?.emit(event: "primitive", payload: "hello")
+    nativeObject?.emit(event: "primitive", payload: true)
+
+    #expect(try runtime.eval("results.length").asInt() == 3)
+    #expect(try runtime.eval("results[0]").asInt() == 42)
+    #expect(try runtime.eval("results[1]").asString() == "hello")
+    #expect(try runtime.eval("results[2]").asBool() == true)
+  }
+
+  @Test
+  func `does not crash when emitting from a shared object not associated with a JS object`() throws {
+    let detached = SharedObjectExample()
+    detached.appContext = appContext
+
+    // Not registered in `sharedObjectRegistry`, so `getJavaScriptValue()` returns nil and the
+    // defensive branches in the public `emit` overloads should log and return cleanly.
+    detached.emit(event: "ignored")
+    detached.emit(event: "ignored", payload: ["key": "value"])
+    detached.emit(event: "ignored", payload: .undefined)
   }
 
   @Test
@@ -187,7 +267,7 @@ struct SharedObjectTests {
       "length": 16
     ]
 
-    nativeObject?.emit(event: "buffer event", arguments: payload)
+    nativeObject?.emit(event: "buffer event", payload: payload)
 
     let resultValue = try runtime.eval("result")
     #expect(!resultValue.isNull() && !resultValue.isUndefined())

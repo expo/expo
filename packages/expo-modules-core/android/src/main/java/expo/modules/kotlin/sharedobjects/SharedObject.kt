@@ -41,20 +41,42 @@ open class SharedObject(runtime: Runtime? = null) {
       )
   }
 
-  fun emit(eventName: String, vararg args: Any?) {
+  /**
+   * Emits an event with no payload to the associated JavaScript object.
+   */
+  fun emit(event: String) {
+    emitInternal(event, emptyArray())
+  }
+
+  /**
+   * Emits an event with a single payload to the associated JavaScript object.
+   */
+  fun emit(event: String, payload: Any?) {
+    emitInternal(event, arrayOf(payload))
+  }
+
+  @Deprecated(
+    "Multi-argument event emission is deprecated. Use `emit(event)` or `emit(event, payload)` and pass a single payload (typically a Map/Bundle) instead.",
+    ReplaceWith("emit(event, args)")
+  )
+  fun emit(event: String, vararg args: Any?) {
+    emitInternal(event, args)
+  }
+
+  private fun emitInternal(event: String, payload: Array<Any?>) {
     val jsObject = getJavaScriptObject() ?: return
     val jniInterop = runtime?.jsiContext ?: return
     try {
       JNIUtils.emitEvent(
         jsObject,
         jniInterop,
-        eventName,
-        args
+        event,
+        payload
           .map { JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true) }
           .toTypedArray()
       )
     } catch (e: Throwable) {
-      logger.error("Unable to send event '$eventName' by shared object of type ${this::class.java.simpleName}", e)
+      logger.error("Unable to send event '$event' by shared object of type ${this::class.java.simpleName}", e)
     }
   }
 
