@@ -8,18 +8,18 @@ import type { types as t } from '@babel/core';
 import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig } from '@expo/metro/metro-transform-worker';
 
-import type { PackedMap, PackedMapWire } from './packedMap';
+import type { PackedMap, SerializableSourceMap } from './packedMap';
 import type { Options as CollectDependenciesOptions } from '../transform-worker/collect-dependencies';
 
 export type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 
 // `data.map` is one of three shapes depending on the pipeline stage:
-//   - `PackedMapWire` from the worker / metro-cache.
+//   - `SerializableSourceMap` from the worker / metro-cache.
 //   - The `Array.isArray`-true Proxy installed on the main thread by
 //     Expo's `Bundler.transformFile` wrapper — what every reader sees.
 //   - Plain `MetroSourceMapSegmentTuple[]` from custom transformers, or
-//     legacy cache entries written before the wire shape existed.
-export type ModuleSourceMap = PackedMapWire | MetroSourceMapSegmentTuple[];
+//     legacy cache entries written before `SerializableSourceMap` existed.
+export type ModuleSourceMap = SerializableSourceMap | MetroSourceMapSegmentTuple[];
 
 export type JsOutput = {
   data: {

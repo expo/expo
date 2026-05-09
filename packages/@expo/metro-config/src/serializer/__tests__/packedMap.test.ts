@@ -2,10 +2,10 @@ import { encode } from '@jridgewell/sourcemap-codec';
 
 import {
   PackedMap,
-  countLinesAndTerminateWire,
-  emptyWire,
+  countLinesAndTerminateSourceMap,
+  emptySourceMap,
   installPackedMap,
-  isPackedWire,
+  isSerializableSourceMap,
   makeProxy,
   materializeMap,
   packDecodedMappings,
@@ -13,7 +13,7 @@ import {
   patchTransformFileForPackedMaps,
   tupleAt,
   wrapTransformResultMaps,
-  type PackedMapWire,
+  type SerializableSourceMap,
 } from '../packedMap';
 
 const STRIDE = 5;
@@ -26,7 +26,7 @@ function wire(opts: {
     | [number, number, number, number]
     | [number, number, number, number, string]
   )[];
-}): PackedMapWire {
+}): SerializableSourceMap {
   const names = new Map<string, number>();
   const out: number[] = new Array(opts.segments.length * STRIDE);
   let off = 0;
@@ -61,30 +61,30 @@ function wire(opts: {
   };
 }
 
-describe('isPackedWire', () => {
+describe('isSerializableSourceMap', () => {
   it('accepts a valid wire object', () => {
-    expect(isPackedWire(wire({ segments: [[1, 0]] }))).toBe(true);
+    expect(isSerializableSourceMap(wire({ segments: [[1, 0]] }))).toBe(true);
   });
 
   it('rejects plain values', () => {
-    expect(isPackedWire(null)).toBe(false);
-    expect(isPackedWire(undefined)).toBe(false);
-    expect(isPackedWire('foo')).toBe(false);
-    expect(isPackedWire([])).toBe(false);
-    expect(isPackedWire([[1, 0]])).toBe(false);
+    expect(isSerializableSourceMap(null)).toBe(false);
+    expect(isSerializableSourceMap(undefined)).toBe(false);
+    expect(isSerializableSourceMap('foo')).toBe(false);
+    expect(isSerializableSourceMap([])).toBe(false);
+    expect(isSerializableSourceMap([[1, 0]])).toBe(false);
   });
 
   it('rejects objects with the wrong version', () => {
     const w = wire({ segments: [[1, 0]] });
-    expect(isPackedWire({ ...w, __version: 0 })).toBe(false);
-    expect(isPackedWire({ ...w, __version: 2 })).toBe(false);
+    expect(isSerializableSourceMap({ ...w, __version: 0 })).toBe(false);
+    expect(isSerializableSourceMap({ ...w, __version: 2 })).toBe(false);
   });
 
   it('rejects malformed wire objects', () => {
     const w = wire({ segments: [[1, 0]] });
-    expect(isPackedWire({ ...w, __packed: 'not-array' })).toBe(false);
-    expect(isPackedWire({ ...w, __names: 'not-array' })).toBe(false);
-    expect(isPackedWire({ ...w, __count: 'not-number' })).toBe(false);
+    expect(isSerializableSourceMap({ ...w, __packed: 'not-array' })).toBe(false);
+    expect(isSerializableSourceMap({ ...w, __names: 'not-array' })).toBe(false);
+    expect(isSerializableSourceMap({ ...w, __count: 'not-number' })).toBe(false);
   });
 });
 
@@ -97,13 +97,13 @@ describe('PackedMap', () => {
         [2, 0, 4, 0],
       ],
     });
-    const p = PackedMap.fromWire(original);
-    expect(p.toWire()).toEqual(original);
+    const p = PackedMap.deserialize(original);
+    expect(p.serialize()).toEqual(original);
   });
 
   it('exposes the data as an Int32Array', () => {
     const original = wire({ segments: [[1, 0, 1, 0]] });
-    const p = PackedMap.fromWire(original);
+    const p = PackedMap.deserialize(original);
     expect(p.buf).toBeInstanceOf(Int32Array);
     expect(p.buf).toBe(p.buf);
   });
@@ -111,25 +111,25 @@ describe('PackedMap', () => {
 
 describe('tupleAt', () => {
   it('returns length-2 for sourceless segments', () => {
-    const p = PackedMap.fromWire(wire({ segments: [[7, 4]] }));
+    const p = PackedMap.deserialize(wire({ segments: [[7, 4]] }));
     expect(tupleAt(p, 0)).toEqual([7, 4]);
     expect(tupleAt(p, 0)!.length).toBe(2);
   });
 
   it('returns length-4 for sourced-without-name segments', () => {
-    const p = PackedMap.fromWire(wire({ segments: [[7, 4, 2, 0]] }));
+    const p = PackedMap.deserialize(wire({ segments: [[7, 4, 2, 0]] }));
     expect(tupleAt(p, 0)).toEqual([7, 4, 2, 0]);
     expect(tupleAt(p, 0)!.length).toBe(4);
   });
 
   it('returns length-5 for sourced+named segments', () => {
-    const p = PackedMap.fromWire(wire({ segments: [[7, 4, 2, 0, 'greet']] }));
+    const p = PackedMap.deserialize(wire({ segments: [[7, 4, 2, 0, 'greet']] }));
     expect(tupleAt(p, 0)).toEqual([7, 4, 2, 0, 'greet']);
     expect(tupleAt(p, 0)!.length).toBe(5);
   });
 
   it('returns undefined for out-of-bounds indices (does not throw)', () => {
-    const p = PackedMap.fromWire(wire({ segments: [[1, 0]] }));
+    const p = PackedMap.deserialize(wire({ segments: [[1, 0]] }));
     expect(tupleAt(p, -1)).toBeUndefined();
     expect(tupleAt(p, 1)).toBeUndefined();
     expect(tupleAt(p, 100)).toBeUndefined();
@@ -137,20 +137,20 @@ describe('tupleAt', () => {
 
   it('throws a clear error for a corrupt name index (out-of-range)', () => {
     // The packer would never produce this, but a corrupt cache entry could.
-    const corrupt: PackedMapWire = {
+    const corrupt: SerializableSourceMap = {
       __version: 1,
       __count: 1,
       __names: ['only-name'],
       __packed: [1, 0, 1, 0, 5],
     };
-    const p = PackedMap.fromWire(corrupt);
+    const p = PackedMap.deserialize(corrupt);
     expect(() => tupleAt(p, 0)).toThrow(/wire entry is corrupt|name index/);
   });
 });
 
 describe('makeProxy', () => {
   function buildProxy(segments: Parameters<typeof wire>[0]['segments']) {
-    return makeProxy(PackedMap.fromWire(wire({ segments })));
+    return makeProxy(PackedMap.deserialize(wire({ segments })));
   }
 
   it('Array.isArray returns true', () => {
@@ -233,10 +233,10 @@ describe('makeProxy', () => {
         [2, 0, 4, 0, 'foo'],
       ],
     });
-    const p = makeProxy(PackedMap.fromWire(original));
+    const p = makeProxy(PackedMap.deserialize(original));
     const json = JSON.stringify(p);
     const parsed = JSON.parse(json);
-    expect(isPackedWire(parsed)).toBe(true);
+    expect(isSerializableSourceMap(parsed)).toBe(true);
     expect(parsed).toEqual(original);
   });
 
@@ -294,10 +294,10 @@ describe('makeProxy', () => {
   });
 });
 
-describe('emptyWire', () => {
+describe('emptySourceMap', () => {
   it('returns a fresh empty wire object each call', () => {
-    const a = emptyWire();
-    const b = emptyWire();
+    const a = emptySourceMap();
+    const b = emptySourceMap();
     expect(a).toEqual({ __version: 1, __count: 0, __names: [], __packed: [] });
     expect(a).not.toBe(b);
     expect(a.__packed).not.toBe(b.__packed);
@@ -319,7 +319,7 @@ describe('packRawMappings', () => {
     ]);
     expect(w.__count).toBe(3);
     expect(w.__names).toEqual(['foo']);
-    const p = PackedMap.fromWire(w);
+    const p = PackedMap.deserialize(w);
     expect(tupleAt(p, 0)).toEqual([1, 0]);
     expect(tupleAt(p, 1)).toEqual([1, 5, 3, 2]);
     expect(tupleAt(p, 2)).toEqual([2, 0, 5, 0, 'foo']);
@@ -330,7 +330,7 @@ describe('packRawMappings', () => {
       // `name: null` shows up in some Babel paths for sourced-without-name.
       { generated: { line: 1, column: 0 }, original: { line: 1, column: 0 }, name: null } as any,
     ]);
-    const p = PackedMap.fromWire(w);
+    const p = PackedMap.deserialize(w);
     expect(tupleAt(p, 0)).toEqual([1, 0, 1, 0]);
     expect(w.__names).toEqual([]);
   });
@@ -375,7 +375,7 @@ describe('packDecodedMappings', () => {
     const w = packDecodedMappings({ mappings, names: ['greet'] });
     expect(w.__count).toBe(2);
     expect(w.__names).toEqual(['greet']);
-    const p = PackedMap.fromWire(w);
+    const p = PackedMap.deserialize(w);
     // Output is 1-based for source line/col
     expect(tupleAt(p, 0)).toEqual([1, 0, 1, 0]);
     expect(tupleAt(p, 1)).toEqual([2, 0, 2, 0, 'greet']);
@@ -385,7 +385,7 @@ describe('packDecodedMappings', () => {
     const mappings = encode([[[0]]]);
     const w = packDecodedMappings({ mappings, names: [] });
     expect(w.__count).toBe(1);
-    const p = PackedMap.fromWire(w);
+    const p = PackedMap.deserialize(w);
     expect(tupleAt(p, 0)).toEqual([1, 0]);
   });
 
@@ -403,33 +403,33 @@ describe('packDecodedMappings', () => {
   });
 });
 
-describe('countLinesAndTerminateWire', () => {
+describe('countLinesAndTerminateSourceMap', () => {
   it('returns lineCount=1 for an empty string', () => {
-    const w = emptyWire();
-    const r = countLinesAndTerminateWire('', w);
+    const w = emptySourceMap();
+    const r = countLinesAndTerminateSourceMap('', w);
     expect(r.lineCount).toBe(1);
-    expect(r.wire.__count).toBe(1);
+    expect(r.sourceMap.__count).toBe(1);
     // Terminator at (line 1, col 0)
-    expect(r.wire.__packed.slice(0, 5)).toEqual([1, 0, SENTINEL, SENTINEL, SENTINEL]);
+    expect(r.sourceMap.__packed.slice(0, 5)).toEqual([1, 0, SENTINEL, SENTINEL, SENTINEL]);
   });
 
   it('counts \\n / \\r\\n / U+2028 / U+2029', () => {
-    expect(countLinesAndTerminateWire('a\nb', emptyWire()).lineCount).toBe(2);
-    expect(countLinesAndTerminateWire('a\r\nb\rc', emptyWire()).lineCount).toBe(3);
-    expect(countLinesAndTerminateWire('a b', emptyWire()).lineCount).toBe(2);
-    expect(countLinesAndTerminateWire('a b', emptyWire()).lineCount).toBe(2);
+    expect(countLinesAndTerminateSourceMap('a\nb', emptySourceMap()).lineCount).toBe(2);
+    expect(countLinesAndTerminateSourceMap('a\r\nb\rc', emptySourceMap()).lineCount).toBe(3);
+    expect(countLinesAndTerminateSourceMap('a b', emptySourceMap()).lineCount).toBe(2);
+    expect(countLinesAndTerminateSourceMap('a b', emptySourceMap()).lineCount).toBe(2);
   });
 
   it('appends a terminator when the last segment is not at (lastLine, lastCol)', () => {
     const w = packRawMappings([
       { generated: { line: 1, column: 0 }, original: { line: 1, column: 0 }, source: 'a' },
     ]);
-    const r = countLinesAndTerminateWire('abc\nxyz', w);
+    const r = countLinesAndTerminateSourceMap('abc\nxyz', w);
     expect(r.lineCount).toBe(2);
-    expect(r.wire.__count).toBe(2);
+    expect(r.sourceMap.__count).toBe(2);
     // Terminator: line=2, col=3 (length of "xyz")
     const off = STRIDE; // second segment starts at offset 5
-    expect(r.wire.__packed.slice(off, off + 5)).toEqual([2, 3, SENTINEL, SENTINEL, SENTINEL]);
+    expect(r.sourceMap.__packed.slice(off, off + 5)).toEqual([2, 3, SENTINEL, SENTINEL, SENTINEL]);
   });
 
   it('does not append a redundant terminator when the last segment already ends at the position', () => {
@@ -438,10 +438,10 @@ describe('countLinesAndTerminateWire', () => {
       { generated: { line: 1, column: 0 }, original: { line: 1, column: 0 }, source: 'a' },
       { generated: { line: 2, column: 3 } },
     ]);
-    const r = countLinesAndTerminateWire('abc\nxyz', w);
+    const r = countLinesAndTerminateSourceMap('abc\nxyz', w);
     expect(r.lineCount).toBe(2);
-    expect(r.wire.__count).toBe(2);
-    expect(r.wire).toBe(w);
+    expect(r.sourceMap.__count).toBe(2);
+    expect(r.sourceMap).toBe(w);
   });
 });
 
@@ -460,7 +460,7 @@ describe('materializeMap', () => {
   });
 
   it('materializes a Proxy to plain tuples (via Symbol.iterator)', () => {
-    const p = makeProxy(PackedMap.fromWire(wire({ segments: [[1, 0]] })));
+    const p = makeProxy(PackedMap.deserialize(wire({ segments: [[1, 0]] })));
     expect(materializeMap(p)).toEqual([[1, 0]]);
   });
 

@@ -28,10 +28,10 @@ import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
-  // `ExpoJsOutput` widens `data.map` to `PackedMapWire |
+  // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
   // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
-  // because the `Bundler.transformFile` wrapper swaps the wire shape
-  // for an `Array.isArray`-true Proxy first.
+  // because the `Bundler.transformFile` wrapper swaps the
+  // `SerializableSourceMap` for an `Array.isArray`-true Proxy first.
   readonly output: readonly ExpoJsOutput[];
 }
 

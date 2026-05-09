@@ -22,7 +22,7 @@ import type {
 import type GeneratorClass from '@expo/metro/metro-source-map/Generator';
 
 import type { ModuleSourceMap } from './jsOutput';
-import { PackedMap, SENTINEL, STRIDE, isPackedWire } from './packedMap';
+import { PackedMap, SENTINEL, STRIDE, isSerializableSourceMap } from './packedMap';
 
 export type {
   BabelSourceMapSegment,
@@ -178,9 +178,9 @@ function readSourceMapInfo(
   let map: ModuleSourceMap | null | undefined;
   if (!packed) {
     map = data.data.map;
-    // Self-heal a wire-shape `data.map` that bypassed the wrapper.
-    if (isPackedWire(map)) {
-      packed = PackedMap.fromWire(map);
+    // Self-heal a `SerializableSourceMap` `data.map` that bypassed the wrapper.
+    if (isSerializableSourceMap(map)) {
+      packed = PackedMap.deserialize(map);
       map = undefined;
     }
   }
@@ -232,7 +232,7 @@ function processModuleIntoGenerator(
     feedModuleSegmentsPacked(generator, info.packed, carryOver);
   } else if (Array.isArray(info.map)) {
     // Legacy plain-tuple path — hits for cache entries written before
-    // `data.map` switched to the wire shape, and for modules from custom
+    // `data.map` switched to `SerializableSourceMap`, and for modules from custom
     // transformers that don't emit packed format.
     feedModuleSegments(generator, info.map, carryOver);
   }

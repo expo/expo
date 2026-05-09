@@ -45,11 +45,11 @@ import collectDependencies, {
 import { shouldMinify } from './resolveOptions';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
-  countLinesAndTerminateWire,
-  emptyWire,
+  countLinesAndTerminateSourceMap,
+  emptySourceMap,
   packDecodedMappings,
   packRawMappings,
-  type PackedMapWire,
+  type SerializableSourceMap,
 } from '../serializer/packedMap';
 import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
@@ -140,7 +140,7 @@ export const minifyCode = async (
   reserved: string[] = []
 ): Promise<{
   code: string;
-  wire: PackedMapWire;
+  sourceMap: SerializableSourceMap;
 }> => {
   const sourceMap = rawMappingsToEncodedMap({ filename, source, rawMappings });
 
@@ -157,9 +157,9 @@ export const minifyCode = async (
 
     return {
       code: minified.code,
-      wire: minified.map
+      sourceMap: minified.map
         ? packDecodedMappings({ mappings: minified.map.mappings, names: minified.map.names })
-        : emptyWire(),
+        : emptySourceMap(),
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -512,11 +512,11 @@ async function transformJS(
   const rawMappings =
     (result as { rawMappings?: BabelSourceMapSegment[] } | null)?.rawMappings ?? [];
   let code = result.code;
-  let wire: PackedMapWire;
+  let sourceMap: SerializableSourceMap;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    ({ wire, code } = await minifyCode(
+    ({ sourceMap, code } = await minifyCode(
       config,
       file.filename,
       result.code,
@@ -525,7 +525,7 @@ async function transformJS(
       reserved
     ));
   } else {
-    wire = packRawMappings(rawMappings);
+    sourceMap = packRawMappings(rawMappings);
   }
 
   const possibleReconcile: ReconcileTransformSettings | undefined =
@@ -552,7 +552,7 @@ async function transformJS(
       : undefined;
 
   let lineCount;
-  ({ lineCount, wire } = countLinesAndTerminateWire(code, wire));
+  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
   // that React Compiler and other Babel plugins may add.
@@ -562,10 +562,10 @@ async function transformJS(
         code,
         lineCount,
         // Reconcile re-runs Babel codegen and replaces `data.map` via
-        // `installPackedMap` before any reader sees it, so the wire emitted
+        // `installPackedMap` before any reader sees it, so the sourceMap emitted
         // here would be discarded — short-circuit to an empty Array to skip
         // the work and avoid GC pressure on optimize builds.
-        map: possibleReconcile ? [] : wire,
+        map: possibleReconcile ? [] : sourceMap,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
@@ -701,12 +701,12 @@ async function transformJSON(
     config.unstable_disableModuleWrapping === true
       ? JsFileWrapping.jsonToCommonJS(file.code)
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
-  let wire: PackedMapWire = emptyWire();
+  let sourceMap: SerializableSourceMap = emptySourceMap();
 
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ wire, code } = await minifyCode(config, file.filename, code, file.code, []));
+    ({ sourceMap, code } = await minifyCode(config, file.filename, code, file.code, []));
   }
 
   let jsType: JSFileType;
@@ -720,11 +720,11 @@ async function transformJSON(
   }
 
   let lineCount;
-  ({ lineCount, wire } = countLinesAndTerminateWire(code, wire));
+  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount, map: wire, functionMap: null },
+      data: { code, lineCount, map: sourceMap, functionMap: null },
       type: jsType,
     },
   ];

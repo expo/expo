@@ -23,10 +23,10 @@ import util from 'node:util';
 import type { ExpoJsOutput } from './jsOutput';
 import { isExpoJsOutput } from './jsOutput';
 import {
-  countLinesAndTerminateWire,
+  countLinesAndTerminateSourceMap,
   installPackedMap,
   packRawMappings,
-  type PackedMapWire,
+  type SerializableSourceMap,
 } from './packedMap';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
 import { type BabelSourceMapSegment } from './sourceMap';
@@ -303,12 +303,12 @@ export async function reconcileTransformSerializerPlugin(
     // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
     const rawMappings = (result as { rawMappings?: BabelSourceMapSegment[] }).rawMappings ?? [];
     let code = result.code;
-    let wire: PackedMapWire;
+    let sourceMap: SerializableSourceMap;
 
     if (reconcile.minify) {
       const source = value.getSource().toString('utf-8');
 
-      ({ wire, code } = await minifyCode(
+      ({ sourceMap, code } = await minifyCode(
         reconcile.minify,
         value.path,
         result.code,
@@ -317,11 +317,11 @@ export async function reconcileTransformSerializerPlugin(
         reserved
       ));
     } else {
-      wire = packRawMappings(rawMappings);
+      sourceMap = packRawMappings(rawMappings);
     }
 
     let lineCount;
-    ({ lineCount, wire } = countLinesAndTerminateWire(code, wire));
+    ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
     const newData = {
       ...outputItem.data,
@@ -339,7 +339,7 @@ export async function reconcileTransformSerializerPlugin(
     // `Bundler.transformFile` wrapper that normally installs the packed
     // shape from worker output. Install it here directly so the encoder
     // fast path stays live for reconciled modules.
-    installPackedMap(newData, wire);
+    installPackedMap(newData, sourceMap);
     return { ...outputItem, data: newData };
   }
 }
