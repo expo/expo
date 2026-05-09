@@ -821,6 +821,10 @@ export async function transform(
   return transformJSWithBabel(file, context);
 }
 
+// NOTE: Increment if cache becomes incompatible (original value would be '')
+// 1. Added new packed source map format
+const CACHE_VERSION = '1';
+
 export function getCacheKey(
   config: JsTransformerConfig,
   opts?: Readonly<{ projectRoot: string }>
@@ -864,9 +868,12 @@ export function getCacheKey(
       })
     : '';
 
-  return [filesKey, stableHash(remainingConfig).toString('hex'), babelTransformerCacheKey].join(
-    '$'
-  );
+  const keyParts: string[] = [];
+  if (CACHE_VERSION) {
+    keyParts.push(CACHE_VERSION);
+  }
+  keyParts.push(filesKey, stableHash(remainingConfig).toString('hex'), babelTransformerCacheKey);
+  return keyParts.join('$');
 }
 
 /**
