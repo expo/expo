@@ -46,3 +46,5 @@ minimumReleaseAgeExclude:
   - 'react-native'
   - multitars
   - 'react-native-reanimated'
+  - 'react-native-screens'
+  - 'whatwg-url-minimum'
