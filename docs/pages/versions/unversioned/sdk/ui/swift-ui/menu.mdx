@@ -88,6 +88,41 @@ export default function CustomLabelMenuExample() {
 }
 ```
 
+### React Native components as label
+
+You can use a React Native view (such as `Pressable`) as the menu's label by wrapping it in [`RNHostView`](rnhostview).
+
+```tsx RNLabelMenuExample.tsx
+import { Host, Menu, Button, RNHostView } from '@expo/ui/swift-ui';
+import { Pressable, Text } from 'react-native';
+
+export default function RNLabelMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu
+        label={
+          <RNHostView matchContents>
+            <Pressable
+              onPress={() => console.log('RN trigger pressed')}
+              style={{
+                alignSelf: 'flex-start',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 8,
+                backgroundColor: '#9B59B6',
+              }}>
+              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+            </Pressable>
+          </RNHostView>
+        }>
+        <Button label="Item 1" onPress={() => console.log('Item 1')} />
+        <Button label="Item 2" onPress={() => console.log('Item 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
 ### Nested menu
 
 Menus can be nested to create submenus.

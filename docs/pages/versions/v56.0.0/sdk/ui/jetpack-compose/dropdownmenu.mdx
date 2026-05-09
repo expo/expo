@@ -61,6 +61,59 @@ export default function BasicDropdownMenuExample() {
 }
 ```
 
+### React Native components as trigger
+
+You can use a React Native view (such as `Pressable`) as the dropdown's trigger by wrapping it in [`RNHostView`](rnhostview).
+
+```tsx RNTriggerDropdownMenuExample.tsx
+import {
+  Host,
+  DropdownMenu,
+  DropdownMenuItem,
+  Text as ComposeText,
+  RNHostView,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+import { Pressable, Text } from 'react-native';
+
+export default function RNTriggerDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <RNHostView matchContents>
+            <Pressable
+              onPress={() => setIsExpanded(true)}
+              style={{
+                alignSelf: 'flex-start',
+                paddingHorizontal: 16,
+                paddingVertical: 10,
+                borderRadius: 8,
+                backgroundColor: '#9B59B6',
+              }}>
+              <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+            </Pressable>
+          </RNHostView>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <ComposeText>Item 1</ComposeText>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <ComposeText>Item 2</ComposeText>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx
