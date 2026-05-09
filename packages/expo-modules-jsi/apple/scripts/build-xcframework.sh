@@ -89,8 +89,10 @@ compute_hash() {
   # Force C locale so sort order is consistent regardless of the environment.
   # Xcode build phases run without locale variables, which changes sort ordering.
   (
-    # Include PODS_ROOT so switching between worktrees invalidates the cache.
+    # Include PODS_ROOT and RN_ROOT so switching between worktrees or RN
+    # sources invalidates the cache.
     echo "PODS_ROOT=${PODS_ROOT:-}"
+    echo "RN_ROOT=${RN_ROOT:-}"
     echo "$all_files" | LC_ALL=C sort | while IFS= read -r file; do
       echo "$file"
       cat "$file"
@@ -243,12 +245,20 @@ fi
 # whether PODS_ROOT was passed as relative or absolute.
 PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
 
-# Resolve react-native via Node so the build works in any node_modules layout
-# (hoisted monorepos, yarn/pnpm workspaces). Falls back to the relative path
-# when `node` is unavailable. Forwarded to Package.swift and the modulemap
-# generator below.
-RN_ROOT="$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null \
-  || echo "${PODS_ROOT}/../../node_modules/react-native")"
+# Resolve react-native. Order:
+#   1. REACT_NATIVE_PATH env var (set by Xcode from the Podfile's build setting)
+#      — for hosts that build RN from a non-npm location, e.g. Expo Go which
+#      uses the `react-native-lab/react-native` submodule, not node_modules.
+#   2. `node -p require.resolve(...)` so the script works in any node_modules
+#      layout (hoisted monorepos, pnpm/yarn workspaces).
+#   3. Relative fallback from PODS_ROOT for when `node` isn't on PATH.
+# Forwarded to Package.swift and the modulemap generator below.
+if [[ -n "${REACT_NATIVE_PATH:-}" && -d "${REACT_NATIVE_PATH}" ]]; then
+  RN_ROOT="$(cd "$REACT_NATIVE_PATH" && pwd)"
+else
+  RN_ROOT="$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null \
+    || echo "${PODS_ROOT}/../../node_modules/react-native")"
+fi
 
 mode="$( [[ -d "${PODS_ROOT}/React-Core-prebuilt/React.xcframework" ]] && echo "prebuilt RN" || echo "source-built RN")"
 [[ -f "${PODS_ROOT}/Target Support Files/React-jsi/React-jsi-umbrella.h" ]] && mode="${mode}, static frameworks"

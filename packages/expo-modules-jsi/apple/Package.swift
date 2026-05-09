@@ -14,8 +14,11 @@ let podsRoot = resolvePodsRoot()
 // framework and its headers don't get mirrored to Pods/Headers/Public. Clang
 // ignores missing `-I` paths, so they're no-ops elsewhere. `RN_ROOT` is
 // forwarded from build-xcframework.sh (Node-resolved for hoisted monorepos).
+// `REACT_NATIVE_PATH` is exported by Xcode for hosts that build RN from a
+// non-npm location, e.g. Expo Go.
 let publicHeaders = "\(podsRoot)/Headers/Public"
 let reactNative = ProcessInfo.processInfo.environment["RN_ROOT"]
+  ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
 let headerSearchPaths = [
   publicHeaders,

@@ -38,7 +38,10 @@ mkdir -p "$GENERATED_DIR"
 
 JSI_UMBRELLA="${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
 if [[ ! -f "$JSI_UMBRELLA" ]]; then
-  RN="${RN_ROOT:-$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null || echo "${PODS_ROOT}/../../node_modules/react-native")}"
+  # Resolution order matches build-xcframework.sh: RN_ROOT (forwarded by the
+  # build script), REACT_NATIVE_PATH (exported by Xcode for hosts like Expo Go
+  # that build RN from a submodule), node resolve, then a relative fallback.
+  RN="${RN_ROOT:-${REACT_NATIVE_PATH:-$(node -p 'require("path").dirname(require.resolve("react-native/package.json"))' 2>/dev/null || echo "${PODS_ROOT}/../../node_modules/react-native")}}"
   JSI_UMBRELLA="${RN}/ReactCommon/jsi/jsi/jsi.h"
 fi
 [[ -f "$JSI_UMBRELLA" ]] || { echo "error: cannot locate jsi.h" >&2; exit 1; }
