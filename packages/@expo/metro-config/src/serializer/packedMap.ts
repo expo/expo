@@ -52,49 +52,29 @@ export function isPackedWire(x: unknown): x is PackedMapWire {
 export class PackedMap {
   readonly count: number;
   readonly names: string[];
-  // Holds the wire's `number[]` until first `.buf` access, after which
-  // it's transferred into an `Int32Array` and dropped.
-  private _wire: number[] | null;
-  private _buf: Int32Array | null;
+  // `Int32Array` storage: 4 bytes/int off-heap vs 8 bytes/slot for the
+  // tagged `number[]` wire form. Materialized eagerly so a `data.map`
+  // whose encoder never iterates (e.g. SSR-eval'd modules — the bundle
+  // is concatenated and `_compile`-ed without anyone calling `.buf`)
+  // doesn't strand a wire-shaped array on the JS heap.
+  readonly buf: Int32Array;
 
-  private constructor(
-    wire: number[] | null,
-    buf: Int32Array | null,
-    names: string[],
-    count: number
-  ) {
-    this._wire = wire;
-    this._buf = buf;
+  private constructor(buf: Int32Array, names: string[], count: number) {
+    this.buf = buf;
     this.names = names;
     this.count = count;
   }
 
   static fromWire(wire: PackedMapWire): PackedMap {
-    return new PackedMap(wire.__packed, null, wire.__names, wire.__count);
+    return new PackedMap(Int32Array.from(wire.__packed), wire.__names, wire.__count);
   }
 
   static fromInts(buf: Int32Array, names: string[], count: number): PackedMap {
-    return new PackedMap(null, buf, names, count);
-  }
-
-  get buf(): Int32Array {
-    if (this._buf) return this._buf;
-    const buf = Int32Array.from(this._wire!);
-    this._buf = buf;
-    this._wire = null;
-    return buf;
+    return new PackedMap(buf, names, count);
   }
 
   toWire(): PackedMapWire {
-    if (this._wire) {
-      return {
-        __version: 1,
-        __count: this.count,
-        __names: this.names.slice(),
-        __packed: this._wire.slice(),
-      };
-    }
-    const buf = this._buf!;
+    const buf = this.buf;
     const out: number[] = new Array(buf.length);
     for (let i = 0; i < buf.length; i++) out[i] = buf[i]!;
     return {

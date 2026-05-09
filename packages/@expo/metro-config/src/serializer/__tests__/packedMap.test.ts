@@ -97,26 +97,11 @@ describe('PackedMap', () => {
     expect(p.toWire()).toEqual(original);
   });
 
-  it('lazy-materializes the Int32Array on first access and caches it', () => {
+  it('exposes the data as an Int32Array', () => {
     const original = wire({ segments: [[1, 0, 1, 0]] });
     const p = PackedMap.fromWire(original);
     expect(p.buf).toBeInstanceOf(Int32Array);
     expect(p.buf).toBe(p.buf);
-  });
-
-  it('round-trips through wire even after the Int32Array is materialized', () => {
-    const original = wire({
-      segments: [
-        [1, 0, 5, 0, 'foo'],
-        [2, 0],
-      ],
-    });
-    const p = PackedMap.fromWire(original);
-    p.buf;
-    const out = p.toWire();
-    expect(out.__count).toBe(original.__count);
-    expect(out.__names).toEqual(original.__names);
-    expect(out.__packed).toEqual(original.__packed);
   });
 });
 
