@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- fix(babel-preset-expo): avoid Hermes V1 native async regressions ([#45597](https://github.com/expo/expo/pull/45597) by [@gronxb](https://github.com/gronxb))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-08
