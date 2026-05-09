@@ -22,7 +22,7 @@ open class SharedObject: AnySharedObject, @unchecked Sendable {
   /**
    An app context for which the shared object was created.
    */
-  nonisolated(unsafe) public internal(set) weak var appContext: AppContext?
+  public internal(set) weak var appContext: AppContext?
 
   /**
    The default public initializer of the shared object.
