@@ -30,6 +30,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
 
   // Swift UI
+  'expo-ui/swift-ui/accessorywidgetbackground': [
+    'swift-ui/AccessoryWidgetBackground/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
