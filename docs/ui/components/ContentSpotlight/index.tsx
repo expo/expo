@@ -103,7 +103,7 @@ export function ContentSpotlight({
           />
           <div
             className={mergeClasses(
-              'max-md-gutters:hidden pointer-events-none absolute inset-0 transition-opacity duration-500',
+              'pointer-events-none absolute inset-0 transition-opacity duration-500 max-md:hidden',
               isInView ? 'opacity-0' : 'opacity-70'
             )}
           />

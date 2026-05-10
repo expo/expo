@@ -23,10 +23,10 @@ export function StateOfRNBanner() {
         'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
         'border-2 border-[#001a72] bg-[#b1dfd0]',
         'dark:border-[#b1dfd0] dark:bg-[#001a72]',
-        'max-md-gutters:flex-wrap'
+        'max-md:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
-        <div className="max-sm-gutters:hidden relative z-10 p-2">
+        <div className="relative z-10 p-2 max-sm:hidden">
           <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#001a72] dark:bg-[#b1dfd0]" />
           <ReactLogo className="icon-lg text-palette-white relative z-10 dark:text-[#001a72]" />
         </div>

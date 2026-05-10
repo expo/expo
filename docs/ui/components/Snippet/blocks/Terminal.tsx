@@ -237,7 +237,7 @@ const PackageSelect = ({ managers, activeManager, onSelect, className }: Package
 const BrowserAction = ({ href, label }: BrowserActionProps) => (
   <SnippetAction
     alwaysDark
-    className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
+    className="max-sm:gap-0 [&_p]:max-sm:hidden"
     rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary shrink-0" />}
     onClick={() => {
       if (typeof window !== 'undefined') {

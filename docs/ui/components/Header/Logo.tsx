@@ -13,11 +13,11 @@ export const Logo = ({ subgroup }: Props) => (
       className="flex flex-row items-center gap-2 decoration-0 outline-offset-1 select-none"
       href="https://expo.dev">
       <WordMarkLogo
-        className={mergeClasses('text-default mt-px h-5 w-[72px]', 'max-md-gutters:hidden')}
+        className={mergeClasses('text-default mt-px h-5 w-[72px]', 'max-md:hidden')}
         title="Expo"
       />
       <LogoIcon
-        className={mergeClasses('icon-lg text-default mr-1.5 hidden', 'max-md-gutters:flex')}
+        className={mergeClasses('icon-lg text-default mr-1.5 hidden', 'max-md:flex')}
         title="Expo"
       />
     </LinkBase>
@@ -30,16 +30,14 @@ export const Logo = ({ subgroup }: Props) => (
       <span
         className={mergeClasses(
           'text-default text-lg font-medium select-none',
-          subgroup && 'max-md-gutters:hidden'
+          subgroup && 'max-md:hidden'
         )}>
         Docs
       </span>
     </LinkBase>
     {subgroup && (
       <>
-        <ChevronRightIcon
-          className={mergeClasses('text-icon-secondary -mx-2', 'max-md-gutters:hidden')}
-        />
+        <ChevronRightIcon className={mergeClasses('text-icon-secondary -mx-2', 'max-md:hidden')} />
         <span className="text-default text-lg font-medium select-none">{subgroup}</span>
       </>
     )}

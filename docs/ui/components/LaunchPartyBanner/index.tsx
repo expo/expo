@@ -37,19 +37,19 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
       className={mergeClasses(
         'asset-shadow relative mb-6 flex justify-between overflow-hidden rounded-lg',
         'border-palette-black bg-palette-white dark:border-palette-white dark:bg-palette-black border-2',
-        'max-md-gutters:flex-col max-md-gutters:items-start max-md-gutters:gap-2 max-md-gutters:bg-launch-party-banner-mobile'
+        'max-md:bg-launch-party-banner-mobile max-md:flex-col max-md:items-start max-md:gap-2'
       )}>
       <div
         className={mergeClasses(
           'bg-launch-party-banner absolute bottom-0 hidden h-[60px] w-full bg-left-bottom',
-          'max-md-gutters:flex'
+          'max-md:flex'
         )}
       />
       <div className="flex items-center gap-4 p-5">
         <div
           className={mergeClasses(
             'border-default bg-hover relative z-10 flex size-[44px] shrink-0 justify-center rounded-md border-2 text-[24px] leading-[42px] shadow-xs select-none',
-            'max-sm-gutters:hidden'
+            'max-sm:hidden'
           )}>
           <ConfettiPopper />
         </div>
@@ -63,7 +63,7 @@ export function LaunchPartyBanner({ currentDateAsString }: Props) {
       <div
         className={mergeClasses(
           'bg-launch-party-banner z-10 flex min-w-[39.5%] shrink-0 items-center justify-end gap-3 bg-left bg-no-repeat pr-5',
-          'max-md-gutters:mb-4 max-md-gutters:h-[unset] max-md-gutters:min-w-[unset] max-md-gutters:bg-none max-md-gutters:px-5'
+          'max-md:mb-4 max-md:h-[unset] max-md:min-w-[unset] max-md:bg-none max-md:px-5'
         )}>
         <Button
           size="xs"

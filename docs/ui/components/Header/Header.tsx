@@ -36,21 +36,21 @@ export const Header = ({
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('text-secondary px-2', 'max-sm-gutters:hidden')}
+            className={mergeClasses('text-secondary px-2', 'max-sm:hidden')}
             href="https://expo.dev/blog">
             Blog
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('text-secondary px-2', 'max-sm-gutters:hidden')}
+            className={mergeClasses('text-secondary px-2', 'max-sm:hidden')}
             href="https://expo.dev/changelog">
             Changelog
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('group text-secondary px-2', 'max-lg-gutters:hidden')}
+            className={mergeClasses('group text-secondary px-2', 'max-lg:hidden')}
             leftSlot={
               <>
                 <Star01Icon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
@@ -65,13 +65,13 @@ export const Header = ({
             theme="quaternary"
             href="https://github.com/expo/expo"
             aria-label="GitHub"
-            className={mergeClasses('hidden px-2', 'max-lg-gutters:flex')}>
+            className={mergeClasses('hidden px-2', 'max-lg:flex')}>
             <GithubIcon className="icon-lg" />
           </Button>
-          <div className="max-lg-gutters:hidden">
+          <div className="max-lg:hidden">
             <ThemeSelector />
           </div>
-          <div className={mergeClasses('hidden', 'max-lg-gutters:flex')}>
+          <div className={mergeClasses('hidden', 'max-lg:flex')}>
             <Button
               theme="quaternary"
               aria-label="Toggle navigation menu"
@@ -92,7 +92,7 @@ export const Header = ({
         <nav
           className={mergeClasses(
             'border-default bg-default relative z-10 mx-auto hidden h-[60px] items-center justify-between border-b p-0 px-4',
-            'max-lg-gutters:flex'
+            'max-lg:flex'
           )}>
           <div className="flex items-center">
             <DEMI>Theme</DEMI>
