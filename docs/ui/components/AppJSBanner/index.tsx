@@ -37,8 +37,8 @@ export function AppJSBanner() {
   return (
     <div
       className={mergeClasses(
-        'grid transition-[grid-template-rows,opacity] duration-300 ease-out motion-reduce:transition-none',
-        isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        'grid transition-[grid-template-rows,opacity] duration-[600ms] ease-out motion-reduce:transition-none',
+        isOpen ? 'grid-rows-[1fr] opacity-100 delay-500' : 'grid-rows-[0fr] opacity-0'
       )}
       onTransitionEnd={event => {
         if (event.propertyName === 'grid-template-rows' && !isOpen) {
