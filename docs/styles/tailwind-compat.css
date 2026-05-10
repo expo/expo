@@ -16,12 +16,6 @@
   --text-2xl--line-height: 1.2;
 }
 
-@custom-variant max-sm (@media (width < 40rem));
-@custom-variant max-md (@media (width < 48rem));
-@custom-variant max-lg (@media (width < 64rem));
-@custom-variant max-xl (@media (width < 80rem));
-@custom-variant max-2xl (@media (width < 96rem));
-
 /*
   TW4 changed default border color to currentcolor.
   This restores the TW3 behavior.
