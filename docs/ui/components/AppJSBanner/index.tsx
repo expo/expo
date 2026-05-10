@@ -32,10 +32,10 @@ export function AppJSBanner() {
         'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg px-6 py-4',
         'bg-[#eef0ff] dark:bg-[#494CFC22]',
         'border border-[#494CFC] dark:border-[#3133b0]',
-        'max-md-gutters:flex-wrap'
+        'max-md:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
-        <div className="max-sm-gutters:hidden relative z-10 p-2">
+        <div className="relative z-10 p-2 max-sm:hidden">
           <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#494CFC]" />
           <AppJSIcon className="icon-lg text-palette-white relative z-10" />
         </div>

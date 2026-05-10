@@ -63,7 +63,7 @@ export const NewsletterSignUp = () => {
   }
 
   return (
-    <div className="max-md-gutters:max-w-full max-w-[350px] flex-1">
+    <div className="max-w-[350px] flex-1 max-md:max-w-full">
       <CALLOUT className="text-secondary flex items-center gap-2 font-medium" id="newsletter-label">
         <Mail01Icon className="text-icon-tertiary shrink-0" />
         Sign up for the Expo Newsletter

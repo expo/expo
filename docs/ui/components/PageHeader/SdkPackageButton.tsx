@@ -23,7 +23,7 @@ export const SdkPackageButton = ({ label, Icon, tooltip, href }: SdkPackageButto
           aria-label={label}>
           <div className="flex items-center gap-1.5">
             <Icon className="icon-sm text-icon-secondary" />
-            <FOOTNOTE crawlable={false} theme="secondary" className="max-md-gutters:hidden">
+            <FOOTNOTE crawlable={false} theme="secondary" className="max-md:hidden">
               {label}
             </FOOTNOTE>
           </div>

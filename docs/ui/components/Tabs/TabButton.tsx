@@ -67,7 +67,7 @@ export function TabButton({
           <LabelElement
             theme={active ? 'default' : 'tertiary'}
             weight="medium"
-            className="max-md-gutters:text-sm max-sm-gutters:text-sm transition-colors">
+            className="transition-colors max-md:text-sm max-sm:text-sm">
             {label}
           </LabelElement>
           {rightSlot}

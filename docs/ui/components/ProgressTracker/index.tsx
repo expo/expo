@@ -101,7 +101,7 @@ export function ProgressTracker({
         />
         <div className="flex flex-col items-center justify-center gap-2">
           <p className="text-default heading-lg flex items-center text-center">
-            <BookOpen02Icon className="text-icon-secondary max-md-gutters:hidden mr-2 size-6!" />{' '}
+            <BookOpen02Icon className="text-icon-secondary mr-2 size-6! max-md:hidden" />{' '}
             {currentChapter.title}
           </p>
           <p className="text-secondary max-w-[60ch] pb-2 text-center leading-normal">{summary}</p>

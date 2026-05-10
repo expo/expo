@@ -71,9 +71,9 @@ export function QuickStart() {
             'col-span-2 min-h-[192px] overflow-hidden bg-linear-to-br from-[#F3E5F5] via-[#E3F2FD] to-[#E3F2FD]',
             'border-palette-gray7 selection:bg-palette-blue8 border',
             'dark:border-[#2d3748] dark:from-[#0a0a0a] dark:via-[#1a1a2e] dark:to-[#16213e]',
-            'max-xl-gutters:col-span-1',
-            'max-lg-gutters:col-span-2',
-            'max-md-gutters:col-span-1'
+            'max-xl:col-span-1',
+            'max-lg:col-span-2',
+            'max-md:col-span-1'
           )}>
           <div
             className={mergeClasses(

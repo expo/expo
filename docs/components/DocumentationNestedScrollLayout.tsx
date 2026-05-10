@@ -82,9 +82,9 @@ export default function DocumentationNestedScrollLayout({
 
   return (
     <div className="mx-auto flex h-dvh w-full flex-col overflow-hidden">
-      <div className="max-lg-gutters:sticky">{header}</div>
+      <div className="max-lg:sticky">{header}</div>
       <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
-        <div className="max-lg-gutters:hidden relative h-full">
+        <div className="relative h-full max-lg:hidden">
           {onSidebarToggle ? (
             <div
               className={mergeClasses(
@@ -150,15 +150,14 @@ export default function DocumentationNestedScrollLayout({
         <div
           className={mergeClasses(
             'relative flex h-[calc(100dvh-60px)] w-full overflow-hidden',
-            'max-lg-gutters:overflow-auto',
+            'max-lg:overflow-auto',
             isMobileMenuVisible && 'hidden'
           )}>
           <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
             <div
               className={mergeClasses(
                 'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
-                isChatExpanded &&
-                  'max-lg-gutters:max-w-screen-xl max-lg-gutters:pl-0 max-lg-gutters:pr-0'
+                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
               )}>
               {children}
             </div>
@@ -168,7 +167,7 @@ export default function DocumentationNestedScrollLayout({
           <div
             className={mergeClasses(
               'border-l-default flex h-[calc(100dvh-60px)] max-w-[280px] shrink-0 flex-col overflow-hidden border-l',
-              'max-xl-gutters:hidden'
+              'max-xl:hidden'
             )}>
             <ScrollContainer ref={sidebarRightRef}>
               {cloneElement(sidebarRight, {
