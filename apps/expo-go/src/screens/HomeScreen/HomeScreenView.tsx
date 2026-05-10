@@ -160,6 +160,7 @@ export class HomeScreenView extends React.Component<Props, State> {
               </>
             ) : null}
 
+            {/* Projects feature disabled in Expo Go.
             {data?.apps.length && this.props.accountName ? (
               <>
                 <Spacer.Vertical size="medium" />
@@ -171,6 +172,7 @@ export class HomeScreenView extends React.Component<Props, State> {
                 />
               </>
             ) : null}
+            */}
 
             {data?.snacks.length && this.props.accountName ? (
               <>

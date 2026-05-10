@@ -11,13 +11,14 @@ import DiagnosticsIcon from '../components/Icons';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import { AccountModal } from '../screens/AccountModal';
-import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
-import { BranchListScreen } from '../screens/BranchListScreen';
+// Projects feature disabled in Expo Go (EAS Updates can ship Hermes bytecode unsupported by Expo Go).
+// import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
+// import { BranchListScreen } from '../screens/BranchListScreen';
 import { DiagnosticsStackScreen } from '../screens/DiagnosticsScreen';
 import { FeedbackFormScreen } from '../screens/FeedbackFormScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import { ProjectScreen } from '../screens/ProjectScreen';
-import { ProjectsListScreen } from '../screens/ProjectsListScreen';
+// import { ProjectScreen } from '../screens/ProjectScreen';
+// import { ProjectsListScreen } from '../screens/ProjectsListScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
 import { SettingsScreen } from '../screens/SettingsScreen';
 import { SnacksListScreen } from '../screens/SnacksListScreen';
@@ -54,13 +55,14 @@ function HomeStackScreen() {
           headerShown: false,
         }}
       />
+      {/* Projects feature disabled in Expo Go.
       <HomeStack.Screen
         name="ProjectsList"
         component={ProjectsListScreen}
         options={{
           title: 'Projects',
         }}
-      />
+      /> */}
       <HomeStack.Screen
         name="SnacksList"
         component={SnacksListScreen}
@@ -68,6 +70,7 @@ function HomeStackScreen() {
           title: 'Snacks',
         }}
       />
+      {/*
       <HomeStack.Screen
         name="ProjectDetails"
         component={ProjectScreen}
@@ -89,6 +92,7 @@ function HomeStackScreen() {
           title: 'Branch',
         }}
       />
+      */}
       <HomeStack.Screen
         name="FeedbackForm"
         component={FeedbackFormScreen}
