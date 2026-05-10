@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="component"
   >
@@ -46,10 +46,10 @@ exports[`APISection expo-apple-authentication 1`] = `
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none shadow-none!"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationbutton"
       >
@@ -378,10 +378,10 @@ for more details.
         class="border-palette-gray4 border-t first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
         >
           <h3
-            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
             id="buttonstyle"
           >
@@ -459,10 +459,10 @@ for more details.
         class="border-palette-gray4 border-t first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
         >
           <h3
-            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
             id="buttontype"
           >
@@ -540,10 +540,10 @@ for more details.
         class="border-palette-gray4 border-t first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
         >
           <h3
-            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
             id="cornerradius"
           >
@@ -625,10 +625,10 @@ for more details.
         class="border-palette-gray4 border-t first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
         >
           <h3
-            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
             id="onpress"
           >
@@ -725,10 +725,10 @@ in here.
         class="border-palette-gray4 border-t first:border-t-0"
       >
         <div
-          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+          class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
         >
           <h3
-            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+            class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
             data-heading="true"
             id="style"
           >
@@ -940,7 +940,7 @@ properties.
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="methods"
   >
@@ -983,10 +983,10 @@ properties.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="formatfullnamefullname-formatstyle"
       >
@@ -1226,10 +1226,10 @@ properties.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="getcredentialstateasyncuser"
       >
@@ -1519,10 +1519,10 @@ value depending on the state of the credential.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="isavailableasync"
       >
@@ -1669,10 +1669,10 @@ value depending on the state of the credential.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="refreshasyncoptions"
       >
@@ -1922,10 +1922,10 @@ refresh operation.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="signinasyncoptions"
       >
@@ -2226,10 +2226,10 @@ sign-in operation.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="signoutasyncoptions"
       >
@@ -2510,7 +2510,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="event-subscriptions"
   >
@@ -2553,10 +2553,10 @@ sign-out operation.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="addrevokelistenerlistener"
       >
@@ -2706,7 +2706,7 @@ sign-out operation.
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="interfaces"
   >
@@ -2749,10 +2749,10 @@ sign-out operation.
     class="border-palette-gray4 rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="subscription"
       >
@@ -2856,10 +2856,10 @@ sign-out operation.
       class="border-palette-gray4 border-b last:border-b-0"
     >
       <div
-        class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+        class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
       >
         <h3
-          class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+          class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
           data-heading="true"
           id="remove"
         >
@@ -2957,7 +2957,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="types"
   >
@@ -3000,10 +3000,10 @@ After calling this function, the listener will no longer receive any events from
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationcredential"
       >
@@ -3589,10 +3589,10 @@ developers.
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationfullname"
       >
@@ -3954,10 +3954,10 @@ may be
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationfullnameformatstyle"
       >
@@ -4148,10 +4148,10 @@ for more details.
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationrefreshoptions"
       >
@@ -4480,10 +4480,10 @@ OAuth 2.0 protocol
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationsigninoptions"
       >
@@ -4832,10 +4832,10 @@ OAuth 2.0 protocol
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationsignoutoptions"
       >
@@ -5087,7 +5087,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="enums"
   >
@@ -5130,10 +5130,10 @@ OAuth 2.0 protocol
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationbuttonstyle"
       >
@@ -5204,7 +5204,7 @@ OAuth 2.0 protocol
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5273,7 +5273,7 @@ OAuth 2.0 protocol
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5342,7 +5342,7 @@ OAuth 2.0 protocol
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5412,10 +5412,10 @@ OAuth 2.0 protocol
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationbuttontype"
       >
@@ -5486,7 +5486,7 @@ OAuth 2.0 protocol
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5555,7 +5555,7 @@ OAuth 2.0 protocol
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5624,7 +5624,7 @@ OAuth 2.0 protocol
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5730,10 +5730,10 @@ OAuth 2.0 protocol
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationcredentialstate"
       >
@@ -5862,7 +5862,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5924,7 +5924,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -5986,7 +5986,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6048,7 +6048,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6111,10 +6111,10 @@ for more details.
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationoperation"
       >
@@ -6166,7 +6166,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6235,7 +6235,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6297,7 +6297,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6359,7 +6359,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6422,10 +6422,10 @@ for more details.
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationscope"
       >
@@ -6602,7 +6602,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6664,7 +6664,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6727,10 +6727,10 @@ for more details.
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="appleauthenticationuserdetectionstatus"
       >
@@ -6847,7 +6847,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6916,7 +6916,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -6985,7 +6985,7 @@ for more details.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -7057,7 +7057,7 @@ for more details.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="methods"
   >
@@ -7100,10 +7100,10 @@ exports[`APISection expo-pedometer 1`] = `
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="getpermissionsasync"
       >
@@ -7222,10 +7222,10 @@ exports[`APISection expo-pedometer 1`] = `
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="getstepcountasyncstart-end"
       >
@@ -7602,10 +7602,10 @@ a start date that is more than seven days in the past returns only the available
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="isavailableasync"
       >
@@ -7746,10 +7746,10 @@ available on this device.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="requestpermissionsasync"
       >
@@ -7868,10 +7868,10 @@ available on this device.
     class="border-palette-gray4 overflow-hidden rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="watchstepcountcallback"
       >
@@ -8162,7 +8162,7 @@ On iOS, the
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="interfaces"
   >
@@ -8205,10 +8205,10 @@ On iOS, the
     class="border-palette-gray4 rounded-lg border [&_h2]:mt-0 [&_h3]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-4 shadow-none [&_h4]:mt-0 overflow-hidden"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="subscription"
       >
@@ -8312,10 +8312,10 @@ On iOS, the
       class="border-palette-gray4 border-b last:border-b-0"
     >
       <div
-        class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+        class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
       >
         <h3
-          class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+          class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
           data-heading="true"
           id="remove"
         >
@@ -8413,7 +8413,7 @@ After calling this function, the listener will no longer receive any events from
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="types"
   >
@@ -8456,10 +8456,10 @@ After calling this function, the listener will no longer receive any events from
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="pedometerresult"
       >
@@ -8586,10 +8586,10 @@ After calling this function, the listener will no longer receive any events from
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="pedometerupdatecallbackresult"
       >
@@ -8755,10 +8755,10 @@ After calling this function, the listener will no longer receive any events from
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="permissionexpiration"
       >
@@ -8858,10 +8858,10 @@ After calling this function, the listener will no longer receive any events from
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="permissionresponse"
       >
@@ -9108,7 +9108,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <h2
-    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md-gutters:text-[22px] max-md-gutters:leading-[1.409] max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263] group flex gap-1 scroll-m-5"
+    class="text-inherit text-[25px] leading-[1.4] font-bold tracking-[-0.021rem] mt-8 mb-3.5 [&_code]:text-[90%] max-md:text-[22px] max-md:leading-[1.409] max-sm:text-[19px] max-sm:leading-[1.5263] group flex gap-1 scroll-m-5"
     data-heading="true"
     id="enums"
   >
@@ -9151,10 +9151,10 @@ in order to enable/disable the permission.
     class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none"
   >
     <div
-      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md-gutters:flex-col max-md-gutters:gap-y-1.5 [&_h3]:mb-0!"
+      class="mb-2.5 flex flex-wrap justify-between px-4 pt-3 max-md:flex-col max-md:gap-y-1.5 [&_h3]:mb-0!"
     >
       <h3
-        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555] max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed group flex gap-1 scroll-m-8"
+        class="text-inherit text-[20px] leading-normal font-semibold tracking-[-0.017rem] mt-7 mb-3 [&_code]:text-[90%] max-md:text-[18px] max-md:leading-[1.5555] max-sm:text-[16px] max-sm:leading-relaxed group flex gap-1 scroll-m-8"
         data-heading="true"
         id="permissionstatus"
       >
@@ -9206,7 +9206,7 @@ in order to enable/disable the permission.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -9275,7 +9275,7 @@ in order to enable/disable the permission.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
@@ -9344,7 +9344,7 @@ in order to enable/disable the permission.
       class="border-t-palette-gray4 border-t px-4 pt-3 pb-0 [&_h4]:mb-0.5"
     >
       <div
-        class="max-md-gutters:flex-col flex flex-wrap justify-between"
+        class="flex flex-wrap justify-between max-md:flex-col"
       >
         <h4
           class="text-inherit text-[16px] leading-relaxed font-semibold tracking-[-0.011rem] mt-6 mb-2 [&_code]:text-[90%] group flex gap-1 scroll-m-5"
