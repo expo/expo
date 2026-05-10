@@ -78,6 +78,7 @@ import path from 'node:path';
 import {
   Application,
   Configuration,
+  normalizePath,
   ReflectionKind,
   TSConfigReader,
   TypeDocReader,
@@ -241,7 +242,7 @@ async function collectTaggedDeclarations(
 
   const result = new Map<string, JSONOutput.DeclarationReflection>();
   if (project) {
-    const json = app.serializer.projectToObject(project, process.cwd()) as unknown;
+    const json = app.serializer.projectToObject(project, normalizePath(process.cwd())) as unknown;
     walk(json, (node) => {
       if (isObject(node) && typeof node.name === 'string' && taggedTypes.has(node.name)) {
         result.set(node.name, node as unknown as JSONOutput.DeclarationReflection);
