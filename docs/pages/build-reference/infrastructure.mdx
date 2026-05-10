@@ -1,5 +1,5 @@
 ---
-modificationDate: September 17th, 2025
+modificationDate: April 20th, 2026
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -339,6 +339,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Ruby 3.2
 - node-gyp 12.2.0
 - Maestro 2.1.0
+- Default iOS Simulator runtime: iOS 26.2
+- Pre-warmed Simulator device: iPhone 17
 
 </Collapsible>
 
@@ -358,6 +360,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Ruby 3.2
 - node-gyp 11.5.0
 - Maestro 2.0.9
+- Default iOS Simulator runtime: iOS 26.1
+- Pre-warmed Simulator device: iPhone 17
 
 </Collapsible>
 
@@ -383,6 +387,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - applesimutils 0.9.12
 - idb-companion 1.1.8
 - Maestro 2.0.3
+- Default iOS Simulator runtime: iOS 26.0
+- Pre-warmed Simulator device: iPhone 17
 
 </Collapsible>
 
@@ -408,6 +414,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Git LFS 3.6.1
 - applesimutils 0.9.10
 - idb-companion 1.1.8
+- Default iOS Simulator runtime: iOS 18.6
+- Pre-warmed Simulator device: iPhone 16 Plus
 
 </Collapsible>
 
@@ -432,6 +440,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Git LFS 3.6.1
 - applesimutils 0.9.10
 - idb-companion 1.1.8
+- Default iOS Simulator runtime: iOS 18.5
+- Pre-warmed Simulator device: iPhone 16 Plus
 
 </Collapsible>
 
@@ -456,6 +466,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - Git LFS 3.6.1
 - applesimutils 0.9.10
 - idb-companion 1.1.8
+- Default iOS Simulator runtime: iOS 18.4
+- Pre-warmed Simulator device: iPhone 16
 
 </Collapsible>
 
@@ -474,6 +486,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.16.2
 - Ruby 3.2
 - node-gyp 11.1.0
+- Default iOS Simulator runtime: iOS 18.2
+- Pre-warmed Simulator device: iPhone 16
 
 </Collapsible>
 
@@ -492,6 +506,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.16.2
 - Ruby 3.2
 - node-gyp 10.2.0
+- Default iOS Simulator runtime: iOS 18.1
+- Pre-warmed Simulator device: iPhone 16
 
 </Collapsible>
 
@@ -510,6 +526,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.15.2
 - Ruby 3.2
 - node-gyp 10.2.0
+- Default iOS Simulator runtime: iOS 18.0
+- Pre-warmed Simulator device: iPhone 16
 
 </Collapsible>
 
@@ -528,6 +546,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.14.3
 - Ruby 2.7
 - node-gyp 10.1.0
+- Default iOS Simulator runtime: iOS 17.5
+- Pre-warmed Simulator device: iPhone 15
 
 </Collapsible>
 
@@ -546,6 +566,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.14.3
 - Ruby 2.7
 - node-gyp 10.0.1
+- Default iOS Simulator runtime: iOS 17.4
+- Pre-warmed Simulator device: iPhone 15
 
 </Collapsible>
 
@@ -564,6 +586,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.14.3
 - Ruby 2.7
 - node-gyp 10.0.1
+- Default iOS Simulator runtime: iOS 17.2
+- Pre-warmed Simulator device: iPhone 15
 
 </Collapsible>
 
@@ -582,6 +606,8 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.14.3
 - Ruby 2.7
 - node-gyp 10.0.1
+- Default iOS Simulator runtime: iOS 17.1
+- Pre-warmed Simulator device: iPhone 15
 
 </Collapsible>
 
@@ -600,8 +626,40 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 - CocoaPods 1.13.0
 - Ruby 2.7
 - node-gyp 10.0.1
+- Default iOS Simulator runtime: iOS 17.0
+- Pre-warmed Simulator device: iPhone 15
 
 </Collapsible>
+
+### iOS Simulators
+
+Some jobs use an iOS Simulator. Examples include [Maestro](/eas/workflows/pre-packaged-jobs/#maestro) tests in [EAS Workflows](/eas/workflows/introduction/) and custom steps that call [`eas/start_ios_simulator`](/custom-builds/schema/#easstart_ios_simulator). For these jobs, each macOS runner image sets a default iOS Simulator runtime and pre-warmed device model, shown under that image's heading in [iOS server images](#ios-server-images).
+
+#### Default iOS Simulator runtime
+
+The default runtime is the iOS version that ships with the image's Xcode. Picking an image sets your default iOS version. Apple's [Xcode release notes](https://developer.apple.com/documentation/xcode-release-notes) document the iOS SDK included in each Xcode release.
+
+An image can include additional Simulator runtimes beyond the default. Run `xcrun simctl list runtimes` in a workflow step to see what's installed on a specific runner. The `eas/start_ios_simulator` function also prints the available runtimes and devices to the job logs.
+
+#### Pre-warmed iOS Simulator
+
+Each macOS runner image ships with a pre-warmed iOS Simulator, configured for the device and default runtime shown under that image's heading. EAS boots that Simulator once while building the image, then shuts it down cleanly. This leaves the OS and Simulator caches populated, so your job's first Simulator boot and app install complete faster than they would on a cold image.
+
+The device name shown under each image's heading is what EAS warmed when it built the image. The build doesn't hardcode a model. It boots the lexicographically first iPhone Simulator name reported by CoreSimulator at image-build time. That rule differs from the default used by [`eas/start_ios_simulator`](/custom-builds/schema/#easstart_ios_simulator) when you omit `device_identifier`: at job time, the worker picks the shortest `iPhone` name among the available devices, following the [open-source build tools logic](https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/startIosSimulator.ts). The two heuristics often agree but can diverge, and both depend on which Simulators the image's Xcode makes available.
+
+Pre-warming is best-effort and applies only to iOS Simulator jobs in EAS Workflows. If you pick a device or runtime that differs from the image's defaults, Simulator boot and app install can take longer because your job doesn't match the warmed configuration.
+
+> **Note:** Pre-warming does not apply to [EAS Build](/build/introduction/), which compiles the app and does not boot a Simulator.
+
+#### Target a different iOS version
+
+Compare the default iOS Simulator runtime across the macOS runner images in [iOS server images](#ios-server-images) to find one that includes the runtime you want. An image can also include runtimes beyond its default, so check a specific runner with `xcrun simctl list runtimes` before ruling it out.
+
+If no image includes the runtime you need, install it in a workflow step before the Simulator boots. Apple publishes Simulator runtime downloads at [More Downloads for Apple Developers](https://developer.apple.com/download/all/). Runtime downloads are several GB, so use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache) to avoid re-downloading on every run.
+
+#### Target a different device
+
+Device availability varies by image, so a name that works on one macOS runner image may not be available on another. To choose a device, pass [`device_identifier`](/eas/workflows/pre-packaged-jobs/#maestro) to the Maestro job, or pass it to [`eas/start_ios_simulator`](/custom-builds/schema/#easstart_ios_simulator) in a custom step. Check the job logs for the device names available on each runner.
 
 ### Supported Xcode versions
 
