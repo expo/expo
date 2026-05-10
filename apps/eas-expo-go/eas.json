@@ -30,7 +30,8 @@
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build",
           "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
           "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
-          "EAS_RESTORE_CACHE": "0"
+          "EAS_RESTORE_CACHE": "0",
+          "USE_CCACHE": "0"
         }
       }
     },
