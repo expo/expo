@@ -53,6 +53,9 @@ export type ExpoMetroOptions = {
   modulesOnly?: boolean;
   runModule?: boolean;
 
+  /** When true, omits `sourcesContent` from generated source maps (saves ~80x memory for SSR). */
+  excludeSource?: boolean;
+
   /** Should assets be exported for hosting. Always true on web. Always false for embedded builds. Optional for native exports. */
   hosted?: boolean;
   /** Disable live bindings (enabled by default, required for circular deps) in experimental import export support. */
@@ -108,6 +111,7 @@ function withDefaults({
     lazy: !props.isExporting && lazy,
     environment: environment === 'client' ? undefined : environment,
     liveBindings: env.EXPO_UNSTABLE_LIVE_BINDINGS,
+    excludeSource: isServerEnvironment(environment),
     ...props,
   };
 }
@@ -175,6 +179,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     hosted,
     liveBindings,
     isLoaderBundle,
+    excludeSource,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -250,7 +255,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
       exporting: isExporting || undefined,
-      excludeSource: Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
+      excludeSource: excludeSource ?? Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
     },
     // TODO(@kitten): See comments in MetroBundlerDevServer.ts; should all defaults be added and the logic
     // from `src/start/server/middleware/metroOptions.ts` that adds default be moved here?

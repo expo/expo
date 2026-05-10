@@ -53,7 +53,8 @@ struct OpenTelemetryTests {
         makeMetric(name: "bundleLoadTime", value: 0.29883666667342185, timestamp: "2026-01-09T12:08:09Z"),
         makeMetric(name: "launchTime", value: 5.689726694341516, timestamp: "2026-01-09T12:08:06Z"),
         makeMetric(name: "loadTime", value: 5.2590179443359375, timestamp: "2026-01-09T12:08:05Z"),
-      ]
+      ],
+      logs: []
     )
   }
 
@@ -168,7 +169,7 @@ struct OpenTelemetryTests {
       languageTag: "en-US",
       environment: nil
     )
-    let event = Event(metadata: metadataWithoutUpdates, metrics: [])
+    let event = Event(metadata: metadataWithoutUpdates, metrics: [], logs: [])
     let metadata = event.toOTMetadata(testEasClientId)
     let keys = metadata.attributes.map { $0.key }
 
@@ -323,7 +324,7 @@ struct OpenTelemetryTests {
   }
 
   @Test
-  func `toOTMetric includes custom params as JSON string`() {
+  func `toOTMetric includes custom params as JSON string`() throws {
     let metric = Event.Metric(
       category: "appStartup",
       name: "bundleLoadTime",
@@ -338,7 +339,7 @@ struct OpenTelemetryTests {
     let otMetric = metric.toOTMetric()
     let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
 
-    let jsonString = attrs["expo.custom_params"]!
+    let jsonString = try #require(attrs["expo.custom_params"] ?? nil)
     let parsed = try! JSONSerialization.jsonObject(with: jsonString.data(using: .utf8)!) as! [String: String]
     #expect(parsed["screen"] == "dashboard")
     #expect(parsed["variant"] == "A")
@@ -359,11 +360,13 @@ struct OpenTelemetryTests {
   func `multiple events produce multiple resourceMetrics entries`() {
     let event1 = Event(
       metadata: testMetadata,
-      metrics: [makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")]
+      metrics: [makeMetric(name: "bundleLoadTime", value: 1.0, timestamp: "2026-01-01T00:00:00Z")],
+      logs: []
     )
     let event2 = Event(
       metadata: testMetadata,
-      metrics: [makeMetric(name: "coldLaunchTime", value: 2.0, timestamp: "2026-01-01T00:00:00Z")]
+      metrics: [makeMetric(name: "coldLaunchTime", value: 2.0, timestamp: "2026-01-01T00:00:00Z")],
+      logs: []
     )
 
     let requestBody = OTRequestBody(resourceMetrics: [
@@ -374,5 +377,19 @@ struct OpenTelemetryTests {
     #expect(requestBody.resourceMetrics.count == 2)
     #expect(requestBody.resourceMetrics[0].scopeMetrics[0].metrics[0].name == "expo.app_startup.bundle_load_time")
     #expect(requestBody.resourceMetrics[1].scopeMetrics[0].metrics[0].name == "expo.app_startup.cold_launch_time")
+  }
+}
+
+/**
+ Test-only convenience for pulling the inner string out of an `OTAnyValue`.
+ Returns `nil` for non-string variants — the metric tests in this file only
+ produce string-valued attributes, so a nil result is a real assertion failure.
+ */
+private extension OTAnyValue {
+  var stringValue: String? {
+    if case .string(let value) = self {
+      return value
+    }
+    return nil
   }
 }

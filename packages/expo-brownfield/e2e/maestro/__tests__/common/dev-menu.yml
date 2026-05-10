@@ -26,7 +26,7 @@ appId: ${APP_ID}
 # Assert that information about the app
 # is correctly loaded
 - assertVisible: "expo-app"
-- assertVisible: "Runtime version: exposdk:55.0.0"
+- assertVisible: "Runtime version: exposdk:56.0.0"
 
 - scrollUntilVisible:
     element:
@@ -36,7 +36,7 @@ appId: ${APP_ID}
 - assertVisible: "1.0.0"
 
 - assertVisible: "Runtime version"
-- assertVisible: "exposdk:55.0.0"
+- assertVisible: "exposdk:56.0.0"
 
 - runFlow:
     when:

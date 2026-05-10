@@ -3,7 +3,7 @@ import * as React from 'react';
 import {
   extractPickerItems,
   PickerItem,
-  type PickerWithItems,
+  type PickerItemProps,
   type PickerItemValue,
   type PickerProps,
 } from './types';
@@ -11,6 +11,7 @@ import { Host } from '../../swift-ui/Host';
 import { Picker as SwiftUIPicker } from '../../swift-ui/Picker';
 import { Text } from '../../swift-ui/Text';
 import {
+  backgroundOverlay,
   disabled as disabledModifier,
   fixedSize,
   foregroundStyle,
@@ -24,7 +25,7 @@ import { type ModifierConfig } from '../../types';
  * A drop-in replacement for `@react-native-picker/picker` on iOS.
  * Renders a SwiftUI wheel picker wrapped in a Host.
  */
-function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
+export function Picker<T extends PickerItemValue>(props: PickerProps<T>) {
   const { selectedValue, onValueChange, enabled, style, children, ref } = props;
   const items = extractPickerItems<T>(children);
   const modifiers = [
@@ -55,8 +56,11 @@ function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
           if (item.color) {
             itemModifiers.push(foregroundStyle(item.color));
           }
-          if (item.fontFamily) {
-            itemModifiers.push(font({ family: item.fontFamily }));
+          if (item.fontFamily || item.fontSize != null) {
+            itemModifiers.push(font({ family: item.fontFamily, size: item.fontSize }));
+          }
+          if (item.backgroundColor) {
+            itemModifiers.push(backgroundOverlay({ color: item.backgroundColor }));
           }
           return (
             <Text key={String(item.value ?? index)} modifiers={itemModifiers}>
@@ -69,5 +73,4 @@ function PickerImpl<T extends PickerItemValue>(props: PickerProps<T>) {
   );
 }
 
-PickerImpl.displayName = 'Picker';
-export const Picker: PickerWithItems = Object.assign(PickerImpl, { Item: PickerItem });
+Picker.Item = PickerItem as React.ComponentType<PickerItemProps>;

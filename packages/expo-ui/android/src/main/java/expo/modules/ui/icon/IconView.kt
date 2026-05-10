@@ -7,6 +7,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -50,6 +51,7 @@ data class Source(
 data class IconProps(
   val source: MutableState<Source?> = mutableStateOf(null),
   val tint: MutableState<Color?> = mutableStateOf(null),
+  val inheritTint: MutableState<Boolean> = mutableStateOf(true),
   val size: MutableState<Int?> = mutableStateOf(null),
   val contentDescription: MutableState<String?> = mutableStateOf(null),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
@@ -73,6 +75,7 @@ class IconView(context: Context, appContext: AppContext) :
   override fun ComposableScope.Content() {
     val (source) = props.source
     val (tint) = props.tint
+    val (inheritTint) = props.inheritTint
     val (iconSize) = props.size
     val (contentDescription) = props.contentDescription
     val (modifiers) = props.modifiers
@@ -100,10 +103,12 @@ class IconView(context: Context, appContext: AppContext) :
 
     // Render icon if painter available
     if (painter != null) {
+      val resolvedTint = tint?.compose
+        ?: if (inheritTint) LocalContentColor.current else androidx.compose.ui.graphics.Color.Unspecified
       Icon(
         painter = painter,
         contentDescription = contentDescription,
-        tint = tint?.compose ?: androidx.compose.ui.graphics.Color.Unspecified,
+        tint = resolvedTint,
         modifier = Modifier
           .then(iconSize?.let { Modifier.size(it.dp) } ?: Modifier)
           .then(ModifierRegistry.applyModifiers(modifiers, appContext, this@Content, globalEventDispatcher))

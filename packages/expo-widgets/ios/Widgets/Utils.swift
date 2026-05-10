@@ -20,6 +20,14 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
   return entries.compactMap(\.self)
 }
 
+func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
+  var props: [String: Any] = ["message": message]
+  if let stack {
+    props["stack"] = stack
+  }
+  return ["type": "RedBoxView", "props": props]
+}
+
 func evaluateLayout(
   layout: String,
   props: [String: Any],
@@ -32,6 +40,10 @@ func evaluateLayout(
   let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
     withArguments: [props, environment]
   )
+  if let exception = context.exception {
+    print("[ExpoWidgets] Layout evaluation failed: \(exception)")
+    return createRedBox(message: exception.toString())
+  }
   return result?.toObject() as? [String: Any]
 }
 
@@ -49,6 +61,12 @@ func getLiveActivityNodes(forName name: String, props: String = "{}", environmen
   let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
     withArguments: [propsDict, environment]
   )
+
+  if let exception = context.exception {
+    print("[ExpoWidgets] Layout evaluation failed: \(exception)")
+    return ["banner": createRedBox(message: exception.toString())]
+  }
+
   return result?.toObject() as? [String: Any] ?? [:]
 }
 

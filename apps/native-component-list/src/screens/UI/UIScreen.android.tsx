@@ -131,6 +131,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},

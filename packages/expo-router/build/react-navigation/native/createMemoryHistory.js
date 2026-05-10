@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createMemoryHistory = createMemoryHistory;
 const non_secure_1 = require("nanoid/non-secure");
+/**
+ * @deprecated Will be removed in a future SDK.
+ */
 function createMemoryHistory() {
     let index = 0;
     let items = [];

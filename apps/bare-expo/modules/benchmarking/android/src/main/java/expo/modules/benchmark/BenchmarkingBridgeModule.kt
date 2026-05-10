@@ -2,6 +2,7 @@ package expo.modules.benchmark
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.BaseJavaModule
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -18,6 +19,11 @@ class BenchmarkingBridgeModule : BaseJavaModule() {
     // For some reason, isBlockingSynchronousMethod doesn't let functions be Void/Unit
     // so returning a dummy number
     return 0.0
+  }
+
+  @ReactMethod
+  fun nothingAsync(promise: Promise) {
+    promise.resolve(null)
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
@@ -42,7 +48,7 @@ class BenchmarkingBridgeModule : BaseJavaModule() {
   }
 
   @ReactMethod(isBlockingSynchronousMethod = true)
-  fun echoObject(point: ReadableMap): WritableMap {
+  fun passthroughDict(point: ReadableMap): WritableMap {
     val result = Arguments.createMap()
     result.putDouble("x", point.getDouble("x"))
     result.putDouble("y", point.getDouble("y"))

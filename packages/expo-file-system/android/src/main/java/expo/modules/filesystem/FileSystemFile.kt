@@ -36,12 +36,12 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("File.create function does not work with SAF content:// uris, use `Directory.createFile` instead")
+    }
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     validateCanCreate(options)
-    if (uri.isContentUri) {
-      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
-    }
     if (options.overwrite && exists) {
       javaFile.delete()
     }

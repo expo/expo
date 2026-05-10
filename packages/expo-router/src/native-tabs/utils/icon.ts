@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
-import type { PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { isChildOfType } from '../../utils/children';
@@ -22,7 +21,7 @@ export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconCol
   return {};
 }
 
-type AwaitedIcon =
+export type AwaitedIcon =
   | {
       sf?: SFSymbol;
       xcasset?: string;
@@ -66,47 +65,6 @@ export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
 
 function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
   return !icon || !('src' in icon && icon.src instanceof Promise);
-}
-
-export function convertOptionsIconToIOSPropsIcon(
-  icon: AwaitedIcon | undefined,
-  iconColor?: ColorValue
-): PlatformIconIOS | undefined {
-  if (icon && 'sf' in icon && icon.sf) {
-    return {
-      type: 'sfSymbol',
-      name: icon.sf,
-    };
-  }
-  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
-    const imageSource =
-      'xcasset' in icon && icon.xcasset
-        ? { uri: icon.xcasset }
-        : (icon as { src: ImageSourcePropType }).src;
-    const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
-    const effectiveRenderingMode =
-      renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
-    if (effectiveRenderingMode === 'original') {
-      return { type: 'imageSource', imageSource };
-    }
-    return { type: 'templateSource', templateSource: imageSource };
-  }
-  return undefined;
-}
-
-export function convertOptionsIconToAndroidPropsIcon(
-  icon: AwaitedIcon
-): PlatformIconAndroid | undefined {
-  if (icon && 'drawable' in icon && icon.drawable) {
-    return {
-      type: 'drawableResource',
-      name: icon.drawable,
-    };
-  }
-  if (icon && 'src' in icon && icon.src) {
-    return { type: 'imageSource', imageSource: icon.src };
-  }
-  return undefined;
 }
 
 export function convertComponentSrcToImageSource(

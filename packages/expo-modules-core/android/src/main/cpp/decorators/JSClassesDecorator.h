@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-
-#include <map>
+#include "../ExpoHeader.pch"
 
 #include "JSDecorator.h"
 #include "../MethodMetadata.h"

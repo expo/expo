@@ -3,7 +3,7 @@ import type { Ref } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { worklets } from '../../State/optionalWorklets';
-import { type ObservableState, useNativeState } from '../../State/useNativeState';
+import type { ObservableState } from '../../State/useNativeState';
 import { useWorkletProp } from '../../State/useWorkletProp';
 import { getStateId } from '../../State/utils';
 import type { ModifierConfig, ViewEvent } from '../../types';
@@ -13,12 +13,18 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 // region Types
 
 /**
- * Can be used for imperatively setting text and focus on the `TextField` component.
+ * Can be used for imperatively focusing and setting text/selection on the `TextField` component.
  */
 export type TextFieldRef = {
   setText: (newText: string) => Promise<void>;
+  /** Clear the current text. */
+  clear: () => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
+  /**
+   * Programmatically set the selection range.
+   */
+  setSelection: (start: number, end: number) => Promise<void>;
 };
 
 export type TextFieldCapitalization = 'none' | 'characters' | 'words' | 'sentences';
@@ -120,23 +126,15 @@ export type TextFieldColors = {
   errorSuffixColor?: ColorValue;
 };
 
-export type TextFieldValue = {
-  text: string;
-  selection: { start: number; end: number };
-};
-
-export type TextFieldValueLike = string | TextFieldValue;
-
 /** Shared props between `TextField` and `OutlinedTextField`. */
-type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
+type BaseTextFieldProps = {
   ref?: Ref<TextFieldRef>;
   /**
-   * An observable state that holds the current value. Create one with either:
-   * - `useNativeState('initial text')`.
-   * - `useNativeState<TextFieldValue>({ text: '', selection: { start: 0, end: 0 } })`
-   * If omitted, the field manages its own internal state.
+   * An observable state that holds the current text value. Create one with
+   * `useNativeState('initial text')`. If omitted, the field manages its own
+   * internal state.
    */
-  value?: ObservableState<T>;
+  value?: ObservableState<string>;
   /** If true, the text field will be focused automatically when mounted. @default false */
   autoFocus?: boolean;
   /** @default true */
@@ -149,18 +147,70 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
   singleLine?: boolean;
   maxLines?: number;
   minLines?: number;
+  /**
+   * Display-time text transformation. `'password'` masks every character;
+   * `'none'` (default) leaves the buffer as-is.
+   */
+  visualTransformation?: 'password' | 'none';
+
+  /**
+   * Selection-related colors. Maps to Compose's `TextSelectionColors` via
+   * `LocalTextSelectionColors`. `handleColor` controls the drag handles;
+   * `backgroundColor` is the highlighted-text background (typically the same
+   * tint at lower alpha so the underlying text stays readable).
+   */
+  textSelectionColors?: {
+    handleColor?: ColorValue;
+    backgroundColor?: ColorValue;
+  };
+
+  /**
+   * Observable state holding the current selection range. Create with
+   * `useNativeState({ start: 0, end: 0 })`. The field writes user-driven
+   * changes back to it, and writes from JS (or a worklet) update the
+   * cursor/selection in the field. Use `ref.setSelection(start, end)` for
+   * imperative one-shot updates.
+   */
+  selection?: ObservableState<{ start: number; end: number }>;
+
+  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  maxLength?: number;
+
+  /** Called when the selection range changes. */
+  onSelectionChange?: (selection: { start: number; end: number }) => void;
+
+  /**
+   * Text styling for the field's content. Maps to Compose's `TextStyle`.
+   */
+  textStyle?: {
+    textAlign?: 'left' | 'right' | 'center' | 'justify';
+    color?: ColorValue;
+    fontSize?: number;
+    fontFamily?: string;
+    fontWeight?:
+      | '100'
+      | '200'
+      | '300'
+      | '400'
+      | '500'
+      | '600'
+      | '700'
+      | '800'
+      | '900'
+      | 'normal'
+      | 'bold';
+    lineHeight?: number;
+    letterSpacing?: number;
+  };
   keyboardOptions?: TextFieldKeyboardOptions;
   keyboardActions?: TextFieldKeyboardActions;
   /**
-   * Fires whenever the value changes. The callback receives the same shape as `value`:
-   * - `string` when `value` is a string observable (typing events only).
-   * - `TextFieldValue` when `value` is a TextFieldValue observable (every gesture:
-   *   typing, tap-to-place, drag, select-all, arrow keys).
-   *
-   * If marked with the `'worklet'` directive, runs synchronously on the UI thread;
-   * otherwise delivered asynchronously as a regular JS event.
+   * Fires whenever the text value changes. If marked with the `'worklet'`
+   * directive, runs synchronously on the UI thread; otherwise delivered
+   * asynchronously as a regular JS event. Use `onSelectionChange` (or read
+   * the `selection` observable) to react to selection-only changes.
    */
-  onValueChange?: (value: T) => void;
+  onValueChange?: (value: string) => void;
   /** A callback triggered when the field gains or loses focus. */
   onFocusChanged?: (focused: boolean) => void;
   shape?: object;
@@ -169,14 +219,13 @@ type BaseTextFieldProps<T extends TextFieldValueLike = string> = {
   children?: React.ReactNode;
 };
 
-export type TextFieldProps<T extends TextFieldValueLike = string> = BaseTextFieldProps<T> & {
+export type TextFieldProps = BaseTextFieldProps & {
   colors?: TextFieldColors;
 };
 
-export type OutlinedTextFieldProps<T extends TextFieldValueLike = string> =
-  BaseTextFieldProps<T> & {
-    colors?: TextFieldColors;
-  };
+export type OutlinedTextFieldProps = BaseTextFieldProps & {
+  colors?: TextFieldColors;
+};
 
 // endregion Types
 
@@ -184,16 +233,25 @@ export type OutlinedTextFieldProps<T extends TextFieldValueLike = string> =
 
 type NativeTextFieldProps = Omit<
   BaseTextFieldProps,
-  'value' | 'onValueChange' | 'onFocusChanged' | 'keyboardActions' | 'children' | 'shape'
+  | 'value'
+  | 'selection'
+  | 'onValueChange'
+  | 'onFocusChanged'
+  | 'onSelectionChange'
+  | 'keyboardActions'
+  | 'children'
+  | 'shape'
 > & {
   variant: 'filled' | 'outlined';
   colors?: TextFieldColors;
   shape?: object;
   children?: React.ReactNode;
   value?: number | null;
+  selection?: number | null;
   onValueChangeSync?: number | null;
-} & ViewEvent<'onValueChange', TextFieldValue> &
+} & ViewEvent<'onValueChange', { text: string; selection: { start: number; end: number } }> &
   ViewEvent<'onFocusChanged', { value: boolean }> &
+  ViewEvent<'onSelectionChange', { start: number; end: number }> &
   ViewEvent<'onKeyboardAction', { action: string; value: string }>;
 
 const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNativeView(
@@ -201,25 +259,21 @@ const TextFieldNativeView: React.ComponentType<NativeTextFieldProps> = requireNa
   'TextFieldView'
 );
 
-function useTransformedProps<T extends TextFieldValueLike>(
-  props: TextFieldProps<T> | OutlinedTextFieldProps<T>,
+function useTransformedProps(
+  props: TextFieldProps | OutlinedTextFieldProps,
   variant: 'filled' | 'outlined'
 ): NativeTextFieldProps {
   const {
     value,
+    selection,
     modifiers,
     children,
     keyboardActions,
     onValueChange,
     onFocusChanged,
+    onSelectionChange,
     ...restProps
   } = props;
-
-  const internalValue = useNativeState<string>('');
-  const state: ObservableState<TextFieldValueLike> =
-    (value as ObservableState<TextFieldValueLike> | undefined) ?? internalValue;
-
-  const isStringMode = typeof state.value === 'string';
 
   const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
   const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
@@ -230,16 +284,15 @@ function useTransformedProps<T extends TextFieldValueLike>(
     ...restProps,
     variant,
     children,
-    value: getStateId(state),
+    value: getStateId(value),
+    selection: getStateId(selection),
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:
-      !isWorklet && onValueChange
-        ? (event) => {
-            const payload = event.nativeEvent;
-            onValueChange((isStringMode ? payload.text : payload) as T);
-          }
-        : undefined,
+      !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
     onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onSelectionChange: onSelectionChange
+      ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
+      : undefined,
     onKeyboardAction: keyboardActions
       ? (event) => {
           const { action, value } = event.nativeEvent;
@@ -296,7 +349,7 @@ function SupportingText(props: { children: React.ReactNode }) {
 /**
  * A Material3 `TextField`.
  */
-function TextFieldComponent<T extends TextFieldValueLike = string>(props: TextFieldProps<T>) {
+function TextFieldComponent(props: TextFieldProps) {
   return <TextFieldNativeView {...useTransformedProps(props, 'filled')} />;
 }
 
@@ -311,9 +364,7 @@ TextFieldComponent.SupportingText = SupportingText;
 /**
  * A Material3 `OutlinedTextField` with a transparent background and border outline.
  */
-function OutlinedTextFieldComponent<T extends TextFieldValueLike = string>(
-  props: OutlinedTextFieldProps<T>
-) {
+function OutlinedTextFieldComponent(props: OutlinedTextFieldProps) {
   return <TextFieldNativeView {...useTransformedProps(props, 'outlined')} />;
 }
 
@@ -328,3 +379,6 @@ OutlinedTextFieldComponent.SupportingText = SupportingText;
 // endregion Components
 
 export { TextFieldComponent as TextField, OutlinedTextFieldComponent as OutlinedTextField };
+
+// Exported for docs api data
+export { type ObservableState };

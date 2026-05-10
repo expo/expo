@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI PullToRefreshBox matches the official Jetpack Compose [PullToRefreshBox](<https://developer.android.com/reference/kotlin/androidx/compose/material3/pulltorefresh/package-summary#PullToRefreshBox(kotlin.Boolean,kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.material3.pulltorefresh.PullToRefreshState,androidx.compose.ui.Alignment,kotlin.Function1,kotlin.Function1)>) API. It wraps scrollable content and shows a refresh indicator when pulled.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/pulltorefreshbox/android-light.webp"
+  darkSource="/static/images/expo-ui/pulltorefreshbox/android-dark.webp"
+  alt="PullToRefreshBox showing the Material 3 loading indicator above a list"
+/>
 
 ## Installation
 

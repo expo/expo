@@ -31,4 +31,11 @@ NS_SWIFT_NAME(JavaScriptSerializable)
 
 @property (nonatomic, readonly) EXSerializableValueType valueType;
 
+// Opaque handle wrapping a `shared_ptr<worklets::Serializable>`, owned by the
+// adapter pod. Nil when the adapter isn't linked.
+@property (nonatomic, strong, readonly, nullable) id handle;
+
+- (nonnull instancetype)initWithHandle:(nullable id)handle
+                             valueType:(EXSerializableValueType)valueType;
+
 @end

@@ -17,7 +17,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 1. Prepare the credentials needed for the build.
    - Depending on the value of `builds.ios.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're offered to generate them.
 
-1. **Bare** projects require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (to ensure the correct bundle identifier and Apple Team ID are set).
+1. Projects that manage their own native directories (**android** and **ios**), require an additional step: check whether the Xcode project is configured to be buildable on the EAS servers (to ensure the correct bundle identifier and Apple Team ID are set).
 1. Create the tarball containing a copy of the repository. Actual behavior depends on the [VCS workflow](https://expo.fyi/eas-vcs-workflow) you are using.
 1. Upload the project tarball to a private Google Cloud Storage (GCS) bucket and send the build request to EAS Build.
 
@@ -39,7 +39,7 @@ In this next phase, this is what happens when EAS Build picks up your request:
    - Write the Provisioning Profile to the **~/Library/MobileDevice/Provisioning Profiles** directory.
    - Verify that the Distribution Certificate and Provisioning Profile match (every Provisioning Profile is assigned to a particular Distribution Certificate and cannot be used for building the iOS with any other certificate).
 
-1. Additional step for **managed** projects: Run `npx expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI.
+1. Additional step for projects using Continuous Native Generation (CNG): Run `npx expo prebuild` to generate **android** and **ios** directories. This step will use the versioned Expo CLI.
 1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run `pod install` in the **ios** directory inside your project.
 1. Run the `eas-build-post-install` script from **package.json** if defined.

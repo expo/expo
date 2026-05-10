@@ -421,6 +421,7 @@ export class Package {
 
 /**
  * Resolves to a Package instance if the package with given name exists in the repository.
+ * Falls back to scanning the cached package list when the directory name doesn't match.
  */
 export function getPackageByName(packageName: string): Package | null {
   const packageJsonPath = pathToLocalPackageJson(packageName);
@@ -428,7 +429,7 @@ export function getPackageByName(packageName: string): Package | null {
     const packageJson = require(packageJsonPath);
     return new Package(path.dirname(packageJsonPath), packageJson);
   } catch {
-    return null;
+    return cachedPackages?.find((pkg) => pkg.packageName === packageName) ?? null;
   }
 }
 
@@ -484,5 +485,18 @@ function readExpoModuleConfigJson(expoModuleConfigJsonPath: string) {
 }
 
 function pathToLocalPackageJson(packageName: string): string {
+  if (packageName.startsWith('@')) {
+    try {
+      const resolved = require.resolve(`${packageName}/package.json`, { paths: [PACKAGES_DIR] });
+      // require.resolve walks up node_modules/. Reject realpaths outside PACKAGES_DIR
+      // so third-party scoped installs (e.g. @babel/core) fall through to the cache lookup.
+      const rel = path.relative(PACKAGES_DIR, fs.realpathSync(resolved));
+      if (!rel.startsWith('..') && !path.isAbsolute(rel)) {
+        return resolved;
+      }
+    } catch {
+      // Fall through — caller's cachedPackages fallback still applies.
+    }
+  }
   return path.join(PACKAGES_DIR, packageName, 'package.json');
 }

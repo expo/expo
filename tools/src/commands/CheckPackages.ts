@@ -22,7 +22,7 @@ export default (program: Command) => {
     .option('--no-build', 'Whether to skip `pnpm build` check.', false)
     .option('--no-test', 'Whether to skip `pnpm test` check.', false)
     .option('--no-lint', 'Whether to skip `pnpm lint` check.', false)
-    .option('--fix-lint', 'Whether to run `pnpm lint --fix` instead of `yarn lint`.', false)
+    .option('--fix-lint', 'Whether to run `pnpm lint --fix` instead of `pnpm lint`.', false)
     .option(
       '--no-uniformity-check',
       'Whether to check the uniformity of committed and generated build files.',

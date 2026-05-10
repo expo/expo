@@ -1,7 +1,7 @@
 {
   "name": "expo-video",
   "title": "Expo Video",
-  "version": "55.0.9",
+  "version": "56.1.0",
   "description": "A cross-platform, performant video component for React Native and Expo with Web support",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,10 +32,11 @@
   "devDependencies": {
     "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

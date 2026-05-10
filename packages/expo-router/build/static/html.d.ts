@@ -5,11 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { PropsWithChildren } from 'react';
+import React from 'react';
 import type { ServerDataLoaderData } from '../loaders/ServerDataLoaderContext';
 /**
  * Root style-reset for full-screen React Native web apps with a root `<ScrollView />` should use the following styles to ensure native parity. [Learn more](https://necolas.github.io/react-native-web/docs/setup/#root-element).
  */
-export declare function ScrollViewStyleReset(): import("react/jsx-runtime").JSX.Element;
+export declare const ScrollViewStyleReset: React.FC;
 export declare function InnerRoot({ children, loadedData, }: PropsWithChildren<{
     loadedData: ServerDataLoaderData;
 }>): import("react/jsx-runtime").JSX.Element;

@@ -5,7 +5,11 @@ export type {
   StackHeaderItemSharedProps,
   StackScreenProps,
   StackScreenBackButtonProps,
+  /**
+   * @deprecated Use `StackTitleProps` instead.
+   */
   StackScreenTitleProps,
+  StackTitleProps,
   StackSearchBarProps,
   StackToolbarBadgeProps,
   StackToolbarButtonProps,

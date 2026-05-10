@@ -11,7 +11,8 @@
         "ReactNativeDependencies",
         "React",
         "Hermes",
-        "expo-modules-core/ExpoModulesCore"
+        "expo-modules-core/ExpoModulesCore",
+        "expo-modules-core/ExpoModulesWorklets"
       ],
       "targets": [
         {
@@ -43,6 +44,7 @@
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore",
+            "expo-modules-core/ExpoModulesWorklets",
             "ExpoUI_ios_objc"
           ],
           "linkedFrameworks": [

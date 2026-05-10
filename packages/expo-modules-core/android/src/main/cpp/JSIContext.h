@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JavaScriptRuntime.h"
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
@@ -12,8 +13,6 @@
 #include "ThreadSafeJNIGlobalRef.h"
 #include "javaclasses/JSRunnable.h"
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
 
@@ -23,10 +22,6 @@
 #include <react/jni/JRuntimeExecutor.h>
 
 #endif
-
-#include <ReactCommon/NativeMethodCallInvokerHolder.h>
-
-#include <memory>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

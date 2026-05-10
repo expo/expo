@@ -1,8 +1,10 @@
 export * from './FileSystem';
 
 export {
+  DEFAULT_DEBOUNCE_MS,
   type FileCreateOptions,
   type DirectoryCreateOptions,
+  type RelocationOptions,
   type FileHandle,
   type FileInfo,
   type FileWriteOptions,
@@ -31,6 +33,10 @@ export {
   type DownloadPauseState,
   type UploadTaskState,
   type DownloadTaskState,
+  type WatchEventType,
+  type WatchEvent,
+  type WatchOptions,
+  type WatchSubscription,
 } from './ExpoFileSystem.types';
 
 export * from './legacyWarnings';

@@ -132,7 +132,7 @@ describeSkipWin('server', () => {
 
     // Manifest
     expect(manifest.runtimeVersion).toBe('1.0');
-    expect(manifest.extra.expoClient?.sdkVersion).toBe('55.0.0');
+    expect(manifest.extra.expoClient?.sdkVersion).toMatch(/\d+\.0\.0/);
     expect(manifest.extra.expoClient?.slug).toBe('basic-start');
     expect(manifest.extra.expoClient?.name).toBe('basic-start');
 

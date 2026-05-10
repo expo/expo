@@ -40,7 +40,9 @@ export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { f
     metadata?: any;
 };
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
-export declare function getCacheKey(config: JsTransformerConfig): string;
+export declare function getCacheKey(config: JsTransformerConfig, opts?: Readonly<{
+    projectRoot: string;
+}>): string;
 export declare function collectDependenciesForShaking(ast: t.File, options: CollectDependenciesOptions): Readonly<{
     ast: t.File;
     dependencyMapName: string;

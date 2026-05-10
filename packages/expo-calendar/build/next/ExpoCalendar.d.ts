@@ -16,10 +16,11 @@ declare class ExpoCalendarNextModule extends NativeModule {
     getCalendars(type?: EntityTypes): Promise<ExpoCalendar[]>;
     listEvents(calendars: string[], startDate: string | Date, endDate: string | Date): Promise<ExpoCalendarEvent[]>;
     getCalendarById(calendarId: string): Promise<ExpoCalendar>;
+    presentPicker(): Promise<ExpoCalendar | null>;
     getEventById(eventId: string): Promise<ExpoCalendarEvent>;
     getReminderById(reminderId: string): Promise<ExpoCalendarReminder>;
-    requestCalendarPermissions(): Promise<PermissionResponse>;
-    getCalendarPermissions(): Promise<PermissionResponse>;
+    requestCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
+    getCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse>;
     requestRemindersPermissions(): Promise<PermissionResponse>;
     getRemindersPermissions(): Promise<PermissionResponse>;
     getSourcesSync(): Source[];
