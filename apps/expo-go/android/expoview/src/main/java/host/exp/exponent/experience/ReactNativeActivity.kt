@@ -399,7 +399,7 @@ abstract class ReactNativeActivity :
           }
           KernelProvider.instance.handleError(ManifestException(null, capturedManifestUrl, errorJson))
         }
-      },
+      }
     )
     val hostWrapper = ReactNativeHostWrapper(application, nativeHost)
 

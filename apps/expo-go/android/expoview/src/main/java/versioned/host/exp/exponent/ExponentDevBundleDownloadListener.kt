@@ -14,7 +14,7 @@ import kotlin.Exception
 class ExponentDevBundleDownloadListener(
   private val listener: DevBundleDownloadProgressListener,
   private val downloadedBundleFileProvider: (() -> File?)? = null,
-  private val onHermesDetected: ((Exception) -> Unit)? = null,
+  private val onHermesDetected: ((Exception) -> Unit)? = null
 ) : DevBundleDownloadListener {
   override fun onSuccess() {
     val bundleFile = downloadedBundleFileProvider?.invoke()

@@ -7,8 +7,14 @@ import java.io.IOException
 object HermesBundleUtils {
   // https://github.com/facebook/hermes/blob/ae8554141cd3d3f64eb98d70c97112fcc6143d34/include/hermes/BCGen/HBC/BytecodeFileFormat.h#L26-L27
   private val HERMES_MAGIC_HEADER = byteArrayOf(
-    0xc6.toByte(), 0x1f.toByte(), 0xbc.toByte(), 0x03.toByte(),
-    0xc1.toByte(), 0x03.toByte(), 0x19.toByte(), 0x1f.toByte()
+    0xc6.toByte(),
+    0x1f.toByte(),
+    0xbc.toByte(),
+    0x03.toByte(),
+    0xc1.toByte(),
+    0x03.toByte(),
+    0x19.toByte(),
+    0x1f.toByte()
   )
 
   fun isHermesBundle(file: File): Boolean {
