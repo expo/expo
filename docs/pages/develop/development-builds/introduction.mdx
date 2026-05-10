@@ -1,98 +1,242 @@
----
-title: Introduction to development builds
-sidebar_title: Introduction
-description: Why use development builds and how to get started.
-searchRank: 98
-searchPosition: 1
-hideTOC: true
-hasVideoLink: true
----
+import React from 'react';
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 
-import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+export default function App() {
+  const services = [
+    {
+      title: 'Banner Printing',
+      price: '₹25/sqft',
+      image:
+        'https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?q=80&w=1200&auto=format&fit=crop',
+    },
+    {
+      title: 'Invitation Cards',
+      price: '₹5/card',
+      image:
+        'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=1200&auto=format&fit=crop',
+    },
+    {
+      title: 'Flex & Poster',
+      price: 'Best Quality',
+      image:
+        'https://images.unsplash.com/photo-1504384308090-c894fdcc538d?q=80&w=1200&auto=format&fit=crop',
+    },
+    {
+      title: 'Visiting Cards',
+      price: '₹150/100 pcs',
+      image:
+        'https://images.unsplash.com/photo-1556740749-887f6717d7e4?q=80&w=1200&auto=format&fit=crop',
+    },
+  ];
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+  const openWhatsApp = () => {
+    Linking.openURL('https://wa.me/919451100151');
+  };
 
-**Development build** is the term that we use for a "Debug" build of an app that includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library. This library augments the built-in React Native development tooling with additional capabilities, such as support for inspecting network requests and a "launcher" UI that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with EAS Update).
+  return (
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Chauhan Printing Press</Text>
+        <Text style={styles.subtitle}>
+          Banner • Flex • Invitation Card • Poster • ID Card
+        </Text>
 
-<Collapsible summary="Difference between Expo Go and development builds">
+        <View style={styles.callBox}>
+          <Text style={styles.callText}>Call Now</Text>
+          <Text style={styles.phone}>9451100151</Text>
+        </View>
+      </View>
 
-[Expo Go](https://expo.dev/go) is a playground app for students and learners to get started quickly. It comes with a fixed set of native libraries built in, so you can write JavaScript code and see changes instantly without building a native app yourself. A development build is a fully featured development environment for working on your production-grade Expo apps.
+      {services.map((service, index) => (
+        <View key={index} style={styles.card}>
+          <Image source={{ uri: service.image }} style={styles.image} />
 
-</Collapsible>
+          <View style={styles.cardContent}>
+            <Text style={styles.serviceTitle}>{service.title}</Text>
+            <Text style={styles.price}>{service.price}</Text>
 
-<Collapsible summary="Native app and JavaScript bundle">
+            <TouchableOpacity style={styles.button} onPress={openWhatsApp}>
+              <Text style={styles.buttonText}>Order Now</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
 
-The **native app** is what you install on your device. Expo Go is a pre-built native app that works like a playground &mdash; it can't be changed after you install it. To add new native libraries or change things like your app name and icon, you need to build your own native app (a development build).
+      <View style={styles.featureBox}>
+        <Text style={styles.featureTitle}>Fast Delivery</Text>
+        <Text style={styles.featureText}>
+          Same day printing available for urgent work.
+        </Text>
+      </View>
 
-The **JavaScript bundle (`npx expo start`)** is where your app's UI code and business logic are. In production apps, there is one **main.js** bundle that is shipped with the app itself. In development, this JS bundle is live reloaded from your local machine. The main role of React Native is to provide a way for the JavaScript code to access the native APIs (Image, Camera, Notifications, and more). However, only APIs and libraries that were bundled in the **native app** can be used.
+      <View style={styles.featureBox}>
+        <Text style={styles.featureTitle}>HD Quality</Text>
+        <Text style={styles.featureText}>
+          High quality print with modern machines.
+        </Text>
+      </View>
 
-</Collapsible>
+      <View style={styles.featureBox}>
+        <Text style={styles.featureTitle}>Custom Design</Text>
+        <Text style={styles.featureText}>
+          Wedding cards, political banners and all graphics design.
+        </Text>
+      </View>
 
-<VideoBoxLink
-  videoId="FdjczjkwQKE"
-  title="Expo Go & Development Builds: which should you use?"
-  description="In this tutorial video Beto explains what each of them is, and when to choose a development build."
-/>
+      <TouchableOpacity style={styles.whatsappBox} onPress={openWhatsApp}>
+        <Text style={styles.whatsappTitle}>Place Your Order on WhatsApp</Text>
+        <Text style={styles.whatsappText}>WhatsApp: 9451100151</Text>
+      </TouchableOpacity>
 
-## Why use a development build (a.k.a what _can't_ you do in Expo Go and why)
+      <Text style={styles.footer}>
+        Developed for Chauhan Printing Press • Munshiganj, Amethi
+      </Text>
 
-Expo Go is a playground for students and learners to understand the basics of React Native. It's limited and not useful for building production-grade projects, so most apps will convert to using development builds. It helps to know exactly what is _impossible_ in Expo Go and _why_, so you can make an informed decision on when and why to make this move.
+      <View style={{ height: 40 }} />
+    </ScrollView>
+  );
+}
 
-<Collapsible summary="Use libraries with native code that aren't in Expo Go">
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#111827',
+    padding: 15,
+  },
+  header: {
+    backgroundColor: '#7f1d1d',
+    borderRadius: 25,
+    padding: 20,
+    marginBottom: 20,
+  },
+  title: {
+    fontSize: 30,
+    color: '#facc15',
+    fontWeight: 'bold',
+  },
+  subtitle: {
+    color: '#ffffff',
+    marginTop: 8,
+    fontSize: 15,
+  },
+  callBox: {
+    backgroundColor: '#facc15',
+    padding: 15,
+    borderRadius: 20,
+    marginTop: 20,
+  },
+  callText: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  phone: {
+    color: '#000',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  card: {
+    backgroundColor: '#1f2937',
+    borderRadius: 25,
+    overflow: 'hidden',
+    marginBottom: 20,
+  },
+  image: {
+    width: '100%',
+    height: 220,
+  },
+  cardContent: {
+    padding: 15,
+  },
+  serviceTitle: {
+    color: '#fde047',
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  price: {
+    color: '#fff',
+    marginTop: 8,
+    fontSize: 18,
+  },
+  button: {
+    backgroundColor: '#dc2626',
+    padding: 14,
+    borderRadius: 18,
+    marginTop: 15,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+  featureBox: {
+    backgroundColor: '#1f2937',
+    padding: 20,
+    borderRadius: 25,
+    marginBottom: 15,
+  },
+  featureTitle: {
+    color: '#fde047',
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  featureText: {
+    color: '#fff',
+    marginTop: 8,
+    fontSize: 16,
+  },
+  whatsappBox: {
+    backgroundColor: '#facc15',
+    padding: 25,
+    borderRadius: 25,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  whatsappTitle: {
+    color: '#000',
+    fontSize: 26,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  whatsappText: {
+    color: '#000',
+    fontSize: 20,
+    marginTop: 10,
+    fontWeight: 'bold',
+  },
+  footer: {
+    color: '#9ca3af',
+    textAlign: 'center',
+    marginTop: 25,
+  },
+});
 
-Consider [`react-native-webview`](/versions/latest/sdk/webview/) as an example, a library that contains native code, but [is included in Expo Go](https://github.com/expo/expo/blob/main/apps/expo-go/package.json#L23). When you run `npx expo install react-native-webview` command in your project, it will install the library in your **node_modules** directory, which includes both the JS code and the native code. But the JS bundle you are building _only_ uses the JS code. Then, your JS bundle gets uploaded to Expo Go, and it interacts with the native code that was already bundled with the app.
+/*
+APK BUILD STEPS
 
-Instead, when you try to use a library that is not included, for example, [`react-native-firebase`](/guides/using-firebase/#using-react-native-firebase), then you can use the JS code and hot reload the new bundle into Expo Go but it will immediately error because the JS code tries to call the native code from the React Native Firebase package that does not exist in Expo Go. There is no way to get the native code into the Expo Go app unless it was already included in the bundle that was uploaded to the app stores.
+1. Install Node.js
+2. Run command:
+   npm install -g expo-cli
 
-</Collapsible>
+3. Create Expo App:
+   npx create-expo-app printing-app
 
-<Collapsible summary="Test changes in app icon, name, splash screen">
+4. Replace App.js with this code.
 
-If you're developing your app in Expo Go only, you can build a store version that will use your provided values and images; it just won't be possible to test it in Expo Go.
+5. Run App:
+   npm start
 
-These native assets are shipped with the native bundle and are immutable once the app is installed. The Expo Go app does show a splash screen, which is your app icon on a solid color background. This is a dev-only emulation to view how the splash screen will probably look. However, it is limited, for example, you cannot test `SplashScreen.setOptions` to animate the splash screen.
+6. Build APK:
+   npx eas build -p android --profile preview
 
-</Collapsible>
-
-<Collapsible summary="Remote push notifications">
-
-While [in-app notifications](/versions/latest/sdk/notifications/) are available in Expo Go, remote push notifications (that is, sending a push notification from a server to the app) are not. This is because a push notification service should be tied to your own push notification certificates, and while it is possible to make it work in Expo Go, it often causes confusion for production builds. It is recommended to test remote push notifications in development builds so you can ensure parity in behavior between development and production.
-
-</Collapsible>
-
-<Collapsible summary="Implementing App/Universal links">
-
-Both [Android App Links](/linking/android-app-links/) and [iOS Universal Links](/linking/ios-universal-links/) require a two-way association between the native app and the website. In particular, it requires the native app to include the linked website's URL. This is impossible with Expo Go due to the aforementioned native code immutability.
-
-</Collapsible>
-
-<Collapsible summary="Open projects using older SDKs (iOS device only)">
-
-Expo Go can only support one SDK version at a time. When a new SDK version is released, Expo Go is updated to support the newer version, and this will be the only version of Expo Go available to install from the stores.
-
-If you're developing on an Android Device, Android Emulator, or iOS Simulator, a compatible version of Expo Go can be [downloaded and installed](https://expo.dev/go). The only platform where this is impossible is iPhone devices because Apple does not support side-loading older versions of apps.
-
-</Collapsible>
-
-<BoxLink
-  title="Expo Go to development build"
-  description="Learn how to migrate an existing Expo Go project to using development builds."
-  href="/develop/development-builds/expo-go-to-dev-build/"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Local app development"
-  description="How to build a development client on your local machine."
-  href="/guides/local-app-development"
-  Icon={BookOpen02Icon}
-/>
-
-<BoxLink
-  title="Development builds on EAS"
-  description="How to build a development client on EAS."
-  href="/develop/development-builds/create-a-build/"
-  Icon={BookOpen02Icon}
-/>
+7. Download APK from Expo build link.
+*/
