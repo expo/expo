@@ -1185,7 +1185,7 @@ properties.
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -1440,7 +1440,7 @@ This should come from the user field of an
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -1594,7 +1594,7 @@ value depending on the state of the credential.
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -1835,7 +1835,7 @@ Calling this method will show the sign in modal before actually refreshing the u
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -2139,7 +2139,7 @@ the user, since this remains the same for apps released by the same developer.
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -2426,7 +2426,7 @@ from using
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -2682,7 +2682,7 @@ sign-out operation.
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -2932,7 +2932,7 @@ After calling this function, the listener will no longer receive any events from
                 id="corner-down-right-outline-icon"
               >
                 <path
-                  d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                  d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                   id="Icon"
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -7175,7 +7175,7 @@ exports[`APISection expo-pedometer 1`] = `
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -7459,7 +7459,7 @@ exports[`APISection expo-pedometer 1`] = `
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -7677,7 +7677,7 @@ a start date that is more than seven days in the past returns only the available
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -7821,7 +7821,7 @@ available on this device.
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -8034,7 +8034,7 @@ provided with a single argument that is
               id="corner-down-right-outline-icon"
             >
               <path
-                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                 id="Icon"
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -8388,7 +8388,7 @@ After calling this function, the listener will no longer receive any events from
                 id="corner-down-right-outline-icon"
               >
                 <path
-                  d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+                  d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
                   id="Icon"
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -8724,7 +8724,7 @@ After calling this function, the listener will no longer receive any events from
             id="corner-down-right-outline-icon"
           >
             <path
-              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M15 20L20 15L15 10"
               id="Icon"
               stroke-linecap="round"
               stroke-linejoin="round"
