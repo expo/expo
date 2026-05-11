@@ -935,7 +935,12 @@ export default class TreeFS implements MutableFileSystem {
         subpath,
         opts.subpathType,
         invalidatedBy,
-        null
+        {
+          ancestorOfRootIdx: closestLookup.ancestorOfRootIdx,
+          node: closestLookup.node,
+          pathIdx:
+            closestLookup.canonicalPath.length > 0 ? closestLookup.canonicalPath.length + 1 : 0,
+        }
       );
       if (maybeAbsolutePathMatch != null) {
         return {
@@ -1046,7 +1051,11 @@ export default class TreeFS implements MutableFileSystem {
         subpath,
         opts.subpathType,
         invalidatedBy,
-        null
+        {
+          ancestorOfRootIdx: commonRootDepth + depthBelowCommonRoot,
+          node: nextNode,
+          pathIdx: candidateNormalPath.length > 0 ? candidateNormalPath.length + 1 : 0,
+        }
       );
       if (maybeAbsolutePathMatch != null) {
         const rootDirParts = this.#pathUtils.getParts();
@@ -1087,10 +1096,57 @@ export default class TreeFS implements MutableFileSystem {
       | null
       | undefined
   ): string | null {
+    // NOTE(@kitten): The most common call for package.json only needs a simple map
+    // lookup, and can skip traversal entirely
+    if (
+      start != null &&
+      subpath.length > 0 &&
+      subpath !== '.' &&
+      subpath !== '..' &&
+      subpath.indexOf(path.sep) === -1
+    ) {
+      const child = start.node.get(subpath);
+      if (child == null) {
+        if (this.#fallbackFilesystem != null) {
+          // noop: fall through to slow-path
+        } else {
+          if (invalidatedBy) {
+            invalidatedBy.add(
+              this.#pathUtils.normalToAbsolute(
+                normalCandidatePath === '' ? subpath : normalCandidatePath + path.sep + subpath
+              )
+            );
+          }
+          return null;
+        }
+      } else {
+        const childIsDirectory = isDirectory(child);
+        if (!childIsDirectory && !isRegularFile(child)) {
+          // noop: Handle symlinks in the slow path, since it needs state tracking
+        } else {
+          const absolutePath = this.#pathUtils.normalToAbsolute(
+            normalCandidatePath === '' ? subpath : normalCandidatePath + path.sep + subpath
+          );
+          if (childIsDirectory === (subpathType === 'd')) {
+            return absolutePath;
+          } else {
+            if (invalidatedBy) invalidatedBy.add(absolutePath);
+            return null;
+          }
+        }
+      }
+    }
+
+    // NOTE(@kitten): We can forward `start` if there's no indirection in the candidate path
+    const canForwardStart =
+      start != null &&
+      normalCandidatePath !== '..' &&
+      !normalCandidatePath.endsWith(path.sep + '..');
     const lookupResult = this.#lookupByNormalPath(
       this.#pathUtils.joinNormalToRelative(normalCandidatePath, subpath).normalPath,
       {
         collectLinkPaths: invalidatedBy,
+        start: canForwardStart ? start! : undefined,
       }
     );
     if (
