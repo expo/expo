@@ -283,7 +283,13 @@ data class CameraMoveEvent(
   val tilt: Float,
 
   @Field
-  val bearing: Float
+  val bearing: Float,
+
+  @Field
+  val latitudeDelta: Double,
+
+  @Field
+  val longitudeDelta: Double
 ) : Record
 
 data class MapClickEvent(

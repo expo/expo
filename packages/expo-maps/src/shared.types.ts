@@ -26,6 +26,41 @@ export type CameraPosition = {
 };
 
 /**
+ * The event payload for the `onCameraMove` callback on `AppleMaps.View` and `GoogleMaps.View`.
+ */
+export type CameraMoveEvent = {
+  /**
+   * The coordinates of the camera center.
+   */
+  coordinates: Coordinates;
+
+  /**
+   * The zoom level of the camera.
+   */
+  zoom: number;
+
+  /**
+   * The tilt of the camera in degrees.
+   */
+  tilt: number;
+
+  /**
+   * The bearing of the camera in degrees.
+   */
+  bearing: number;
+
+  /**
+   * The height of the visible region in degrees of latitude
+   */
+  latitudeDelta: number;
+
+  /**
+   * The width of the visible region in degrees of longitude
+   */
+  longitudeDelta: number;
+};
+
+/**
  * @hidden
  */
 export type MapsModule = {
