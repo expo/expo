@@ -11,14 +11,11 @@ export type ScrollViewProps = {
    */
   axes?: 'vertical' | 'horizontal' | 'both';
   /**
-   * Visibility of the scroll indicators. Mirrors SwiftUI's `scrollIndicators(_:)` modifier.
-   * - `'automatic'`: platform-default behavior.
-   * - `'visible'`: prefer showing indicators (may still be hidden by the system).
-   * - `'hidden'`: prefer hiding indicators (may still be shown by the system).
-   * - `'never'`: never show indicators.
-   * @default 'automatic'
+   * Whether to show scroll indicators. For richer visibility control (e.g. `'never'`)
+   * or per-axis control, use the `scrollIndicators(...)` modifier instead.
+   * @default true
    */
-  scrollIndicators?: 'automatic' | 'visible' | 'hidden' | 'never';
+  showsIndicators?: boolean;
 } & CommonViewModifierProps;
 
 const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNativeView(

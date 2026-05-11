@@ -1,11 +1,11 @@
-// Copyright 2015-present 650 Industries. All rights reserved.
+// Copyright 2026-present 650 Industries. All rights reserved.
 
 import SwiftUI
 import ExpoModulesCore
 
 public final class ScrollViewComponentProps: UIBaseViewProps {
   @Field var axes: AxisOptions = .vertical
-  @Field var scrollIndicators: ScrollIndicatorVisibilityOptions = .automatic
+  @Field var showsIndicators: Bool = true
 }
 
 public struct ScrollViewComponent: ExpoSwiftUI.View {
@@ -16,9 +16,8 @@ public struct ScrollViewComponent: ExpoSwiftUI.View {
   }
 
   public var body: some View {
-    ScrollView(props.axes.toAxis()) {
+    ScrollView(props.axes.toAxis(), showsIndicators: props.showsIndicators) {
       Children()
     }
-    .scrollIndicators(props.scrollIndicators.toVisibility())
   }
 }

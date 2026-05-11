@@ -4,15 +4,15 @@
 
 ### 🛠 Breaking changes
 
-- [iOS] `ScrollView` (`@expo/ui/swift-ui`): replaced `showsIndicators: boolean` with `scrollIndicators: 'automatic' | 'visible' | 'hidden' | 'never'`, matching SwiftUI's `scrollIndicators(_:)` modifier.
-
 ### 🎉 New features
+
+- [iOS] Added the `scrollIndicators(visibility, axes?)` SwiftUI modifier in `@expo/ui/swift-ui/modifiers`, wrapping SwiftUI's `scrollIndicators(_:axes:)`. ([#45649](https://github.com/expo/expo/pull/45649) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- [iOS] Consolidated the duplicate `AxisOptions` / `AxisSetType` enums into a single `AxisOptions` in `Convertibles/AxisOptions.swift`.
+- [iOS] Consolidated the duplicate `AxisOptions` / `AxisSetType` enums into a single `AxisOptions` in `Convertibles/AxisOptions.swift`. ([#45649](https://github.com/expo/expo/pull/45649) by [@vonovak](https://github.com/vonovak))
 
 ## 56.0.4 — 2026-05-08
 

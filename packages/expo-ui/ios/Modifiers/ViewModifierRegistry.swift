@@ -1874,6 +1874,10 @@ extension ViewModifierRegistry {
       return try ScrollDisabledModifier(from: params, appContext: appContext)
     }
 
+    register("scrollIndicators") { params, appContext, _ in
+      return try ScrollIndicatorsModifier(from: params, appContext: appContext)
+    }
+
     register("tabViewStyle") { params, appContext, _ in
       return try TabViewStyleModifier(from: params, appContext: appContext)
     }

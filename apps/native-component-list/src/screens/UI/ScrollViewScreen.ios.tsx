@@ -1,5 +1,11 @@
 import { HStack, Host, ScrollView, VStack, Text, RoundedRectangle } from '@expo/ui/swift-ui';
-import { frame, foregroundStyle, padding, font } from '@expo/ui/swift-ui/modifiers';
+import {
+  frame,
+  foregroundStyle,
+  padding,
+  font,
+  scrollIndicators,
+} from '@expo/ui/swift-ui/modifiers';
 
 import { ScrollPage, Section } from '../../components/Page';
 
@@ -76,7 +82,7 @@ function BothAxesExample() {
 function HideIndicatorsExample() {
   return (
     <Host style={{ height: 240 }}>
-      <ScrollView scrollIndicators="hidden">
+      <ScrollView modifiers={[scrollIndicators('hidden')]}>
         <VStack spacing={8}>
           {Array.from({ length: 30 }, (_, i) => (
             <Text key={i} modifiers={[font({ size: 17 }), padding({ horizontal: 16 })]}>
@@ -101,7 +107,7 @@ export default function ScrollViewScreen() {
       <Section title='axes="both" (2D scroll)'>
         <BothAxesExample />
       </Section>
-      <Section title='scrollIndicators="hidden"'>
+      <Section title='scrollIndicators("hidden") modifier'>
         <HideIndicatorsExample />
       </Section>
     </ScrollPage>

@@ -67,7 +67,7 @@ export function ScrollView({
   return (
     <SwiftUIScrollView
       axes={direction}
-      scrollIndicators={showsIndicators ? 'automatic' : 'hidden'}
+      showsIndicators={showsIndicators}
       modifiers={scrollModifiers}
       testID={testID}>
       <Group modifiers={innerModifiers}>{children}</Group>
