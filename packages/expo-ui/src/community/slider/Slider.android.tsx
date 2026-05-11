@@ -47,4 +47,3 @@ export function Slider(props: SliderProps) {
     </Host>
   );
 }
-
