@@ -100,7 +100,6 @@ export const nonLinkableTypes = [
   'NavigationProp',
   'NavigatorProps',
   'NotificationTimeoutError',
-  'ObservableState',
   'Options',
   'P',
   'Parameters',

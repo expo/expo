@@ -9,9 +9,9 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A text input that routes to [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
+A text input that routes to [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android,  [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
 
-The API mirrors React Native's `TextInput`, with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
+The API mirrors React Native's [`TextInput`](https://reactnative.dev/docs/textinput), with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
 
 ## Installation
 
@@ -74,6 +74,8 @@ export default function ControlledTextInputExample() {
 
 Add the `'worklet'` directive to [`onChangeText`](#onchangetext) for synchronously updating the state on the UI thread. Writes to `value` land without the JS-thread round-trip that can cause cursor flicker.
 
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
 ```tsx PhoneMaskExample.tsx
 import { Host, TextInput, useNativeState } from '@expo/ui';
 import { useEffectEvent } from 'react';
@@ -116,7 +118,7 @@ export default function PhoneMaskExample() {
 
 ## Unsupported React Native props
 
-Some React Native `TextInput` props are not supported, because SwiftUI's `TextField` or Compose's `TextField` does not expose an equivalent, or because the prop is replaced by a different mechanism. See the [API](#api) section below for the supported props. If a missing prop blocks your use case, [open an issue](https://github.com/expo/expo/issues/new/choose) so it can be prioritized.
+Some React Native `TextInput` props are not supported, because Compose's `TextField` or SwiftUI's `TextField` does not expose an equivalent, or because the prop is replaced by a different mechanism. See the [API](#api) section below for the supported props. If a missing prop blocks your use case, [open an issue](https://github.com/expo/expo/issues/new/choose) so it can be prioritized.
 
 ## API
 
