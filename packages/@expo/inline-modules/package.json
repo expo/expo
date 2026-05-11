@@ -30,7 +30,7 @@
     "url": "https://github.com/expo/expo/issues"
   },
   "dependencies": {
-    "@expo/config-plugins": "workspace:~56.0.2"
+    "@expo/config-plugins": "workspace:~56.0.3"
   },
   "devDependencies": {
     "@types/jest": "^29.2.1",

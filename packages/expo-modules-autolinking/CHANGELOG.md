@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Re-stamp `ExpoModulesJSI.xcframework` stub slices on every `pod install` so cached pods can't ship with missing slices. ([#45542](https://github.com/expo/expo/pull/45542) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.2 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

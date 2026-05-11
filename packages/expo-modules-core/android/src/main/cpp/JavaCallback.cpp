@@ -1,19 +1,10 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JavaCallback.h"
 #include "JSIContext.h"
 #include "types/JNIToJSIConverter.h"
 #include "Exceptions.h"
-
-#include "JSIUtils.h"
-#include "JNIUtils.h"
-
-#include <fbjni/fbjni.h>
-#include <fbjni/fbjni.h>
-#include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
-
-#include <functional>
 
 namespace expo {
 
@@ -59,7 +50,6 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeDoubleArray", JavaCallback::invokeDoubleArray),
                  });
 }
-
 
 jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
   JSIContext *jsiContext,

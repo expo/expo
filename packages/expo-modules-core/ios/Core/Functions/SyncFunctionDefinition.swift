@@ -101,7 +101,7 @@ public class SyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnySyncFunc
   func call(_ appContext: AppContext, in runtime: JavaScriptRuntime, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) throws(Exception) -> JavaScriptValue {
     let result = try runBody(appContext, in: runtime, this: this, arguments: arguments)
     do {
-      return try appContext.converter.toJS(result, returnType)
+      return try appContext.converter.toJS(result, returnType, in: runtime)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {

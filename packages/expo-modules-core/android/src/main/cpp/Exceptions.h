@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-
-#include <optional>
+#include "ExpoHeader.pch"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

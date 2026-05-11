@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI provides two text field components that match the official Jetpack Compose [TextField API](https://developer.android.com/develop/ui/compose/text/user-input): `TextField` (filled) and `OutlinedTextField` (outlined border). Both variants share the same props and support composable slot children for label, placeholder, icons, prefix, suffix, and supporting text.
 
@@ -15,6 +16,13 @@ Expo UI provides two text field components that match the official Jetpack Compo
 | -------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
 | Filled   | Solid background with a bottom indicator line. | Default text input style following Material3 design. Use for most forms and input fields.                     |
 | Outlined | Transparent background with a border outline.  | Alternative style that provides a distinct visual boundary. Use when filled fields blend into the background. |
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/textfield/android-light.webp"
+  darkSource="/static/images/expo-ui/textfield/android-dark.webp"
+  alt="Filled and outlined Material 3 text fields"
+/>
 
 ## Installation
 

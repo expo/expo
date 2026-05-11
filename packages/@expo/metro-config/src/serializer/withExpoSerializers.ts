@@ -6,7 +6,7 @@
  */
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import type { ReadOnlyDependencies, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
+import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
@@ -134,7 +134,7 @@ export function createDefaultExportCustomSerializer(
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
-    inputOptions: SerializerOptions
+    inputOptions: ExpoSerializerOptions
   ): Promise<string | { code: string; map: string }> => {
     // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
     const isPossiblyDev =
@@ -148,7 +148,7 @@ export function createDefaultExportCustomSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
-    const options: SerializerOptions = {
+    const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
         if (props.length > 0) {
@@ -214,9 +214,7 @@ export function createDefaultExportCustomSerializer(
       bundleMap ??= getSourceMapString()(
         [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
         {
-          // TODO: Surface this somehow.
-          excludeSource: false,
-          // excludeSource: options.serializerOptions?.excludeSource,
+          excludeSource: options.serializerOptions?.excludeSource ?? false,
           processModuleFilter: options.processModuleFilter,
           shouldAddToIgnoreList: options.shouldAddToIgnoreList,
         }

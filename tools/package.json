@@ -35,7 +35,7 @@
     "@expo/multipart-body-parser": "^1.1.0",
     "@expo/osascript": "workspace:*",
     "@expo/plist": "workspace:*",
-    "@expo/xcpretty": "^4.4.0",
+    "@expo/xcpretty": "^4.4.4",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",
     "@linear/sdk": "^2.6.0",
@@ -68,7 +68,7 @@
     "strip-ansi": "^6.0.0",
     "tar": "^7.5.12",
     "terminal-link": "^2.1.1",
-    "typedoc": "^0.28.15",
+    "typedoc": "^0.28.19",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -82,7 +82,7 @@
     "@types/fs-extra": "^11.0.4",
     "@types/getenv": "^1.0.3",
     "@types/inquirer": "^8.2.10",
-    "@types/node": "~22.13.17",
+    "@types/node": "^22.14.0",
     "@types/npm-registry-fetch": "^8.0.7",
     "@types/semver": "^7.5.8",
     "@types/uuid": "^9.0.2",
@@ -91,7 +91,7 @@
     "eslint-plugin-lodash": "^7.4.0",
     "prettier": "^3.3.3",
     "taskr": "1.1.0",
-    "typescript": "^5.9.2"
+    "typescript": "^6.0.3"
   },
   "volta": {
     "node": "22.13.1"

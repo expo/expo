@@ -750,8 +750,6 @@ describe(withExtendedResolver, () => {
           });
 
           [
-            'source-map-support',
-            'source-map-support/register.js',
             'react',
             '@radix-ui/accordion',
             '@babel/runtime/helpers/interopRequireDefault',
@@ -849,38 +847,6 @@ describe(withExtendedResolver, () => {
           originModulePath: '/index.css',
         }),
         '@radix-ui/colors/green-dark.css',
-        'web'
-      );
-
-      expect(result).toEqual({
-        type: 'empty',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    });
-
-    it(`does not extern source-map-support in server environments that are bundling for standalone exports`, async () => {
-      const result = getModifiedConfig({ isExporting: true }).resolver.resolveRequest!(
-        getNodeResolverContext({
-          customResolverOptions: {
-            exporting: true,
-          },
-        }),
-        'source-map-support',
-        'web'
-      );
-
-      expect(result).toEqual({
-        type: 'empty',
-      });
-
-      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
-    });
-
-    it(`does not extern source-map-support in client environment`, async () => {
-      const result = getModifiedConfig().resolver.resolveRequest!(
-        getResolverContext(),
-        'source-map-support',
         'web'
       );
 

@@ -3,7 +3,6 @@ package expo.modules.kotlin.types
 import android.net.Uri
 import android.os.Bundle
 import expo.modules.kotlin.jni.ReturnType
-import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.typedarray.RawTypedArrayHolder
@@ -121,7 +120,7 @@ interface JSTypeConverter<T> {
   object RecordConverter : JSTypeConverter<Record> {
     override fun convertToJS(value: Any?): Any? {
       enforceType<Record?>(value)
-      return value?.toJSValueExperimental()
+      return value?.toJSValueExperimental(null)
     }
 
     override val returnType: ReturnType
@@ -129,49 +128,11 @@ interface JSTypeConverter<T> {
   }
 
   class IntrospectableRecordConverter(
-    introspectableData: PIntrospectionData<Record>
+    private val introspectableData: PIntrospectionData<Record>
   ) : JSTypeConverter<Record> {
-    data class Property(
-      val key: String,
-      val getter: (Record) -> Any?
-    )
-
-    private val properties = introspectableData
-      .properties
-      .mapNotNull { property ->
-        val fieldAnnotation = property
-          .annotations
-          .firstOrNull { annotation -> annotation.jClass == Field::class.java }
-          ?: return@mapNotNull null
-
-        val propertyName = (
-          fieldAnnotation
-            .arguments
-            .getOrDefault("key", property.name) as String
-          )
-          .ifEmpty { property.name }
-
-        Property(
-          propertyName,
-          property::get
-        )
-      }
-
     override fun convertToJS(value: Any?): Any? {
-      if (value == null) {
-        return null
-      }
-
-      enforceType<Record>(value)
-      val result = mutableMapOf<String, Any?>()
-
-      properties.forEach { property ->
-        val propValue = property.getter(value)
-        val convertedValue = JSTypeConverterProvider.convertToJSValue(propValue, useExperimentalConverter = true)
-        result[property.key] = convertedValue
-      }
-
-      return result
+      enforceType<Record?>(value)
+      return value?.toJSValueExperimental(introspectableData)
     }
 
     override val returnType: ReturnType

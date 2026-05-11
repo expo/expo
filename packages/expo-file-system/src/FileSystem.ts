@@ -9,6 +9,7 @@ import {
   type PickSingleFileResult,
   FileMode,
   type UploadOptions,
+  type UploadProgress,
   type UploadResult,
   type DownloadProgress,
   type DownloadTaskOptions,
@@ -155,14 +156,72 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return new Blob([this.bytesSync().slice(start, end)], { type: contentType });
   }
 
+  /**
+   * Uploads this file to a server and starts the request immediately.
+   *
+   * The promise is fulfilled with response metadata and body for completed HTTP responses,
+   * including non-2xx status codes. It is rejected only when the file cannot be read, the
+   * request fails, or the upload is cancelled.
+   *
+   * @param url The URL to upload the file to.
+   * @param options Upload options.
+   * @returns A promise fulfilled with the upload response.
+   */
   upload(url: string, options?: UploadOptions): Promise<UploadResult> {
     return new UploadTask(this, url, options).uploadAsync();
   }
 
+  /**
+   * Creates an upload task for this file without starting it.
+   *
+   * Call `uploadAsync()` on the returned task to start the upload. Use this when you need to
+   * inspect task state, cancel the upload, or subscribe to progress manually.
+   *
+   * @param url The URL to upload the file to.
+   * @param options Upload options.
+   * @returns An upload task that can be started with `uploadAsync()`.
+   *
+   * @example
+   * ```ts
+   * const file = new File(Paths.document, 'photo.jpg');
+   * const task = file.createUploadTask('https://example.com/upload', {
+   *   uploadType: UploadType.MULTIPART,
+   *   onProgress: ({ bytesSent, totalBytes }) => {
+   *     console.log(`${bytesSent} / ${totalBytes}`);
+   *   },
+   * });
+   *
+   * const result = await task.uploadAsync();
+   * ```
+   */
   createUploadTask(url: string, options?: UploadOptions): UploadTask {
     return new UploadTask(this, url, options);
   }
 
+  /**
+   * Creates a download task without starting it.
+   *
+   * Call `downloadAsync()` on the returned task to start the download. Use this when you need
+   * pause/resume support, task state, cancellation, or manual progress subscriptions.
+   *
+   * @param url The URL of the file to download.
+   * @param destination The destination file or directory. If a directory is provided, the
+   * resulting filename is determined from the response headers or URL.
+   * @param options Download task options.
+   * @returns A download task that can be started with `downloadAsync()`.
+   *
+   * @example
+   * ```ts
+   * const destination = new File(Paths.document, 'video.mp4');
+   * const task = File.createDownloadTask('https://example.com/video.mp4', destination, {
+   *   onProgress: ({ bytesWritten, totalBytes }) => {
+   *     console.log(`${bytesWritten} / ${totalBytes}`);
+   *   },
+   * });
+   *
+   * const file = await task.downloadAsync();
+   * ```
+   */
   static createDownloadTask(
     url: string,
     destination: File | Directory,
@@ -479,6 +538,9 @@ function cleanupNetworkTask(
 }
 /**
  * Represents an upload task with progress tracking and cancellation support.
+ *
+ * Upload tasks start in the `idle` state. Calling `uploadAsync()` moves the task to `active`,
+ * then to `completed`, `cancelled`, or `error`.
  */
 export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
   private _state: UploadTaskState = 'idle';
@@ -488,6 +550,15 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
   private _subscription?: EventSubscription;
   private _abortHandler?: () => void;
 
+  /**
+   * Creates an upload task.
+   *
+   * The task does not start automatically. Call `uploadAsync()` to begin uploading.
+   *
+   * @param file The file to upload.
+   * @param url The URL to upload the file to.
+   * @param options Upload options.
+   */
   constructor(file: File, url: string, options?: UploadOptions) {
     super();
     this._file = file;
@@ -495,10 +566,24 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     this._options = options;
   }
 
+  /**
+   * The current state of the upload task.
+   */
   get state(): UploadTaskState {
     return this._state;
   }
 
+  /**
+   * Starts the upload operation.
+   *
+   * This method can only be called once, while the task is `idle`. The promise is fulfilled
+   * with response metadata and body for completed HTTP responses, including non-2xx status codes.
+   * It is rejected when the file cannot be read, the request fails, or the task is cancelled.
+   *
+   * If `options.signal` is aborted, the promise is rejected with an `AbortError`.
+   *
+   * @returns A promise fulfilled with the upload response.
+   */
   async uploadAsync(): Promise<UploadResult> {
     assertNetworkTaskState(this._state, ['idle'], 'uploadAsync');
     this._state = 'active';
@@ -549,6 +634,25 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
     }
   }
 
+  /**
+   * Adds a listener for upload progress events.
+   *
+   * > **Note:** Prefer the `onProgress` option unless you need manual subscription control.
+   *
+   * @param eventName The event to listen to. Only `'progress'` is supported.
+   * @param listener Invoked with upload progress updates.
+   * @returns A subscription handle. Call `remove()` to stop listening.
+   */
+  addListener(eventName: 'progress', listener: (data: UploadProgress) => void): EventSubscription {
+    return super.addListener(eventName, listener);
+  }
+
+  /**
+   * Cancels the upload operation.
+   *
+   * If `uploadAsync()` is pending, its promise is rejected after the native request is cancelled.
+   * Calling this method after the task reaches `completed`, `cancelled`, or `error` has no effect.
+   */
   cancel(): void {
     if (['completed', 'cancelled', 'error'].includes(this._state)) return;
     this._state = 'cancelled';
@@ -561,6 +665,10 @@ export class UploadTask extends ExpoFileSystem.FileSystemUploadTask {
 
 /**
  * Represents a download task with pause/resume support and progress tracking.
+ *
+ * Download tasks start in the `idle` state. Calling `downloadAsync()` moves the task to `active`;
+ * pausing moves it to `paused`, and a completed, cancelled, or failed transfer moves it to the
+ * corresponding terminal state.
  */
 export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   private _state: DownloadTaskState = 'idle';
@@ -573,6 +681,16 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
   private _inFlightOperation?: Promise<File | null>;
   private _pauseRequest?: Promise<void>;
 
+  /**
+   * Creates a download task.
+   *
+   * The task does not start automatically. Call `downloadAsync()` to begin downloading.
+   *
+   * @param url The URL of the file to download.
+   * @param destination The destination file or directory. If a directory is provided, the resulting
+   * filename is determined from the response headers or URL.
+   * @param options Download task options.
+   */
   constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions) {
     super();
     this._url = url;
@@ -580,10 +698,24 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     this._options = options;
   }
 
+  /**
+   * The current state of the download task.
+   */
   get state(): DownloadTaskState {
     return this._state;
   }
 
+  /**
+   * Starts the download operation.
+   *
+   * This method can only be called once, while the task is `idle`. The promise is fulfilled with
+   * the downloaded file when the transfer completes, or with `null` if the task is paused before
+   * completion. It is rejected when the request fails or the task is cancelled.
+   *
+   * If `options.signal` is aborted, the promise is rejected with an `AbortError`.
+   *
+   * @returns A promise fulfilled with the downloaded file, or `null` when the task is paused.
+   */
   async downloadAsync(): Promise<File | null> {
     assertNetworkTaskState(this._state, ['idle'], 'downloadAsync');
     this._state = 'active';
@@ -598,6 +730,13 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     return operation;
   }
 
+  /**
+   * Requests pausing the active download operation.
+   *
+   * The pending `downloadAsync()` or `resumeAsync()` promise is fulfilled with `null` after native
+   * code produces resume data and the task enters the `paused` state. Use `pauseAsync()` if you
+   * need to wait until the task is ready to resume or save.
+   */
   pause(): void {
     assertNetworkTaskState(this._state, ['active'], 'pause');
     this._pauseRequest = Promise.resolve(super.pause()).then((result) => {
@@ -607,11 +746,27 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     // when the native promise resolves with null
   }
 
+  /**
+   * Requests pausing the active download operation and waits until the task reaches the `paused`
+   * state.
+   *
+   * @returns A promise fulfilled after resume data is available.
+   */
   async pauseAsync(): Promise<void> {
     this.pause();
     await this._pauseRequest;
     await this._inFlightOperation;
   }
+
+  /**
+   * Resumes a paused download operation.
+   *
+   * The promise is fulfilled with the downloaded file when the transfer completes, or with `null`
+   * if the task is paused again before completion. It is rejected when the request fails or the task
+   * is cancelled.
+   *
+   * @returns A promise fulfilled with the downloaded file, or `null` when the task is paused.
+   */
   async resumeAsync(): Promise<File | null> {
     assertNetworkTaskState(this._state, ['paused'], 'resumeAsync');
     if (!this._resumeData) {
@@ -631,6 +786,29 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     return operation;
   }
 
+  /**
+   * Adds a listener for download progress events.
+   *
+   * > **Note:** Prefer the `onProgress` option unless you need manual subscription control.
+   *
+   * @param eventName The event to listen to. Only `'progress'` is supported.
+   * @param listener Invoked with download progress updates.
+   * @returns A subscription handle. Call `remove()` to stop listening.
+   */
+  addListener(
+    eventName: 'progress',
+    listener: (data: DownloadProgress) => void
+  ): EventSubscription {
+    return super.addListener(eventName, listener);
+  }
+
+  /**
+   * Cancels the download operation.
+   *
+   * If `downloadAsync()` or `resumeAsync()` is pending, its promise is rejected after the native
+   * request is cancelled. Calling this method after the task reaches `completed`, `cancelled`, or
+   * `error` has no effect.
+   */
   cancel(): void {
     if (['completed', 'cancelled', 'error'].includes(this._state)) return;
     this._state = 'cancelled';
@@ -641,6 +819,15 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     this._abortHandler = undefined;
   }
 
+  /**
+   * Returns the paused task state that can be persisted and restored later.
+   *
+   * This method can only be called while the task is `paused`. The returned state contains
+   * platform-specific resume data and request metadata, but does not include callbacks or abort
+   * signals.
+   *
+   * @returns A serializable paused download state.
+   */
   savable(): DownloadPauseState {
     assertNetworkTaskState(this._state, ['paused'], 'savable');
     return {
@@ -652,6 +839,18 @@ export class DownloadTask extends ExpoFileSystem.FileSystemDownloadTask {
     };
   }
 
+  /**
+   * Creates a paused download task from saved state.
+   *
+   * Use this to continue a download after persisting the value returned by `savable()`. New options
+   * can attach progress callbacks or an abort signal because functions and signals are not stored
+   * in `DownloadPauseState`. If both saved state and new options include headers, the new headers
+   * override saved headers with the same names.
+   *
+   * @param state The saved pause state.
+   * @param options Optional download task options to attach to the restored task.
+   * @returns A download task in the `paused` state.
+   */
   static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask {
     if (!state.resumeData) {
       throw new Error('Cannot restore task: DownloadPauseState has no resumeData');

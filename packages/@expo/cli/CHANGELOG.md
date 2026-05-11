@@ -10,6 +10,42 @@
 
 ### 💡 Others
 
+## 56.1.0 — 2026-05-08
+
+### 🎉 New features
+
+- Prefix web client logs with platform name in Metro terminal output. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+- Improve the visiblity of errors for native-stack and drawer imports ([#45546](https://github.com/expo/expo/pull/45546) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Fix Metro progress bars appearing as permanent output due to cursor corruption from stderr writes and stale status snapshots. ([#45523](https://github.com/expo/expo/pull/45523) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent Metro loading indicator from showing broken states in headless runs. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix `--port 0` exiting silently in `expo start` when the port is busy. ([#45513](https://github.com/expo/expo/pull/45513) by [@EvanBacon](https://github.com/EvanBacon))
+- Apply printf-style format substitution for web client logs forwarded from the browser. ([#45516](https://github.com/expo/expo/pull/45516) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix @react-navigation/core rewrite to expo-router/react-navigation ([#45543](https://github.com/expo/expo/pull/45543) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Slightly optimize `ignorePattern` passed to `@expo/metro-file-map` ([#45552](https://github.com/expo/expo/pull/45552) by [@kitten](https://github.com/kitten))
+- Replace deprecated `url.parse()` with WHATWG `URL` API in Metro dev server. ([#45524](https://github.com/expo/expo/pull/45524) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+- Adopt `experiments.onDemandFilesystem` on `@expo/config-types` ([#45555](https://github.com/expo/expo/pull/45555) by [@kitten](https://github.com/kitten))
+- Replace `source-map-support` package with `@expo/require-utils`'s built-in Node source-map support for reduced memory usage ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-07
+
+### 🐛 Bug fixes
+
+- Drop obsolete webview installation check ([#45489](https://github.com/expo/expo/pull/45489) by [@kitten](https://github.com/kitten))
+- Pass `cache: false` to `evalModule` to prevent retaining server bundles in memory indefinitely ([#45509](https://github.com/expo/expo/pull/45509) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/xcpretty@^4.4.4` ([#45473](https://github.com/expo/expo/pull/45473) by [@EvanBacon](https://github.com/EvanBacon))
+- Tweak dependency check message and placement on `expo start` ([#45487](https://github.com/expo/expo/pull/45487) by [@kitten](https://github.com/kitten))
+- Reduce memory pressure/usage from `withMetroErrorReportingResolver` ([#45446](https://github.com/expo/expo/pull/45446) by [@kitten](https://github.com/kitten))
+
 ## 56.0.5 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

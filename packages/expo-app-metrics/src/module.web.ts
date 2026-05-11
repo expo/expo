@@ -27,6 +27,9 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
     return '';
   }
   stopSession(sessionId: string) {}
+  async getMainSession() {
+    return null;
+  }
 }
 
 export default registerWebModule(ExpoAppMetricsModule, 'ExpoAppMetrics');

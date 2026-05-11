@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Tooltip matches the official Jetpack Compose [Tooltip](https://developer.android.com/develop/ui/compose/components/tooltip) API. `TooltipBox` wraps anchor content and displays a tooltip. The tooltip content is provided via the `TooltipBox.PlainTooltip` or `TooltipBox.RichTooltip` compound components, which match [`PlainTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-plain) and [`RichTooltip`](https://developer.android.com/develop/ui/compose/components/tooltip#display-rich) respectively. Tooltips can be triggered by long-press or shown programmatically via `ref`.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/tooltip/android-light.webp"
+  darkSource="/static/images/expo-ui/tooltip/android-dark.webp"
+  alt="Material 3 rich tooltip with title, body, learn more action, and anchor button"
+/>
 
 ## Installation
 

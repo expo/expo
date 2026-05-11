@@ -8,10 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI HorizontalPager matches Jetpack Compose's [HorizontalPager](<https://developer.android.com/reference/kotlin/androidx/compose/foundation/pager/package-summary#HorizontalPager(androidx.compose.foundation.pager.PagerState,androidx.compose.ui.Modifier,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function0,kotlin.Function2)>) — a horizontally scrolling pager that snaps to individual pages.
 
 `HorizontalPager` does not impose its own height &mdash; give it one with the [`height`](modifiers/#heightheight) modifier or place it inside a parent with a finite height.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/horizontalpager/android-light.webp"
+  darkSource="/static/images/expo-ui/horizontalpager/android-dark.webp"
+  alt="HorizontalPager showing the second of three pages with a page indicator below"
+/>
 
 ## Installation
 

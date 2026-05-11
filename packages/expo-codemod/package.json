@@ -1,6 +1,6 @@
 {
   "name": "expo-codemod",
-  "version": "56.0.1",
+  "version": "56.0.2",
   "description": "Codemods for migrating Expo apps between SDK versions",
   "license": "MIT",
   "keywords": [

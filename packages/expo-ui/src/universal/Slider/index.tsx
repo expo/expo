@@ -1,6 +1,22 @@
-import { View, type ViewStyle } from 'react-native';
+import type { ComponentProps } from 'react';
+import { StyleSheet, unstable_createElement, View, type ViewProps } from 'react-native';
 
 import type { SliderProps } from './types';
+
+const styles = StyleSheet.create({
+  view: {
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+  },
+  input: {
+    width: '100%',
+    cursor: 'pointer',
+  },
+});
+
+const NativeSlider = (
+  props: Omit<ComponentProps<'input'>, 'style' | 'type'> & { style?: ViewProps['style'] }
+) => unstable_createElement('input', { ...props, type: 'range' });
 
 /**
  * A control for selecting a value from a continuous or stepped range.
@@ -11,13 +27,12 @@ export function Slider({
   min = 0,
   max = 1,
   step,
-  disabled,
+  disabled = false,
   testID,
 }: SliderProps) {
   return (
-    <View style={containerStyle}>
-      <input
-        type="range"
+    <View style={styles.view}>
+      <NativeSlider
         value={value}
         min={min}
         max={max}
@@ -25,20 +40,10 @@ export function Slider({
         disabled={disabled}
         onChange={(e) => onValueChange(parseFloat(e.target.value))}
         data-testid={testID}
-        style={inputStyle}
+        style={styles.input}
       />
     </View>
   );
 }
-
-const containerStyle: ViewStyle = {
-  alignSelf: 'stretch',
-  justifyContent: 'center',
-};
-
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  cursor: 'pointer',
-};
 
 export * from './types';

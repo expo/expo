@@ -20,6 +20,9 @@ class ExpoAppMetricsModule extends NativeModule {
         return '';
     }
     stopSession(sessionId) { }
+    async getMainSession() {
+        return null;
+    }
 }
 export default registerWebModule(ExpoAppMetricsModule, 'ExpoAppMetrics');
 //# sourceMappingURL=module.web.js.map

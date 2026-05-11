@@ -1,8 +1,7 @@
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "MainRuntimeInstaller.h"
-
-#include <fbjni/fbjni.h>
 
 namespace jni = facebook::jni;
 

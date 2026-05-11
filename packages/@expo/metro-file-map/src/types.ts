@@ -21,7 +21,7 @@ export interface BuildParameters {
   readonly extensions: readonly string[];
   /** @deprecated */
   readonly forceNodeFilesystemAPI?: boolean;
-  readonly ignorePattern: RegExp;
+  readonly ignorePattern: RegExp | null;
   readonly plugins: readonly InputFileMapPlugin[];
   readonly retainAllFiles: boolean;
   readonly rootDir: string;

@@ -25,6 +25,7 @@ export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
 export { useTheme } from './react-navigation/core/theming/useTheme';
 export { useRoutePath } from './react-navigation/native/useRoutePath';
 export { useScrollToTop } from './react-navigation/native/useScrollToTop';
+export { useRoute } from './react-navigation/core/useRoute';
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 export type * from './types';

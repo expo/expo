@@ -33,7 +33,7 @@ export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'screenKey'>>;
  * Props passed to the underlying tab host implementation in `react-native-screens`.
  */
 export type NativeTabsHostNativeProps = Partial<
-  Omit<TabsHostProps, 'navState' | 'onTabSelected' | 'children'>
+  Omit<TabsHostProps, 'navStateRequest' | 'onTabSelected' | 'children'>
 >;
 
 export interface NativeTabOptions extends DefaultRouterOptions {
@@ -344,10 +344,10 @@ export interface OnTabChangeEventPayload {
   /**
    * The provenance value reported by the native side for this selection.
    *
-   * The navigator echoes this back via `navState.provenance` on subsequent
-   * JS-driven updates so the native side can distinguish stale updates from
-   * fresh ones. See `TabsHostNavState` in `react-native-screens` for the full
-   * contract.
+   * The navigator echoes this back via `navStateRequest.baseProvenance` on
+   * subsequent JS-driven updates so the native side can distinguish stale
+   * updates from fresh ones. See `TabsHostNavStateRequest` in
+   * `react-native-screens` for the full contract.
    */
   provenance: number;
   // TODO(@ubax): consider renaming this field

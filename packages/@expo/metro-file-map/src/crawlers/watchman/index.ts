@@ -13,6 +13,7 @@ import { performance } from 'perf_hooks';
 
 import { planQuery } from './planQuery';
 import { RootPathUtils } from '../../lib/RootPathUtils';
+import isVcsPath from '../../lib/isVcsPath';
 import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from '../../lib/normalizePathSeparatorsToSystem';
 import type {
@@ -292,7 +293,7 @@ export default async function watchmanCrawl({
         }
         // Whether watchman can return exists: false in a fresh instance
         // response is unknown, but there's nothing we need to do in that case.
-      } else if (!ignore(filePath)) {
+      } else if (!isVcsPath(fileData.name) && !ignore(filePath)) {
         const { mtime_ms, size } = fileData;
         invariant(mtime_ms != null && size != null, 'missing file data in watchman response');
         const mtime = typeof mtime_ms === 'number' ? mtime_ms : mtime_ms.toNumber();

@@ -43,7 +43,7 @@ function NativeTabsView(props) {
             tabBarControllerMode,
             bottomAccessory: bottomAccessoryFn,
             ...rawIosProps,
-        }, tabBarHidden: props.hidden, ...rawHostRestProps, navState: { selectedScreenKey, provenance }, onTabSelected: onTabSelected, children: children }));
+        }, tabBarHidden: props.hidden, ...rawHostRestProps, navStateRequest: { selectedScreenKey, baseProvenance: provenance }, onTabSelected: onTabSelected, children: children }));
 }
 function Screen(props) {
     const { options, standardAppearance, scrollEdgeAppearance, contentRenderer } = props;

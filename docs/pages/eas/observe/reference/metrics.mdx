@@ -180,4 +180,12 @@ By default, all installations dispatch their metrics. To dispatch from a fractio
 
 ### Environment
 
-All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default, or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). Metrics collected from debug builds are dropped before dispatching unless `dispatchInDebug` is set to `true` via [`configure()`](/eas/observe/configuration/#configure) (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). You can also disable all dispatching globally using `configure({ dispatchingEnabled: false })`.
+All metrics are grouped by environment. The environment value is derived from `process.env.NODE_ENV` by default (falling back to `'production'` if unset), or can be overridden via [`configure({ environment })`](/eas/observe/configuration/#configure). The environment is a metadata tag attached to each metric and does not affect whether metrics are dispatched.
+
+### Debug builds
+
+Metrics collected from debug builds are dropped before dispatching unless `dispatchInDebug` is set to `true` via [`configure()`](/eas/observe/configuration/#configure) (for information, see [Enable metrics in development](/eas/observe/configuration/#enable-metrics-in-development)). A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value.
+
+### Disabling dispatching
+
+You can disable all dispatching globally using `configure({ dispatchingEnabled: false })`. While disabled, any pending metrics are dropped without being dispatched and no further metrics are dispatched until it is set back to `true`.

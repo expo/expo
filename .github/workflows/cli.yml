@@ -16,6 +16,7 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/router-server/**
       - packages/@expo/log-box/**
+      - packages/@expo/metro-file-map/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**
@@ -37,6 +38,7 @@ on:
       - packages/@expo/prebuild-config/src/**
       - packages/@expo/router-server/**
       - packages/@expo/log-box/**
+      - packages/@expo/metro-file-map/**
       - packages/create-expo/**
       - packages/eslint-config-expo/**
       - packages/eslint-plugin-expo/**

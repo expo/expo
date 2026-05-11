@@ -41,11 +41,7 @@ export default function SessionsList() {
 
   useFocusEffect(
     useCallback(() => {
-      if (Platform.OS === 'ios') {
-        refresh();
-      } else {
-        setLoaded(true);
-      }
+      refresh();
     }, [refresh])
   );
 

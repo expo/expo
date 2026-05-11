@@ -35,7 +35,10 @@ export function useOnTabSelectedHandler(
   onTabChange: NativeTabsViewProps['onTabChange']
 ): NonNullable<TabsHostProps['onTabSelected']> {
   return useCallback<NonNullable<TabsHostProps['onTabSelected']>>(
-    ({ nativeEvent: { selectedScreenKey, provenance, isNativeAction } }) => {
+    ({ nativeEvent: { selectedScreenKey, provenance, actionOrigin } }) => {
+      // Treat anything other than a JS-driven echo as a native action so the
+      // navigator emits `tabPress` and dispatches `JUMP_TO`.
+      const isNativeAction = actionOrigin !== 'programmatic-js';
       onTabChange({ selectedKey: selectedScreenKey, provenance, isNativeAction });
     },
     [onTabChange]

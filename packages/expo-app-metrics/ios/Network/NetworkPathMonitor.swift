@@ -31,7 +31,8 @@ final class NetworkPathMonitor: NetworkPathObserverDelegate, Sendable {
    */
   private var firstPathContinuations: [CheckedContinuation<Void, Never>] = []
 
-  private init() {}
+  /** Internal so tests can construct dedicated instances; production code uses `shared`. */
+  init() {}
 
   /**
    Idempotent. Constructs the observer on the first call; later calls are
@@ -56,19 +57,28 @@ final class NetworkPathMonitor: NetworkPathObserverDelegate, Sendable {
     return currentPath
   }
 
+  /**
+   Caches `path` and resumes any callers awaiting the first path. Tests on
+   `AppMetricsActor` can call this directly to avoid the async hop in
+   `onNetworkPathUpdate(_:)`.
+   */
+  func apply(_ path: NetworkPath) {
+    let wasFirst = currentPath == nil
+    currentPath = path
+    if wasFirst {
+      let pending = firstPathContinuations
+      firstPathContinuations.removeAll()
+      for continuation in pending {
+        continuation.resume()
+      }
+    }
+  }
+
   // MARK: - NetworkPathObserverDelegate
 
   nonisolated func onNetworkPathUpdate(_ path: NetworkPath) {
     AppMetricsActor.isolated { [self] in
-      let wasFirst = currentPath == nil
-      currentPath = path
-      if wasFirst {
-        let pending = firstPathContinuations
-        firstPathContinuations.removeAll()
-        for continuation in pending {
-          continuation.resume()
-        }
-      }
+      apply(path)
     }
   }
 }

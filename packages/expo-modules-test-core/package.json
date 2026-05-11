@@ -11,7 +11,10 @@
     "expo-modules-test-core"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "test": "expo-module test",
+    "lint": "expo-module lint",
+    "clean": "expo-module clean"
   },
   "bin": {
     "expo-modules-test-core": "./bin/cli.js"
@@ -32,6 +35,7 @@
     "glob": "^13.0.0",
     "prettier": "^3.0.3",
     "xml-js": "^1.6.11",
-    "yaml": "^2.8.3"
+    "yaml": "^2.8.3",
+    "expo-type-information": "^0.0.1"
   }
 }

@@ -2,19 +2,11 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "types/CppType.h"
 #include "types/ExpectedType.h"
 #include "types/AnyType.h"
 #include "types/ReturnType.h"
-
-#include <jsi/jsi.h>
-#include <fbjni/fbjni.h>
-#include <ReactCommon/TurboModuleUtils.h>
-#include <react/jni/ReadableNativeArray.h>
-#include <memory>
-#include <vector>
-#include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

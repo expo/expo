@@ -14,9 +14,9 @@ interface WatcherOptions {
     extensions: readonly string[];
     /** @deprecated */
     forceNodeFilesystemAPI?: boolean;
-    healthCheckFilePrefix: string;
+    healthCheckFilePrefix: string | null;
     ignoreForCrawl: (filePath: string) => boolean;
-    ignorePatternForWatch: RegExp;
+    ignorePatternForWatch: RegExp | null;
     previousState: CrawlerOptions['previousState'];
     perfLogger: PerfLogger | undefined | null;
     roots: readonly string[];

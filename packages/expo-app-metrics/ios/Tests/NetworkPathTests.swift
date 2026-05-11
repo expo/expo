@@ -66,8 +66,8 @@ struct NetworkPathTests {
 @Suite("NetworkPathMonitor")
 struct NetworkPathMonitorTests {
   @Test
-  func `caches the last received path`() async throws {
-    let monitor = NetworkPathMonitor.shared
+  func `caches the last received path`() {
+    let monitor = NetworkPathMonitor()
     let path = NetworkPath(
       status: .satisfied,
       interfaceType: .wifi,
@@ -76,16 +76,13 @@ struct NetworkPathMonitorTests {
       unsatisfiedReason: nil,
       timestamp: 1.0
     )
-    monitor.onNetworkPathUpdate(path)
-    // `onNetworkPathUpdate` dispatches via `AppMetricsActor.isolated { ... }`,
-    // so we yield to let the cache update before asserting.
-    try await Task.sleep(for: .milliseconds(10))
+    monitor.apply(path)
     #expect(monitor.currentPath == path)
   }
 
   @Test
-  func `overwrites the cached path on subsequent updates`() async throws {
-    let monitor = NetworkPathMonitor.shared
+  func `overwrites the cached path on subsequent updates`() {
+    let monitor = NetworkPathMonitor()
     let first = NetworkPath(
       status: .satisfied,
       interfaceType: .wifi,
@@ -102,15 +99,14 @@ struct NetworkPathMonitorTests {
       unsatisfiedReason: .notAvailable,
       timestamp: 2.0
     )
-    monitor.onNetworkPathUpdate(first)
-    monitor.onNetworkPathUpdate(second)
-    try await Task.sleep(for: .milliseconds(10))
+    monitor.apply(first)
+    monitor.apply(second)
     #expect(monitor.currentPath == second)
   }
 
   @Test
   func `waitForFirstPath returns immediately when a path is already cached`() async {
-    let monitor = NetworkPathMonitor.shared
+    let monitor = NetworkPathMonitor()
     let path = NetworkPath(
       status: .satisfied,
       interfaceType: .wifi,
@@ -119,7 +115,7 @@ struct NetworkPathMonitorTests {
       unsatisfiedReason: nil,
       timestamp: 1.0
     )
-    monitor.onNetworkPathUpdate(path)
+    monitor.apply(path)
     let result = await monitor.waitForFirstPath()
     #expect(result == path)
   }

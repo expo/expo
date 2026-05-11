@@ -78,6 +78,7 @@ import path from 'node:path';
 import {
   Application,
   Configuration,
+  normalizePath,
   ReflectionKind,
   TSConfigReader,
   TypeDocReader,
@@ -223,7 +224,17 @@ async function collectTaggedDeclarations(
       disableSources: true,
       hideGenerator: true,
       excludeExternals: true,
-      blockTags: [...Configuration.OptionDefaults.blockTags, DOCS_INLINE_TAG],
+      blockTags: [
+        ...Configuration.OptionDefaults.blockTags,
+        DOCS_INLINE_TAG,
+        '@alias',
+        '@deprecated',
+        '@docsMissing',
+        '@header',
+        '@hideType',
+        '@needsAudit',
+        '@platform',
+      ],
     } as unknown as TypeDocOptions,
     [new TSConfigReader(), new TypeDocReader()]
   );
@@ -231,7 +242,7 @@ async function collectTaggedDeclarations(
 
   const result = new Map<string, JSONOutput.DeclarationReflection>();
   if (project) {
-    const json = app.serializer.projectToObject(project, process.cwd()) as unknown;
+    const json = app.serializer.projectToObject(project, normalizePath(process.cwd())) as unknown;
     walk(json, (node) => {
       if (isObject(node) && typeof node.name === 'string' && taggedTypes.has(node.name)) {
         result.set(node.name, node as unknown as JSONOutput.DeclarationReflection);

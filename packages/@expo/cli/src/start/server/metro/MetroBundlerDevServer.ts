@@ -78,11 +78,7 @@ import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { getFreePortAsync } from '../../../utils/port';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
-import {
-  cachedSourceMaps,
-  evalMetroAndWrapFunctions,
-  evalMetroNoHandling,
-} from '../getStaticRenderFunctions';
+import { evalMetroAndWrapFunctions, evalMetroNoHandling } from '../getStaticRenderFunctions';
 import {
   fromRuntimeManifestRoute,
   fromServerManifestRoute,
@@ -831,6 +827,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       this.projectRoot,
       res.src,
       res.filename,
+      res.map,
       specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
     );
   };
@@ -936,6 +933,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         runModule: expoBundleOptions.runModule ?? true,
         sourceUrl: expoBundleOptions.sourceUrl!,
         sourceMapUrl: extraOptions.sourceMapUrl ?? expoBundleOptions.sourceMapUrl!,
+        excludeSource: expoBundleOptions.serializerOptions.excludeSource ?? false,
       },
       transformOptions,
     });
@@ -984,13 +982,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     const scriptContents = wrapBundle(bundle);
-
-    if (map) {
-      debug('Registering SSR source map for:', filename);
-      cachedSourceMaps.set(filename, { url: this.projectRoot, map });
-    } else {
-      debug('No SSR source map found for:', filename);
-    }
 
     return {
       ...rest,
@@ -1811,7 +1802,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       if (!apiRoute?.src) {
         return null;
       }
-      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename);
+      return evalMetroNoHandling(this.projectRoot, apiRoute.src, apiRoute.filename, apiRoute.map);
     } catch (error) {
       // Format any errors that were thrown in the global scope of the evaluation.
       if (error instanceof Error) {

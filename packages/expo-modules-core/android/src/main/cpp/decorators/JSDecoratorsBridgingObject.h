@@ -2,12 +2,9 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-
-#include <vector>
+#include "../ExpoHeader.pch"
 
 #include "JSDecorator.h"
-#include "../MethodMetadata.h"
 #include "../JNIFunctionBody.h"
 #include "../types/ExpectedType.h"
 

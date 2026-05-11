@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "56.0.3",
+  "version": "56.0.5",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu-interface": "workspace:56.0.0"
+    "expo-dev-menu-interface": "workspace:~56.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",

@@ -90,7 +90,10 @@ class SessionManager(
   }
 
   suspend fun stopSession(sessionId: String) {
-    database.sessionDao().updateActiveStatus(sessionId, isActive = false)
+    database.sessionDao().stopSessionAt(
+      sessionId,
+      endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
+    )
   }
 
   suspend fun addMetrics(
@@ -111,6 +114,8 @@ class SessionManager(
 
   suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
 
+  suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
+
   suspend fun getAllActiveSessions(): List<SessionWithMetrics> = database.sessionDao().getAllActiveSessions()
 
   suspend fun removeSessions(session: List<SessionWithMetrics>) {
@@ -125,9 +130,13 @@ class SessionManager(
     database.sessionDao().deactivateAllSessionsBefore(timestamp)
   }
 
-  suspend fun cleanupOldMetrics() {
+  /**
+   * Prunes inactive sessions whose `startTimestamp` is older than the
+   * retention window. Their metrics are removed via the foreign-key cascade.
+   */
+  suspend fun cleanupOldSessions() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
-    database.metricDao().deleteMetricsOlderThan(cutoffTimestamp)
+    database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
   }
 
   suspend fun updateEnvironmentForActiveSessions(environment: String) {

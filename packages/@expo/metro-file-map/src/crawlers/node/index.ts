@@ -55,9 +55,15 @@ function find(
       } else {
         for (let idx = 0; idx < entries.length; idx++) {
           const entry = entries[idx]!;
-          const name = entry.name.toString();
-          const file = directory + path.sep + name;
+          const name = entry.name;
 
+          // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
+          const isDirectory = entry.isDirectory();
+          if (isDirectory && (name === '.git' || name === '.hg')) {
+            continue;
+          }
+
+          const file = directory + path.sep + name;
           const isSymbolicLink = entry.isSymbolicLink();
           if (ignore(file) || (!includeSymlinks && isSymbolicLink)) {
             continue;
@@ -72,7 +78,7 @@ function find(
               ? name
               : dirNormal + path.sep + name;
 
-          if (entry.isDirectory()) {
+          if (isDirectory) {
             // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively based
             // on their normal paths, so we can exclude using `^...`
             if (!ignore(childNormal)) {

@@ -8,10 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI DateTimePicker matches the official Jetpack Compose [Date Picker](https://developer.android.com/develop/ui/compose/components/datepickers) and [Time Picker](https://developer.android.com/develop/ui/compose/components/time-pickers) APIs and supports date, time, and combined selection.
 
 > **Note:** The date variants render Material's calendar grid and input field, both of which scroll horizontally internally. The parent `Host` must provide a finite width on the horizontal axis, use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width). See [Match contents in Host reference](host/#match-contents) for details.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/datetimepicker/android-light.webp"
+  darkSource="/static/images/expo-ui/datetimepicker/android-dark.webp"
+  alt="Material 3 date picker showing a selected date in a calendar grid"
+/>
 
 ## Installation
 
