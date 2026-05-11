@@ -9,9 +9,9 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A text input that routes to [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
+A text input that routes to [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android,  [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
 
-The API mirrors React Native's `TextInput`, with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
+The API mirrors React Native's [`TextInput`](https://reactnative.dev/docs/textinput), with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
 
 ## Installation
 
