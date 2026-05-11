@@ -21,16 +21,25 @@ internal fun findAppProject(project: Project): Project {
 }
 
 /**
- * Build a release-variant AndroidManifest.xml that forwards every
- * `expo.modules.updates.*` `<meta-data>` entry from the host app's
- * manifest into the brownfield library's release manifest, so AGP merges
- * them into the consumer's manifest.
+ * Build a release-variant AndroidManifest.xml that forwards every `<application>`
+ * `<meta-data>` entry from the expo app's manifest into the brownfield library's release
+ * manifest, so AGP merges them into the consumer's manifest at AAR consumption time.
  *
- * String resource references (`@string/foo`) are resolved against the host
- * app's `res/values/strings.xml`, because the brownfield AAR cannot share
- * those resources with the consumer.
+ * This covers any expo library whose config plugin injects runtime configuration into
+ * the expo app's AndroidManifest at `expo prebuild` time (expo-updates, expo-notifications,
+ * etc.). Without forwarding, the brownfield library's runtime modules read empty meta-data
+ * and silently disable themselves.
+ *
+ * Value forms supported:
+ *   - Literal `android:value="..."` (preserved as-is).
+ *   - String resource refs `android:value="@string/foo"` are resolved against the expo
+ *     app's `res/values/strings.xml` and inlined. The brownfield AAR cannot share those
+ *     strings with the consumer because resources are not currently forwarded.
+ *   - `android:resource="@drawable/foo"` (or any other resource ref) is preserved as a
+ *     `resource` attribute. Note: for the consumer to actually resolve it, the referenced
+ *     resource needs to ship in the brownfield AAR (drawable, color, etc.).
  */
-fun buildForwardedUpdatesManifest(appManifest: File, appStrings: File): String {
+fun buildForwardedApplicationManifest(appManifest: File, appStrings: File): String {
   val empty = """<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" />
 """
@@ -38,17 +47,28 @@ fun buildForwardedUpdatesManifest(appManifest: File, appStrings: File): String {
 
   val factory = DocumentBuilderFactory.newInstance().apply { isNamespaceAware = false }
   val doc = factory.newDocumentBuilder().parse(appManifest)
-  val metaNodes = doc.getElementsByTagName("meta-data")
-  val strings = parseStringResources(appStrings)
+  val applicationNodes = doc.getElementsByTagName("application")
+  if (applicationNodes.length == 0) return empty
+  val applicationEl = applicationNodes.item(0) as? Element ?: return empty
 
-  val entries = mutableListOf<Pair<String, String>>()
-  for (i in 0 until metaNodes.length) {
-    val el = metaNodes.item(i) as? Element ?: continue
+  val strings = parseStringResources(appStrings)
+  val children = applicationEl.childNodes
+
+  data class MetaEntry(val name: String, val attr: String, val value: String)
+  val entries = mutableListOf<MetaEntry>()
+  for (i in 0 until children.length) {
+    val el = children.item(i) as? Element ?: continue
+    if (el.tagName != "meta-data") continue
     val name = el.getAttribute("android:name")
-    if (name.isNullOrEmpty() || !name.startsWith("expo.modules.updates.")) continue
-    val rawValue = el.getAttribute("android:value") ?: ""
-    val resolved = resolveResourceReference(rawValue, strings)
-    entries.add(name to resolved)
+    if (name.isNullOrEmpty()) continue
+    val literalValue = el.getAttribute("android:value")
+    val resourceRef = el.getAttribute("android:resource")
+    when {
+      !literalValue.isNullOrEmpty() ->
+        entries.add(MetaEntry(name, "android:value", resolveResourceReference(literalValue, strings)))
+      !resourceRef.isNullOrEmpty() ->
+        entries.add(MetaEntry(name, "android:resource", resourceRef))
+    }
   }
   if (entries.isEmpty()) return empty
 
@@ -56,11 +76,13 @@ fun buildForwardedUpdatesManifest(appManifest: File, appStrings: File): String {
     append("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
     append("<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\">\n")
     append("  <application>\n")
-    entries.forEach { (name, value) ->
+    entries.forEach { entry ->
       append("    <meta-data android:name=\"")
-      append(escapeXmlAttribute(name))
-      append("\" android:value=\"")
-      append(escapeXmlAttribute(value))
+      append(escapeXmlAttribute(entry.name))
+      append("\" ")
+      append(entry.attr)
+      append("=\"")
+      append(escapeXmlAttribute(entry.value))
       append("\" />\n")
     }
     append("  </application>\n")
