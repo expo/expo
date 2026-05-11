@@ -87,7 +87,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-describe('initListeners (android)', () => {
+describe('initListeners', () => {
   it('records TTR with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
     const now = performance.now();
     jest.spyOn(performance, 'now').mockReturnValue(now + 100);

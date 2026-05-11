@@ -41,8 +41,9 @@ public class Session: Codable, MetricsReceiver, @unchecked Sendable {
   }
 
   /**
-   Test-only initializer that builds a session with explicit values and skips registering it
-   with the global storage. Do not use from production code.
+   Non-registering initializer that builds a session with explicit values.
+   The caller is responsible for adding it to storage (or skipping that step,
+   e.g. in tests).
    */
   init(id: String, type: SessionType, startDate: Date, endDate: Date?) {
     self.id = id
