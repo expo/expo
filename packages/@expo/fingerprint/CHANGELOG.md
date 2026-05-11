@@ -6,13 +6,41 @@
 
 ### 🎉 New features
 
-- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.17.4 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.0 — 2026-05-05
 
 ### 🐛 Bug fixes
 
 - Use `expo-splash-screen` plugin config type and remove legacy `splash` properties from fingerprint sources. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
 
-### 💡 Others
+## 0.16.7 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.6 - 2026-03-11
+
+### 🎉 New features
+
+- Include expo-font plugin font files in fingerprint hash calculation ([#43575](https://github.com/expo/expo/pull/43575) by [@vonovak](https://github.com/vonovak))
 
 ## 0.16.5 — 2026-02-25
 

@@ -11,6 +11,10 @@ jest.mock('../../../api/user/user');
 
 const originalEnvCI = process.env.CI;
 
+afterEach(() => {
+  nock.cleanAll();
+});
+
 describe(`startAsync`, () => {
   beforeEach(() => {
     delete process.env.CI;
@@ -47,6 +51,9 @@ describe(`startAsync`, () => {
       exp,
       runtime,
     });
+
+    // Flush the fire-and-forget promise chain from startAsync
+    await new Promise((resolve) => setTimeout(resolve, 50));
 
     await session.closeAsync();
 

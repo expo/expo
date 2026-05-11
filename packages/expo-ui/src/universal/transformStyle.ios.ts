@@ -3,8 +3,13 @@ import {
   border,
   clipShape,
   disabled as disabledMod,
+  font,
+  foregroundStyle,
   frame,
   hidden as hiddenMod,
+  kerning,
+  lineSpacing,
+  multilineTextAlignment,
   onAppear,
   onDisappear,
   onTapGesture,
@@ -13,7 +18,22 @@ import {
   type ModifierConfig,
 } from '@expo/ui/swift-ui/modifiers';
 
+import type { UniversalTextStyle } from './Text/types';
 import type { UniversalBaseProps, UniversalStyle } from './types';
+
+const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
+  '100': 'ultraLight',
+  '200': 'thin',
+  '300': 'light',
+  '400': 'regular',
+  '500': 'medium',
+  '600': 'semibold',
+  '700': 'bold',
+  '800': 'heavy',
+  '900': 'black',
+  normal: 'regular',
+  bold: 'bold',
+};
 
 /**
  * Converts universal style/event/lifecycle/behavior props into a SwiftUI
@@ -34,9 +54,40 @@ export function transformToModifiers(
   options?: {
     /** Alignment for the frame modifier (used by Column/Row). */
     frameAlignment?: Parameters<typeof frame>[0]['alignment'];
+    /** Text-styling props for text-rendering components. */
+    textStyle?: UniversalTextStyle;
   }
 ): ModifierConfig[] {
   const mods: ModifierConfig[] = [];
+
+  // Text styling (innermost — applies to text content before container modifiers)
+  const textStyle = options?.textStyle;
+  if (textStyle) {
+    if (
+      textStyle.fontFamily != null ||
+      textStyle.fontSize != null ||
+      textStyle.fontWeight != null
+    ) {
+      mods.push(
+        font({
+          family: textStyle.fontFamily,
+          size: textStyle.fontSize,
+          weight: textStyle.fontWeight ? FONT_WEIGHT_MAP[textStyle.fontWeight] : undefined,
+        })
+      );
+    }
+    if (textStyle.color != null) mods.push(foregroundStyle(textStyle.color));
+    if (textStyle.letterSpacing != null) mods.push(kerning(textStyle.letterSpacing));
+    if (textStyle.lineHeight != null) {
+      // Approximation: SwiftUI's true `lineHeight(_:)` modifier exists only on iOS 26+.
+      // Users who need exact spacing on iOS 26+ can use `lineHeight()` via the `modifiers` prop.
+      const baseFontSize = textStyle.fontSize ?? 17;
+      mods.push(lineSpacing(Math.max(0, textStyle.lineHeight - baseFontSize)));
+    }
+    if (textStyle.textAlign === 'left') mods.push(multilineTextAlignment('leading'));
+    else if (textStyle.textAlign === 'right') mods.push(multilineTextAlignment('trailing'));
+    else if (textStyle.textAlign === 'center') mods.push(multilineTextAlignment('center'));
+  }
 
   if (style) {
     // Padding (innermost)

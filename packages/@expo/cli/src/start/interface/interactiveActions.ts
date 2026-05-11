@@ -9,6 +9,7 @@ import { learnMore } from '../../utils/link';
 import type { ExpoChoice } from '../../utils/prompts';
 import { selectAsync } from '../../utils/prompts';
 import { printQRCode } from '../../utils/qr';
+import { getDependencyCheckMessage } from '../checkDependenciesOnStart';
 import type { DevServerManager } from '../server/DevServerManager';
 import {
   openJsInspector,
@@ -30,7 +31,10 @@ export class DevServerManagerActions {
   ) {}
 
   printDevServerInfo(
-    options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
+    options: Pick<
+      StartOptions,
+      'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'dependencyCheckRef'
+    >
   ) {
     // Keep track of approximately how much space we have to print our usage guide
     let rows = process.stdout.rows || Infinity;
@@ -100,9 +104,16 @@ export class DevServerManagerActions {
       }
     }
 
+    const dependencyCheckLines = getDependencyCheckMessage(options.dependencyCheckRef?.result);
+    rows -= dependencyCheckLines.length;
+
     printUsage(options, { verbose: false, rows });
     printHelp();
     Log.log();
+
+    for (const line of dependencyCheckLines) {
+      Log.log(line);
+    }
   }
 
   async openJsInspectorAsync() {

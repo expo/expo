@@ -3,17 +3,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
-exports.appendIconOptions = appendIconOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
 const react_1 = require("react");
 const react_native_1 = require("react-native");
 const native_1 = require("../react-navigation/native");
 const elements_1 = require("./common/elements");
-const icon_1 = require("./utils/icon");
+const optionsIconConverter_1 = require("./utils/optionsIconConverter");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useFocusEffect_1 = require("../useFocusEffect");
 const children_1 = require("../utils/children");
-const materialIconConverter_1 = require("./utils/materialIconConverter");
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
  *
@@ -107,7 +105,7 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             appendLabelOptions(acc, child.props);
         }
         else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
-            appendIconOptions(acc, child.props);
+            (0, optionsIconConverter_1.appendIconOptions)(acc, child.props);
         }
         return acc;
     }, { ...initialOptions });
@@ -134,90 +132,6 @@ function appendLabelOptions(options, props) {
             options.selectedLabelStyle = react_native_1.StyleSheet.flatten(props.selectedStyle);
         }
     }
-}
-function appendIconOptions(options, props) {
-    if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
-        if (typeof props.sf === 'string') {
-            options.icon = props.sf
-                ? {
-                    sf: props.sf,
-                }
-                : undefined;
-            options.selectedIcon = undefined;
-        }
-        else if (props.sf) {
-            options.icon = props.sf.default
-                ? {
-                    sf: props.sf.default,
-                }
-                : undefined;
-            options.selectedIcon = props.sf.selected
-                ? {
-                    sf: props.sf.selected,
-                }
-                : undefined;
-        }
-    }
-    else if ('xcasset' in props && props.xcasset && process.env.EXPO_OS === 'ios') {
-        if (typeof props.xcasset === 'string') {
-            options.icon = { xcasset: props.xcasset };
-            options.selectedIcon = undefined;
-        }
-        else {
-            options.icon = props.xcasset.default ? { xcasset: props.xcasset.default } : undefined;
-            options.selectedIcon = props.xcasset.selected
-                ? { xcasset: props.xcasset.selected }
-                : undefined;
-        }
-    }
-    else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
-        if ('md' in props) {
-            console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
-        }
-        options.icon = { drawable: props.drawable };
-        options.selectedIcon = undefined;
-    }
-    else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
-        if (process.env.NODE_ENV !== 'production') {
-            if ('drawable' in props) {
-                console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
-            }
-        }
-        options.icon = (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md);
-    }
-    else if ('src' in props && props.src) {
-        const icon = convertIconSrcToIconOption(props);
-        options.icon = icon?.icon;
-        options.selectedIcon = icon?.selectedIcon;
-    }
-    if (props.selectedColor) {
-        options.selectedIconColor = props.selectedColor;
-    }
-}
-function convertIconSrcToIconOption(icon) {
-    if (icon && icon.src) {
-        const { defaultIcon, selected } = typeof icon.src === 'object' && 'selected' in icon.src
-            ? { defaultIcon: icon.src.default, selected: icon.src.selected }
-            : { defaultIcon: icon.src };
-        const options = {};
-        options.icon = convertSrcOrComponentToSrc(defaultIcon, { renderingMode: icon.renderingMode });
-        options.selectedIcon = convertSrcOrComponentToSrc(selected, {
-            renderingMode: icon.renderingMode,
-        });
-        return options;
-    }
-    return undefined;
-}
-function convertSrcOrComponentToSrc(src, options) {
-    if (src) {
-        if ((0, react_1.isValidElement)(src)) {
-            return (0, icon_1.convertComponentSrcToImageSource)(src, options.renderingMode);
-        }
-        else {
-            return { src, renderingMode: options.renderingMode };
-        }
-    }
-    return undefined;
 }
 function isNativeTabTrigger(child, contextKey) {
     if ((0, children_1.isChildOfType)(child, exports.NativeTabTrigger)) {

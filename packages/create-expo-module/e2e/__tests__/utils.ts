@@ -42,6 +42,8 @@ export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOp
     cwd: cwdPath,
     env: {
       ...process.env,
+      // NOTE(@kitten): pnpm currently passes on and consumes all its workspace configs, which breaks isolation
+      npm_config_minimum_release_age: '0',
       // Force non-interactive mode for CI
       CI: '1',
       // Disable telemetry

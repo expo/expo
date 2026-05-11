@@ -2,6 +2,7 @@ import type { MetricAttributes } from './types';
 declare const _default: {
     markInteractive(attributes?: MetricAttributes): void;
     markFirstRender(): void;
+    logEvent(name: string, options?: import("./types").LogEventOptions): void;
     getStoredEntries(): Promise<import("./types").Metric[]>;
     clearStoredEntries(): Promise<void>;
     getAllSessions(): Promise<import("./types").Session[]>;
@@ -16,6 +17,7 @@ declare const _default: {
         routeName?: string;
         params?: Record<string, unknown>;
     }): Promise<void>;
+    getMainSession(): Promise<import("./types").MainSession | null>;
 };
 export default _default;
 //# sourceMappingURL=module.d.ts.map

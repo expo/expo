@@ -331,7 +331,76 @@ With server rendering, loaders execute on every request. This means:
 
 ## Typed loader functions
 
-For improved type safety, you can import the `LoaderFunction` type from `expo-router`:
+`expo-server` provides two helper functions that create loaders with improved type safety. They narrow the callback signature so you only receive the parameters relevant to your rendering mode.
+
+### `createStaticLoader`
+
+Use [`createStaticLoader`](/versions/unversioned/sdk/server/#createstaticloaderfn) for routes that only need route parameters. The callback only receives the route params, and is safe to use with both static and server rendering:
+
+```tsx src/app/posts/[postId].tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+import { createStaticLoader } from 'expo-router/server';
+
+export const loader = createStaticLoader(async params => {
+  const response = await fetch(`https://api.example.com/posts/${params.postId}`);
+  return response.json();
+});
+
+export default function Post() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <View>
+      <Text>{data.title}</Text>
+    </View>
+  );
+}
+```
+
+### `createServerLoader`
+
+Use [`createServerLoader`](/versions/unversioned/sdk/server/#createserverloaderfn) for routes that need access to the incoming HTTP request. The callback receives an [`ImmutableRequest`](/versions/latest/sdk/server/#immutablerequest) and the route params as arguments:
+
+```tsx src/app/profile.tsx
+import { Text, View } from 'react-native';
+import { useLoaderData } from 'expo-router';
+import { createServerLoader } from 'expo-router/server';
+
+export const loader = createServerLoader(async (request, params) => {
+  const authToken = request.headers.get('Authorization');
+
+  if (!authToken) {
+    return { user: null };
+  }
+
+  const response = await fetch('https://api.example.com/user', {
+    headers: { Authorization: authToken },
+  });
+
+  return { user: await response.json() };
+});
+
+export default function Profile() {
+  const { user } = useLoaderData<typeof loader>();
+
+  if (!user) {
+    return <Text>Please log in</Text>;
+  }
+
+  return (
+    <View>
+      <Text>Welcome, {user.name}</Text>
+    </View>
+  );
+}
+```
+
+> **warning** `createServerLoader` will throw an error if called during static site generation (SSG) because there is no HTTP request at build time. Use `createStaticLoader` when using static rendering.
+
+### Using `LoaderFunction` directly
+
+You can also type loaders directly using the [`LoaderFunction`](/versions/latest/sdk/server/#loaderfunction) type from `expo-router/server`. This gives you full control over the function signature, including both `request` and `params`:
 
 ```tsx src/app/posts/[postId].tsx
 import { Text, View } from 'react-native';
@@ -362,7 +431,7 @@ export default function Post() {
 
 ## Known limitations
 
-- Loaders **must** return JSON-serializable data. Streaming responses are currently not supported. This will be addressed in a future release.
+- Loaders **must** return JSON-serializable data. Returning streams or async iterable from a loader is not supported. This will be addressed in a future release.
 - Loader data is cached on the client during navigation. There is currently no built-in way to invalidate this cache. This will be addressed in a future release.
 
 ## Common questions

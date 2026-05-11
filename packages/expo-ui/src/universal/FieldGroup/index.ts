@@ -1,11 +1,12 @@
 import { FieldGroup as FieldGroupBase } from './FieldGroup';
 import { FieldSection } from './FieldSection';
 import { Header, Footer } from './FieldSectionSlots';
+import type { FieldSectionFooterProps, FieldSectionHeaderProps, FieldSectionProps } from './types';
 
 const FieldGroup = FieldGroupBase as typeof FieldGroupBase & {
-  Section: typeof FieldSection;
-  SectionHeader: typeof Header;
-  SectionFooter: typeof Footer;
+  Section: React.FC<FieldSectionProps>;
+  SectionHeader: React.FC<FieldSectionHeaderProps>;
+  SectionFooter: React.FC<FieldSectionFooterProps>;
 };
 FieldGroup.Section = FieldSection;
 FieldGroup.SectionHeader = Header;

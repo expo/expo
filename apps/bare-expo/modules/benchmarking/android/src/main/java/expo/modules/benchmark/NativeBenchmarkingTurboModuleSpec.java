@@ -1,6 +1,7 @@
 package expo.modules.benchmark;
 
 import com.facebook.proguard.annotations.DoNotStrip;
+import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -26,6 +27,10 @@ public abstract class NativeBenchmarkingTurboModuleSpec extends ReactContextBase
   @DoNotStrip
   public abstract double nothing();
 
+  @ReactMethod
+  @DoNotStrip
+  public abstract void nothingAsync(Promise promise);
+
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
   public abstract double addNumbers(double a, double b);
@@ -40,5 +45,5 @@ public abstract class NativeBenchmarkingTurboModuleSpec extends ReactContextBase
 
   @ReactMethod(isBlockingSynchronousMethod = true)
   @DoNotStrip
-  public abstract WritableMap echoObject(ReadableMap point);
+  public abstract WritableMap passthroughDict(ReadableMap point);
 }

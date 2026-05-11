@@ -1,5 +1,5 @@
 /**
- * Copyright © 2023 650 Industries.
+ * Copyright © 2026 650 Industries.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -15,16 +15,13 @@ import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
 import { getRootComponent } from './getRootComponent';
-import { resolveMetadata } from '../server/metadata';
 import { createDebug } from '../utils/debug';
 import {
-  createInjectedCssElements,
-  createInjectedScriptElements,
-  createLoaderDataScript,
-  getHydrationFlagScript,
+  createInjectedCssAsString,
+  createInjectedScriptsAsString,
+  createLoaderDataScriptAsString,
   serializeHelmetToHtml,
 } from '../utils/html';
-import { createDocumentMetadataInjectionTransform } from '../utils/streams';
 
 const debug = createDebug('expo:router:server:renderStaticContent');
 
@@ -44,9 +41,6 @@ export type GetStaticContentOptions = {
     /** Unique key for the route. Derived from the route's contextKey */
     key: string;
   };
-  metadata?: {
-    headTags: string;
-  } | null;
   request?: Request;
   /** Asset manifest for hydration bundles (JS/CSS). Used in SSR. */
   assets?: {
@@ -124,13 +118,13 @@ export async function getStaticContent(
   // Inject static fonts loaded with expo-font
   output = output.replace('</head>', `${fonts.join('')}</head>`);
   if (loadedData) {
-    output = output.replace('</head>', `${createLoaderDataScript(loadedData)}</head>`);
+    output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
   }
 
   // Inject hydration assets (JS/CSS bundles). Used in SSR mode
   if (options?.assets) {
     if (options.assets.css.length > 0) {
-      const injectedCSS = createInjectedCssElements(options.assets.css);
+      const injectedCSS = createInjectedCssAsString(options.assets.css);
       output = output.replace('</head>', `${injectedCSS}\n</head>`);
     }
 
@@ -138,7 +132,7 @@ export async function getStaticContent(
       // In non-streaming mode, use deferred scripts in the body
       output = output.replace(
         '</body>',
-        `${createInjectedScriptElements(options.assets.js)}\n</body>`
+        `${createInjectedScriptsAsString(options.assets.js)}\n</body>`
       );
     }
   }
@@ -160,62 +154,6 @@ function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
   return html;
 }
 
-/**
- * Streaming SSR renderer using `renderToReadableStream`. Returns a web `ReadableStream`
- * that emits the full HTML document with head injections applied.
- *
- * `<head>` tags are captured from shell-ready render state. Metadata produced only after suspended
- * or async work resolves is not guaranteed to appear in the initial HTML head and will reconcile on
- * the client after hydration instead.
- *
- * @privateRemarks This function should be moved to a separate file
- * (i.e. `renderStreamingContent.tsx`) as it doesn't belong with static rendering logic.
- */
-export async function getStreamingContent(
-  location: URL,
-  options?: GetStaticContentOptions
-): Promise<ReadableStream<Uint8Array>> {
-  const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-    location,
-    options
-  );
-
-  const stream = await ReactDOMServer.renderToReadableStream(
-    <Head.Provider context={headContext}>
-      <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
-    </Head.Provider>,
-    {
-      bootstrapScripts: options?.assets?.js,
-      signal: options?.request?.signal,
-    }
-  );
-
-  // Collect head injection content after the shell stream is ready.
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
-  const { headTags, htmlAttributes, bodyAttributes } = serializeHelmetToHtml(headContext.helmet);
-  const fonts = Font.getServerResources();
-  debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
-
-  const injectionParts: string[] = [];
-  if (options?.metadata?.headTags) injectionParts.push(options.metadata.headTags);
-  if (headTags) injectionParts.push(headTags);
-  injectionParts.push(getHydrationFlagScript());
-  if (css) injectionParts.push(css);
-  if (fonts.length > 0) injectionParts.push(fonts.join(''));
-  if (loadedData) injectionParts.push(createLoaderDataScript(loadedData));
-  if (options?.assets?.css && options.assets.css.length > 0) {
-    injectionParts.push(createInjectedCssElements(options.assets.css));
-  }
-
-  return stream.pipeThrough(
-    createDocumentMetadataInjectionTransform({
-      injectionParts,
-      htmlAttributes,
-      bodyAttributes,
-    })
-  );
-}
-
 // Re-export for use in server
-export { resolveMetadata };
+export { getStreamingContent, resolveMetadata } from '../server/renderStreamingContent';
 export { getBuildTimeServerManifestAsync, getManifest } from './getServerManifest';

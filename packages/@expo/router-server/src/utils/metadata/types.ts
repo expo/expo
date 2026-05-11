@@ -6,11 +6,35 @@ import type {
   MetadataValueArray,
 } from 'expo-server';
 
-export type MetadataTag = {
-  tagName: 'title' | 'meta' | 'link';
-  attributes?: Record<string, string>;
+type TitleTag = {
+  tagName: 'title';
+  content: string;
+};
+
+type MetaTag = {
+  tagName: 'meta';
+  attributes: Record<string, string>;
   content?: string;
 };
+
+type LinkTag = {
+  tagName: 'link';
+  attributes: Record<string, string>;
+};
+
+export type MetadataTag = TitleTag | MetaTag | LinkTag;
+
+export function isTitleTag(tag: MetadataTag): tag is TitleTag {
+  return tag.tagName === 'title';
+}
+
+export function isMetaTag(tag: MetadataTag): tag is MetaTag {
+  return tag.tagName === 'meta';
+}
+
+export function isLinkTag(tag: MetadataTag): tag is LinkTag {
+  return tag.tagName === 'link';
+}
 
 type ArrayElement<T> = T extends readonly (infer U)[] ? U : T;
 

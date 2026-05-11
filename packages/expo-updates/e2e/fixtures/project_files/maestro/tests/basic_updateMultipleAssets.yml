@@ -30,4 +30,19 @@ onFlowStart:
 - assertTrue:
     condition: ${maestro.copiedText == "test-update-2"}
     label: Assert update string is from downloaded update
+- assertTrue:
+    condition:  ${output.api.lastAssetRequestHeaders().host == 'localhost:' + MAESTRO_UPDATES_SERVER_PORT}
+    label: Check that asset request contains correct host header
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
+- assertTrue:
+    condition:  ${output.api.lastAssetRequestHeaders()['expo-channel-name'] == 'default'}
+    label: Check that asset request contains correct channel name header 
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
+- assertTrue:
+    condition:  ${output.api.lastAssetRequestHeaders()['expo-runtime-version'] == '1.0.0'}
+    label: Check that asset request contains correct runtime version header
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
 - stopApp

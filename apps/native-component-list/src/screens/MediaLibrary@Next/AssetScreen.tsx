@@ -74,18 +74,18 @@ const AssetScreen = () => {
 
   const loadAssetState = async (selectedAsset: Asset) => {
     const info = await selectedAsset.getInfo();
-    const subtypes = await selectedAsset.getMediaSubtypes();
     if (Platform.OS === 'ios') {
-      const [orient, networkAsset, pairedVideo] = await Promise.all([
+      const [orient, networkAsset, pairedVideo, subtypes] = await Promise.all([
         selectedAsset.getOrientation(),
         selectedAsset.getIsInCloud(),
         selectedAsset.getLivePhotoVideoUri(),
+        selectedAsset.getMediaSubtypes(),
       ]);
+      setMediaSubtypes(subtypes);
       setOrientation(orient);
       setIsNetworkAsset(networkAsset);
       setPairedVideoUri(pairedVideo);
     }
-    setMediaSubtypes(subtypes);
     setAsset(selectedAsset);
     setAssetInfo(info);
     setTestState(TestState.FINISHED);
@@ -166,8 +166,7 @@ const AssetScreen = () => {
         }
         case 'video': {
           const videoFile = new File(dir, `${screenName}.mp4`);
-          const videoUrl =
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+          const videoUrl = 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4';
           await File.downloadFileAsync(videoUrl, videoFile, { idempotent: true });
           return videoFile;
         }

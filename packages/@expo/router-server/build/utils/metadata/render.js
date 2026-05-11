@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderMetadataTags = renderMetadataTags;
-exports.renderMetadataHtml = renderMetadataHtml;
 const tag_1 = require("./tag");
 function renderMetadataTags(resolved) {
     const tags = [];
@@ -24,9 +23,6 @@ function renderMetadataTags(resolved) {
     renderLinkRelations(tags, resolved);
     renderOther(tags, resolved.other);
     return tags;
-}
-function renderMetadataHtml(tags) {
-    return tags.map(tag_1.renderMetadataTag).join('');
 }
 function renderTitle(tags, title) {
     if (!title)

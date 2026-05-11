@@ -10,6 +10,9 @@ export type FileCreateOptions = {
      */
     overwrite?: boolean;
 };
+/**
+ * Options for moving or copying files and directories.
+ */
 export type RelocationOptions = {
     /**
      * Whether to overwrite the destination if it exists.
@@ -41,6 +44,7 @@ export type FileWriteOptions = {
 };
 /**
  * The default debounce time for file system watcher events in milliseconds.
+ * @hidden
  */
 export declare const DEFAULT_DEBOUNCE_MS = 100;
 /**
@@ -82,7 +86,7 @@ export type WatchEvent<T extends File | Directory> = {
 export type WatchOptions = {
     /**
      * The debounce interval in milliseconds for coalescing rapid successive events into a single callback.
-     * @default DEFAULT_DEBOUNCE_MS
+     * @default 100
      */
     debounce?: number;
     /**
@@ -323,7 +327,7 @@ export declare class File {
     validatePath(): void;
     /**
      * Retrieves text from the file.
-     * @returns A promise that resolves with the contents of the file as string.
+     * @returns A promise fulfilled with the contents of the file as string.
      */
     text(): Promise<string>;
     /**
@@ -333,7 +337,7 @@ export declare class File {
     textSync(): string;
     /**
      * Retrieves content of the file as base64.
-     * @returns A promise that resolves with the contents of the file as a base64 string.
+     * @returns A promise fulfilled with the contents of the file as a base64 string.
      */
     base64(): Promise<string>;
     /**
@@ -343,7 +347,7 @@ export declare class File {
     base64Sync(): string;
     /**
      * Retrieves byte content of the entire file.
-     * @returns A promise that resolves with the contents of the file as a `Uint8Array`.
+     * @returns A promise fulfilled with the contents of the file as a `Uint8Array`.
      */
     bytes(): Promise<Uint8Array<ArrayBuffer>>;
     /**
@@ -423,7 +427,7 @@ export declare class File {
      * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
      * @param options - Download options. When the destination already contains a file, the promise rejects with a `DestinationAlreadyExists` error unless `options.idempotent` is set to `true`. With `idempotent: true`, the download overwrites the existing file instead of failing.
      *
-     * @returns A promise that resolves to the downloaded file. When the server responds with
+     * @returns A promise fulfilled with the downloaded file. When the server responds with
      * a non-2xx HTTP status, the promise rejects with an `UnableToDownload` error whose
      * message includes the status code. No file is created in that scenario.
      *
@@ -436,7 +440,7 @@ export declare class File {
     /**
      * Uploads this file to the network.
      *
-     * The promise resolves with the HTTP response metadata and body for any completed response,
+     * The promise is fulfilled with the HTTP response metadata and body for any completed response,
      * including non-2xx status codes. It rejects only for local file errors, transport failures,
      * or cancellation.
      *
@@ -445,15 +449,33 @@ export declare class File {
      */
     upload(url: string, options?: UploadOptions): Promise<UploadResult>;
     /**
-     * An overload of the `pickFileAsync` method, which picks and returns a single `File`.
-     * This overload requires options to have `multipleFiles` flag be `undefined` or `false`.
-     * @param options options
+     * Opens the system file picker for selecting a single file.
+     *
+     * This overload requires `options.multipleFiles` to be `undefined` or `false`.
+     *
+     * @param options File picker options.
      */
     static pickFileAsync(options?: PickSingleFileOptions): Promise<PickSingleFileResult>;
     /**
-     * An overload of the `pickFileAsync` method, which picks and returns a list of `File`'s.
-     * This overload requires options to have `multipleFiles` flag be `true`.
-     * @param options options
+     * Opens the system file picker for selecting multiple files.
+     *
+     * This overload requires `options.multipleFiles` to be `true`.
+     *
+     * @param options File picker options.
+     *
+     * @example
+     * ```ts
+     * const result = await File.pickFileAsync({
+     *   multipleFiles: true,
+     *   mimeTypes: ['image/*', 'application/pdf'],
+     * });
+     *
+     * if (!result.canceled) {
+     *   for (const file of result.result) {
+     *     console.log(file.uri);
+     *   }
+     * }
+     * ```
      */
     static pickFileAsync(options?: PickMultipleFilesOptions): Promise<PickMultipleFilesResult>;
     /**
@@ -622,6 +644,9 @@ export type DirectoryInfo = {
      */
     files?: string[];
 };
+/**
+ * Shared options accepted by file picker calls.
+ */
 export type PickFileGeneralOptions = {
     /**
      * A URI pointing to an initial folder in which the file picker is opened.
@@ -644,12 +669,19 @@ export type PickFileGeneralOptions = {
  * Options for picking a single file.
  */
 export type PickSingleFileOptions = PickFileGeneralOptions & {
+    /**
+     * Keeps the picker in single-file mode. Omit this property or set it to `false` when selecting one file.
+     * @default false
+     */
     multipleFiles?: false;
 };
 /**
  * Options for picking multiple files.
  */
 export type PickMultipleFilesOptions = PickFileGeneralOptions & {
+    /**
+     * Allows multiple files to be selected from the system UI.
+     */
     multipleFiles: true;
 };
 /**
@@ -659,31 +691,61 @@ export type PickMultipleFilesOptions = PickFileGeneralOptions & {
 export type PickFileOptions = PickSingleFileOptions | PickMultipleFilesOptions;
 /**
  * Result type for picking a single file.
+ *
+ * Successful picks return `{ result: File, canceled: false }`. Canceled picks return
+ * `{ result: null, canceled: true }`.
  */
 export type PickSingleFileResult = PickSingleFileSuccessResult | PickFileCanceledResult;
 /**
  * Result type for picking multiple files.
+ *
+ * Successful picks return `{ result: File[], canceled: false }`. Canceled picks return
+ * `{ result: null, canceled: true }`.
  */
 export type PickMultipleFilesResult = PickMultipleFilesSuccessResult | PickFileCanceledResult;
 /**
  * Result type for successfully picking a single file.
+ * @inline
+ * @docsInline
  */
 export type PickSingleFileSuccessResult = {
+    /**
+     * The selected file.
+     */
     result: File;
+    /**
+     * Indicates that the picker completed with a selected file.
+     */
     canceled: false;
 };
 /**
- * Result type for a successful picking multiple files.
+ * Result type for successfully picking multiple files.
+ * @inline
+ * @docsInline
  */
 export type PickMultipleFilesSuccessResult = {
+    /**
+     * The selected files.
+     */
     result: File[];
+    /**
+     * Indicates that the picker completed with selected files.
+     */
     canceled: false;
 };
 /**
  * Result type for a canceled file pick.
+ * @inline
+ * @docsInline
  */
 export type PickFileCanceledResult = {
+    /**
+     * Always `null` when the picker is canceled.
+     */
     result: null;
+    /**
+     * Indicates that the user canceled the picker without selecting files.
+     */
     canceled: true;
 };
 /**
@@ -861,10 +923,14 @@ export type UploadTaskState = Exclude<TaskState, 'paused'>;
 export type DownloadTaskState = TaskState;
 /**
  * Represents an upload task with progress tracking and cancellation support.
+ *
+ * Create instances with `new UploadTask(...)` or `file.createUploadTask(...)`, then call
+ * `uploadAsync()` to start the upload.
  */
 export declare class UploadTask {
     /**
-     * The current state of the upload task.
+     * The current state of the upload task. Upload tasks move from `idle` to `active`, then to
+     * `completed`, `cancelled`, or `error`.
      */
     readonly state: UploadTaskState;
     /**
@@ -875,18 +941,21 @@ export declare class UploadTask {
      */
     constructor(file: File, url: string, options?: UploadOptions);
     /**
-     * Starts the upload operation.
-     * @returns A promise that resolves with the upload result.
-     * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
+     * Starts the upload operation. This method can only be called once, while the task is `idle`.
+     *
+     * @returns A promise fulfilled with the upload result. The promise is rejected when the upload
+     * cannot read the file, the request fails, or the task is cancelled.
      */
     uploadAsync(): Promise<UploadResult>;
     /**
-     * Cancels the upload operation.
-     * Any pending `uploadAsync()` promise rejects after cancellation.
+     * Cancels the upload operation. If `uploadAsync()` is pending, its promise is rejected after the
+     * native request is cancelled.
      */
     cancel(): void;
     /**
      * Adds a listener for upload progress events.
+     *
+     * > **Note:** Prefer the `onProgress` option unless you need manual subscription control.
      */
     addListener(eventName: 'progress', listener: (data: UploadProgress) => void): {
         remove: () => void;
@@ -894,10 +963,14 @@ export declare class UploadTask {
 }
 /**
  * Represents a download task with pause/resume support and progress tracking.
+ *
+ * Create instances with `new DownloadTask(...)` or `File.createDownloadTask(...)`, then call
+ * `downloadAsync()` to start the download.
  */
 export declare class DownloadTask {
     /**
-     * The current state of the download task.
+     * The current state of the download task. Download tasks move from `idle` to `active`, then to
+     * `paused`, `completed`, `cancelled`, or `error`.
      */
     readonly state: DownloadTaskState;
     /**
@@ -908,40 +981,53 @@ export declare class DownloadTask {
      */
     constructor(url: string, destination: File | Directory, options?: DownloadTaskOptions);
     /**
-     * Starts the download operation.
-     * @returns A promise that resolves with the downloaded file, or null if paused.
-     * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
+     * Starts the download operation. This method can only be called once, while the task is `idle`.
+     *
+     * @returns A promise fulfilled with the downloaded file, or `null` if the task is paused before
+     * completion. The promise is rejected when the request fails or the task is cancelled.
      */
     downloadAsync(): Promise<File | null>;
     /**
-     * Pauses the download operation. The pending downloadAsync() promise resolves with null.
+     * Requests pausing the active download operation. The pending `downloadAsync()` or `resumeAsync()`
+     * promise is fulfilled with `null` after native code produces resume data and the task enters the
+     * `paused` state.
      */
     pause(): void;
     /**
+     * Requests pausing the active download operation and waits until the task reaches the `paused`
+     * state.
+     */
+    pauseAsync(): Promise<void>;
+    /**
      * Resumes a paused download operation.
-     * @returns A promise that resolves with the downloaded file, or null if paused again.
-     * If the task is cancelled via `cancel()` or `signal`, the promise rejects.
+     *
+     * @returns A promise fulfilled with the downloaded file, or `null` if the task is paused again.
+     * The promise is rejected when the request fails or the task is cancelled.
      */
     resumeAsync(): Promise<File | null>;
     /**
-     * Cancels the download operation.
-     * Any pending `downloadAsync()` or `resumeAsync()` promise rejects after cancellation.
+     * Cancels the download operation. If `downloadAsync()` or `resumeAsync()` is pending, its promise
+     * is rejected after the native request is cancelled.
      */
     cancel(): void;
     /**
-     * Returns the current state that can be persisted and restored later.
+     * Returns the paused task state that can be persisted and restored later.
+     *
      * @returns The pause state.
      */
     savable(): DownloadPauseState;
     /**
      * Creates a download task from a saved state.
+     *
      * @param state The saved pause state.
-     * @param options Optional new options to attach (e.g. onProgress, signal) since those are not persisted.
+     * @param options Optional new options to attach, such as `onProgress` or `signal`, since those are not persisted.
      * @returns A new download task.
      */
     static fromSavable(state: DownloadPauseState, options?: DownloadTaskOptions): DownloadTask;
     /**
      * Adds a listener for download progress events.
+     *
+     * > **Note:** Prefer the `onProgress` option unless you need manual subscription control.
      */
     addListener(eventName: 'progress', listener: (data: DownloadProgress) => void): {
         remove: () => void;

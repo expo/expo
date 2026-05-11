@@ -59,6 +59,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
     name: 'TabView component',
     route: 'ui/tabview',
     options: {},
@@ -256,6 +264,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ScrollViewScreen'));
+    },
+  },
+  {
+    name: 'ScrollView shared position',
+    route: 'ui/scrollview-shared-position',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewSharedPositionScreen'));
     },
   },
   {

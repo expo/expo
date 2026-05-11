@@ -25,28 +25,9 @@ it('adds import stack to error', () => {
         [
           'ios', // platform
           new Map([
-            [
-              '/project/a.js',
-              new Set([
-                {
-                  path: '/project/b.js',
-                  request: 'b',
-                },
-              ]),
-            ],
-            [
-              '/project/b.js',
-              new Set([
-                {
-                  path: '/project/c.js',
-                  request: 'c',
-                },
-              ]),
-            ],
-            [
-              '/project/c.js', // unresolved module
-              new Set<{ path: string; request: string }>(),
-            ],
+            ['/project/a.js', new Map([['/project/b.js', 'b']])],
+            ['/project/b.js', new Map([['/project/c.js', 'c']])],
+            ['/project/c.js', new Map<string, string>()],
           ]),
         ],
       ]),
@@ -90,24 +71,8 @@ it('adds import stack with circular dependencies to error', () => {
         [
           'ios', // platform
           new Map([
-            [
-              '/project/foo.js',
-              new Set([
-                {
-                  path: '/project/bar.js',
-                  request: 'bar',
-                },
-              ]),
-            ],
-            [
-              '/project/bar.js',
-              new Set([
-                {
-                  path: '/project/foo.js',
-                  request: 'foo',
-                },
-              ]),
-            ],
+            ['/project/foo.js', new Map([['/project/bar.js', 'bar']])],
+            ['/project/bar.js', new Map([['/project/foo.js', 'foo']])],
           ]),
         ],
       ]),
@@ -155,37 +120,10 @@ it('adds import stack with stack depth limit to error', () => {
         [
           'ios', // platform
           new Map([
-            [
-              '/project/a.js',
-              new Set([
-                {
-                  path: '/project/b.js',
-                  request: 'b',
-                },
-              ]),
-            ],
-            [
-              '/project/b.js',
-              new Set([
-                {
-                  path: '/project/c.js',
-                  request: 'c',
-                },
-              ]),
-            ],
-            [
-              '/project/c.js',
-              new Set([
-                {
-                  path: '/project/d.js',
-                  request: 'd',
-                },
-              ]),
-            ],
-            [
-              '/project/d.js', // unresolved module
-              new Set<{ path: string; request: string }>(),
-            ],
+            ['/project/a.js', new Map([['/project/b.js', 'b']])],
+            ['/project/b.js', new Map([['/project/c.js', 'c']])],
+            ['/project/c.js', new Map([['/project/d.js', 'd']])],
+            ['/project/d.js', new Map<string, string>()],
           ]),
         ],
       ]),
@@ -230,37 +168,10 @@ it('adds import stack with stack count limit to error', () => {
         [
           'ios', // platform
           new Map([
-            [
-              '/project/node_modules/a.js',
-              new Set([
-                {
-                  path: '/project/b.js',
-                  request: 'b',
-                },
-              ]),
-            ],
-            [
-              '/project/a.js',
-              new Set([
-                {
-                  path: '/project/b.js',
-                  request: 'b',
-                },
-              ]),
-            ],
-            [
-              '/project/b.js',
-              new Set([
-                {
-                  path: '/project/c.js',
-                  request: 'c',
-                },
-              ]),
-            ],
-            [
-              '/project/c.js', // unresolved module
-              new Set<{ path: string; request: string }>(),
-            ],
+            ['/project/node_modules/a.js', new Map([['/project/b.js', 'b']])],
+            ['/project/a.js', new Map([['/project/b.js', 'b']])],
+            ['/project/b.js', new Map([['/project/c.js', 'c']])],
+            ['/project/c.js', new Map<string, string>()],
           ]),
         ],
       ]),
@@ -304,94 +215,24 @@ it('prioritizes project stack over node_modules, circular deps, and depth limite
           'ios', // platform
           new Map([
             // Node modules stack
-            [
-              '/project/node_modules/lib.js',
-              new Set([
-                {
-                  path: '/project/utils.js',
-                  request: 'utils',
-                },
-              ]),
-            ],
+            ['/project/node_modules/lib.js', new Map([['/project/utils.js', 'utils']])],
             // Circular dependency stack
-            [
-              '/project/circular1.js',
-              new Set([
-                {
-                  path: '/project/circular2.js',
-                  request: 'circular2',
-                },
-              ]),
-            ],
+            ['/project/circular1.js', new Map([['/project/circular2.js', 'circular2']])],
             [
               '/project/circular2.js',
-              new Set([
-                {
-                  path: '/project/circular1.js',
-                  request: 'circular1',
-                },
-                {
-                  path: '/project/utils.js',
-                  request: 'utils',
-                },
+              new Map([
+                ['/project/circular1.js', 'circular1'],
+                ['/project/utils.js', 'utils'],
               ]),
             ],
             // Deep stack that would hit depth limit
-            [
-              '/project/deep1.js',
-              new Set([
-                {
-                  path: '/project/deep2.js',
-                  request: 'deep2',
-                },
-              ]),
-            ],
-            [
-              '/project/deep2.js',
-              new Set([
-                {
-                  path: '/project/deep3.js',
-                  request: 'deep3',
-                },
-              ]),
-            ],
-            [
-              '/project/deep3.js',
-              new Set([
-                {
-                  path: '/project/deep4.js',
-                  request: 'deep4',
-                },
-              ]),
-            ],
-            [
-              '/project/deep4.js',
-              new Set([
-                {
-                  path: '/project/utils.js',
-                  request: 'utils',
-                },
-              ]),
-            ],
+            ['/project/deep1.js', new Map([['/project/deep2.js', 'deep2']])],
+            ['/project/deep2.js', new Map([['/project/deep3.js', 'deep3']])],
+            ['/project/deep3.js', new Map([['/project/deep4.js', 'deep4']])],
+            ['/project/deep4.js', new Map([['/project/utils.js', 'utils']])],
             // preferred project
-            [
-              '/project/app.js',
-              new Set([
-                {
-                  path: '/project/utils.js',
-                  request: 'utils',
-                },
-              ]),
-            ],
-            [
-              '/project/utils.js',
-              new Set([
-                {
-                  path: '/project/missing.js',
-                  request: 'missing',
-                },
-              ]),
-            ],
+            ['/project/app.js', new Map([['/project/utils.js', 'utils']])],
+            ['/project/utils.js', new Map([['/project/missing.js', 'missing']])],
           ]),
         ],
       ]),
@@ -435,33 +276,12 @@ it('prioritizes projectRoot stack over server root stack', () => {
           'ios', // platform
           new Map([
             // Server root stack
-            [
-              '/server-root/lib.js',
-              new Set([
-                {
-                  path: '/server-root/project/utils.js',
-                  request: 'utils',
-                },
-              ]),
-            ],
+            ['/server-root/lib.js', new Map([['/server-root/project/utils.js', 'utils']])],
             // Project root stack (should be preferred)
-            [
-              '/server-root/project/app.js',
-              new Set([
-                {
-                  path: '/server-root/project/utils.js',
-                  request: 'utils',
-                },
-              ]),
-            ],
+            ['/server-root/project/app.js', new Map([['/server-root/project/utils.js', 'utils']])],
             [
               '/server-root/project/utils.js',
-              new Set([
-                {
-                  path: '/server-root/project/missing.js',
-                  request: 'missing',
-                },
-              ]),
+              new Map([['/server-root/project/missing.js', 'missing']]),
             ],
           ]),
         ],

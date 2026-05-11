@@ -37,12 +37,15 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckRef'>
 ) {
+  // Spend one-tick waiting for the dependency check result
+  if (options.dependencyCheckRef) {
+    await Promise.race([options.dependencyCheckRef.promise, Promise.resolve(null)]);
+  }
+
   const actions = new DevServerManagerActions(devServerManager, options);
-
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
-
   const usageOptions = {
     isWebSocketsEnabled,
     devClient: devServerManager.options.devClient,
@@ -144,7 +147,8 @@ export async function startInterfaceAsync(
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
-          return actions.printDevServerInfo(usageOptions);
+          actions.printDevServerInfo(usageOptions);
+          return;
         }
         break;
       }
@@ -188,7 +192,8 @@ export async function startInterfaceAsync(
       }
       case 'c':
         Log.clear();
-        return actions.printDevServerInfo(usageOptions);
+        actions.printDevServerInfo(usageOptions);
+        return;
       case 'j':
         return actions.openJsInspectorAsync();
       case 'r':
