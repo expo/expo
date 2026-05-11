@@ -146,18 +146,18 @@ data class SessionWithMetrics(
 )
 @Serializable
 data class LogRecord(
-  @PrimaryKey val logId: String = UUID.randomUUID().toString(),
-  val sessionId: String,
+  @PrimaryKey @Field val logId: String = UUID.randomUUID().toString(),
+  @Field val sessionId: String,
   // ISO 8601 date string
-  val timestamp: String,
-  val name: String,
-  val body: String? = null,
+  @Field val timestamp: String,
+  @Field val name: String,
+  @Field val body: String? = null,
   // Lowercase severity case name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`).
-  val severity: String,
+  @Field val severity: String,
   // JSON string. Typed encoding happens at OTel time, not at storage time.
-  val attributes: String? = null,
-  val droppedAttributesCount: Int = 0
-)
+  @Field val attributes: String? = null,
+  @Field val droppedAttributesCount: Int = 0
+) : Record
 
 data class SessionWithLogs(
   @Embedded val session: Session,
