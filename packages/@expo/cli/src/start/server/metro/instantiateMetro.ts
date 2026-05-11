@@ -125,6 +125,16 @@ class LogRespectingTerminal extends Terminal {
     console.info = sendLog;
     console.warn = sendStderr;
     console.error = sendStderr;
+
+    // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
+    process.on('exit', () => {
+      if (!this.#drainingStderr && this.#stderrQueue.length) {
+        this.#drainingStderr = true;
+        this.status('');
+        const lines = this.#stderrQueue.splice(0);
+        process.stderr.write(lines.join('\n') + '\n');
+      }
+    });
   }
 
   /** Write to stderr without corrupting Terminal's cursor tracking. */
