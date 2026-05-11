@@ -278,19 +278,6 @@ export interface ExpoAppMetricsModuleType {
      */
     triggerCrash(kind: CrashKind): void;
     /**
-     * Starts a new app metrics session. Returns the session ID.
-     *
-     * @private This API is unstable and may change without notice.
-     * @platform android
-     */
-    startSession(): string;
-    /**
-     * Stops the app metrics session with the given session ID.
-     *
-     * @platform android
-     */
-    stopSession(sessionId: string): void;
-    /**
      * @private This API is unstable and may change without notice.
      * @platform android
      */

@@ -16,10 +16,6 @@ class ExpoAppMetricsModule extends NativeModule {
     }
     simulateCrashReport() { }
     triggerCrash() { }
-    startSession(metadata) {
-        return '';
-    }
-    stopSession(sessionId) { }
     async getMainSession() {
         return null;
     }
