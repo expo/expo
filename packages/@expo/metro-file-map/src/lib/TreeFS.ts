@@ -483,6 +483,8 @@ export default class TreeFS implements MutableFileSystem {
 
   addOrModify(mixedPath: Path, metadata: FileMetadata, changeListener?: FileSystemListener): void {
     const normalPath = this.#normalizePath(mixedPath);
+    const dirname = path.dirname(normalPath);
+    const basename = path.basename(normalPath);
     // Walk the tree to find the *real* path of the parent node, creating
     // directories as we need.
     const onSegment: MakeDirsSegmentCallback | undefined = changeListener
@@ -496,18 +498,34 @@ export default class TreeFS implements MutableFileSystem {
       this.#rootNode,
       0,
       0,
-      path.dirname(normalPath),
+      dirname,
       true,
       onSegment
     );
     if (!parentDirNode.exists) {
       throw new Error(`TreeFS: Failed to make parent directory entry for ${mixedPath}`);
     }
-    // Normalize the resulting path to account for the parent node being root.
-    const canonicalPath = this.#normalizePath(
-      parentDirNode.canonicalPath + path.sep + path.basename(normalPath)
-    );
-    this.bulkAddOrModify(new Map([[canonicalPath, metadata]]), changeListener);
+    if (!isDirectory(parentDirNode.node)) {
+      throw new Error(
+        `TreeFS: Could not add directory ${dirname}, adding ${mixedPath}. ` +
+          `${dirname} already exists in the file map as a file.`
+      );
+    }
+    const canonicalPath = this.#normalizePath(parentDirNode.canonicalPath + path.sep + basename);
+    if (changeListener != null) {
+      const existingNode = parentDirNode.node.get(basename);
+      if (existingNode != null) {
+        invariant(
+          !isDirectory(existingNode),
+          'Detected addition or modification of file %s, but it is tracked as a non-empty directory',
+          canonicalPath
+        );
+        changeListener.fileModified(canonicalPath, existingNode, metadata);
+      } else {
+        changeListener.fileAdded(canonicalPath, metadata);
+      }
+    }
+    parentDirNode.node.set(basename, metadata);
   }
 
   bulkAddOrModify(addedOrModifiedFiles: FileData, changeListener?: FileSystemListener): void {
