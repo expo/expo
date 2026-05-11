@@ -1,15 +1,29 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-extension UIImagePickerController {
-  func fixCannotMoveEditingBox() {
-    defer {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.01) { [weak self] in
-        self?.fixCannotMoveEditingBox()
-      }
-    }
+import ObjectiveC.runtime
 
-    guard let cropView = cropView,
-      let scrollView = scrollView,
+private var cropFixDriverKey: UInt8 = 0
+
+extension UIImagePickerController {
+  // Attaches a `CADisplayLink` to the picker that calls `applyCropFix` on
+  // every screen refresh while the picker is alive. UIImagePickerController
+  // exposes no callback for "the editor mounted" or "the image loaded," and
+  // its internal scroll view is rebuilt at points we can't observe, so we
+  // re-run the fix per frame until the picker deallocates.
+  func fixCannotMoveEditingBox() {
+    if objc_getAssociatedObject(self, &cropFixDriverKey) == nil {
+      objc_setAssociatedObject(
+        self,
+        &cropFixDriverKey,
+        CropFixDriver(picker: self),
+        .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+      )
+    }
+  }
+
+  internal func applyCropFix() {
+    guard let cropView,
+      let scrollView,
       let scrollSuperview = scrollView.superview,
       scrollView.contentSize.width > 0,
       scrollView.contentSize.height > 0 else {
@@ -88,5 +102,26 @@ extension UIImagePickerController {
       return scrollView
     }
     return view.subviews.lazy.compactMap { self.findScrollView(from: $0) }.first
+  }
+}
+
+private final class CropFixDriver: NSObject {
+  private weak var picker: UIImagePickerController?
+  private var displayLink: CADisplayLink?
+
+  init(picker: UIImagePickerController) {
+    self.picker = picker
+    super.init()
+    let link = CADisplayLink(target: self, selector: #selector(tick))
+    link.add(to: .main, forMode: .common)
+    self.displayLink = link
+  }
+
+  deinit {
+    displayLink?.invalidate()
+  }
+
+  @objc private func tick() {
+    picker?.applyCropFix()
   }
 }
