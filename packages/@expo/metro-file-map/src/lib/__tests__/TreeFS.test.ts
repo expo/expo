@@ -1973,23 +1973,22 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         const fbTfs = makeFallbackTfs({
           serverRoot: p('/project'),
           files: new Map([
-            [p('node_modules/react'), [0, 0, 0, null, '../../.bun-cache/react', null] as any],
+            // Canonical normal target for /.bun-cache/react under rootDir
+            // /project is '../.bun-cache/react' (rootDepth=1).
+            [p('node_modules/react'), [0, 0, 0, null, '../.bun-cache/react', null] as any],
           ]),
         });
 
         mockFallback.readdir.mockImplementation(
           (normalPath: string, _absolutePath: string, dirNode: any) => {
             const result = dirNode ?? new Map();
-            if (normalPath === p('../..')) {
+            if (normalPath === p('..')) {
               if (!result.has('.bun-cache')) {
                 result.set('.bun-cache', markFallbackDir(new Map()));
               }
               return markFallbackDir(result, 1);
             }
-            if (
-              normalPath === p('../../.bun-cache/react') ||
-              normalPath === p('node_modules/react')
-            ) {
+            if (normalPath === p('../.bun-cache/react') || normalPath === p('node_modules/react')) {
               result.set('package.json', [100, 5, 0, null, 0, null]);
               result.set('index.js', [100, 5, 0, null, 0, null]);
               return markFallbackDir(result, 1);
@@ -1998,7 +1997,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           }
         );
         mockFallback.lookup.mockImplementation((normalPath: string) => {
-          if (normalPath === p('../../.bun-cache/react')) {
+          if (normalPath === p('../.bun-cache/react')) {
             return markFallbackDir(new Map<string, any>());
           }
           return null;
@@ -2013,7 +2012,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         );
         expect(found).not.toBeNull();
         expect(found?.absolutePath).toBe(
-          mockPathModule.resolve(p('/project'), p('../../.bun-cache/react/package.json'))
+          mockPathModule.resolve(p('/project'), p('../.bun-cache/react/package.json'))
         );
       });
 
@@ -2497,4 +2496,70 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
   });
+
+  if (platform === 'win32') {
+    describe('cross-drive paths (Windows)', () => {
+      let tfsCD: TreeFSType;
+      const externalMeta: FileMetadata = [123, 4, 0, null, 0, 'external'];
+
+      beforeEach(() => {
+        tfsCD = new TreeFS({
+          rootDir: 'C:\\project',
+          files: new Map<CanonicalPath, FileMetadata>([
+            ['bar.js', [234, 3, 0, null, 0, 'bar']],
+            // Canonical form of 'D:\\external\\file.js' for rootDepth=1.
+            ['..\\..\\D:\\external\\file.js', externalMeta],
+          ]),
+          processFile: async () => {
+            throw new Error('Not implemented');
+          },
+        });
+      });
+
+      test('exists() finds a seeded cross-drive file', () => {
+        expect(tfsCD.exists('D:\\external\\file.js')).toBe(true);
+      });
+
+      test('lookup() returns the absolute drive-prefixed path as realPath', () => {
+        expect(tfsCD.lookup('D:\\external\\file.js')).toMatchObject({
+          exists: true,
+          type: 'f',
+          realPath: 'D:\\external\\file.js',
+        });
+      });
+
+      test('getAllFiles() enumerates cross-drive and in-tree files side by side', () => {
+        expect(tfsCD.getAllFiles().sort()).toEqual([
+          'C:\\project\\bar.js',
+          'D:\\external\\file.js',
+        ]);
+      });
+
+      test('addOrModify() accepts a new cross-drive absolute path', () => {
+        tfsCD.addOrModify('D:\\added\\later.js', [1, 1, 0, null, 0, 'later']);
+        expect(tfsCD.exists('D:\\added\\later.js')).toBe(true);
+        expect(tfsCD.lookup('D:\\added\\later.js')).toMatchObject({
+          exists: true,
+          type: 'f',
+          realPath: 'D:\\added\\later.js',
+        });
+      });
+
+      test('remove() deletes a cross-drive entry and prunes empty ancestor dirs', () => {
+        tfsCD.remove('D:\\external\\file.js');
+        expect(tfsCD.exists('D:\\external\\file.js')).toBe(false);
+        // Intermediate 'D:' / 'external' directory nodes pruned.
+        expect(tfsCD.lookup('D:\\external').exists).toBe(false);
+        expect(tfsCD.exists('C:\\project\\bar.js')).toBe(true);
+      });
+
+      test('lookup() reports missing for non-existent cross-drive path', () => {
+        expect(tfsCD.lookup('D:\\external\\missing.js')).toMatchObject({
+          exists: false,
+        });
+        // A different drive (E:) was never seeded — also missing.
+        expect(tfsCD.exists('E:\\anywhere.js')).toBe(false);
+      });
+    });
+  }
 });
