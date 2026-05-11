@@ -81,6 +81,22 @@ jobs:
     params:
       platform: ios
       profile: production
+  update_android:
+    name: Publish Android update
+    needs: [get_android_build]
+    if: ${{ needs.get_android_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: android
+  update_ios:
+    name: Publish iOS update
+    needs: [get_ios_build]
+    if: ${{ needs.get_ios_build.outputs.build_id }}
+    type: update
+    params:
+      branch: production
+      platform: ios
 ```
 
 For tags to trigger the workflow, we need to pick a pattern that matches our team's flow. Common patterns include:
@@ -129,6 +145,7 @@ Make a TypeScript/JavaScript change in our example project, commit it, and push 
     '',
     '$ git push origin main --tags',
   ]}
+  cmdCopy="git add . && git commit -m 'Fix welcome copy' && git tag v0.1.0 && git push origin main --tags"
 />
 
 The workflow triggers on the `v0.1.0` tag. Open the EAS dashboard, and under **Workflows**, notice "Deploy to production" running with `refs/tags/v0.1.0` as its branch:
