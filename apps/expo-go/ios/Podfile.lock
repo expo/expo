@@ -249,11 +249,9 @@ PODS:
     - Yoga
   - ExpoModulesJSI (56.0.2):
     - React-Core
-    - React-runtimescheduler
     - ReactCommon
   - ExpoModulesJSI/Tests (56.0.2):
     - React-Core
-    - React-runtimescheduler
     - ReactCommon
   - ExpoModulesTestCore (56.0.0):
     - ExpoModulesCore
@@ -4682,7 +4680,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: e202b670f62063851ed74c964034037312d523a8
   ExpoMediaLibrary: ee2d74d5e52154305b8229dcb5c4319c84f30311
   ExpoModulesCore: 2a0440b73015179c83c0bd92e2ffdf8decb41c00
-  ExpoModulesJSI: 7312f97b995c769bbfa60182be4dc47814a0a59c
+  ExpoModulesJSI: 0740aeb1d9d2d3a7e4cd3368b09835d59cba0eb6
   ExpoModulesTestCore: 5660ab6b5928747366d4946580622a578865696a
   ExpoModulesWorklets: f6674212fdcd312c11642b1e51b9433ab1940a2f
   ExpoModulesWorkletsAdapter: 23fa6f8b59e1096e35849bf4f13210640b896822
