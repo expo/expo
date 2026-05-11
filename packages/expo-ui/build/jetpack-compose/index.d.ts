@@ -33,6 +33,7 @@ export * from './ModalBottomSheet';
 export * from './Carousel';
 export { HorizontalPager, type HorizontalPagerHandle, type HorizontalPagerProps, } from './HorizontalPager';
 export * from './SearchBar';
+export * from './Snackbar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
 export * from './FloatingActionButton';

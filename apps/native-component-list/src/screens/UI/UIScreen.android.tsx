@@ -355,6 +355,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Snackbar component',
+    route: 'ui/snackbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SnackbarScreen'));
+    },
+  },
+  {
     name: 'Tooltip component',
     route: 'ui/tooltip',
     options: {},

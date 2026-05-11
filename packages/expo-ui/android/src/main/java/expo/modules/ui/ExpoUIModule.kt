@@ -135,6 +135,8 @@ class ExpoUIModule : Module() {
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
     View(RichTooltipView::class)
+    // Class-based view so SnackbarHostView can read its styling via findChildOfType
+    View(SnackbarView::class)
 
     //endregion Views use expo-modules-core DSL for uncommon features
 
@@ -589,6 +591,14 @@ class ExpoUIModule : Module() {
     ExpoUIView<AnimatedVisibilityProps>("AnimatedVisibilityView") {
       Content { props ->
         AnimatedVisibilityContent(props)
+      }
+    }
+
+    ExpoUIView<SnackbarHostProps>("SnackbarHostView") {
+      val show by AsyncFunction<SnackbarShowOptions>()
+
+      Content { props ->
+        SnackbarHostContent(props, show)
       }
     }
 
