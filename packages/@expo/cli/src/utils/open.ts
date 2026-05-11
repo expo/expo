@@ -24,19 +24,18 @@ function escapeAppleScriptString(value: string): string {
     .replace(/\n/g, '\\n');
 }
 
-// See: https://github.com/ExiaSR/better-opn/blob/master/openChrome.applescript
-// MIT License, Copyright (c) 2015-present, Facebook, Inc. (originally from create-react-app)
-function buildOpenChromiumTabScript(target: string, matchUrl: string, browser: string): string[] {
+function buildOpenChromiumTabScript(target: string, matchUrl: string): string[] {
   const theURL = escapeAppleScriptString(target);
   const matchURL = escapeAppleScriptString(matchUrl);
-  const theProgram = escapeAppleScriptString(browser);
   return applescript`
     property targetTab: null
     property targetTabIndex: -1
     property targetWindow: null
-    property theProgram: "${theProgram}"
+    property theProgram: ""
 
     on run
+      set theProgram to my findRunningChromium()
+      if theProgram is "" then error "No Chromium browser is running."
       set theURL to "${theURL}"
       set matchURL to "${matchURL}"
       using terms from application "Google Chrome"
@@ -67,6 +66,18 @@ function buildOpenChromiumTabScript(target: string, matchUrl: string, browser: s
       end using terms from
     end run
 
+    on findRunningChromium()
+      set candidates to {"Google Chrome Canary", "Google Chrome", "Microsoft Edge", "Brave Browser", "Vivaldi", "Chromium"}
+      tell application "System Events"
+        set runningNames to name of every process
+      end tell
+      repeat with candidate in candidates
+        set candidateName to candidate as string
+        if candidateName is in runningNames then return candidateName
+      end repeat
+      return ""
+    end findRunningChromium
+
     on lookupTabWithUrl(lookupUrl)
       using terms from application "Google Chrome"
         tell application theProgram
@@ -93,15 +104,6 @@ function buildOpenChromiumTabScript(target: string, matchUrl: string, browser: s
   `;
 }
 
-const CHROMIUM_BROWSERS = [
-  'Google Chrome Canary',
-  'Google Chrome',
-  'Microsoft Edge',
-  'Brave Browser',
-  'Vivaldi',
-  'Chromium',
-];
-
 function safeOrigin(target: string): string {
   try {
     return new URL(target).origin;
@@ -112,19 +114,14 @@ function safeOrigin(target: string): string {
 
 async function tryOpenInChromiumTabAsync(target: string): Promise<boolean> {
   const matchUrl = process.env.OPEN_MATCH_HOST_ONLY === 'true' ? safeOrigin(target) : target;
-  for (const browser of CHROMIUM_BROWSERS) {
-    const running = await osascript.isAppRunningAsync(browser).catch(() => false);
-    if (!running) continue;
-    try {
-      await osascript.spawnAsync(buildOpenChromiumTabScript(target, matchUrl, browser), {
-        stdio: 'ignore',
-      });
-      return true;
-    } catch {
-      // Try the next browser.
-    }
+  try {
+    await osascript.spawnAsync(buildOpenChromiumTabScript(target, matchUrl), {
+      stdio: 'ignore',
+    });
+    return true;
+  } catch {
+    return false;
   }
-  return false;
 }
 
 /**
