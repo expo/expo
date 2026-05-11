@@ -18,6 +18,7 @@ class DevMenuViewModel: ObservableObject {
   @Published var showElementInspector: Bool = false
   @Published var showRuntimeVersion: Bool = false
   @Published var showSystemSection: Bool = false
+  @Published var hasBeenEdited: Bool = false
 
   private let manager: DevMenuManager
   private var cancellables = Set<AnyCancellable>()
@@ -31,6 +32,7 @@ class DevMenuViewModel: ObservableObject {
     loadData()
     checkOnboardingStatus()
     observeManifestChanges()
+    observeSnackEditingChanges()
   }
 
   private func loadData() {
@@ -38,6 +40,33 @@ class DevMenuViewModel: ObservableObject {
     loadDevSettings()
     loadFloatingActionButtonState()
     updateSectionVisibility()
+    hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
+  }
+
+  /// True when running a lesson (vs a free-form snack)
+  var isLessonSession: Bool {
+    return SnackEditingSession.shared.isLesson
+  }
+
+  /// True for lessons or snacks with "lesson"/"learn" in name
+  var isLessonLikeSession: Bool {
+    return SnackEditingSession.shared.isLessonLikeSession
+  }
+
+  /// Hides the "Tools button" toggle for lessons / lesson-like snacks
+  var shouldHideFABToggle: Bool {
+    return isLessonLikeSession
+  }
+
+  /// True if there's an active snack editing session (lesson or saved snack)
+  var hasActiveSnackSession: Bool {
+    return SnackEditingSession.shared.isReady
+  }
+
+  /// Resets code to original and broadcasts to the runtime (no reload needed)
+  func resetCode() {
+    SnackEditingSession.shared.resetAndBroadcast()
+    manager.closeMenu()
   }
 
   private func loadAppInfo() {
@@ -177,6 +206,24 @@ class DevMenuViewModel: ObservableObject {
         self?.loadAppInfo()
         self?.loadDevSettings()
         self?.updateSectionVisibility()
+      }
+      .store(in: &cancellables)
+  }
+
+  private func observeSnackEditingChanges() {
+    // Update hasBeenEdited when code changes
+    NotificationCenter.default.publisher(for: SnackEditingSession.codeDidChangeNotification)
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
+      }
+      .store(in: &cancellables)
+
+    // Reset hasBeenEdited when session changes (new snack opened)
+    NotificationCenter.default.publisher(for: SnackEditingSession.sessionDidChangeNotification)
+      .receive(on: DispatchQueue.main)
+      .sink { [weak self] _ in
+        self?.hasBeenEdited = SnackEditingSession.shared.hasBeenEdited
       }
       .store(in: &cancellables)
   }
