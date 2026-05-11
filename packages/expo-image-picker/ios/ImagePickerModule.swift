@@ -104,9 +104,8 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     let picker = UIImagePickerController()
 
     // Only the camera flow's edit screen needs this workaround. The library
-    // picker on modern iOS hosts its editor in a separate system process via
-    // `_UISceneHostingView`, so we can't reach its scroll view from our
-    // address space.
+    // picker hosts its editor in a separate system process via `_UISceneHostingView`,
+    // so the fix is not applicable.
     if sourceType == .camera {
       picker.fixCannotMoveEditingBox()
     }

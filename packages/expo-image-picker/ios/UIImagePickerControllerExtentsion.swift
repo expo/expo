@@ -21,13 +21,11 @@ extension UIImagePickerController {
     }
   }
 
-  internal func applyCropFix() {
-    guard let cropView,
-      let scrollView,
-      let scrollSuperview = scrollView.superview,
+  internal func applyCropFix(cropView: UIView, scrollView: UIScrollView, isFirstApply: Bool) -> Bool {
+    guard let scrollSuperview = scrollView.superview,
       scrollView.contentSize.width > 0,
       scrollView.contentSize.height > 0 else {
-      return
+      return false
     }
 
     let cropFrame = cropView.convert(cropView.bounds, to: scrollSuperview)
@@ -36,6 +34,12 @@ extension UIImagePickerController {
     let baseWidth = scrollView.contentSize.width / scrollView.zoomScale
     let baseHeight = scrollView.contentSize.height / scrollView.zoomScale
     let minZoomForFill = max(cropSize.width / baseWidth, cropSize.height / baseHeight)
+    let needsFix = scrollView.zoomScale < minZoomForFill - 0.001
+
+    if scrollView.isZooming || scrollView.isZoomBouncing || !(isFirstApply || needsFix) {
+      return false
+    }
+
     let edgeInset = UIEdgeInsets(
       top: max(0, cropFrame.minY - scrollFrame.minY),
       left: max(0, cropFrame.minX - scrollFrame.minX),
@@ -43,16 +47,8 @@ extension UIImagePickerController {
       right: max(0, scrollFrame.maxX - cropFrame.maxX)
     )
 
-    let isInitialLayout = scrollView.contentOffset.y == 0 || scrollView.contentInset == .zero
-    let needsFix = scrollView.zoomScale < minZoomForFill - 0.001
-
-    if scrollView.isZooming || scrollView.isZoomBouncing || !(isInitialLayout || needsFix) {
-      return
-    }
-
     UIView.performWithoutAnimation {
       let previousOffset = scrollView.contentOffset
-      let shouldCenterContent = scrollView.contentInset == .zero
 
       if scrollView.zoomScale < minZoomForFill {
         scrollView.minimumZoomScale = minZoomForFill
@@ -60,7 +56,7 @@ extension UIImagePickerController {
       }
 
       scrollView.contentInset = edgeInset
-      if shouldCenterContent {
+      if isFirstApply {
         scrollView.contentOffset = CGPoint(
           x: -edgeInset.left + max(0, scrollView.contentSize.width - cropSize.width) / 2,
           y: -edgeInset.top + max(0, scrollView.contentSize.height - cropSize.height) / 2
@@ -77,6 +73,7 @@ extension UIImagePickerController {
         )
       }
     }
+    return true
   }
 
   var cropView: UIView? {
@@ -87,8 +84,9 @@ extension UIImagePickerController {
     return findScrollView(from: self.view)
   }
 
+  //TODO: @behenate check iPad behaviour
   func findCropView(from view: UIView) -> UIView? {
-    let shorterEdge = min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+    let shorterEdge = min(self.view.bounds.width, self.view.bounds.height)
     let size = view.bounds.size
     let tolerance = 1 / UIScreen.main.scale
     if abs(shorterEdge - size.width) <= tolerance, abs(shorterEdge - size.height) <= tolerance {
@@ -105,14 +103,30 @@ extension UIImagePickerController {
   }
 }
 
+private final class CropFixDriverProxy: NSObject {
+  weak var driver: CropFixDriver?
+
+  init(_ driver: CropFixDriver) {
+    self.driver = driver
+  }
+
+  @objc func tick() {
+    driver?.tick()
+  }
+}
+
 private final class CropFixDriver: NSObject {
   private weak var picker: UIImagePickerController?
   private var displayLink: CADisplayLink?
+  private weak var cachedCropView: UIView?
+  private weak var cachedScrollView: UIScrollView?
+  private var hasBeenApplied = false
 
   init(picker: UIImagePickerController) {
     self.picker = picker
     super.init()
-    let link = CADisplayLink(target: self, selector: #selector(tick))
+    let proxy = CropFixDriverProxy(self)
+    let link = CADisplayLink(target: proxy, selector: #selector(CropFixDriverProxy.tick))
     link.add(to: .main, forMode: .common)
     self.displayLink = link
   }
@@ -121,7 +135,22 @@ private final class CropFixDriver: NSObject {
     displayLink?.invalidate()
   }
 
-  @objc private func tick() {
-    picker?.applyCropFix()
+  fileprivate func tick() {
+    guard let picker = picker else {
+      return
+    }
+
+    if cachedScrollView?.window == nil || cachedCropView?.window == nil {
+      cachedScrollView = picker.scrollView
+      cachedCropView = picker.cropView
+      hasBeenApplied = false
+    }
+
+    guard let scrollView = cachedScrollView, let cropView = cachedCropView else {
+      return
+    }
+    if picker.applyCropFix(cropView: cropView, scrollView: scrollView, isFirstApply: !hasBeenApplied) {
+      hasBeenApplied = true
+    }
   }
 }
