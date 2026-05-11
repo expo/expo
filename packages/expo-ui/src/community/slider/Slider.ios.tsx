@@ -46,5 +46,3 @@ export function Slider(props: SliderProps) {
     </Host>
   );
 }
-
-Slider.displayName = 'Slider';

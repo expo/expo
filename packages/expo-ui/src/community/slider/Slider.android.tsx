@@ -48,4 +48,3 @@ export function Slider(props: SliderProps) {
   );
 }
 
-Slider.displayName = 'Slider';

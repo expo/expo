@@ -4,7 +4,4 @@ import { type SliderProps } from './types';
  * Renders a Material 3 `Slider` wrapped in a Host.
  */
 export declare function Slider(props: SliderProps): import("react/jsx-runtime").JSX.Element;
-export declare namespace Slider {
-    var displayName: string;
-}
 //# sourceMappingURL=Slider.android.d.ts.map
