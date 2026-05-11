@@ -23,6 +23,10 @@ public class DevMenuManager: NSObject {
   var fabWindow: DevMenuFABWindow?
   private var isNavigatingHome = false
 
+  /// True when the current Snack session is a lesson or playground.
+  /// Forces the FAB to stay visible even if the user disabled the preference.
+  @objc var isLessonLikeSession: Bool = false
+
   override init() {
     super.init()
     self.window = DevMenuWindow(manager: self)
@@ -125,8 +129,14 @@ public class DevMenuManager: NSObject {
 
   @objc func goHome() {
     isNavigatingHome = true
+    isLessonLikeSession = false
     fabWindow?.setVisible(false, animated: false)
     EXKernel.sharedInstance().switchTasks()
+  }
+
+  /// Hides the FAB immediately. Used during app reload to avoid jank.
+  @objc func hideFAB() {
+    fabWindow?.setVisible(false, animated: false)
   }
 
   func togglePerformanceMonitor() {
@@ -201,7 +211,7 @@ public class DevMenuManager: NSObject {
         }
       }
 
-      let shouldShow = DevMenuPreferences.showFloatingActionButton
+      let shouldShow = (DevMenuPreferences.showFloatingActionButton || self.isLessonLikeSession)
         && !self.isVisible
         && self.hasActiveApp
         && !self.isNavigatingHome

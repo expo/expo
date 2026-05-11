@@ -59,8 +59,8 @@ import UIKit
       // We're called from RCTExecuteOnMainQueue so we're already on the main thread
       MainActor.assumeIsolated {
         SnackEditingSession.shared.clearSession()
+        DevMenuManager.shared.isLessonLikeSession = false
       }
-      DevMenuManager.shared.isLessonLikeSession = false
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
       return

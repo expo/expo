@@ -2,8 +2,13 @@
 
 import SwiftUI
 
+enum SnappedEdge {
+  case left, right
+}
+
 enum FABConstants {
   static let iconSize: CGFloat = 44
+  static let touchTargetSize: CGFloat = 80
   static let margin: CGFloat = 10
   static let verticalPadding: CGFloat = 0
   static let dragThreshold: CGFloat = 10
