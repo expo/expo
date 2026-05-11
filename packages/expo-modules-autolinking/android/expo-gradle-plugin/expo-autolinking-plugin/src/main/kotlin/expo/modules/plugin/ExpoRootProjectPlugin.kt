@@ -43,10 +43,12 @@ fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
 
       val minSupported = KSPLookup.keys.min()
       throw IllegalStateException(
-        "Kotlin $kotlinVersion is not supported by Expo modules. " +
-          "The minimum supported Kotlin version is $minSupported. " +
-          "Update 'kotlinVersion' in your project's build.gradle to a supported version. " +
-          "Alternatively, you can set 'kspVersion' explicitly in build.gradle to bypass this check, but this is unsupported and may cause build failures."
+        """
+        Kotlin $kotlinVersion is not supported by Expo modules.
+        The minimum supported Kotlin version is $minSupported. 
+        Update 'kotlinVersion' in your project's build.gradle to a supported version. 
+        Alternatively, you can set 'kspVersion' explicitly in build.gradle to bypass this check, but this is unsupported and may cause build failures.  
+        """.trimIndent()
       )
     }
   }
