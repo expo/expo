@@ -18,23 +18,23 @@ import { Step } from '~/ui/components/Step';
 
 ### Time to first render not showing
 
-Verify that your root layout is wrapped with `AppMetricsRoot`:
+Verify that your root layout is wrapped with `ObserveRoot`:
 
 ```jsx
-import { AppMetricsRoot } from 'expo-observe';
+import { ObserveRoot } from 'expo-observe';
 
 function RootLayout() {
   return (/* your layout */);
 }
 
-export default AppMetricsRoot.wrap(RootLayout);
+export default ObserveRoot.wrap(RootLayout);
 ```
 
 ### Time to interactive not showing
 
 This metric requires manual instrumentation. Verify that:
 
-1. You are calling `AppMetrics.markInteractive()` after your splash screen is hidden.
+1. You are calling `markInteractive()` (from `useObserve()`) after your splash screen is hidden.
 2. The call is actually being executed (add a `console.log` to verify).
 
 <Collapsible summary="Migrating from expo-eas-observe">
@@ -62,13 +62,15 @@ If you previously installed `expo-eas-client` as a separate dependency, you can 
 + import { AppMetrics } from 'expo-observe';
 ```
 
+> **info** For new `markInteractive()` call sites, prefer the `useObserve()` hook (see [Get started](/eas/observe/get-started/#mark-interactive)). The legacy `AppMetrics.markInteractive()` call style continues to work.
+
 </Step>
 
 <Step label="3">
 
-**Replace manual `markFirstRender()` with `AppMetricsRoot`**
+**Replace manual `markFirstRender()` with `ObserveRoot`**
 
-Instead of calling `markFirstRender()` manually, wrap your root layout with the `AppMetricsRoot` HOC. This handles the measurement automatically.
+Instead of calling `markFirstRender()` manually, wrap your root layout with the `ObserveRoot` HOC. This handles the measurement automatically.
 
 Before:
 
@@ -88,13 +90,13 @@ export default function RootLayout() {
 After:
 
 ```jsx
-import { AppMetricsRoot } from 'expo-observe';
+import { ObserveRoot } from 'expo-observe';
 
 function RootLayout() {
   return (/* your layout */);
 }
 
-export default AppMetricsRoot.wrap(RootLayout);
+export default ObserveRoot.wrap(RootLayout);
 ```
 
 </Step>

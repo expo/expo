@@ -79,7 +79,7 @@ This metric is collected automatically.
 
 **What it measures:** Time from when the app finishes native launching to when the root React component first renders on the screen. This is the moment actual content is rendered by React, after the splash screen is hidden. The goal for every app should be to show something meaningful as fast as possible, even if it's a skeleton loading screen.
 
-This metric is collected automatically when you wrap your root layout with `AppMetricsRoot` (see [Get started](/eas/observe/get-started/)). You can also call `AppMetrics.markFirstRender()` manually if needed.
+This metric is collected automatically when you wrap your root layout with `ObserveRoot` (see [Get started](/eas/observe/get-started/)). You can also call `AppMetrics.markFirstRender()` manually if needed.
 
 **How to improve:**
 
@@ -96,7 +96,7 @@ This metric is collected automatically when you wrap your root layout with `AppM
 
 **What it measures:** Time between the warm/cold launch and when the user can actually tap, scroll, and interact with the app in other ways. It is the most important startup metric because it is what users perceive as "the app is ready".
 
-This metric is not reported automatically. To start measuring it, call `AppMetrics.markInteractive()` once the screen is ready for user interaction, for example in a `useEffect` that runs after your initial data has loaded. If your app uses deep links, the main screen may not always be the initial screen, so we recommend calling this function on other screens too. Only the first call per launch is recorded, so it is safe to call it multiple times (for example, when the user navigates between screens). If you use `expo-router`, the metric's event automatically includes the current route name.
+This metric is not reported automatically. To start measuring it, call `markInteractive()` from `useObserve()` once the screen is ready for user interaction, for example in a `useEffect` that runs after your initial data has loaded. If your app uses deep links, the main screen may not always be the initial screen, so we recommend calling this function on other screens too. Only the first call per launch is recorded, so it is safe to call it multiple times (for example, when the user navigates between screens). If you use `expo-router`, the metric's event automatically includes the current route name.
 
 **What makes an app "interactive"?**
 
@@ -106,7 +106,7 @@ All of these must be true:
 - Touch handlers are attached and responsive.
 - Navigation is functional.
 
-**How to improve measurement accuracy:** Call `AppMetrics.markInteractive()` only after the screen's content is loaded and touch handlers are active, not just on component mount. If your screen fetches data before becoming usable, place the call after the data is ready.
+**How to improve measurement accuracy:** Call `markInteractive()` only after the screen's content is loaded and touch handlers are active, not just on component mount. If your screen fetches data before becoming usable, place the call after the data is ready.
 
 **How to improve:**
 
@@ -144,7 +144,9 @@ Each TTI event includes extra params to help triage issues:
 You can attach your own params to the TTI event by passing them to `markInteractive()`. This is useful for slicing TTI by app-specific dimensions such as user cohort, tenant, feature flag variant, or the type of content the screen loaded.
 
 ```tsx
-AppMetrics.markInteractive({
+const { markInteractive } = useObserve();
+
+markInteractive({
   params: {
     tenant: 'acme',
     cohort: 'beta',
@@ -156,7 +158,9 @@ AppMetrics.markInteractive({
 You can also override the route name attached to the event, which is otherwise populated from the initial route detected by [Expo Router](/router/introduction/). This useful when the screen's logical name differs from the router path, is a dynamic route, or when not using Expo Router:
 
 ```tsx
-AppMetrics.markInteractive({
+const { markInteractive } = useObserve();
+
+markInteractive({
   routeName: '/feed',
   params: { cacheHit: true },
 });
