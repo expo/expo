@@ -1,6 +1,6 @@
+import { EventEmitter } from 'events';
 import type { IncomingMessage, ServerResponse } from 'http';
 import type { Socket } from 'net';
-import { EventEmitter } from 'events';
 
 // ---- Mocks ----
 
@@ -38,7 +38,9 @@ jest.mock('../createHandlersFactory', () => ({
   createHandlersFactory: () => jest.fn(),
 }));
 
+// eslint-disable-next-line import/first, import/order
 import { isLocalSocket, isMatchingOrigin } from '../../../../../utils/net';
+// eslint-disable-next-line import/first, import/order
 import { createDebugMiddleware } from '../createDebugMiddleware';
 
 // ---- Helpers ----

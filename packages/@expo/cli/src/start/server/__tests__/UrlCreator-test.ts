@@ -181,21 +181,15 @@ describe('constructUrl', () => {
     it(`uses port 443 internally for https tunnel URLs without explicit port`, () => {
       // The tunnel URL parser should infer port 443 for https URLs that don't
       // specify a port, so native inspector code doesn't default to 8081
-      const creator = new UrlCreator(
-        {},
-        { port: 8081, getTunnelUrl: () => 'https://tunnel.dev/' }
-      );
+      const creator = new UrlCreator({}, { port: 8081, getTunnelUrl: () => 'https://tunnel.dev/' });
       // The URL itself omits the default port
-      expect(
-        creator.constructUrl({ hostType: 'tunnel', scheme: 'https' })
-      ).toBe('https://tunnel.dev');
+      expect(creator.constructUrl({ hostType: 'tunnel', scheme: 'https' })).toBe(
+        'https://tunnel.dev'
+      );
     });
 
     it(`uses port 80 internally for http tunnel URLs without explicit port`, () => {
-      const creator = new UrlCreator(
-        {},
-        { port: 8081, getTunnelUrl: () => 'http://tunnel.dev/' }
-      );
+      const creator = new UrlCreator({}, { port: 8081, getTunnelUrl: () => 'http://tunnel.dev/' });
       expect(creator.constructUrl({ hostType: 'tunnel' })).toBe('http://tunnel.dev');
     });
   });

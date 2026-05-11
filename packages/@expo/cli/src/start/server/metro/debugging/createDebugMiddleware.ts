@@ -111,7 +111,7 @@ export function createDebugMiddleware({
       // generated WebSocket URLs use wss://, avoiding mixed-content errors.
       // This applies to both local and remote requests because the proxy
       // connects from localhost, making the request appear local.
-      const shouldMarkEncrypted = isRequestOverHttps(req) && !req.socket.encrypted;
+      const shouldMarkEncrypted = isRequestOverHttps(req) && !(req.socket as any).encrypted;
       if (shouldMarkEncrypted) {
         Object.defineProperty(req.socket, 'encrypted', { value: true, configurable: true });
       }
