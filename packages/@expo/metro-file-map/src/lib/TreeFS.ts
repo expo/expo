@@ -393,15 +393,23 @@ export default class TreeFS implements MutableFileSystem {
 
   getAllFiles(): Path[] {
     const result: Path[] = [];
-    this.#forEachMetadata(
-      this.#rootNode,
-      { includeNodeModules: true, includeSymlinks: false },
-      '',
-      (_baseName, canonicalPath) => {
-        result.push(this.#pathUtils.normalToAbsolute(canonicalPath));
-      }
-    );
+    this.#collectAllFilesInto(this.#rootNode, '', result);
     return result;
+  }
+
+  // NOTE(@kitten): Specialize the `getAllFiles` collector, to avoid a megamorphic deopt in V8
+  #collectAllFilesInto(node: DirectoryNode, prefix: string, result: Path[]): void {
+    for (const [name, child] of node) {
+      if (child == null) {
+        continue;
+      }
+      const prefixedName = prefix === '' ? name : prefix + path.sep + name;
+      if (isDirectory(child)) {
+        this.#collectAllFilesInto(child, prefixedName, result);
+      } else if (isRegularFile(child)) {
+        result.push(this.#pathUtils.normalToAbsolute(prefixedName));
+      }
+    }
   }
 
   linkStats(mixedPath: Path): FileStats | null {
