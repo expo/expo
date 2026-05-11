@@ -44,6 +44,7 @@ internal struct SwipeActionsView: ExpoSwiftUI.View {
 #endif
   }
 
+#if !os(tvOS)
   @ViewBuilder
   private func contentWithSwipeActions(_ content: AnyView) -> some View {
     let leading = actionSlot(for: .leading)
@@ -71,6 +72,7 @@ internal struct SwipeActionsView: ExpoSwiftUI.View {
       content
     }
   }
+#endif
 
   private func actionSlot(for edge: SwipeActionsEdge) -> SwipeActionsSlot? {
     props.children?
