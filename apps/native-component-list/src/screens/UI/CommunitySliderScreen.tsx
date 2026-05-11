@@ -28,11 +28,16 @@ export default function CommunitySliderScreen() {
   const [stepIndex, setStepIndex] = useState(0);
   const [disabled, setDisabled] = useState(false);
   const [inverted, setInverted] = useState(false);
+  const [limited, setLimited] = useState(false);
   const [value, setValue] = useState(0.5);
 
   const range = RANGES[rangeIndex];
   const width = WIDTHS[widthIndex].value;
   const step = STEPS[stepIndex].factor * (range.max - range.min);
+  // Limits clamp to the inner 60% of the range when enabled.
+  const span = range.max - range.min;
+  const lowerLimit = limited ? range.min + span * 0.2 : undefined;
+  const upperLimit = limited ? range.min + span * 0.8 : undefined;
 
   const onSelectRange = (i: number) => {
     setRangeIndex(i);
@@ -50,6 +55,8 @@ export default function CommunitySliderScreen() {
           step={step}
           disabled={disabled}
           inverted={inverted}
+          lowerLimit={lowerLimit}
+          upperLimit={upperLimit}
           onValueChange={setValue}
           style={width ? { width, alignSelf: 'center' } : { alignSelf: 'stretch' }}
         />
@@ -67,6 +74,10 @@ export default function CommunitySliderScreen() {
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Inverted</Text>
           <Switch value={inverted} onValueChange={setInverted} />
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.rowLabel}>Limits (inner 60%)</Text>
+          <Switch value={limited} onValueChange={setLimited} />
         </View>
       </View>
     </Page>

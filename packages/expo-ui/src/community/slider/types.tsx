@@ -23,6 +23,16 @@ export type SliderProps = {
    */
   maximumValue?: number;
   /**
+   * The lower limit value of the slider. The user won't be able to slide
+   * below this limit.
+   */
+  lowerLimit?: number;
+  /**
+   * The upper limit value of the slider. The user won't be able to slide
+   * above this limit.
+   */
+  upperLimit?: number;
+  /**
    * If true the user won't be able to move the slider.
    * @default false
    */
