@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix reading updates app.manifest and meta-data tags ([#45655](https://github.com/expo/expo/pull/45655) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 55.0.22 — 2026-05-05
