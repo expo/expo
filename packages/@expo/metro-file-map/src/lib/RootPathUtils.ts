@@ -45,6 +45,16 @@ const SEP_UP_FRAGMENT = path.sep + '..';
 const UP_FRAGMENT_SEP_LENGTH = UP_FRAGMENT_SEP.length;
 const CURRENT_FRAGMENT = '.' + path.sep;
 
+const IS_WIN32 = path.sep === '\\';
+
+function startsWithDriveLetter(str: string): boolean {
+  if (!IS_WIN32 || str.charCodeAt(1) !== 58 /* ':' */) {
+    return false;
+  }
+  const c = str.charCodeAt(0);
+  return (c >= 65 && c <= 90) /* A-Z */ || (c >= 97 && c <= 122) /* a-z */;
+}
+
 export class RootPathUtils {
   #rootDir: string;
   #rootDirnames: readonly string[];
@@ -169,8 +179,11 @@ export class RootPathUtils {
   resolveSymlinkToNormal(symlinkNormalPath: string, readlinkResult: string): string {
     let target = normalizePathSeparatorsToSystem(readlinkResult);
     // WARN: This only applies to Windows + Node 20 case, where the value is completely
-    // unnormalized and a trailing slash may be returned
-    if (target[target.length - 1] === path.sep) {
+    // unnormalized and a trailing slash may be returned. Skip the strip when the target
+    // is a filesystem root: POSIX '/' or Windows 'X:\'
+    const len = target.length;
+    const isFsRoot = len === 1 || (len === 3 && startsWithDriveLetter(target));
+    if (!isFsRoot && target[len - 1] === path.sep) {
       target = target.slice(0, -1);
     }
     if (path.isAbsolute(target)) {
