@@ -114,29 +114,37 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       }
     );
 
-    test.each([
-      p('..'),
-      p('../root'),
-      p('../root/path'),
-      p('../project'),
-      p('../project/'),
-      p('../../project/root'),
-      p('../../project/root/'),
-      p('../../../normal/path'),
-      p('../../../normal/path/'),
-      p('../../..'),
-    ])(`relativeToNormal('%s') matches path.resolve + path.relative`, (relativePath) => {
-      let expected = mockPathModule.relative(
-        rootDir,
-        mockPathModule.resolve(rootDir, relativePath)
-      );
-      // Unlike native path.resolve + path.relative, we expect to preserve
-      // trailing separators. (Consistent with path.normalize.)
-      if (relativePath.endsWith(sep) && !expected.endsWith(sep) && expected !== '') {
-        expected += sep;
+    // relativeToNormal no longer collapses non-canonical leading '..' chains
+    // (no in-function clip); inputs are expected to be canonical for rootDir.
+    const relativeToNormalInputs =
+      rootDir === p('/project/root')
+        ? [
+            p('..'),
+            p('../root'),
+            p('../root/path'),
+            p('../project'),
+            p('../project/'),
+            p('../../project/root'),
+            p('../../project/root/'),
+            p('../../..'),
+          ]
+        : [p('..')];
+
+    test.each(relativeToNormalInputs)(
+      `relativeToNormal('%s') matches path.resolve + path.relative`,
+      (relativePath) => {
+        let expected = mockPathModule.relative(
+          rootDir,
+          mockPathModule.resolve(rootDir, relativePath)
+        );
+        // Unlike native path.resolve + path.relative, we expect to preserve
+        // trailing separators. (Consistent with path.normalize.)
+        if (relativePath.endsWith(sep) && !expected.endsWith(sep) && expected !== '') {
+          expected += sep;
+        }
+        expect(pathUtils.relativeToNormal(relativePath)).toEqual(expected);
       }
-      expect(pathUtils.relativeToNormal(relativePath)).toEqual(expected);
-    });
+    );
   });
 
   test.each([
