@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Add hints and start node for `TreeFS.hierarchicalLookup` improving performance for metro's `getClosestPackage` lookups ([#45650](https://github.com/expo/expo/pull/45650) by [@kitten](https://github.com/kitten))
+- Refactor `TreeFS` to make tree walkers monomorphic and ditch generators ([#45651](https://github.com/expo/expo/pull/45651) by [@kitten](https://github.com/kitten))
 
 ## 56.0.0 — 2026-05-08
 
