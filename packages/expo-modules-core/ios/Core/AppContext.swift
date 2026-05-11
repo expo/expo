@@ -430,25 +430,33 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /**
    Sets the JavaScript runtime from raw pointers. Called by `ExpoReactNativeFactory`
-   when React Native initializes the runtime. The native scheduler reference and
-   dispatch trampoline are required so `JavaScriptRuntime.schedule(...)` /
-   `.execute(...)` can dispatch onto the JS thread.
+   when React Native initializes the runtime. When `nativeScheduler` and `dispatch`
+   are both provided, `JavaScriptRuntime.schedule(...)` / `.execute(...)` dispatch
+   onto the JS thread through them. When either is `nil`, the runtime falls back
+   to a synchronous no-op scheduler — callers can detect this via
+   `JavaScriptRuntime.supportsAsyncScheduling`.
 
    `dispatch` is a raw pointer to a C function with signature
    `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
-   to the typed pointer inside `ExpoModulesJSI`.
+   to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
+   here rather than `@convention(c)` so the symbol can cross the Objective-C
+   bridge without needing a Swift-typed entry point.
    */
   @objc
   public func setRuntime(
     _ runtimePointer: UnsafeMutableRawPointer,
-    nativeScheduler: UnsafeMutableRawPointer,
-    dispatch: UnsafeRawPointer
+    nativeScheduler: UnsafeMutableRawPointer?,
+    dispatch: UnsafeRawPointer?
   ) {
-    _runtime = ExpoRuntime(
-      unsafePointer: runtimePointer,
-      nativeScheduler: nativeScheduler,
-      dispatch: dispatch
-    )
+    if let nativeScheduler, let dispatch {
+      _runtime = ExpoRuntime(
+        unsafePointer: runtimePointer,
+        nativeScheduler: nativeScheduler,
+        dispatch: dispatch
+      )
+    } else {
+      _runtime = ExpoRuntime(unsafePointer: runtimePointer)
+    }
   }
 
   @JavaScriptActor

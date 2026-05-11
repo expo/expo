@@ -30,11 +30,10 @@ namespace {
 void dispatchOnReactScheduler(void *nativeScheduler, int priority, void (^callback)()) noexcept
 {
   auto *scheduler = static_cast<facebook::react::RuntimeScheduler *>(nativeScheduler);
-  void (^retained)() = [callback copy];
   scheduler->scheduleTask(
     static_cast<facebook::react::SchedulerPriority>(priority),
-    [retained](facebook::jsi::Runtime &) {
-      retained();
+    [callback](facebook::jsi::Runtime &) {
+      callback();
     });
 }
 
@@ -56,13 +55,17 @@ void dispatchOnReactScheduler(void *nativeScheduler, int priority, void (^callba
   // React-runtimescheduler symbols out of the prebuilt ExpoModulesJSI.framework
   // — important for source-built RN, where those symbols are hidden after link
   // and unreachable via -undefined dynamic_lookup.
+  //
+  // If RN didn't install a RuntimeSchedulerBinding for some reason, pass nullptr
+  // for both — AppContext.setRuntime falls back to a synchronous no-op scheduler
+  // so the app still launches; modules that require async dispatch can gate on
+  // `JavaScriptRuntime.supportsAsyncScheduling`.
   auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(runtime);
   auto scheduler = binding ? binding->getRuntimeScheduler() : nullptr;
-  NSAssert(scheduler != nullptr, @"React Native did not install a RuntimeScheduler before didInitializeRuntime; ExpoModulesJSI cannot dispatch work onto the JS thread.");
 
   [_appContext setRuntime:&runtime
           nativeScheduler:scheduler.get()
-                 dispatch:reinterpret_cast<const void *>(&dispatchOnReactScheduler)];
+                 dispatch:scheduler ? reinterpret_cast<const void *>(&dispatchOnReactScheduler) : nullptr];
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [_appContext registerNativeModules];
