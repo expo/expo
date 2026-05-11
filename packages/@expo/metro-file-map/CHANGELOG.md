@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Windows path resolution for cross-device resolved paths ([#45648](https://github.com/expo/expo/pull/45648) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.0 — 2026-05-08
