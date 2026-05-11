@@ -145,6 +145,11 @@ export class RootPathUtils {
     const right = pos === 0 ? normalPath : normalPath.slice(pos);
     if (right.length === 0) {
       return left;
+    } else if (pos > this.#rootDepth * UP_FRAGMENT_SEP_LENGTH) {
+      // When we walk above the filesystem root, we emit the remaining path as is.
+      // This is important on Windows, since we're canonicalizing cross-device paths
+      // as relative paths from rootDir
+      return right;
     }
     // left may already end in a path separator only if it is a filesystem root,
     // '/' or 'X:\'.
