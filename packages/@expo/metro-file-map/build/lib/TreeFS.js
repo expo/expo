@@ -116,8 +116,11 @@ class TreeFS {
         return tfs;
     }
     getSize(mixedPath) {
-        const fileMetadata = this.#getFileData(mixedPath);
-        return (fileMetadata && fileMetadata[constants_1.default.SIZE]) ?? null;
+        const result = this.#lookup(this.#normalizePath(mixedPath));
+        if (!result.exists || isDirectory(result.node)) {
+            return null;
+        }
+        return result.node[constants_1.default.SIZE] ?? null;
     }
     getDifference(files, options) {
         const changedFiles = new Map(files);
@@ -127,9 +130,7 @@ class TreeFS {
         let rootNode = this.#rootNode;
         let prefix = '';
         if (subpath != null && subpath !== '') {
-            const lookupResult = this.#lookupByNormalPath(subpath, {
-                followLeaf: true,
-            });
+            const lookupResult = this.#lookup(subpath);
             if (!lookupResult.exists || !isDirectory(lookupResult.node)) {
                 // Directory doesn't exist, nothing to compare - all files are new
                 return { changedFiles, removedFiles };
@@ -137,15 +138,12 @@ class TreeFS {
             rootNode = lookupResult.node;
             prefix = lookupResult.canonicalPath;
         }
-        for (const { canonicalPath, metadata } of this.#metadataIterator(rootNode, {
-            includeNodeModules: true,
-            includeSymlinks: true,
-        }, prefix)) {
+        this.#forEachMetadata(rootNode, { includeNodeModules: true, includeSymlinks: true }, prefix, (_baseName, canonicalPath, metadata) => {
             const newMetadata = files.get(canonicalPath);
             if (newMetadata) {
                 if (isRegularFile(newMetadata) !== isRegularFile(metadata)) {
                     // Types differ, file has changed
-                    continue;
+                    return;
                 }
                 if (newMetadata[constants_1.default.MTIME] != null &&
                     newMetadata[constants_1.default.MTIME] !== 0 &&
@@ -170,28 +168,29 @@ class TreeFS {
             else {
                 removedFiles.add(canonicalPath);
             }
-        }
+        });
         return {
             changedFiles,
             removedFiles,
         };
     }
     getMtimeByNormalPath(normalPath) {
-        const result = this.#lookupByNormalPath(normalPath, {
-            followLeaf: false,
-            skipFallback: true,
-        });
+        // skipFallback=true: this is a cache-validation lookup; consulting the
+        // fallback filesystem here would be expensive AND mutate the tree as a
+        // side effect via `#populateFromFilesystem`.
+        const result = this.#walkLookupNoFollow(this.#rootNode, 0, 0, normalPath, undefined, true);
         return result.exists && !isDirectory(result.node) ? result.node[constants_1.default.MTIME] : null;
     }
     getSha1(mixedPath) {
-        const fileMetadata = this.#getFileData(mixedPath);
-        return (fileMetadata && fileMetadata[constants_1.default.SHA1]) ?? null;
+        const result = this.#lookup(this.#normalizePath(mixedPath));
+        if (!result.exists || isDirectory(result.node)) {
+            return null;
+        }
+        return result.node[constants_1.default.SHA1] ?? null;
     }
     async getOrComputeSha1(mixedPath) {
         const normalPath = this.#normalizePath(mixedPath);
-        const result = this.#lookupByNormalPath(normalPath, {
-            followLeaf: true,
-        });
+        const result = this.#lookup(normalPath);
         if (!result.exists || isDirectory(result.node)) {
             return null;
         }
@@ -230,16 +229,13 @@ class TreeFS {
             : { sha1 };
     }
     exists(mixedPath) {
-        const result = this.#getFileData(mixedPath);
-        return result != null;
+        const result = this.#lookup(this.#normalizePath(mixedPath));
+        return result.exists && !isDirectory(result.node);
     }
     lookup(mixedPath) {
         const normalPath = this.#normalizePath(mixedPath);
         const links = new Set();
-        const result = this.#lookupByNormalPath(normalPath, {
-            collectLinkPaths: links,
-            followLeaf: true,
-        });
+        const result = this.#lookup(normalPath, links);
         if (!result.exists) {
             const { canonicalMissingPath } = result;
             return {
@@ -257,19 +253,33 @@ class TreeFS {
         return { exists: true, links, realPath, type: 'f', metadata: node };
     }
     getAllFiles() {
-        return Array.from(this.metadataIterator({
-            includeNodeModules: true,
-            includeSymlinks: false,
-        }), ({ canonicalPath }) => this.#pathUtils.normalToAbsolute(canonicalPath));
+        const result = [];
+        this.#collectAllFilesInto(this.#rootNode, '', result);
+        return result;
+    }
+    // NOTE(@kitten): Specialize the `getAllFiles` collector, to avoid a megamorphic deopt in V8
+    #collectAllFilesInto(node, prefix, result) {
+        for (const [name, child] of node) {
+            if (child == null) {
+                continue;
+            }
+            const prefixedName = prefix === '' ? name : prefix + path_1.default.sep + name;
+            if (isDirectory(child)) {
+                this.#collectAllFilesInto(child, prefixedName, result);
+            }
+            else if (isRegularFile(child)) {
+                result.push(this.#pathUtils.normalToAbsolute(prefixedName));
+            }
+        }
     }
     linkStats(mixedPath) {
-        const fileMetadata = this.#getFileData(mixedPath, { followLeaf: false });
-        if (fileMetadata == null) {
+        const result = this.#lookupNoFollow(this.#normalizePath(mixedPath));
+        if (!result.exists || isDirectory(result.node)) {
             return null;
         }
-        const fileType = isRegularFile(fileMetadata) ? 'f' : 'l';
+        const fileMetadata = result.node;
         return {
-            fileType,
+            fileType: isRegularFile(fileMetadata) ? 'f' : 'l',
             modifiedTime: fileMetadata[constants_1.default.MTIME],
             size: fileMetadata[constants_1.default.SIZE],
         };
@@ -282,7 +292,7 @@ class TreeFS {
     *matchFiles(opts) {
         const { filter = null, filterCompareAbsolute = false, filterComparePosix = false, follow = false, recursive = true, rootDir = null, } = opts;
         const normalRoot = rootDir == null ? '' : this.#normalizePath(rootDir);
-        const contextRootResult = this.#lookupByNormalPath(normalRoot);
+        const contextRootResult = this.#lookup(normalRoot);
         if (!contextRootResult.exists) {
             return;
         }
@@ -295,13 +305,14 @@ class TreeFS {
         const contextRootAbsolutePathForComparison = filterComparePosix && path_1.default.sep !== '/'
             ? contextRootAbsolutePath.replaceAll(path_1.default.sep, '/')
             : contextRootAbsolutePath;
-        for (const relativePathForComparison of this.#pathIterator(contextRoot, contextRootParent, ancestorOfRootIdx, {
+        const matches = [];
+        this.#forEachPath(contextRoot, contextRootParent, ancestorOfRootIdx, {
             alwaysYieldPosix: filterComparePosix,
             canonicalPathOfRoot: rootRealPath,
             follow,
             recursive,
             subtreeOnly: rootDir != null,
-        })) {
+        }, '', new Set(), (relativePathForComparison) => {
             if (filter == null ||
                 filter.test(
                 // NOTE(EvanBacon): Ensure files start with `./` for matching purposes
@@ -313,24 +324,44 @@ class TreeFS {
                 const relativePath = filterComparePosix === true && path_1.default.sep !== '/'
                     ? relativePathForComparison.replaceAll('/', path_1.default.sep)
                     : relativePathForComparison;
-                yield path_1.default.join(contextRootAbsolutePath, relativePath);
+                matches.push(path_1.default.join(contextRootAbsolutePath, relativePath));
             }
-        }
+        });
+        yield* matches;
     }
     addOrModify(mixedPath, metadata, changeListener) {
         const normalPath = this.#normalizePath(mixedPath);
+        const dirname = path_1.default.dirname(normalPath);
+        const basename = path_1.default.basename(normalPath);
         // Walk the tree to find the *real* path of the parent node, creating
         // directories as we need.
-        const parentDirNode = this.#lookupByNormalPath(path_1.default.dirname(normalPath), {
-            changeListener,
-            makeDirectories: true,
-        });
+        const onSegment = changeListener
+            ? (_node, segmentNormalPath, _segmentName, _idx, isNewlyCreated) => {
+                if (isNewlyCreated) {
+                    changeListener.directoryAdded(segmentNormalPath);
+                }
+            }
+            : undefined;
+        const parentDirNode = this.#walkAndMakeDirectories(this.#rootNode, 0, 0, dirname, true, onSegment);
         if (!parentDirNode.exists) {
             throw new Error(`TreeFS: Failed to make parent directory entry for ${mixedPath}`);
         }
-        // Normalize the resulting path to account for the parent node being root.
-        const canonicalPath = this.#normalizePath(parentDirNode.canonicalPath + path_1.default.sep + path_1.default.basename(normalPath));
-        this.bulkAddOrModify(new Map([[canonicalPath, metadata]]), changeListener);
+        if (!isDirectory(parentDirNode.node)) {
+            throw new Error(`TreeFS: Could not add directory ${dirname}, adding ${mixedPath}. ` +
+                `${dirname} already exists in the file map as a file.`);
+        }
+        const canonicalPath = this.#normalizePath(parentDirNode.canonicalPath + path_1.default.sep + basename);
+        if (changeListener != null) {
+            const existingNode = parentDirNode.node.get(basename);
+            if (existingNode != null) {
+                (0, invariant_1.default)(!isDirectory(existingNode), 'Detected addition or modification of file %s, but it is tracked as a non-empty directory', canonicalPath);
+                changeListener.fileModified(canonicalPath, existingNode, metadata);
+            }
+            else {
+                changeListener.fileAdded(canonicalPath, metadata);
+            }
+        }
+        parentDirNode.node.set(basename, metadata);
     }
     bulkAddOrModify(addedOrModifiedFiles, changeListener) {
         // Optimisation: Bulk FileData are typically clustered by directory, so we
@@ -339,16 +370,19 @@ class TreeFS {
         // faster than caching all lookups in a Map, and 70% faster than no cache.
         let lastDir;
         let directoryNode;
+        const onSegment = changeListener
+            ? (_node, segmentNormalPath, _segmentName, _idx, isNewlyCreated) => {
+                if (isNewlyCreated) {
+                    changeListener.directoryAdded(segmentNormalPath);
+                }
+            }
+            : undefined;
         for (const [normalPath, metadata] of addedOrModifiedFiles) {
             const lastSepIdx = normalPath.lastIndexOf(path_1.default.sep);
             const dirname = lastSepIdx === -1 ? '' : normalPath.slice(0, lastSepIdx);
             const basename = lastSepIdx === -1 ? normalPath : normalPath.slice(lastSepIdx + 1);
             if (directoryNode == null || dirname !== lastDir) {
-                const lookup = this.#lookupByNormalPath(dirname, {
-                    changeListener,
-                    followLeaf: false,
-                    makeDirectories: true,
-                });
+                const lookup = this.#walkAndMakeDirectories(this.#rootNode, 0, 0, dirname, false, onSegment);
                 if (!lookup.exists) {
                     // This should only be possible if the input is non-real and
                     // lookup hits a broken symlink.
@@ -382,7 +416,7 @@ class TreeFS {
         this.#removeNormalPath(normalPath, changeListener);
     }
     #removeNormalPath(normalPath, changeListener) {
-        const result = this.#lookupByNormalPath(normalPath, { followLeaf: false });
+        const result = this.#lookupNoFollow(normalPath);
         if (!result.exists) {
             return;
         }
@@ -408,8 +442,7 @@ class TreeFS {
                 // NB: This isn't the most efficient algorithm - in the case of
                 // removing the last file in a deep hierarchy it's O(depth^2), but
                 // that's not expected to be a case common enough to justify
-                // implementation complexity, or slowing down more common uses of
-                // _lookupByNormalPath.
+                // implementation complexity, or slowing down more common lookups.
                 this.#removeNormalPath(path_1.default.dirname(canonicalPath), changeListener);
             }
         }
@@ -428,8 +461,15 @@ class TreeFS {
      *
      * Note that this code is extremely hot during resolution, being the most
      * expensive part of a file existence check. Benchmark any modifications!
+     *
+     * Each flag combination is implemented as its own specialised walker
+     * (`#walkLookup`, `#walkLookupNoFollow`, `#walkAndMakeDirectories`) so
+     * the hot inner loop has no per-iteration
+     * `opts.X` branches. Thin convenience wrappers below (`#lookup`,
+     * `#lookupNoFollow`, `#lookupFromNode`, `#walkAndStream`) cover the
+     * common call shapes.
      */
-    #lookupByNormalPath(requestedNormalPath, opts = { followLeaf: true, makeDirectories: false }) {
+    #walkLookup(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, onSegment, collectLinkPaths) {
         // We'll update the target if we hit a symlink.
         let targetNormalPath = requestedNormalPath;
         // Lazy-initialised set of seen target paths, to detect symlink cycles.
@@ -437,20 +477,11 @@ class TreeFS {
         // Set when a symlink is followed, to allow fallback population outside
         // the boundary for paths reachable transitively through symlinks.
         let followedSymlink = false;
-        // Pointer to the first character of the current path segment in
-        // targetNormalPath.
-        let fromIdx = opts.start?.pathIdx ?? 0;
-        // The parent of the current segment.
-        let parentNode = opts.start?.node ?? this.#rootNode;
-        // If a returned node is (an ancestor of) the root, this is the number of
-        // levels below the root, i.e. '' is 0, '..' is 1, '../..' is 2, otherwise
-        // null.
-        let ancestorOfRootIdx = opts.start?.ancestorOfRootIdx ?? 0;
-        const { collectAncestors, changeListener } = opts;
-        // Used only when collecting ancestors, to avoid double-counting nodes and
+        let fromIdx = startPathIdx;
+        let parentNode = startNode;
+        let ancestorOfRootIdx = startAncestorOfRootIdx;
+        // Used only when streaming ancestors, to avoid double-yielding nodes and
         // paths when traversing a symlink takes us back to rootNode and out again.
-        // This tracks the first character of the first segment not already
-        // collected.
         let unseenPathFromIdx = 0;
         while (targetNormalPath.length > fromIdx) {
             const nextSepIdx = targetNormalPath.indexOf(path_1.default.sep, fromIdx);
@@ -464,24 +495,22 @@ class TreeFS {
                 continue;
             }
             let segmentNode = parentNode.get(segmentName);
-            // In normal paths all indirections are at the prefix, so we are at the
-            // nth ancestor of the root iff the path so far is n '..' segments.
             if (segmentName === '..' && ancestorOfRootIdx != null) {
                 ancestorOfRootIdx++;
             }
             else if (segmentNode != null) {
-                ancestorOfRootIdx = null;
+                ancestorOfRootIdx = undefined;
             }
             if (segmentNode == null) {
-                if (opts.makeDirectories !== true && segmentName !== '..') {
-                    if (!opts.skipFallback && this.#fallbackFilesystem != null) {
+                if (segmentName !== '..') {
+                    if (this.#fallbackFilesystem != null) {
                         const parentEnd = isLastSegment
                             ? fromIdx - segmentName.length - 1
                             : fromIdx - segmentName.length - 2;
                         const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
                         segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlink);
                         if (segmentNode != null) {
-                            ancestorOfRootIdx = null;
+                            ancestorOfRootIdx = undefined;
                         }
                     }
                     if (segmentNode == null) {
@@ -496,16 +525,7 @@ class TreeFS {
                 }
                 if (segmentNode == null) {
                     segmentNode = new Map();
-                    if (opts.makeDirectories === true) {
-                        if (changeListener != null) {
-                            const canonicalPath = isLastSegment
-                                ? targetNormalPath
-                                : targetNormalPath.slice(0, fromIdx - 1);
-                            changeListener.directoryAdded(canonicalPath);
-                        }
-                        parentNode.set(segmentName, segmentNode);
-                    }
-                    else if (!opts.skipFallback && this.#fallbackFilesystem != null) {
+                    if (this.#fallbackFilesystem != null) {
                         parentNode.set(segmentName, segmentNode);
                     }
                 }
@@ -514,13 +534,12 @@ class TreeFS {
             if (
             // ...at a directory node and the only subsequent character is `/`, or
             (nextSepIdx === targetNormalPath.length - 1 && isDirectory(segmentNode)) ||
-                // there are no subsequent `/`, and this node is anything but a symlink
-                // we're required to resolve due to followLeaf.
-                (isLastSegment &&
-                    (isDirectory(segmentNode) || isRegularFile(segmentNode) || opts.followLeaf === false))) {
+                // ...there are no subsequent `/`, and this node is a directory or a
+                // regular file. (A leaf symlink falls through and is followed.)
+                (isLastSegment && (isDirectory(segmentNode) || isRegularFile(segmentNode)))) {
                 return {
                     ancestorOfRootIdx,
-                    canonicalPath: isLastSegment ? targetNormalPath : targetNormalPath.slice(0, -1), // remove trailing `/`
+                    canonicalPath: isLastSegment ? targetNormalPath : targetNormalPath.slice(0, -1),
                     exists: true,
                     node: segmentNode,
                     parentNode,
@@ -529,16 +548,11 @@ class TreeFS {
             // If the next node is a directory, go into it
             if (isDirectory(segmentNode)) {
                 parentNode = segmentNode;
-                if (collectAncestors && isUnseen) {
+                if (onSegment != null && isUnseen) {
                     const currentPath = isLastSegment
                         ? targetNormalPath
                         : targetNormalPath.slice(0, fromIdx - 1);
-                    collectAncestors.push({
-                        ancestorOfRootIdx,
-                        node: segmentNode,
-                        normalPath: currentPath,
-                        segmentName,
-                    });
+                    onSegment(segmentNode, currentPath, segmentName, ancestorOfRootIdx);
                 }
             }
             else {
@@ -562,8 +576,8 @@ class TreeFS {
                         missingSegmentName: segmentName,
                     };
                 }
-                if (opts.collectLinkPaths) {
-                    opts.collectLinkPaths.add(this.#pathUtils.normalToAbsolute(currentPath));
+                if (collectLinkPaths != null) {
+                    collectLinkPaths.add(this.#pathUtils.normalToAbsolute(currentPath));
                 }
                 const remainingTargetPath = isLastSegment ? '' : targetNormalPath.slice(fromIdx);
                 // Append any subsequent path segments to the symlink target, and reset
@@ -572,18 +586,19 @@ class TreeFS {
                 targetNormalPath = joinedResult.normalPath;
                 // Two special cases (covered by unit tests):
                 //
-                // If the symlink target is the root, the root should be a counted as
-                // an ancestor. We'd otherwise miss counting it because we normally
-                // push new ancestors only when entering a directory.
+                // If the symlink target is the root, the root should be counted as an
+                // ancestor. We'd otherwise miss it because new ancestors are only
+                // streamed when entering a directory.
                 //
                 // If the symlink target is an ancestor of the root *and* joining it
                 // with the remaining path results in collapsing segments, e.g:
-                // '../..' + 'parentofroot/root/foo.js' = 'foo.js', then we must add
+                // '../..' + 'parentofroot/root/foo.js' = 'foo.js', then we must yield
                 // parentofroot and root as ancestors.
-                if (collectAncestors &&
+                if (onSegment != null &&
                     !isLastSegment &&
                     // No-op optimisation to bail out the common case of nothing to do.
-                    ((ancestorOfRootIdx = this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget)) === 0 ||
+                    ((ancestorOfRootIdx =
+                        this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget) ?? undefined) === 0 ||
                         joinedResult.collapsedSegments > 0)) {
                     let node = this.#rootNode;
                     let collapsedPath = '';
@@ -605,12 +620,16 @@ class TreeFS {
                         node = node.get('..') ?? new Map();
                         collapsedPath = collapsedPath === '' ? '..' : collapsedPath + path_1.default.sep + '..';
                     }
-                    collectAncestors.push(...reverseAncestors.reverse());
+                    // Emit in shallowest-first order, matching today's
+                    // collectAncestors.push(...reverseAncestors.reverse()).
+                    for (let i = reverseAncestors.length - 1; i >= 0; i--) {
+                        const a = reverseAncestors[i];
+                        onSegment(a.node, a.normalPath, a.segmentName, a.ancestorOfRootIdx);
+                    }
                 }
-                // For the purpose of collecting ancestors: Ignore the traversal to
-                // the symlink target, and start collecting ancestors only
-                // from the target itself (ie, the basename of the normal target path)
-                // onwards.
+                // For the purpose of streaming ancestors: Ignore the traversal to the
+                // symlink target, and start yielding ancestors only from the target
+                // itself (i.e. the basename of the normal target path) onwards.
                 unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path_1.default.sep) + 1;
                 if (seen == null) {
                     // Optimisation: set this lazily only when we've encountered a symlink
@@ -637,8 +656,288 @@ class TreeFS {
             canonicalPath: targetNormalPath,
             exists: true,
             node: this.#rootNode,
-            parentNode: null,
+            parentNode: undefined,
         };
+    }
+    /**
+     * Specialised body for lstat-style lookups: followLeaf=false,
+     * makeDirectories=false. A symlink at the leaf is returned as-is.
+     * `skipFallback=true` disables the fallback-FS consultation (used by
+     * `getMtimeByNormalPath`, which must not trigger fallback population as
+     * a side effect of validation).
+     */
+    #walkLookupNoFollow(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, onSegment, skipFallback) {
+        let targetNormalPath = requestedNormalPath;
+        let seen;
+        let followedSymlink = false;
+        let fromIdx = startPathIdx;
+        let parentNode = startNode;
+        let ancestorOfRootIdx = startAncestorOfRootIdx;
+        let unseenPathFromIdx = 0;
+        while (targetNormalPath.length > fromIdx) {
+            const nextSepIdx = targetNormalPath.indexOf(path_1.default.sep, fromIdx);
+            const isLastSegment = nextSepIdx === -1;
+            const segmentName = isLastSegment
+                ? targetNormalPath.slice(fromIdx)
+                : targetNormalPath.slice(fromIdx, nextSepIdx);
+            const isUnseen = fromIdx >= unseenPathFromIdx;
+            fromIdx = !isLastSegment ? nextSepIdx + 1 : targetNormalPath.length;
+            if (segmentName === '.') {
+                continue;
+            }
+            let segmentNode = parentNode.get(segmentName);
+            if (segmentName === '..' && ancestorOfRootIdx != null) {
+                ancestorOfRootIdx++;
+            }
+            else if (segmentNode != null) {
+                ancestorOfRootIdx = undefined;
+            }
+            if (segmentNode == null) {
+                if (segmentName !== '..') {
+                    if (!skipFallback && this.#fallbackFilesystem != null) {
+                        const parentEnd = isLastSegment
+                            ? fromIdx - segmentName.length - 1
+                            : fromIdx - segmentName.length - 2;
+                        const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
+                        segmentNode = this.#populateFromFilesystem(parentNode, segmentName, parentCanonicalPath, followedSymlink);
+                        if (segmentNode != null) {
+                            ancestorOfRootIdx = undefined;
+                        }
+                    }
+                    if (segmentNode == null) {
+                        return {
+                            canonicalMissingPath: isLastSegment
+                                ? targetNormalPath
+                                : targetNormalPath.slice(0, fromIdx - 1),
+                            exists: false,
+                            missingSegmentName: segmentName,
+                        };
+                    }
+                }
+                if (segmentNode == null) {
+                    segmentNode = new Map();
+                    if (!skipFallback && this.#fallbackFilesystem != null) {
+                        parentNode.set(segmentName, segmentNode);
+                    }
+                }
+            }
+            // Done: at the last segment we return whatever we found (no leaf
+            // follow). Also done if the only remaining character is the trailing
+            // path separator and the node is a directory.
+            if (isLastSegment ||
+                (nextSepIdx === targetNormalPath.length - 1 && isDirectory(segmentNode))) {
+                return {
+                    ancestorOfRootIdx,
+                    canonicalPath: isLastSegment ? targetNormalPath : targetNormalPath.slice(0, -1),
+                    exists: true,
+                    node: segmentNode,
+                    parentNode,
+                };
+            }
+            if (isDirectory(segmentNode)) {
+                parentNode = segmentNode;
+                if (onSegment != null && isUnseen) {
+                    const currentPath = targetNormalPath.slice(0, fromIdx - 1);
+                    onSegment(segmentNode, currentPath, segmentName, ancestorOfRootIdx);
+                }
+            }
+            else {
+                const currentPath = targetNormalPath.slice(0, fromIdx - 1);
+                if (isRegularFile(segmentNode)) {
+                    return {
+                        canonicalMissingPath: currentPath,
+                        exists: false,
+                        missingSegmentName: segmentName,
+                    };
+                }
+                // Symlink in an interior position — still follow it (only the leaf
+                // is exempt from following under followLeaf=false).
+                const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode, currentPath);
+                if (normalSymlinkTarget == null) {
+                    return {
+                        canonicalMissingPath: currentPath,
+                        exists: false,
+                        missingSegmentName: segmentName,
+                    };
+                }
+                const remainingTargetPath = targetNormalPath.slice(fromIdx);
+                const joinedResult = this.#pathUtils.joinNormalToRelative(normalSymlinkTarget, remainingTargetPath);
+                targetNormalPath = joinedResult.normalPath;
+                if (onSegment != null &&
+                    ((ancestorOfRootIdx =
+                        this.#pathUtils.getAncestorOfRootIdx(normalSymlinkTarget) ?? undefined) === 0 ||
+                        joinedResult.collapsedSegments > 0)) {
+                    let node = this.#rootNode;
+                    let collapsedPath = '';
+                    const reverseAncestors = [];
+                    for (let i = 0; i <= joinedResult.collapsedSegments && isDirectory(node); i++) {
+                        if (i > 0 || ancestorOfRootIdx === 0 || joinedResult.collapsedSegments > 0) {
+                            reverseAncestors.push({
+                                ancestorOfRootIdx: i,
+                                node,
+                                normalPath: collapsedPath,
+                                segmentName: this.#pathUtils.getBasenameOfNthAncestor(i),
+                            });
+                        }
+                        node = node.get('..') ?? new Map();
+                        collapsedPath = collapsedPath === '' ? '..' : collapsedPath + path_1.default.sep + '..';
+                    }
+                    for (let i = reverseAncestors.length - 1; i >= 0; i--) {
+                        const a = reverseAncestors[i];
+                        onSegment(a.node, a.normalPath, a.segmentName, a.ancestorOfRootIdx);
+                    }
+                }
+                unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path_1.default.sep) + 1;
+                if (seen == null) {
+                    seen = new Set([requestedNormalPath]);
+                }
+                if (seen.has(targetNormalPath)) {
+                    return {
+                        canonicalMissingPath: targetNormalPath,
+                        exists: false,
+                        missingSegmentName: segmentName,
+                    };
+                }
+                seen.add(targetNormalPath);
+                followedSymlink = true;
+                fromIdx = 0;
+                parentNode = this.#rootNode;
+                ancestorOfRootIdx = 0;
+            }
+        }
+        (0, invariant_1.default)(parentNode === this.#rootNode, 'Unexpectedly escaped traversal');
+        return {
+            ancestorOfRootIdx: 0,
+            canonicalPath: targetNormalPath,
+            exists: true,
+            node: this.#rootNode,
+            parentNode: undefined,
+        };
+    }
+    /**
+     * Specialised body that creates missing directory nodes as it walks.
+     * `followLeaf` is parameterised so callers that look up `dirname(...)`
+     * can choose lstat-style or stat-style at the leaf. `onSegment` fires
+     * for every directory encountered, with `isNewlyCreated` distinguishing
+     * dirs the walker just created from dirs that already existed.
+     */
+    #walkAndMakeDirectories(startNode, startPathIdx, startAncestorOfRootIdx, requestedNormalPath, followLeaf, onSegment) {
+        let targetNormalPath = requestedNormalPath;
+        let seen;
+        let fromIdx = startPathIdx;
+        let parentNode = startNode;
+        let ancestorOfRootIdx = startAncestorOfRootIdx;
+        let unseenPathFromIdx = 0;
+        while (targetNormalPath.length > fromIdx) {
+            const nextSepIdx = targetNormalPath.indexOf(path_1.default.sep, fromIdx);
+            const isLastSegment = nextSepIdx === -1;
+            const segmentName = isLastSegment
+                ? targetNormalPath.slice(fromIdx)
+                : targetNormalPath.slice(fromIdx, nextSepIdx);
+            const isUnseen = fromIdx >= unseenPathFromIdx;
+            fromIdx = !isLastSegment ? nextSepIdx + 1 : targetNormalPath.length;
+            if (segmentName === '.') {
+                continue;
+            }
+            let segmentNode = parentNode.get(segmentName);
+            let wasJustCreated = false;
+            if (segmentName === '..' && ancestorOfRootIdx != null) {
+                ancestorOfRootIdx++;
+            }
+            else if (segmentNode != null) {
+                ancestorOfRootIdx = undefined;
+            }
+            if (segmentNode == null) {
+                segmentNode = new Map();
+                parentNode.set(segmentName, segmentNode);
+                wasJustCreated = true;
+            }
+            if ((nextSepIdx === targetNormalPath.length - 1 && isDirectory(segmentNode)) ||
+                (isLastSegment && (isDirectory(segmentNode) || isRegularFile(segmentNode) || !followLeaf))) {
+                if (wasJustCreated && onSegment != null) {
+                    const currentPath = isLastSegment
+                        ? targetNormalPath
+                        : targetNormalPath.slice(0, fromIdx - 1);
+                    onSegment(segmentNode, currentPath, segmentName, ancestorOfRootIdx, true);
+                }
+                return {
+                    ancestorOfRootIdx,
+                    canonicalPath: isLastSegment ? targetNormalPath : targetNormalPath.slice(0, -1),
+                    exists: true,
+                    node: segmentNode,
+                    parentNode,
+                };
+            }
+            if (isDirectory(segmentNode)) {
+                parentNode = segmentNode;
+                if (onSegment != null && isUnseen) {
+                    const currentPath = isLastSegment
+                        ? targetNormalPath
+                        : targetNormalPath.slice(0, fromIdx - 1);
+                    onSegment(segmentNode, currentPath, segmentName, ancestorOfRootIdx, wasJustCreated);
+                }
+            }
+            else {
+                const currentPath = isLastSegment
+                    ? targetNormalPath
+                    : targetNormalPath.slice(0, fromIdx - 1);
+                if (isRegularFile(segmentNode)) {
+                    return {
+                        canonicalMissingPath: currentPath,
+                        exists: false,
+                        missingSegmentName: segmentName,
+                    };
+                }
+                // Interior symlink: follow it.
+                const normalSymlinkTarget = this.#resolveSymlinkTargetToNormalPath(segmentNode, currentPath);
+                if (normalSymlinkTarget == null) {
+                    return {
+                        canonicalMissingPath: currentPath,
+                        exists: false,
+                        missingSegmentName: segmentName,
+                    };
+                }
+                const remainingTargetPath = isLastSegment ? '' : targetNormalPath.slice(fromIdx);
+                const joinedResult = this.#pathUtils.joinNormalToRelative(normalSymlinkTarget, remainingTargetPath);
+                targetNormalPath = joinedResult.normalPath;
+                unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path_1.default.sep) + 1;
+                if (seen == null) {
+                    seen = new Set([requestedNormalPath]);
+                }
+                if (seen.has(targetNormalPath)) {
+                    return {
+                        canonicalMissingPath: targetNormalPath,
+                        exists: false,
+                        missingSegmentName: segmentName,
+                    };
+                }
+                seen.add(targetNormalPath);
+                fromIdx = 0;
+                parentNode = this.#rootNode;
+                ancestorOfRootIdx = 0;
+            }
+        }
+        (0, invariant_1.default)(parentNode === this.#rootNode, 'Unexpectedly escaped traversal');
+        return {
+            ancestorOfRootIdx: 0,
+            canonicalPath: targetNormalPath,
+            exists: true,
+            node: this.#rootNode,
+            parentNode: undefined,
+        };
+    }
+    // Convenience wrappers for the common walker call shapes.
+    #lookup(normalPath, collectLinkPaths) {
+        return this.#walkLookup(this.#rootNode, 0, 0, normalPath, undefined, collectLinkPaths);
+    }
+    #lookupNoFollow(normalPath) {
+        return this.#walkLookupNoFollow(this.#rootNode, 0, 0, normalPath, undefined, false);
+    }
+    #lookupFromNode(startNode, startPathIdx, startAncestorOfRootIdx, target, collectLinkPaths) {
+        return this.#walkLookup(startNode, startPathIdx, startAncestorOfRootIdx, target, undefined, collectLinkPaths);
+    }
+    #walkAndStream(normalPath, onSegment, collectLinkPaths) {
+        return this.#walkLookup(this.#rootNode, 0, 0, normalPath, onSegment, collectLinkPaths);
     }
     /**
      * Given a start path (which need not exist), a subpath and type, and
@@ -666,11 +965,16 @@ class TreeFS {
     hierarchicalLookup(mixedStartPath, subpath, opts) {
         const ancestorsOfInput = [];
         const normalPath = this.#normalizePath(mixedStartPath);
-        const invalidatedBy = opts.invalidatedBy;
-        const closestLookup = this.#lookupByNormalPath(normalPath, {
-            collectAncestors: ancestorsOfInput,
-            collectLinkPaths: invalidatedBy,
-        });
+        const invalidatedBy = opts.invalidatedBy ?? undefined;
+        const onSegment = (node, normalPathOfDir, segmentName, ancestorOfRootIdx) => {
+            ancestorsOfInput.push({
+                ancestorOfRootIdx,
+                node,
+                normalPath: normalPathOfDir,
+                segmentName,
+            });
+        };
+        const closestLookup = this.#walkAndStream(normalPath, onSegment, invalidatedBy);
         if (closestLookup.exists && isDirectory(closestLookup.node)) {
             const maybeAbsolutePathMatch = this.#checkCandidateHasSubpath(closestLookup.canonicalPath, subpath, opts.subpathType, invalidatedBy, {
                 ancestorOfRootIdx: closestLookup.ancestorOfRootIdx,
@@ -719,7 +1023,7 @@ class TreeFS {
                 commonRoot = ancestor.node;
             }
         }
-        // Phase 1: Consider descendenants of the common root, from deepest to
+        // Phase 1: Consider descendants of the common root, from deepest to
         // shallowest.
         for (let candidateIdx = ancestorsOfInput.length - 1; candidateIdx >= commonRootDepth; --candidateIdx) {
             const candidate = ancestorsOfInput[candidateIdx];
@@ -732,15 +1036,12 @@ class TreeFS {
                 pathIdx: candidate.normalPath.length > 0 ? candidate.normalPath.length + 1 : 0,
             });
             if (maybeAbsolutePathMatch != null) {
-                // Determine the input path relative to the current candidate. Note
-                // that the candidate path will always be canonical (real), whereas the
-                // input may contain symlinks, so the candidate is not necessarily a
-                // prefix of the input. Use the fact that each remaining candidate
-                // corresponds to a leading segment of the input normal path, and
-                // discard the first candidateIdx + 1 segments of the input path.
-                //
-                // The next 5 lines are equivalent to (but faster than)
-                // normalPath.split('/').slice(candidateIdx + 1).join('/').
+                // Determine the input path relative to the current candidate. The
+                // candidate path is always canonical (real); the input may contain
+                // symlinks, so the candidate is not necessarily a prefix of the input.
+                // Use the fact that each remaining candidate corresponds to a leading
+                // segment of the input normal path, and discard the first
+                // candidateIdx + 1 segments of the input path.
                 let prefixLength = commonRootDepth * 3; // Leading '../'
                 for (let i = commonRootDepth; i <= candidateIdx; i++) {
                     prefixLength = normalPath.indexOf(path_1.default.sep, prefixLength + 1);
@@ -752,8 +1053,7 @@ class TreeFS {
                 };
             }
         }
-        // Phase 2: Consider the common root and its ancestors
-        // This will be '', '..', '../..', etc.
+        // Phase 2: Consider the common root and its ancestors.
         let candidateNormalPath = commonRootDepth > 0 ? normalPath.slice(0, 3 * commonRootDepth - 1) : '';
         const remainingNormalPath = normalPath.slice(commonRootDepth * 3);
         let nextNode = commonRoot;
@@ -826,10 +1126,10 @@ class TreeFS {
         const canForwardStart = start != null &&
             normalCandidatePath !== '..' &&
             !normalCandidatePath.endsWith(path_1.default.sep + '..');
-        const lookupResult = this.#lookupByNormalPath(this.#pathUtils.joinNormalToRelative(normalCandidatePath, subpath).normalPath, {
-            collectLinkPaths: invalidatedBy,
-            start: canForwardStart ? start : undefined,
-        });
+        const target = this.#pathUtils.joinNormalToRelative(normalCandidatePath, subpath).normalPath;
+        const lookupResult = canForwardStart
+            ? this.#lookupFromNode(start.node, start.pathIdx, start.ancestorOfRootIdx, target, invalidatedBy)
+            : this.#lookup(target, invalidatedBy);
         if (lookupResult.exists &&
             // Should be a Map iff subpathType is directory
             isDirectory(lookupResult.node) === (subpathType === 'd')) {
@@ -840,10 +1140,14 @@ class TreeFS {
         }
         return null;
     }
-    metadataIterator(opts) {
-        return this.#metadataIterator(this.#rootNode, opts);
+    *metadataIterator(opts) {
+        const buffer = [];
+        this.#forEachMetadata(this.#rootNode, opts, '', (baseName, canonicalPath, metadata) => {
+            buffer.push({ baseName, canonicalPath, metadata });
+        });
+        yield* buffer;
     }
-    *#metadataIterator(rootNode, opts, prefix = '') {
+    #forEachMetadata(rootNode, opts, prefix, callback) {
         for (const [name, node] of rootNode) {
             if (node == null) {
                 continue;
@@ -853,10 +1157,10 @@ class TreeFS {
             }
             const prefixedName = prefix === '' ? name : prefix + path_1.default.sep + name;
             if (isDirectory(node)) {
-                yield* this.#metadataIterator(node, opts, prefixedName);
+                this.#forEachMetadata(node, opts, prefixedName, callback);
             }
             else if (isRegularFile(node) || opts.includeSymlinks) {
-                yield { baseName: name, canonicalPath: prefixedName, metadata: node };
+                callback(name, prefixedName, node);
             }
         }
     }
@@ -865,17 +1169,13 @@ class TreeFS {
             ? this.#pathUtils.absoluteToNormal(relativeOrAbsolutePath)
             : this.#pathUtils.relativeToNormal(relativeOrAbsolutePath);
     }
-    *#directoryNodeIterator(node, parent, ancestorOfRootIdx) {
-        if (ancestorOfRootIdx != null && ancestorOfRootIdx > 0 && parent) {
-            yield [this.#pathUtils.getBasenameOfNthAncestor(ancestorOfRootIdx - 1), parent];
-        }
-        yield* node.entries();
-    }
     /**
      * Enumerate paths under a given node, including symlinks and through
-     * symlinks (if `follow` is enabled).
+     * symlinks (if `follow` is enabled). Invokes `callback` for each matching
+     * path. Inlines what was previously `#directoryNodeIterator` (yielding the
+     * parent entry first when `ancestorOfRootIdx > 0`).
      */
-    *#pathIterator(iterationRootNode, iterationRootParentNode, ancestorOfRootIdx, opts, pathPrefix = '', followedLinks = new Set()) {
+    #forEachPath(iterationRootNode, iterationRootParentNode, ancestorOfRootIdx, opts, pathPrefix, followedLinks, callback) {
         const pathSep = opts.alwaysYieldPosix ? '/' : path_1.default.sep;
         const prefixWithSep = pathPrefix === '' ? pathPrefix : pathPrefix + pathSep;
         // Optimization: We can attempt to eagerly populate directories we're visiting
@@ -888,18 +1188,18 @@ class TreeFS {
             const rootCanonical = pathPrefix === '' ? canonicalRoot : canonicalRoot + path_1.default.sep + pathPrefix;
             this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false, false);
         }
-        for (const [name, node] of this.#directoryNodeIterator(iterationRootNode, iterationRootParentNode, ancestorOfRootIdx)) {
+        const visitEntry = (name, node) => {
             if (node == null) {
-                continue;
+                return;
             }
             else if (opts.subtreeOnly && name === '..') {
-                continue;
+                return;
             }
             const nodePath = prefixWithSep + name;
             if (!isDirectory(node)) {
                 if (isRegularFile(node)) {
                     // regular file
-                    yield nodePath;
+                    callback(nodePath);
                 }
                 else {
                     // symlink
@@ -911,24 +1211,22 @@ class TreeFS {
                     // its normal path, and we need a canonical path for resolution
                     // (imagine our normal path contains a symlink 'bar' -> '.', and we
                     // are at /foo/bar/baz where baz -> '..' - that should resolve to
-                    // /foo, not /foo/bar). We *can* use _lookupByNormalPath to walk to
-                    // the canonical symlink, and then to its target.
-                    const resolved = this.#lookupByNormalPath(normalPathOfSymlink, {
-                        followLeaf: true,
-                    });
+                    // /foo, not /foo/bar). We *can* use #walkLookup to walk to the
+                    // canonical symlink, and then to its target.
+                    const resolved = this.#lookup(normalPathOfSymlink);
                     if (!resolved.exists) {
                         // Symlink goes nowhere, nothing to report.
-                        continue;
+                        return;
                     }
                     const target = resolved.node;
                     if (!isDirectory(target)) {
                         // Symlink points to a file, just yield the path of the symlink.
-                        yield nodePath;
+                        callback(nodePath);
                     }
                     else if (opts.recursive && opts.follow && !followedLinks.has(node)) {
                         // Symlink points to a directory - iterate over its contents using
                         // the path where we found the symlink as a prefix.
-                        yield* this.#pathIterator(target, resolved.parentNode, resolved.ancestorOfRootIdx, opts, nodePath, new Set([...followedLinks, node]));
+                        this.#forEachPath(target, resolved.parentNode, resolved.ancestorOfRootIdx, opts, nodePath, new Set([...followedLinks, node]), callback);
                     }
                 }
             }
@@ -942,8 +1240,16 @@ class TreeFS {
                         : opts.canonicalPathOfRoot + path_1.default.sep + nodePathWithSystemSeparators;
                     this.#populateDirFromFilesystem(node, canonicalPath, false, false);
                 }
-                yield* this.#pathIterator(node, iterationRootParentNode, ancestorOfRootIdx != null && ancestorOfRootIdx > 0 ? ancestorOfRootIdx - 1 : null, opts, nodePath, followedLinks);
+                this.#forEachPath(node, iterationRootParentNode, ancestorOfRootIdx != null && ancestorOfRootIdx > 0 ? ancestorOfRootIdx - 1 : undefined, opts, nodePath, followedLinks, callback);
             }
+        };
+        // Inlined #directoryNodeIterator: yield the parent entry first when we're
+        // at a directory above the root, then iterate `node.entries()`.
+        if (ancestorOfRootIdx != null && ancestorOfRootIdx > 0 && iterationRootParentNode) {
+            visitEntry(this.#pathUtils.getBasenameOfNthAncestor(ancestorOfRootIdx - 1), iterationRootParentNode);
+        }
+        for (const [name, node] of iterationRootNode) {
+            visitEntry(name, node);
         }
     }
     #resolveSymlinkTargetToNormalPath(symlinkNode, canonicalPathOfSymlink) {
@@ -959,29 +1265,19 @@ class TreeFS {
                 return normalTarget;
             }
             catch {
-                return null;
+                return undefined;
             }
         }
         else if (symlinkTarget === 0 || symlinkTarget == null) {
             // WARN: We shouldn't call this method on non-symlinks. Outside of tests
             // this condition shouldn't trigger. It's fine not to resolve a symlink if
             // it does trigger however
-            return null;
+            return undefined;
         }
         else {
             (0, invariant_1.default)(typeof symlinkTarget === 'string', 'Expected symlink target to be populated.');
             return (0, normalizePathSeparatorsToSystem_1.default)(symlinkTarget);
         }
-    }
-    #getFileData(filePath, opts = { followLeaf: true }) {
-        const normalPath = this.#normalizePath(filePath);
-        const result = this.#lookupByNormalPath(normalPath, {
-            followLeaf: opts.followLeaf,
-        });
-        if (!result.exists || isDirectory(result.node)) {
-            return null;
-        }
-        return result.node;
     }
     /**
      * Return a filtered view of the tree containing only content under watched
@@ -1090,7 +1386,7 @@ class TreeFS {
     }
     /**
      * Populate an existing (potentially empty sentinel) directory node from
-     * the filesystem. Used by #pathIterator to fill lazy directories before
+     * the filesystem. Used by #forEachPath to fill lazy directories before
      * iteration, and by #populateFromFilesystem for optimistic parent
      * population.
      */
