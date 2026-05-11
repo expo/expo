@@ -1,10 +1,7 @@
 import { type SliderProps } from './types';
 import { Host } from '../../swift-ui/Host';
 import { Slider as SwiftUISlider } from '../../swift-ui/Slider';
-import {
-  disabled as disabledModifier,
-  tint as tintModifier,
-} from '../../swift-ui/modifiers';
+import { disabled as disabledModifier, tint as tintModifier } from '../../swift-ui/modifiers';
 import type { ModifierConfig } from '../../types';
 
 /**
@@ -28,7 +25,7 @@ export function Slider(props: SliderProps) {
   const hostStyle = inverted ? [style, { transform: [{ scaleX: -1 }] }] : style;
   // SwiftUI's Slider only exposes `.tint(...)` for the minimum (active)
   // track. `maximumTrackTintColor` and `thumbTintColor` are accepted at the
-  // type level but not visually applied on iOS until UIKit fallback work.
+  // type level but not visually applied on iOS
   const modifiers: ModifierConfig[] = [];
   if (disabled) modifiers.push(disabledModifier(true));
   if (minimumTrackTintColor !== undefined) {
