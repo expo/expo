@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Skip Babel transform for CSS's JS mount module ([#45657](https://github.com/expo/expo/pull/45657) by [@kitten](https://github.com/kitten))
+
 ## 56.0.7 — 2026-05-13
 
 ### 💡 Others
