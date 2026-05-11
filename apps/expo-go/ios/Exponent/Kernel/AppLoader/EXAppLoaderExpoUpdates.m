@@ -259,7 +259,8 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
-  if ([EXAppLoaderExpoUpdates isHermesBundle:_bundle]) {
+  BOOL isEasUpdate = [_httpManifestUrl.host isEqualToString:@"u.expo.dev"];
+  if (!isEasUpdate && [EXAppLoaderExpoUpdates isHermesBundle:_bundle]) {
     EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
     _error = [manifestResource formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
       @"errorCode": @"EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED",
