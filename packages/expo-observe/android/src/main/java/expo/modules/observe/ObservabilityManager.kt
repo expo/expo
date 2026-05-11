@@ -85,10 +85,7 @@ class BaseObservabilityManager(
       return
     }
 
-    val dispatchingEnabled = ObservePreferences.getConfig(context)?.dispatchingEnabled ?: true
-    val dispatchInDebug = ObservePreferences.getConfig(context)?.dispatchInDebug ?: false
-    val shouldDispatch = dispatchingEnabled && isInSample() && (!isDebugBuild || dispatchInDebug)
-    if (!shouldDispatch) {
+    if (!shouldDispatch()) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return
     }
@@ -125,9 +122,21 @@ class BaseObservabilityManager(
     return deterministicUniformValueProvider() < clamped
   }
 
+  private fun shouldDispatch(): Boolean {
+    val config = ObservePreferences.getConfig(context)
+    val dispatchingEnabled = config?.dispatchingEnabled ?: true
+    val dispatchInDebug = config?.dispatchInDebug ?: false
+    // `isDev` is the OR of the JS-bundle dev flag (pushed via `setBundleDefaults` on JS
+    // package import) and the native build's debug flag. Either being true means the
+    // bundle should be treated as dev for dispatch-gating.
+    val isJsDev = ObservePreferences.getBundleDefaults(context)?.isJsDev ?: false
+    val isDev = isDebugBuild || isJsDev
+    return dispatchingEnabled && isInSample() && (!isDev || dispatchInDebug)
+  }
+
   suspend fun cleanup() {
     pendingMetricsManager.cleanupOldPendingMetrics()
-    // TODO(@ubax): Move sessionManager.cleanupOldMetrics() out of eas observe
-    sessionManager.cleanupOldMetrics()
+    // TODO(@ubax): Move sessionManager.cleanupOldSessions out of eas observe
+    sessionManager.cleanupOldSessions()
   }
 }

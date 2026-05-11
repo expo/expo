@@ -1,10 +1,9 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "ExpoModulesHostObject.h"
 #include "LazyObject.h"
 
-#include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
 #include <react/bridging/LongLivedObject.h>
 
 namespace jsi = facebook::jsi;

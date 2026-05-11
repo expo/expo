@@ -136,9 +136,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
         }
         const getEnsuredMaps = () => {
             bundleMap ??= getSourceMapString()([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
-                // TODO: Surface this somehow.
-                excludeSource: false,
-                // excludeSource: options.serializerOptions?.excludeSource,
+                excludeSource: options.serializerOptions?.excludeSource ?? false,
                 processModuleFilter: options.processModuleFilter,
                 shouldAddToIgnoreList: options.shouldAddToIgnoreList,
             });

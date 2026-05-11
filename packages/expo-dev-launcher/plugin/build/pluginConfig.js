@@ -28,6 +28,14 @@ const schema = {
             type: 'boolean',
             nullable: true,
         },
+        skipOnboarding: {
+            type: 'boolean',
+            nullable: true,
+        },
+        showMenuAtLaunch: {
+            type: 'boolean',
+            nullable: true,
+        },
         android: {
             type: 'object',
             properties: {
@@ -51,6 +59,14 @@ const schema = {
                 },
                 defaultLaunchURL: {
                     type: 'string',
+                    nullable: true,
+                },
+                skipOnboarding: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                showMenuAtLaunch: {
+                    type: 'boolean',
                     nullable: true,
                 },
             },
@@ -79,6 +95,14 @@ const schema = {
                 },
                 defaultLaunchURL: {
                     type: 'string',
+                    nullable: true,
+                },
+                skipOnboarding: {
+                    type: 'boolean',
+                    nullable: true,
+                },
+                showMenuAtLaunch: {
+                    type: 'boolean',
                     nullable: true,
                 },
             },

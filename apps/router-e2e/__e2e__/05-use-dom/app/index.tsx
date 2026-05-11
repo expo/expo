@@ -91,7 +91,13 @@ export default function Page() {
       </TestCase>
 
       <TestCase name="NativeModuleProxy">
-        <NativeModuleProxy dom={{ matchContents: true, useExpoDOMWebView: true }} />
+        <NativeModuleProxy
+          dom={{
+            matchContents: true,
+            useExpoDOMWebView: true,
+            unstable_useExpoModulesBridge: true,
+          }}
+        />
       </TestCase>
       <TestCase name="Router">
         <RouterDemo

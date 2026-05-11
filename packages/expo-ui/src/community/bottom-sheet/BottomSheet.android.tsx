@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import { BottomSheetContext, BottomSheetInternalContext } from './context';
 import type { BottomSheetMethods, BottomSheetProps } from './types';
@@ -65,6 +65,7 @@ export function BottomSheet(props: BottomSheetProps) {
     backgroundStyle,
     children,
   } = props;
+  const { width } = useWindowDimensions();
 
   const hasMultipleSnapPoints = snapPointsProp != null && snapPointsProp.length > 1;
   const fitToContents = enableDynamicSizing && (!snapPointsProp || snapPointsProp.length === 0);
@@ -196,7 +197,7 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host matchContents>
+        <Host style={{ position: 'absolute', width }}>
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}

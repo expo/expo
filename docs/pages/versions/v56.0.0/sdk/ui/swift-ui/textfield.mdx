@@ -1,0 +1,225 @@
+---
+title: TextField
+description: A SwiftUI TextField component for text input.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
+
+Expo UI TextField matches the official SwiftUI [TextField API](https://developer.apple.com/documentation/swiftui/textfield) and supports single-line and multiline input, keyboard configuration, submit handling, and an imperative `ref` for programmatic control.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/textfield/ios-light.webp"
+  darkSource="/static/images/expo-ui/textfield/ios-dark.webp"
+  alt="TextField and SecureField inside a Form"
+/>
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic text field
+
+```tsx BasicTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+
+export default function BasicTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField placeholder="Username" onTextChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Multiline text field
+
+Set `axis="vertical"` to allow the text field to expand vertically. Use the [`lineLimit`](modifiers/#linelimit) modifier to control the visible line count. When using `Host matchContents`, add `fixedSize({ horizontal: false, vertical: true })` so the text field accepts the parent's width while using its ideal height.
+
+```tsx MultilineTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { lineLimit, fixedSize } from '@expo/ui/swift-ui/modifiers';
+
+export default function MultilineTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        axis="vertical"
+        placeholder="Tell us about yourself..."
+        onTextChange={setValue}
+        modifiers={[lineLimit(5), fixedSize({ horizontal: false, vertical: true })]}
+      />
+    </Host>
+  );
+}
+```
+
+### Keyboard type
+
+Use the [`keyboardType`](modifiers/#keyboardtypekeyboardtype) modifier to display a specific keyboard layout.
+
+```tsx KeyboardTypeExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { keyboardType, autocorrectionDisabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function KeyboardTypeExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        placeholder="Email"
+        onTextChange={setValue}
+        modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
+      />
+    </Host>
+  );
+}
+```
+
+### Submit handling
+
+Use the [`submitLabel`](modifiers/#submitlabelsubmitlabel) modifier to customize the return key and [`onSubmit`](modifiers/#onsubmithandler) to handle the submit action.
+
+```tsx SubmitHandlingExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { submitLabel, onSubmit } from '@expo/ui/swift-ui/modifiers';
+
+export default function SubmitHandlingExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        placeholder="Search..."
+        onTextChange={setValue}
+        modifiers={[submitLabel('search'), onSubmit(() => console.log('Submitted:', value))]}
+      />
+    </Host>
+  );
+}
+```
+
+### Imperative ref
+
+Use a `ref` to imperatively set text, focus, blur, or select text.
+
+> **Note:** `setSelection` requires iOS 18.0+ / tvOS 18.0+. The other ref methods work on all supported versions.
+
+```tsx ImperativeRefExample.tsx
+import { useRef } from 'react';
+import {
+  Host,
+  TextField,
+  TextFieldRef,
+  Button,
+  HStack,
+  VStack,
+  useNativeState,
+} from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ImperativeRefExample() {
+  const ref = useRef<TextFieldRef>(null);
+  const text = useNativeState('Select me!');
+
+  return (
+    <Host matchContents>
+      <VStack>
+        <TextField ref={ref} text={text} placeholder="Imperative field" />
+        <HStack spacing={12}>
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.focus()}
+            label="Focus"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.blur()}
+            label="Blur"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.setText('SwiftUI rocks!')}
+            label="Set Text"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.clear()}
+            label="Clear"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.setSelection(0, 7)}
+            label="Select"
+          />
+        </HStack>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Worklet text masking
+
+When `onTextChange` is marked with the `'worklet'` directive, it runs synchronously on the UI thread, so writes to [`useNativeState`](usenativestate) observables inside the callback take effect before the next frame. There is no flicker between the typed text and the masked text. The example below masks a phone number as the user types and writes both `text` and `selection` from the worklet to keep the cursor at the end of the formatted value.
+
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/). The `selection` prop requires iOS 18.0+ / tvOS 18.0+. On older versions the worklet can still update the text but cursor positioning is unavailable.
+
+```tsx WorkletPhoneMaskExample.tsx
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
+import { keyboardType } from '@expo/ui/swift-ui/modifiers';
+
+export default function WorkletPhoneMaskExample() {
+  const phone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
+
+  return (
+    <Host matchContents>
+      <TextField
+        text={phone}
+        selection={selection}
+        placeholder="(555) 123-4567"
+        modifiers={[keyboardType('phone-pad')]}
+        onTextChange={v => {
+          'worklet';
+          const digits = v.replace(/\D/g, '').slice(0, 10);
+          let formatted = digits;
+          if (digits.length > 6) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+          } else if (digits.length > 3) {
+            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+          }
+          if (formatted !== v) {
+            phone.value = formatted;
+            selection.value = { start: formatted.length, end: formatted.length };
+          }
+        }}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { TextField } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/textfield" apiName="TextField" />

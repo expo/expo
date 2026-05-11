@@ -39,7 +39,6 @@ expoAutolinking.exclude = [
   'expo-maps',
   'expo-network-addons',
   'expo-splash-screen',
-  '@expo/ui',
   'expo-mesh-gradient',
   '@expo/app-integrity',
   '@expo/home',

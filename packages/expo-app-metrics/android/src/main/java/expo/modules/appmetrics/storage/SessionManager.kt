@@ -8,6 +8,9 @@ import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.utils.TimeUtils
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -50,7 +53,11 @@ class SessionManager(
       appIdentifier = metadata?.appIdentifier,
       appVersion = metadata?.appVersion,
       appBuildNumber = metadata?.appBuildNumber,
-      appUpdateId = metadata?.appUpdateId,
+      appUpdateId = metadata?.appUpdatesInfo?.updateId,
+      appUpdateRuntimeVersion = metadata?.appUpdatesInfo?.runtimeVersion,
+      appUpdateRequestHeaders = metadata?.appUpdatesInfo?.requestHeaders?.let {
+        Json.encodeToString(MapSerializer(String.serializer(), String.serializer()), it)
+      },
       appEasBuildId = metadata?.appEasBuildId,
       deviceOs = metadata?.deviceOs,
       deviceOsVersion = metadata?.deviceOsVersion,
@@ -83,7 +90,10 @@ class SessionManager(
   }
 
   suspend fun stopSession(sessionId: String) {
-    database.sessionDao().updateActiveStatus(sessionId, isActive = false)
+    database.sessionDao().stopSessionAt(
+      sessionId,
+      endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
+    )
   }
 
   suspend fun addMetrics(
@@ -104,6 +114,8 @@ class SessionManager(
 
   suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
 
+  suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
+
   suspend fun getAllActiveSessions(): List<SessionWithMetrics> = database.sessionDao().getAllActiveSessions()
 
   suspend fun removeSessions(session: List<SessionWithMetrics>) {
@@ -118,9 +130,13 @@ class SessionManager(
     database.sessionDao().deactivateAllSessionsBefore(timestamp)
   }
 
-  suspend fun cleanupOldMetrics() {
+  /**
+   * Prunes inactive sessions whose `startTimestamp` is older than the
+   * retention window. Their metrics are removed via the foreign-key cascade.
+   */
+  suspend fun cleanupOldSessions() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
-    database.metricDao().deleteMetricsOlderThan(cutoffTimestamp)
+    database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
   }
 
   suspend fun updateEnvironmentForActiveSessions(environment: String) {

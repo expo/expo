@@ -2,15 +2,11 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JSIObjectWrapper.h"
 #include "JavaScriptTypedArray.h"
 #include "JavaScriptArrayBuffer.h"
 #include "JNIDeallocator.h"
-
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-
-#include <memory>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

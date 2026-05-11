@@ -138,13 +138,20 @@ public struct Conversions {
    `unknownToJavaScriptValue` which handles type-erased values through `NSNumber`/`NSDictionary` matching.
    */
   static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try anyToJavaScriptValue(value, appContext: appContext, in: appContext.runtime)
+  }
+
+  /**
+   Variant that creates JS values in the given `runtime`, used by the worklet conversion.
+   */
+  static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if ValueType.self is AnyOptional.Type, Optional.isNil(value) {
       return .null
     }
     if let value = value as? AnyArgument {
-      return try type(of: value).getDynamicType().castToJS(value, appContext: appContext)
+      return try type(of: value).getDynamicType().castToJS(value, appContext: appContext, in: runtime)
     }
-    return try unknownToJavaScriptValue(value, appContext: appContext)
+    return try unknownToJavaScriptValue(value, appContext: appContext, in: runtime)
   }
 
   /**
@@ -153,11 +160,17 @@ public struct Conversions {
    can call this without re-entering the `AnyArgument` check and causing infinite recursion.
    */
   static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
-    if let value = value as? JavaScriptRepresentable {
-      return .representing(value: value, in: try appContext.runtime)
-    }
+    return try unknownToJavaScriptValue(value, appContext: appContext, in: appContext.runtime)
+  }
 
-    let runtime = try appContext.runtime
+  /**
+   Variant that creates JS values in the given `runtime` — used by the worklet conversion
+   path so produced dicts/arrays live in the calling runtime, not the main runtime.
+   */
+  static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    if let value = value as? JavaScriptRepresentable {
+      return .representing(value: value, in: runtime)
+    }
 
     switch value {
     case is Void:
@@ -179,14 +192,14 @@ public struct Conversions {
     case let array as NSArray:
       let jsArray = runtime.createArray(length: array.count)
       for (index, element) in array.enumerated() {
-        try jsArray.set(value: anyToJavaScriptValue(element, appContext: appContext), at: index)
+        try jsArray.set(value: anyToJavaScriptValue(element, appContext: appContext, in: runtime), at: index)
       }
       return jsArray.asValue()
     case let dict as NSDictionary:
       let jsObject = runtime.createObject()
       for (key, element) in dict {
         guard let key = key as? String else { continue }
-        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, appContext: appContext))
+        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, appContext: appContext, in: runtime))
       }
       return jsObject.asValue()
     default:

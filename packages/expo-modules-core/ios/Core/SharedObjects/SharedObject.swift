@@ -97,13 +97,27 @@ public extension SharedObject { // swiftlint:disable:this no_grouping_extension
       }
 
       // Convert native arguments to JS, just like function results
-      let arguments = argumentPairs.map { argument, dynamicType in
-        return Conversions.convertFunctionResult(argument, appContext: appContext, dynamicType: dynamicType)
+      let jsArguments: [JavaScriptValue]
+      do {
+        jsArguments = try argumentPairs.map { argument, dynamicType in
+          try dynamicType.convertToJS(argument, appContext: appContext)
+        }
+      } catch {
+        log.warn("Failed to convert arguments for event '\(event)' on \(type(of: self)); the event will not be emitted: \(error)")
+        return
       }
+
+      let argumentsBuffer = JavaScriptValuesBuffer.copying(in: runtime, values: jsArguments)
 
       runtime.withUnsafePointee { runtimePtr in
         jsValue.withUnsafePointee { objectPtr in
-          JSUtils.emitEvent(event, runtimePointer: runtimePtr, objectPointer: objectPtr, withArguments: arguments)
+          JSUtils.emitEvent(
+            event,
+            runtimePointer: runtimePtr,
+            objectPointer: objectPtr,
+            argumentsPointer: argumentsBuffer.rawBaseAddress,
+            argumentCount: UInt(argumentsBuffer.count)
+          )
         }
       }
     }

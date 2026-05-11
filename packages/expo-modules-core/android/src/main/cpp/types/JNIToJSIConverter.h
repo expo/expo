@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "../JSIContext.h"
 #include "../JSharedObject.h"
 #include "../JNIUtils.h"
 #include "ObjectDeallocator.h"
-#include "../javaclasses/Collections.h"
 #include "../JavaScriptArrayBuffer.h"
 #include "../NativeArrayBuffer.h"
 #include "../concepts/jni_deref.h"
@@ -14,16 +14,7 @@
 #include "../concepts/jsi.h"
 #include "ReturnType.h"
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-#include <optional>
 #include <concepts>
-
-#include <react/jni/ReadableNativeMap.h>
-#include <react/jni/ReadableNativeArray.h>
-#include <react/jni/WritableNativeArray.h>
-#include <react/jni/WritableNativeMap.h>
-#include <jsi/JSIDynamic.h>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

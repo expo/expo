@@ -33,6 +33,26 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       )
     }
 
+    Function("logEvent") { (name: String, options: LogEventOptions?) in
+      guard let validatedName = validateEventName(name) else {
+        return
+      }
+      let validatedBody = validateEventBody(options?.body)
+      let sanitized = sanitizeLogEventAttributes(options?.attributes)
+
+      AppMetricsActor.isolated {
+        AppMetrics.mainSession.receiveLog(
+          LogRecord(
+            name: validatedName,
+            body: validatedBody,
+            attributes: sanitized.attributes,
+            droppedAttributesCount: sanitized.droppedCount,
+            severity: options?.severity ?? .info
+          )
+        )
+      }
+    }
+
     AsyncFunction("getAppStartupTimesAsync") {
       return await AppMetrics.mainSession.appStartupMonitor.metrics
     }

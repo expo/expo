@@ -9,8 +9,9 @@ import type { EventSubscription } from 'expo-modules-core';
 import type { Contact as ContactType } from './types/Contact';
 import type { Container as ContainerType } from './types/Container';
 import { FallbackContainer } from './types/Container';
-import type { Group as GroupType } from './types/Group';
 import { FallbackGroup } from './types/Group';
+import type { Group as GroupType } from './types/Group';
+import type { ContactsPermissionResponse } from './types/Permissions';
 
 type ExpoContactsEvents = {
   contactsDidChange: () => void;
@@ -21,6 +22,8 @@ declare class ExpoContactsModule extends NativeModule<ExpoContactsEvents> {
   Contact: typeof ContactType;
   Group: typeof GroupType;
   Container: typeof ContainerType;
+  getPermissionsAsync(): Promise<ContactsPermissionResponse>;
+  requestPermissionsAsync(): Promise<ContactsPermissionResponse>;
 }
 
 const expoContactsModule = requireNativeModule<ExpoContactsModule>('ExpoContactsNext');
@@ -98,4 +101,20 @@ export function addContactsChangeListener(listener: () => void): EventSubscripti
  */
 export function removeAllContactsChangeListeners(): void {
   expoContactsModule.removeAllListeners('contactsDidChange');
+}
+
+/**
+ * Checks user's permissions for accessing contacts data.
+ * @returns A promise that resolves to a [`ContactsPermissionResponse`](#contactspermissionresponse) object.
+ */
+export async function getPermissionsAsync() {
+  return expoContactsModule.getPermissionsAsync();
+}
+
+/**
+ * Asks the user to grant permissions for accessing contacts data.
+ * @returns A promise that resolves to a [`ContactsPermissionResponse`](#contactspermissionresponse) object.
+ */
+export async function requestPermissionsAsync() {
+  return expoContactsModule.requestPermissionsAsync();
 }

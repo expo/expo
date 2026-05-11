@@ -1,4 +1,3 @@
-//@ts-expect-error
-import ExpoUITestScreen from 'native-component-list/src/screens/UI/ButtonScreen';
+import HorizontalPagerScreen from 'native-component-list/src/screens/UI/HorizontalPagerScreen';
 
-export default ExpoUITestScreen;
+export default HorizontalPagerScreen;

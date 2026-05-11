@@ -139,6 +139,20 @@ function applyUseStrictDirective(ast) {
         directives.push(core_1.types.directive(core_1.types.directiveLiteral('use strict')));
     }
 }
+function getImportNames(options, ast) {
+    if (options.experimentalImportSupport === true &&
+        options.customTransformOptions?.liveBindings !== 'false') {
+        // NOTE(@kitten): The live bindings import/export plugin doesn't use these helpers
+        // If it's used, we can assume that there's no conflicts (since we reserve this name, and assume users won't use it)
+        // and skip the expensive `generateImportNames` call
+        return {
+            importAll: '_$$_IMPORT_ALL',
+            importDefault: '_$$_IMPORT_DEFAULT',
+        };
+    }
+    // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
+    return (0, generateImportNames_1.default)(ast);
+}
 function applyImportSupport(ast, { filename, options, importDefault, importAll, collectLocations, performConstantFolding, }) {
     // Perform the import-export transform (in case it's still needed), then
     // fold requires and perform constant folding (if in dev).
@@ -254,8 +268,7 @@ async function transformJS(file, { config, options }) {
     // Transformers can output null ASTs (if they ignore the file). In that case
     // we need to parse the module source code to get their AST.
     let ast = file.ast ?? nullthrows((0, core_1.parse)(file.code, { sourceType: 'unambiguous' }));
-    // NOTE(EvanBacon): This can be really expensive on larger files. We should replace it with a cheaper alternative that just iterates and matches.
-    const { importDefault, importAll } = (0, generateImportNames_1.default)(ast);
+    const { importDefault, importAll } = getImportNames(options, ast);
     // Add "use strict" if the file was parsed as a module, and the directive did
     // not exist yet.
     applyUseStrictDirective(ast);
@@ -540,6 +553,8 @@ function getBabelTransformArgs(file, { options, config, projectRoot }, plugins =
         options: {
             ...babelTransformerOptions,
             enableBabelRCLookup: config.enableBabelRCLookup,
+            // NOTE(@kitten): Hint for babel transformer on where to look up Babel config from
+            extendsBabelConfigPath: config.enableBabelRCLookup !== false ? config.extendsBabelConfigPath : undefined,
             // NOTE(@kitten): This shouldn't be relevant via this code path. However, in case it does,
             // this prevents us from adding imports/requires to @babel/runtime when we're transforming a script
             enableBabelRuntime: options.type === 'script' ? false : config.enableBabelRuntime,
@@ -597,7 +612,7 @@ async function transform(config, projectRoot, filename, data, options) {
     };
     return transformJSWithBabel(file, context);
 }
-function getCacheKey(config) {
+function getCacheKey(config, opts) {
     const { 
     // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
     expo_customTransformerPath: _customTransformerPath, babelTransformerPath, minifierPath, ...remainingConfig } = config;
@@ -613,12 +628,22 @@ function getCacheKey(config) {
         require.resolve('@expo/metro/metro/ModuleGraph/worker/JsFileWrapping'),
         ...metroTransformPlugins.getTransformPluginCacheKeyFiles(),
     ]);
-    const babelTransformer = require(babelTransformerPath);
-    return [
-        filesKey,
-        (0, metro_cache_1.stableHash)(remainingConfig).toString('hex'),
-        babelTransformer.getCacheKey ? babelTransformer.getCacheKey() : '',
-    ].join('$');
+    let babelTransformer = require(babelTransformerPath);
+    // NOTE(@kitten): Many custom Babel transformers won't have `getCacheKey` yet and won't
+    // pass ours through. We should still try to derive a cache key though, since the default
+    // looks at a user's Babel config, if they have one
+    if (config.extendsBabelConfigPath && !babelTransformer.getCacheKey) {
+        babelTransformer = require('../babel-transformer');
+    }
+    const babelTransformerCacheKey = babelTransformer.getCacheKey
+        ? babelTransformer.getCacheKey({
+            projectRoot: opts?.projectRoot,
+            enableBabelRCLookup: config.enableBabelRCLookup,
+            // NOTE(@kitten): Custom modification to pass this custom Babel resolution option to `getCacheKey` for consistency
+            extendsBabelConfigPath: config.extendsBabelConfigPath,
+        })
+        : '';
+    return [filesKey, (0, metro_cache_1.stableHash)(remainingConfig).toString('hex'), babelTransformerCacheKey].join('$');
 }
 /**
  * Produces a Babel template that transforms an "import(...)" call into a

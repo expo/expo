@@ -5,7 +5,8 @@ class ExpoAppMetricsModule extends NativeModule {
         throw new Error('Method not implemented.');
     }
     async markFirstRender() { }
-    async markInteractive(_attributes) { }
+    async markInteractive(attributes) { }
+    logEvent(name, options) { }
     async getStoredEntries() {
         return [];
     }
@@ -19,6 +20,9 @@ class ExpoAppMetricsModule extends NativeModule {
         return '';
     }
     stopSession(sessionId) { }
+    async getMainSession() {
+        return null;
+    }
 }
 export default registerWebModule(ExpoAppMetricsModule, 'ExpoAppMetrics');
 //# sourceMappingURL=module.web.js.map

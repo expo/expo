@@ -12,7 +12,6 @@ public protocol AnyField {
  */
 internal protocol AnyFieldInternal: AnyField {
   var key: String? { get }
-  var options: Set<FieldOption> { get set }
   var fieldType: AnyDynamicType { get }
 
   /**
@@ -21,6 +20,9 @@ internal protocol AnyFieldInternal: AnyField {
    Note that it's NOT the opposite to `isOptional`.
    */
   var isRequired: Bool { get }
+
+  // Read‑modify‑write inside `body` is atomic.
+  func withOptions<T>(_ body: (inout Set<FieldOption>) -> T) -> T
 
   func set(_ newValue: Any?, appContext: AppContext) throws
 

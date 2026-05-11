@@ -5,8 +5,66 @@ import {
   Paths,
   UploadTask,
   DownloadTask,
+  UploadType,
   type DownloadPauseState,
 } from '../index';
+
+describe('File.upload()', () => {
+  const url = 'https://example.com/upload';
+  const mockUploadResult = { body: '{"ok":true}', status: 200, headers: { 'x-req-id': '1' } };
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('starts an upload task and resolves with its result', async () => {
+    const file = new File(Paths.cache, 'photo.jpg');
+    const uploadAsyncSpy = jest
+      .spyOn(UploadTask.prototype, 'uploadAsync')
+      .mockResolvedValue(mockUploadResult);
+
+    const result = await file.upload(url);
+
+    expect(uploadAsyncSpy).toHaveBeenCalledTimes(1);
+    expect(result).toEqual(mockUploadResult);
+  });
+
+  it('forwards upload options through the underlying task', async () => {
+    const file = new File(Paths.cache, 'photo.jpg');
+    jest
+      .spyOn(ExpoFileSystem.FileSystemUploadTask.prototype, 'start')
+      .mockResolvedValue({ body: 'validation failed', status: 422, headers: { 'x-error': '1' } });
+
+    const result = await file.upload(url, {
+      httpMethod: 'PATCH',
+      uploadType: UploadType.MULTIPART,
+      headers: { Authorization: 'Bearer token' },
+      fieldName: 'asset',
+      mimeType: 'image/jpeg',
+      parameters: { albumId: '42' },
+      sessionType: 'foreground',
+    });
+
+    expect(ExpoFileSystem.FileSystemUploadTask.prototype.start).toHaveBeenCalledWith(
+      url,
+      file,
+      expect.objectContaining({
+        httpMethod: 'PATCH',
+        uploadType: UploadType.MULTIPART,
+        headers: { Authorization: 'Bearer token' },
+        fieldName: 'asset',
+        mimeType: 'image/jpeg',
+        parameters: { albumId: '42' },
+        sessionType: 'foreground',
+      })
+    );
+    expect(result).toEqual({
+      body: 'validation failed',
+      status: 422,
+      headers: { 'x-error': '1' },
+    });
+  });
+});
 
 describe('UploadTask', () => {
   let file: File;
@@ -539,6 +597,7 @@ describe('DownloadPauseState persistence', () => {
 describe('Progress callback', () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    delete (File.prototype as any).size;
   });
 
   it('onProgress callback is wired via addListener for UploadTask', async () => {
@@ -574,5 +633,26 @@ describe('Progress callback', () => {
     await task.downloadAsync();
 
     expect(addListenerSpy).toHaveBeenCalledWith('progress', onProgress);
+  });
+
+  it('File.downloadFileAsync emits final progress when native completes without a complete event', async () => {
+    const onProgress = jest.fn();
+    const outputUri = 'file:///mock/cache/video.mp4';
+    const dest = new File(Paths.cache, 'video.mp4');
+
+    Object.defineProperty(File.prototype, 'size', {
+      configurable: true,
+      get: () => 42,
+    });
+
+    jest.spyOn(ExpoFileSystem, 'downloadFileAsync').mockResolvedValue(outputUri);
+    jest.spyOn(ExpoFileSystem, 'addListener').mockReturnValue({ remove: jest.fn() } as any);
+
+    const file = await File.downloadFileAsync('https://example.com/video.mp4', dest, {
+      onProgress,
+    });
+
+    expect(file.uri).toBe(outputUri);
+    expect(onProgress).toHaveBeenCalledWith({ bytesWritten: 42, totalBytes: 42 });
   });
 });

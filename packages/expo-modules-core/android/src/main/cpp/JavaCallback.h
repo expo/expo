@@ -2,18 +2,12 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 #include "JSharedObject.h"
 #include "JavaScriptArrayBuffer.h"
 #include "NativeArrayBuffer.h"
 
-#include <jsi/jsi.h>
-#include <fbjni/fbjni.h>
-#include <folly/dynamic.h>
-#include <variant>
-
-#include <react/jni/WritableNativeArray.h>
-#include <react/jni/WritableNativeMap.h>
 #include <fbjni/detail/CoreClasses.h>
 #include <ReactCommon/CallInvoker.h>
 #include <react/bridging/LongLivedObject.h>

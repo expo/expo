@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import expo.modules.appmetrics.AppMetadata
+import expo.modules.appmetrics.AppUpdatesInfo
+import expo.modules.appmetrics.BuildConfig
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.*
@@ -112,7 +114,11 @@ class SessionManagerTest {
         appIdentifier = "com.test.app",
         appVersion = "1.2.3",
         appBuildNumber = "42",
-        appUpdateId = "update-123",
+        appUpdatesInfo = AppUpdatesInfo(
+          updateId = "update-123",
+          runtimeVersion = null,
+          requestHeaders = null
+        ),
         deviceOs = "Android",
         deviceOsVersion = "14",
         deviceModel = "Pixel 8",
@@ -168,15 +174,15 @@ class SessionManagerTest {
   @Test
   fun `startSessionWithIdAt falls back to preferences environment`() =
     runTest {
-      // Arrange — Robolectric apps are debuggable, so default is "development"
       val sessionId = "test-session"
+      val expected = if (BuildConfig.DEBUG) "development" else null
 
       // Act
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Assert
       val sessions = sessionManager.getAllSessions()
-      assertEquals("development", sessions[0].session.environment)
+      assertEquals(expected, sessions[0].session.environment)
     }
 
   @Test
@@ -203,6 +209,21 @@ class SessionManagerTest {
     }
 
   @Test
+  fun `stopSession stamps endTimestamp`() =
+    runTest {
+      // Arrange
+      val sessionId = "test-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      sessionManager.stopSession(sessionId)
+
+      // Assert
+      val stopped = sessionManager.getAllSessions().single()
+      assertNotNull("endTimestamp should be set after stopSession", stopped.session.endTimestamp)
+    }
+
+  @Test
   fun `deactivateAllSessionsBefore deactivates old sessions only`() =
     runTest {
       // Arrange
@@ -218,6 +239,46 @@ class SessionManagerTest {
       val activeSessions = sessionManager.getAllActiveSessions()
       assertEquals(1, activeSessions.size)
       assertEquals(newSession, activeSessions[0].session.id)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore stamps endTimestamp on orphan sessions`() =
+    runTest {
+      // Arrange — a session left active across launches (force-killed process,
+      // OOM, etc.). On the next module create we deactivate it, and the cutoff
+      // timestamp is the heuristic end-time we record.
+      val orphan = "orphan-session"
+      sessionManager.startSessionWithIdAt(orphan, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      val cutoff = "2025-01-10T00:00:00.000Z"
+      sessionManager.deactivateAllSessionsBefore(cutoff)
+
+      // Assert
+      val deactivated = sessionManager.getAllSessions().single { it.session.id == orphan }
+      assertFalse(deactivated.session.isActive)
+      assertEquals(cutoff, deactivated.session.endTimestamp)
+    }
+
+  @Test
+  fun `deactivateAllSessionsBefore preserves existing endTimestamps`() =
+    runTest {
+      // Arrange — a session that was properly stopped via stopSession should
+      // keep its real end time even if it predates the deactivate cutoff.
+      val cleanlyStopped = "clean-session"
+      sessionManager.startSessionWithIdAt(cleanlyStopped, "2025-01-01T00:00:00.000Z")
+      sessionManager.stopSession(cleanlyStopped)
+      val originalEnd = sessionManager.getAllSessions()
+        .single { it.session.id == cleanlyStopped }
+        .session.endTimestamp
+      assertNotNull("precondition: stopSession should have stamped endTimestamp", originalEnd)
+
+      // Act
+      sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
+
+      // Assert — the cleanly-stopped session keeps its original end time.
+      val preserved = sessionManager.getAllSessions().single { it.session.id == cleanlyStopped }
+      assertEquals(originalEnd, preserved.session.endTimestamp)
     }
 
   @Test
@@ -594,6 +655,45 @@ class SessionManagerTest {
       assertEquals(0, sessionManager.getAllSessions().size)
     }
 
+  @Test
+  fun `cleanupOldSessions removes inactive sessions older than the retention window`() =
+    runTest {
+      // Arrange — three sessions across the cutoff. We can't pick a static
+      // timestamp like the other tests because the retention window is computed
+      // from `now`, so we anchor against the current time.
+      val now = System.currentTimeMillis()
+      val retentionMs = MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS * 1000
+      val isoFormatter = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", java.util.Locale.US)
+        .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+
+      val staleStoppedId = "stale-stopped"
+      val staleActiveId = "stale-active"
+      val freshStoppedId = "fresh-stopped"
+
+      val staleStart = isoFormatter.format(java.util.Date(now - retentionMs - 60_000))
+      val freshStart = isoFormatter.format(java.util.Date(now - 60_000))
+
+      sessionManager.startSessionWithIdAt(staleStoppedId, staleStart)
+      sessionManager.stopSession(staleStoppedId)
+
+      sessionManager.startSessionWithIdAt(staleActiveId, staleStart)
+      // Intentionally not stopped — simulates a long-running session.
+
+      sessionManager.startSessionWithIdAt(freshStoppedId, freshStart)
+      sessionManager.stopSession(freshStoppedId)
+
+      // Act
+      sessionManager.cleanupOldSessions()
+
+      // Assert — only the stopped, stale session is gone. The active stale
+      // session is preserved (we don't pull a session out from under a
+      // long-running process), and the fresh stopped session is preserved.
+      val remaining = sessionManager.getAllSessions().map { it.session.id }.toSet()
+      assertFalse("stale stopped session should be cleaned up", remaining.contains(staleStoppedId))
+      assertTrue("stale but active session should be preserved", remaining.contains(staleActiveId))
+      assertTrue("fresh stopped session should be preserved", remaining.contains(freshStoppedId))
+    }
+
   // endregion
 
   // region Helper Methods
@@ -621,7 +721,7 @@ class SessionManagerTest {
     appIdentifier: String = "com.test.app",
     appVersion: String? = "1.0.0",
     appBuildNumber: String? = "1",
-    appUpdateId: String? = null,
+    appUpdatesInfo: AppUpdatesInfo? = null,
     appEasBuildId: String? = null,
     deviceOs: String? = "Android",
     deviceOsVersion: String? = "14",
@@ -637,7 +737,7 @@ class SessionManagerTest {
       appIdentifier = appIdentifier,
       appVersion = appVersion,
       appBuildNumber = appBuildNumber,
-      appUpdateId = appUpdateId,
+      appUpdatesInfo = appUpdatesInfo,
       appEasBuildId = appEasBuildId,
       languageTag = languageTag,
       deviceOs = deviceOs,

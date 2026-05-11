@@ -57,7 +57,7 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
     const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
 
     addBuildPhases(xcodeProject, {
-      targetUuid,
+      targetUuid: target.uuid,
       groupName,
       productFile,
       widgetFiles: swiftWidgetFiles,

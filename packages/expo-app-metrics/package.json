@@ -1,7 +1,7 @@
 {
   "name": "expo-app-metrics",
   "title": "Expo App Metrics",
-  "version": "0.1.7",
+  "version": "56.0.5",
   "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -30,14 +30,15 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "expo-updates-interface": "workspace:~55.1.3"
+    "expo-updates-interface": "workspace:~56.0.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

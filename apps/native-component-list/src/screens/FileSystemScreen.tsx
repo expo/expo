@@ -8,6 +8,8 @@ import type {
   DownloadPauseState,
   DownloadTaskState,
   UploadTaskState,
+  WatchSubscription,
+  WatchEvent,
 } from 'expo-file-system';
 import * as IntentLauncher from 'expo-intent-launcher';
 import * as MediaLibrary from 'expo-media-library';
@@ -72,6 +74,7 @@ export default function FileSystemScreen() {
         <FileInfoSection withCurrentFile={withCurrentFile} />
         <ReadWriteSection withCurrentFile={withCurrentFile} />
         <FileHandleSection currentFile={currentFile} />
+        <FileWatcherSection currentFile={currentFile} />
         <CopyMoveSection
           withCurrentFile={withCurrentFile}
           safDirectory={safDirectory}
@@ -436,6 +439,113 @@ function FileHandleSection({ currentFile }: { currentFile: File | null }) {
       />
       {handleInfo && <MonoText>Handle: {handleInfo}</MonoText>}
       {handleLog.length > 0 && <MonoText>{handleLog}</MonoText>}
+    </>
+  );
+}
+
+function FileWatcherSection({ currentFile }: { currentFile: File | null }) {
+  const subscriptionRef = useRef<WatchSubscription | null>(null);
+  const [watchTarget, setWatchTarget] = useState<string | null>(null);
+  const [watchLog, setWatchLog] = useState<string[]>([]);
+
+  useEffect(() => {
+    return () => {
+      subscriptionRef.current?.remove();
+      subscriptionRef.current = null;
+    };
+  }, []);
+
+  function appendLog(line: string) {
+    const timestamp = new Date().toLocaleTimeString();
+    setWatchLog((prev) => [`[${timestamp}] ${line}`, ...prev].slice(0, 50));
+  }
+
+  function stopWatching() {
+    if (subscriptionRef.current) {
+      subscriptionRef.current.remove();
+      subscriptionRef.current = null;
+      appendLog('Stopped watching');
+      setWatchTarget(null);
+    }
+  }
+
+  function watchFile(file: File) {
+    stopWatching();
+    try {
+      const subscription = file.watch((event: WatchEvent<File>) => {
+        appendLog(`${event.type.toUpperCase()}: ${event.target.name}`);
+      });
+      subscriptionRef.current = subscription;
+      setWatchTarget(`File: ${file.name}`);
+      appendLog(`Started watching file: ${file.name}`);
+    } catch (e: any) {
+      Alert.alert('Error', e.message);
+    }
+  }
+
+  function watchDirectory(dir: Directory) {
+    stopWatching();
+    try {
+      const subscription = dir.watch((event: WatchEvent<File | Directory>) => {
+        const targetType = event.target instanceof Directory ? 'dir' : 'file';
+        appendLog(`${event.type.toUpperCase()} (${targetType}): ${event.target.name}`);
+      });
+      subscriptionRef.current = subscription;
+      setWatchTarget(`Directory: ${dir.name}`);
+      appendLog(`Started watching directory: ${dir.name}`);
+    } catch (e: any) {
+      Alert.alert('Error', e.message);
+    }
+  }
+
+  return (
+    <>
+      <HeadingText>File System Watcher</HeadingText>
+      <Text style={styles.note}>Watch files or directories for changes</Text>
+
+      <ListButton
+        title="Watch current file"
+        disabled={!currentFile}
+        onPress={() => watchFile(currentFile!)}
+      />
+      <ListButton
+        title="Watch cache directory"
+        onPress={() => {
+          const cacheDir = new Directory(Paths.cache, 'test_sandbox');
+          cacheDir.create({ intermediates: true, idempotent: true });
+          watchDirectory(cacheDir);
+        }}
+      />
+      <ListButton title="Watch document directory" onPress={() => watchDirectory(Paths.document)} />
+      <ListButton
+        title="Stop watching"
+        disabled={!subscriptionRef.current}
+        onPress={stopWatching}
+      />
+
+      {watchTarget && (
+        <View style={styles.watchStatusBar}>
+          <Text style={styles.watchStatusText}>Watching: {watchTarget}</Text>
+        </View>
+      )}
+
+      {watchLog.length > 0 && (
+        <>
+          <View style={styles.watchLogHeader}>
+            <Text style={styles.watchLogTitle}>Event Log</Text>
+            <TouchableOpacity onPress={() => setWatchLog([])}>
+              <Text style={styles.clearLogButton}>Clear</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView style={styles.watchLogContainer} nestedScrollEnabled>
+            {watchLog.map((line, index) => (
+              <Text key={index} style={styles.watchLogLine}>
+                {line}
+              </Text>
+            ))}
+          </ScrollView>
+        </>
+      )}
     </>
   );
 }
@@ -1272,5 +1382,45 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#888',
     marginBottom: 4,
+  },
+  watchStatusBar: {
+    backgroundColor: '#e8f5e9',
+    padding: 8,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  watchStatusText: {
+    fontSize: 12,
+    color: '#2e7d32',
+    fontWeight: '500',
+  },
+  watchLogHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  watchLogTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#333',
+  },
+  clearLogButton: {
+    fontSize: 12,
+    color: '#4630eb',
+  },
+  watchLogContainer: {
+    maxHeight: 150,
+    backgroundColor: '#f5f5f5',
+    borderRadius: 4,
+    padding: 8,
+    marginTop: 4,
+  },
+  watchLogLine: {
+    fontSize: 11,
+    fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    color: '#333',
+    paddingVertical: 2,
   },
 });

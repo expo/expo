@@ -420,6 +420,23 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<HorizontalPagerProps>("HorizontalPagerView") {
+      val animateScrollToPage by AsyncFunction<Int>()
+      val scrollToPage by AsyncFunction<Int>()
+      val onCurrentPageChange by Event<HorizontalPagerCurrentPageChangeEvent>()
+      val onSettledPageChange by Event<HorizontalPagerSettledPageChangeEvent>()
+
+      Content { props ->
+        HorizontalPagerContent(
+          props,
+          animateScrollToPage,
+          scrollToPage,
+          { onCurrentPageChange(it) },
+          { onSettledPageChange(it) }
+        )
+      }
+    }
+
     ExpoUIView<HorizontalCenteredHeroCarouselProps>("HorizontalCenteredHeroCarouselView") {
       Content { props ->
         HorizontalCenteredHeroCarouselContent(props)
@@ -586,21 +603,27 @@ class ExpoUIModule : Module() {
 
     ExpoUIView<TextFieldProps>("TextFieldView") {
       val setText by AsyncFunction<String>()
+      val setSelection by AsyncFunction<Int, Int>()
+      val clear by AsyncFunction()
       val focus by AsyncFunction()
       val blur by AsyncFunction()
       val onValueChange by Event<TextFieldValuePayload>()
       val onFocusChanged by Event<GenericEventPayload1<Boolean>>()
       val onKeyboardAction by Event<KeyboardActionEvent>()
+      val onSelectionChange by Event<TextFieldSelectionPayload>()
 
       Content { props ->
         TextFieldContent(
           props,
           setText,
+          setSelection,
+          clear,
           focus,
           blur,
           onValueChanged = { onValueChange(it) },
           onFocusChange = { onFocusChanged(it) },
-          onKeyboardActionTriggered = { onKeyboardAction(it) }
+          onKeyboardActionTriggered = { onKeyboardAction(it) },
+          onSelectionChanged = { onSelectionChange(it) }
         )
       }
     }
@@ -646,6 +669,12 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         ExposedDropdownMenuContent(props) { onDismissRequest(Unit) }
+      }
+    }
+
+    ExpoUIView<MaskViewProps>("MaskView") {
+      Content { props ->
+        MaskViewContent(props)
       }
     }
 

@@ -12,6 +12,12 @@ public protocol MetricsReceiver {
    */
   @AppMetricsActor
   func receiveMetric(_ metric: Metric)
+
+  /**
+   Receives a single log record.
+   */
+  @AppMetricsActor
+  func receiveLog(_ log: LogRecord)
 }
 
 extension MetricsReceiver {
@@ -20,4 +26,7 @@ extension MetricsReceiver {
 
   @AppMetricsActor
   public func receiveMetric(_ metric: Metric) {}
+
+  @AppMetricsActor
+  public func receiveLog(_ log: LogRecord) {}
 }

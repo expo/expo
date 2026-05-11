@@ -18,6 +18,11 @@ internal struct DynamicEncodableType: AnyDynamicType {
     return false
   }
 
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    // TODO: Create DynamicDecodableType and reuse it here – that would work perfectly with Codable types
+    fatalError("DynamicEncodableType can only cast to JavaScript, not from")
+  }
+
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     // TODO: Create DynamicDecodableType and reuse it here – that would work perfectly with Codable types
     fatalError("DynamicEncodableType can only cast to JavaScript, not from")

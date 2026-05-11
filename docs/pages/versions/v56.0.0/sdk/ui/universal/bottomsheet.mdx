@@ -1,0 +1,75 @@
+---
+title: BottomSheet
+description: A modal sheet that slides up from the bottom of the screen.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A modal sheet that slides up from the bottom of the screen. The sheet's visibility is controlled &mdash; toggle [`isPresented`](#ispresented) from React state and dismiss it from [`onDismiss`](#ondismiss) (called when the user swipes down or taps the overlay).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic bottom sheet
+
+```tsx BottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, Column, Button, BottomSheet, Text } from '@expo/ui';
+
+export default function BottomSheetExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
+      <BottomSheet isPresented={isPresented} onDismiss={() => setIsPresented(false)}>
+        <Column spacing={12}>
+          <Text textStyle={{ fontSize: 18, fontWeight: '700' }}>Sheet contents</Text>
+          <Text>Drag down or tap the overlay to dismiss.</Text>
+          <Button label="Close" onPress={() => setIsPresented(false)} />
+        </Column>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+### Hiding the drag indicator
+
+Pass [`showDragIndicator={false}`](#showdragindicator) for sheets without a handle.
+
+```tsx BottomSheetNoIndicatorExample.tsx
+import { useState } from 'react';
+import { Host, Button, BottomSheet, Text } from '@expo/ui';
+
+export default function BottomSheetNoIndicatorExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        showDragIndicator={false}>
+        <Text>No drag handle.</Text>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { BottomSheet } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/bottomsheet" apiName="BottomSheet" />

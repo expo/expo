@@ -27,11 +27,27 @@ export * from './Slider';
 export * from './Spacer';
 export * from './Switch';
 export * from './SyncSwitch';
-export * from './TextField';
+export {
+  TextField,
+  OutlinedTextField,
+  type TextFieldProps,
+  type TextFieldRef,
+  type TextFieldCapitalization,
+  type TextFieldImeAction,
+  type TextFieldKeyboardOptions,
+  type TextFieldKeyboardType,
+  type TextFieldKeyboardActions,
+  type TextFieldColors,
+} from './TextField';
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
 export * from './Carousel';
+export {
+  HorizontalPager,
+  type HorizontalPagerHandle,
+  type HorizontalPagerProps,
+} from './HorizontalPager';
 export * from './SearchBar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
@@ -49,3 +65,4 @@ export * from './Column';
 export * from './FlowRow';
 export { useNativeState } from '../State/useNativeState';
 export type { ViewEvent } from '../types';
+export type { PrimitiveBaseProps } from './layout-types';

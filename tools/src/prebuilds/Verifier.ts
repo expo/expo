@@ -35,7 +35,7 @@ export const FrameworkVerifier = {
     buildFlavor: BuildFlavor,
     options?: XCFrameworkVerifyOptions
   ): Promise<Map<string, XCFrameworkVerificationReport>> => {
-    logger.info(
+    logger.verbose(
       `🔍 Verifying xcframework for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)} [${buildFlavor.toLowerCase()}]`
     );
 
@@ -246,7 +246,7 @@ export const FrameworkVerifier = {
               `  ${chalk.red('✗')} Resource bundle ${chalk.cyan(bundleName)} missing from slices: ${missingSlices.join(', ')}`
             );
           } else {
-            logger.info(
+            logger.verbose(
               `  ${chalk.green('✓')} Resource bundle ${chalk.cyan(bundleName)} present in all slices (${foundSlices.join(', ')})`
             );
           }

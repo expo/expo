@@ -71,7 +71,7 @@ const withTargetXcodeProject = (config, { targetName, bundleIdentifier, deployme
     const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
     const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
     (0, addBuildPhases_1.addBuildPhases)(xcodeProject, {
-        targetUuid,
+        targetUuid: target.uuid,
         groupName,
         productFile,
         widgetFiles: swiftWidgetFiles,

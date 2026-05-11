@@ -140,10 +140,15 @@ internal func allMirrorChildren(_ mirror: Mirror) -> [Mirror.Child] {
 internal func fieldsOf(_ record: Record) -> [AnyFieldInternal] {
   let mirror = Mirror(reflecting: record)
   return allMirrorChildren(mirror).compactMap { (label: String?, value: Any) in
-    guard var field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
+    guard let field = value as? AnyFieldInternal, let key = field.key ?? convertLabelToKey(label) else {
       return nil
     }
-    field.options = field.options.union([.keyed(key)])
+    field.withOptions { options in
+      let alreadyKeyed = options.contains { $0.rawValue == FieldOption.keyed("").rawValue }
+      if !alreadyKeyed {
+        options.insert(.keyed(key))
+      }
+    }
     return field
   }
 }

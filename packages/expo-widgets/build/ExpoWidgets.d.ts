@@ -1,11 +1,11 @@
-import { NativeModule } from 'expo';
+import type { EventSubscription } from 'expo-modules-core';
 import type { ExpoWidgetsEvents, NativeLiveActivity, NativeLiveActivityFactory, NativeWidgetObject } from './Widgets.types';
-declare class ExpoWidgetsModule extends NativeModule<ExpoWidgetsEvents> {
+declare const ExpoWidgetsModule: {
     reloadAllWidgets(): void;
-    readonly Widget: typeof NativeWidgetObject;
-    readonly LiveActivityFactory: typeof NativeLiveActivityFactory;
-    readonly LiveActivity: typeof NativeLiveActivity;
-}
-declare const _default: ExpoWidgetsModule;
-export default _default;
+    Widget: typeof NativeWidgetObject;
+    LiveActivityFactory: typeof NativeLiveActivityFactory;
+    LiveActivity: typeof NativeLiveActivity;
+    addListener<EventName extends keyof ExpoWidgetsEvents>(_eventName: EventName, _listener: ExpoWidgetsEvents[EventName]): EventSubscription;
+};
+export default ExpoWidgetsModule;
 //# sourceMappingURL=ExpoWidgets.d.ts.map

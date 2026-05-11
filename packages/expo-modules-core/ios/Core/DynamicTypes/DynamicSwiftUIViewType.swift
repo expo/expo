@@ -17,13 +17,13 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
   }
 
   /**
-   Casts from the React component instance to the view tag (`Int`).
+   Resolves the React component instance to the native SwiftUI view via its tag.
    */
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let viewTag = findViewTag(jsValue) else {
       throw InvalidViewTagException()
     }
-    return viewTag
+    return try cast(viewTag, appContext: appContext)
   }
 
   /**
