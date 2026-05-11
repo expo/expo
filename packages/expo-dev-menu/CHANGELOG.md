@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXDevMenuSkipOnboarding` build-time switch (Android `<meta-data>` / iOS Info.plist) to opt out of the dev-menu first-launch onboarding overlay. Useful for E2E test runs (Maestro, Detox) and CI pipelines that wipe app data between runs. ([#45640](https://github.com/expo/expo/issues/45640) by [@TomKalina](https://github.com/TomKalina))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -5,6 +5,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
+import androidx.core.content.edit
 import expo.modules.devmenu.helpers.preferences
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
@@ -67,7 +68,8 @@ class DevMenuDefaultPreferences(
 
   private val fabDefault = metaDataBool("EXDevMenuShowFloatingActionButton", true)
   private val showsAtLaunchDefault = metaDataBool("EXDevMenuShowsAtLaunch", true)
-  private val isOnboardingFinishedDefault = metaDataBool("EXDevMenuIsOnboardingFinished", false)
+  private val skipOnboarding = metaDataBool("EXDevMenuSkipOnboarding", false)
+  private val isOnboardingFinishedDefault = metaDataBool("EXDevMenuIsOnboardingFinished", skipOnboarding)
 
   private val listeners = mutableListOf<() -> Unit>()
 
@@ -104,7 +106,13 @@ class DevMenuDefaultPreferences(
     by preferences(sharedPreferences, showsAtLaunchDefault)
 
   override var isOnboardingFinished: Boolean
-    by preferences(sharedPreferences, isOnboardingFinishedDefault)
+    get() = skipOnboarding ||
+      sharedPreferences.getBoolean("isOnboardingFinished", isOnboardingFinishedDefault)
+    set(value) {
+      sharedPreferences.edit(commit = true) {
+        putBoolean("isOnboardingFinished", value)
+      }
+    }
 
   override var showFab: Boolean
     by preferences(sharedPreferences, fabDefault)

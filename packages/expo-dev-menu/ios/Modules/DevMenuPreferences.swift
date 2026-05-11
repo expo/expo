@@ -6,6 +6,7 @@ let touchGestureEnabledKey = "EXDevMenuTouchGestureEnabled"
 let keyCommandsEnabledKey = "EXDevMenuKeyCommandsEnabled"
 let showsAtLaunchKey = "EXDevMenuShowsAtLaunch"
 let isOnboardingFinishedKey = "EXDevMenuIsOnboardingFinished"
+let skipOnboardingKey = "EXDevMenuSkipOnboarding"
 let showFloatingActionButtonKey = "EXDevMenuShowFloatingActionButton"
 
 public class DevMenuPreferences: Module {
@@ -129,6 +130,9 @@ public class DevMenuPreferences: Module {
    */
   public static var isOnboardingFinished: Bool {
     get {
+      if Bundle.main.object(forInfoDictionaryKey: skipOnboardingKey) as? Bool == true {
+        return true
+      }
       return DevMenuTestInterceptorManager.interceptor?.isOnboardingFinishedKey ?? boolForKey(isOnboardingFinishedKey)
     }
     set {
