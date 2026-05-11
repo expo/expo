@@ -47,13 +47,8 @@ class ObservabilityManager(
     sessionManager.addMetricsInsertListener { metricIds ->
       pendingMetricsManager.addPendingMetrics(metricIds)
     }
-    // Logs are only dispatched in OpenTelemetry mode (no legacy logs endpoint
-    // exists). Skip the pending-table tracking entirely on non-OTel installs
-    // so rows don't accumulate with no path to drain them.
-    if (useOpenTelemetry) {
-      sessionManager.addLogsInsertListener { logIds ->
-        pendingLogsManager.addPendingLogs(logIds)
-      }
+    sessionManager.addLogsInsertListener { logIds ->
+      pendingLogsManager.addPendingLogs(logIds)
     }
   }
 
@@ -135,16 +130,8 @@ class BaseObservabilityManager(
   /**
    * Dispatches log events to `/v1/logs`. Independent from the metrics path —
    * a logs failure doesn't affect the metrics pending table and vice versa.
-   * Logs are only sent in OpenTelemetry mode (no legacy logs endpoint exists);
-   * skip the work entirely in non-OTel mode so any leftover `pending_logs`
-   * rows from an earlier OTel-enabled run don't trigger a wasted session join
-   * + event build every dispatch cycle.
    */
   suspend fun dispatchUnsentLogs() {
-    if (!useOpenTelemetry) {
-      return
-    }
-
     val pendingIds = pendingLogsManager.getAllPendingLogIds()
     if (pendingIds.isEmpty()) {
       return

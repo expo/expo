@@ -68,16 +68,11 @@ class EventDispatcher(
     }
 
   /**
-   * Dispatches log records to `{baseUrl}/{projectId}/v1/logs`. Only meaningful
-   * in OpenTelemetry mode — there's no legacy logs endpoint, so non-OTel mode
-   * short-circuits to `false`.
+   * Dispatches log records to `{baseUrl}/{projectId}/v1/logs`. Always uses the
+   * OTLP wire shape — there is no legacy logs endpoint.
    */
   suspend fun dispatchLogs(events: List<Event>): Boolean =
     suspendCancellableCoroutine { continuation ->
-      if (!useOpenTelemetry) {
-        continuation.resume(false)
-        return@suspendCancellableCoroutine Unit
-      }
       val easId = EASClientID(context).uuid.toString()
       val resourceLogs = events
         .filter { it.logs.isNotEmpty() }

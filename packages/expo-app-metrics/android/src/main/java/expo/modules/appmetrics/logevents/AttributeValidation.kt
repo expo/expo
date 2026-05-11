@@ -2,11 +2,8 @@ package expo.modules.appmetrics.logevents
 
 import android.util.Log
 import expo.modules.appmetrics.TAG
-import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
+import expo.modules.appmetrics.utils.JsonAny
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 /**
  * Patterns that match attribute keys reserved by the SDK. Caller-provided
@@ -26,8 +23,11 @@ private val RESERVED_ATTRIBUTE_PATTERNS: List<Regex> = listOf(
 
 /**
  * Maximum number of attributes accepted per log record. Mirrors the OTel SDK
- * default — collectors and backends start to push back well before this limit,
- * so we cap eagerly and surface the overflow via `droppedAttributesCount`.
+ * default (`OTEL_LOGRECORD_ATTRIBUTE_COUNT_LIMIT`) — collectors and backends
+ * start to push back well before this limit, so we cap eagerly and surface the
+ * overflow via `droppedAttributesCount`.
+ *
+ * Spec: https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/configuration/sdk-environment-variables.md#logrecord-limits
  */
 private const val MAX_ATTRIBUTE_COUNT = 128
 
@@ -60,7 +60,7 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
     return SanitizedLogAttributes(attributes = null, droppedCount = 0)
   }
 
-  val sanitized = LinkedHashMap<String, Any?>()
+  val sanitized = mutableMapOf<String, Any?>()
   var emptyKeyDrops = 0
   val reservedKeyDrops = mutableListOf<String>()
 
@@ -85,9 +85,9 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
   // genuinely needs >128 attributes should split them across multiple events.
   var overflowDrops = 0
   if (sanitized.size > MAX_ATTRIBUTE_COUNT) {
-    val keptKeys = sanitized.keys.sorted().take(MAX_ATTRIBUTE_COUNT).toSet()
-    overflowDrops = sanitized.size - MAX_ATTRIBUTE_COUNT
-    sanitized.keys.toList().forEach { k -> if (k !in keptKeys) sanitized.remove(k) }
+    val droppedKeys = sanitized.keys.sorted().drop(MAX_ATTRIBUTE_COUNT).toSet()
+    overflowDrops = droppedKeys.size
+    sanitized.keys.removeAll(droppedKeys)
   }
 
   if (emptyKeyDrops > 0) {
@@ -123,26 +123,5 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
  * time will skip them and add to `droppedAttributesCount` accordingly.
  */
 internal fun attributesToJsonObject(attributes: Map<String, Any?>): JsonObject {
-  return JsonObject(attributes.mapValues { (_, value) -> anyToJsonElement(value) })
-}
-
-private fun anyToJsonElement(value: Any?): JsonElement {
-  return when (value) {
-    null -> JsonNull
-    is Boolean -> JsonPrimitive(value)
-    is Int -> JsonPrimitive(value)
-    is Long -> JsonPrimitive(value)
-    is Double -> if (value.isFinite()) JsonPrimitive(value) else JsonNull
-    is Float -> if (value.isFinite()) JsonPrimitive(value.toDouble()) else JsonNull
-    is Number -> JsonPrimitive(value.toDouble())
-    is String -> JsonPrimitive(value)
-    is Map<*, *> -> JsonObject(
-      value.entries
-        .filter { it.key is String }
-        .associate { (k, v) -> (k as String) to anyToJsonElement(v) }
-    )
-    is List<*> -> JsonArray(value.map { anyToJsonElement(it) })
-    is Array<*> -> JsonArray(value.map { anyToJsonElement(it) })
-    else -> JsonNull
-  }
+  return JsonObject(attributes.mapValues { (_, value) -> JsonAny.toElement(value) })
 }

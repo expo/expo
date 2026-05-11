@@ -146,27 +146,27 @@ data class SessionWithMetrics(
 )
 @Serializable
 data class LogRecord(
-  @PrimaryKey @Field val logId: String = UUID.randomUUID().toString(),
-  @Field val sessionId: String,
+  @PrimaryKey val logId: String = UUID.randomUUID().toString(),
+  val sessionId: String,
   // ISO 8601 date string
-  @Field val timestamp: String,
-  @Field val name: String,
-  @Field val body: String? = null,
+  val timestamp: String,
+  val name: String,
+  val body: String? = null,
   // Lowercase severity case name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`).
-  @Field val severity: String,
+  val severity: String,
   // JSON string. Typed encoding happens at OTel time, not at storage time.
-  @Field val attributes: String? = null,
-  @Field val droppedAttributesCount: Int = 0
-) : Record
+  val attributes: String? = null,
+  val droppedAttributesCount: Int = 0
+)
 
 data class SessionWithLogs(
-  @Field @Embedded val session: Session,
+  @Embedded val session: Session,
   @Relation(
     parentColumn = "id",
     entityColumn = "sessionId"
   )
-  @Field val logs: List<LogRecord>
-) : Record
+  val logs: List<LogRecord>
+)
 
 @Dao
 interface MetricDao {

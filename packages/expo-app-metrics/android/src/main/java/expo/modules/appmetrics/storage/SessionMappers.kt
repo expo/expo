@@ -1,16 +1,11 @@
 package expo.modules.appmetrics.storage
 
+import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.booleanOrNull
-import kotlinx.serialization.json.doubleOrNull
-import kotlinx.serialization.json.longOrNull
 
 /**
  * JS-facing shape of a session. Field names mirror the TypeScript `Session`
@@ -113,22 +108,6 @@ private fun decodeJsonObject(jsonString: String?): Map<String, Any?>? {
     if (element !is JsonObject) {
       return@runCatching null
     }
-    element.mapValues { (_, v) -> jsonElementToAny(v) }
+    element.mapValues { (_, v) -> JsonAny.fromElement(v) }
   }.getOrNull()
-}
-
-private fun jsonElementToAny(element: JsonElement): Any? {
-  return when (element) {
-    is JsonNull -> null
-    is JsonPrimitive -> when {
-      element.isString -> element.content
-      else ->
-        element.booleanOrNull
-          ?: element.longOrNull
-          ?: element.doubleOrNull
-          ?: element.content
-    }
-    is JsonObject -> element.mapValues { (_, v) -> jsonElementToAny(v) }
-    is JsonArray -> element.map { jsonElementToAny(it) }
-  }
 }
