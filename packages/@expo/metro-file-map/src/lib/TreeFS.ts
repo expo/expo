@@ -527,6 +527,10 @@ export default class TreeFS implements MutableFileSystem {
 
   remove(mixedPath: Path, changeListener?: FileSystemListener): void {
     const normalPath = this.#normalizePath(mixedPath);
+    this.#removeNormalPath(normalPath, changeListener);
+  }
+
+  #removeNormalPath(normalPath: string, changeListener?: FileSystemListener): void {
     const result = this.#lookupByNormalPath(normalPath, { followLeaf: false });
     if (!result.exists) {
       return;
@@ -535,7 +539,7 @@ export default class TreeFS implements MutableFileSystem {
 
     if (isDirectory(node) && node.size > 0) {
       for (const basename of node.keys()) {
-        this.remove(canonicalPath + path.sep + basename, changeListener);
+        this.#removeNormalPath(canonicalPath + path.sep + basename, changeListener);
       }
       // Removing the last file will delete this directory
       return;
@@ -555,7 +559,7 @@ export default class TreeFS implements MutableFileSystem {
         // that's not expected to be a case common enough to justify
         // implementation complexity, or slowing down more common uses of
         // _lookupByNormalPath.
-        this.remove(path.dirname(canonicalPath), changeListener);
+        this.#removeNormalPath(path.dirname(canonicalPath), changeListener);
       }
     }
   }
