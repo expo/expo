@@ -1,0 +1,146 @@
+---
+title: Slider
+description: A slider compatible with @react-native-community/slider.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A `Slider` component with an API compatible with `@react-native-community/slider`. It uses a SwiftUI `Slider` on iOS, a Material 3 `Slider` on Android, and a native `<input type="range">` element on web.
+
+Under the hood this component wraps the platform-specific `@expo/ui` primitives:
+
+- **Android**: [Jetpack Compose Slider](../jetpack-compose/slider)
+- **iOS**: [SwiftUI Slider](../swift-ui/slider)
+
+If you need lower-level control, use those primitives directly.
+
+## Installation
+
+<APIInstallSection />
+
+## Migrating from `@react-native-community/slider`
+
+- Update the import from `import Slider from '@react-native-community/slider'` to `import Slider from '@expo/ui/community/slider'`.
+- `onSlidingStart`, `onSlidingComplete`, `tapToSeek`, `StepMarker`, `renderStepNumber`, `thumbImage`, `minimumTrackImage`, `maximumTrackImage`, `trackImage`, `accessibilityUnits`, `accessibilityIncrements`, `testID`, and `ref.updateValue` are not yet supported.
+- On iOS, `maximumTrackTintColor` and `thumbTintColor` have no visual effect — SwiftUI's `Slider` only exposes the minimum (active) track tint. `minimumTrackTintColor` works on both platforms.
+- `lowerLimit` and `upperLimit` clamp the thumb to a sub-region of the slider's range. The visible track still spans `minimumValue..maximumValue`, but the thumb cannot be dragged past the limits.
+
+## Basic usage
+
+```tsx SliderExample.tsx
+import { useState } from 'react';
+import { Text, View } from 'react-native';
+import Slider from '@expo/ui/community/slider';
+
+export default function SliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <View>
+      <Slider value={value} onValueChange={setValue} />
+      <Text>Value: {value.toFixed(3)}</Text>
+    </View>
+  );
+}
+```
+
+## Custom range and step
+
+Set `minimumValue` and `maximumValue` to define the slider's range, and `step` to snap the thumb to discrete increments.
+
+```tsx RangedSliderExample.tsx
+import { useState } from 'react';
+import { Text, View } from 'react-native';
+import Slider from '@expo/ui/community/slider';
+
+export default function RangedSliderExample() {
+  const [volume, setVolume] = useState(50);
+
+  return (
+    <View>
+      <Slider
+        value={volume}
+        minimumValue={0}
+        maximumValue={100}
+        step={5}
+        onValueChange={setVolume}
+      />
+      <Text>Volume: {Math.round(volume)}%</Text>
+    </View>
+  );
+}
+```
+
+## Restricting the reachable range
+
+Use `lowerLimit` and `upperLimit` to prevent the thumb from being dragged past a sub-region of `minimumValue..maximumValue`. The track still renders the full range, but the thumb stops at the limits during drag.
+
+```tsx LimitedSliderExample.tsx
+import { useState } from 'react';
+import Slider from '@expo/ui/community/slider';
+
+export default function LimitedSliderExample() {
+  const [value, setValue] = useState(50);
+
+  return (
+    <Slider
+      value={value}
+      minimumValue={0}
+      maximumValue={100}
+      lowerLimit={20}
+      upperLimit={80}
+      onValueChange={setValue}
+    />
+  );
+}
+```
+
+## Tint colors
+
+Customize the slider's colors with `minimumTrackTintColor`, `maximumTrackTintColor`, and `thumbTintColor`. On iOS, only `minimumTrackTintColor` is currently applied.
+
+```tsx TintedSliderExample.tsx
+import { useState } from 'react';
+import Slider from '@expo/ui/community/slider';
+
+export default function TintedSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return (
+    <Slider
+      value={value}
+      minimumTrackTintColor="#ef4444"
+      maximumTrackTintColor="#fecaca"
+      thumbTintColor="#dc2626"
+      onValueChange={setValue}
+    />
+  );
+}
+```
+
+## Inverted
+
+Reverse the slider's direction so the maximum value appears on the left and the minimum on the right.
+
+```tsx InvertedSliderExample.tsx
+import { useState } from 'react';
+import Slider from '@expo/ui/community/slider';
+
+export default function InvertedSliderExample() {
+  const [value, setValue] = useState(0.5);
+
+  return <Slider value={value} inverted onValueChange={setValue} />;
+}
+```
+
+## API
+
+```tsx
+import Slider from '@expo/ui/community/slider';
+```
+
+<APISection packageName="expo-ui/community/slider" apiName="Slider" />
