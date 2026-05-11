@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock } from '~/ui/components/Snippet';
 
-> **info** This guide targets **SDK 56 and later**. In SDK 56, Expo Router stopped accepting application-code imports from `@react-navigation/*` — they now come from `expo-router/*` entry points. If you are upgrading an existing Expo Router app from SDK 55 or earlier, follow the [SDK 55 → 56 migration guide](/router/migrate/sdk-55-to-56). The samples below already use the SDK 56+ import paths.
+> **info** This guide targets **SDK 56 and later**. In SDK 56, Expo Router stopped accepting application-code imports from `@react-navigation/*. They now come from `expo-router/\*` entry points. If you are upgrading an existing Expo Router app from SDK 55 or earlier, follow the [SDK 55 to 56 migration guide](/router/migrate/sdk-55-to-56). The samples below already use the SDK 56 and later import paths.
 
 ## Pitch
 
@@ -517,7 +517,7 @@ You can use this technique at any layer of the app to set the theme for a specif
 
 The [React Navigation Elements](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
 
-In SDK 56 and later, this library is re-exported from `expo-router/react-navigation` — there is no separate package to install:
+In SDK 56 and later, this library is re-exported from `expo-router/react-navigation` and there is no separate package to install:
 
 ```tsx
 import { Header, HeaderBackButton } from 'expo-router/react-navigation';
