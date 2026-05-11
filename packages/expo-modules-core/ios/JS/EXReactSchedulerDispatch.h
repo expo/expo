@@ -4,6 +4,8 @@
 
 #ifdef __cplusplus
 
+namespace expo {
+
 /**
  Trampoline that `ExpoModulesJSI` calls to dispatch work onto the JS thread.
  Casts the `nativeScheduler` pointer back to a `react::RuntimeScheduler *` and
@@ -19,8 +21,6 @@
  pass `&expo::dispatchOnReactScheduler` as the `dispatch` argument to
  `AppContext.setRuntime`.
  */
-namespace expo {
-
 void dispatchOnReactScheduler(void *nativeScheduler, int priority, void (^callback)()) noexcept;
 
 } // namespace expo
