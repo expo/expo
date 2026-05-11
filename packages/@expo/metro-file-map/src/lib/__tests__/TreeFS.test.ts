@@ -88,6 +88,35 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     expect(tfs.exists(p('/project/link-to-nowhere'))).toBe(false);
   });
 
+  describe('linkStats edge cases (followLeaf=false)', () => {
+    test('returns type "l" for a symlink to a directory', () => {
+      // link-to-foo → foo (a directory). followLeaf=false returns the symlink.
+      expect(tfs.linkStats(p('/project/link-to-foo'))).toMatchObject({ fileType: 'l' });
+    });
+
+    test('returns type "l" for a broken symlink at the leaf', () => {
+      // followLeaf=false: leaf symlink is returned regardless of target validity.
+      expect(tfs.linkStats(p('/project/link-to-nowhere'))).toMatchObject({ fileType: 'l' });
+    });
+
+    test('resolves non-leaf symlinks, returns terminal symlink as "l"', () => {
+      // link-to-foo is followed (non-leaf); link-to-bar.js at leaf is returned as 'l'.
+      expect(tfs.linkStats(p('/project/link-to-foo/link-to-bar.js'))).toMatchObject({
+        fileType: 'l',
+      });
+    });
+
+    test('returns null when a non-leaf segment is a regular file', () => {
+      expect(tfs.linkStats(p('/project/bar.js/no-such'))).toBeNull();
+    });
+
+    test('cycling symlink at leaf returns "l" without consulting cycle detection', () => {
+      // followLeaf=false short-circuits at the leaf — the symlink target isn't
+      // resolved, so the cycle never has a chance to be observed.
+      expect(tfs.linkStats(p('/project/link-cycle-1'))).toMatchObject({ fileType: 'l' });
+    });
+  });
+
   test('implements linkStats()', () => {
     expect(tfs.linkStats(p('/project/link-to-foo/another.js'))).toEqual({
       fileType: 'f',
@@ -198,6 +227,15 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         exists: false,
         missing: p('/deep/project/root/baz.js'),
       });
+    });
+
+    test('symlink to itself returns missing (cycle detection)', () => {
+      expect(tfs.lookup(p('/project/link-to-self'))).toMatchObject({ exists: false });
+    });
+
+    test('two-node symlink cycle returns missing from either entry point', () => {
+      expect(tfs.lookup(p('/project/link-cycle-1'))).toMatchObject({ exists: false });
+      expect(tfs.lookup(p('/project/link-cycle-2'))).toMatchObject({ exists: false });
     });
   });
 
@@ -685,6 +723,32 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         },
       });
       expect(nullMtimeTfs.getMtimeByNormalPath(p('a.js'))).toBeNull();
+    });
+
+    test('skipFallback: does not invoke the fallback filesystem', () => {
+      // getMtimeByNormalPath passes skipFallback: true. Even when a fallback FS
+      // is configured, missing paths must return null without consulting it.
+      const mockFallback = {
+        lookup: jest.fn().mockReturnValue(null),
+        readdir: jest.fn().mockReturnValue(null),
+      };
+      const fbTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('existing.js'), [555, 5, 0, null, 0, null]],
+        ]),
+        fallbackFilesystem: mockFallback,
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+      // In-tree path: returns mtime, no fallback call.
+      expect(fbTfs.getMtimeByNormalPath(p('existing.js'))).toBe(555);
+      // Missing path: returns null, fallback not consulted.
+      expect(fbTfs.getMtimeByNormalPath(p('missing.js'))).toBeNull();
+      expect(fbTfs.getMtimeByNormalPath(p('missing/dir/file.js'))).toBeNull();
+      expect(mockFallback.lookup).not.toHaveBeenCalled();
+      expect(mockFallback.readdir).not.toHaveBeenCalled();
     });
   });
 
