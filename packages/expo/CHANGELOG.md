@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed launch-time crash in apps with source-built React Native by wiring the React `RuntimeScheduler` into `ExpoModulesJSI` from `ExpoReactNativeFactory`. ([#45636](https://github.com/expo/expo/pull/45636) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.0-preview.7 — 2026-05-08

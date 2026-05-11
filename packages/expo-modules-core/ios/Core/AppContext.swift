@@ -429,12 +429,26 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   // MARK: - Runtime
 
   /**
-   Sets the JavaScript runtime from a raw pointer to a `facebook::jsi::Runtime` instance.
-   Called from ObjC++ (e.g. `ExpoReactNativeFactory`) when React Native initializes the runtime.
+   Sets the JavaScript runtime from raw pointers. Called by `ExpoReactNativeFactory`
+   when React Native initializes the runtime. The native scheduler reference and
+   dispatch trampoline are required so `JavaScriptRuntime.schedule(...)` /
+   `.execute(...)` can dispatch onto the JS thread.
+
+   `dispatch` is a raw pointer to a C function with signature
+   `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
+   to the typed pointer inside `ExpoModulesJSI`.
    */
   @objc
-  public func setRuntime(_ runtimePointer: UnsafeMutableRawPointer) {
-    _runtime = ExpoRuntime(unsafePointer: runtimePointer)
+  public func setRuntime(
+    _ runtimePointer: UnsafeMutableRawPointer,
+    nativeScheduler: UnsafeMutableRawPointer,
+    dispatch: UnsafeRawPointer
+  ) {
+    _runtime = ExpoRuntime(
+      unsafePointer: runtimePointer,
+      nativeScheduler: nativeScheduler,
+      dispatch: dispatch
+    )
   }
 
   @JavaScriptActor
