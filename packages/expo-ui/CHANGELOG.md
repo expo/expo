@@ -92,8 +92,6 @@ _This version does not introduce any user-facing changes._
 
 - Moved `DateTimePicker` to `@expo/ui/community/datetime-picker`. The old `@expo/ui/datetimepicker` export still works but logs a deprecation warning in development. ([@vonovak](https://github.com/vonovak)) ([#45211](https://github.com/expo/expo/pull/45211) by [@vonovak](https://github.com/vonovak))
 - [iOS] Added `extraProps` to `SlotView` for passing metadata to SwiftUI slot consumers. ([#44689](https://github.com/expo/expo/pull/45287) by [@yousofabouhalawa](https://github.com/yousofabouhalawa))
-- [iOS] Introduce `SlotView` to replace structural child view types with a single generic slot. ([#43607](https://github.com/expo/expo/pull/43607) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Make RNHostView SwiftUI view ([#43570](https://github.com/expo/expo/pull/43570) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
 - Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Reuse `HorizontalAlignment` converter in `LazyColumn`. ([#44755](https://github.com/expo/expo/pull/44755) by [@kudo](https://github.com/kudo))
