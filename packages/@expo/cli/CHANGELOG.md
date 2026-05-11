@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix regression hiding stderr output on fatal exit ([#45641](https://github.com/expo/expo/pull/45641) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.1.0 — 2026-05-08
