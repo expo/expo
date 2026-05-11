@@ -344,7 +344,7 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     showTryAgainButton = false;
   } else if ([errorCode isEqualToString:@"EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED"]) {
     formattedMessage = @"This project was published with a precompiled Hermes bytecode bundle. Expo Go runs plain JavaScript bundles, so it can't load this update.";
-    fixInstructions = @"Open this project in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) instead.";
+    fixInstructions = @"Open this project in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) instead, or use **eas update --no-bytecode**.";
     showTryAgainButton = false;
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
     formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.

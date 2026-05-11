@@ -120,7 +120,7 @@ class ManifestException : ExponentException {
           "EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED" -> {
             formattedMessage = "This project was published with a precompiled Hermes bytecode bundle. Expo Go runs plain JavaScript bundles, so it can't load this update."
             fixInstructions =
-              "Open this project in a <a href='https://docs.expo.dev/develop/development-builds/introduction/'>development build</a> instead."
+              "Open this project in a <a href='https://docs.expo.dev/develop/development-builds/introduction/'>development build</a> instead, or use <b>eas update --no-bytecode</b>."
             canRetry = false
           }
 
