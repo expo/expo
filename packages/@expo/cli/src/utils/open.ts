@@ -1,5 +1,6 @@
 import * as osascript from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
+import os from 'os';
 import path from 'path';
 
 /** Splits an inline script into trimmed, non-empty lines for `osascript -e <line>`. */
@@ -154,26 +155,52 @@ export async function openBrowserAsync(target: string): Promise<boolean> {
     }
     const openArgs: string[] = [];
     if (browserApp) openArgs.push('-a', browserApp);
-    openArgs.push(target);
+    // Per `open(1)`, everything following `--args` is forwarded to the launched app,
+    // so the target URL must come after the args block to reach the app alongside them.
     if (browserArgs.length > 0) openArgs.push('--args', ...browserArgs);
+    openArgs.push(target);
     await spawnAsync('open', openArgs, { stdio: 'ignore' });
     return true;
   }
 
   if (process.platform === 'win32') {
-    // Windows preserves env var case in Node, but the OS variable is `SystemRoot`.
-    const systemRoot = process.env.SYSTEMROOT ?? process.env.SystemRoot ?? 'C:\\Windows';
-    const cmd = path.join(systemRoot, 'System32', 'cmd.exe');
-    // `start ""` — the empty quoted string is the window title, so the URL isn't
-    // interpreted as a title argument.
-    const startArgs = ['/c', 'start', '""'];
-    if (browserApp) startArgs.push(browserApp);
-    startArgs.push(target, ...browserArgs);
-    await spawnAsync(cmd, startArgs, { stdio: 'ignore' });
+    await spawnWindowsStartAsync(target, browserApp, browserArgs);
+    return true;
+  }
+
+  // WSL: when the user hasn't overridden BROWSER, route through Windows `cmd.exe` so
+  // the URL opens in the user's Windows browser. Falls through to `xdg-open` otherwise.
+  if (!browserApp && isWsl()) {
+    await spawnAsync('/mnt/c/Windows/System32/cmd.exe', ['/c', 'start', '""', target], {
+      stdio: 'ignore',
+    });
     return true;
   }
 
   const command = browserApp ?? 'xdg-open';
   await spawnAsync(command, [...browserArgs, target], { stdio: 'ignore' });
   return true;
+}
+
+async function spawnWindowsStartAsync(
+  target: string,
+  browserApp: string | undefined,
+  browserArgs: string[]
+): Promise<void> {
+  // Windows preserves env var case in Node, but the OS variable is `SystemRoot`.
+  const systemRoot = process.env.SYSTEMROOT ?? process.env.SystemRoot ?? 'C:\\Windows';
+  const cmd = path.join(systemRoot, 'System32', 'cmd.exe');
+  // `start ""` — the empty quoted string is the window title, so the URL isn't
+  // interpreted as a title argument.
+  const startArgs = ['/c', 'start', '""'];
+  if (browserApp) startArgs.push(browserApp);
+  startArgs.push(target, ...browserArgs);
+  await spawnAsync(cmd, startArgs, { stdio: 'ignore' });
+}
+
+function isWsl(): boolean {
+  if (process.platform !== 'linux') return false;
+  if (process.env.WSL_DISTRO_NAME) return true;
+  const release = os.release().toLowerCase();
+  return release.includes('microsoft') || release.includes('wsl');
 }
