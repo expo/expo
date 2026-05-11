@@ -14,6 +14,10 @@ class DevMenuViewModel: ObservableObject {
   @Published var showDebuggingTip: Bool = false
   @Published var showFastRefresh: Bool = false
   @Published var showHostUrl: Bool = false
+  @Published var showPerformanceMonitor: Bool = false
+  @Published var showElementInspector: Bool = false
+  @Published var showRuntimeVersion: Bool = false
+  @Published var showSystemSection: Bool = false
 
   private let manager: DevMenuManager
   private var cancellables = Set<AnyCancellable>()
@@ -47,9 +51,34 @@ class DevMenuViewModel: ObservableObject {
   private func updateSectionVisibility() {
     let manifest = manager.currentManifest
     let isDev = manifest?.isDevelopmentMode() == true || manifest?.isUsingDeveloperTool() == true
-    showDebuggingTip = isDev
-    showFastRefresh = isDev
-    showHostUrl = !isDev && manager.isCurrentAppSnack
+    let isSnack = manager.isCurrentAppSnack
+
+    if isSnack {
+      // Snacks: hide dev tools, show snack-specific tools (source explorer, undo)
+      showDebuggingTip = false
+      showFastRefresh = false
+      showPerformanceMonitor = false
+      showElementInspector = false
+      showRuntimeVersion = false
+      showHostUrl = false
+      showSystemSection = false
+    } else if !isDev {
+      showDebuggingTip = false
+      showFastRefresh = false
+      showPerformanceMonitor = false
+      showElementInspector = false
+      showRuntimeVersion = false
+      showHostUrl = false
+      showSystemSection = true
+    } else {
+      showDebuggingTip = true
+      showFastRefresh = true
+      showPerformanceMonitor = true
+      showElementInspector = true
+      showRuntimeVersion = true
+      showHostUrl = false
+      showSystemSection = true
+    }
   }
 
   func hideMenu() {

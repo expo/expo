@@ -47,13 +47,13 @@ struct SettingsTabView: View {
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
-          Text("Automatic is only supported on operating systems that allow you to control the system-wide color scheme.")
+          Text("Automatic follows your device's system appearance.")
             .font(.caption)
             .foregroundColor(.secondary)
         }
 
         VStack(alignment: .leading, spacing: 16) {
-          Text("Developer Menu Gestures")
+          Text("Tool Menu Gestures")
             .font(.headline)
             .foregroundColor(.primary)
 
@@ -75,7 +75,7 @@ struct SettingsTabView: View {
           .background(Color.expoSecondarySystemBackground)
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.large))
 
-          Text("Selected gestures will toggle the developer menu while inside an experience. The menu allows you to reload or return to home in a published experience, and exposes developer tools in development mode.")
+          Text("Selected gestures will open the tool menu.")
             .font(.caption)
             .foregroundColor(.secondary)
         }
