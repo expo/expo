@@ -6,15 +6,19 @@ import { type CommonViewModifierProps } from '../types';
 export type ScrollViewProps = {
   children: React.ReactNode;
   /**
-   * The scrollable axes.
+   * The scrollable axes. Pass `'both'` to enable 2D (horizontal + vertical) scrolling.
    * @default 'vertical'
    */
   axes?: 'vertical' | 'horizontal' | 'both';
   /**
-   * Whether to show scroll indicators.
-   * @default true
+   * Visibility of the scroll indicators. Mirrors SwiftUI's `scrollIndicators(_:)` modifier.
+   * - `'automatic'`: platform-default behavior.
+   * - `'visible'`: prefer showing indicators (may still be hidden by the system).
+   * - `'hidden'`: prefer hiding indicators (may still be shown by the system).
+   * - `'never'`: never show indicators.
+   * @default 'automatic'
    */
-  showsIndicators?: boolean;
+  scrollIndicators?: 'automatic' | 'visible' | 'hidden' | 'never';
 } & CommonViewModifierProps;
 
 const ScrollViewNativeView: React.ComponentType<ScrollViewProps> = requireNativeView(
