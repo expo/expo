@@ -211,8 +211,11 @@ export default class TreeFS implements MutableFileSystem {
   }
 
   getSize(mixedPath: Path): number | null {
-    const fileMetadata = this.#getFileData(mixedPath);
-    return (fileMetadata && fileMetadata[H.SIZE]) ?? null;
+    const result = this.#lookup(this.#normalizePath(mixedPath));
+    if (!result.exists || isDirectory(result.node)) {
+      return null;
+    }
+    return result.node[H.SIZE] ?? null;
   }
 
   getDifference(
@@ -300,8 +303,11 @@ export default class TreeFS implements MutableFileSystem {
   }
 
   getSha1(mixedPath: Path): string | null {
-    const fileMetadata = this.#getFileData(mixedPath);
-    return (fileMetadata && fileMetadata[H.SHA1]) ?? null;
+    const result = this.#lookup(this.#normalizePath(mixedPath));
+    if (!result.exists || isDirectory(result.node)) {
+      return null;
+    }
+    return result.node[H.SHA1] ?? null;
   }
 
   async getOrComputeSha1(
@@ -355,8 +361,8 @@ export default class TreeFS implements MutableFileSystem {
   }
 
   exists(mixedPath: Path): boolean {
-    const result = this.#getFileData(mixedPath);
-    return result != null;
+    const result = this.#lookup(this.#normalizePath(mixedPath));
+    return result.exists && !isDirectory(result.node);
   }
 
   lookup(mixedPath: Path): LookupResult {
@@ -399,13 +405,13 @@ export default class TreeFS implements MutableFileSystem {
   }
 
   linkStats(mixedPath: Path): FileStats | null {
-    const fileMetadata = this.#getFileData(mixedPath, { followLeaf: false });
-    if (fileMetadata == null) {
+    const result = this.#lookupNoFollow(this.#normalizePath(mixedPath));
+    if (!result.exists || isDirectory(result.node)) {
       return null;
     }
-    const fileType = isRegularFile(fileMetadata) ? 'f' : 'l';
+    const fileMetadata = result.node;
     return {
-      fileType,
+      fileType: isRegularFile(fileMetadata) ? 'f' : 'l',
       modifiedTime: fileMetadata[H.MTIME],
       size: fileMetadata[H.SIZE],
     };
@@ -1747,18 +1753,6 @@ export default class TreeFS implements MutableFileSystem {
       invariant(typeof symlinkTarget === 'string', 'Expected symlink target to be populated.');
       return normalizePathSeparatorsToSystem(symlinkTarget);
     }
-  }
-
-  #getFileData(
-    filePath: Path,
-    opts: { followLeaf: boolean } = { followLeaf: true }
-  ): FileMetadata | null {
-    const normalPath = this.#normalizePath(filePath);
-    const result = opts.followLeaf ? this.#lookup(normalPath) : this.#lookupNoFollow(normalPath);
-    if (!result.exists || isDirectory(result.node)) {
-      return null;
-    }
-    return result.node;
   }
 
   /**
