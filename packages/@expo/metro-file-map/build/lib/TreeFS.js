@@ -379,6 +379,9 @@ class TreeFS {
     }
     remove(mixedPath, changeListener) {
         const normalPath = this.#normalizePath(mixedPath);
+        this.#removeNormalPath(normalPath, changeListener);
+    }
+    #removeNormalPath(normalPath, changeListener) {
         const result = this.#lookupByNormalPath(normalPath, { followLeaf: false });
         if (!result.exists) {
             return;
@@ -386,7 +389,7 @@ class TreeFS {
         const { parentNode, canonicalPath, node } = result;
         if (isDirectory(node) && node.size > 0) {
             for (const basename of node.keys()) {
-                this.remove(canonicalPath + path_1.default.sep + basename, changeListener);
+                this.#removeNormalPath(canonicalPath + path_1.default.sep + basename, changeListener);
             }
             // Removing the last file will delete this directory
             return;
@@ -407,7 +410,7 @@ class TreeFS {
                 // that's not expected to be a case common enough to justify
                 // implementation complexity, or slowing down more common uses of
                 // _lookupByNormalPath.
-                this.remove(path_1.default.dirname(canonicalPath), changeListener);
+                this.#removeNormalPath(path_1.default.dirname(canonicalPath), changeListener);
             }
         }
     }
