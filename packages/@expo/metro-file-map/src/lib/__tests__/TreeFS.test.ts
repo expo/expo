@@ -845,6 +845,84 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         expect(invalidatedBy).toEqual(new Set(expectedInvalidatedBy.map(p)));
       }
     );
+
+    test('subpathType "d": matches directory child', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a'), 'b', {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'd',
+        })
+      ).toEqual({ absolutePath: p('/A/B/C/a/b'), containerRelativePath: '' });
+      expect(invalidatedBy).toEqual(new Set());
+    });
+
+    test('subpathType "d": skips file ancestor, matches directory ancestor', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a/b/c/d/foo.js'), 'package.json', {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'd',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/b/package.json'),
+        containerRelativePath: p('c/d/foo.js'),
+      });
+      expect(invalidatedBy).toEqual(
+        new Set([
+          p('/A/B/C/a/b/c/d/foo.js'),
+          p('/A/B/C/a/b/c/d/package.json'),
+          p('/A/B/C/a/b/c/package.json'),
+        ])
+      );
+    });
+
+    test('multi-segment subpath resolves against Phase 1 candidate', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a/n_m/pkg/foo.js'), p('subpath/package.json'), {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'f',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/n_m/pkg/subpath/package.json'),
+        containerRelativePath: 'foo.js',
+      });
+    });
+
+    test('multi-segment subpath resolves against Phase 2 candidate above root', () => {
+      // Phase 2 candidate ends in `..`, so `start` is not forwarded to the
+      // slow path — joinNormalToRelative would otherwise collapse the suffix.
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/foo'), p('C/a/package.json'), {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'f',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/package.json'),
+        containerRelativePath: 'foo',
+      });
+      expect(invalidatedBy).toEqual(new Set([p('/A/B/foo')]));
+    });
+
+    test('symlink at subpath resolves via slow path', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a/1/foo.js'), 'package.json', {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'f',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/1/real-package.json'),
+        containerRelativePath: 'foo.js',
+      });
+    });
   });
 
   describe('matchFiles', () => {
