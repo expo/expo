@@ -54,6 +54,7 @@ export function Actions({
 
 /**
  * Applies native SwiftUI swipe actions to its non-slot children.
+ * @platform ios
  */
 function SwipeActionsComponent(props: SwipeActionsProps) {
   const { modifiers, ...restProps } = props;
