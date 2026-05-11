@@ -1,4 +1,4 @@
-import type { StyleProp, ViewStyle } from 'react-native';
+import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
 
 /**
  * Props for the `Slider` community drop-in component.
@@ -50,6 +50,20 @@ export type SliderProps = {
    * @default false
    */
   inverted?: boolean;
+  /**
+   * Color of the track to the left of the thumb.
+   */
+  minimumTrackTintColor?: ColorValue;
+  /**
+   * Color of the track to the right of the thumb.
+   * @platform android
+   */
+  maximumTrackTintColor?: ColorValue;
+  /**
+   * Color of the thumb.
+   * @platform android
+   */
+  thumbTintColor?: ColorValue;
   /**
    * Callback continuously called while the user is dragging the slider.
    */

@@ -22,10 +22,17 @@ const STEPS = [
   { label: '1/4', factor: 0.25 },
 ] as const;
 
+const TINTS = [
+  { label: 'Default', min: undefined, max: undefined, thumb: undefined },
+  { label: 'Red', min: '#ef4444', max: '#fecaca', thumb: '#dc2626' },
+  { label: 'Blue', min: '#3b82f6', max: '#bfdbfe', thumb: '#1d4ed8' },
+] as const;
+
 export default function CommunitySliderScreen() {
   const [rangeIndex, setRangeIndex] = useState(0);
   const [widthIndex, setWidthIndex] = useState(0);
   const [stepIndex, setStepIndex] = useState(0);
+  const [tintIndex, setTintIndex] = useState(0);
   const [disabled, setDisabled] = useState(false);
   const [inverted, setInverted] = useState(false);
   const [limited, setLimited] = useState(false);
@@ -34,6 +41,7 @@ export default function CommunitySliderScreen() {
   const range = RANGES[rangeIndex];
   const width = WIDTHS[widthIndex].value;
   const step = STEPS[stepIndex].factor * (range.max - range.min);
+  const tint = TINTS[tintIndex];
   // Limits clamp to the inner 60% of the range when enabled.
   const span = range.max - range.min;
   const lowerLimit = limited ? range.min + span * 0.2 : undefined;
@@ -57,6 +65,9 @@ export default function CommunitySliderScreen() {
           inverted={inverted}
           lowerLimit={lowerLimit}
           upperLimit={upperLimit}
+          minimumTrackTintColor={tint.min}
+          maximumTrackTintColor={tint.max}
+          thumbTintColor={tint.thumb}
           onValueChange={setValue}
           style={width ? { width, alignSelf: 'center' } : { alignSelf: 'stretch' }}
         />
@@ -64,9 +75,30 @@ export default function CommunitySliderScreen() {
       </View>
 
       <View style={styles.controls}>
-        <PillRow label="Range" options={RANGES.map((r) => r.label)} index={rangeIndex} onSelect={onSelectRange} />
-        <PillRow label="Step" options={STEPS.map((s) => s.label)} index={stepIndex} onSelect={setStepIndex} />
-        <PillRow label="Width" options={WIDTHS.map((w) => w.label)} index={widthIndex} onSelect={setWidthIndex} />
+        <PillRow
+          label="Range"
+          options={RANGES.map((r) => r.label)}
+          index={rangeIndex}
+          onSelect={onSelectRange}
+        />
+        <PillRow
+          label="Step"
+          options={STEPS.map((s) => s.label)}
+          index={stepIndex}
+          onSelect={setStepIndex}
+        />
+        <PillRow
+          label="Tint"
+          options={TINTS.map((t) => t.label)}
+          index={tintIndex}
+          onSelect={setTintIndex}
+        />
+        <PillRow
+          label="Width"
+          options={WIDTHS.map((w) => w.label)}
+          index={widthIndex}
+          onSelect={setWidthIndex}
+        />
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Disabled</Text>
           <Switch value={disabled} onValueChange={setDisabled} />

@@ -16,6 +16,9 @@ export function Slider(props: SliderProps) {
     step,
     disabled,
     inverted,
+    minimumTrackTintColor,
+    maximumTrackTintColor,
+    thumbTintColor,
     onValueChange,
     style,
   } = props;
@@ -23,6 +26,11 @@ export function Slider(props: SliderProps) {
   const max = maximumValue ?? 1;
   const steps = step && step > 0 ? Math.max(0, Math.round((max - min) / step) - 1) : 0;
   const hostStyle = inverted ? [style, { transform: [{ scaleX: -1 }] }] : style;
+  const colors = {
+    activeTrackColor: minimumTrackTintColor,
+    inactiveTrackColor: maximumTrackTintColor,
+    thumbColor: thumbTintColor,
+  };
   return (
     <Host matchContents={{ vertical: true }} style={hostStyle}>
       <ComposeSlider
@@ -33,6 +41,7 @@ export function Slider(props: SliderProps) {
         upperLimit={upperLimit}
         steps={steps}
         enabled={disabled === undefined ? undefined : !disabled}
+        colors={colors}
         onValueChange={onValueChange}
       />
     </Host>
