@@ -46,6 +46,7 @@ const UP_FRAGMENT_SEP_LENGTH = UP_FRAGMENT_SEP.length;
 const CURRENT_FRAGMENT = '.' + path.sep;
 
 const IS_WIN32 = path.sep === '\\';
+const ROOT_BASE_IDX = IS_WIN32 ? 0 : 1;
 
 function startsWithDriveLetter(str: string): boolean {
   if (!IS_WIN32 || str.charCodeAt(1) !== 58 /* ':' */) {
@@ -322,9 +323,10 @@ export class RootPathUtils {
         };
       }
 
-      // Cap the number of indirections at the total number of root segments.
-      // File systems treat '..' at the root as '.'.
-      if (totalUpIndirections < this.#rootParts.length - 1) {
+      // Cap the number of indirections at the total number of root parts.
+      // File systems treat '..' at the root as '.'. For Windows, cross-device
+      // paths need to survive this
+      if (totalUpIndirections < this.#rootParts.length - ROOT_BASE_IDX) {
         totalUpIndirections++;
       }
 
