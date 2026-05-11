@@ -229,7 +229,7 @@ export class RootPathUtils {
     if (relativePath === '') {
       return { collapsedSegments: 0, normalPath };
     }
-    const left = normalPath + path.sep;
+    const left = normalPath.endsWith(path.sep) ? normalPath : normalPath + path.sep;
     const rawPath = left + relativePath;
     if (normalPath === '..' || normalPath.endsWith(SEP_UP_FRAGMENT)) {
       const collapsed = this.#tryCollapseIndirectionsInSuffix(rawPath, 0, 0);
