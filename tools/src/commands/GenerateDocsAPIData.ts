@@ -239,6 +239,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-router/color': ['color/index.ts', 'expo-router'],
   'expo-router/native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router/split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router/experimental-stack': ['layouts/experimental-stack/index.tsx', 'expo-router'],
   'expo-router/ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],

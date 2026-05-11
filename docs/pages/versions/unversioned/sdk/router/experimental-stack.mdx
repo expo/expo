@@ -1,0 +1,120 @@
+---
+title: Router Experimental Stack
+sidebar_title: Experimental Stack
+description: An opt-in sibling to Stack built on the react-native-screens experimental gamma stack. Available for testing only.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-router/src/layouts/experimental-stack'
+packageName: 'expo-router'
+platforms: ['ios', 'android']
+isAlpha: true
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import APISection from '~/components/plugins/APISection';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+> **important** `ExperimentalStack` is an [alpha](/more/release-statuses/#alpha) API available in **Expo SDK 56** and later. It is for testing only &mdash; the API and feature set may change before it is ready for production use.
+
+`ExperimentalStack` is a sibling to [`Stack`](./stack) powered by the new `react-native-screens/experimental` stack. It is opt-in per navigator: replace `<Stack />` with `<ExperimentalStack />` in the specific layout you want to migrate, and keep `<Stack />` everywhere else.
+
+We are sharing it early so you can try it in your app and tell us what is missing. The supported option surface is intentionally narrow and will grow over time.
+
+> See the [Expo Router](./index) reference for more information about the file-based routing library for native and Web apps.
+
+## Supported features
+
+Supported screen options:
+
+- `title`
+- `headerShown`
+- `headerTransparent`
+- `headerBackVisible`
+
+On Android, `ExperimentalStack` ships with [predictive back gesture](https://developer.android.com/guide/navigation/custom-back/predictive-back-gesture) support. You still need to enable it for your app by setting [`android.predictiveBackGestureEnabled`](/versions/latest/config/app/#predictivebackgestureenabled) to `true` in your [app config](/workflow/configuration/).
+
+## Platform support
+
+`ExperimentalStack` is native-only. On Web, it falls back to the standard `Stack`, so the same layout works across platforms without conditional code.
+
+## Basic usage
+
+```tsx app/_layout.tsx
+import { ExperimentalStack as Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack screenOptions={{ headerShown: true }}>
+      <Stack.Screen name="index" options={{ title: 'Home' }} />
+      <Stack.Screen name="details" options={{ title: 'Details' }} />
+    </Stack>
+  );
+}
+```
+
+You can compose `ExperimentalStack.Screen` and `ExperimentalStack.Protected` the same way you would with `Stack`.
+
+## Known limitations
+
+<Collapsible summary="Limited screen options">
+
+`ExperimentalStack` supports only `title`, `headerShown`, `headerTransparent`, and `headerBackVisible`. Passing any other option (for example, `headerLeft`, `headerRight`, `headerTitle`, `headerStyle`, `headerTintColor`, animation overrides, status bar options) logs a development warning and has no effect. Keep using `<Stack />` for screens that need those options.
+
+</Collapsible>
+
+<Collapsible summary="No presentation modes yet">
+
+`ExperimentalStack` does not yet support `presentation: 'modal'` or `transparentModal`. Screens always push onto the stack.
+
+</Collapsible>
+
+<Collapsible summary="No sheets yet">
+
+`ExperimentalStack` does not yet support `formSheet` or the related sheet sizing/detent options.
+
+</Collapsible>
+
+<Collapsible summary="No custom headers yet">
+
+`ExperimentalStack` does not yet support custom header components or header tinting/styling. Only the four header options listed above take effect.
+
+</Collapsible>
+
+<Collapsible summary="No animation or status bar customization yet">
+
+`ExperimentalStack` does not yet honor per-screen animation overrides (`animation`, `animationDuration`) or status bar options.
+
+</Collapsible>
+
+<Collapsible summary="Cannot be mixed with Stack on Android">
+
+On Android, `ExperimentalStack` and the standard `Stack` cannot coexist in the same app &mdash; pick one navigator type for your native stacks. We hope to lift this restriction in a future release so you can migrate one navigator at a time.
+
+</Collapsible>
+
+<Collapsible summary="Web falls back to standard Stack">
+
+On Web, `<ExperimentalStack />` renders the standard `Stack` from `expo-router`. Native-only options have no effect on Web.
+
+</Collapsible>
+
+> **info** We are actively developing `ExperimentalStack` and looking for feedback. You can share your thoughts on [Discord](https://chat.expo.dev), [open an issue on GitHub](https://github.com/expo/expo/issues), or use the **Feedback** button at the bottom of this page.
+
+## Installation
+
+`ExperimentalStack` ships as part of `expo-router`. Follow the Expo Router installation guide if you do not already have it in your project:
+
+<BoxLink
+  title="Install Expo Router"
+  description="Learn how to install Expo Router in your project."
+  href="/router/installation/"
+  Icon={BookOpen02Icon}
+/>
+
+## API
+
+```js
+import { ExperimentalStack } from 'expo-router';
+```
+
+<APISection packageName="expo-router/experimental-stack" apiName="Experimental Stack" />
