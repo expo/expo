@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Removed @shopify/react-native-skia's precompiled configuration due to install-script issues
+
 ## 56.0.3 — 2026-05-08
 
 ### 🐛 Bug fixes

@@ -17,7 +17,6 @@ Configs live in `packages/expo-modules-autolinking/external-configs/ios/<package
 | Package | Product Name |
 |---------|-------------|
 | `@react-native-async-storage/async-storage` | `RNCAsyncStorage` |
-| `@shopify/react-native-skia` | `RNSkia` |
 | `lottie-react-native` | `LottieReactNative` |
 | `react-native-gesture-handler` | `RNGestureHandler` |
 | `react-native-keyboard-controller` | `KeyboardController` |
