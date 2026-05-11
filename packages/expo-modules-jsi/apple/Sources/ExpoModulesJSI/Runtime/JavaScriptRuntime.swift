@@ -74,19 +74,19 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    React Native factory uses.
 
    - `unsafePointer`: raw pointer to the underlying `facebook::jsi::Runtime`.
-   - `nativeScheduler`: raw pointer to the `react::RuntimeScheduler` instance.
+   - `scheduler`: raw pointer to the `react::RuntimeScheduler` instance.
    - `dispatch`: raw pointer to a C function with signature
      `void (*)(void *scheduler, int priority, void (^callback)())`.
    */
   public init(
     unsafePointer: UnsafeMutableRawPointer,
-    nativeScheduler: UnsafeMutableRawPointer,
+    scheduler: UnsafeMutableRawPointer,
     dispatch: UnsafeRawPointer
   ) {
     let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
     let fn = unsafeBitCast(dispatch, to: expo.RuntimeScheduler.ScheduleFn.self)
     self.pointee = runtime
-    self.scheduler = expo.RuntimeScheduler(nativeScheduler, fn)
+    self.scheduler = expo.RuntimeScheduler(scheduler, fn)
   }
 
   /**

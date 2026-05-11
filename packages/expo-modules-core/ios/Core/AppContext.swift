@@ -430,7 +430,7 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   /**
    Sets the JavaScript runtime from raw pointers. Called by `ExpoReactNativeFactory`
-   when React Native initializes the runtime. When `nativeScheduler` and `dispatch`
+   when React Native initializes the runtime. When `scheduler` and `dispatch`
    are both provided, `JavaScriptRuntime.schedule(...)` / `.execute(...)` dispatch
    onto the JS thread through them. When either is `nil`, the runtime falls back
    to a synchronous no-op scheduler — callers can detect this via
@@ -445,13 +445,13 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   @objc
   public func setRuntime(
     _ runtimePointer: UnsafeMutableRawPointer,
-    nativeScheduler: UnsafeMutableRawPointer?,
+    scheduler: UnsafeMutableRawPointer?,
     dispatch: UnsafeRawPointer?
   ) {
-    if let nativeScheduler, let dispatch {
+    if let scheduler, let dispatch {
       _runtime = ExpoRuntime(
         unsafePointer: runtimePointer,
-        nativeScheduler: nativeScheduler,
+        scheduler: scheduler,
         dispatch: dispatch
       )
     } else {

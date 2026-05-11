@@ -19,25 +19,8 @@
 #import "ExpoModulesCore-Swift.h"
 #endif
 #import <ReactCommon/RCTHost.h>
-#import <react/renderer/runtimescheduler/RuntimeScheduler.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
-
-namespace {
-
-// Trampoline that ExpoModulesJSI calls to dispatch work onto the JS thread.
-// Defined here (rather than in the xcframework) so the xcframework's prebuilt
-// binary doesn't need to link against React-runtimescheduler.
-void dispatchOnReactScheduler(void *nativeScheduler, int priority, void (^callback)()) noexcept
-{
-  auto *scheduler = static_cast<facebook::react::RuntimeScheduler *>(nativeScheduler);
-  scheduler->scheduleTask(
-    static_cast<facebook::react::SchedulerPriority>(priority),
-    [callback](facebook::jsi::Runtime &) {
-      callback();
-    });
-}
-
-} // namespace
+#import <ExpoModulesCore/EXReactSchedulerDispatch.h>
 
 @implementation EXReactNativeFactory {
   EXAppContext *_appContext;
@@ -64,8 +47,8 @@ void dispatchOnReactScheduler(void *nativeScheduler, int priority, void (^callba
   auto scheduler = binding ? binding->getRuntimeScheduler() : nullptr;
 
   [_appContext setRuntime:&runtime
-          nativeScheduler:scheduler.get()
-                 dispatch:scheduler ? reinterpret_cast<const void *>(&dispatchOnReactScheduler) : nullptr];
+                scheduler:scheduler.get()
+                 dispatch:scheduler ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
   [_appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [_appContext registerNativeModules];
