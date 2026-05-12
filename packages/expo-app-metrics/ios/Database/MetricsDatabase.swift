@@ -488,6 +488,16 @@ final class MetricsDatabase {
     }
   }
 
+  /**
+   Creates the four data tables plus `schema_version`. Relationships:
+
+   - `sessions` is the root. Every other table keys off `sessions.id` (a UUID string).
+   - `metrics` and `logs` each have a `sessionId` FK with `ON DELETE CASCADE`. Their `id` is
+     `INTEGER PRIMARY KEY AUTOINCREMENT` so `expo-observe` can dispatch with a monotonic cursor.
+   - `crash_reports` is keyed by `sessionId`. There's no FK constraint; the relationship is
+     informational, and deletes cascade manually (see `deleteSession`, `deleteAllSessions`,
+     `cleanupSessions`).
+   */
   private func createSchemaTables() throws {
     try database.execute("""
       CREATE TABLE IF NOT EXISTS schema_version (version INTEGER NOT NULL);
