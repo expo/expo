@@ -95,6 +95,11 @@ export const CICD_TUTORIAL_INITIAL_CHAPTERS: Chapter[] = [
     completed: false,
     slug: '/tutorial/cicd/tag-based-releases',
   },
+  {
+    title: 'Chapter 7: Web deployments',
+    completed: false,
+    slug: '/tutorial/cicd/web-deployments',
+  },
 ];
 
 // The following data is for the Get started Tutorial (/tutorial/).

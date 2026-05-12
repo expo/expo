@@ -112,7 +112,7 @@ No other job changes are needed. The `fingerprint`, `get-build`, `build`, and `u
 
 ### Commit and push the workflow change
 
-Commit the change to `production.yml` and push it to `main`. This doesn't trigger the workflow because we switched from a branch trigger to a tag trigger.
+Commit the change to **production.yml** and push it to `main`. This doesn't trigger the workflow because we switched from a branch trigger to a tag trigger.
 
 <Terminal
   cmd={[
@@ -131,7 +131,7 @@ Commit the change to `production.yml` and push it to `main`. This doesn't trigge
 
 ### Create a tag to test the workflow
 
-To trigger the workflow, we need to push a tag that matches the glob pattern defined in **production.yml**.
+To run the workflow, we need to push a tag that matches the glob pattern defined in **production.yml**.
 
 Make a TypeScript/JavaScript change in our example project, commit it, and push a new tag:
 

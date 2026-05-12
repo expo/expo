@@ -648,6 +648,7 @@ export const learn = [
       makePage('tutorial/cicd/e2e-tests.mdx'),
       makePage('tutorial/cicd/production.mdx'),
       makePage('tutorial/cicd/tag-based-releases.mdx'),
+      makePage('tutorial/cicd/web-deployments.mdx'),
     ],
     { expanded: true }
   ),
