@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix babel config resolution to distinguish project-wide configs (`babel.config.*`) from directory-scoped configs (`.babelrc`). ([#45683](https://github.com/expo/expo/pull/45683) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.0 — 2026-05-05
