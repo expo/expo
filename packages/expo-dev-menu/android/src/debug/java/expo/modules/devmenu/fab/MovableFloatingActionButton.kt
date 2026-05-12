@@ -50,7 +50,11 @@ fun MovableFloatingActionButton(
   margin: Dp = Margin,
   onPress: () -> Unit = {}
 ) {
-  BoxWithConstraints(modifier = modifier.safeDrawingPadding().fillMaxSize()) {
+  BoxWithConstraints(
+    modifier = modifier
+      .safeDrawingPadding()
+      .fillMaxSize()
+  ) {
     val totalFabSize = DpSize(fabSize.width + margin * 2, fabSize.height + margin * 2)
     val totalFabSizePx = with(LocalDensity.current) {
       Offset(totalFabSize.width.toPx(), totalFabSize.height.toPx())
