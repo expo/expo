@@ -53,7 +53,12 @@ internal struct FontModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if let family = family {
-      content.font(Font.custom(family, size: size ?? 17))
+      let baseFont = Font.custom(family, size: size ?? 17)
+      if let weight = weight {
+        content.font(baseFont.weight(weight.toSwiftUI()))
+      } else {
+        content.font(baseFont)
+      }
     } else {
       content.font(.system(
         size: size ?? 17,
