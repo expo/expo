@@ -19,7 +19,9 @@ async function main(args: string[]) {
   cli
     .name('expo-type-information')
     .version(require('../package.json').version)
-    .description('CLI commands for retrieving type information from native files.');
+    .description(
+      'Retrieve type information from Swift expo modules and use it to generate typescript.'
+    );
 
   moduleInterfaceCommand(cli);
   inlineModulesInterfaceCommand(cli);
