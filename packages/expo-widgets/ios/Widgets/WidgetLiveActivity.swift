@@ -26,25 +26,30 @@ public struct WidgetLiveActivity: Widget {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       LiveActivityBannerView(context: context, environment: environment)
     } dynamicIsland: { context in
-      DynamicIsland {
+      let nodes = getLiveActivityNodes(
+        forName: context.state.name,
+        props: context.state.props,
+        environment: environment
+      )
+      return DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
-          LiveActivitySectionView(context: context, environment: environment, sectionName: "expandedCenter")
+          LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "expandedCenter")
         }
         DynamicIslandExpandedRegion(.leading) {
-          LiveActivitySectionView(context: context, environment: environment, sectionName: "expandedLeading")
+          LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "expandedLeading")
         }
         DynamicIslandExpandedRegion(.trailing) {
-          LiveActivitySectionView(context: context, environment: environment, sectionName: "expandedTrailing")
+          LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "expandedTrailing")
         }
         DynamicIslandExpandedRegion(.bottom) {
-          LiveActivitySectionView(context: context, environment: environment, sectionName: "expandedBottom")
+          LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "expandedBottom")
         }
       } compactLeading: {
-        LiveActivitySectionView(context: context, environment: environment, sectionName: "compactLeading")
+        LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "compactLeading")
       } compactTrailing: {
-        LiveActivitySectionView(context: context, environment: environment, sectionName: "compactTrailing")
+        LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "compactTrailing")
       } minimal: {
-        LiveActivitySectionView(context: context, environment: environment, sectionName: "minimal")
+        LiveActivityNodeView(activityID: context.activityID, nodes: nodes, sectionName: "minimal")
       }
       .widgetURL(getLiveActivityUrl(forName: context.state.name))
     }
@@ -53,19 +58,14 @@ public struct WidgetLiveActivity: Widget {
 }
 
 @available(iOS 16.1, *)
-private struct LiveActivitySectionView: View {
-  let context: ActivityViewContext<LiveActivityAttributes>
-  let environment: [String: Any]
+private struct LiveActivityNodeView: View {
+  let activityID: String
+  let nodes: [String: Any]
   let sectionName: String
 
   var body: some View {
-    let nodes = getLiveActivityNodes(
-      forName: context.state.name,
-      props: context.state.props,
-      environment: environment
-    )
     if let node = nodes[sectionName] as? [String: Any] {
-      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: activityID, kind: .liveActivity, node: node)
     } else {
       EmptyView()
     }

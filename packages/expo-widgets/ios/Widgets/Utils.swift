@@ -49,6 +49,9 @@ func evaluateLayout(
 
 func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
+  if layout.isEmpty {
+    return [:]
+  }
   let propsData = props.data(using: .utf8)
   let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
   guard let context = createWidgetContext(layout: layout) else {
@@ -59,7 +62,7 @@ func getLiveActivityNodes(forName name: String, props: String = "{}", environmen
   widgetEnvironment["timestamp"] = Int(Date.now.timeIntervalSince1970 * 1000)
 
   let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [propsDict, environment]
+    withArguments: [propsDict, widgetEnvironment]
   )
 
   if let exception = context.exception {

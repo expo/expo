@@ -1,7 +1,13 @@
 import Foundation
 import JavaScriptCore
 
+private var cachedContexts: [String: JSContext] = [:]
+
 func createWidgetContext(layout: String) -> JSContext? {
+  if let cached = cachedContexts[layout] {
+    return cached
+  }
+
   guard let context = JSContext() else {
     return nil
   }
@@ -19,5 +25,7 @@ func createWidgetContext(layout: String) -> JSContext? {
   // Inject layout
   let layoutValue = context.evaluateScript("(\(layout))")
   context.setObject(layoutValue, forKeyedSubscript: "__expoWidgetLayout" as NSString)
+
+  cachedContexts[layout] = context
   return context
 }
