@@ -17,7 +17,12 @@ const timers_1 = require("timers");
 const v8_1 = require("v8");
 const rootRelativeCacheKeys_1 = __importDefault(require("../lib/rootRelativeCacheKeys"));
 const debug = require('debug')('Metro:FileMapCache');
-const DEFAULT_PREFIX = 'metro-file-map';
+let DEFAULT_PREFIX = 'metro-file-map';
+if (process.isBun) {
+    // NOTE(@kitten): The v8 serialize/deserialize format isn't 100% compatible between
+    // Node and Bun and therefore we should fork the cache file
+    DEFAULT_PREFIX += '-bun';
+}
 const DEFAULT_DIRECTORY = (0, os_1.tmpdir)();
 const DEFAULT_AUTO_SAVE_DEBOUNCE_MS = 5000;
 // NOTE(@kitten): We're incompatible with Metro, so need our own naming
