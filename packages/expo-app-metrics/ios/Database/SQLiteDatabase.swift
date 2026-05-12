@@ -10,8 +10,11 @@ import SQLite3
  to serialize access through some single owner (we use `AppMetricsActor`) because the C library's
  statement/transaction state is shared per-connection.
  */
-struct SQLiteDatabase: ~Copyable {
-  let rawHandle: OpaquePointer
+struct SQLiteDatabase: ~Copyable, Sendable {
+  // `nonisolated(unsafe)` lets the immutable handle cross isolation boundaries. The pointer itself
+  // is `let`; concurrent access to what it points at is the caller's responsibility (we serialize
+  // via `AppMetricsActor` — see the type's doc comment).
+  nonisolated(unsafe) private let rawHandle: OpaquePointer
 
   init(fileUrl: URL) throws {
     try FileManager.default.createDirectory(
@@ -70,6 +73,14 @@ struct SQLiteDatabase: ~Copyable {
    */
   func prepare(_ sql: String) throws -> SQLiteStatement {
     return try SQLiteStatement(db: rawHandle, sql: sql)
+  }
+
+  /**
+   Returns the rowid of the most recent successful INSERT on this connection — the auto-increment
+   `id` for tables with an `INTEGER PRIMARY KEY AUTOINCREMENT` column.
+   */
+  func lastInsertRowid() -> Int64 {
+    return sqlite3_last_insert_rowid(rawHandle)
   }
 
   /**

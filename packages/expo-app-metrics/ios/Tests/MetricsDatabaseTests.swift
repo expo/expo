@@ -220,6 +220,28 @@ struct MetricsDatabaseTests {
   }
 
   @Test
+  func `init prunes sessions past the retention window`() async throws {
+    try await withTemporaryDirectory { directoryUrl in
+      // Seed the file with one row past the retention cutoff and one well inside it, then drop the
+      // database and reopen. After awaiting an actor-isolated call (which FIFO-queues behind the
+      // init-scheduled prune), only the fresh row should remain.
+      do {
+        let database = try MetricsDatabase(directoryUrl: directoryUrl)
+        let expired = Date.now.addingTimeInterval(-MetricsDatabase.sessionRetention - 60).ISO8601Format()
+        let fresh = Date.now.addingTimeInterval(-60).ISO8601Format()
+        try database.insert(session: makeSessionRow(id: "expired", startTimestamp: expired))
+        try database.insert(session: makeSessionRow(id: "fresh", startTimestamp: fresh))
+      }
+
+      let database = try MetricsDatabase(directoryUrl: directoryUrl)
+      let remaining = try await AppMetricsActor.isolated {
+        return try database.getAllSessions().map(\.id)
+      }
+      #expect(remaining == ["fresh"])
+    }
+  }
+
+  @Test
   func `cleanupSessions removes rows older than the cutoff regardless of active flag`() throws {
     try withTemporaryDatabase { database in
       // `old-active` simulates a session whose process crashed before it could be marked inactive —
@@ -520,13 +542,26 @@ private func withTemporaryDatabase(_ body: (MetricsDatabase) throws -> Void) thr
 }
 
 private func withTemporaryDirectory(_ body: (URL) throws -> Void) throws {
-  let directoryUrl = FileManager.default.temporaryDirectory
-    .appendingPathComponent("ExpoAppMetricsTests-\(UUID().uuidString)")
-  try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+  let directoryUrl = try makeTemporaryDirectory()
   defer {
     try? FileManager.default.removeItem(at: directoryUrl)
   }
   try body(directoryUrl)
+}
+
+private func withTemporaryDirectory(_ body: @AppMetricsActor @Sendable (URL) async throws -> Void) async throws {
+  let directoryUrl = try makeTemporaryDirectory()
+  defer {
+    try? FileManager.default.removeItem(at: directoryUrl)
+  }
+  try await body(directoryUrl)
+}
+
+private func makeTemporaryDirectory() throws -> URL {
+  let directoryUrl = FileManager.default.temporaryDirectory
+    .appendingPathComponent("ExpoAppMetricsTests-\(UUID().uuidString)")
+  try FileManager.default.createDirectory(at: directoryUrl, withIntermediateDirectories: true)
+  return directoryUrl
 }
 
 private func makeSessionRow(

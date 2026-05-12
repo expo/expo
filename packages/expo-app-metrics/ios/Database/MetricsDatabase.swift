@@ -1,7 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import Foundation
-import SQLite3
 
 /**
  SQLite-backed storage for sessions, metrics, logs and crash reports.
@@ -9,7 +8,7 @@ import SQLite3
  All read/write methods are isolated to `AppMetricsActor`. The connection is opened with
  `SQLITE_OPEN_NOMUTEX`, so SQLite assumes a single caller — actor isolation is what guarantees that.
  */
-final class MetricsDatabase {
+final class MetricsDatabase: Sendable {
   /**
    Schema version stamped into the database on first open. Bump this whenever the schema or its
    semantics change in a way that an older or newer build can't operate on; on a mismatch the
@@ -17,6 +16,11 @@ final class MetricsDatabase {
    is local-only and short-lived, so wiping is preferable to maintaining migration code.
    */
   static let currentSchemaVersion = 3
+
+  /**
+   How long a session (and its metrics, logs, crash report) is retained before `init` prunes it.
+   */
+  static let sessionRetention: TimeInterval = 7 * 24 * 60 * 60 // 7 days
 
   let database: SQLiteDatabase
 
@@ -37,6 +41,30 @@ final class MetricsDatabase {
     self.fileUrl = directoryUrl.appendingPathComponent("\(fileName).db")
     self.database = try Self.openConnection(fileUrl: fileUrl)
     try createSchemaIfNeeded()
+    schedulePruneExpiredSessions()
+  }
+
+  /**
+   Dispatches a one-shot prune of retention-expired sessions onto `AppMetricsActor`. Fire-and-forget
+   from `init` so opening the database isn't slowed by the deletion; subsequent actor-isolated calls
+   queue behind it and will see the pruned state.
+
+   `weak self` so a database that's been discarded before the task runs (e.g. a transient instance
+   in a test, or a replaced singleton) doesn't keep its connection alive past its visible lifetime
+   — running prune against a connection whose file has been wiped trips a libsqlite3 use-after-free.
+   */
+  private func schedulePruneExpiredSessions() {
+    AppMetricsActor.isolated { [weak self] in
+      guard let self else {
+        return
+      }
+      let cutoff = Date.now.addingTimeInterval(-Self.sessionRetention).ISO8601Format()
+      do {
+        try self.cleanupSessions(olderThan: cutoff)
+      } catch {
+        logger.warn("[AppMetrics] Failed to prune expired sessions: \(error.localizedDescription)")
+      }
+    }
   }
 
   /**
@@ -348,7 +376,7 @@ final class MetricsDatabase {
       metric.value, metric.routeName, metric.updateId, metric.params
     ])
     try statement.run()
-    return sqlite3_last_insert_rowid(database.rawHandle)
+    return database.lastInsertRowid()
   }
 
   @AppMetricsActor
@@ -401,7 +429,7 @@ final class MetricsDatabase {
       log.body, log.attributes, log.droppedAttributesCount
     ])
     try statement.run()
-    return sqlite3_last_insert_rowid(database.rawHandle)
+    return database.lastInsertRowid()
   }
 
   @AppMetricsActor
