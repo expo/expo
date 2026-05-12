@@ -7,19 +7,20 @@ This package provides a CLI tool and exports functions which can:
 
 ## Installation
 
-First add the package to your npm dependencies
+First, add the package to your npm dependencies:
 
 ```zsh
 npm install expo-type-information
 ```
 
-To use this package, you need to have `sourcekitten` installed. You can install it using homebrew
+To use this package, you need to have `sourcekitten` installed. You can install it using Homebrew:
 
 ```zsh
 brew install sourcekitten
 ```
 
-Note that this package only works on MacOS!
+> [!WARNING]
+> This package only works on macOS.
 
 ## Usage
 
