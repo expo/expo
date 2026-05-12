@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `'..'` at root handling to align with Metro ([#45687](https://github.com/expo/expo/pull/45687) by [@kitten](https://github.com/kitten))
+- Fork disk cache binary file for Bun ([#45677](https://github.com/expo/expo/pull/45677) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
