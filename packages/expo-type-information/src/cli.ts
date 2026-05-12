@@ -9,6 +9,7 @@ import { inlineModulesInterfaceCommand } from './commands/inlineModulesInterface
 import { moduleInterfaceCommand } from './commands/moduleInterfaceCommand';
 import { shortModuleInterfaceCommand } from './commands/shortModuleInterfaceCommand';
 import { typeInformationCommand } from './commands/typeInformationCommand';
+import { preprocessFileCommand } from './commands/preprocessFileCommand';
 
 async function main(args: string[]) {
   if (!isSourceKittenInstalled()) {
@@ -31,6 +32,8 @@ async function main(args: string[]) {
   generateModuleTypesCommand(otherCommands);
   generateViewTypesCommand(otherCommands);
   generateJsxIntrinsics(otherCommands);
+  preprocessFileCommand(otherCommands);
+
   await cli.parseAsync(args, { from: 'user' });
 }
 

@@ -399,6 +399,24 @@ async function withTempFile<T>(content: string, fn: (filePath: string) => Promis
   }
 }
 
+export async function withPreparedSingleFile<T>(
+  { input, typeInference }: GetFileTypeInformationOptions,
+  fn: (filePath: string) => Promise<T>
+): Promise<T> {
+  const shouldPreprocessFile = typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE;
+  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
+    return fn(input.inputFileAbsolutePaths[0] as string);
+  }
+
+  const fileContent =
+    input.type === 'file'
+      ? await mergeFileContents(input.inputFileAbsolutePaths)
+      : input.fileContent;
+
+  const preprocessedContent = shouldPreprocessFile ? preprocessSwiftFile(fileContent) : fileContent;
+  return withTempFile(preprocessedContent, fn);
+}
+
 /**
  * Reads and extracts `FileTypeInformation` from either a provided file path or a raw string of source code.
  * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
@@ -419,16 +437,7 @@ export async function getFileTypeInformation({
     });
   }
 
-  const fileContent =
-    input.type === 'file'
-      ? await mergeFileContents(input.inputFileAbsolutePaths)
-      : input.fileContent;
-
-  const preprocessedContent = shouldPreprocessFile ? preprocessSwiftFile(fileContent) : fileContent;
-
-  return withTempFile(preprocessedContent, async (tempFilePath) => {
-    return getSwiftFileTypeInformation(tempFilePath, {
-      typeInference: typeInferenceOn,
-    });
+  return withPreparedSingleFile({ input, typeInference }, async (tempFilePath) => {
+    return getSwiftFileTypeInformation(tempFilePath, { typeInference: typeInferenceOn });
   });
 }

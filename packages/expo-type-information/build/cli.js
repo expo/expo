@@ -10,6 +10,7 @@ const inlineModulesInterfaceCommand_1 = require("./commands/inlineModulesInterfa
 const moduleInterfaceCommand_1 = require("./commands/moduleInterfaceCommand");
 const shortModuleInterfaceCommand_1 = require("./commands/shortModuleInterfaceCommand");
 const typeInformationCommand_1 = require("./commands/typeInformationCommand");
+const preprocessFileCommand_1 = require("./commands/preprocessFileCommand");
 async function main(args) {
     if (!(0, commandUtils_1.isSourceKittenInstalled)()) {
         console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');
@@ -29,6 +30,7 @@ async function main(args) {
     (0, generateModuleTypesCommand_1.generateModuleTypesCommand)(otherCommands);
     (0, generateViewTypesCommand_1.generateViewTypesCommand)(otherCommands);
     (0, generateJSXIntrinsicsCommand_1.generateJsxIntrinsics)(otherCommands);
+    (0, preprocessFileCommand_1.preprocessFileCommand)(otherCommands);
     await cli.parseAsync(args, { from: 'user' });
 }
 main(process.argv.slice(2));
