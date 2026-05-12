@@ -65,8 +65,14 @@ public struct CrashReport: Codable, Sendable {
     let payloadBegin = timestampBegin.ISO8601Format()
     let payloadEnd = timestampEnd.ISO8601Format()
     let intersecting = mainSessions.filter { session in
-      let sessionEnd = session.endTimestamp ?? .distantFutureTimestamp
-      return session.startTimestamp <= payloadEnd && sessionEnd >= payloadBegin
+      guard session.startTimestamp <= payloadEnd else {
+        return false
+      }
+      // No end timestamp means the session is still active — it overlaps anything in its future.
+      guard let sessionEnd = session.endTimestamp else {
+        return true
+      }
+      return sessionEnd >= payloadBegin
     }
     let candidates: [SessionRow]
     if !intersecting.isEmpty {

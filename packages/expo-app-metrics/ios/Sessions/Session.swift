@@ -29,6 +29,13 @@ public class Session: MetricsReceiver, @unchecked Sendable {
     self.startDate = Date.now
     self.type = type
 
+    // The session-row INSERT is fire-and-forget on `AppMetricsActor`. Subsequent writes for this
+    // session (metrics, logs, `stop()`, crash reports) all go through the same actor, and tasks on
+    // an actor run in submission order — so they always observe the INSERT before their own SQL
+    // runs, even though no caller `await`s the task returned here. The invariant only holds because
+    // every metric-producing path enqueues *after* `Session.init` returns; if a future caller
+    // submits to `AppMetricsActor` from a parallel task that could race `init`, this should be
+    // converted to a stored `sessionStartTask` that downstream writes `await` before proceeding.
     AppMetricsActor.isolated { [self] in
       let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
       do {

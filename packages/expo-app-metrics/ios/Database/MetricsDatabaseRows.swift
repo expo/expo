@@ -2,14 +2,6 @@
 
 import Foundation
 
-extension String {
-  /**
-   Sentinel ISO-8601 timestamp that sorts after any realistic value. Used in time-window
-   intersection logic where a missing `endTimestamp` means "still active, treat as far future".
-   */
-  static let distantFutureTimestamp = "9999-12-31T23:59:59Z"
-}
-
 /**
  A session paired with its child metrics, logs, and (optional) crash report payload — the shape
  dispatch and the JS bridge consume.
