@@ -278,29 +278,10 @@ export interface ExpoAppMetricsModuleType {
      */
     triggerCrash(kind: CrashKind): void;
     /**
-     * Starts a new app metrics session. Returns the session ID.
-     *
      * @private This API is unstable and may change without notice.
      * @platform android
      */
-    startSession(): string;
-    /**
-     * Stops the app metrics session with the given session ID.
-     *
-     * @platform android
-     */
-    stopSession(sessionId: string): void;
-    /**
-     * @private This API is unstable and may change without notice.
-     * @platform android
-     */
-    addCustomMetricToSession(sessionId: string, metric: {
-        category: string;
-        name: string;
-        value: number;
-        routeName?: string;
-        params?: Record<string, unknown>;
-    }): Promise<void>;
+    addCustomMetricToSession(metric: Metric): Promise<void>;
     /**
      * Returns the current main session, including its metrics. Resolves to
      * `null` if the session row hasn't been persisted yet.

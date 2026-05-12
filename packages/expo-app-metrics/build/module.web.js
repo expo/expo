@@ -1,7 +1,7 @@
 import { NativeModule, registerWebModule } from 'expo';
 export * from './types';
 class ExpoAppMetricsModule extends NativeModule {
-    addCustomMetricToSession(sessionId, metric) {
+    addCustomMetricToSession(metric) {
         throw new Error('Method not implemented.');
     }
     async markFirstRender() { }
@@ -16,10 +16,6 @@ class ExpoAppMetricsModule extends NativeModule {
     }
     simulateCrashReport() { }
     triggerCrash() { }
-    startSession(metadata) {
-        return '';
-    }
-    stopSession(sessionId) { }
     async getMainSession() {
         return null;
     }

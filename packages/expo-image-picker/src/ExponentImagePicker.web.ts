@@ -1,5 +1,5 @@
-import type { PermissionResponse } from 'expo-modules-core';
-import { PermissionStatus, Platform } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
+import { Platform } from 'expo-modules-core';
 
 import type {
   ImagePickerAsset,

@@ -14,7 +14,6 @@ unstable_navigationEvents.enable();
     );
   });
 });
-unstable_navigationEvents.saveCurrentPathname();
 
 export default function Layout() {
   return (

@@ -1240,7 +1240,7 @@ jobs:
       flow_path: string | string[] # required
       shards: number # optional, defaults to 1
       retries: number # optional, defaults to 0
-      smart_retry: boolean # optional, defaults to true. When true, retries will attempt to re-run only the flows that failed on the previous attempt when applicable.
+      retry_failed_only: boolean # optional, defaults to true. When true, retries will attempt to re-run only the flows that failed on the previous attempt when applicable.
       record_screen: boolean # optional, defaults to false. If true, uploads a screen recording of the tests.
       include_tags: string | string[] # optional. Tags to include in the tests. Will be passed to Maestro as `--include-tags`.
       exclude_tags: string | string[] # optional. Tags to exclude from the tests. Will be passed to Maestro as `--exclude-tags`.

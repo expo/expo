@@ -1,6 +1,6 @@
-import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
-export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
-export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved;
+import type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent } from './types';
+export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent, } from './types';
+export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved | ActionDispatchedEvent;
 type EventTypeName = AnalyticsEvent['type'];
 type Payload<T extends EventTypeName> = Omit<Extract<AnalyticsEvent, {
     type: T;
@@ -12,8 +12,5 @@ export declare const unstable_navigationEvents: {
     emit: typeof emit;
     enable: () => void;
     isEnabled: () => boolean;
-    saveCurrentPathname: () => void;
-    readonly currentPathname: string | undefined;
-    readonly currentParams: Record<string, string> | undefined;
 };
 //# sourceMappingURL=index.d.ts.map

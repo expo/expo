@@ -2,8 +2,6 @@ package expo.modules.appmetrics.logevents
 
 import android.util.Log
 import expo.modules.appmetrics.TAG
-import expo.modules.appmetrics.utils.JsonAny
-import kotlinx.serialization.json.JsonObject
 
 /**
  * Patterns that match attribute keys reserved by the SDK. Caller-provided
@@ -114,14 +112,4 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
     attributes = if (sanitized.isEmpty()) null else sanitized,
     droppedCount = emptyKeyDrops + reservedKeyDrops.size + overflowDrops
   )
-}
-
-/**
- * Converts a sanitized attribute map to a `JsonObject` for storage. Values
- * whose type cannot be represented in OTLP (e.g. `Date`, NaN/Infinity doubles)
- * are encoded as JSON `null` here; the typed-attribute encoder at dispatch
- * time will skip them and add to `droppedAttributesCount` accordingly.
- */
-internal fun attributesToJsonObject(attributes: Map<String, Any?>): JsonObject {
-  return JsonObject(attributes.mapValues { (_, value) -> JsonAny.toElement(value) })
 }
