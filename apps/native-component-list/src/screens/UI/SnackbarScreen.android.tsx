@@ -8,13 +8,7 @@ import {
   type SnackbarHostRef,
   Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
-import {
-  align,
-  background,
-  fillMaxSize,
-  fillMaxWidth,
-  padding,
-} from '@expo/ui/jetpack-compose/modifiers';
+import { align, fillMaxSize, fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 export default function SnackbarScreen() {
@@ -85,13 +79,13 @@ export default function SnackbarScreen() {
         <Box modifiers={[align('bottomCenter'), fillMaxWidth()]}>
           <SnackbarHost ref={defaultHostRef} />
         </Box>
-        <Box modifiers={[align('bottomCenter'), fillMaxWidth(), background('red')]}>
+        <Box modifiers={[align('bottomCenter'), fillMaxWidth()]}>
           <SnackbarHost ref={styledHostRef}>
             <Snackbar
-              containerColor="#1E1E2E"
-              contentColor="#CDD6F4"
-              actionContentColor="#F38BA8"
-              dismissActionContentColor="#CDD6F4"
+              containerColor="#322F35"
+              contentColor="#E6E0E9"
+              actionContentColor="#D0BCFF"
+              dismissActionContentColor="#E6E0E9"
             />
           </SnackbarHost>
         </Box>

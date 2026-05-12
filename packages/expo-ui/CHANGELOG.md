@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
 - Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
