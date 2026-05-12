@@ -68,7 +68,7 @@ type WalkResult =
     };
 
 function isDirectory(node: MixedNode | null | undefined): node is DirectoryNode {
-  return node instanceof Map;
+  return node != null && typeof (node as DirectoryNode).get === 'function';
 }
 
 function isRegularFile(node: FileNode | null | undefined): boolean {
