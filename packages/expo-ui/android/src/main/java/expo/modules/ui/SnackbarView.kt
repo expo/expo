@@ -95,7 +95,7 @@ fun FunctionalComposableScope.SnackbarHostContent(
         )
       }
     } catch (_: CancellationException) {
-      // The compose scope can be cancelled if the view is disposed before user dismisses the snackbar or performs the action. 
+      // The compose scope can be cancelled if the view is disposed before user dismisses the snackbar or performs the action.
       // In that case, we treat it as if the snackbar was dismissed.
       SnackbarResult.Dismissed
     }
