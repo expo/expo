@@ -48,7 +48,6 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
     };
     cacheStores: FileStore<any>[];
     watcher: {
-        unstable_workerThreads: false;
         additionalExts: string[];
     };
     serializer: {
@@ -98,6 +97,7 @@ export declare function getDefaultConfig(projectRoot: string, { mode, isCSSEnabl
         asyncRequireModulePath: string;
         assetRegistryPath: string;
         enableBabelRuntime: string | undefined;
+        enableBabelRCLookup: undefined;
         getTransformOptions: () => Promise<{
             transform: {
                 experimentalImportSupport: true;

@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { ClientManager } from './ClientManager';
-import { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
+import type { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
 import { LockdowndClient } from './client/LockdowndClient';
 import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
@@ -11,7 +11,7 @@ import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
 import * as devicectl from '../../../start/platforms/ios/devicectl';
 import { launchAppWithDeviceCtl } from '../../../start/platforms/ios/devicectl';
-import { OSType } from '../../../start/platforms/ios/simctl';
+import type { OSType } from '../../../start/platforms/ios/simctl';
 import { uniqBy } from '../../../utils/array';
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
@@ -190,10 +190,9 @@ export async function runOnDevice({
       onProgress
     );
 
-    const {
-      // TODO(EvanBacon): This can be undefined when querying App Clips.
-      [bundleId]: appInfo,
-    } = await installer.lookupApp([bundleId]);
+    // NOTE(EvanBacon): This can be undefined when querying App Clips.
+    const lookupResult = await installer.lookupApp([bundleId]);
+    const appInfo = lookupResult?.[bundleId];
 
     if (appInfo) {
       // launch fails with EBusy or ENotFound if you try to launch immediately after install

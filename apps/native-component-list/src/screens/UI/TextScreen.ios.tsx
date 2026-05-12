@@ -39,6 +39,23 @@ export default function TextScreen() {
             Hello <Text modifiers={[bold(), foregroundStyle('blue')]}>world</Text>!
           </Text>
         </Section>
+        <Section title="Hierarchical Foreground Style">
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'primary' })]}>
+            Primary{' '}
+            <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+              Secondary
+            </Text>
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'secondary' })]}>
+            Secondary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'tertiary' })]}>
+            Tertiary
+          </Text>
+          <Text modifiers={[foregroundStyle({ type: 'hierarchical', style: 'quaternary' })]}>
+            Quaternary
+          </Text>
+        </Section>
         <Section title="Custom Font Families">
           <Text modifiers={[font({ family: 'Inter-Bold', size: 18 })]}>Inter Bold Font</Text>
           <Text modifiers={[font({ family: 'Inter-Medium', size: 16 })]}>Inter Medium Font</Text>
@@ -80,6 +97,28 @@ export default function TextScreen() {
           <Text modifiers={[font({ size: 18, weight: 'regular' })]}>18pt Font Size</Text>
           <Text modifiers={[font({ size: 20, weight: 'regular' })]}>20pt Font Size</Text>
           <Text modifiers={[font({ size: 24, weight: 'regular' })]}>24pt Font Size</Text>
+        </Section>
+
+        <Section title="Date (style: date)">
+          <Text date={new Date(Date.now() + 3600000)} dateStyle="date" />
+        </Section>
+        <Section title="Date (style: timer)">
+          <Text date={new Date(Date.now() + 300000)} dateStyle="timer" />
+        </Section>
+        <Section title="Date (style: relative)">
+          <Text date={new Date(Date.now() + 300000)} dateStyle="relative" />
+        </Section>
+        <Section title="Timer Interval (countdown)">
+          <Text
+            timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+            countsDown
+          />
+        </Section>
+        <Section title="Timer Interval (count up)">
+          <Text
+            timerInterval={{ lower: new Date(), upper: new Date(Date.now() + 600000) }}
+            countsDown={false}
+          />
         </Section>
 
         <Section title="Markdown Text">

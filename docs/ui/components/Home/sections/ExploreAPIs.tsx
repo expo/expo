@@ -26,22 +26,22 @@ export function ExploreAPIs() {
         <APIGridCell
           title="Image"
           link="/versions/latest/sdk/image/"
-          icon={<Image03DuotoneIcon className="size-16" />}
+          icon={<Image03DuotoneIcon className="size-16!" />}
         />
         <APIGridCell
           title="Camera"
           link="/versions/latest/sdk/camera"
-          icon={<CameraPlusDuotoneIcon className="size-16" />}
+          icon={<CameraPlusDuotoneIcon className="size-16!" />}
         />
         <APIGridCell
           title="Notifications"
           link="/versions/latest/sdk/notifications"
-          icon={<NotificationMessageDuotoneIcon className="size-16" />}
+          icon={<NotificationMessageDuotoneIcon className="size-16!" />}
         />
         <APIGridCell
           title="View all APIs"
           link="/versions/latest/"
-          icon={<DocsLogo className="size-16" />}
+          icon={<DocsLogo className="size-16!" />}
         />
       </div>
     </>
@@ -60,8 +60,8 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
     <A
       href={link}
       className={mergeClasses(
-        'group relative block min-h-[200px] overflow-hidden rounded-lg border border-default bg-subtle shadow-xs transition',
-        '[&_h2]:!my-0 [&_h3]:!mt-0',
+        'group border-default bg-subtle relative block min-h-[200px] overflow-hidden rounded-lg border shadow-xs transition',
+        '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className
       )}
@@ -69,7 +69,7 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
       <div className="flex min-h-[142px] items-center justify-center transition-transform group-hover:scale-105">
         {icon}
       </div>
-      <LABEL className="flex min-h-[30px] items-center justify-between bg-default p-4">
+      <LABEL className="bg-default flex min-h-[30px] items-center justify-between p-4">
         {title}
         <ArrowRightIcon className="text-icon-secondary" />
       </LABEL>

@@ -36,9 +36,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :osx => '13.4',
+    :tvos => '16.4'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -49,6 +49,7 @@ Pod::Spec.new do |s|
   # Otherwise, `pod install` would fail because it's not linkable by the community CLI.
   if defined?(use_expo_modules!)
     s.dependency 'ExpoModulesCore'
+    s.dependency 'ExpoModulesJSI'
   elsif !$expo_warned_about_missing_autolinking
     puts <<~EOS
 
@@ -110,6 +111,8 @@ Pod::Spec.new do |s|
   s.private_header_files = ['ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'ios/Tests'
   end
 end

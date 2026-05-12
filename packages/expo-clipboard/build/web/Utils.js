@@ -14,7 +14,10 @@ export function base64toBlob(base64Data, contentType) {
         const end = Math.min(begin + sliceSize, bytesLength);
         const bytes = new Array(end - begin);
         for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
-            bytes[i] = byteCharacters[offset].charCodeAt(0);
+            const char = byteCharacters[offset];
+            if (char != null) {
+                bytes[i] = char.charCodeAt(0);
+            }
         }
         byteArrays[sliceIndex] = new Uint8Array(bytes);
     }

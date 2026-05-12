@@ -16,12 +16,12 @@ export function CommandLineTools() {
       <GridContainer>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-purple3',
+            'bg-subtle from-subtle to-palette-purple3 min-h-[192px] bg-linear-to-br from-15%',
             'selection:bg-palette-purple5'
           )}>
-          <AppleAppStoreIcon className="absolute -bottom-16 -right-10 size-72 text-palette-purple10 opacity-10" />
+          <AppleAppStoreIcon className="text-palette-purple10 absolute -right-10 -bottom-16 size-72! opacity-10" />
           <div className="relative z-10 flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 !font-bold !text-palette-purple10 heading-lg">
+            <h2 className="text-palette-purple10! heading-lg flex items-center gap-2 font-bold!">
               <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
             </h2>
             <div>
@@ -34,12 +34,12 @@ export function CommandLineTools() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'min-h-[192px] bg-subtle bg-gradient-to-br from-subtle from-15% to-palette-green3',
+            'bg-subtle from-subtle to-palette-green3 min-h-[192px] bg-linear-to-br from-15%',
             'selection:bg-palette-green4'
           )}>
-          <Cloud01DuotoneIcon className="absolute -bottom-20 -right-8 size-80 text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
+          <Cloud01DuotoneIcon className="absolute -right-8 -bottom-20 size-80! text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
           <div className="relative z-10 flex flex-col gap-4">
-            <h2 className="flex items-center gap-2 !font-bold !text-[#1e8a5f] heading-lg dark:!text-[#4eca8c]">
+            <h2 className="heading-lg flex items-center gap-2 font-bold! text-[#1e8a5f]! dark:text-[#4eca8c]!">
               <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
               your web app
             </h2>

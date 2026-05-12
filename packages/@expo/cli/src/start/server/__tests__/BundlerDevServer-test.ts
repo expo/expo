@@ -2,7 +2,8 @@ import { vol } from 'memfs';
 
 import { envIsWebcontainer } from '../../../utils/env';
 import { openBrowserAsync } from '../../../utils/open';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { BundlerDevServer } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
@@ -11,6 +12,9 @@ jest.mock(`../../../utils/env`, () => ({
   envIsWebcontainer: jest.fn(() => false),
 }));
 jest.mock('../../../utils/open');
+jest.mock('../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../AsyncWsTunnel');
@@ -338,7 +342,7 @@ describe('getExpoGoUrl', () => {
       '/',
       getPlatformBundlers('/', { web: { bundler: 'metro' } })
     );
-    expect(() => server['getExpoGoUrl']()).toThrow('Dev server instance not found');
+    expect(() => server['getExpoGoUrl']()).toThrow('Dev server is uninitialized');
   });
 
   it(`gets the native Expo Go URL`, async () => {
@@ -399,7 +403,7 @@ describe('getManifestMiddlewareAsync', () => {
   );
   it(`asserts server is not running`, async () => {
     await expect(server['getManifestMiddlewareAsync']()).rejects.toThrow(
-      /Dev server instance not found/
+      /Dev server is uninitialized/
     );
   });
 });

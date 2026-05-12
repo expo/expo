@@ -1,0 +1,55 @@
+---
+title: ControlGroup
+description: A SwiftUI ControlGroup component for grouping interactive controls.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI ControlGroup matches the official SwiftUI [ControlGroup API](https://developer.apple.com/documentation/swiftui/controlgroup). When placed inside a [`Menu`](menu), the children are rendered as a compact horizontal row of buttons.
+
+> **Note:** On tvOS, ControlGroup requires tvOS 17.0 or later.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic control group
+
+A control group inside a menu, these render as a horizontal row of icon buttons.
+
+```tsx BasicControlGroupExample.tsx
+import { Host, Menu, ControlGroup, Button } from '@expo/ui/swift-ui';
+
+export default function BasicControlGroupExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Options" systemImage="ellipsis.circle">
+        <ControlGroup>
+          <Button systemImage="plus" label="Add" onPress={() => console.log('Add')} />
+          <Button systemImage="star" label="Favorite" onPress={() => console.log('Favorite')} />
+          <Button
+            systemImage="square.and.arrow.up"
+            label="Share"
+            onPress={() => console.log('Share')}
+          />
+        </ControlGroup>
+        <Button label="Other Action" onPress={() => console.log('Other')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { ControlGroup } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/controlgroup" apiName="ControlGroup" />

@@ -21,12 +21,9 @@ public class ExpoNotificationsChannelGroupSerializer implements NotificationsCha
   }
 
   @Override
-  @Nullable
+  @NonNull
   @RequiresApi(api = Build.VERSION_CODES.O)
-  public Bundle toBundle(@Nullable NotificationChannelGroup group) {
-    if (group == null) {
-      return null;
-    }
+  public Bundle toBundle(@NonNull NotificationChannelGroup group) {
     Bundle result = new Bundle();
     result.putString(ID_KEY, getId(group));
     result.putString(NAME_KEY, group.getName().toString());

@@ -1,6 +1,6 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { ImageSourcePropType } from 'react-native';
 import type { ScreenStackHeaderConfigProps } from 'react-native-screens';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export interface StackScreenBackButtonProps {
     /**
      * The title to display for the back button.
@@ -64,7 +64,10 @@ export interface StackScreenBackButtonProps {
  *   );
  * }
  * ```
+ *
+ * > **Note:** If multiple instances of this component are rendered for the same screen,
+ * the last one rendered in the component tree takes precedence.
  */
-export declare function StackScreenBackButton(props: StackScreenBackButtonProps): import("react").JSX.Element;
+export declare function StackScreenBackButton({ children, style, withMenu, displayMode, hidden, src, }: StackScreenBackButtonProps): null;
 export declare function appendStackScreenBackButtonPropsToOptions(options: NativeStackNavigationOptions, props: StackScreenBackButtonProps): NativeStackNavigationOptions;
 //# sourceMappingURL=StackScreenBackButton.d.ts.map

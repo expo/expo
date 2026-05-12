@@ -1,18 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SuspenseFallback = SuspenseFallback;
-const react_1 = __importDefault(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
 const Toast_1 = require("./Toast");
 function SuspenseFallback({ route }) {
     if (__DEV__) {
-        return (<Toast_1.ToastWrapper>
-        <Toast_1.Toast filename={route?.contextKey}>Bundling...</Toast_1.Toast>
-      </Toast_1.ToastWrapper>);
+        return ((0, jsx_runtime_1.jsx)(Toast_1.ToastWrapper, { children: (0, jsx_runtime_1.jsx)(Toast_1.Toast, { filename: route, children: "Bundling..." }) }));
     }
-    // TODO: Support user's customizing the fallback.
     return null;
 }
 //# sourceMappingURL=SuspenseFallback.js.map

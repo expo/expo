@@ -27,7 +27,10 @@ import androidx.compose.ui.graphics.drawscope.scale
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class Resolution(
   @Field
   val x: Int = 8,
@@ -36,6 +39,7 @@ data class Resolution(
   val y: Int = 8
 ) : Record
 
+@OptimizedComposeProps
 data class MeshGradientViewProps(
   val columns: MutableState<Int> = mutableIntStateOf(0),
   val rows: MutableState<Int> = mutableIntStateOf(0),

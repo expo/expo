@@ -14,7 +14,7 @@ const findPodspecFile = async (targetPath) => {
     // NOTE(@kitten): Compare case-insensitively against basename of derived name
     const mainBasename = path_1.default.basename(targetPath).toLowerCase();
     const mainPodspecFile = podspecFiles.find((podspecFile) => path_1.default.basename(podspecFile, '.podspec').toLowerCase() === mainBasename);
-    return mainPodspecFile ?? (podspecFiles.length > 0 ? podspecFiles[0] : null);
+    return mainPodspecFile ?? podspecFiles[0] ?? null;
 };
 async function resolveDependencyConfigImplIosAsync(resolution, reactNativeConfig, expoModuleConfig) {
     if (reactNativeConfig === null) {

@@ -16,11 +16,11 @@ import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency
 import type { SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 
-import { ExpoSerializerOptions } from './fork/baseJSBundle';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { isExpoJsOutput } from './jsOutput';
 import { sortDependencies } from './reconcileTransformSerializerPlugin';
 import { hasSideEffectWithDebugTrace } from './sideEffects';
-import {
+import type {
   DependencyData,
   MutableInternalDependency,
 } from '../transform-worker/collect-dependencies';
@@ -74,7 +74,8 @@ export function isModuleEmptyFor(ast?: types.File) {
 
 function isEmptyModule(value: Module<MixedOutput>): boolean {
   return value.output.every((outputItem) => {
-    return isModuleEmptyFor(accessAst(outputItem));
+    // TODO: Module type should be properly upcast
+    return isModuleEmptyFor(accessAst(outputItem as AdvancedMixedOutput));
   });
 }
 
@@ -193,7 +194,8 @@ export async function treeShakeSerializer(
 
   for (const value of graph.dependencies.values()) {
     // TODO: Move this to the transformer and combine with collect dependencies.
-    getExportsForModule(value);
+    // TODO: Module type should be properly upcast
+    getExportsForModule(value as Module<AdvancedMixedOutput>);
   }
 
   const beforeList = [...graph.dependencies.keys()];
@@ -333,7 +335,11 @@ export async function treeShakeSerializer(
           if (path.node.source) {
             // Get module for import ID:
             const nextModule = getDepForImportId(path.node.source.value);
-            const exportResults = getExportsForModule(nextModule, checkedModules);
+            // TODO: Module type should be properly upcast
+            const exportResults = getExportsForModule(
+              nextModule as Module<AdvancedMixedOutput>,
+              checkedModules
+            );
             // console.log('exportResults', exportResults);
 
             if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
@@ -567,7 +573,8 @@ export async function treeShakeSerializer(
   }
 
   function removeUnusedExports(value: Module<MixedOutput>, depth: number = 0): string[] {
-    if (!accessAst(value.output[0]) || !value.inverseDependencies.size) {
+    // TODO: Output type should be properly upcast
+    if (!accessAst(value.output[0] as AdvancedMixedOutput) || !value.inverseDependencies.size) {
       return [];
     }
     if (depth > 5) {
@@ -587,7 +594,7 @@ export async function treeShakeSerializer(
 
     const isExportUsed = (importName: string) => {
       return inverseDeps.some((dep) => {
-        const isModule = dep?.output.some((outputItem: AdvancedMixedOutput) => {
+        const isModule = dep?.output.some((outputItem) => {
           return outputItem.type === 'js/module';
         });
 
@@ -751,7 +758,8 @@ export async function treeShakeSerializer(
 
     if (needsImportReindex) {
       // TODO: Do this better with a tracked removal of the import rather than a full reparse.
-      populateModuleWithImportUsage(value);
+      // TODO: Module type should be properly upcast
+      populateModuleWithImportUsage(value as Module<AdvancedMixedOutput>);
     }
 
     if (shouldRecurseUnusedExports) {
@@ -883,13 +891,15 @@ export async function treeShakeSerializer(
     }
     const dirtyImports = value.output
       .map((outputItem) => {
-        return removeUnusedImportsFromModule(value, accessAst(outputItem));
+        // TODO: Module type should be properly upcast
+        return removeUnusedImportsFromModule(value, accessAst(outputItem as AdvancedMixedOutput));
       })
       .flat();
 
     if (dirtyImports.length) {
       // TODO: Do this better with a tracked removal of the import rather than a full reparse.
-      populateModuleWithImportUsage(value);
+      // TODO: Module type should be properly upcast
+      populateModuleWithImportUsage(value as Module<AdvancedMixedOutput>);
     }
     return dirtyImports;
   }
@@ -937,8 +947,11 @@ export async function treeShakeSerializer(
 
     if (isDebugEnabled) {
       // Print if any dependencies weren't checked (this shouldn't happen)
+      // TODO: Output should be upcast
       const unchecked = [...graph.dependencies.entries()]
-        .filter(([key, value]) => !checked.has(key) && accessAst(value.output[0]))
+        .filter(
+          ([key, value]) => !checked.has(key) && accessAst(value.output[0] as AdvancedMixedOutput)
+        )
         .map(([key]) => key);
       if (unchecked.length) {
         debug('[ISSUE]: Unchecked modules:', unchecked);

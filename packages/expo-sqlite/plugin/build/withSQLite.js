@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-sqlite/package.json');
+const pkg = require('../../package.json');
 const withSQLite = (config, props) => {
     config = withSQLiteAndroidProps(config, props);
     config = withSQLiteIOSProps(config, props);

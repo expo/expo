@@ -28,7 +28,7 @@ class FormDelegate: OnContactPickingResultHandler {
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
 
-  func presentEditForm(for contact: ContactNext, options: FormOptions?, promise: Promise) throws {
+  func editWithForm(for contact: ContactNext, options: FormOptions?, promise: Promise) throws {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }
@@ -138,7 +138,11 @@ class FormDelegate: OnContactPickingResultHandler {
     guard let currentViewController = appContext?.utilities?.currentViewController() else {
       throw MissingCurrentViewControllerException()
     }
-    ContactAccessPicker.present(inViewController: currentViewController, promise: promise)
+    ContactAccessPickerNext.present(
+      inViewController: currentViewController,
+      contactFactory: contactFactory,
+      promise: promise
+    )
   }
 
   internal func didPickContact(contact: CNContact) throws {
@@ -151,7 +155,7 @@ class FormDelegate: OnContactPickingResultHandler {
   }
 
   internal func didCancelPickingContact() {
-    contactPickingPromise?.resolve()
+    contactPickingPromise?.resolve(NSNull())
     contactPickingPromise = nil
   }
 }

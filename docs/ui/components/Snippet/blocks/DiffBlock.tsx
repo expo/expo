@@ -124,7 +124,7 @@ export const DiffBlock = ({
       return null;
     }
     return (
-      <Snippet key={oldRevision + '-' + newRevision}>
+      <Snippet key={oldRevision + '-' + newRevision} data-md="diff">
         <SnippetHeaderComponent
           title={`${filenameModifier(type === 'delete' ? oldPath : newPath)}`}
           Icon={Copy07Icon}
@@ -133,7 +133,7 @@ export const DiffBlock = ({
           float={collapseDeletedFiles && type === 'delete'}>
           {newPath && filenameToLinkUrl && type !== 'delete' ? (
             <SnippetAction
-              rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
+              rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary shrink-0" />}
               onClick={() => {
                 window.open(filenameToLinkUrl(newPath), '_blank');
               }}>

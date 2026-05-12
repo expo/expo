@@ -2,9 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLoadedNavigation = useLoadedNavigation;
 exports.useOptionalNavigation = useOptionalNavigation;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const router_store_1 = require("../global-state/router-store");
+const native_1 = require("../react-navigation/native");
 /** Returns a callback which is invoked when the navigation state has loaded. */
 function useLoadedNavigation() {
     const navigation = (0, native_1.useNavigation)();

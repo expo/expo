@@ -45,18 +45,20 @@ const withWidgetSourceFiles = (config, { widgets, targetName, onFilesGenerated, 
     async (config) => {
         const projectRoot = config.modRequest.platformProjectRoot;
         const targetDirectory = path.join(projectRoot, targetName);
+        const existingInfoPlistPath = path.join(targetDirectory, 'Info.plist');
+        const existingInfoPlist = fs.existsSync(existingInfoPlistPath)
+            ? fs.readFileSync(existingInfoPlistPath, 'utf8')
+            : null;
         if (fs.existsSync(targetDirectory)) {
             fs.rmSync(targetDirectory, { recursive: true, force: true });
         }
-        if (!fs.existsSync(targetDirectory)) {
-            fs.mkdirSync(targetDirectory, { recursive: true });
-        }
+        fs.mkdirSync(targetDirectory, { recursive: true });
         const entitlementsPath = path.join(targetDirectory, `${targetName}.entitlements`);
         const entitlementsContent = {
             'com.apple.security.application-groups': [groupIdentifier],
         };
         fs.writeFileSync(entitlementsPath, plist_1.default.build(entitlementsContent));
-        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory);
+        const infoPlistPath = createInfoPlist(groupIdentifier, targetDirectory, config.ios?.version ?? config.version ?? '1.0', config.ios?.buildNumber ?? '1', existingInfoPlist);
         const indexSwiftPath = createIndexSwift(widgets, targetDirectory);
         const widgetSwiftPaths = widgets.map((widget) => createWidgetSwift(widget, targetDirectory));
         onFilesGenerated([entitlementsPath, infoPlistPath, indexSwiftPath, ...widgetSwiftPaths]);
@@ -69,14 +71,19 @@ const createIndexSwift = (widgets, targetPath) => {
     const numberOfBundles = Math.ceil(numberOfWidgets / 4);
     let output = `import WidgetKit
 import SwiftUI
-import ExpoWidgets
+internal import ExpoWidgets
 `;
-    for (let i = 0; i < numberOfBundles; i++) {
-        const start = i * 4;
-        const end = Math.min(start + 4, numberOfWidgets);
-        const widgetChunk = widgets.slice(start, end);
-        const isLastChunk = i === numberOfBundles - 1;
-        output += addIndexSwiftChunk(widgetChunk, i, isLastChunk);
+    if (numberOfWidgets > 0) {
+        for (let i = 0; i < numberOfBundles; i++) {
+            const start = i * 4;
+            const end = Math.min(start + 4, numberOfWidgets);
+            const widgetChunk = widgets.slice(start, end);
+            const isLastChunk = i === numberOfBundles - 1;
+            output += addIndexSwiftChunk(widgetChunk, i, isLastChunk);
+        }
+    }
+    else {
+        output += addIndexSwiftChunk([], 0, true);
     }
     fs.writeFileSync(indexFilePath, output);
     return indexFilePath;
@@ -86,22 +93,32 @@ const createWidgetSwift = (widget, targetPath) => {
     fs.writeFileSync(widgetFilePath, widgetSwift(widget));
     return widgetFilePath;
 };
-const createInfoPlist = (groupIdentifier, targetPath) => {
+const createInfoPlist = (groupIdentifier, targetPath, marketingVersion, bundleVersion, existingInfoPlist) => {
     const infoPlistPath = `${targetPath}/Info.plist`;
-    fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier));
+    if (existingInfoPlist) {
+        const parsedInfoPlist = plist_1.default.parse(existingInfoPlist);
+        if (parsedInfoPlist.NSExtension?.NSExtensionPointIdentifier === 'com.apple.widgetkit-extension' &&
+            parsedInfoPlist.ExpoWidgetsAppGroupIdentifier === groupIdentifier &&
+            parsedInfoPlist.CFBundleShortVersionString === marketingVersion &&
+            parsedInfoPlist.CFBundleVersion === bundleVersion) {
+            fs.writeFileSync(infoPlistPath, existingInfoPlist);
+            return infoPlistPath;
+        }
+    }
+    fs.writeFileSync(infoPlistPath, infoPlist(groupIdentifier, marketingVersion, bundleVersion));
     return infoPlistPath;
 };
 const addIndexSwiftChunk = (widgets, index, isLastChunk) => `
 ${index === 0 ? '@main' : ''}
 struct ExportWidgets${index}: WidgetBundle {
   var body: some Widget {
-    ${widgets.map((widget) => `${widget.name}()`).join('\n\t\t')}
+    ${widgets.map((widget) => `${widget.name}()`).join('\n\t')}
     ${!isLastChunk ? `ExportWidgets${index + 1}().body` : `WidgetLiveActivity()`}
   }
 }`;
 const widgetSwift = (widget) => `import WidgetKit
 import SwiftUI
-import ExpoWidgets
+internal import ExpoWidgets
 
 struct ${widget.name}: Widget {
   let name: String = "${widget.name}"
@@ -112,10 +129,10 @@ struct ${widget.name}: Widget {
     }
     .configurationDisplayName("${widget.displayName}")
     .description("${widget.description}")
-    .supportedFamilies([.${widget.supportedFamilies.join(', .')}])
+    .supportedFamilies([.${widget.supportedFamilies.join(', .')}])${widget.contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
-const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>
+const infoPlist = (groupIdentifier, marketingVersion, bundleVersion) => `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
@@ -126,6 +143,10 @@ const infoPlist = (groupIdentifier) => `<?xml version="1.0" encoding="UTF-8"?>
 	</dict>
   <key>ExpoWidgetsAppGroupIdentifier</key>
   <string>${groupIdentifier}</string>
+	<key>CFBundleShortVersionString</key>
+	<string>${marketingVersion}</string>
+	<key>CFBundleVersion</key>
+	<string>${bundleVersion}</string>
 </dict>
 </plist>
 `;

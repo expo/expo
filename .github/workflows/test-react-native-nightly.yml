@@ -33,29 +33,27 @@ jobs:
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: 🚀 Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
       - name: 💎 Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
         run: gem install cocoapods xcpretty
-      - name: ♻️ Restore workspace node modules
-        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v4
-        id: workspace-modules-cache
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
-        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
       - name: ⭐️ Create test-nightlies Project
         run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
@@ -102,28 +100,26 @@ jobs:
         uses: actions/checkout@v5
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: 🚀 Setup Bun
         uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
       - name: 🔨 Use JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: ♻️ Restore workspace node modules
-        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v4
-        id: workspace-modules-cache
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
-        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
       - name: ⭐️ Create test-nightlies Project
         run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly

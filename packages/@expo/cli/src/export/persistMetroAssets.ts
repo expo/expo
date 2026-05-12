@@ -13,7 +13,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { drawableFileTypes, getAssetLocalPath } from './metroAssetLocalPath';
-import { ExportAssetMap } from './saveAssets';
+import type { ExportAssetMap } from './saveAssets';
 import { Log } from '../log';
 
 function cleanAssetCatalog(catalogDir: string): void {
@@ -92,9 +92,9 @@ export async function persistMetroAssetsAsync(
   for (const asset of assetsToCopy) {
     const validScales = new Set(filterPlatformAssetScales(platform, asset.scales));
     for (let idx = 0; idx < asset.scales.length; idx++) {
-      const scale = asset.scales[idx];
+      const scale = asset.scales[idx]!;
       if (validScales.has(scale)) {
-        const src = asset.files[idx];
+        const src = asset.files[idx]!;
         const dest = getAssetLocalPath(asset, { platform, scale, baseUrl });
         if (files) {
           const data = await fs.promises.readFile(src);
@@ -189,7 +189,7 @@ function getImageSet(
       return {
         name: `${fileName + suffix}.${asset.type}`,
         scale,
-        src: asset.files[idx],
+        src: asset.files[idx]!,
       };
     }),
   };
@@ -210,7 +210,7 @@ export function copyInBatchesAsync(filesToCopy: Record<string, string>) {
       if (queue.length) {
         // queue.length === 0 is checked in previous branch, so this is string
         const src = queue.shift() as string;
-        const dest = filesToCopy[src];
+        const dest = filesToCopy[src]!;
         copy(src, dest, copyNext);
       } else {
         resolve();
@@ -235,7 +235,7 @@ const ALLOWED_SCALES: { [key: string]: number[] } = {
 };
 
 export function filterPlatformAssetScales(platform: string, scales: number[]): number[] {
-  const whitelist: number[] = ALLOWED_SCALES[platform];
+  const whitelist: number[] = ALLOWED_SCALES[platform]!;
   if (!whitelist) {
     return scales;
   }
@@ -244,7 +244,7 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
     // No matching scale found, but there are some available. Ideally we don't
     // want to be in this situation and should throw, but for now as a fallback
     // let's just use the closest larger image
-    const maxScale = whitelist[whitelist.length - 1];
+    const maxScale = whitelist[whitelist.length - 1]!;
     for (const scale of scales) {
       if (scale > maxScale) {
         result.push(scale);
@@ -254,7 +254,7 @@ export function filterPlatformAssetScales(platform: string, scales: number[]): n
 
     // There is no larger scales available, use the largest we have
     if (!result.length) {
-      result.push(scales[scales.length - 1]);
+      result.push(scales[scales.length - 1]!);
     }
   }
   return result;

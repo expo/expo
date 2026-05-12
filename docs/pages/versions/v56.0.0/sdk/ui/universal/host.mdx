@@ -1,0 +1,59 @@
+---
+title: Host
+description: A cross-platform Host component that wraps universal @expo/ui content.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A container for universal `@expo/ui` content. On Android and iOS it re-exports the platform-native [`Host` for Jetpack Compose](../jetpack-compose/host)/[`Host` for SwiftUI](../swift-ui/host), so Jetpack Compose/SwiftUI children render exactly as they would in the platform-specific packages. On web, it falls back to a React Native [`View`](https://reactnative.dev/docs/view). Use `Host` as the root of any universal subtree so the same component tree works across all three platforms.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic usage
+
+```tsx HostExample.tsx
+import { Host, Column, Text, Button } from '@expo/ui';
+
+export default function HostExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column spacing={12} alignment="center">
+        <Text>Hello, world!</Text>
+        <Button label="Press me" onPress={() => alert('Pressed')} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Match contents sizing
+
+Use `matchContents` to let `Host` size itself to fit its content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, the same prop is accepted for API parity but sizing is ultimately determined by the `style` you pass, since the web `Host` renders a plain React Native `View`.
+
+```tsx MatchContentsExample.tsx
+import { Host, Button } from '@expo/ui';
+
+export default function MatchContentsExample() {
+  return (
+    <Host matchContents>
+      <Button label="Sized to content" onPress={() => {}} />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Host } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/host" apiName="Host" />

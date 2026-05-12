@@ -15,6 +15,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios sync_screenshots
+
+```sh
+[bundle exec] fastlane ios sync_screenshots
+```
+
+
+
 ### ios prepare_schemes
 
 ```sh

@@ -1,0 +1,90 @@
+---
+title: Markdown Pipeline Integration Test
+description: Internal test page for validating HTML→Markdown conversion.
+hideFromSearch: true
+---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+# Markdown Pipeline Integration Test
+
+This page exists to validate the HTML-to-Markdown conversion pipeline.
+
+## Terminal Block
+
+<Terminal cmd={['$ npx expo-md-test@latest']} />
+
+## Tab Panels
+
+<Tabs>
+<Tab label="npm">
+
+```sh
+npm install md-test-npm-pkg
+```
+
+</Tab>
+<Tab label="yarn">
+
+```sh
+yarn add md-test-yarn-pkg
+```
+
+</Tab>
+</Tabs>
+
+## Collapsible Section
+
+<Collapsible summary="Expand for details">
+  This is md-test-collapsible-content that should survive conversion.
+</Collapsible>
+
+## Step-by-Step Guide
+
+<Step label="1">
+### md-test-step-one
+
+First step instructions.
+
+</Step>
+
+<Step label="2">
+### md-test-step-two
+
+Second step instructions.
+
+</Step>
+
+## Card Links
+
+<BoxLink title="md-test-boxlink-title" description="md-test-boxlink-desc" href="/test/boxlink" />
+
+## Code Blocks
+
+```typescript
+const mdTestCode: string = 'md-test-typed-code';
+```
+
+## Tables
+
+| Feature            | Description               |
+| ------------------ | ------------------------- |
+| md-test-table-cell | A table cell with content |
+
+## Callout
+
+> **Note:** This is md-test-callout-info for the integration test.
+
+## Links and Formatting
+
+Here is [md-test-link-text](/test/link) and **md-test-bold-text** in a paragraph.
+
+- md-test-unordered-item
+- Another list item
+
+1. md-test-ordered-item
+2. Another ordered item

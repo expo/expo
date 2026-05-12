@@ -8,7 +8,6 @@ import expo.modules.contacts.next.domain.wrappers.ContactId
 import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.records.NewRecord
 import expo.modules.contacts.next.records.PatchRecord
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.ValueOrUndefined
 import expo.modules.kotlin.types.toKClass
@@ -33,7 +32,6 @@ class ContactPatchBuilder(
     toAppend.add(appendable)
   }
 
-  @OptIn(EitherType::class)
   inline fun <reified T : PatchRecord, reified R : NewRecord> withListProperty(
     property: ValueOrUndefined<List<Either<T, R>>?>,
     field: ExtractableField.Data<*>

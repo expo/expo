@@ -1,4 +1,4 @@
-import { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo';
 /**
  * Enum with available location accuracies.
  */
@@ -443,6 +443,13 @@ export type PermissionDetailsLocationIOS = {
      * The scope of granted permission. Indicates when it's possible to use location.
      */
     scope: 'whenInUse' | 'always' | 'none';
+    /**
+     * The accuracy authorization granted by the user.
+     * `'full'` means the user has granted precise location access, `'reduced'` means the app
+     * can only access approximate location. Below iOS 14 always returns `'full'`.
+     * @platform ios 14+
+     */
+    accuracy: 'full' | 'reduced';
 };
 export type PermissionDetailsLocationAndroid = {
     /**

@@ -1,7 +1,7 @@
-import { TabNavigationState } from '@react-navigation/native';
-import { ReactNode, ReactElement, ComponentProps } from 'react';
-import { View, PressableProps } from 'react-native';
+import type { ReactNode, ReactElement, ComponentProps } from 'react';
+import type { View, PressableProps } from 'react-native';
 import type { TriggerMap } from './common';
+import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
     children?: ReactNode | undefined;
@@ -50,7 +50,7 @@ export type TabTriggerSlotProps = PressablePropsWithoutFunctionChildren & React.
  * </Tabs>
  * ```
  */
-export declare function TabTrigger({ asChild, name, href, resetOnFocus, ...props }: TabTriggerProps): import("react").JSX.Element;
+export declare function TabTrigger({ asChild, name, href, resetOnFocus, ...props }: TabTriggerProps): import("react/jsx-runtime").JSX.Element;
 /**
  * @hidden
  */

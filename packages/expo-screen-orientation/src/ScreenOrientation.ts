@@ -4,28 +4,27 @@ import { Dimensions } from 'react-native';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import {
   Orientation,
-  OrientationChangeEvent,
-  OrientationChangeListener,
+  type OrientationChangeEvent,
+  type OrientationChangeListener,
   OrientationLock,
-  PlatformOrientationInfo,
+  type PlatformOrientationInfo,
   WebOrientationLock,
-  WebOrientation,
-  SizeClassIOS,
-  ScreenOrientationInfo,
 } from './ScreenOrientation.types';
 
 export {
   Orientation,
   OrientationLock,
-  PlatformOrientationInfo,
-  OrientationChangeListener,
-  OrientationChangeEvent,
+  type PlatformOrientationInfo,
+  type OrientationChangeListener,
+  type OrientationChangeEvent,
   WebOrientationLock,
   WebOrientation,
   SizeClassIOS,
-  ScreenOrientationInfo,
-  EventSubscription as Subscription,
-};
+  type ScreenOrientationInfo,
+} from './ScreenOrientation.types';
+
+// TODO(@kitten): Remove re-export from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 
 let _orientationChangeSubscribers: EventSubscription[] = [];
 
@@ -238,7 +237,7 @@ export function removeOrientationChangeListeners(): void {
   let i = _orientationChangeSubscribers.length;
   while (i--) {
     const subscriber = _orientationChangeSubscribers[i];
-    subscriber.remove();
+    subscriber?.remove();
 
     // remove after a successful unsubscribe
     _orientationChangeSubscribers.pop();

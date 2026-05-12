@@ -1,6 +1,6 @@
-import { ProxyNativeModule } from 'expo-modules-core';
+import type { ProxyNativeModule } from 'expo-modules-core';
 
-import { NotificationChannel } from './NotificationChannelManager.types';
+import type { NotificationChannel } from './NotificationChannelManager.types';
 
 /**
  * An object which represents a notification channel group.

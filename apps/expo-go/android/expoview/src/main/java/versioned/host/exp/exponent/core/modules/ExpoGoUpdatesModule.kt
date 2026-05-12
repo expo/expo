@@ -10,6 +10,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.updates.IUpdatesController
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
+import expo.modules.updates.reloadscreen.ReloadScreenOptions
 import expo.modules.updates.statemachine.UpdatesStateContext
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelProvider
@@ -51,7 +52,7 @@ class ExpoGoUpdatesModule(experienceProperties: Map<String, Any?>) : Module() {
       } ?: mapOf()
     }
 
-    AsyncFunction("reload") { promise: Promise ->
+    AsyncFunction("reload") { options: ReloadScreenOptions?, promise: Promise ->
       KernelProvider.instance.reloadVisibleExperience(manifestUrl!!, true)
       promise.resolve(null)
     }

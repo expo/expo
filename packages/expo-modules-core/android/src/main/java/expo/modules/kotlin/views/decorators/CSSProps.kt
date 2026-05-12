@@ -64,7 +64,7 @@ private fun <T : View> ViewDefinitionBuilder<T>.UseBorderWidthProps() {
     BackgroundStyleApplicator.setBorderWidth(
       view,
       edge,
-      width ?: Float.NaN
+      width
     )
   }
 }

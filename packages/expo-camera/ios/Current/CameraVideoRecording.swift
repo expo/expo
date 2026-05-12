@@ -112,21 +112,19 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     from connections: [AVCaptureConnection],
     error: Error?
   ) {
-    var success = true
-
-    if error != nil {
-      let value = (error as? NSError)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool
-      success = value == true ? true : false
+    defer {
+      videoRecordedPromise = nil
+      videoCodecType = nil
     }
 
-    if success && videoRecordedPromise != nil {
+    let success = error == nil
+      || (error as? NSError)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool == true
+
+    if success {
       videoRecordedPromise?.resolve(["uri": outputFileURL.absoluteString])
-    } else if videoRecordedPromise != nil {
+    } else {
       videoRecordedPromise?.reject(CameraRecordingFailedException())
     }
-
-    videoRecordedPromise = nil
-    videoCodecType = nil
   }
 
   func cleanup() {

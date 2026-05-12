@@ -65,13 +65,15 @@ jsEngine: graaljs
 - openLink: bareexpo://test-suite/run?tests=${testCase}
 # make sure we're running the right test
 - assertVisible:
+    id: "test_suite_selection_query_text"
     text: "${testCase}"
 - extendedWaitUntil:
     visible:
       id: "test_suite_text_results"
     timeout: 120000
 - assertVisible:
-    text: "Success!"
+    id: "test_suite_summary_result_text"
+    text: "All tests passed!"
 `);
   }
 
@@ -179,8 +181,10 @@ const getCustomMaestroFlowsAsync = async (
   }
 
   const yamlFiles = await Array.fromAsync(fs.glob('**/*.yaml', { cwd: e2eDir, exclude: ignore }));
+  yamlFiles.sort();
 
-  if (platform === 'ios') {
+  if (platform === 'ios' && process.env.CI) {
+    // when running locally, we assume the app can open without confirmation
     yamlFiles.unshift('_nested-flows/confirm-app-open.yaml');
   }
 

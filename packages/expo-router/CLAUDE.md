@@ -34,9 +34,11 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   ├── Drawer.tsx         # Drawer navigator
 │   │   ├── withLayoutContext.tsx  # Layout context HOC
 │   │   └── stack-utils/       # Stack utilities
+│   │       ├── Agents.md  # Read this file before modifying components in this directory
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
-│   │       ├── screen/        # Title (StackScreenTitle) and BackButton (StackScreenBackButton)
-│   │       └── toolbar/       # StackToolbar* components, with native bridge in bottom-toolbar-native-elements
+│   │       ├── StackTitle.tsx # Stack.Title
+│   │       ├── screen/        # BackButton (StackScreenBackButton);
+│   │       └── toolbar/       # StackToolbar* components
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)
 │   │   ├── NativeTabs.tsx            # Assignment of Trigger and BottomAccessory to NativeTabs component
@@ -100,7 +102,10 @@ File-based routing library for React Native and web applications. Built on top o
 ├── server.d.ts                # Re-exports types from `@expo/router-server`
 ├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
 ├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
-├── tabs.js                    # Tab navigator - import { Tabs } from "expo-router/tabs"
+├── js-stack.js                # JS stack navigator - import { Stack } from "expo-router/js-stack"
+├── tabs.js                    # JS tab navigator (deprecated) - import { Tabs } from "expo-router/tabs"
+├── js-tabs.js                 # JS tab navigator - import { Tabs } from "expo-router/js-tabs"
+├── js-top-tabs.js             # JS top tab navigator - import { TopTabs } from "expo-router/js-top-tabs"
 ├── html.js                    # HTML document wrapper for web - import { Html } from "expo-router/html"
 ├── ui.js                      # Headless UI tabs components - import { Tabs } from "expo-router/ui"
 ├── unstable-native-tabs.js    # Native bottom tabs - import { NativeTabs } from "expo-router/unstable-native-tabs"
@@ -115,11 +120,36 @@ Run tests with jest-expo multi-platform presets:
 
 ```bash
 # Run all tests
-yarn test
+pnpm test
 
 # Run specific test file
-yarn test src/__tests__/navigation.test.ios.tsx
+pnpm test src/__tests__/navigation.test.ios.tsx
 ```
+
+To verify if the types used in tests are correct, run:
+
+```bash
+pnpm test:types
+```
+
+### Swift Tests (iOS)
+
+Native Swift tests live in `ios/Tests/` and use Apple's Swift Testing framework (`import Testing`).
+
+Run from the `packages/expo-router` directory:
+
+```bash
+et native-unit-tests --packages expo-router -p ios
+```
+
+> Pods must be installed in `apps/native-tests/ios` first (`pod install`).
+
+**Conventions:**
+
+- Use `@Test` / `@Suite` from Swift Testing (not XCTest)
+- Backtick-quoted test names for readability (e.g., `` @Test func `converts options correctly`() ``)
+- Inner structs for grouping related tests within a `@Suite`
+- `#expect` / `#require` for assertions
 
 ### Testing Patterns
 
@@ -164,6 +194,40 @@ it('can navigate between routes', () => {
 - `.test.node.ts` - Node.js tests
 
 **RSC tests:** When adding new components, add RSC tests in `__rsc_tests__/` directories to verify they render correctly in React Server Components environment.
+
+When testing native primitives, mock them in tests using `jest.mock()`. When adding mocks use `typeof import('module-name')` to preserve types and ensure path correctness. Example:
+
+```ts
+jest.mock('react-native-screens', () => {
+  const actualScreens = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+  };
+});
+```
+
+**Spies and console mocks:** Use `beforeEach`/`afterEach` with `mockRestore()`:
+
+```ts
+let spy: jest.SpyInstance;
+beforeEach(() => {
+  spy = jest.spyOn(Module, 'fn');
+}); // or jest.spyOn(console, 'warn').mockImplementation(() => {})
+afterEach(() => {
+  spy.mockRestore();
+});
+```
+
+**Mock call assertions:** Use array index access. Comment non-zero indices:
+
+```ts
+const props = MockedComponent.mock.calls[0][0];
+// [1] because first call is layout, second is screen
+const screenProps = MockedComponent.mock.calls[1][0];
+```
 
 ## Key Concepts
 
@@ -215,21 +279,26 @@ Native tabs (`expo-router/unstable-native-tabs`) provide native bottom tab navig
 
 ### E2E Testing (router-e2e)
 
-The `apps/router-e2e` app contains end-to-end tests and examples for Expo Router. Different apps are in `__e2e__/` subdirectory.
-
 **Running tests/apps:**
 
-- From `packages/@expo/cli`: `yarn test:e2e <PROJECT_NAME>` or `yarn test:playwright <PROJECT_NAME>`
-- Maestro tests (native navigation): `yarn test:e2e` from `apps/router-e2e`
+- From `packages/@expo/cli`: `pnpm test:e2e <PROJECT_NAME>` or `pnpm test:playwright <PROJECT_NAME>`
+- Maestro tests (native navigation): `pnpm test:e2e` from `apps/router-e2e`
 - Some of the apps are only for manual testing
+
+**Manual Android testing:** Use the `/android-e2e-testing` skill for step-by-step guidance on testing Expo Router screens on Android emulators using ADB. This covers launching E2E apps, navigating via UI dumps, interacting with the app, and verifying results.
 
 ## Verification
 
 After developing a feature, run these commands in `packages/expo-router`:
 
-1. `CI=1 yarn test` - Run all tests. During development use `yarn test [test file]` for efficiency. For RSC tests: `yarn test:rsc`
-2. `yarn build` - Build and verify TypeScript correctness
-3. `yarn lint` - Run last to find linting issues
+1. `CI=1 pnpm test` - Run all tests. During development use `pnpm test [test file]` for efficiency. For RSC tests: `pnpm test:rsc`
+2. `pnpm build` - Build and verify TypeScript correctness. If you moved or deleted files, run `pnpm clean` first.
+3. `pnpm test:types` - Verify type correctness in tests
+4. `pnpm lint` - Run last to find linting issues
+
+Then test the feature on the simulator using one of the `apps/router-e2e/__e2e__/` projects. For android, use the `/android-e2e-testing` skill for testing on emulators.
+
+Lastly, span a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 
@@ -256,12 +325,19 @@ et generate-docs-api-data --packageName expo-router --sdk <VERSION>
 
 ### Testing docs changes
 
-To run the docs site locally run `yarn dev` in the `docs/` directory of the monorepo. The reference will be available at:
+To run the docs site locally run `pnpm dev` in the `docs/` directory of the monorepo. The reference will be available at:
 
 - http://localhost:3002/versions/unversioned/sdk/router/ for main router
 - http://localhost:3002/versions/unversioned/sdk/router-native-tabs/ for native tabs
 - http://localhost:3002/versions/unversioned/sdk/router-split-view/ for split view
 - http://localhost:3002/versions/unversioned/sdk/router-ui/ for headless tabs
+
+## Coding style
+
+- Always use latest React 19 hooks and patterns - `use` instead of `useContext`, `useId`, etc.
+- Make sure the code works with and without React Compiler enabled.
+- Don't use `any` types, unless strictly necessary. Use `unknown` instead and narrow types as much as possible.
+- Never import files with platform-specific extensions directly. Always import from the base path and let the bundler resolve the correct file. Correct `import { Component } from './Component'`, not `import { Component } from './Component.ios'`.
 
 ## Maintaining This Document
 

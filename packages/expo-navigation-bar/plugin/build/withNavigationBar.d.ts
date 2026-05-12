@@ -1,23 +1,31 @@
-import { ExpoConfig } from 'expo/config';
-import { ConfigPlugin, AndroidConfig } from 'expo/config-plugins';
-import { NavigationBarVisibility, NavigationBarBehavior, NavigationBarPosition, NavigationBarButtonStyle } from 'expo-navigation-bar';
+import { AndroidConfig, ConfigPlugin, ExportedConfigWithProps } from 'expo/config-plugins';
+import { NavigationBarVisibility } from '../..';
+export type ResourceXMLConfig = ExportedConfigWithProps<AndroidConfig.Resources.ResourceXML>;
+type NavigationBarStyle = 'light' | 'dark';
 export type Props = {
-    borderColor?: string;
-    backgroundColor?: string | null;
-    barStyle?: NavigationBarButtonStyle | null;
+    /**
+     * Whether the OS should keep the navigation bar translucent for contrast.
+     * @default true
+     * @platform android
+     */
+    enforceContrast?: boolean;
+    /**
+     * Whether the navigation bar starts hidden.
+     * @platform android
+     */
+    hidden?: boolean;
+    /**
+     * Which style the navigation bar starts with. Accepts `light` and `dark`.
+     * @platform android
+     */
+    style?: NavigationBarStyle;
+    /** @deprecated */
+    barStyle?: NavigationBarStyle | null;
+    /** @deprecated */
     visibility?: NavigationBarVisibility;
-    behavior?: NavigationBarBehavior;
-    position?: NavigationBarPosition;
-    legacyVisible?: NonNullable<NonNullable<ExpoConfig['androidNavigationBar']>['visible']>;
 };
-export declare function resolveProps(config: Pick<ExpoConfig, 'androidNavigationBar'>, _props: Props | void): Props;
-/**
- * Ensure the Expo Go manifest is updated when the project is using config plugin properties instead
- * of the static values that Expo Go reads from (`androidNavigationBar`).
- */
-export declare const withAndroidNavigationBarExpoGoManifest: ConfigPlugin<Props>;
-export declare function setStrings(strings: AndroidConfig.Resources.ResourceXML, { borderColor, visibility, position, behavior, legacyVisible, }: Omit<Props, 'backgroundColor' | 'barStyle'>): AndroidConfig.Resources.ResourceXML;
-export declare function setNavigationBarColors({ backgroundColor }: Pick<Props, 'backgroundColor'>, colors: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
-export declare function setNavigationBarStyles({ backgroundColor, barStyle }: Pick<Props, 'backgroundColor' | 'barStyle'>, styles: AndroidConfig.Resources.ResourceXML): AndroidConfig.Resources.ResourceXML;
-declare const _default: ConfigPlugin<void | Props>;
+export declare function resolveProps(props: Props | undefined): Props | undefined;
+export declare const setNavigationBarStyles: ({ hidden, style }: Props, styles: AndroidConfig.Resources.ResourceXML) => AndroidConfig.Resources.ResourceXML;
+export declare function applyEnforceNavigationBarContrast(config: ResourceXMLConfig, enforceNavigationBarContrast: boolean): ResourceXMLConfig;
+declare const _default: ConfigPlugin<Props | undefined>;
 export default _default;

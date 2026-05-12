@@ -1,5 +1,6 @@
-import { PermissionStatus, UnavailabilityError } from 'expo-modules-core';
-import { LocationAccuracy, } from './Location.types';
+import { PermissionStatus } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
+import { LocationAccuracy } from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 class GeocoderError extends Error {
     code;

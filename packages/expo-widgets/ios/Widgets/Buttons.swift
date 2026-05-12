@@ -5,6 +5,8 @@ import ExpoUI
 final class ButtonProps: ExpoUI.ButtonProps {
   @Field var source: String?
   @Field var target: String?
+  @Field var entryIndex: Int?
+  @Field var environmentString: String?
 }
 
 @available(iOS 17.0, *)
@@ -16,7 +18,9 @@ struct WidgetButtonView: ExpoSwiftUI.View {
       role: props.role?.toNativeRole(),
       intent: WidgetUserInteraction(
         source: props.source,
-        target: props.target
+        target: props.target,
+        entryIndex: props.entryIndex,
+        environmentString: props.environmentString
       )
     ) {
       if let label = props.label {

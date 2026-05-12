@@ -17,6 +17,8 @@ Expo UI ProgressView matches the official SwiftUI [ProgressView API](https://dev
 
 ## Usage
 
+> **Note:** When using the `linear` style (which is the default for determinate progress), `ProgressView` is a flexible-width component, it expands to fill available horizontal space. When using `matchContents` on the `Host`, you should apply a [`frame`](modifiers/#frameparams) modifier on the `ProgressView` to give it an explicit width. Alternatively, give the `Host` an explicit size using `style` (for example, `style={{ width: 300 }}` or `style={{ flex: 1 }}`). The `circular` style and indeterminate spinner have a fixed size and work with `matchContents`.
+
 ### Indeterminate progress
 
 When no `value` is provided, the progress view displays an indeterminate indicator (spinner).
@@ -42,7 +44,7 @@ import { Host, ProgressView } from '@expo/ui/swift-ui';
 
 export default function DeterminateExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ProgressView value={0.5} />
     </Host>
   );
@@ -59,7 +61,7 @@ import { progressViewStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function ProgressViewStylesExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ProgressView value={0.5} modifiers={[progressViewStyle('linear')]} />
     </Host>
   );
@@ -75,7 +77,7 @@ import { Host, ProgressView, Text } from '@expo/ui/swift-ui';
 
 export default function LabelExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ProgressView value={0.25}>
         <Text>Loading...</Text>
       </ProgressView>
@@ -94,7 +96,7 @@ import { tint } from '@expo/ui/swift-ui/modifiers';
 
 export default function TintedExample() {
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <ProgressView value={0.7} modifiers={[tint('red')]} />
     </Host>
   );
@@ -115,7 +117,7 @@ export default function TimerExample() {
   const endDate = new Date(Date.now() + 10000); // 10 seconds from now
 
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack spacing={16}>
         <ProgressView timerInterval={{ lower: startDate, upper: endDate }} />
         <ProgressView timerInterval={{ lower: startDate, upper: endDate }} countsDown={false}>

@@ -164,7 +164,7 @@
 
 - (BOOL)shouldVerifyScopedPermission:(NSString *)permissionType
 {
-  // temporarily exclude notifactions from permissions per experience; system brightness is always granted
+  // exclude notifications from permissions per experience; system brightness is always granted
   return ![@[@"notifications", @"userFacingNotifications", @"systemBrightness"] containsObject:permissionType];
 }
 

@@ -1,6 +1,7 @@
 import { requireNativeView } from 'expo';
 import type { NativeSyntheticEvent } from 'react-native';
 
+import { Slot } from '../SlotView';
 import { type CommonViewModifierProps } from '../types';
 
 export type SliderProps = {
@@ -20,6 +21,16 @@ export type SliderProps = {
    * The maximum value of the slider. Updating this value does not trigger callbacks if the current value is above `max`.
    */
   max?: number;
+  /**
+   * Lower limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `lowerLimit` during drag.
+   */
+  lowerLimit?: number;
+  /**
+   * Upper limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `upperLimit` during drag.
+   */
+  upperLimit?: number;
   /**
    * A label describing the slider's purpose.
    */
@@ -56,11 +67,6 @@ const SliderNativeView: React.ComponentType<NativeSliderProps> = requireNativeVi
   'SliderView'
 );
 
-const SliderValueLabelNativeView: React.ComponentType<{
-  kind: 'label' | 'minimum' | 'maximum';
-  children?: React.ReactNode;
-}> = requireNativeView('ExpoUI', 'SliderLabelView');
-
 function transformSliderProps(props: SliderProps): NativeSliderProps {
   const {
     label,
@@ -90,13 +96,9 @@ export function Slider(props: SliderProps) {
 
   return (
     <SliderNativeView {...transformSliderProps(props)}>
-      {label && <SliderValueLabelNativeView kind="label">{label}</SliderValueLabelNativeView>}
-      {minimumValueLabel && (
-        <SliderValueLabelNativeView kind="minimum">{minimumValueLabel}</SliderValueLabelNativeView>
-      )}
-      {maximumValueLabel && (
-        <SliderValueLabelNativeView kind="maximum">{maximumValueLabel}</SliderValueLabelNativeView>
-      )}
+      {label && <Slot name="label">{label}</Slot>}
+      {minimumValueLabel && <Slot name="minimum">{minimumValueLabel}</Slot>}
+      {maximumValueLabel && <Slot name="maximum">{maximumValueLabel}</Slot>}
     </SliderNativeView>
   );
 }

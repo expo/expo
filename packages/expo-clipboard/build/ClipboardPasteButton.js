@@ -1,4 +1,4 @@
-import React from 'react';
+import { jsx as _jsx } from "react/jsx-runtime";
 import ExpoClipboardPasteButton from './ExpoClipboardPasteButton';
 // @needsAudit
 /**
@@ -28,6 +28,6 @@ export function ClipboardPasteButton({ onPress, ...restProps }) {
     const onPastePressed = ({ nativeEvent }) => {
         onPress(nativeEvent);
     };
-    return <ExpoClipboardPasteButton onPastePressed={onPastePressed} {...restProps}/>;
+    return _jsx(ExpoClipboardPasteButton, { onPastePressed: onPastePressed, ...restProps });
 }
 //# sourceMappingURL=ClipboardPasteButton.js.map

@@ -21,7 +21,7 @@ export const PageVote = () => {
       {userVoted ? (
         <CALLOUT theme="secondary">Thank you for your vote! 💙</CALLOUT>
       ) : (
-        <div className="flex flex-row items-center gap-2 max-md-gutters:flex-col">
+        <div className="max-md-gutters:flex-col flex flex-row items-center gap-2">
           <CALLOUT theme="secondary" weight="medium">
             Was this doc helpful?
           </CALLOUT>
@@ -34,7 +34,7 @@ export const PageVote = () => {
               leftSlot={
                 <>
                   <ThumbsUpIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsUpDuotoneIcon className="icon-sm hidden text-icon-success group-hover:flex group-focus-visible:flex" />
+                  <ThumbsUpDuotoneIcon className="icon-sm text-icon-success hidden group-hover:flex group-focus-visible:flex" />
                 </>
               }
               onClick={() => {
@@ -50,7 +50,7 @@ export const PageVote = () => {
               leftSlot={
                 <>
                   <ThumbsDownIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsDownDuotoneIcon className="icon-sm hidden text-icon-danger group-hover:flex group-focus-visible:flex" />
+                  <ThumbsDownDuotoneIcon className="icon-sm text-icon-danger hidden group-hover:flex group-focus-visible:flex" />
                 </>
               }
               onClick={() => {

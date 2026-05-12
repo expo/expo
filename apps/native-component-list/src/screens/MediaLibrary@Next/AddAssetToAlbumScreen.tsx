@@ -52,7 +52,7 @@ const AddAssetToAlbumScreen = () => {
     const url =
       type === 'image'
         ? 'https://picsum.photos/200/300'
-        : 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+        : 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4';
     await File.downloadFileAsync(url, file, { idempotent: true });
     return file;
   };

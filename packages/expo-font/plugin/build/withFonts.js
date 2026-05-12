@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const withFontsAndroid_1 = require("./withFontsAndroid");
 const withFontsIos_1 = require("./withFontsIos");
-const pkg = require('expo-font/package.json');
+const pkg = require('../../package.json');
 const withFonts = (config, props) => {
     if (!props) {
         return config;

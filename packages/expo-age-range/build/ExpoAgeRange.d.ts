@@ -1,4 +1,4 @@
-import { ExpoAgeRangeModule } from './ExpoAgeRange.types';
+import type { ExpoAgeRangeModule } from './ExpoAgeRange.types';
 /**
  * @hidden
  */

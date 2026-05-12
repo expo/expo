@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import chalk from 'chalk';
 
-import { Command } from '../../bin/cli';
+import type { Command } from '../../bin/cli';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 
 export const expoPrebuild: Command = async (argv) => {

@@ -1,0 +1,169 @@
+{
+  "source": {
+    "server": "https://mcp.expo.dev/mcp",
+    "localRepo": "expo/expo-mcp",
+    "fetchedAt": "2026-03-18T10:06:19.629Z"
+  },
+  "totalTools": 25,
+  "totalPrompts": 1,
+  "tools": [
+    {
+      "name": "add_library",
+      "description": "Add an Expo library to the project using expo install and attach usage instructions when available.",
+      "examplePrompt": "add sqlite and basic CRUD to the app",
+      "availability": "Server"
+    },
+    {
+      "name": "search_documentation",
+      "description": "Search the official Expo documentation and return page URLs ranked by relevance for a user query. Use read_documentation to fetch the full content of specific pages, starting from the top.",
+      "examplePrompt": "search documentation for CNG",
+      "availability": "Server"
+    },
+    {
+      "name": "read_documentation",
+      "description": "Fetch a single Expo documentation page and return its content as markdown. Returns up to ~5000 tokens per call. Use offset to paginate through long pages.",
+      "examplePrompt": "read the Expo Router docs page",
+      "availability": "Server"
+    },
+    {
+      "name": "learn",
+      "description": "Learn Expo how-to for a specific topic and remember it for future conversations. Use this to teach the assistant about specific Expo features or workflows.",
+      "examplePrompt": "learn how to use expo-router",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_create",
+      "description": "Creates a new EAS workflow YAML file for Expo projects or fetches workflow syntax documentation. Use this when users want to create CI/CD workflows in .eas/workflows/ or need to learn EAS workflow syntax. After creating, use workflow_validate to validate the file.",
+      "examplePrompt": "create a CI/CD workflow for building and deploying",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_info",
+      "description": "Fetches detailed information about a specific EAS workflow run by ID. Use this to check the status, job results, errors, and artifacts of a workflow run. If workflow has multiple jobs, draw them in a diagram to show the dependencies between jobs.",
+      "examplePrompt": "get the status of the latest workflow run",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_list",
+      "description": "Lists recent EAS workflow runs for a project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "examplePrompt": "list the recent workflow runs",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_logs",
+      "description": "Fetches logs for a specific job in an EAS workflow run. Call without sectionIndex or phase to get a summary of log sections (phase names and line ranges); then call again with sectionIndex or phase to fetch that section.",
+      "examplePrompt": "show me the logs for the build job in the workflow",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_run",
+      "description": "Triggers an EAS workflow run from a git reference. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\"). The workflow file must exist at the specified git reference.",
+      "examplePrompt": "run the build-and-deploy workflow",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_cancel",
+      "description": "Cancels a running EAS workflow. Use workflow_info to get the workflow run ID.",
+      "examplePrompt": "cancel the running workflow",
+      "availability": "Server"
+    },
+    {
+      "name": "workflow_validate",
+      "description": "Validates EAS workflow YAML syntax and configuration. Use this after creating a workflow to ensure it is valid. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "examplePrompt": "validate my workflow file",
+      "availability": "Server"
+    },
+    {
+      "name": "build_list",
+      "description": "Lists EAS builds for a project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\"). Use this to see recent builds, their status, and available artifacts.",
+      "examplePrompt": "list the recent builds for this project",
+      "availability": "Server"
+    },
+    {
+      "name": "build_info",
+      "description": "Fetches the status and detailed information about a specific EAS build by ID. Use this to check build status, errors, artifacts, and other details.",
+      "examplePrompt": "get the status of my latest iOS build",
+      "availability": "Server"
+    },
+    {
+      "name": "build_logs",
+      "description": "Fetches the logs for a specific EAS build. The build must be completed (finished or errored) to have logs available.",
+      "examplePrompt": "show me the logs for the failed build",
+      "availability": "Server"
+    },
+    {
+      "name": "build_submit",
+      "description": "Submits an EAS build to the app store (Google Play Store for Android, App Store for iOS). The build must be a finished build with the appropriate distribution type. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "examplePrompt": "submit the latest build to the App Store",
+      "availability": "Server"
+    },
+    {
+      "name": "build_run",
+      "description": "Triggers a new EAS build using a build profile from eas.json. Requires a GitHub repository to be connected to the project. Provide either appId (from app.json \"extra.eas.projectId\") OR appFullName (e.g., \"@owner/my-app\").",
+      "examplePrompt": "run a production build for iOS",
+      "availability": "Server"
+    },
+    {
+      "name": "build_cancel",
+      "description": "Cancels an EAS build that is queued or in progress. Use build_info to check the current status first.",
+      "examplePrompt": "cancel the build that is currently in progress",
+      "availability": "Server"
+    },
+    {
+      "name": "testflight_crashes",
+      "description": "Fetch TestFlight crash data. Without crashId, lists recent crashes. With crashId, returns the full crash log with stack trace.",
+      "examplePrompt": "show me recent TestFlight crashes",
+      "availability": "Server"
+    },
+    {
+      "name": "testflight_feedback",
+      "description": "Fetch screenshot feedback from TestFlight. Returns feedback metadata including device info, user comments, and screenshot URLs.",
+      "examplePrompt": "show TestFlight feedback for my app",
+      "availability": "Server"
+    },
+    {
+      "name": "expo_router_sitemap",
+      "description": "Query the all routes of the current expo-router project. This is useful if you were using expo-router and want to know all the routes of the app.",
+      "examplePrompt": "check the expo-router-sitemap output",
+      "availability": "Local",
+      "requirements": "requires `expo-router` library"
+    },
+    {
+      "name": "open_devtools",
+      "description": "Open the React Native DevTools.",
+      "examplePrompt": "open devtools",
+      "availability": "Local"
+    },
+    {
+      "name": "collect_app_logs",
+      "description": "Collect logs from native device (logcat/syslog) or JavaScript console.",
+      "examplePrompt": "collect app logs from the iOS simulator",
+      "availability": "Local"
+    },
+    {
+      "name": "automation_tap",
+      "description": "Tap on the device at the given coordinates (x, y) or by react-native testID. Provide either (x AND y) or testID.",
+      "examplePrompt": "tap the screen at x=12, y=22",
+      "availability": "Local"
+    },
+    {
+      "name": "automation_take_screenshot",
+      "description": "Take screenshot of the full app or a specific view by react-native testID. Optionally provide testID to screenshot a specific view.",
+      "examplePrompt": "take a screenshot and verify the blue circle view",
+      "availability": "Local"
+    },
+    {
+      "name": "automation_find_view",
+      "description": "Find view and dump its properties. This is useful to verify the view is rendered correctly.",
+      "examplePrompt": "dump properties for testID 'button-123'",
+      "availability": "Local"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "expo_router_sitemap",
+      "description": "Query the all routes of the current expo-router project using `expo-router-sitemap`.",
+      "availability": "Local"
+    }
+  ]
+}

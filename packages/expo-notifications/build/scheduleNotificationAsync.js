@@ -1,6 +1,6 @@
 import { Platform, UnavailabilityError, uuid } from 'expo-modules-core';
 import NotificationScheduler from './NotificationScheduler';
-import { SchedulableTriggerInputTypes, } from './Notifications.types';
+import { SchedulableTriggerInputTypes } from './Notifications.types';
 import { hasValidTriggerObject } from './hasValidTriggerObject';
 /**
  * Schedules a notification to be triggered in the future.

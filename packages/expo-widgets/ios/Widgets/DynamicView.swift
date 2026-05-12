@@ -18,84 +18,107 @@ extension ObjectIdentifier: @retroactive Encodable {
 
 public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   let node: [String: Any]
-  let source: String
+  let name: String
   let kind: WidgetsKind
+  let entryIndex: Int?
+  let environmentString: String?
 
   let uuid = NodeIdentityWrapper(id: UUID())
   public var id: ObjectIdentifier {
     ObjectIdentifier(uuid)
   }
 
-  public init(source: String, kind: WidgetsKind, node: [String: Any]) {
-    self.source = source
+  public init(name: String, kind: WidgetsKind, node: [String: Any]) {
+    self.name = name
     self.kind = kind
     self.node = node
+    self.entryIndex = nil
+    self.environmentString = nil
+  }
+
+  public init(name: String, kind: WidgetsKind, node: [String: Any], entryIndex: Int?, environmentString: String?) {
+    self.name = name
+    self.kind = kind
+    self.node = node
+    self.entryIndex = entryIndex
+    self.environmentString = environmentString
   }
 
   @ViewBuilder
   public var body: some View {
     switch node["type"] as? String {
-    case "Text":
-      render(TextView.self, TextViewProps.self) { props in
-        if let rawProps = node["props"] as? [String: Any] {
-          if let children = rawProps["children"] as? String {
-            props.text = children
-          } else if let childrenArray = rawProps["children"] as? [String] {
-            props.text = childrenArray.joined(separator: "")
-          }
-        }
-      }
-    case "HStack":
+    case "TextView":
+      render(TextView.self, TextViewProps.self, updateProps: updateChildren)
+    case "HStackView":
       render(HStackView.self, HStackViewProps.self, updateProps: updateChildren)
-    case "VStack":
+    case "VStackView":
       render(VStackView.self, VStackViewProps.self, updateProps: updateChildren)
-    case "ZStack":
+    case "ZStackView":
       render(ZStackView.self, ZStackViewProps.self, updateProps: updateChildren)
-    case "Rectangle":
+    case "RectangleView":
       render(RectangleView.self, RectangleViewProps.self)
-    case "RoundedRectangle":
+    case "RoundedRectangleView":
       render(RoundedRectangleView.self, RoundedRectangleViewProps.self)
-    case "Capsule":
+    case "CapsuleView":
       render(CapsuleView.self, CapsuleViewProps.self)
-    case "Circle":
+    case "CircleView":
       render(CircleView.self, CircleViewProps.self)
-    case "Image":
+    case "ImageView":
       render(ImageView.self, ImageViewProps.self)
-    case "Divider":
+    case "AccessoryWidgetBackgroundView":
+      render(AccessoryWidgetBackgroundView.self, AccessoryWidgetBackgroundProps.self)
+    case "DividerView":
       render(DividerView.self, DividerProps.self)
-    case "Ellipse":
+    case "EllipseView":
       render(EllipseView.self, EllipseViewProps.self)
-    case "Label":
+    case "LabelView":
       render(LabelView.self, LabelViewProps.self)
-    case "Progress":
+    case "ProgressView":
       render(ProgressView.self, ProgressViewProps.self)
-    case "Spacer":
+    case "SpacerView":
       render(SpacerView.self, SpacerViewProps.self)
-    case "UnevenRoundedRectangle":
+    case "UnevenRoundedRectangleView":
       render(UnevenRoundedRectangleView.self, UnevenRoundedRectangleViewProps.self)
-    case "Gauge":
+    case "GaugeView":
       render(GaugeView.self, GaugeProps.self)
     case "Button":
       if #available(iOS 17.0, *) {
         switch kind {
         case .widget:
           render(WidgetButtonView.self, ButtonProps.self) { buttonProps in
-            buttonProps.source = source
+            try updateChildren(buttonProps)
+            buttonProps.source = name
+            buttonProps.entryIndex = entryIndex
+            buttonProps.environmentString = environmentString
           }
         case .liveActivity:
           render(LiveActivityButtonView.self, ButtonProps.self) { buttonProps in
-            buttonProps.source = source
+            try updateChildren(buttonProps)
+            buttonProps.source = name
           }
         }
       } else {
         render(ExpoUI.Button.self, ExpoUI.ButtonProps.self, updateProps: updateChildren)
       }
-
+    case "react.fragment":
+      render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
+    case "LinkView":
+      render(LinkView.self, LinkViewProps.self, updateProps: updateChildren)
+#if DEBUG
+    case "RedBoxView":
+      render(RedBoxView.self, RedBoxViewProps.self) { redBoxProps in
+        redBoxProps.source = name
+        redBoxProps.kind = kind
+      }
     default:
       ZStack {
         Color.red.opacity(0.5)
         Text("Unable to get the view for: \(node["type"] as? String ?? "undefined")")
       }
+#else
+    default:
+      EmptyView()
+#endif
     }
   }
 
@@ -110,7 +133,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
         if let rawProps = node["props"] as? [String: Any] {
           let props = try propsType.init(rawProps: rawProps, context: WidgetsContext.shared.context)
           try updateProps?(props)
-          return AnyView(UIBaseView<P, V>(props: props))
+          // TODO(@jakex7): Prevent unwanted transition when view is updated with new props - we want to have the same view instance recreated with new props instead of creating a new view instance and transitioning to it
+          return AnyView(UIBaseView<P, V>(props: props).transition(.identity))
         }
         return AnyView(EmptyView())
       } catch {
@@ -124,10 +148,11 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   private func updateChildren<P>(_ initialProps: P) throws
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
-      if let children = props["children"] as? [[String: Any]] {
-        initialProps.children = children.map { WidgetsDynamicView(source: source, kind: kind, node: $0) }
+      if let children = props["children"] as? [Any] {
+        let validChildren = children.compactMap { $0 as? [String: Any] }
+        initialProps.children = validChildren.map { WidgetsDynamicView(name: name, kind: kind, node: $0, entryIndex: entryIndex, environmentString: environmentString) }
       } else if let child = props["children"] as? [String: Any] {
-        initialProps.children = [WidgetsDynamicView(source: source, kind: kind, node: child)]
+        initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
       }
     }
   }

@@ -1,4 +1,4 @@
-import { MediaType } from './MediaType';
+import type { MediaType } from './MediaType';
 
 export type AssetInfo = {
   id: string;
@@ -10,4 +10,5 @@ export type AssetInfo = {
   duration: number | null;
   creationTime: number | null;
   modificationTime: number | null;
+  isFavorite?: boolean;
 };

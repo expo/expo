@@ -1,0 +1,47 @@
+name: Router
+
+on:
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/router.yml
+      - packages/expo-router/**
+      - pnpm-lock.yaml
+      - '!**.md'
+  pull_request:
+    paths:
+      - .github/workflows/router.yml
+      - packages/expo-router/**
+      - pnpm-lock.yaml
+      - '!**.md'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  router-test-types:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 100
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: 🏗️ Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🧪 Run types tests
+        working-directory: packages/expo-router
+        run: pnpm test:types

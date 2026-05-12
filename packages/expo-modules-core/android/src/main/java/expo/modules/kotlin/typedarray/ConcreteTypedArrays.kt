@@ -4,7 +4,7 @@ import expo.modules.kotlin.jni.JavaScriptTypedArray
 
 @Suppress("NOTHING_TO_INLINE")
 private inline fun TypedArray.checkIfInRange(index: Int) {
-  if (index < 0 || index >= length) {
+  if (index !in 0..<length) {
     throw IndexOutOfBoundsException()
   }
 }

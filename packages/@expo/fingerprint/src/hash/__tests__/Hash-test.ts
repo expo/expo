@@ -1,10 +1,10 @@
 import { createHash } from 'crypto';
 import { vol } from 'memfs';
-import pLimit from 'p-limit';
 import path from 'path';
 
 import type { DebugInfoDir, HashSource } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
+import { createLimiter } from '../../utils/Concurrency';
 import {
   createContentsHashResultsAsync,
   createDirHashResultsAsync,
@@ -92,7 +92,7 @@ describe(createFingerprintSourceAsync, () => {
     expect(
       await createFingerprintSourceAsync(
         source,
-        pLimit(1),
+        createLimiter(1),
         '/app',
         await normalizeOptionsAsync('/app', { debug: true })
       )
@@ -113,7 +113,7 @@ describe(createFingerprintSourceAsync, () => {
     expect(
       await createFingerprintSourceAsync(
         source,
-        pLimit(1),
+        createLimiter(1),
         '/app',
         await normalizeOptionsAsync('/app')
       )
@@ -150,7 +150,7 @@ describe(createFileHashResultsAsync, () => {
   it('should return {id, hex} result', async () => {
     const filePath = 'assets/icon.png';
     const contents = '{}';
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     const options = await normalizeOptionsAsync('/app', { debug: true });
     vol.mkdirSync('/app');
     vol.mkdirSync('/app/assets');
@@ -166,7 +166,7 @@ describe(createFileHashResultsAsync, () => {
   it('should ignore file if it is in options.ignorePaths', async () => {
     const filePath = 'app.json';
     const contents = '{}';
-    const limiter = pLimit(1);
+    const limiter = createLimiter(1);
     const options = await normalizeOptionsAsync('/app', { debug: true, ignorePaths: ['*.json'] });
     vol.mkdirSync('/app');
     vol.writeFileSync(path.join('/app', filePath), contents);
@@ -182,7 +182,7 @@ describe(createDirHashResultsAsync, () => {
   });
 
   it('should return {id, hex} result', async () => {
-    const limiter = pLimit(3);
+    const limiter = createLimiter(3);
     const options = await normalizeOptionsAsync('/app', { debug: true });
     const volJSON = {
       '/app/ios/Podfile': '...',
@@ -198,7 +198,7 @@ describe(createDirHashResultsAsync, () => {
   });
 
   it('should ignore dir if it is in options.ignorePaths', async () => {
-    const limiter = pLimit(3);
+    const limiter = createLimiter(3);
     const options = await normalizeOptionsAsync('/app', {
       debug: true,
       ignorePaths: ['ios/**/*', 'android/**/*'],
@@ -224,7 +224,7 @@ describe(createDirHashResultsAsync, () => {
   });
 
   it('should partially ignore dir if it is in options.ignorePaths but using negated pattern to include some files', async () => {
-    const limiter = pLimit(3);
+    const limiter = createLimiter(3);
     const options = await normalizeOptionsAsync('/app', {
       debug: true,
       ignorePaths: ['ios/**/*', '!ios/Podfile', 'android/**/*'],
@@ -248,7 +248,7 @@ describe(createDirHashResultsAsync, () => {
   });
 
   it('should return stable result from sorted files', async () => {
-    const limiter = pLimit(3);
+    const limiter = createLimiter(3);
     const options = await normalizeOptionsAsync('/app', { debug: true });
     const volJSON = {
       '/app/ios/Podfile': '...',

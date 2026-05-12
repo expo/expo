@@ -1,5 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
+import { jsx as _jsx } from "react/jsx-runtime";
 import { forwardRef, useImperativeHandle, useRef } from 'react';
 import { View } from 'react-native';
 import getBackgroundColor from './getBackgroundColor';
@@ -23,15 +24,19 @@ const BlurView = forwardRef(({ tint = 'default', intensity = 50, style, ...props
                     }
                 }
             }
-            blurViewRef.current.style.backgroundColor = blurStyle.backgroundColor;
-            blurViewRef.current.style.backdropFilter = blurStyle.backdropFilter;
+            if (blurStyle.backgroundColor) {
+                blurViewRef.current.style.backgroundColor = blurStyle.backgroundColor;
+            }
+            if (blurStyle.backdropFilter) {
+                blurViewRef.current.style.backdropFilter = blurStyle.backdropFilter;
+            }
             // @ts-expect-error: Webkit-specific legacy property (let's not type this, since it's deprecated)
             blurViewRef.current.style['webkitBackdropFilter'] = blurStyle.WebkitBackdropFilter;
         },
     }), [intensity, tint]);
-    return (<View {...props} style={[style, blurStyle]} 
-    /** @ts-expect-error: mismatch in ref type to support manually setting style props. */
-    ref={blurViewRef}/>);
+    return (_jsx(View, { ...props, style: [style, blurStyle], 
+        /** @ts-expect-error: mismatch in ref type to support manually setting style props. */
+        ref: blurViewRef }));
 });
 function getBlurStyle({ intensity, tint, }) {
     const blur = `saturate(180%) blur(${Math.min(intensity, 100) * 0.2}px)`;

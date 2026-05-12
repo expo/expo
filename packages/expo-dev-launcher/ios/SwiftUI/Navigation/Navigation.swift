@@ -2,7 +2,7 @@
 import SwiftUI
 import ExpoModulesCore
 
-private struct SafeAreaTopPadding: View {
+struct SafeAreaTopPadding: View {
   let manualInset: CGFloat
 
   var body: some View {

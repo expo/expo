@@ -71,7 +71,7 @@ export default function App() {
   useEffect(() => {
     (async () => {
       const plaintext = 'Hello, world!';
-      const plaintextBase64 = btoa(plaintexxt);
+      const plaintextBase64 = btoa(plaintext);
 
       const encryptionKey = await AESEncryptionKey.generate();
       const sealedData = await aesEncryptAsync(plaintextBase64, key);
@@ -79,8 +79,8 @@ export default function App() {
         output: 'base64',
       });
 
-      const decrpyted = atob(decryptedBase64);
-      console.log('Decrypted: ', decrpyted);
+      const decrypted = atob(decryptedBase64);
+      console.log('Decrypted: ', decrypted);
     })();
   }, []);
 

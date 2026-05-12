@@ -147,9 +147,9 @@ enum VNBarcodeType: String, Enumerable {
 
 struct VisionScannerOptions: Record {
   @Field var barcodeTypes: [VNBarcodeType] = []
-  @Field var isPinchToZoomEnabled: Bool = false
-  @Field var isGuidanceEnabled: Bool = true
-  @Field var isHighlightingEnabled: Bool = false
+  @Field var isPinchToZoomEnabled: Bool?
+  @Field var isGuidanceEnabled: Bool?
+  @Field var isHighlightingEnabled: Bool?
 
   @available(iOS 16.0, *)
   func toSymbology() -> [VNBarcodeSymbology] {

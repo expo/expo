@@ -1,12 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { Log } from '../utils/log';
-import {
-  getVersionedNativeModuleNamesAsync,
-  VersionedNativeModuleNamesCache,
-} from '../utils/versionedNativeModules';
+import type { VersionedNativeModuleNamesCache } from '../utils/versionedNativeModules';
+import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
 
 interface PackageJson {
   name: string;
@@ -71,10 +69,11 @@ export class PeerDependencyChecks implements DoctorCheck<DoctorCache> {
 
     const groupedByMissingPeerDependency = filteredPeerDependencyIssues.reduce(
       (acc, issue) => {
-        if (acc[issue.missingPeerDependency]) {
-          acc[issue.missingPeerDependency].push(issue.requiredBy);
+        const { missingPeerDependency } = issue;
+        if (acc[missingPeerDependency]) {
+          acc[missingPeerDependency].push(issue.requiredBy);
         } else {
-          acc[issue.missingPeerDependency] = [issue.requiredBy];
+          acc[missingPeerDependency] = [issue.requiredBy];
         }
         return acc;
       },

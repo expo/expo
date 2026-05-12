@@ -1,6 +1,6 @@
 {
   "name": "expo-store-review",
-  "version": "55.0.3",
+  "version": "56.0.3",
   "description": "Provides access to native APIs for in-app reviews.",
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -34,7 +33,9 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2"
+    "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

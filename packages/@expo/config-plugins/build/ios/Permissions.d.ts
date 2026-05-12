@@ -1,5 +1,5 @@
-import { InfoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { InfoPlist } from './IosConfig.types';
+import type { ConfigPlugin } from '../Plugin.types';
 export declare function applyPermissions<Defaults extends Record<string, string> = Record<string, string>>(defaults: Defaults, permissions: Partial<Record<keyof Defaults, string | false>>, infoPlist: InfoPlist): InfoPlist;
 /**
  * Helper method for creating mods to apply default permissions.

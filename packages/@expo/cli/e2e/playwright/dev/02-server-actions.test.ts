@@ -3,7 +3,8 @@ import { test, expect } from '@playwright/test';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
-import { pageCollectErrors } from '../page';
+import { sanitizeRSCPayloadString } from '../../utils/rsc';
+import { pageCollectErrors, replayRequestText } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
@@ -86,22 +87,13 @@ test.describe(inputDir, () => {
       );
     });
 
-    const serverActionResponsePromise = page.waitForResponse((response) => {
-      const pathname = new URL(response.url()).pathname;
-      return (
-        pathname.startsWith('/_flight/web/ACTION_') && pathname.endsWith('_$$INLINE_ACTION.txt')
-      );
-    });
-
     // Call the server action
     await page.locator('[data-testid="call-jsx-server-action"]').click();
 
-    await serverActionRequest;
-    const response = await serverActionResponsePromise;
+    const request = await serverActionRequest;
+    const rscPayload = await replayRequestText(request);
 
-    const rscPayload = new TextDecoder().decode(await response.body());
-
-    expect(rscPayload)
+    expect(sanitizeRSCPayloadString(rscPayload))
       .toBe(`1:I["node_modules/react-native-web/dist/exports/Text/index.js",["/node_modules/react-native-web/dist/exports/Text/index.js.bundle?platform=web&dev=true&hot=false&transform.asyncRoutes=true&transform.routerRoot=__e2e__%2F02-server-actions%2Fapp&modulesOnly=true&runModule=false&resolver.clientboundary=true&xRSC=1"],"",1]
 0:{"_value":[["$","$L1",null,{"style":{"color":"darkcyan"},"testID":"server-action-props","children":"c=0"},null],["$","$L1",null,{"testID":"server-action-platform","children":"web"},null]]}
 `);

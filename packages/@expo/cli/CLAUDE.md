@@ -8,6 +8,7 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 ├── bin/cli.ts         # CLI entry point - registers all commands
 ├── src/
 │   ├── api/           # expo.dev API client
+│   ├── events/        # JSONL event-based debugger
 │   ├── config/        # `expo config` command
 │   ├── customize/     # `expo customize` command
 │   ├── export/        # `expo export` command (production bundling)
@@ -65,8 +66,8 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 │   ├── utils/         # Shared utilities
 │   └── whoami/        # `expo whoami` command
 ├── e2e/
-│   ├── __tests__/     # E2E CLI tests (`yarn test:e2e`)
-│   ├── playwright/    # E2E Metro web/server tests (`yarn test:playwright`)
+│   ├── __tests__/     # E2E CLI tests (`pnpm test:e2e`)
+│   ├── playwright/    # E2E Metro web/server tests (`pnpm test:playwright`)
 │   ├── fixtures/      # Test fixtures
 │   └── utils/         # Test utilities
 ├── static/
@@ -84,6 +85,7 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 Read additional resource files:
 
 - ./docs/testing.md - Anything related to testing
+- ./docs/events.md - Anything related to event logging
 
 ## Windows
 
@@ -138,10 +140,20 @@ See `src/utils/open.ts` for an example of handling the `SYSTEMROOT`/`SystemRoot`
 
 ## Debug logs
 
-Debug logs support `DEBUG=expo:*`, for legacy reasons we support `EXPO_DEBUG=1` which sets `DEBUG=expo:*` in the bin.ts file.
+**Old debugging system:**
+Debug logs used to be created with the `debug` package with individual modules creating a `debug` function to use for logging.
+This can then be activated with `DEBUG=expo:*`, and for legacy reasons `EXPO_DEBUG=1` currently sets `DEBUG=expo:*` in the bin.ts file.
+
+```ts
+const debug = require('debug')('expo:utils:example');
+debug('hello');
+```
+
+**New debugging system:**
+Newer modules use the `events` helper from `src/events` as documented in `./docs/events.md` to define structured events in JSON format.
 
 ## Production
 
 Expo CLI is distributed via npm. Files are intentionally included via the `files` array in the `package.json`, with ignores in the `.npmignore` file.
 
-Production build is performed with `yarn prepublishOnly` -> `yarn prepare` -> `taskr release` which evaluates the `taskfile.js` to bundle code into the root build directory.
+Production build is performed with `pnpm prepublishOnly` -> `taskr release` which evaluates the `taskfile.js` to bundle code into the root build directory.

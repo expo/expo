@@ -1,4 +1,5 @@
 {
+  "name": "expo-ui",
   "platforms": ["apple", "android"],
   "coreFeatures": ["swiftui", "compose"],
   "apple": {

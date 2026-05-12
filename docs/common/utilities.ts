@@ -155,7 +155,7 @@ export function listMissingHashLinkTargets(apiName?: string) {
   };
 
   const logAsTable = () => {
-    /* eslint-disable no-console */
+    /* oxlint-disable no-console */
     console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
     console.table(missingEntries);
     console.groupEnd();
@@ -183,7 +183,7 @@ export function versionToText(version: string): string {
     return 'Next (unversioned)';
   } else if (version === 'latest') {
     return `${formatSdkVersion(LATEST_VERSION)} (latest)`;
-  } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
+  } else if (version === BETA_VERSION?.toString()) {
     return `${formatSdkVersion(BETA_VERSION.toString())} (beta)`;
   }
 

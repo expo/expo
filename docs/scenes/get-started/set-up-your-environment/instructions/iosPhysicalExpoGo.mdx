@@ -1,9 +1,43 @@
 import QRCodeReact from 'react-qr-code';
 
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
 ## Set up an iOS device with Expo Go
 
-Scan the QR code to download the app from the App Store, or visit the Expo Go page on the [App Store](https://itunes.apple.com/app/apple-store/id982107779).
+<Step label="1">
+### Enroll in the Apple Developer Program
 
-<div className="inline-block rounded-lg border border-default bg-palette-white p-4">
-  <QRCodeReact value="https://itunes.apple.com/app/apple-store/id982107779" size={228} />
-</div>
+To install Expo Go on your iOS device, you will need an active subscription to the Apple Developer Program. Sign up for the [Apple Developer Program here](https://developer.apple.com/programs/).
+
+</Step>
+
+<Step label="2">
+### Build Expo Go for iOS
+
+Run the following command to build Expo Go:
+
+<Terminal cmd={['$ npx eas-cli@latest go']} />
+
+</Step>
+
+<Step label="3">
+### Install TestFlight
+
+Download and install the [TestFlight app](https://apps.apple.com/us/app/testflight/id899247664). You can also scan the QR code below on your iOS device:
+
+<QRCodeReact value="https://apps.apple.com/us/app/testflight/id899247664" size={228} />
+
+</Step>
+
+<Step label="4">
+### Add yourself as a tester
+
+1. Go to [App Store Connect](https://appstoreconnect.apple.com).
+2. Select the Expo Go app.
+3. Navigate to the "TestFlight" tab.
+4. Add your Apple ID email as an internal tester.
+
+Once you do, you should receive an email invitation to join the TestFlight beta. When you accept the invitation, you can install Expo Go on your iOS device.
+
+</Step>

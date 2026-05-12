@@ -59,6 +59,11 @@ export default (program: Command) => {
       'Include expo-module-scripts in publishing (excluded by default).',
       false
     )
+    .option(
+      '--cascade-all',
+      'Include dependents of shared tooling packages (babel-preset-expo, jest-expo, etc.) that are normally excluded from cascading.',
+      false
+    )
 
     /* exclusive options */
     .option(
@@ -87,9 +92,15 @@ export default (program: Command) => {
       'Whether to build and publish Android artifacts to the local NPM registry.',
       false
     )
+    .option('--skip-ios-prebuilds', 'Skips bundling iOS xcframeworks.', false)
     .option(
       '--auto-select-unpublished',
       'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
+      false
+    )
+    .option(
+      '--prompt-otp',
+      'Prompt for an npm OTP code before publishing. Re-prompts automatically when the code expires.',
       false
     )
     /* debug options */

@@ -7,7 +7,7 @@ const withIosPlugin = (config, props) => {
     config = (0, plugins_1.withXcodeProjectPlugin)(config, pluginConfig);
     config = (0, plugins_1.withPodfilePlugin)(config, pluginConfig);
     config = (0, plugins_1.withPodfilePropertiesPlugin)(config, pluginConfig);
-    config = (0, plugins_1.withBuildPropertiesPlugin)(config);
+    config = (0, plugins_1.withBuildPropertiesPlugin)(config, pluginConfig);
     return config;
 };
 exports.default = withIosPlugin;

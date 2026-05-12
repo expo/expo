@@ -1,7 +1,7 @@
-import { DevServerManager } from './DevServerManager';
+import type { DevServerManager } from './DevServerManager';
 import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
-import { McpServer } from './MCP';
+import type { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
 import { Log } from '../../log';
 

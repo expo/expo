@@ -1,7 +1,18 @@
 import { Color, Label, Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
-import { View, Text, Switch, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Switch,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  Alert,
+  Platform,
+} from 'react-native';
+
+import { searchIcon, closeIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 
 export default function HeaderItemsScreen() {
   const params = useLocalSearchParams();
@@ -18,6 +29,10 @@ export default function HeaderItemsScreen() {
   const [showRightMenu1, setShowRightMenu1] = useState(!!params.rightMenu1);
   const [showRightMenu2, setShowRightMenu2] = useState(false);
   const [showSearchButton, setShowSearchButton] = useState(!!params.searchButton);
+  const [showXcassetButton1, setShowXcassetButton1] = useState(false);
+  const [showXcassetButton2, setShowXcassetButton2] = useState(false);
+  const [showXcassetMenu1, setShowXcassetMenu1] = useState(false);
+  const [showXcassetMenu2, setShowXcassetMenu2] = useState(false);
 
   // State for menu items
   const [emailsArchived, setEmailsArchived] = useState(false);
@@ -88,9 +103,15 @@ export default function HeaderItemsScreen() {
         style={styles.customHeaderElement}>
         <SymbolView
           size={20}
-          tintColor={Color.ios.systemBlue}
+          tintColor={Platform.select({
+            ios: Color.ios.systemBlue,
+            android: Color.android.dynamic.primary,
+          })}
           style={{ width: 20, height: 20 }}
-          name="heart.fill"
+          name={{
+            ios: 'heart.fill',
+            android: 'favorite',
+          }}
         />
       </Pressable>
     );
@@ -107,7 +128,7 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="left">
           <Stack.Toolbar.Button
             hidden={!showLeftButton1}
-            icon="arrow.left"
+            icon={process.env.EXPO_OS === 'ios' ? 'arrow.left' : searchIcon}
             onPress={handleLeftButton1Press}
           />
           <Stack.Toolbar.Button
@@ -154,14 +175,45 @@ export default function HeaderItemsScreen() {
               <Stack.Toolbar.Icon sf="2.circle" />
             </Stack.Toolbar.MenuAction>
           </Stack.Toolbar.Menu>
+
+          <Stack.Toolbar.Menu
+            icon={require('../../../assets/expo-logo.png')}
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
+            title="Actions"
+            tintColor={Platform.select({
+              ios: Color.ios.systemBrown,
+              android: Color.android.dynamic.primary,
+            })}>
+            {/* Simple actions */}
+            <Stack.Toolbar.MenuAction
+              icon={require('../../../assets/expo-transparent.png')}
+              iconRenderingMode="template"
+              destructive
+              onPress={() => Alert.alert('Send', 'Email sent!')}>
+              Send email
+            </Stack.Toolbar.MenuAction>
+
+            {/* Nested menu */}
+            <Stack.Toolbar.Menu title="Preferences" icon={require('../../../assets/expo-logo.png')}>
+              <Stack.Toolbar.MenuAction
+                icon="bell"
+                onPress={() => Alert.alert('Notifications', 'Toggling notifications...')}>
+                Enable notifications
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+          </Stack.Toolbar.Menu>
         </Stack.Toolbar>
 
         {/* Right header items */}
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu
             hidden={!showRightMenu1}
-            icon="ellipsis.circle"
+            icon={process.env.EXPO_OS === 'ios' ? 'ellipsis.circle' : moreVertIcon}
             title="Actions"
+            tintColor={Platform.select({
+              ios: Color.ios.systemBrown,
+              android: Color.android.dynamic.primary,
+            })}
             style={{
               color: '#00f',
               fontFamily: 'Arial',
@@ -177,11 +229,16 @@ export default function HeaderItemsScreen() {
             </Stack.Toolbar.Badge>
 
             {/* Simple actions */}
-            <Stack.Toolbar.MenuAction onPress={handleSendEmail}>
+            <Stack.Toolbar.MenuAction
+              icon={process.env.EXPO_OS === 'ios' ? undefined : sendIcon}
+              onPress={handleSendEmail}>
               <Stack.Toolbar.Label>Send email</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="paperplane" />
             </Stack.Toolbar.MenuAction>
-            <Stack.Toolbar.MenuAction destructive onPress={handleDeleteEmail}>
+            <Stack.Toolbar.MenuAction
+              icon={process.env.EXPO_OS === 'ios' ? undefined : deleteIcon}
+              destructive
+              onPress={handleDeleteEmail}>
               <Stack.Toolbar.Label>Delete email</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="trash" />
             </Stack.Toolbar.MenuAction>
@@ -310,9 +367,45 @@ export default function HeaderItemsScreen() {
 
           <Stack.Toolbar.Button
             hidden={!showSearchButton}
-            icon="magnifyingglass"
+            icon={process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : searchIcon}
             onPress={handleSearchPress}
           />
+
+          {/* Xcasset icon buttons */}
+          <Stack.Toolbar.Button
+            hidden={!showXcassetButton1}
+            onPress={() => Alert.alert('Xcasset Button', 'expo-logo pressed')}>
+            <Stack.Toolbar.Icon xcasset="expo-logo" />
+          </Stack.Toolbar.Button>
+          <Stack.Toolbar.Button
+            hidden={!showXcassetButton2}
+            tintColor={Color.ios.systemTeal}
+            onPress={() => Alert.alert('Xcasset Button', 'expo-transparent pressed')}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+          </Stack.Toolbar.Button>
+
+          {/* Xcasset icon menus */}
+          <Stack.Toolbar.Menu hidden={!showXcassetMenu1} title="Xcasset Menu 1">
+            <Stack.Toolbar.Icon xcasset="expo-logo" />
+            <Stack.Toolbar.Label>Expo Logo</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from expo-logo menu')}>
+              <Stack.Toolbar.Label>Logo Action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="star" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+          <Stack.Toolbar.Menu
+            hidden={!showXcassetMenu2}
+            title="Xcasset Menu 2"
+            tintColor={Color.ios.systemTeal}>
+            <Stack.Toolbar.Icon xcasset="expo-transparent" />
+            <Stack.Toolbar.Label>Expo Transparent</Stack.Toolbar.Label>
+            <Stack.Toolbar.MenuAction
+              onPress={() => Alert.alert('Action', 'Action from expo-transparent menu')}>
+              <Stack.Toolbar.Label>Transparent Action</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="star" />
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
         </Stack.Toolbar>
       </Stack.Screen>
 
@@ -420,6 +513,42 @@ export default function HeaderItemsScreen() {
               testID="toggle-search-button"
               value={showSearchButton}
               onValueChange={setShowSearchButton}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button (expo-logo)</Text>
+            <Switch
+              testID="toggle-xcasset-button-1"
+              value={showXcassetButton1}
+              onValueChange={setShowXcassetButton1}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Button (expo-transparent)</Text>
+            <Switch
+              testID="toggle-xcasset-button-2"
+              value={showXcassetButton2}
+              onValueChange={setShowXcassetButton2}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu (expo-logo)</Text>
+            <Switch
+              testID="toggle-xcasset-menu-1"
+              value={showXcassetMenu1}
+              onValueChange={setShowXcassetMenu1}
+            />
+          </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Show Xcasset Menu (expo-transparent)</Text>
+            <Switch
+              testID="toggle-xcasset-menu-2"
+              value={showXcassetMenu2}
+              onValueChange={setShowXcassetMenu2}
             />
           </View>
         </View>

@@ -32,7 +32,7 @@ export function createRouteHandlerMiddleware(
       pathname: string,
       route: RouteInfo<RegExp>,
       request?: ImmutableRequest
-    ) => Promise<{ content: string }>;
+    ) => Promise<{ content: string | ReadableStream<Uint8Array>; resources?: unknown }>;
     bundleApiRoute: (
       functionFilePath: string
     ) => Promise<null | Record<string, Function> | Response>;

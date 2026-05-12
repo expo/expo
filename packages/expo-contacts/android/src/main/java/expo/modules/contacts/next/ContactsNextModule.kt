@@ -33,6 +33,7 @@ class ContactsNextModule : Module() {
   private val imageByteArrayConverter by lazy {
     ImageByteArrayConverter(context.contentResolver)
   }
+
   private val photoPropertyMapper by lazy {
     PhotoPropertyMapper(imageByteArrayConverter)
   }
@@ -54,8 +55,17 @@ class ContactsNextModule : Module() {
   private val permissionsDelegate by lazy {
     ContactsPermissionsDelegate(appContext)
   }
+
   private val observerDelegate by lazy {
-    ContactsObserverDelegate(appContext, this@ContactsNextModule)
+    ContactsObserverDelegate(
+      context.contentResolver,
+      appContext.backgroundCoroutineScope
+    ) {
+      sendEvent(
+        CONTACTS_DID_CHANGE_EVENT,
+        mapOf("body" to null)
+      )
+    }
   }
 
   override fun definition() = ModuleDefinition {
@@ -328,8 +338,8 @@ class ContactsNextModule : Module() {
         self.urlAddresses.delete(urlAddressRecord)
       }
 
-      AsyncFunction("presentEditForm") Coroutine { self: Contact ->
-        self.presentEditForm()
+      AsyncFunction("editWithForm") Coroutine { self: Contact ->
+        self.editWithForm()
       }
 
       StaticAsyncFunction("create") Coroutine { createContactRecord: CreateContactRecord ->
@@ -362,28 +372,28 @@ class ContactsNextModule : Module() {
       StaticAsyncFunction("hasAny") Coroutine { ->
         Contact.hasAny(contactRepository)
       }
-
-      StaticAsyncFunction("requestPermissionsAsync") { promise: Promise ->
-        permissionsDelegate.requestPermissions(promise)
-      }
-
-      StaticAsyncFunction("getPermissions") { promise: Promise ->
-        permissionsDelegate.getPermissions(promise)
-      }
     }
 
-    Events(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME)
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      permissionsDelegate.getPermissions(promise)
+    }
+
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      permissionsDelegate.requestPermissions(promise)
+    }
+
+    Events(CONTACTS_DID_CHANGE_EVENT)
 
     OnDestroy {
-      observerDelegate.stopObservingContactChanges()
+      observerDelegate.stopObserving()
     }
 
-    OnStartObserving(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME) {
-      observerDelegate.startObservingContactChanges()
+    OnStartObserving(CONTACTS_DID_CHANGE_EVENT) {
+      observerDelegate.startObserving()
     }
 
-    OnStopObserving(ContactsObserverDelegate.ON_CONTACTS_CHANGE_EVENT_NAME) {
-      observerDelegate.stopObservingContactChanges()
+    OnStopObserving(CONTACTS_DID_CHANGE_EVENT) {
+      observerDelegate.stopObserving()
     }
 
     RegisterActivityContracts {
@@ -391,5 +401,8 @@ class ContactsNextModule : Module() {
         registerContactContracts()
       }
     }
+  }
+  companion object {
+    const val CONTACTS_DID_CHANGE_EVENT = "contactsDidChange"
   }
 }

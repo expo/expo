@@ -72,7 +72,7 @@ export const SnackInline = ({
   const { language, value } = getCodeBlockDataFromChildren(children);
 
   return (
-    <Snippet className="mb-3 flex flex-col prose-pre:!m-0 prose-pre:!border-0">
+    <Snippet className="prose-pre:m-0! prose-pre:border-0! mb-3 flex flex-col">
       <SnippetHeader title={label ?? 'Example'} Icon={SnackLogo}>
         <form action={SNACK_URL} method="POST" target="_blank" className="contents">
           <input type="hidden" name="platform" value={defaultPlatform ?? DEFAULT_PLATFORM} />
@@ -97,7 +97,7 @@ export const SnackInline = ({
               )}
             />
           )}
-          <CopyAction text={cleanCopyValue(value)} />
+          <CopyAction text={cleanCopyValue(value, context.version)} />
           <SnippetAction
             disabled={!isReady}
             rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}

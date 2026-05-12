@@ -35,7 +35,8 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Try = void 0;
-const react_1 = __importStar(require("react"));
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_1 = require("react");
 const SplashScreen = __importStar(require("./Splash"));
 const errors_1 = require("../rsc/router/errors");
 // No way to access `getDerivedStateFromError` from a function component afaict.
@@ -63,7 +64,7 @@ class Try extends react_1.Component {
         if (!error) {
             return children;
         }
-        return <ErrorBoundary error={error} retry={this.retry}/>;
+        return (0, jsx_runtime_1.jsx)(ErrorBoundary, { error: error, retry: this.retry });
     }
 }
 exports.Try = Try;

@@ -4,15 +4,16 @@ sidebar_title: Serve bundle diffs
 description: Enable your project to accept bundle diffs when available.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **important** Bundle diffing is in **beta** and may have limitations. See [Current limitations](#current-limitations) for details.
+> **important** Bundle diffing is in [**beta**](/more/release-statuses/#beta) and may have limitations. See [Current limitations](#current-limitations) for details.
 
 Enable bundle diffing to let EAS Update deliver a **bundle patch** when possible. When you publish a new update, EAS Update can generate a smaller file containing only the differences between the bundle currently running on the device and the new bundle. This often reduces update download size significantly.
 
-## Prerequisites
-
-Your app must use **Expo SDK 55 or later**.
+<Prerequisites>
+  <Requirement title="Expo SDK 55 or later">Your app must be on Expo SDK 55 or later.</Requirement>
+</Prerequisites>
 
 ## Enable bundle diffing
 

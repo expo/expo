@@ -51,8 +51,7 @@ function isRestrictedPort(port: number) {
 async function isBusyPortRunningSameProcessAsync(projectRoot: string, { port }: { port: number }) {
   const { getRunningProcess } =
     require('./getRunningProcess') as typeof import('./getRunningProcess');
-
-  const runningProcess = isRestrictedPort(port) ? null : getRunningProcess(port);
+  const runningProcess = isRestrictedPort(port) ? null : await getRunningProcess(port);
   if (runningProcess) {
     if (runningProcess.directory === projectRoot) {
       return true;
@@ -91,7 +90,7 @@ export async function choosePortAsync(
 
     const { getRunningProcess } =
       require('./getRunningProcess') as typeof import('./getRunningProcess');
-    const runningProcess = isRestricted ? null : getRunningProcess(defaultPort);
+    const runningProcess = isRestricted ? null : await getRunningProcess(defaultPort);
 
     if (runningProcess) {
       const pidTag = chalk.gray(`(pid ${runningProcess.pid})`);
@@ -149,6 +148,14 @@ export async function resolvePortAsync(
     port = defaultPort;
   } else {
     port = env.RCT_METRO_PORT || fallbackPort || 8081;
+  }
+
+  // Port 0 means "pick any available port" — scan from the fallback port without prompting.
+  if (port === 0) {
+    const scanFrom = env.RCT_METRO_PORT || fallbackPort || 8081;
+    const resolvedPort = await getFreePortAsync(scanFrom);
+    process.env.RCT_METRO_PORT = String(resolvedPort);
+    return resolvedPort;
   }
 
   // Only check the port when the bundler is running.

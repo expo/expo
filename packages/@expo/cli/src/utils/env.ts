@@ -67,7 +67,7 @@ class Env {
   }
   /** Disable auto web setup */
   get EXPO_NO_WEB_SETUP() {
-    return boolish('EXPO_NO_WEB_SETUP', false);
+    return boolish('EXPO_NO_WEB_SETUP', envIsHeadless());
   }
   /** Disable auto TypeScript setup */
   get EXPO_NO_TYPESCRIPT_SETUP() {
@@ -80,6 +80,10 @@ class Env {
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
+  }
+  /** Disable printing the QR code in the interactive Terminal UI. */
+  get EXPO_NO_QR_CODE(): boolean {
+    return boolish('EXPO_NO_QR_CODE', false);
   }
   /** The React Metro port that's baked into react-native scripts and tools. */
   get RCT_METRO_PORT() {
@@ -174,13 +178,6 @@ class Env {
     return boolish('EXPO_METRO_UNSTABLE_ERRORS', true);
   }
 
-  /** Enable the experimental sticky resolver for Metro (Uses Expo Autolinking results and applies them to Metro's resolution)
-   * @deprecated Replaced by `exp.experiments.autolinkingModuleResolution`
-   */
-  get EXPO_USE_STICKY_RESOLVER() {
-    return boolish('EXPO_USE_STICKY_RESOLVER', false);
-  }
-
   /** Disable Environment Variable injection in client bundles. */
   get EXPO_NO_CLIENT_ENV_VARS(): boolean {
     return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
@@ -244,11 +241,6 @@ class Env {
     return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
   }
 
-  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
-  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
-    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
-  }
-
   /** Enable unstable/experimental support for deploying the native server in `npx expo run` commands. */
   get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
     return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
@@ -261,14 +253,12 @@ class Env {
 
   /** Disable the React Native Directory compatibility check for new architecture when installing packages */
   get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
-    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', false);
+    return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', envIsHeadless());
   }
 
   /** Disable the dependency validation when installing other dependencies and starting the project */
   get EXPO_NO_DEPENDENCY_VALIDATION(): boolean {
-    // Default to disabling when running in a web container (stackblitz, bolt, etc).
-    const isWebContainer = process.versions.webcontainer != null;
-    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', isWebContainer);
+    return boolish('EXPO_NO_DEPENDENCY_VALIDATION', envIsHeadless());
   }
 
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
@@ -279,6 +269,11 @@ class Env {
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_UNSTABLE_WEB_MODAL(): boolean {
     return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
+  }
+
+  /** Disable @react-navigation checks for expo-router projects */
+  get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
+    return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
@@ -306,7 +301,12 @@ class Env {
    * Enable Bonjour advertising of the Expo CLI on local networks
    */
   get EXPO_UNSTABLE_BONJOUR(): boolean {
-    return boolish('EXPO_UNSTABLE_BONJOUR', false);
+    return boolish('EXPO_UNSTABLE_BONJOUR', !envIsHeadless());
+  }
+
+  /** @internal Configure other environment variables for headless operations */
+  get EXPO_UNSTABLE_HEADLESS() {
+    return boolish('EXPO_UNSTABLE_HEADLESS', envIsWebcontainer());
   }
 }
 
@@ -318,4 +318,8 @@ export function envIsWebcontainer() {
     env.EXPO_FORCE_WEBCONTAINER_ENV ||
     (process.env.SHELL === '/bin/jsh' && !!process.versions.webcontainer)
   );
+}
+
+export function envIsHeadless() {
+  return env.EXPO_UNSTABLE_HEADLESS;
 }

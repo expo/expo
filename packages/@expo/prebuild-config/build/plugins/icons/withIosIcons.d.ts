@@ -1,6 +1,6 @@
-import { ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig, IOSIcons } from '@expo/config-types';
-import { ContentsJsonImage } from './AssetContents';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import type { ExpoConfig, IOSIcons } from '@expo/config-types';
+import type { ContentsJsonImage } from './AssetContents';
 export declare const withIosIcons: ConfigPlugin;
 export declare function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | string | null;
 export declare function setIconsAsync(config: ExpoConfig, projectRoot: string): Promise<void>;

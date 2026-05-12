@@ -43,17 +43,49 @@ export async function sendPushNotificationsAsync({
     }
   }
 
-  const receipts = result.data;
-  if (receipts) {
-    const receipt = receipts[0];
-    if (receipt.status === 'error') {
-      if (receipt.details) {
+  const tickets = result.data;
+  if (tickets) {
+    const ticket = tickets[0];
+    if (ticket.status === 'error') {
+      if (ticket.details) {
         console.warn(
-          `Expo push service reported an error sending a notification: ${receipt.details.error}`
+          `Expo push service reported an error accepting a notification: ${ticket.details.error}`
         );
       }
-      if (receipt.__debug) {
-        console.warn(receipt.__debug);
+      if (ticket.__debug) {
+        console.warn(ticket.__debug);
+      }
+    }
+  }
+
+  // Check push receipts after a delay to confirm delivery
+  const receiptIds = (tickets ?? [])
+    .filter((ticket: { status: string; id?: string }) => ticket.status === 'ok')
+    .map((ticket: { id: string }) => ticket.id);
+
+  if (receiptIds.length > 0) {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    const receiptResponse = await fetch(PUSH_ENDPOINT.replace('/send', '/getReceipts'), {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ids: receiptIds }),
+    });
+
+    const receiptResult = await receiptResponse.json();
+    console.log({ receipts: JSON.stringify(receiptResult, null, 2) });
+
+    if (receiptResult.data) {
+      for (const [id, receipt] of Object.entries(receiptResult.data) as [string, any][]) {
+        if (receipt.status === 'error') {
+          console.warn(`Receipt ${id} error: ${receipt.message}`);
+          if (receipt.details?.error) {
+            console.warn(`Error code: ${receipt.details.error}`);
+          }
+        }
       }
     }
   }

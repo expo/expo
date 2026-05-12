@@ -1,5 +1,5 @@
 import { TerminalReporter } from '../TerminalReporter';
-import { TerminalReportableEvent } from '../TerminalReporter.types';
+import type { TerminalReportableEvent } from '../TerminalReporter.types';
 
 function createReporter() {
   const reporter = new TerminalReporter({

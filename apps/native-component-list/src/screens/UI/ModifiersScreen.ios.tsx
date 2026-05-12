@@ -13,6 +13,8 @@ import {
   Slider,
   Capsule,
   Stepper,
+  Spacer,
+  Image,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -48,6 +50,7 @@ import {
   allowsTightening,
   truncationMode,
   kerning,
+  monospacedDigit,
   textCase,
   underline,
   strikethrough,
@@ -62,9 +65,20 @@ import {
   tag,
   font,
   lineLimit,
+  contentShape,
+  shapes,
+  resizable,
 } from '@expo/ui/swift-ui/modifiers';
+import { useAssets } from 'expo-asset';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text as RNText, View, useWindowDimensions } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text as RNText,
+  View,
+  useWindowDimensions,
+  Alert,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ModifiersScreen() {
@@ -111,6 +125,9 @@ export default function ModifiersScreen() {
   const [badgeIndex, setBadgeIndex] = useState(0);
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
+  const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
+  const [assets] = useAssets([require('../../../assets/images/logo-wordmark.png')]);
+  const wordmarkUri = assets?.[0]?.localUri;
 
   return (
     <ScrollView>
@@ -240,6 +257,19 @@ export default function ModifiersScreen() {
             />
             <Text modifiers={[font({ size: 14 }), kerning(kerningValue)]}>Kerning Text</Text>
             <Slider min={0} max={10} onValueChange={setKerning} />
+
+            <HStack alignment="center" spacing={40}>
+              <VStack spacing={4}>
+                <Text modifiers={[font({ size: 12 })]}>Default</Text>
+                <Text modifiers={[font({ size: 20 })]}>1111111111</Text>
+                <Text modifiers={[font({ size: 20 })]}>0000000000</Text>
+              </VStack>
+              <VStack spacing={4}>
+                <Text modifiers={[font({ size: 12 })]}>monospacedDigit</Text>
+                <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>1111111111</Text>
+                <Text modifiers={[font({ size: 20 }), monospacedDigit()]}>0000000000</Text>
+              </VStack>
+            </HStack>
 
             <HStack spacing={20}>
               <Text modifiers={[font({ size: 14 }), textCase('lowercase')]}>lowercase</Text>
@@ -544,6 +574,38 @@ export default function ModifiersScreen() {
               📐 2:1 Aspect ratio blue card
             </Text>
 
+            {wordmarkUri && (
+              <HStack spacing={16}>
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>Forced 1:1</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      resizable(),
+                      aspectRatio({ ratio: 1, contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      background('#EAF4FF'),
+                      border({ color: '#3498DB', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>Intrinsic ratio</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      resizable(),
+                      aspectRatio({ contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      background('#E8F8F5'),
+                      border({ color: '#16A085', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+              </HStack>
+            )}
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -664,13 +726,48 @@ export default function ModifiersScreen() {
               ))}
             </HStack>
             <Stepper
-              onValueChanged={setContainerRelativeFrameCount}
-              defaultValue={containerRelativeFrameCount}
+              onValueChange={setContainerRelativeFrameCount}
+              value={containerRelativeFrameCount}
               label={`Items count: ${containerRelativeFrameCount}`}
             />
           </Section>
 
           <AppearSection />
+
+          {/* Container Shape Modifier */}
+          <Section title="Content Shape Modifier">
+            <Text>Try tapping the empty space between texts:</Text>
+            <HStack
+              modifiers={[
+                cornerRadius(8),
+                onTapGesture(() => {
+                  Alert.alert('Without contentShape', 'Tapped! (Only works on text)');
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+
+            <Text>{'WITH contentShape\nNow tap the empty space:'}</Text>
+            <HStack
+              spacing={0}
+              modifiers={[
+                contentShape(shapes.rectangle()),
+                onTapGesture(() => {
+                  setcontentShapeButtonCounter((prev) => {
+                    const nextCount = prev + 1;
+                    Alert.alert('With contentShape', `Works everywhere! Count: ${nextCount}`);
+                    return nextCount;
+                  });
+                }),
+              ]}>
+              <Text>Left label</Text>
+              <Spacer />
+              <Text>Right label</Text>
+            </HStack>
+            <Text>Taps: {contentShapeButtonCounter}</Text>
+          </Section>
 
           <Section title="Misc">
             <VStack

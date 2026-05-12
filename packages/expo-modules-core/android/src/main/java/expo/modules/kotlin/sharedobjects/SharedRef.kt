@@ -14,7 +14,7 @@ open class SharedRef<RefType>(
   val ref: RefType,
   runtime: Runtime? = null
 ) : SharedObject(runtime) {
-  constructor(ref: RefType, appContext: AppContext) : this(ref, appContext.hostingRuntimeContext)
+  constructor(ref: RefType, appContext: AppContext) : this(ref, appContext.runtime)
 
   /**
    * A type of the native reference. It can be used to distinguish between different SharedRefs in the JavaScript.

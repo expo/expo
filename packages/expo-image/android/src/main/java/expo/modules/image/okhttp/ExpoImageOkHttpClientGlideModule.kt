@@ -8,8 +8,8 @@ import com.bumptech.glide.integration.okhttp3.OkHttpUrlLoader
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.module.LibraryGlideModule
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.image.events.OkHttpProgressListener
-import okhttp3.OkHttpClient
 import java.io.InputStream
 
 /**
@@ -71,7 +71,7 @@ data class GlideUrlWrapper(val glideUrl: GlideUrl) {
 @GlideModule
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-    val client = OkHttpClient()
+    val client = OkHttpClientProvider.createClient()
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
     // to make sure that the app will use only one client.
     registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))

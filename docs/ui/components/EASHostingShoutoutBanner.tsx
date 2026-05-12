@@ -24,7 +24,7 @@ export function EASHostingShoutoutBanner() {
   return (
     <div
       className={mergeClasses(
-        'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg border border-success bg-palette-green2 px-6 py-4 shadow-xs',
+        'border-success bg-palette-green2 relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg border px-6 py-4 shadow-xs',
         'max-md-gutters:flex-wrap'
       )}>
       <svg
@@ -64,18 +64,18 @@ export function EASHostingShoutoutBanner() {
         />
       </svg>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+        <div className="max-sm-gutters:hidden relative z-10 p-2">
           <div
             className={mergeClasses(
-              'asset-sm-shadow absolute inset-0 rounded-md bg-palette-green10',
+              'asset-sm-shadow bg-palette-green10 absolute inset-0 rounded-md',
               'dark:bg-palette-green6'
             )}
           />
-          <Cloud01Icon className="icon-lg relative z-10 text-palette-white" />
+          <Cloud01Icon className="icon-lg text-palette-white relative z-10" />
         </div>
         <div className="relative grid grid-cols-1">
-          <p className="text-base font-medium text-success">EAS Hosting</p>
-          <p className="text-sm text-success">
+          <p className="text-success text-base font-medium">EAS Hosting</p>
+          <p className="text-success text-sm">
             Try the first end-to-end deployment solution for universal app development.
           </p>
         </div>
@@ -88,7 +88,7 @@ export function EASHostingShoutoutBanner() {
           theme="secondary"
           rightSlot={<ArrowUpRightIcon className="icon-xs text-icon-success" />}
           className={mergeClasses(
-            'gap-1.5 border-success text-icon-success hocus:bg-palette-green2',
+            'border-success text-icon-success hocus:bg-palette-green2 gap-1.5',
             'dark:border-palette-green8 dark:bg-palette-green4 dark:text-default dark:hocus:bg-palette-green5'
           )}>
           Learn More

@@ -9,11 +9,11 @@ export function getLocalAssetUri(hash, type) {
     const legacyLocalAssetsKey = `${hash}.${type ?? ''}`;
     switch (true) {
         case localAssetsKey in localAssets: {
-            return localAssets[localAssetsKey];
+            return localAssets[localAssetsKey] ?? null;
         }
         case legacyLocalAssetsKey in localAssets: {
             // legacy updates store assets with an extension
-            return localAssets[legacyLocalAssetsKey];
+            return localAssets[legacyLocalAssetsKey] ?? null;
         }
         default:
             return null;

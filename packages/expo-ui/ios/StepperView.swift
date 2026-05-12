@@ -5,37 +5,33 @@ import ExpoModulesCore
 
 final class StepperProps: UIBaseViewProps {
   @Field var label: String
-  @Field var defaultValue: Int?
+  @Field var value: Int = 0
   @Field var min: Int = 0
   @Field var max: Int = 100
   @Field var step: Int = 1
-  var onValueChanged = EventDispatcher()
+  var onValueChange = EventDispatcher()
 }
 
 struct StepperView: ExpoSwiftUI.View {
   @ObservedObject var props: StepperProps
-  @State var value: Int
-
+  @State var value: Int = 0
+  
   init(props: StepperProps) {
     self.props = props
-    let initialValue = props.defaultValue ?? 0
-    let clampedValue = max(props.min, min(props.max, initialValue))
-    self._value = State(initialValue: clampedValue)
   }
 
   var body: some View {
 #if !os(tvOS)
     Stepper(props.label, value: $value, in: props.min...props.max, step: props.step)
-      .onChange(of: value, perform: { newValue in
-        props.onValueChanged(([
-          "value": Int(newValue)
-        ]))
-      })
       .onAppear {
-        // Ensure the value is set correctly when the view appears
-        if let defaultValue = props.defaultValue {
-          let clampedValue = max(props.min, min(props.max, defaultValue))
-          value = clampedValue
+        value = max(props.min, min(props.max, props.value))
+      }
+      .onChange(of: props.value) { newValue in
+        value = max(props.min, min(props.max, newValue))
+      }
+      .onChange(of: value) { newValue in
+        if props.value != newValue {
+          props.onValueChange(["value": Int(newValue)])
         }
       }
 #else

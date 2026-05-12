@@ -1,8 +1,9 @@
+// TODO(@kitten): Add missing optional peers
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
-import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
+import { ExecutionEnvironment } from './Constants.types';
 import ExponentConstants from './ExponentConstants';
-export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
+export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 if (!ExponentConstants) {
     console.warn("No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?");
 }

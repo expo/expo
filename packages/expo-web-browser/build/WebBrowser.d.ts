@@ -1,5 +1,5 @@
-import { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebBrowserCompleteAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures, WebBrowserPresentationStyle, AuthSessionOpenOptions } from './WebBrowser.types';
-export { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebBrowserCompleteAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures, WebBrowserPresentationStyle, AuthSessionOpenOptions, };
+import { type WebBrowserAuthSessionResult, type WebBrowserCompleteAuthSessionOptions, type WebBrowserCompleteAuthSessionResult, type WebBrowserCoolDownResult, type WebBrowserCustomTabsResults, type WebBrowserMayInitWithUrlResult, type WebBrowserOpenOptions, type WebBrowserResult, WebBrowserResultType, type WebBrowserWarmUpResult, type AuthSessionOpenOptions } from './WebBrowser.types';
+export { type WebBrowserAuthSessionResult, type WebBrowserCompleteAuthSessionOptions, type WebBrowserCompleteAuthSessionResult, type WebBrowserCoolDownResult, type WebBrowserCustomTabsResults, type WebBrowserMayInitWithUrlResult, type WebBrowserOpenOptions, type WebBrowserRedirectResult, type WebBrowserResult, WebBrowserResultType, type WebBrowserWarmUpResult, type WebBrowserWindowFeatures, WebBrowserPresentationStyle, type AuthSessionOpenOptions, } from './WebBrowser.types';
 /**
  * Returns a list of applications package names supporting Custom Tabs, Custom Tabs
  * service, user chosen and preferred one. This may not be fully reliable, since it uses
@@ -11,7 +11,7 @@ export { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebB
  */
 export declare function getCustomTabsSupportingBrowsersAsync(): Promise<WebBrowserCustomTabsResults>;
 /**
- * This method calls `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
+ * This method calls the `warmUp` method on [CustomTabsClient](https://developer.android.com/reference/android/support/customtabs/CustomTabsClient.html#warmup(long))
  * for specified package.
  *
  * @param browserPackage Package of browser to be warmed up. If not set, preferred browser will be warmed.

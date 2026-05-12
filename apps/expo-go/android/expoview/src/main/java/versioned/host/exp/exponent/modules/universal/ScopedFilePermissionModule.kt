@@ -1,6 +1,5 @@
 package versioned.host.exp.exponent.modules.universal
 
-import expo.modules.interfaces.filesystem.Permission
 import expo.modules.kotlin.services.FilePermissionService
 import host.exp.exponent.utils.ScopedContext
 import java.io.File

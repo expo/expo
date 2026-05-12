@@ -1,5 +1,4 @@
 /// <reference types="jest-expo/rsc/expect" />
-import * as React from 'react';
 
 // Right now NativeTabs.Trigger.* components cannot be used in the server environment
 import { Badge, Icon, Label } from '../../primitives';
@@ -24,6 +23,10 @@ it(`renders Icon sf`, async () => {
 
 it(`renders Icon drawable`, async () => {
   await expect(<Icon drawable="0.circle" />).toMatchFlightSnapshot();
+});
+
+it(`renders Icon xcasset`, async () => {
+  await expect(<Icon xcasset="custom-icon" />).toMatchFlightSnapshot();
 });
 
 it(`renders Badge`, async () => {

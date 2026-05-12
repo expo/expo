@@ -37,6 +37,10 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       'ReactNativeHostManager.swift',
       // Messaging proxy
       'Messaging.swift',
+      // State proxy
+      'State.swift',
+      // State wrapper
+      'StateWrapper.swift',
       //SwiftUI brownfield entrypoint
       'ReactNativeView.swift',
       // UIKit brownfield view controller
@@ -47,8 +51,17 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       'ReactNativeDelegate.swift',
     ];
 
-    // Create files from templates
-    templateFiles.forEach((templateFile) => createFileFromTemplate(templateFile, groupPath));
+    // Per-target prefix is interpolated into `@objc(...)` annotations so the
+    // ObjC runtime sees a unique class name per inner-app framework.
+    // Swift type names themselves stay unprefixed: each brownfield framework
+    // has a unique Swift module name, which is enough namespace isolation, and
+    // typealias-based unprefixing breaks linking under library-evolution mode
+    // (clients reference symbols by the typealias path, but the framework
+    // exports symbols under the underlying class name → undefined symbol).
+    const templateVars = { prefix: pluginConfig.targetName };
+    templateFiles.forEach((templateFile) =>
+      createFileFromTemplate(templateFile, groupPath, templateVars)
+    );
 
     // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
     applyPatchToFile('ExpoAppDelegate.patch', path.join(groupPath, 'ExpoAppDelegate.swift'));
@@ -83,7 +96,21 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
       xcodeProject,
       pluginConfig.targetName,
       config.ios?.buildNumber || '1',
-      pluginConfig.bundleIdentifier
+      pluginConfig.bundleIdentifier,
+      config.ios?.version || config.version
+    );
+
+    // Add Expo.plist to the framework target's resources so expo-updates
+    // can read its configuration from the framework bundle at runtime.
+    // Uses addBuildPhase to create a PBXResourcesBuildPhase for the framework target
+    // since addResourceFile requires an existing Resources phase which framework targets lack.
+    xcodeProject.addBuildPhase(
+      [`${projectName}/Supporting/Expo.plist`],
+      'PBXResourcesBuildPhase',
+      'Resources',
+      target.uuid,
+      'framework',
+      '""'
     );
 
     return config;

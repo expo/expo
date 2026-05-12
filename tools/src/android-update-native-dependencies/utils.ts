@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import semver from 'semver';
+import semver, { type ReleaseType } from 'semver';
 import terminalLink from 'terminal-link';
 
 import { EXPOTOOLS_DIR } from '../Constants';
@@ -18,7 +18,7 @@ export function getChangelogLink(dependency: string, fallbackLink: string | null
   );
 }
 
-export function calculateSemverDiff(from: string, to: string | null): SemverDiff {
+export function calculateSemverDiff(from: string, to: string | null): ReleaseType | null {
   if (!to) {
     return null;
   }
@@ -30,17 +30,7 @@ export function calculateSemverDiff(from: string, to: string | null): SemverDiff
   }
 }
 
-export type SemverDiff =
-  | 'major'
-  | 'premajor'
-  | 'minor'
-  | 'preminor'
-  | 'patch'
-  | 'prepatch'
-  | 'prerelease'
-  | null;
-
-export function addColorBasedOnSemverDiff(version: string | null, semverDiff: SemverDiff) {
+export function addColorBasedOnSemverDiff(version: string | null, semverDiff: ReleaseType | null) {
   let colorEffect: 'green' | 'yellow' | 'red' | 'reset' | 'bgRedBright' = 'bgRedBright';
   if (semverDiff) {
     if (['patch', 'prepatch'].includes(semverDiff)) {

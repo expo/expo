@@ -4,8 +4,7 @@ sidebar_title: Overview
 description: SwiftUI components for building native iOS interfaces with @expo/ui.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
-isBeta: true
+platforms: ['ios', 'tvos', 'expo-go']
 hasVideoLink: true
 ---
 
@@ -15,8 +14,6 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
-
-> **important** **This library is currently in beta and subject to breaking changes.** It is not available in the Expo Go app &mdash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
 The SwiftUI components in `@expo/ui/swift-ui` allow you to build fully native iOS interfaces using SwiftUI from React Native.
 
@@ -40,7 +37,7 @@ export function SaveButton() {
 }
 ```
 
-For an in-depth explanation of how `Host` works, see the following resources:
+For more information, see the following resources:
 
 <BoxLink
   title="Expo UI guide for Swift UI"
@@ -50,6 +47,13 @@ For an in-depth explanation of how `Host` works, see the following resources:
     </>
   }
   href="/guides/expo-ui-swift-ui/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Extending with SwiftUI"
+  description="Create custom SwiftUI components and modifiers that integrate with Expo UI."
+  href="/guides/expo-ui-swift-ui/extending/"
   Icon={BookOpen02Icon}
 />
 

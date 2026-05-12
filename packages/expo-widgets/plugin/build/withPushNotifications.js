@@ -5,7 +5,7 @@ const withPushNotifications = (config, props) => (0, config_plugins_1.withInfoPl
     mod.modResults['aps-environment'] = 'development';
     return mod;
 }), (mod) => {
-    mod.modResults['ExpoLiveActivity_EnablePushNotifications'] = props.enablePushNotifications;
+    mod.modResults['ExpoWidgets_EnablePushNotifications'] = props.enablePushNotifications;
     return mod;
 });
 exports.default = withPushNotifications;

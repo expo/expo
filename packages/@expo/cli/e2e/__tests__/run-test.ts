@@ -21,6 +21,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/run').expoRun`);
   expect(modules).toStrictEqual([
+    '@expo/cli/build/src/events/index.js',
+    '@expo/cli/build/src/events/stream.js',
     '@expo/cli/build/src/log.js',
     '@expo/cli/build/src/run/hints.js',
     '@expo/cli/build/src/run/index.js',
@@ -90,12 +92,16 @@ it('runs `npx expo run ios --help`', async () => {
         --scheme [scheme]                Scheme to build
         --binary <path>                  Path to existing .app or .ipa to install.
         --configuration <configuration>  Xcode configuration to use. Debug or Release. Default: Debug
-        -d, --device [device]            Device name or UDID to build the app on
+        -d, --device [device]            Device name, UDID, or "generic" for build-only
+        -o, --output <path>              Directory to output the built app binary
         -p, --port <port>                Port to start the Metro bundler on. Default: 8081
         -h, --help                       Usage info
 
       Build for production (unsigned) with the Release configuration:
         $ npx expo run:ios --configuration Release
+
+      Build for simulator without installing (build-only):
+        $ npx expo run:ios --configuration Release --device generic --output ./build
     "
   `);
 });

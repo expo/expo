@@ -15,7 +15,11 @@ In this chapter, we'll learn how to take a screenshot using a third-party librar
 
 > **info** So far, we have used third-party libraries, such as `react-native-gesture-handler`, `react-native-reanimated`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/) depending on a use case.
 
-<VideoBoxLink videoId="Jft3_Yfr-p4" title="Watch: Taking screenshots in your universal Expo app" />
+<VideoBoxLink
+  videoId="Jft3_Yfr-p4"
+  title="Watch: Taking screenshots in your universal Expo app"
+  description="Capture a screenshot with react-native-view-shot and save it to the device's media library using expo-media-library."
+/>
 
 ---
 
@@ -75,8 +79,8 @@ We'll use `react-native-view-shot` to allow the user to take a screenshot within
 3. Wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass the reference variable to it.
 
 {/* prettier-ignore */}
-```tsx src/app/(tabs)/index.tsx|collapseHeight=440
-import { useEffect, useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
+```tsx app/(tabs)/index.tsx|collapseHeight=440
+import { useState, /* @tutinfo Import <CODE>useRef</CODE> hook from <CODE>react</CODE>. */useRef/* @end */ } from 'react';
 /* @tutinfo Import <CODE>captureRef</CODE> from <CODE>react-native-view-shot</CODE>. */import { captureRef } from 'react-native-view-shot';/* @end */
 
 export default function Index() {
@@ -260,14 +264,11 @@ Now, choose a photo and add a sticker in the app. Then tap the "Save" button. We
   name="GET_STARTED"
   summary={
     <>
-
-        We've successfully used <CODE>react-native-view-shot</CODE> and <CODE>expo-media-library</CODE> to capture a
-        screenshot and save it on the device's library.
+      We've successfully used <CODE>react-native-view-shot</CODE> and{' '}
+      <CODE>expo-media-library</CODE> to capture a screenshot and save it on the device's library.
     </>
-
-}
-nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web
-platforms to implement the same functionality on web."
-nextChapterTitle="Handle platform differences"
-nextChapterLink="/tutorial/platform-differences"
+  }
+  nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web platforms to implement the same functionality on web."
+  nextChapterTitle="Handle platform differences"
+  nextChapterLink="/tutorial/platform-differences"
 />

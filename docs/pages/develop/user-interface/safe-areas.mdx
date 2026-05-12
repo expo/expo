@@ -39,7 +39,7 @@ You can skip installing `react-native-safe-area-context` if you have created a p
 
 You can directly use [`SafeAreaView`](https://appandflow.github.io/react-native-safe-area-context/api/safe-area-view) to wrap the content of your screen's component. It is a regular `<View>` with the safe area insets applied as extra padding or margin.
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -74,7 +74,7 @@ Alternate to `SafeAreaView`, you can use [`useSafeAreaInsets`](https://appandflo
 
 The example below uses the `useSafeAreaInsets` hook. It applies top padding to a `<View>` using `insets.top`.
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 

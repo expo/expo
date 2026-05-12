@@ -1,4 +1,4 @@
-import { MailComposerStatus, } from './MailComposer.types';
+import { MailComposerStatus } from './MailComposer.types';
 function removeNullishValues(obj) {
     for (const propName in obj) {
         if (obj[propName] == null) {

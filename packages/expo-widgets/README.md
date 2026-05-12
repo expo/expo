@@ -1,6 +1,6 @@
 # Expo Widgets
 
-Provide battery information for the physical device.
+Build iOS home screen widgets and Live Activities using Expo UI components.
 
 # API documentation
 

@@ -29,10 +29,10 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   if (sidebarActiveGroup === 'archive') {
     return (
-      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-1.5">
+      <div className="border-default bg-default flex flex-col gap-0.5 border-b p-1.5">
         <LinkBase
           href="/"
-          className="flex items-center gap-3 rounded-md p-2.5 text-secondary hocus:bg-element">
+          className="text-secondary hocus:bg-element flex items-center gap-3 rounded-md p-2.5">
           <ArrowLeftIcon className="text-icon-secondary" />
           Back
         </LinkBase>
@@ -42,7 +42,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
 
   return (
     <>
-      <div className="flex flex-col gap-0.5 border-b border-default bg-default p-4 compact-height:pb-3">
+      <div className="border-default bg-default compact-height:pb-3 flex flex-col gap-0.5 border-b p-4">
         <Search mainSection={mainSection} />
         <div
           className={mergeClasses(

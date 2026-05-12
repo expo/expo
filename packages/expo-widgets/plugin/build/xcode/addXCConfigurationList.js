@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.addXCConfigurationList = addXCConfigurationList;
 function addXCConfigurationList(xcodeProject, props) {
+    const comment = `Build configuration list for PBXNativeTarget "${props.targetName}"`;
     const commonBuildSettings = {
         PRODUCT_NAME: `"$(TARGET_NAME)"`,
         SWIFT_VERSION: '5.0',
@@ -17,23 +18,18 @@ function addXCConfigurationList(xcodeProject, props) {
         SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
         CODE_SIGN_ENTITLEMENTS: `"${props.targetName}/${props.targetName}.entitlements"`,
         APPLICATION_EXTENSION_API_ONLY: '"YES"',
+        ...(props.appleTeamId ? { DEVELOPMENT_TEAM: props.appleTeamId } : {}),
     };
-    const buildConfigurationsList = [
-        {
-            name: 'Debug',
-            isa: 'XCBuildConfiguration',
-            buildSettings: {
-                ...commonBuildSettings,
-            },
-        },
-        {
-            name: 'Release',
-            isa: 'XCBuildConfiguration',
-            buildSettings: {
-                ...commonBuildSettings,
-            },
-        },
-    ];
-    const xCConfigurationList = xcodeProject.addXCConfigurationList(buildConfigurationsList, 'Release', `Build configuration list for PBXNativeTarget "${props.targetName}"`);
-    return xCConfigurationList;
+    const existingConfigurationListUuid = xcodeProject.pbxTargetByName(props.targetName)?.buildConfigurationList;
+    if (existingConfigurationListUuid) {
+        return {
+            uuid: existingConfigurationListUuid,
+            xcConfigurationList: xcodeProject.pbxXCConfigurationList()[existingConfigurationListUuid],
+        };
+    }
+    return xcodeProject.addXCConfigurationList(['Debug', 'Release'].map((name) => ({
+        name,
+        isa: 'XCBuildConfiguration',
+        buildSettings: { ...commonBuildSettings },
+    })), 'Release', comment);
 }

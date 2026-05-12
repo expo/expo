@@ -1,6 +1,7 @@
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
-import { AndroidManifest, getMainActivity } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
+import { getMainActivity } from '../Manifest';
 import { getOrientation, setAndroidOrientation } from '../Orientation';
 
 async function getFixtureManifestAsync() {

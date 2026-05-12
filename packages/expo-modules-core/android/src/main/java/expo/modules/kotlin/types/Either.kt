@@ -5,11 +5,10 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.apifeatures.EitherType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.unwrap
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 sealed class DeferredValue
 
@@ -43,13 +42,12 @@ data class ConvertedValue(val convertedValue: Any) : DeferredValue()
  */
 inline fun <reified T : Any> toKClass(): KClass<T> = T::class
 
-@EitherType
 @DoNotStrip
 // We can't strip this class because typeOf<Either<T,P>> won't work in the release builds.
 open class Either<FirstType : Any, SecondType : Any>(
   private val bareValue: Any,
   private val deferredValue: MutableList<DeferredValue>,
-  private val types: List<KType>
+  private val types: List<TypeDescriptor>
 
 ) {
   internal fun `is`(index: Int): Boolean {
@@ -106,12 +104,11 @@ open class Either<FirstType : Any, SecondType : Any>(
   fun second(): SecondType = get(1) as SecondType
 }
 
-@EitherType
 @DoNotStrip
 open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,
-  types: List<KType>
+  types: List<TypeDescriptor>
 ) : Either<FirstType, SecondType>(bareValue, deferredValue, types) {
   @JvmName("isThirdType")
   fun `is`(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>): Boolean = `is`(2)
@@ -122,12 +119,11 @@ open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   fun third(): ThirdType = get(2) as ThirdType
 }
 
-@EitherType
 @DoNotStrip
 class EitherOfFour<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,
-  types: List<KType>
+  types: List<TypeDescriptor>
 ) : EitherOfThree<FirstType, SecondType, ThirdType>(bareValue, deferredValue, types) {
   @JvmName("isFourthType")
   fun `is`(@Suppress("UNUSED_PARAMETER") type: KClass<FourthType>): Boolean = `is`(3)

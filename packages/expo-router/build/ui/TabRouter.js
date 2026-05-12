@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ExpoTabRouter = ExpoTabRouter;
-const native_1 = require("@react-navigation/native");
+const native_1 = require("../react-navigation/native");
 function ExpoTabRouter(options) {
     const rnTabRouter = (0, native_1.TabRouter)(options);
     const router = {

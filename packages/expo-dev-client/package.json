@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-client",
-  "version": "55.0.3",
+  "version": "56.0.6",
   "description": "Expo Development Client",
   "main": "build/DevClient.js",
   "types": "build/DevClient.d.ts",
@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "e2e": "expo-test-runner run-test -t e2e",
@@ -32,15 +31,17 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/dev-client/",
   "dependencies": {
-    "expo-dev-launcher": "55.0.4",
-    "expo-dev-menu": "55.0.3",
-    "expo-dev-menu-interface": "55.0.1",
-    "expo-manifests": "~55.0.3",
-    "expo-updates-interface": "~55.1.1"
+    "expo-dev-launcher": "workspace:~56.0.6",
+    "expo-dev-menu": "workspace:~56.0.6",
+    "expo-dev-menu-interface": "workspace:~56.0.0",
+    "expo-manifests": "workspace:~56.0.1",
+    "expo-updates-interface": "workspace:~56.0.1"
   },
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2",
-    "expo-test-runner": "0.3.11"
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "expo-test-runner": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

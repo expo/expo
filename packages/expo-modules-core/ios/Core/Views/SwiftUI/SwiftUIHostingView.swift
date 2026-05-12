@@ -70,7 +70,7 @@ extension ExpoSwiftUI {
      */
     init(viewType: ContentView.Type, props: Props, appContext: AppContext) {
       self.contentView = ContentView(props: props)
-      let rootView = AnyView(contentView.environmentObject(shadowNodeProxy))
+      let rootView = AnyView(contentView)
       self.props = props
       let controller = UIHostingController(rootView: rootView)
 
@@ -81,17 +81,15 @@ extension ExpoSwiftUI {
 
       super.init(appContext: appContext)
 
-      shadowNodeProxy.setViewSize = { size in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setViewSize(size)
-        #endif
+      shadowNodeProxy.setViewSize = { [weak self] size in
+        self?.setViewSize(size)
       }
 
-      shadowNodeProxy.setStyleSize = { width, height in
-        #if RCT_NEW_ARCH_ENABLED
-        self.setStyleSize(width, height: height)
-        #endif
+      shadowNodeProxy.setStyleSize = { [weak self] width, height in
+        self?.setStyleSize(width, height: height)
       }
+
+      props.shadowNodeProxy = shadowNodeProxy
 
       shadowNodeProxy.objectWillChange.send()
 
@@ -161,7 +159,6 @@ extension ExpoSwiftUI {
       setupHostingViewConstraints()
     }
 
-#if RCT_NEW_ARCH_ENABLED
     /**
      Fabric calls this function when mounting (attaching) a child component view.
      */
@@ -202,7 +199,6 @@ extension ExpoSwiftUI {
         props.objectWillChange.send()
       }
     }
-#endif // RCT_NEW_ARCH_ENABLED
 
     /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
@@ -228,9 +224,10 @@ extension ExpoSwiftUI {
 
       if window != nil, let parentController = reactViewController() {
         #if !os(macOS)
-        if parentController as? UINavigationController == nil {
+        if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
           // Swift automatically adds the hostingController in the correct place when the parentController
-          // is UINavigationController, since it's children are supposed to be only screens
+          // is UINavigationController, since it's children are supposed to be only screens.
+          // Similarly, for UITabBarController we expect its children to be only tabs.
           parentController.addChild(hostingController)
         }
         #else

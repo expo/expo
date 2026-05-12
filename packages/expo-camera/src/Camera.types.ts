@@ -1,16 +1,10 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription,
-  NativeModule,
-} from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { NativeModule } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
-import { AndroidBarcode } from './AndroidBarcode.types';
-import { PictureRef } from './PictureRef';
+import type { AndroidBarcode } from './AndroidBarcode.types';
+import type { PictureRef } from './PictureRef';
 
 export type CameraType = 'front' | 'back';
 
@@ -328,7 +322,7 @@ export type BarcodeScanningResult = {
    * [Google MLKit's native order](https://developers.google.com/android/reference/com/google/mlkit/vision/barcode/common/Barcode#getCornerPoints())
    * is used, which is `topLeft`, `topRight`, `bottomRight`, `bottomLeft`.
    * On iOS, the order is `bottomLeft`, `bottomRight`, `topLeft`, `topRight`. On Web, the order is
-   * `topLeft`, `bottomLeft`, `topRight`, `bottomRight`.
+   * `topLeft`, `topRight`, `bottomRight`, `bottomLeft` (matching Android/BarcodeDetector order).
    *
    */
   cornerPoints: BarcodePoint[];
@@ -591,13 +585,14 @@ export type BarcodeType =
   | 'code128'
   | 'upc_a';
 
+// TODO(@kitten): Remove re-exports from EMC
 export {
-  PermissionResponse,
+  type PermissionResponse,
   PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  EventSubscription as Subscription,
-};
+  type PermissionExpiration,
+  type PermissionHookOptions,
+} from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
 
 export type PhotoResult = {
   /**

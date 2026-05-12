@@ -1,177 +1,119 @@
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalLayoutApi::class)
+
 package expo.modules.ui
 
-import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.FloatingToolbarDefaults
+import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ComposableScope
-import expo.modules.kotlin.views.ExpoViewComposableScope
-import expo.modules.kotlin.views.with
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.ui.convertibles.HorizontalAlignment
+import expo.modules.ui.convertibles.HorizontalArrangement
+import expo.modules.ui.convertibles.VerticalAlignment
+import expo.modules.ui.convertibles.ContentAlignment
+import expo.modules.ui.convertibles.VerticalArrangement
+import expo.modules.ui.convertibles.toComposeArrangement
+import expo.modules.kotlin.views.OptimizedComposeProps
 
-enum class HorizontalArrangement(val value: String) : Enumerable {
-  START("start"),
-  END("end"),
-  CENTER("center"),
-  SPACE_BETWEEN("spaceBetween"),
-  SPACE_AROUND("spaceAround"),
-  SPACE_EVENLY("spaceEvenly");
-
-  fun toComposeArrangement(): Arrangement.Horizontal {
-    return when (this) {
-      START -> Arrangement.Start
-      END -> Arrangement.End
-      CENTER -> Arrangement.Center
-      SPACE_BETWEEN -> Arrangement.SpaceBetween
-      SPACE_AROUND -> Arrangement.SpaceAround
-      SPACE_EVENLY -> Arrangement.SpaceEvenly
-    }
-  }
-}
-
-enum class VerticalArrangement(val value: String) : Enumerable {
+enum class FloatingToolbarExitAlwaysScrollBehavior(val value: String) : Enumerable {
   TOP("top"),
   BOTTOM("bottom"),
-  CENTER("center"),
-  SPACE_BETWEEN("spaceBetween"),
-  SPACE_AROUND("spaceAround"),
-  SPACE_EVENLY("spaceEvenly");
-
-  fun toComposeArrangement(): Arrangement.Vertical {
-    return when (this) {
-      TOP -> Arrangement.Top
-      BOTTOM -> Arrangement.Bottom
-      CENTER -> Arrangement.Center
-      SPACE_BETWEEN -> Arrangement.SpaceBetween
-      SPACE_AROUND -> Arrangement.SpaceAround
-      SPACE_EVENLY -> Arrangement.SpaceEvenly
-    }
-  }
-}
-
-enum class HorizontalAlignment(val value: String) : Enumerable {
   START("start"),
-  END("end"),
-  CENTER("center");
+  END("end");
 
-  fun toComposeAlignment(): Alignment.Horizontal {
+  fun toComposeExitDirection(): FloatingToolbarExitDirection {
     return when (this) {
-      START -> Alignment.Start
-      END -> Alignment.End
-      CENTER -> Alignment.CenterHorizontally
+      TOP -> FloatingToolbarExitDirection.Top
+      BOTTOM -> FloatingToolbarExitDirection.Bottom
+      START -> FloatingToolbarExitDirection.Start
+      END -> FloatingToolbarExitDirection.End
     }
   }
 }
 
-enum class VerticalAlignment(val value: String) : Enumerable {
-  TOP("top"),
-  BOTTOM("bottom"),
-  CENTER("center");
-
-  fun toComposeAlignment(): Alignment.Vertical {
-    return when (this) {
-      TOP -> Alignment.Top
-      BOTTOM -> Alignment.Bottom
-      CENTER -> Alignment.CenterVertically
-    }
-  }
-}
-
+@OptimizedComposeProps
 data class LayoutProps(
-  val horizontalArrangement: HorizontalArrangement = HorizontalArrangement.START,
-  val verticalArrangement: VerticalArrangement = VerticalArrangement.TOP,
-  val horizontalAlignment: HorizontalAlignment = HorizontalAlignment.START,
-  val verticalAlignment: VerticalAlignment = VerticalAlignment.TOP,
-  val modifiers: List<ModifierConfig>? = emptyList()
+  val horizontalArrangement: HorizontalArrangement? = null,
+  val verticalArrangement: VerticalArrangement? = null,
+  val horizontalAlignment: HorizontalAlignment? = null,
+  val verticalAlignment: VerticalAlignment? = null,
+  val contentAlignment: ContentAlignment? = null,
+  val floatingToolbarExitAlwaysScrollBehavior: FloatingToolbarExitAlwaysScrollBehavior? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @Composable
-fun ExpoViewComposableScope.RowContent(props: LayoutProps) {
-  Row(
-    horizontalArrangement = props.horizontalArrangement.toComposeArrangement(),
-    verticalAlignment = props.verticalAlignment.toComposeAlignment(),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
-  ) {
-    Children(ComposableScope().with(rowScope = this@Row))
-  }
-}
-
-@Composable
-fun ExpoViewComposableScope.ColumnContent(props: LayoutProps) {
-  Column(
-    verticalArrangement = props.verticalArrangement.toComposeArrangement(),
-    horizontalAlignment = props.horizontalAlignment.toComposeAlignment(),
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
-  ) {
-    Children(ComposableScope().with(columnScope = this@Column))
-  }
-}
-
-@Composable
-fun ExpoViewComposableScope.BoxContent(props: LayoutProps) {
-  Box(
-    modifier = ModifierRegistry.applyModifiers(props.modifiers)
-  ) {
-    Children(ComposableScope().with(boxScope = this@Box))
-  }
-}
-
-enum class TextFontWeight(val value: String) : Enumerable {
-  NORMAL("normal"),
-  BOLD("bold"),
-  W100("100"),
-  W200("200"),
-  W300("300"),
-  W400("400"),
-  W500("500"),
-  W600("600"),
-  W700("700"),
-  W800("800"),
-  W900("900");
-
-  fun toComposeFontWeight(): FontWeight {
-    return when (this) {
-      NORMAL -> FontWeight.Normal
-      BOLD -> FontWeight.Bold
-      W100 -> FontWeight.W100
-      W200 -> FontWeight.W200
-      W300 -> FontWeight.W300
-      W400 -> FontWeight.W400
-      W500 -> FontWeight.W500
-      W600 -> FontWeight.W600
-      W700 -> FontWeight.W700
-      W800 -> FontWeight.W800
-      W900 -> FontWeight.W900
+internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
+  val scrollBehavior = props.floatingToolbarExitAlwaysScrollBehavior
+    ?.toComposeExitDirection()
+    ?.let {
+      FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
     }
+  Row(
+    horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
+    verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+  ) {
+    Children(UIComposableScope(rowScope = this@Row, nestedScrollConnection = scrollBehavior))
   }
 }
 
-data class TextProps(
-  val text: String = "",
-  val color: AndroidColor? = null,
-  val fontSize: Float = 16f,
-  val fontWeight: TextFontWeight = TextFontWeight.NORMAL,
-  val modifiers: List<ModifierConfig> = emptyList()
-) : ComposeProps
+@Composable
+internal fun FunctionalComposableScope.FlowRowContent(props: LayoutProps) {
+  FlowRow(
+    horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
+    verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  ) {
+    Children(UIComposableScope(rowScope = this@FlowRow))
+  }
+}
 
 @Composable
-fun ExpoViewComposableScope.TextContent(props: TextProps) {
-  Text(
-    text = props.text,
-    modifier = ModifierRegistry.applyModifiers(props.modifiers),
-    color = colorToComposeColor(props.color),
-    style = TextStyle(
-      fontSize = props.fontSize.sp,
-      fontWeight = props.fontWeight.toComposeFontWeight()
-    )
-  )
+internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
+  val scrollBehavior = props.floatingToolbarExitAlwaysScrollBehavior
+    ?.toComposeExitDirection()
+    ?.let {
+      FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
+    }
+  Column(
+    verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
+    horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+  ) {
+    Children(UIComposableScope(columnScope = this@Column, nestedScrollConnection = scrollBehavior))
+  }
+}
+
+@Composable
+fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
+  val scrollBehavior = props.floatingToolbarExitAlwaysScrollBehavior
+    ?.toComposeExitDirection()
+    ?.let {
+      FloatingToolbarDefaults.exitAlwaysScrollBehavior(exitDirection = it)
+    }
+  Box(
+    contentAlignment = props.contentAlignment?.toComposeAlignment() ?: Alignment.TopStart,
+    modifier = ModifierRegistry
+      .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+      .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
+  ) {
+    Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
+  }
 }

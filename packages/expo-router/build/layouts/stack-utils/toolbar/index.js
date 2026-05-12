@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarView = exports.StackToolbarSpacer = exports.StackToolbarSearchBarSlot = exports.StackToolbarMenuAction = exports.StackToolbarMenu = exports.StackToolbarButton = exports.appendStackToolbarPropsToOptions = exports.StackToolbar = exports.StackToolbarLabel = exports.StackToolbarIcon = exports.StackToolbarBadge = void 0;
-var common_primitives_1 = require("../common-primitives");
-Object.defineProperty(exports, "StackToolbarBadge", { enumerable: true, get: function () { return common_primitives_1.StackToolbarBadge; } });
-Object.defineProperty(exports, "StackToolbarIcon", { enumerable: true, get: function () { return common_primitives_1.StackToolbarIcon; } });
-Object.defineProperty(exports, "StackToolbarLabel", { enumerable: true, get: function () { return common_primitives_1.StackToolbarLabel; } });
+var toolbar_primitives_1 = require("./toolbar-primitives");
+Object.defineProperty(exports, "StackToolbarBadge", { enumerable: true, get: function () { return toolbar_primitives_1.StackToolbarBadge; } });
+Object.defineProperty(exports, "StackToolbarIcon", { enumerable: true, get: function () { return toolbar_primitives_1.StackToolbarIcon; } });
+Object.defineProperty(exports, "StackToolbarLabel", { enumerable: true, get: function () { return toolbar_primitives_1.StackToolbarLabel; } });
 var StackToolbar_1 = require("./StackToolbar");
 Object.defineProperty(exports, "StackToolbar", { enumerable: true, get: function () { return StackToolbar_1.StackToolbar; } });
 var StackToolbarClient_1 = require("./StackToolbarClient");

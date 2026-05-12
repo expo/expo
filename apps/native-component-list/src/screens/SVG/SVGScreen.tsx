@@ -53,7 +53,7 @@ SVGScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'white',
   },
   row: {

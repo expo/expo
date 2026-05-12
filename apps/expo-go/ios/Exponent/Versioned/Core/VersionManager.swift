@@ -11,7 +11,6 @@ import EXManifests
 @objc(EXVersionManager)
 final class VersionManager: EXVersionManagerObjC {
   var appContext: AppContext?
-  var legacyModulesProxy: LegacyNativeModulesProxy?
   var legacyModuleRegistry: EXModuleRegistry?
   private var hasRegisteredExpoModules = false
 
@@ -54,17 +53,21 @@ final class VersionManager: EXVersionManagerObjC {
     }
 
     let legacyModuleRegistry = createLegacyModuleRegistry(params: params, manifest: manifest)
-    let legacyModulesProxy = LegacyNativeModulesProxy(customModuleRegistry: legacyModuleRegistry)
     let config = createAppContextConfig()
     let appContext = AppContext(
-      legacyModulesProxy: legacyModulesProxy,
       legacyModuleRegistry: legacyModuleRegistry,
       config: config
     )
 
     self.appContext = appContext
     self.legacyModuleRegistry = legacyModuleRegistry
-    self.legacyModulesProxy = legacyModulesProxy
+
+    // The ConstantsProvider hardcodes `executionEnvironment ti "bare"` and reads `manifest` from
+    // EXConstants.bundle. In Expo Go we need `executionEnvironment to be
+    // "storeClient". EXConstantsBinding merges them on top of the
+    // base constants, so installing it here makes `Constants.expoConfig`,
+    // `Constants.executionEnvironment` resolve correctly.
+    appContext.constants = EXConstantsBinding(params: params)
 
     registerExpoModules(appContext)
     hasRegisteredExpoModules = true
@@ -89,8 +92,7 @@ final class VersionManager: EXVersionManagerObjC {
     // that would work well for us (especially properly invalidating existing app context on reload).
     let appContext = getOrCreateAppContext()
 
-    guard let legacyModulesProxy,
-          let legacyModuleRegistry else {
+    guard let legacyModuleRegistry else {
       fatalError("Legacy modules should have been initialized")
     }
 
@@ -99,15 +101,9 @@ final class VersionManager: EXVersionManagerObjC {
       EXDisabledDevLoadingView(),
       EXStatusBarManager(),
 
-      // Adding EXNativeModulesProxy with the custom moduleRegistry.
-      legacyModulesProxy,
-
       // Adding the way to access the module registry from RCTBridgeModules.
       EXModuleRegistryHolderReactModule(moduleRegistry: legacyModuleRegistry),
 
-      // When ExpoBridgeModule is initialized by RN, it automatically creates the app context.
-      // In Expo Go, it has to use already created app context.
-      ExpoBridgeModule(appContext: appContext)
     ]
 
     return modules + super.extraModules()

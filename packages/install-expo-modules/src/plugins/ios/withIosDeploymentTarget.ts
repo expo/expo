@@ -1,11 +1,14 @@
-import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withDangerousMod } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
-import { ISA, XCBuildConfiguration } from 'xcparse';
+import type { XCBuildConfiguration } from 'xcparse';
+import { ISA } from 'xcparse';
 
-import { withXCParseXcodeProject, XCParseXcodeProject } from './withXCParseXcodeProject';
+import type { XCParseXcodeProject } from './withXCParseXcodeProject';
+import { withXCParseXcodeProject } from './withXCParseXcodeProject';
 
 type IosDeploymentTargetConfigPlugin = ConfigPlugin<{ deploymentTarget: string }>;
 
@@ -53,9 +56,9 @@ export async function updateDeploymentTargetPodfile(
   contents: string,
   deploymentTarget: string
 ): Promise<string> {
-  const matchResult = createPodfilePlatformRegExp().exec(contents);
+  const matchResult = createPodfilePlatformRegExp().exec(contents)?.[2];
   if (matchResult) {
-    const version = await parseVersionAsync(projectRoot, matchResult[2]);
+    const version = await parseVersionAsync(projectRoot, matchResult);
     if (version && semver.lt(toSemVer(version), toSemVer(deploymentTarget))) {
       return contents.replace(createPodfilePlatformRegExp(), (match, prefix, versionPart) => {
         return `${prefix}'${deploymentTarget}'`;
@@ -71,7 +74,7 @@ export async function shouldUpdateDeployTargetPodfileAsync(
 ) {
   const podfilePath = path.join(projectRoot, 'ios', 'Podfile');
   const podfile = await fs.promises.readFile(podfilePath, 'utf-8');
-  const matchResult = createPodfilePlatformRegExp().exec(podfile);
+  const matchResult = createPodfilePlatformRegExp().exec(podfile)?.[2];
   if (!matchResult) {
     console.warn(
       'Unrecognized `ios/Podfile` content, will skip the process to update minimum iOS supported version.'
@@ -79,7 +82,7 @@ export async function shouldUpdateDeployTargetPodfileAsync(
     return false;
   }
 
-  const version = await parseVersionAsync(projectRoot, matchResult[2]);
+  const version = await parseVersionAsync(projectRoot, matchResult);
   if (!version) {
     console.warn(
       'Unrecognized `ios/Podfile` content, will skip the process to update minimum iOS supported version.'
@@ -102,9 +105,9 @@ export async function lookupReactNativeMinIosVersionSupported(
     try {
       const content = await fs.promises.readFile(reactNativeCocoaPodsHelper, 'utf-8');
       const matchRepExp = /^\s*def self\.min_ios_version_supported\n\s*return\s*['"]([\d.]+)['"]/gm;
-      const matchResult = matchRepExp.exec(content);
+      const matchResult = matchRepExp.exec(content)?.[1];
       if (matchResult) {
-        return matchResult[1];
+        return matchResult;
       }
     } catch {}
   }
@@ -118,9 +121,9 @@ export async function lookupReactNativeMinIosVersionSupported(
     try {
       const content = await fs.promises.readFile(reactNativePodsScript, 'utf-8');
       const matchRepExp = /^def min_ios_version_supported\n\s*return\s*['"]([\d.]+)['"]/gm;
-      const matchResult = matchRepExp.exec(content);
+      const matchResult = matchRepExp.exec(content)?.[1];
       if (matchResult) {
-        return matchResult[1];
+        return matchResult;
       }
     } catch {}
   }

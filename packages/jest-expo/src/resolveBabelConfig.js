@@ -16,7 +16,9 @@ function resolveBabelConfig(projectRoot) {
   }
 
   try {
-    return require.resolve('expo/internal/babel-preset');
+    return require.resolve('expo/internal/babel-preset', {
+      paths: [projectRoot, __dirname],
+    });
   } catch {
     try {
       // TODO(@kitten): Temporary, since our E2E tests don't use monorepo

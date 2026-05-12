@@ -27,14 +27,15 @@ android {
     )
     buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
     buildConfigField(
-        "boolean",
-        "IS_EDGE_TO_EDGE_ENABLED",
-        properties["edgeToEdgeEnabled"].toString(),
-    )
-    buildConfigField(
         "String",
         "REACT_NATIVE_RELEASE_LEVEL",
         "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"",
+    )
+    // TODO(pmleczek): Investigate why this has to be added for brownfield
+    buildConfigField(
+      "boolean",
+      "IS_EDGE_TO_EDGE_ENABLED",
+      "true", // Edge-to-edge is mandatory in Android 16+
     )
   }
 

@@ -22,11 +22,11 @@ export interface LocalDirectoryPublication {
 export interface RemotePublicPublication {
   type: 'remotePublic';
   name?: string;
-  url: string;
+  url: string | EnvValue;
   allowInsecure?: boolean;
 }
 
-export interface RemotePrivateBasicPublication {
+export interface RemotePrivatePublication {
   type: 'remotePrivate';
   name?: string;
   url: string | EnvValue;
@@ -35,17 +35,11 @@ export interface RemotePrivateBasicPublication {
   allowInsecure?: boolean;
 }
 
-export interface RemotePrivatePublicationInternal extends RemotePrivateBasicPublication {
-  url: string;
-  username: string;
-  password: string;
-}
-
 export type Publication =
   | LocalMavenPublication
   | LocalDirectoryPublication
   | RemotePublicPublication
-  | RemotePrivateBasicPublication;
+  | RemotePrivatePublication;
 
 export interface PluginConfig {
   group: string;

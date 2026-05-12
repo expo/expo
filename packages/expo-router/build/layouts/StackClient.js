@@ -1,52 +1,19 @@
 "use strict";
 'use client';
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackRouter = exports.stackRouterOverride = void 0;
-const native_1 = require("@react-navigation/native");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const non_secure_1 = require("nanoid/non-secure");
-const react_1 = __importStar(require("react"));
+const react_1 = require("react");
 const withLayoutContext_1 = require("./withLayoutContext");
 const createNativeStackNavigator_1 = require("../fork/native-stack/createNativeStackNavigator");
 const LinkPreviewContext_1 = require("../link/preview/LinkPreviewContext");
 const navigationParams_1 = require("../navigationParams");
 const useScreens_1 = require("../useScreens");
 const stack_utils_1 = require("./stack-utils");
+const native_1 = require("../react-navigation/native");
 const children_1 = require("../utils/children");
 const Protected_1 = require("../views/Protected");
-const Screen_1 = require("../views/Screen");
 const NativeStackNavigator = (0, createNativeStackNavigator_1.createNativeStackNavigator)().Navigator;
 const RNStack = (0, withLayoutContext_1.withLayoutContext)(NativeStackNavigator);
 function isStackAction(action) {
@@ -296,6 +263,7 @@ const stackRouterOverride = (original) => {
                     if (id !== undefined) {
                         route = state.routes.find((route) => route.name === action.payload.name && id === getId?.({ params: route.params }));
                     }
+                    const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
                     if (route) {
                         return {
                             ...state,
@@ -303,29 +271,42 @@ const stackRouterOverride = (original) => {
                                 if (r.key !== route?.key) {
                                     return r;
                                 }
+                                const mergedParams = routeParamList[action.payload.name] !== undefined
+                                    ? {
+                                        ...routeParamList[action.payload.name],
+                                        ...action.payload.params,
+                                    }
+                                    : action.payload.params;
                                 return {
                                     ...r,
-                                    params: routeParamList[action.payload.name] !== undefined
+                                    params: preloadZoomTransitionId
                                         ? {
-                                            ...routeParamList[action.payload.name],
-                                            ...action.payload.params,
+                                            ...mergedParams,
+                                            [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
                                         }
-                                        : action.payload.params,
+                                        : mergedParams,
                                 };
                             }),
                         };
                     }
                     else {
                         // START FORK
+                        const preloadedRouteKey = `${action.payload.name}-${(0, non_secure_1.nanoid)()}`;
+                        const preloadedRouteParams = routeParamList[action.payload.name] !== undefined
+                            ? {
+                                ...routeParamList[action.payload.name],
+                                ...action.payload.params,
+                            }
+                            : action.payload.params;
                         const currentPreloadedRoute = {
-                            key: `${action.payload.name}-${(0, non_secure_1.nanoid)()}`,
+                            key: preloadedRouteKey,
                             name: action.payload.name,
-                            params: routeParamList[action.payload.name] !== undefined
+                            params: preloadZoomTransitionId
                                 ? {
-                                    ...routeParamList[action.payload.name],
-                                    ...action.payload.params,
+                                    ...preloadedRouteParams,
+                                    [navigationParams_1.INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
                                 }
-                                : action.payload.params,
+                                : preloadedRouteParams,
                         };
                         // END FORK
                         return {
@@ -386,6 +367,7 @@ function filterSingular(state, getId) {
     if (!state.routes) {
         return state;
     }
+    // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
     const currentIndex = state.index || state.routes.length - 1;
     const current = state.routes[currentIndex];
     const name = current.name;
@@ -407,37 +389,6 @@ function filterSingular(state, getId) {
         ...state,
         index: routes.length - 1,
         routes,
-    };
-}
-function mapProtectedScreen(props) {
-    return {
-        ...props,
-        children: react_1.Children.toArray(props.children)
-            .map((child, index) => {
-            if ((0, children_1.isChildOfType)(child, stack_utils_1.StackScreen)) {
-                const options = (0, stack_utils_1.appendScreenStackPropsToOptions)({}, child.props);
-                const { children, ...rest } = child.props;
-                return <Screen_1.Screen key={child.props.name} {...rest} options={options}/>;
-            }
-            else if ((0, children_1.isChildOfType)(child, Protected_1.Protected)) {
-                return <Protected_1.Protected key={`${index}-${props.guard}`} {...mapProtectedScreen(child.props)}/>;
-            }
-            else if ((0, children_1.isChildOfType)(child, stack_utils_1.StackHeader)) {
-                // Ignore Stack.Header, because it can be used to set header options for Stack
-                // and we use this function to process children of Stack, as well.
-                return null;
-            }
-            else {
-                if (react_1.default.isValidElement(child)) {
-                    console.warn(`Unknown child element passed to Stack: ${child.type}`);
-                }
-                else {
-                    console.warn(`Unknown child element passed to Stack: ${child}`);
-                }
-            }
-            return null;
-        })
-            .filter(Boolean),
     };
 }
 /**
@@ -465,21 +416,27 @@ const Stack = Object.assign((props) => {
                 return (0, stack_utils_1.appendScreenStackPropsToOptions)({}, screenStackProps);
             }
         }
-        else {
-            return props.screenOptions;
+        else if (props.screenOptions) {
+            const screenOptions = props.screenOptions;
+            if (typeof screenOptions === 'function') {
+                return (0, stack_utils_1.validateStackPresentation)(screenOptions);
+            }
+            return (0, stack_utils_1.validateStackPresentation)(screenOptions);
         }
+        return props.screenOptions;
     }, [props.screenOptions, props.children]);
     const screenOptions = (0, react_1.useMemo)(() => {
         const condition = isStackAnimationDisabled ? () => true : shouldDisableAnimationBasedOnParams;
         return disableAnimationInScreenOptions(screenOptionsWithCompositionAPIOptions, condition);
     }, [screenOptionsWithCompositionAPIOptions, isStackAnimationDisabled]);
-    const rnChildren = (0, react_1.useMemo)(() => mapProtectedScreen({ guard: true, children: props.children }).children, [props.children]);
-    return (<RNStack {...props} children={rnChildren} screenOptions={screenOptions} UNSTABLE_router={exports.stackRouterOverride}/>);
+    const rnChildren = (0, react_1.useMemo)(() => (0, stack_utils_1.mapProtectedScreen)({ guard: true, children: props.children }).children, [props.children]);
+    return ((0, jsx_runtime_1.jsx)(RNStack, { ...props, children: rnChildren, screenOptions: screenOptions, UNSTABLE_router: exports.stackRouterOverride }));
 }, {
     Screen: stack_utils_1.StackScreen,
     Protected: Protected_1.Protected,
     Header: stack_utils_1.StackHeader,
     SearchBar: stack_utils_1.StackSearchBar,
+    Title: stack_utils_1.StackTitle,
     Toolbar: stack_utils_1.StackToolbar,
 });
 function disableAnimationInScreenOptions(options, condition) {

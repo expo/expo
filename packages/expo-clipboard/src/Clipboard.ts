@@ -7,10 +7,10 @@ import type {
   GetStringOptions,
   SetStringOptions,
 } from './Clipboard.types';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
 import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 
-export { EventSubscription as Subscription };
+// TODO(@kitten): Remove re-export from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
@@ -45,23 +45,6 @@ export async function setStringAsync(
     throw new UnavailabilityError('Clipboard', 'setStringAsync');
   }
   return ExpoClipboard.setStringAsync(text, options);
-}
-
-/**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export function setString(text: string): void {
-  if (Platform.OS === 'web') {
-    // on web, we need to return legacy method,
-    // because of different return type
-    return ExpoClipboard.setString(text);
-  } else {
-    setStringAsync(text);
-  }
 }
 
 /**
@@ -229,6 +212,5 @@ export const isPasteButtonAvailable: boolean =
   Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 
 export * from './Clipboard.types';
-export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
 
-export { ClipboardPasteButton };
+export { ClipboardPasteButton, type ClipboardPasteButtonProps } from './ClipboardPasteButton';

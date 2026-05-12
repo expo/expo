@@ -1,4 +1,4 @@
-import { ActionResize } from '../../ImageManipulator.types';
+import type { ActionResize } from '../../ImageManipulator.types';
 import { getContext } from '../utils.web';
 
 /**
@@ -66,16 +66,16 @@ function resampleSingle(
           //hermite filter
           weight = 2 * w * w * w - 3 * w * w + 1;
           const xPosition = 4 * (xx + yy * widthSource);
-          //alpha
-          gx_a += weight * data[xPosition + 3];
+          // alpha
+          gx_a += weight * data[xPosition + 3]!;
           weightsAlpha += weight;
-          //colors
-          if (data[xPosition + 3] < 255) {
-            weight = (weight * data[xPosition + 3]) / 250;
+          // colors
+          if (data[xPosition + 3]! < 255) {
+            weight = (weight * data[xPosition + 3]!) / 250;
           }
-          gx_r += weight * data[xPosition];
-          gx_g += weight * data[xPosition + 1];
-          gx_b += weight * data[xPosition + 2];
+          gx_r += weight * data[xPosition]!;
+          gx_g += weight * data[xPosition + 1]!;
+          gx_b += weight * data[xPosition + 2]!;
           weights += weight;
         }
       }

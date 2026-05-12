@@ -1,4 +1,4 @@
-import { ResourceKind } from './Resources';
+import type { ResourceKind } from './Resources';
 export interface ProjectFile<L extends string = string> {
     path: string;
     language: L;

@@ -10,6 +10,7 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { CODE } from '~/ui/components/Text';
 
 ## Installation
@@ -24,7 +25,7 @@ import * as Expo from 'expo';
 
 ### `expo/fetch` API
 
-`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.wintercg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
+`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.whatwg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
 
 ```ts Streaming fetch
 import { fetch } from 'expo/fetch';
@@ -44,6 +45,8 @@ while (true) {
 const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
 console.log(buffer.length); // 512
 ```
+
+> **Note:** On Android and iOS, `expo/fetch` is also installed as the global `fetch`. This means any calls to `fetch(...)` without importing from `expo/fetch` use the same WinterCG-compliant implementation. To keep React Native's built-in `fetch` as the global, set `EXPO_PUBLIC_USE_RN_FETCH=1` in your [environment variables](/guides/environment-variables/). Named imports from `expo/fetch` continue to work regardless of this flag.
 
 ### Encoding APIs
 
@@ -143,6 +146,8 @@ Remove any custom polyfills for `structuredClone` to prevent bloat. Refer to the
 
 Some common questions about using the `expo` package in your project.
 
+<FAQ>
+
 <Collapsible summary={<><CODE>rootRegisterComponent</CODE> setup for existing React Native projects</>}>
 
 If you are managing your React Native project's native directories (**android** and **ios**) manually, you need to follow the instructions below to set up the `registerRootComponent` function. This is necessary for the Expo modules to work correctly.
@@ -192,3 +197,5 @@ registerRootComponent(App);
 **For projects that use [Expo Router](/router/introduction/)**, you can create a custom entry point by following these steps from [Expo Router's installation guide](/router/installation/#custom-entry-point-to-initialize-and-load). To use the top-level **src** directory in your Expo Router project, see [src directory reference](/router/reference/src-directory/) for more information.
 
 </Collapsible>
+
+</FAQ>

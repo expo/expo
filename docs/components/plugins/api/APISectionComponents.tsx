@@ -108,7 +108,7 @@ const renderComponent = (
   return (
     <div
       key={`component-definition-${resolvedName}`}
-      className={mergeClasses(STYLES_APIBOX, '!shadow-none')}>
+      className={mergeClasses(STYLES_APIBOX, 'shadow-none!')}>
       <APISectionDeprecationNote comment={extractedComment} sticky />
       <APIBoxHeader name={resolvedName} comment={extractedComment} />
       {resolvedType && resolvedTypeParameters && !hideType && (

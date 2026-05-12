@@ -1,4 +1,4 @@
-import { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimationParams, SpringAnimationParams, TimingAnimationParams } from './types';
+import type { AnimationObject, ChainableAnimationType, InterpolatingSpringAnimationParams, SpringAnimationParams, TimingAnimationParams } from './types';
 /**
  * Built-in animation presets for the `animation` modifier.
  * Presets:
@@ -38,6 +38,6 @@ export declare const Animation: {
     default: ChainableAnimationType;
 };
 declare function ChainableAnimation(animation: AnimationObject): ChainableAnimationType;
-export declare const animation: (animationObject: ReturnType<typeof ChainableAnimation>, animatedValue: number | boolean) => import("../createModifier").ModifierConfig;
+export declare const animation: (animationObject: ReturnType<typeof ChainableAnimation>, animatedValue: number | boolean) => import("..").ModifierConfig;
 export {};
 //# sourceMappingURL=index.d.ts.map

@@ -16,16 +16,15 @@ import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.types.LazyKType
 import expo.modules.kotlin.types.TypeConverterProvider
 import expo.modules.kotlin.types.mergeWithDefault
 import expo.modules.kotlin.types.toAnyType
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 import expo.modules.kotlin.views.ModuleDefinitionBuilderWithCompose
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.decorators.UseCSSProps
 import kotlin.reflect.KClass
-import kotlin.reflect.typeOf
 
 const val DEFAULT_MODULE_VIEW = "DEFAULT_MODULE_VIEW"
 
@@ -93,7 +92,7 @@ open class InternalModuleDefinitionBuilder(
   inline fun <reified T : View> View(viewClass: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
     val viewDefinitionBuilder = ViewDefinitionBuilder(
       viewClass,
-      LazyKType(classifier = T::class, kTypeProvider = { typeOf<T>() }),
+      typeDescriptorOf<T>(),
       converters
     )
 

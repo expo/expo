@@ -1,8 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import ExpoNetwork from './ExpoNetwork';
-import { NetworkStateType } from './Network.types';
-export { NetworkStateType };
+export { NetworkStateType } from './Network.types';
 const onNetworkStateEventName = 'onNetworkStateChanged';
 // @needsAudit
 /**

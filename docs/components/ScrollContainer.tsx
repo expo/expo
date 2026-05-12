@@ -41,7 +41,7 @@ export const ScrollContainer = forwardRef<ScrollContainerHandle, ScrollContainer
     return (
       <div
         className={mergeClasses(
-          'size-full transform-gpu overflow-y-auto overflow-x-hidden',
+          'size-full transform-gpu overflow-x-hidden overflow-y-auto',
           className
         )}
         ref={scrollRef}

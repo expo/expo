@@ -10,6 +10,9 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import java.io.File
 
 data class ProcessSuccessLoaderResult(
@@ -32,8 +35,9 @@ class RemoteLoader internal constructor(
   private val mFileDownloader: FileDownloader,
   updatesDirectory: File,
   private val launchedUpdate: UpdateEntity?,
-  private val loaderFiles: LoaderFiles
-) : Loader(context, configuration, logger, database, updatesDirectory, loaderFiles) {
+  private val loaderFiles: LoaderFiles,
+  scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+) : Loader(context, configuration, logger, database, updatesDirectory, loaderFiles, scope) {
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
@@ -41,8 +45,9 @@ class RemoteLoader internal constructor(
     database: UpdatesDatabase,
     fileDownloader: FileDownloader,
     updatesDirectory: File,
-    launchedUpdate: UpdateEntity?
-  ) : this(context, configuration, logger, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
+    launchedUpdate: UpdateEntity?,
+    scope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+  ) : this(context, configuration, logger, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles(), scope)
 
   override suspend fun loadRemoteUpdate(
     database: UpdatesDatabase,

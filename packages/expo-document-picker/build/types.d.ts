@@ -40,7 +40,7 @@ export type DocumentPickerAsset = {
      */
     size?: number;
     /**
-     * An URI to the local document file.
+     * A URI to the local document file.
      */
     uri: string;
     /**

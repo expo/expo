@@ -1,10 +1,11 @@
 import { promises } from 'fs';
 import path from 'path';
 
-import { ForwardedBaseModOptions, provider, withGeneratedBaseMods } from './createBaseMod';
-import { ExportedConfig, ModConfig } from '../Plugin.types';
+import type { ForwardedBaseModOptions } from './createBaseMod';
+import { provider, withGeneratedBaseMods } from './createBaseMod';
+import type { ExportedConfig, ModConfig } from '../Plugin.types';
 import { Colors, Manifest, Paths, Properties, Resources, Strings, Styles } from '../android';
-import { AndroidManifest } from '../android/Manifest';
+import type { AndroidManifest } from '../android/Manifest';
 import { parseXMLAsync, writeXMLAsync } from '../utils/XML';
 import { reverseSortString, sortObject, sortObjWithOrder } from '../utils/sortObject';
 
@@ -16,7 +17,7 @@ function getAndroidManifestTemplate(config: ExportedConfig) {
   // Keep in sync with https://github.com/expo/expo/blob/main/templates/expo-template-bare-minimum/android/app/src/main/AndroidManifest.xml
   // TODO: Read from remote template when possible
   return parseXMLAsync(`
-  <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="${
+  <manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools" package="${
     config.android?.package ?? 'com.placeholder.appid'
   }">
 
@@ -25,8 +26,8 @@ function getAndroidManifestTemplate(config: ExportedConfig) {
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
     <!-- These require runtime permissions on M -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" tools:replace="android:maxSdkVersion"/>
     <!-- END OPTIONAL PERMISSIONS -->
 
     <queries>

@@ -1,4 +1,4 @@
-import { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, AndroidPublication, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
+import type { AndroidGradleAarProjectDescriptor, AndroidGradlePluginDescriptor, AndroidPublication, RawExpoModuleConfig, RawModuleConfigApple, SupportedPlatform } from './types';
 export declare class ExpoAndroidModuleConfig {
     classifier: string;
     name: string | null;
@@ -85,4 +85,4 @@ export declare class ExpoModuleConfig {
      */
     toJSON(): RawExpoModuleConfig;
 }
-export declare const discoverExpoModuleConfigAsync: (input: string, ...args: any[]) => Promise<any>;
+export declare const discoverExpoModuleConfigAsync: import("./memoize").MemoizableAsyncFn<any[], ExpoModuleConfig | null>;

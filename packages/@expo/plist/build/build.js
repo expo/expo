@@ -65,7 +65,7 @@ function ISODateString(d) {
 const toString = Object.prototype.toString;
 function type(obj) {
     const m = toString.call(obj).match(/\[object (.*)\]/);
-    return m ? m[1] : m;
+    return m?.[1] ?? null;
 }
 /**
  * Generate an XML plist string from the input object `obj`.

@@ -8,8 +8,8 @@ import type { Components } from 'react-markdown';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
-import type { ContextScope, GlobalSwitchStatus, ContextMarker } from './AskPageAIChat.types';
 import { FOOTNOTE } from '../Text';
+import type { ContextScope, GlobalSwitchStatus, ContextMarker } from './AskPageAIChat.types';
 import { normalizeQuestion } from './AskPageAIChat.utils';
 
 type ConversationEntry = {
@@ -58,11 +58,11 @@ export function AskPageAIChatMessages({
 }: AskPageAIChatMessagesProps) {
   if (conversation.length === 0) {
     return (
-      <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
-        <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-        <div className="mt-1 space-y-3 text-xs text-secondary">
+      <div className="border-default bg-subtle rounded-md border px-3 py-2 shadow-xs">
+        <FOOTNOTE className="text-default font-medium">AI Assistant</FOOTNOTE>
+        <div className="text-secondary mt-1 space-y-3 text-sm">
           I'm an SDK AI assistant — ask me a question about the{' '}
-          <span className="font-medium text-default">
+          <span className="text-default font-medium">
             {contextScope === 'page' ? 'current page' : 'Expo docs'}
           </span>
           .
@@ -85,10 +85,11 @@ export function AskPageAIChatMessages({
         const trimmedLower = trimmedAnswer?.toLowerCase() ?? '';
         const fallbackLower = fallbackResponse.toLowerCase();
         const hasSources = Array.isArray(qa.sources) && qa.sources.length > 0;
+        const normalizedBasePath = basePath.replace(/\/+$/, '');
         const isOffPageAnswer =
           contextScope === 'page' &&
           hasSources &&
-          qa.sources!.some(source => !source.source_url.includes(basePath));
+          qa.sources!.every(source => !source.source_url.includes(normalizedBasePath));
         const sourcesForDisplay = isOffPageAnswer ? [] : (qa.sources ?? []);
         const isFallbackAnswer =
           trimmedLower.includes(fallbackLower) ||
@@ -117,19 +118,19 @@ export function AskPageAIChatMessages({
               <div key={`marker-${marker.id}`} className="flex justify-center">
                 <FOOTNOTE
                   theme="secondary"
-                  className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-                  Switched to <span className="font-medium text-default">{marker.label}.</span>
+                  className="border-default bg-subtle inline-block rounded-md border px-2 py-1">
+                  Switched to <span className="text-default font-medium">{marker.label}.</span>
                 </FOOTNOTE>
               </div>
             ))}
             <div className="flex justify-end pr-1">
-              <div className="ml-auto max-w-[85%] rounded-md border border-default bg-subtle px-3 py-1.5 text-right text-sm leading-snug text-secondary shadow-xs">
+              <div className="border-default bg-subtle text-secondary ml-auto max-w-[85%] rounded-md border px-3 py-1.5 text-right text-sm leading-snug shadow-xs">
                 {displayQuestion}
               </div>
             </div>
             <div className="px-0">
-              <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
-              <div className="mt-1 space-y-3 text-xs text-secondary">
+              <FOOTNOTE className="text-default font-medium">AI Assistant</FOOTNOTE>
+              <div className="text-secondary mt-1 space-y-3 text-sm">
                 {answerForDisplay ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                     {answerForDisplay}
@@ -146,32 +147,32 @@ export function AskPageAIChatMessages({
                     type="button"
                     theme="quaternary"
                     size="xs"
-                    className="inline-flex items-center gap-2 rounded-md border border-default bg-subtle px-3 py-1 text-xs font-medium text-default shadow-xs transition-colors hover:bg-element focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-palette-blue9 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="border-default bg-subtle text-default hover:bg-element focus-visible:ring-palette-blue9 inline-flex items-center gap-2 rounded-md border px-3 py-1 text-sm font-medium shadow-xs transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-60"
                     disabled={isBusy || hasTriggeredGlobalSearch || isPendingGlobal}
                     onClick={() => {
                       onSearchAcrossDocs(displayQuestion);
                     }}>
-                    <FileSearch02Icon className="icon-xs mr-2 text-icon-secondary" />
+                    <FileSearch02Icon className="icon-xs text-icon-secondary mr-2" />
                     {hasTriggeredGlobalSearch || isPendingGlobal
                       ? 'Searching Expo docs…'
                       : 'Search Expo docs'}
                   </Button>
                   {showSwitchingNotice ? (
-                    <FOOTNOTE theme="secondary" className="text-xs">
+                    <FOOTNOTE theme="secondary" className="text-sm">
                       {switchNoticeText}
                     </FOOTNOTE>
                   ) : null}
                 </div>
               ) : null}
               {canSubmitFeedback ? (
-                <div className="mt-3 flex items-center gap-1 text-xs text-secondary">
+                <div className="text-secondary mt-3 flex items-center gap-1 text-sm">
                   <span className="text-secondary">Was this helpful?</span>
                   <div className="flex items-center gap-1">
                     <Button
                       type="button"
                       theme="quaternary"
                       size="xs"
-                      className="px-2 !text-secondary hover:!text-default focus:!text-default disabled:cursor-not-allowed disabled:opacity-60"
+                      className="text-secondary! hover:text-default! focus:text-default! px-2 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label="Upvote answer"
                       aria-pressed={isUpvoted}
                       disabled={disableUpvote}
@@ -192,7 +193,7 @@ export function AskPageAIChatMessages({
                       type="button"
                       theme="quaternary"
                       size="xs"
-                      className="px-2 !text-secondary hover:!text-default focus:!text-default disabled:cursor-not-allowed disabled:opacity-60"
+                      className="text-secondary! hover:text-default! focus:text-default! px-2 disabled:cursor-not-allowed disabled:opacity-60"
                       aria-label="Downvote answer"
                       aria-pressed={isDownvoted}
                       disabled={disableDownvote}
@@ -214,7 +215,7 @@ export function AskPageAIChatMessages({
               ) : null}
             </div>
             {sourcesForDisplay?.length ? (
-              <FOOTNOTE theme="secondary" className="ml-1 text-xs">
+              <FOOTNOTE theme="secondary" className="ml-1 text-sm">
                 Sources:{' '}
                 {sourcesForDisplay.map((source, sourceIdx, sources) => (
                   <span key={source.source_url}>
@@ -238,8 +239,8 @@ export function AskPageAIChatMessages({
         <div key={`marker-${marker.id}`} className="flex justify-center">
           <FOOTNOTE
             theme="secondary"
-            className="inline-block rounded-md border border-default bg-subtle px-2 py-1">
-            Switched to <span className="font-medium text-default">{marker.label}.</span>
+            className="border-default bg-subtle inline-block rounded-md border px-2 py-1">
+            Switched to <span className="text-default font-medium">{marker.label}.</span>
           </FOOTNOTE>
         </div>
       ))}

@@ -17,6 +17,10 @@ describe(getLoaderModulePath, () => {
     expect(getLoaderModulePath('/posts/123')).toBe('/_expo/loaders/posts/123');
   });
 
+  it('preserves route groups in paths', () => {
+    expect(getLoaderModulePath('/(group)/index')).toBe('/_expo/loaders/(group)/index');
+  });
+
   it('preserves query parameters', () => {
     expect(getLoaderModulePath('/request?foo=bar')).toBe('/_expo/loaders/request?foo=bar');
   });

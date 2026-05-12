@@ -86,6 +86,7 @@ enum NotificationSoundEnum: String, Enumerable {
       return UNNotificationSound(named: UNNotificationSoundName(rawValue: soundName))
     }
   }
+
 }
 
 public struct ThumbnailClipAreaRecord: Record {
@@ -385,6 +386,28 @@ public struct NotificationContentRecord: Record {
     }
 
     return content
+  }
+
+  func customSoundExists() -> Bool {
+    guard let sound = sound,
+          let soundName = try? sound.as(String.self) else {
+      return true
+    }
+    let soundEnum = NotificationSoundEnum(rawValue: soundName) ?? .custom
+    guard soundEnum == .custom else {
+      return true
+    }
+    return notificationSoundExists(named: soundName)
+  }
+
+  private func notificationSoundExists(named name: String) -> Bool {
+    let last = (name as NSString).lastPathComponent
+    let base = (last as NSString).deletingPathExtension
+    let ext  = (last as NSString).pathExtension
+
+    guard !base.isEmpty, !ext.isEmpty else { return false }
+
+    return Bundle.main.url(forResource: base, withExtension: ext) != nil
   }
 }
 

@@ -11,7 +11,7 @@ function addShareIntoEntitlements(
   }
 
   for (const key of Object.keys(shareIntoEntitlements)) {
-    const itemsToAdd = shareIntoEntitlements[key];
+    const itemsToAdd = shareIntoEntitlements[key] ?? [];
     const existingValue = existingEntitlements[key] ?? [];
 
     if (!Array.isArray(existingValue)) {

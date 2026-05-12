@@ -1,18 +1,17 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JSIContext.h"
 #include "Exceptions.h"
-#include "ExpoModulesHostObject.h"
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
+#include "JSIUtils.h"
 #include "SharedObject.h"
-#include "SharedRef.h"
-#include "NativeModule.h"
+#include "decorators/JSDecoratorsBridgingObject.h"
+#include "decorators/JSClassesDecorator.h"
 
 #include <fbjni/detail/Meta.h>
-#include <fbjni/fbjni.h>
 
-#include <memory>
 #include <shared_mutex>
 
 namespace jni = facebook::jni;
@@ -26,9 +25,12 @@ void JSIContext::registerNatives() {
                    makeNativeMethod("evaluateVoidScript", JSIContext::evaluateVoidScript),
                    makeNativeMethod("global", JSIContext::global),
                    makeNativeMethod("createObject", JSIContext::createObject),
+                   makeNativeMethod("scheduleOnJSThread", JSIContext::scheduleOnJSThread),
                    makeNativeMethod("drainJSEventLoop", JSIContext::drainJSEventLoop),
                    makeNativeMethod("setNativeStateForSharedObject",
                                     JSIContext::jniSetNativeStateForSharedObject),
+                   makeNativeMethod("installModuleClasses",
+                                    JSIContext::installModuleClasses),
                  });
 }
 
@@ -150,6 +152,13 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::createObject() noexcept
   return runtimeHolder->createObject();
 }
 
+void JSIContext::scheduleOnJSThread(jni::alias_ref<JSRunnable::javaobject> runnable) {
+  auto ref = jni::make_global(runnable);
+  runtimeHolder->jsInvoker->invokeAsync([ref = std::move(ref)](jsi::Runtime &) {
+    ref->run();
+  });
+}
+
 void JSIContext::drainJSEventLoop() {
   runtimeHolder->drainJSEventLoop();
 }
@@ -226,6 +235,95 @@ jni::local_ref<JavaScriptObject::javaobject> JSIContext::getJavascriptClass(
       "getJavascriptClass"
     );
   return method(javaPart_, std::move(native));
+}
+
+// Returns the JS class for the given native SharedObject class, lazily building it on first access.
+jni::local_ref<JavaScriptObject::javaobject> JSIContext::ensureClassInstalled(jsi::Runtime &rt, jni::local_ref<jclass> nativeClass) {
+  auto jsClassObj = getJavascriptClass(jni::make_local(nativeClass));
+  if (jsClassObj) {
+    return jsClassObj;
+  }
+
+  const static auto buildClassDecorator = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<JSDecoratorsBridgingObject::javaobject>(jni::local_ref<jclass>)>(
+      "buildClassDecorator"
+    );
+  auto decorator = buildClassDecorator(javaPart_, jni::make_local(nativeClass));
+  if (decorator) {
+    auto *classDec = decorator->cthis()->getClassDecorator();
+    if (classDec) {
+      classDec->consumeForWorklet(rt);
+    }
+  }
+
+  return getJavascriptClass(std::move(nativeClass));
+}
+
+// Creates a JS proxy object with the class prototype and the given shared object ID.
+jsi::Value JSIContext::resolveSharedObjectInstance(jsi::Runtime &rt, int objectId, jni::local_ref<JavaScriptObject::javaobject> jsClassObj) {
+  auto jsClass = jsClassObj->cthis()->get();
+  auto proto = jsClass->getProperty(rt, "prototype");
+  if (!proto.isObject()) {
+    throw jsi::JSError(rt, "Failed to get JS prototype for SharedObject with id '" + std::to_string(objectId) + "'");
+  }
+
+  auto protoObj = proto.asObject(rt);
+  auto instance = common::createObjectWithPrototype(rt, &protoObj);
+
+  // Flags = 0 → non-configurable, non-enumerable, non-writable. Freezes the id on the proxy.
+  // Unlike the main-runtime path (SharedObject.cpp) which defines __expo_shared_object_id__
+  // as a getter on the prototype reading NativeState, here it's an own property on the instance
+  // since worklet proxies don't carry NativeState. SharedObjectIdConverter uses getProperty
+  // which finds own props first, so both paths resolve correctly.
+  jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
+  descriptor.setProperty(rt, "value", objectId);
+  common::defineProperty(rt, &instance, "__expo_shared_object_id__", std::move(descriptor));
+
+  return jsi::Value(rt, std::move(instance));
+}
+
+// Installs SharedObject.__resolveInWorklet in the runtime.
+void JSIContext::installModuleClasses() {
+  auto &runtime = runtimeHolder->get();
+  auto expoObj = runtime.global().getPropertyAsObject(runtime, "expo");
+  auto sharedObjectClass = expoObj.getPropertyAsObject(runtime, "SharedObject");
+  auto *self = this;
+
+  auto resolveInWorklet = jsi::Function::createFromHostFunction(
+    runtime,
+    jsi::PropNameID::forAscii(runtime, "__resolveInWorklet"),
+    1,
+    [self](
+      jsi::Runtime &rt,
+      const jsi::Value &,
+      const jsi::Value *args,
+      size_t
+    ) -> jsi::Value {
+      if (self->wasDeallocated()) {
+        throw jsi::JSError(rt, "__resolveInWorklet: JSIContext has been deallocated");
+      }
+
+      int objectId = static_cast<int>(args[0].asNumber());
+
+      // Resolve the native SharedObject's class by ID.
+      const static auto getNativeClass = expo::JSIContext::javaClassLocal()
+        ->getMethod<jni::local_ref<jclass>(int)>("getNativeSharedObjectClass");
+      auto nativeClass = getNativeClass(self->javaPart_, objectId);
+      if (!nativeClass) {
+        throw jsi::JSError(rt, "SharedObject with id '" + std::to_string(objectId) + "' not found in the registry");
+      }
+
+      // Ensure the class prototype is installed (lazy, cached in classRegistry).
+      auto jsClassObj = self->ensureClassInstalled(rt, std::move(nativeClass));
+      if (!jsClassObj) {
+        throw jsi::JSError(rt, "No class definition registered for SharedObject with id '" + std::to_string(objectId) + "'");
+      }
+
+      return self->resolveSharedObjectInstance(rt, objectId, std::move(jsClassObj));
+    }
+  );
+
+  sharedObjectClass.setProperty(runtime, "__resolveInWorklet", std::move(resolveInWorklet));
 }
 
 void JSIContext::prepareForDeallocation() noexcept {

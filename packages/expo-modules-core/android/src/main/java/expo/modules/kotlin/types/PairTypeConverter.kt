@@ -10,20 +10,20 @@ import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
 import expo.modules.kotlin.recycle
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 class PairTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val pairType: KType
+  private val pairType: TypeDescriptor
 ) : DynamicAwareTypeConverters<Pair<*, *>>() {
   private val converters = listOf(
     converterProvider.obtainTypeConverter(
-      requireNotNull(pairType.arguments.getOrNull(0)?.type) {
+      requireNotNull(pairType.params.getOrNull(0)) {
         "The pair type should contain the type of the first parameter."
       }
     ),
     converterProvider.obtainTypeConverter(
-      requireNotNull(pairType.arguments.getOrNull(1)?.type) {
+      requireNotNull(pairType.params.getOrNull(1)) {
         "The pair type should contain the type of the second parameter."
       }
     )
@@ -52,7 +52,7 @@ class PairTypeConverter(
   private fun convertElement(context: AppContext?, array: ReadableArray, index: Int, forceConversion: Boolean): Any? {
     return array.getDynamic(index).recycle {
       exceptionDecorator({ cause ->
-        CollectionElementCastException(pairType, pairType.arguments[index].type!!, type, cause)
+        CollectionElementCastException(pairType, pairType.params[index], type, cause)
       }) {
         converters[index].convert(this, context, forceConversion)
       }

@@ -47,16 +47,19 @@ public class EXDevLauncherErrorManager: NSObject {
 
       let errorView = ErrorView(
         error: error,
-        onReload: {
-          self?.dismissCurrentErrorView()
-          guard let appUrl = self?.controller?.appManifestURLWithFallback() else {
+        onReload: { [weak self] in
+          guard let self else { return }
+          self.dismissCurrentErrorView()
+          guard let appUrl = self.controller?.appManifestURLWithFallback() else {
+            self.controller?.navigateToLauncher()
             return
           }
-          self?.controller?.loadApp(appUrl, onSuccess: nil, onError: nil)
+          self.controller?.loadApp(appUrl, onSuccess: nil, onError: nil)
         },
-        onGoHome: {
-          self?.dismissCurrentErrorView()
-          self?.controller?.navigateToLauncher()
+        onGoHome: { [weak self] in
+          guard let self else { return }
+          self.dismissCurrentErrorView()
+          self.controller?.navigateToLauncher()
         }
       )
 

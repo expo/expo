@@ -1,15 +1,16 @@
 import React from 'react';
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ColorValue } from 'react-native';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 declare function ModalStackRouteDrawer({ routeKey, options, dismissible, renderScreen, onDismiss, themeColors, }: {
     routeKey: string;
     options: ExtendedStackNavigationOptions;
     renderScreen: () => React.ReactNode;
     onDismiss: () => void;
     themeColors: {
-        card: string;
-        background: string;
+        card: ColorValue;
+        background: ColorValue;
     };
     dismissible?: boolean;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export { ModalStackRouteDrawer };
 //# sourceMappingURL=ModalStackRouteDrawer.d.ts.map

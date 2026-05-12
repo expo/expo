@@ -3,7 +3,7 @@
 fastlane_require 'fileutils'
 fastlane_require 'shellwords'
 
-fastlane_version "2.225.0"
+fastlane_version "2.232.2"
 default_platform :ios
 
 STAGING_API_URL = 'https://staging.exp.host/'
@@ -168,11 +168,16 @@ platform :ios do
   lane :unit_tests do |options|
     workspace = "apps/native-tests/ios/NativeTests.xcworkspace"
 
+    result_bundle_path = "/tmp/ios-unit-tests-results/results.xcresult"
+
     generated_scheme = generate_test_scheme(
       scheme_name: 'NativeTests',
       workspace_path: workspace,
       targets: options[:targets]
     )
+
+    # xcodebuild fails if the result bundle already exists at the given path.
+    FileUtils.rm_rf(result_bundle_path)
 
     run_tests(
       workspace: workspace,
@@ -186,6 +191,8 @@ platform :ios do
       skip_detect_devices: false,
       skip_package_dependencies_resolution: true,
       derived_data_path: "/tmp/ExpoUnitTestsDerivedData",
+      result_bundle: true,
+      result_bundle_path: result_bundle_path,
       xcargs: 'CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO',
     )
   end

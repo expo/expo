@@ -5,6 +5,7 @@ sidebar_title: Continuous Native Generation
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 
 A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies.
@@ -131,6 +132,8 @@ Everything offered by Expo including [EAS](/eas/), Expo CLI, and the libraries i
 
 ## Common questions
 
+<FAQ>
+
 ### CNG
 
 <Collapsible summary="How does CNG help with project upgrades?">
@@ -172,8 +175,6 @@ Here are a few community examples of difficult native features converted into si
 - [iOS Safari Extensions](https://github.com/andrew-levy/react-native-safari-extension): Here, the process of creating a Safari Extension for iOS, which is a notoriously difficult feature to implement, is reduced to a few of lines of JSON.
 
 - [iMessage Sticker App](https://github.com/expo/config-plugins/tree/main/packages/ios-stickers): This Expo config plugin can generate an entire iMessage Sticker App from a JSON object.
-
-- [Cross-platform end-to-end testing](https://github.com/expo/config-plugins/tree/main/packages/detox): Configure native apps to support E2E testing with Detox in a single-line.
 
 - [The entire Firebase suite](https://rnfirebase.io/): Here you can see the entire native Firebase suite going from a multi-step native configuration process across multiple IDEs, down to basic JSON configuration.
 
@@ -272,3 +273,5 @@ Other packages, such as [`react-native-ble-plx`](https://github.com/Polidea/reac
 Alternatively, we also have a repo for [out-of-tree config plugins](https://github.com/expo/config-plugins) which provides plugins for popular packages that haven't adopted the system yet. Think of this like [DefinitelyTyped](https://github.com/DefinitelyTyped/DefinitelyTyped) for TypeScript. We prefer packages ship their own config plugin, but if they haven't adopted the system yet, the community can use the packages listed in the repo.
 
 </Collapsible>
+
+</FAQ>

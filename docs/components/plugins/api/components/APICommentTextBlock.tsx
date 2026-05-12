@@ -10,7 +10,6 @@ import { InlineHelp } from '~/ui/components/InlineHelp';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { CALLOUT } from '~/ui/components/Text';
 
-import { APIBoxSectionHeader } from './APIBoxSectionHeader';
 import { CommentData } from '../APIDataTypes';
 import {
   getAllTagData,
@@ -20,6 +19,7 @@ import {
   parseCommentContent,
 } from '../APISectionUtils';
 import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
+import { APIBoxSectionHeader } from './APIBoxSectionHeader';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
 type Props = {
@@ -43,7 +43,7 @@ export const APICommentTextBlock = ({
   emptyCommentFallback,
 }: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
-  const hasContent = Boolean(content?.length) || Boolean(afterContent);
+  const hasContent = (content?.length ?? 0) > 0 || Boolean(afterContent);
 
   const paramTags = hasContent ? getParamTags(content) : undefined;
   const parsedContent = (
@@ -63,19 +63,19 @@ export const APICommentTextBlock = ({
         className={mergeClasses(
           ELEMENT_SPACING,
           !isMultiline && 'flex items-center gap-1.5',
-          'last:[&>*]:!mb-0'
+          '[&>*:last-child]:mb-0!'
         )}>
         {inlineHeaders ? (
           <CALLOUT
             className={mergeClasses(
-              'my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary',
+              'text-tertiary my-1.5 flex flex-row items-center gap-1.5 font-medium',
               !isMultiline && 'my-0'
             )}>
-            <CodeSquare01Icon className="icon-sm -mt-px text-icon-tertiary" />
+            <CodeSquare01Icon className="icon-sm text-icon-tertiary -mt-px" />
             Example
           </CALLOUT>
         ) : (
-          <APIBoxSectionHeader text="Example" className="-mx-4 mb-3 mt-1" Icon={CodeSquare01Icon} />
+          <APIBoxSectionHeader text="Example" className="-mx-4 mt-1 mb-3" Icon={CodeSquare01Icon} />
         )}
         <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
           {exampleText}
@@ -87,7 +87,7 @@ export const APICommentTextBlock = ({
   const see = getTagData('see', comment);
   const seeContent = see && (
     <InlineHelp
-      className={mergeClasses('shadow-none', `!${ELEMENT_SPACING}`, '[table_&]:mt-2')}
+      className={mergeClasses('shadow-none', 'mb-2.5! [table_&]:last:mb-0!', '[table_&]:mt-2')}
       size="sm"
       type="info-light">
       <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm, remarkSupsub]}>
@@ -101,7 +101,7 @@ export const APICommentTextBlock = ({
   return (
     <div
       className={mergeClasses(
-        includeSpacing && hasContent && 'px-4 [table_&]:!mb-0 [table_&]:px-0',
+        includeSpacing && hasContent && 'px-4 [table_&]:mb-0! [table_&]:px-0',
         emptyCommentFallback && !hasContent && 'text-quaternary'
       )}>
       {includePlatforms && hasPlatforms && (

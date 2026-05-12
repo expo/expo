@@ -260,42 +260,9 @@ public class Manifest: NSObject {
     (expoClientConfigRootObject()?.optionalValue(forKey: "backgroundColor"))
   }
 
-  public func iosSplashBackgroundColor() -> String? {
-    return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        ["ios", "splash", "backgroundColor"],
-        ["splash", "backgroundColor"]
-      ])
-    }
-  }
-
   public func iosAppIconUrl() -> String? {
     return expoClientConfigRootObject().let { it in
       Manifest.string(fromManifest: it, atPath: ["iconUrl"])
-    }
-  }
-
-  public func iosSplashImageUrl() -> String? {
-    var paths = [["ios", "splash", "imageUrl"], ["splash", "imageUrl"]]
-#if os(iOS) || os(tvOS)
-    if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
-      paths.insert(contentsOf: [
-        ["ios", "splash", "tabletImageUrl"],
-        ["splash", "tabletImageUrl"]
-      ], at: 0)
-    }
-#endif
-    return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: paths)
-    }
-  }
-
-  public func iosSplashImageResizeMode() -> String? {
-    return expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        ["ios", "splash", "resizeMode"],
-        ["splash", "resizeMode"]
-      ])
     }
   }
 
@@ -321,24 +288,6 @@ public class Manifest: NSObject {
     }
 
     return forcesRTL
-  }
-
-  public func jsEngine() -> String {
-    let jsEngine = expoClientConfigRootObject().let { it in
-      Manifest.string(fromManifest: it, atPaths: [
-        ["ios", "jsEngine"],
-        ["jsEngine"]
-      ])
-    }
-
-    guard let jsEngine = jsEngine else {
-      let sdkMajorVersion = expoGoSDKMajorVersion()
-      if sdkMajorVersion > 0 && sdkMajorVersion < 48 {
-        return "jsc"
-      }
-      return "hermes"
-    }
-    return jsEngine
   }
 
   /**

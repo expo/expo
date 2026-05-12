@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '../Plugin.types';
 export declare const withPrimaryColor: ConfigPlugin;
 export declare const withPrimaryColorColors: ConfigPlugin;
 export declare const withPrimaryColorStyles: ConfigPlugin;

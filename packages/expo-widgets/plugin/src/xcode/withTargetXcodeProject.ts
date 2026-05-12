@@ -1,4 +1,5 @@
 import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
 import { addPbxGroup } from './addPbxGroup';
@@ -12,25 +13,26 @@ type TargetXcodeProjectProps = {
   targetName: string;
   bundleIdentifier: string;
   deploymentTarget: string;
+  appleTeamId?: string;
   getFileUris: () => string[];
 };
 
 const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
   config,
-  { targetName, bundleIdentifier, deploymentTarget, getFileUris }
+  { targetName, bundleIdentifier, deploymentTarget, appleTeamId, getFileUris }
 ) =>
   withXcodeProject(config, (config) => {
     const xcodeProject = config.modResults;
     const targetUuid = xcodeProject.generateUuid();
     const groupName = 'Embed Foundation Extensions';
-    const marketingVersion = config.version;
 
     const xCConfigurationList = addXCConfigurationList(xcodeProject, {
       targetName,
-      currentProjectVersion: config.ios!.buildNumber || '1',
       bundleIdentifier,
       deploymentTarget,
-      marketingVersion,
+      appleTeamId,
+      marketingVersion: '1.0',
+      currentProjectVersion: '1',
     });
 
     const productFile = addProductFile(xcodeProject, {
@@ -49,10 +51,13 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 
     addTargetDependency(xcodeProject, target);
 
-    const swiftWidgetFiles = getFileUris().filter((file) => file.endsWith('.swift'));
+    const projectRoot = config.modRequest.platformProjectRoot;
+    const targetDirectory = path.join(projectRoot, targetName);
+    const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
+    const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
 
     addBuildPhases(xcodeProject, {
-      targetUuid,
+      targetUuid: target.uuid,
       groupName,
       productFile,
       widgetFiles: swiftWidgetFiles,
@@ -60,7 +65,7 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 
     addPbxGroup(xcodeProject, {
       targetName,
-      widgetFiles: getFileUris(),
+      widgetFiles: relativePaths,
     });
 
     return config;

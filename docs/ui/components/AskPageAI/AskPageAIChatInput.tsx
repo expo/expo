@@ -18,15 +18,15 @@ export function AskPageAIChatInput({
   conversationLength,
 }: AskPageAIChatInputProps) {
   return (
-    <div className="mt-auto border-t border-default px-5 pb-6 pt-4">
+    <div className="border-default mt-auto border-t px-5 pt-4 pb-6">
       <form
-        className="flex items-center gap-1 rounded-md border border-default bg-default px-2 py-1.5"
+        className="border-default bg-default flex items-center gap-1 rounded-md border px-2 py-1.5"
         onSubmit={onSubmit}
         aria-label="Ask AI form">
         <textarea
           aria-label="Ask AI about this page"
           placeholder="Ask about this page (Shift+Enter for newline)"
-          className="max-h-[160px] min-h-[64px] flex-1 resize-none overflow-y-auto rounded-md border border-transparent bg-subtle px-3 py-2 text-sm leading-relaxed outline-none placeholder:text-tertiary focus:!shadow-none focus:!outline-none focus:ring-0 focus-visible:!shadow-none focus-visible:!outline-none focus-visible:ring-0"
+          className="bg-subtle placeholder:text-tertiary max-h-[160px] min-h-[64px] flex-1 resize-none overflow-y-auto rounded-md border border-transparent px-3 py-2 text-sm leading-relaxed outline-none focus:shadow-none! focus:ring-0 focus:outline-none! focus-visible:shadow-none! focus-visible:ring-0 focus-visible:outline-none!"
           rows={2}
           value={question}
           onChange={event => {
@@ -44,7 +44,7 @@ export function AskPageAIChatInput({
           type="submit"
           theme="quaternary"
           size="sm"
-          className="flex size-6 items-center justify-center rounded-full !p-0"
+          className="flex size-6 items-center justify-center rounded-full p-0!"
           disabled={isBusy || question.trim().length === 0}>
           <ArrowCircleUpDuotoneIcon className="icon-md text-icon-default" />
         </Button>

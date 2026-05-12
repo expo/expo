@@ -1,5 +1,5 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import type { SearchBarProps } from 'react-native-screens';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 export interface StackSearchBarProps extends SearchBarProps {
 }
 /**
@@ -28,6 +28,6 @@ export interface StackSearchBarProps extends SearchBarProps {
  * }
  * ```
  */
-export declare function StackSearchBar(props: StackSearchBarProps): import("react").JSX.Element;
+export declare function StackSearchBar({ ref, autoCapitalize, autoFocus, barTintColor, tintColor, cancelButtonText, disableBackButtonOverride, hideNavigationBar, hideWhenScrolling, inputType, obscureBackground, onBlur, onCancelButtonPress, onChangeText, onClose, onFocus, onOpen, onSearchButtonPress, placeholder, placement, allowToolbarIntegration, textColor, hintTextColor, headerIconColor, shouldShowHintSearchIcon, }: StackSearchBarProps): null;
 export declare function appendStackSearchBarPropsToOptions(options: NativeStackNavigationOptions, props: StackSearchBarProps): NativeStackNavigationOptions;
 //# sourceMappingURL=StackSearchBar.d.ts.map

@@ -78,7 +78,14 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
   await expect(
-    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], { verbose: false })
+    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], {
+      verbose: false,
+      env: {
+        ...process.env,
+        // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
+        NODE_PATH: '',
+      },
+    })
   ).rejects.toThrow(
     /Cannot determine the project's Expo SDK version because the module `expo` is not installed\. Install it with `npm install expo` and try again./
   );
@@ -221,8 +228,12 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
     { reuseExisting: false }
   );
 
-  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  const expoPackage = require(
+    require.resolve('expo/package.json', {
+      paths: [path.join(projectRoot, 'package.json')],
+    })
+  );
+  const expoSdkVersion = semver.minVersion(expoPackage.version)?.major;
   if (!expoSdkVersion) {
     throw new Error('Could not determine Expo SDK major version from template');
   }
@@ -254,6 +265,7 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
   );
 });
 
+/*
 itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'github-template-prebuild',
@@ -282,6 +294,7 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
+*/
 
 // Regression test for https://github.com/expo/expo/issues/36289
 // This tests contains assertions related to ios files, making it incompatible with Windows

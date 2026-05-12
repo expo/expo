@@ -105,7 +105,7 @@ async function promptForBackupOTPAsync(
     body: JSON.stringify({
       username,
       password,
-      secondFactorDeviceID: device.id,
+      secondFactorDeviceID: device?.id,
     }),
   });
 

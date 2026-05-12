@@ -6,7 +6,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unmatched = Unmatched;
-const native_1 = require("@react-navigation/native");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const expo_linking_1 = require("expo-linking");
 const react_1 = __importDefault(require("react"));
 const react_native_1 = require("react-native");
@@ -15,6 +15,7 @@ const NoSSR_1 = require("./NoSSR");
 const Link_1 = require("../link/Link");
 const useNavigation_1 = require("../useNavigation");
 const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
+const native_1 = require("../react-navigation/native");
 const stack_1 = require("../utils/stack");
 const Pressable_1 = require("../views/Pressable");
 /**
@@ -25,9 +26,7 @@ const Pressable_1 = require("../views/Pressable");
 function Unmatched() {
     // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L51
     // we need to ensure that the Unmatched component is not rendered on the server.
-    return (<NoSSR_1.NoSSR>
-      <UnmatchedInner />
-    </NoSSR_1.NoSSR>);
+    return ((0, jsx_runtime_1.jsx)(NoSSR_1.NoSSR, { children: (0, jsx_runtime_1.jsx)(UnmatchedInner, {}) }));
 }
 function UnmatchedInner() {
     const [render, setRender] = react_1.default.useState(false);
@@ -49,93 +48,63 @@ function UnmatchedInner() {
             });
         }
     }, [isFocused, isPreloaded, navigation]);
-    return (<react_native_1.View testID="expo-router-unmatched" style={styles.container}>
-      <NotFoundAsset />
-      <react_native_1.Text role="heading" aria-level={1} style={styles.title}>
-        Unmatched Route
-      </react_native_1.Text>
-      <react_native_1.Text role="heading" aria-level={2} style={[styles.subtitle, styles.secondaryText]}>
-        Page could not be found.
-      </react_native_1.Text>
-      {render ? (<Link_1.Link href={pathname} replace {...react_native_1.Platform.select({ native: { asChild: true } })}>
-          <Pressable_1.Pressable>
-            {({ hovered, pressed }) => (<react_native_1.Text style={[
-                    styles.pageLink,
-                    styles.secondaryText,
-                    react_native_1.Platform.select({
-                        web: {
-                            transitionDuration: '200ms',
-                            opacity: 1,
-                        },
-                    }),
-                    hovered && {
-                        opacity: 0.8,
-                        textDecorationLine: 'underline',
-                    },
-                    pressed && {
-                        opacity: 0.8,
-                    },
-                ]}>
-                {url}
-              </react_native_1.Text>)}
-          </Pressable_1.Pressable>
-        </Link_1.Link>) : (<react_native_1.View style={[styles.pageLink, styles.placeholder]}/>)}
-      <react_native_1.View style={styles.linkContainer}>
-        <Pressable_1.Pressable>
-          {({ hovered, pressed }) => (<react_native_1.Text onPress={() => {
-                if (router.canGoBack()) {
-                    router.back();
-                }
-                else {
-                    router.replace('/');
-                }
-            }} style={[
-                styles.link,
-                react_native_1.Platform.select({
-                    web: {
-                        transitionDuration: '200ms',
-                        opacity: 1,
-                    },
-                }),
-                hovered && {
-                    opacity: 0.8,
-                    textDecorationLine: 'underline',
-                },
-                pressed && {
-                    opacity: 0.8,
-                },
-            ]}>
-              Go back
-            </react_native_1.Text>)}
-        </Pressable_1.Pressable>
-        <react_native_1.Text style={[styles.linkSeparator, styles.secondaryText]}>•</react_native_1.Text>
-        <Link_1.Link href="/_sitemap" replace {...react_native_1.Platform.select({ native: { asChild: true } })}>
-          <Pressable_1.Pressable>
-            {({ hovered, pressed }) => (<react_native_1.Text style={[
-                styles.link,
-                react_native_1.Platform.select({
-                    web: {
-                        transitionDuration: '200ms',
-                        opacity: 1,
-                    },
-                }),
-                hovered && {
-                    opacity: 0.8,
-                    textDecorationLine: 'underline',
-                },
-                pressed && {
-                    opacity: 0.8,
-                },
-            ]}>
-                Sitemap
-              </react_native_1.Text>)}
-          </Pressable_1.Pressable>
-        </Link_1.Link>
-      </react_native_1.View>
-    </react_native_1.View>);
+    return ((0, jsx_runtime_1.jsxs)(react_native_1.View, { testID: "expo-router-unmatched", style: styles.container, children: [(0, jsx_runtime_1.jsx)(NotFoundAsset, {}), (0, jsx_runtime_1.jsx)(react_native_1.Text, { role: "heading", "aria-level": 1, style: styles.title, children: "Unmatched Route" }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { role: "heading", "aria-level": 2, style: [styles.subtitle, styles.secondaryText], children: "Page could not be found." }), render ? ((0, jsx_runtime_1.jsx)(Link_1.Link, { href: pathname, replace: true, ...react_native_1.Platform.select({ native: { asChild: true } }), children: (0, jsx_runtime_1.jsx)(Pressable_1.Pressable, { children: ({ hovered, pressed }) => ((0, jsx_runtime_1.jsx)(react_native_1.Text, { style: [
+                            styles.pageLink,
+                            styles.secondaryText,
+                            react_native_1.Platform.select({
+                                web: {
+                                    transitionDuration: '200ms',
+                                    opacity: 1,
+                                },
+                            }),
+                            hovered && {
+                                opacity: 0.8,
+                                textDecorationLine: 'underline',
+                            },
+                            pressed && {
+                                opacity: 0.8,
+                            },
+                        ], children: url })) }) })) : ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.pageLink, styles.placeholder] })), (0, jsx_runtime_1.jsxs)(react_native_1.View, { style: styles.linkContainer, children: [(0, jsx_runtime_1.jsx)(Pressable_1.Pressable, { children: ({ hovered, pressed }) => ((0, jsx_runtime_1.jsx)(react_native_1.Text, { onPress: () => {
+                                if (router.canGoBack()) {
+                                    router.back();
+                                }
+                                else {
+                                    router.replace('/');
+                                }
+                            }, style: [
+                                styles.link,
+                                react_native_1.Platform.select({
+                                    web: {
+                                        transitionDuration: '200ms',
+                                        opacity: 1,
+                                    },
+                                }),
+                                hovered && {
+                                    opacity: 0.8,
+                                    textDecorationLine: 'underline',
+                                },
+                                pressed && {
+                                    opacity: 0.8,
+                                },
+                            ], children: "Go back" })) }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { style: [styles.linkSeparator, styles.secondaryText], children: "\u2022" }), (0, jsx_runtime_1.jsx)(Link_1.Link, { href: "/_sitemap", replace: true, ...react_native_1.Platform.select({ native: { asChild: true } }), children: (0, jsx_runtime_1.jsx)(Pressable_1.Pressable, { children: ({ hovered, pressed }) => ((0, jsx_runtime_1.jsx)(react_native_1.Text, { style: [
+                                    styles.link,
+                                    react_native_1.Platform.select({
+                                        web: {
+                                            transitionDuration: '200ms',
+                                            opacity: 1,
+                                        },
+                                    }),
+                                    hovered && {
+                                        opacity: 0.8,
+                                        textDecorationLine: 'underline',
+                                    },
+                                    pressed && {
+                                        opacity: 0.8,
+                                    },
+                                ], children: "Sitemap" })) }) })] })] }));
 }
 function NotFoundAsset() {
-    return <react_native_1.Image source={require('expo-router/assets/unmatched.png')} style={styles.image}/>;
+    return (0, jsx_runtime_1.jsx)(react_native_1.Image, { source: require('expo-router/assets/unmatched.png'), style: styles.image });
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

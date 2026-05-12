@@ -1,148 +1,141 @@
 package expo.modules.devmenu.fab
 
-import android.annotation.SuppressLint
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.composeunstyled.Icon
+import com.composeunstyled.Text
 import expo.modules.devmenu.R
-import expo.modules.devmenu.compose.newtheme.NewAppTheme
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
+private val FabBlue = Color(0xFF007AFF)
+
 @Composable
 fun FloatingActionButtonContent(
   modifier: Modifier = Modifier,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  onRefreshPress: () -> Unit = {},
-  onEllipsisPress: () -> Unit = {}
+  isPressed: Boolean = false,
+  isDragging: Boolean = false,
+  isIdle: Boolean = false
 ) {
-  val pillShape = RoundedCornerShape(percent = 50)
-  val horizontalPadding = 14.dp
-  val verticalPadding = 16.dp
-  val animatedRotation = remember { Animatable(0f) }
-  val animatedScale = remember { Animatable(1f) }
-  val scope = rememberCoroutineScope()
+  val scale by animateFloatAsState(
+    targetValue = if (isPressed && !isDragging) 0.9f else 1f,
+    label = "pressScale"
+  )
 
-  BoxWithConstraints(
+  val idleAlpha by animateFloatAsState(
+    targetValue = if (isIdle) 0.5f else 1f,
+    label = "idleAlpha"
+  )
+
+  val idleSaturation by animateFloatAsState(
+    targetValue = if (isIdle) 0f else 1f,
+    label = "idleSaturation"
+  )
+
+  var showLabel by remember { mutableStateOf(true) }
+
+  LaunchedEffect(Unit) {
+    delay(10_000)
+    showLabel = false
+  }
+
+  Column(
+    horizontalAlignment = Alignment.CenterHorizontally,
     modifier = modifier
-      .shadow(6.dp, pillShape)
-      .border(
-        width = 1.dp,
-        color = NewAppTheme.colors.border.default,
-        shape = pillShape
-      )
-      .background(
-        color = NewAppTheme.colors.background.default,
-        shape = pillShape
-      )
-      .clip(pillShape)
+      .scale(scale)
+      .graphicsLayer {
+        alpha = idleAlpha
+      }
+      .drawWithContent {
+        val colorMatrix = android.graphics.ColorMatrix()
+        colorMatrix.setSaturation(idleSaturation)
+        val paint = android.graphics.Paint().apply {
+          colorFilter = android.graphics.ColorMatrixColorFilter(colorMatrix)
+        }
+        drawContext.canvas.nativeCanvas.saveLayer(null, paint)
+        drawContent()
+        drawContext.canvas.nativeCanvas.restore()
+      }
   ) {
-    val iconSize = maxWidth - (horizontalPadding * 2)
-
-    Column(
-      verticalArrangement = Arrangement.SpaceBetween,
-      horizontalAlignment = Alignment.CenterHorizontally,
-      modifier = modifier
-        .border(
-          width = 1.dp,
-          color = NewAppTheme.colors.border.default,
-          shape = pillShape
+    Box(
+      contentAlignment = Alignment.Center,
+      modifier = Modifier
+        .shadow(
+          elevation = 8.dp,
+          shape = CircleShape,
+          ambientColor = Color.Black.copy(alpha = 0.4f),
+          spotColor = Color.Black.copy(alpha = 0.4f)
         )
-        .fillMaxSize()
-        .padding(horizontal = horizontalPadding, vertical = verticalPadding)
+        .size(52.dp)
+        .border(4.dp, FabBlue.copy(alpha = 0.3f), CircleShape)
+        .padding(4.dp)
+        .background(FabBlue, CircleShape)
     ) {
       Icon(
-        painter = painterResource(R.drawable.refresh_round_icon),
-        contentDescription = "Refresh",
-        tint = NewAppTheme.colors.icon.tertiary,
-        modifier = Modifier
-          .size(iconSize)
-          .rotate(animatedRotation.value)
-          .clickable(
-            interactionSource = interactionSource,
-            indication = null,
-            onClick = {
-              scope.launch {
-                animatedRotation.animateTo(
-                  targetValue = 360f,
-                  animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioLowBouncy,
-                    stiffness = Spring.StiffnessVeryLow,
-                    visibilityThreshold = 5f
-                  )
-                )
-                onRefreshPress()
-                animatedRotation.snapTo(0f)
-              }
-            }
-          )
+        painter = painterResource(R.drawable.gear_fill),
+        contentDescription = "Tools",
+        tint = Color.White,
+        modifier = Modifier.size(26.dp)
       )
+    }
 
-      Icon(
-        painter = painterResource(R.drawable.ellipsis_horizontal),
-        contentDescription = "Open Dev Menu",
-        tint = NewAppTheme.colors.icon.tertiary,
+    AnimatedVisibility(
+      visible = showLabel,
+      exit = fadeOut() + scaleOut()
+    ) {
+      Box(
         modifier = Modifier
-          .size(iconSize)
-          .scale(animatedScale.value)
-          .clickable(
-            interactionSource = interactionSource,
-            // TODO @behenate: Figure out how to use ripple instead of scale animation with an interaction source shared by both buttons
-            indication = null,
-            onClick = {
-              onEllipsisPress()
-              scope.launch {
-                animatedScale.snapTo(0.9f)
-                animatedScale.animateTo(
-                  targetValue = 1f,
-                  animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessLow
-                  )
-                )
-              }
-            }
-          )
-      )
+          .padding(top = 6.dp)
+          .shadow(4.dp, RoundedCornerShape(percent = 50))
+          .background(Color.White, RoundedCornerShape(percent = 50))
+          .padding(horizontal = 10.dp, vertical = 4.dp)
+      ) {
+        Text(
+          text = "Tools",
+          color = Color.Black,
+          fontSize = 11.sp,
+          fontWeight = FontWeight.SemiBold
+        )
+      }
     }
   }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun VerticalActionPillPreview() {
-  // You would typically wrap this in your app's theme.
-  // Using a basic Column for positioning in the preview.
+fun FloatingActionButtonContentPreview() {
   Column(
-    modifier = Modifier
-      .padding(32.dp)
-      .background(NewAppTheme.colors.border.default),
+    modifier = Modifier.padding(32.dp),
     horizontalAlignment = Alignment.CenterHorizontally
   ) {
-    FloatingActionButtonContent(modifier = Modifier.size(46.dp, 92.dp))
+    FloatingActionButtonContent()
   }
 }

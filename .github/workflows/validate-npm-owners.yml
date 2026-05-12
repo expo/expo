@@ -13,13 +13,22 @@ jobs:
         uses: actions/checkout@v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-tools: 'true'
       - name: 🔎 Validate
-        run: expotools validate-npm-owners
+        run: pnpm expotools validate-npm-owners
         env:
           NPM_TOKEN_READ_ONLY: ${{ secrets.NPM_TOKEN_READ_ONLY }}
       - name: 🔔 Notify on Slack

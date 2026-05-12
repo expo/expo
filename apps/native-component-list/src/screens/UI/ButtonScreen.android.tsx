@@ -1,75 +1,143 @@
-import { Button as JetpackButton, Host, Shape } from '@expo/ui/jetpack-compose';
+import {
+  Host,
+  Button,
+  FilledTonalButton,
+  OutlinedButton,
+  ElevatedButton,
+  TextButton,
+  Text as ComposeText,
+  Column,
+  Card,
+  LazyColumn,
+  Shape,
+  Icon,
+  Spacer,
+} from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, padding, width } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
 
-import { Page, Section } from '../../components/Page';
+const addIcon = require('../../../assets/icons/api/Camera.png');
+const sendIcon = require('../../../assets/icons/api/Notification.png');
 
-function Button(props: React.ComponentProps<typeof JetpackButton>) {
+export default function ButtonScreen() {
   return (
-    <Host matchContents>
-      <JetpackButton {...props} />
+    <Host style={{ flex: 1 }}>
+      <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Filled Button</ComposeText>
+            <ComposeText>Default Material3 filled button.</ComposeText>
+            <Button onClick={() => console.log('Filled clicked')}>
+              <ComposeText>Filled</ComposeText>
+            </Button>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Filled Tonal Button</ComposeText>
+            <ComposeText>A softer alternative to a filled button.</ComposeText>
+            <FilledTonalButton onClick={() => console.log('Tonal clicked')}>
+              <ComposeText>Filled Tonal</ComposeText>
+            </FilledTonalButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Outlined Button</ComposeText>
+            <ComposeText>A medium-emphasis button with a border.</ComposeText>
+            <OutlinedButton onClick={() => console.log('Outlined clicked')}>
+              <ComposeText>Outlined</ComposeText>
+            </OutlinedButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Elevated Button</ComposeText>
+            <ComposeText>A tonal button with a shadow for more emphasis.</ComposeText>
+            <ElevatedButton onClick={() => console.log('Elevated clicked')}>
+              <ComposeText>Elevated</ComposeText>
+            </ElevatedButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Text Button</ComposeText>
+            <ComposeText>A low-emphasis button without a container.</ComposeText>
+            <TextButton onClick={() => console.log('Text clicked')}>
+              <ComposeText>Text</ComposeText>
+            </TextButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Disabled</ComposeText>
+            <ComposeText>Buttons with enabled set to false.</ComposeText>
+            <Button enabled={false}>
+              <ComposeText>Disabled Filled</ComposeText>
+            </Button>
+            <OutlinedButton enabled={false}>
+              <ComposeText>Disabled Outlined</ComposeText>
+            </OutlinedButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Custom Colors</ComposeText>
+            <ComposeText>Override container and content colors.</ComposeText>
+            <Button colors={{ containerColor: '#6200EE', contentColor: '#FFFFFF' }}>
+              <ComposeText>Purple</ComposeText>
+            </Button>
+            <FilledTonalButton colors={{ containerColor: '#FF6347', contentColor: '#FFFFFF' }}>
+              <ComposeText>Tomato</ComposeText>
+            </FilledTonalButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Leading & Trailing Icons</ComposeText>
+            <ComposeText>Use Icon as a child to add leading or trailing icons.</ComposeText>
+            <Button onClick={() => console.log('Add clicked')}>
+              <Icon source={addIcon} size={18} tint="#FFFFFF" />
+              <Spacer modifiers={[width(8)]} />
+              <ComposeText>Add Item</ComposeText>
+            </Button>
+            <OutlinedButton onClick={() => console.log('Send clicked')}>
+              <ComposeText>Send</ComposeText>
+              <Spacer modifiers={[width(8)]} />
+              <Icon source={sendIcon} size={18} />
+            </OutlinedButton>
+            <FilledTonalButton onClick={() => console.log('Both icons clicked')}>
+              <Icon source={addIcon} size={18} />
+              <Spacer modifiers={[width(8)]} />
+              <ComposeText>Create & Send</ComposeText>
+              <Spacer modifiers={[width(8)]} />
+              <Icon source={sendIcon} size={18} />
+            </FilledTonalButton>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Custom Shapes</ComposeText>
+            <ComposeText>Buttons with custom shapes.</ComposeText>
+            <Button shape={Shape.RoundedCorner({ cornerRadii: { topStart: 16, bottomEnd: 16 } })}>
+              <ComposeText>Rounded Corner</ComposeText>
+            </Button>
+            <ElevatedButton
+              shape={Shape.PillStar({
+                innerRadius: 0.5,
+                radius: 1,
+                verticesCount: 20,
+                smoothing: 1,
+              })}>
+              <ComposeText>Star</ComposeText>
+            </ElevatedButton>
+          </Column>
+        </Card>
+      </LazyColumn>
     </Host>
   );
 }
 
-export default function UIScreen() {
-  return (
-    <Page>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Section title="Default">
-          <Button>Test</Button>
-        </Section>
-        <Section title="System Styles">
-          <Button variant="bordered">Bordered</Button>
-          <Button variant="borderless">Borderless</Button>
-          <Button variant="outlined">Outlined</Button>
-          <Button variant="elevated">Elevated</Button>
-        </Section>
-        <Section title="Disabled">
-          <Button disabled>Disabled</Button>
-          <Button>Enabled</Button>
-        </Section>
-        <Section title="Button Images">
-          <Button variant="bordered" leadingIcon="filled.AccountBox">
-            Folder
-          </Button>
-          <Button variant="elevated" leadingIcon="filled.Warning">
-            Tortoise
-          </Button>
-          <Button
-            variant="borderless"
-            leadingIcon="outlined.Delete"
-            elementColors={{ contentColor: '#FF6347' }}>
-            Trash
-          </Button>
-          <Button variant="outlined" leadingIcon="outlined.Favorite" trailingIcon="filled.Favorite">
-            Heart
-          </Button>
-        </Section>
-        <Section title="Android Custom Colored Buttons">
-          <Button elementColors={{ containerColor: '#007BFF', contentColor: '#FF6347' }}>
-            Blue
-          </Button>
-          <Button elementColors={{ containerColor: '#FF6347', contentColor: '#007BFF' }}>
-            Red
-          </Button>
-        </Section>
-        <Section title="Tinted Buttons">
-          <Button color="#f00f0f">Red</Button>
-        </Section>
-        <Section title="interpolated strings">
-          <Button color="#FF6347">
-            {/* eslint-disable-next-line */}
-            Hello {'world'}
-          </Button>
-        </Section>
-        <Section title="Custom shapes">
-          <Button
-            shape={Shape.PillStar({ innerRadius: 0.5, radius: 1, verticesCount: 20, smoothing: 1 })}
-            leadingIcon="rounded.Check"
-          />
-        </Section>
-      </ScrollView>
-    </Page>
-  );
-}
+ButtonScreen.navigationOptions = {
+  title: 'Button',
+};

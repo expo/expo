@@ -1,6 +1,6 @@
 {
   "name": "@expo/dom-webview",
-  "version": "55.0.2",
+  "version": "56.0.4",
   "description": "A WebView specifically designed for Expo DOM components",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -10,7 +10,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "syncBrowserScripts": "./scripts/buildBrowserScripts.ts"
@@ -37,7 +36,9 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^55.0.2"
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

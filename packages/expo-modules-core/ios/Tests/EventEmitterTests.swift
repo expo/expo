@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("EventEmitter JS class")
+@JavaScriptActor
 struct EventEmitterTests {
   let appContext = AppContext.create()
   var runtime: ExpoRuntime {
@@ -91,7 +92,7 @@ struct EventEmitterTests {
         "result"
       ])
       .asArray()
-      .compactMap({ try $0?.asInt() })
+      .map({ try $0.asInt() })
 
     #expect(args.count == 3)
     #expect(args[0] == 14)
@@ -139,15 +140,16 @@ struct EventEmitterTests {
     var calls: Int = 0
     var receivedEventName: String?
     let eventName = "testEvent"
-    let listenerA = try runtime.createSyncFunction("listenerA") { _, _ in .undefined }
-    let listenerB = try runtime.createSyncFunction("listenerB") { _, _ in .undefined }
+    let eventNameValue = JavaScriptValue(try runtime, eventName)
+    let listenerA = try runtime.createFunction("listenerA") { _, _ in .undefined }
+    let listenerB = try runtime.createFunction("listenerB") { _, _ in .undefined }
     let observer = try setupEventObserver(runtime: runtime, functionName: "startObserving") { arguments in
-      receivedEventName = try arguments.first?.asString()
+      receivedEventName = try arguments[0].asString()
       calls = calls + 1
     }
 
-    observer.addListener.call(withArguments: [eventName, listenerA], thisObject: observer.emitter, asConstructor: false)
-    observer.addListener.call(withArguments: [eventName, listenerB], thisObject: observer.emitter, asConstructor: false)
+    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerA.asValue())
+    try observer.addListener.call(this: observer.emitter, arguments: eventName, listenerB.asValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -158,15 +160,16 @@ struct EventEmitterTests {
     var calls: Int = 0
     var receivedEventName: String?
     let eventName = "testEvent"
-    let listener = try runtime.createSyncFunction("listener") { _, _ in .undefined }
+    let eventNameValue = JavaScriptValue(try runtime, eventName)
+    let listener = try runtime.createFunction("listener") { _, _ in .undefined }
     let observer = try setupEventObserver(runtime: runtime, functionName: "stopObserving") { arguments in
-      receivedEventName = try arguments.first?.asString()
+      receivedEventName = try arguments[0].asString()
       calls = calls + 1
     }
 
-    observer.addListener.call(withArguments: [eventName, listener], thisObject: observer.emitter, asConstructor: false)
-    observer.removeListener.call(withArguments: [eventName, listener], thisObject: observer.emitter, asConstructor: false)
-    observer.removeListener.call(withArguments: [eventName, listener], thisObject: observer.emitter, asConstructor: false)
+    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
+    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
+    try observer.removeListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -177,15 +180,16 @@ struct EventEmitterTests {
     var calls: Int = 0
     var receivedEventName: String?
     let eventName = "testEvent"
-    let listener = try runtime.createSyncFunction("listener") { _, _ in .undefined }
+    let eventNameValue = JavaScriptValue(try runtime, eventName)
+    let listener = try runtime.createFunction("listener") { _, _ in .undefined }
     let observer = try setupEventObserver(runtime: runtime, functionName: "stopObserving") { arguments in
-      receivedEventName = try arguments.first?.asString()
+      receivedEventName = try arguments[0].asString()
       calls = calls + 1
     }
 
-    observer.addListener.call(withArguments: [eventName, listener], thisObject: observer.emitter, asConstructor: false)
-    observer.removeAllListeners.call(withArguments: [eventName], thisObject: observer.emitter, asConstructor: false)
-    observer.removeAllListeners.call(withArguments: [eventName], thisObject: observer.emitter, asConstructor: false)
+    try observer.addListener.call(this: observer.emitter, arguments: eventNameValue, listener.asValue())
+    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue)
+    try observer.removeAllListeners.call(this: observer.emitter, arguments: eventNameValue)
 
     #expect(calls == 1)
     #expect(receivedEventName == eventName)
@@ -275,30 +279,33 @@ struct EventEmitterTests {
 
 // MARK: - Helpers
 
-private typealias EventObserver = (
-  emitter: JavaScriptObject,
-  addListener: RawJavaScriptFunction,
-  removeListener: RawJavaScriptFunction,
-  removeAllListeners: RawJavaScriptFunction
-)
+private struct EventObserver: ~Copyable {
+  let emitter: JavaScriptObject
+  let addListener: JavaScriptFunction
+  let removeListener: JavaScriptFunction
+  let removeAllListeners: JavaScriptFunction
 
+  init(emitter: consuming JavaScriptObject) {
+    self.addListener = emitter.getPropertyAsFunction("addListener")
+    self.removeListener = emitter.getPropertyAsFunction("removeListener")
+    self.removeAllListeners = emitter.getPropertyAsFunction("removeAllListeners")
+    self.emitter = emitter
+  }
+}
+
+@JavaScriptActor
 private func setupEventObserver(
   runtime: ExpoRuntime,
   functionName: String,
-  callback: @escaping (_ arguments: [JavaScriptValue]) throws -> Void
+  callback: @escaping (_ arguments: consuming JavaScriptValuesBuffer) throws -> Void
 ) throws -> EventObserver {
-  let emitter = try! runtime.eval("new expo.EventEmitter()").asObject()
-  let observingFunction = runtime.createSyncFunction(functionName) { [callback] this, arguments in
+  let emitter = try runtime.eval("new expo.EventEmitter()").asObject()
+  let observingFunction = runtime.createFunction(functionName) { [callback] this, arguments in
     try callback(arguments)
     return .undefined
   }
 
   emitter.setProperty(functionName, value: observingFunction)
 
-  return (
-    emitter,
-    addListener: try emitter.getProperty("addListener").asFunction(),
-    removeListener: try emitter.getProperty("removeListener").asFunction(),
-    removeAllListeners: try emitter.getProperty("removeAllListeners").asFunction()
-  )
+  return EventObserver(emitter: emitter)
 }

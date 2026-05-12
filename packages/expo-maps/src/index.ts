@@ -1,4 +1,4 @@
-import { createPermissionHook } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
 
 import ExpoMaps from './ExpoMaps';
 import * as AppleTypes from './apple/AppleMaps.types';
@@ -45,7 +45,11 @@ export namespace AppleMaps {
   export const MapColorScheme = AppleTypes.AppleMapsColorScheme;
   export type MapColorScheme = AppleTypes.AppleMapsColorScheme;
 
+  export const ContourStyle = AppleTypes.AppleMapsContourStyle;
+  export type ContourStyle = AppleTypes.AppleMapsContourStyle;
+
   export type Marker = AppleTypes.AppleMapsMarker;
+  export type Annotation = AppleTypes.AppleMapsAnnotation;
   export type MapUISettings = AppleTypes.AppleMapsUISettings;
   export type MapProperties = AppleTypes.AppleMapsProperties;
 

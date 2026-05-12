@@ -179,11 +179,14 @@ internal fun PublishingExtension.createPublication(
   from: String,
   project: Project,
   libraryExtension: LibraryExtension,
-  rnVersion: String?,
-  hermesVersion: String?,
 ) {
+  val rnVersion = getReactNativeVersion(project)
+  val hermesVersion = getHermesVersion(project)
+
+  val isBrownfieldProject = project.plugins.hasPlugin("expo-brownfield-setup")
+
   val _artifactId =
-    if (rnVersion != null) {
+    if (isBrownfieldProject) {
       project.name
     } else {
       requireNotNull(libraryExtension.namespace)
@@ -198,9 +201,7 @@ internal fun PublishingExtension.createPublication(
 
       pom.withXml { xml ->
         removeReactNativeDependencyPom(xml)
-        if (rnVersion != null && hermesVersion != null) {
-          setReactNativeVersionPom(xml, rnVersion, hermesVersion)
-        }
+        setReactNativeVersionPom(xml, rnVersion, hermesVersion)
       }
     }
   }

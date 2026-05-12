@@ -5,11 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
 import expo.modules.core.ModuleRegistry
@@ -21,7 +22,8 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsResponse
 import expo.modules.interfaces.permissions.PermissionsResponseListener
 import expo.modules.interfaces.permissions.PermissionsStatus
-import java.util.*
+import java.util.LinkedList
+import java.util.Queue
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
@@ -42,9 +44,8 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private fun didAsk(permission: String): Boolean = mAskedPermissionsCache.getBoolean(permission, false)
 
   private fun addToAskedPermissionsCache(permissions: Array<out String>) {
-    with(mAskedPermissionsCache.edit()) {
+    mAskedPermissionsCache.edit(commit = true) {
       permissions.forEach { putBoolean(it, true) }
-      apply()
     }
   }
 
@@ -315,7 +316,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
 
   private fun askForWriteSettingsPermissionFirst() {
     Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS).apply {
-      data = Uri.parse("package:${context.packageName}")
+      data = "package:${context.packageName}".toUri()
       addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }.let {
       mWriteSettingsPermissionBeingAsked = true

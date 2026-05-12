@@ -1,4 +1,4 @@
-import { createPermissionHook } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
 import ExpoMaps from './ExpoMaps';
 import * as AppleTypes from './apple/AppleMaps.types';
 import { AppleMapsView } from './apple/AppleMapsView';
@@ -24,6 +24,7 @@ export var AppleMaps;
     AppleMaps.MapType = AppleTypes.AppleMapsMapType;
     AppleMaps.MapStyleElevation = AppleTypes.AppleMapsMapStyleElevation;
     AppleMaps.MapColorScheme = AppleTypes.AppleMapsColorScheme;
+    AppleMaps.ContourStyle = AppleTypes.AppleMapsContourStyle;
 })(AppleMaps || (AppleMaps = {}));
 export const requestPermissionsAsync = ExpoMaps.requestPermissionsAsync;
 export const getPermissionsAsync = ExpoMaps.getPermissionsAsync;

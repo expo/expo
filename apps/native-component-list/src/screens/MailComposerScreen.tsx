@@ -48,7 +48,7 @@ export default function MailComposerScreen() {
         isHtml: true,
       });
       setStatus(status);
-    } catch (error) {
+    } catch (error: any) {
       console.log('Error: ', error);
       Alert.alert(`Something went wrong: ${error.message}`);
     }

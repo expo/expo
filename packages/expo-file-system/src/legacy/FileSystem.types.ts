@@ -269,6 +269,11 @@ export type WritingOptions = {
    * @default FileSystem.EncodingType.UTF8
    */
   encoding?: EncodingType | 'utf8' | 'base64';
+  /**
+   * Whether to append the contents to the end of the file or overwrite the existing file.
+   * @default false
+   */
+  append?: boolean;
 };
 
 export type DeletingOptions = {

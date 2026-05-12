@@ -4,13 +4,24 @@ sidebar_title: Deploy web apps
 description: Learn how to deploy your web app using EAS Hosting.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
+import { CODE } from '~/ui/components/Text';
 
 If you are building a universal app, you can quickly deploy your web app using [EAS Hosting](/eas/hosting/introduction/). It is a service for deploying web apps built with Expo Router and React.
 
-## Prerequisites
-
-Before you begin, in your project's **app.json** file, ensure that the [`expo.web.output`](/versions/latest/config/app/#output) property is either `static` or `server`.
+<Prerequisites>
+  <Requirement
+    title={
+      <>
+        Set <CODE>expo.web.output</CODE> in app.json
+      </>
+    }>
+    In your project's **app.json**, ensure that the
+    [`expo.web.output`](/versions/latest/config/app/#output) property is either `static` or
+    `server`.
+  </Requirement>
+</Prerequisites>
 
 ## Export your web project
 
@@ -40,7 +51,7 @@ Once your deployment is complete, the EAS CLI will output a production URL to ac
 
 ## Deploy automatically
 
-You can automatically deploy your app to the web with [EAS Workflows](/eas/workflows/get-started/). First, you'll need to [configure your project](/eas/workflows/get-started/#configure-your-project), add a file named **.eas/workflows/deploy-web.yml** at the root of your project, then add the following workflow configuration:
+You can automatically deploy your app to the web with [EAS Workflows](/eas/workflows/introduction/). First, you'll need to [configure your project](/eas/workflows/get-started/), add a file named **.eas/workflows/deploy-web.yml** at the root of your project, then add the following workflow configuration:
 
 ```yaml .eas/workflows/deploy-web.yml
 name: Deploy web
@@ -61,7 +72,7 @@ The workflow above will create a web deployment on every commit to your project'
 
 <Terminal cmd={['$ eas workflow:run deploy-web.yml']} />
 
-Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples).
+Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples/introduction).
 
 ## Learn more
 

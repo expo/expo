@@ -1,7 +1,7 @@
 import { sync as globSync } from 'glob';
 
 import { CommandError } from '../../../utils/errors';
-import { ProjectInfo } from '../XcodeBuild.types';
+import type { ProjectInfo } from '../XcodeBuild.types';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
@@ -23,14 +23,14 @@ export function resolveXcodeProject(projectRoot: string): ProjectInfo {
     return {
       // Use full path instead of relative project root so that warnings and errors contain full paths as well, this helps with filtering.
       // Also helps keep things consistent in monorepos.
-      name: paths[0],
+      name: paths[0]!,
       // name: path.relative(projectRoot, paths[0]),
       isWorkspace: true,
     };
   }
   paths = findXcodeProjectPaths(projectRoot, 'xcodeproj');
   if (paths.length) {
-    return { name: paths[0], isWorkspace: false };
+    return { name: paths[0]!, isWorkspace: false };
   }
   throw new CommandError(
     'IOS_MALFORMED',

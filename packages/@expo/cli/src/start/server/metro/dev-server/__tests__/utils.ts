@@ -2,7 +2,8 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { parse } from 'node:url';
 import { promisify } from 'node:util';
-import { ClientOptions, WebSocket } from 'ws';
+import type { ClientOptions } from 'ws';
+import { WebSocket } from 'ws';
 
 import { createMetroMiddleware } from '../createMetroMiddleware';
 
@@ -14,7 +15,16 @@ export function withMetroServer(projectRoot = '/project'): {
     connect: (url: string) => WebSocket;
   };
 } {
-  const metro = createMetroMiddleware({ projectRoot });
+  const metro = createMetroMiddleware(
+    { projectRoot },
+    {
+      getMetroBundler: () =>
+        ({
+          ready: () => Promise.resolve(),
+        }) as any,
+    }
+  );
+
   const server = createServer(metro.middleware);
 
   const closeServer = promisify(server.close.bind(server));

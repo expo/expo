@@ -20,12 +20,12 @@ export const GridItem = ({
   <A
     href={href}
     className={mergeClasses(
-      'group flex flex-col items-center justify-center gap-1.5 rounded-md border border-default p-6 shadow-xs transition-all',
+      'group border-default flex flex-col items-center justify-center gap-1.5 rounded-md border p-6 shadow-xs transition-all',
       'hocus:scale-105 hocus:shadow-md'
     )}
     isStyled>
     <Icon title={title} image={image} />
-    <RawH4 className="!mt-1 text-center">{title}</RawH4>
+    <RawH4 className="mt-1! text-center">{title}</RawH4>
     {(protocol || []).length > 0 && (
       <CALLOUT
         theme="secondary"

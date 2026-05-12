@@ -11,15 +11,16 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
+    :ios => '16.4',
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
   s.source_files = '**/*.{h,cpp,m,mm,swift}'
-  
+
   s.dependency 'ExpoModulesCore'
+  s.dependency 'ExpoModulesWorklets'
 
   install_modules_dependencies(s)
 end

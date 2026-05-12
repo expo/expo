@@ -139,3 +139,9 @@ internal final class InvalidPathException: Exception {
     "Failed to create video path"
   }
 }
+
+internal class SetAssetFavoriteFailedException: GenericException<Error?> {
+  override var reason: String {
+    "Failed to update asset favorite status: \(param?.localizedDescription ?? "unknown error")"
+  }
+}

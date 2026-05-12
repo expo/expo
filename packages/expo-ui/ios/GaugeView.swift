@@ -31,14 +31,10 @@ public struct GaugeView: ExpoSwiftUI.View {
   @ViewBuilder
   private var gaugeContent: some View {
     let range = (props.min ?? 0.0)...(props.max ?? 1.0)
-    let label = props.children?.compactMap { $0.childView as? GaugeLabelView }
-      .first { $0.props.kind == .label }
-    let currentValueLabel = props.children?.compactMap { $0.childView as? GaugeLabelView }
-      .first { $0.props.kind == .currentValue }
-    let minimumValueLabel = props.children?.compactMap { $0.childView as? GaugeLabelView }
-      .first { $0.props.kind == .minimumValue }
-    let maximumValueLabel = props.children?.compactMap { $0.childView as? GaugeLabelView }
-      .first { $0.props.kind == .maximumValue }
+    let label = props.children?.slot("label")
+    let currentValueLabel = props.children?.slot("currentValue")
+    let minimumValueLabel = props.children?.slot("minimumValue")
+    let maximumValueLabel = props.children?.slot("maximumValue")
 
     Gauge(value: props.value, in: range) {
       label
@@ -53,21 +49,3 @@ public struct GaugeView: ExpoSwiftUI.View {
 #endif
 }
 
-internal enum GaugeLabelKind: String, Enumerable {
-  case label
-  case currentValue
-  case minimumValue
-  case maximumValue
-}
-
-internal final class GaugeLabelProps: ExpoSwiftUI.ViewProps {
-  @Field var kind: GaugeLabelKind = .label
-}
-
-internal struct GaugeLabelView: ExpoSwiftUI.View {
-  @ObservedObject var props: GaugeLabelProps
-
-  var body: some View {
-    Children()
-  }
-}

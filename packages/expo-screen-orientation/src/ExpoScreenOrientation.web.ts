@@ -1,12 +1,12 @@
 import { NativeModule, Platform, registerWebModule } from 'expo-modules-core';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
+import type { ExpoOrientationEvents } from './ScreenOrientation.types';
 import {
   Orientation,
   OrientationLock,
   WebOrientationLock,
   WebOrientation,
-  ExpoOrientationEvents,
 } from './ScreenOrientation.types';
 
 const OrientationLockAPIToWeb: {
@@ -148,10 +148,11 @@ class ExpoScreenOrientation extends NativeModule<ExpoOrientationEvents> {
   async getOrientationAsync(): Promise<Orientation> {
     const webOrientation =
       screen['msOrientation'] || (screen.orientation || screen['mozOrientation'] || {}).type;
-    if (!webOrientation) {
+    const orientation = OrientationWebToAPI[webOrientation];
+    if (!orientation) {
       return Orientation.UNKNOWN;
     }
-    return OrientationWebToAPI[webOrientation];
+    return orientation;
   }
   async lockAsync(orientationLock: OrientationLock): Promise<void> {
     const webOrientationLock = OrientationLockAPIToWeb[orientationLock];

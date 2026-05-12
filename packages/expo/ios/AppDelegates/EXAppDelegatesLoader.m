@@ -3,7 +3,12 @@
 #import <Expo/EXLegacyAppDelegateWrapper.h>
 
 #import <Expo/EXAppDelegatesLoader.h>
-#import <Expo/Swift.h>
+
+#if __has_include(<Expo/Expo-Swift.h>)
+#import <Expo/Expo-Swift.h>
+#else
+#import "Expo-Swift.h"
+#endif
 
 // Make the legacy wrapper conform to the protocol for subscribers.
 @interface EXLegacyAppDelegateWrapper () <EXAppDelegateSubscriberProtocol>

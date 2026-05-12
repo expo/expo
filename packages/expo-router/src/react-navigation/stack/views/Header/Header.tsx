@@ -1,0 +1,73 @@
+'use client';
+import * as React from 'react';
+import { use } from 'react';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { HeaderSegment } from './HeaderSegment';
+import { getHeaderTitle, HeaderShownContext } from '../../../elements';
+import { StackActions } from '../../../native';
+import type { StackHeaderProps } from '../../types';
+import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
+import { throttle } from '../../utils/throttle';
+
+export const Header = React.memo(function Header({
+  back,
+  layout,
+  progress,
+  options,
+  route,
+  navigation,
+  styleInterpolator,
+}: StackHeaderProps) {
+  const insets = useSafeAreaInsets();
+
+  let previousTitle;
+
+  // The label for the left back button shows the title of the previous screen
+  // If a custom label is specified, we use it, otherwise use previous screen's title
+  if (options.headerBackTitle !== undefined) {
+    previousTitle = options.headerBackTitle;
+  } else if (back) {
+    previousTitle = back.title;
+  }
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const goBack = React.useCallback(
+    throttle(() => {
+      if (navigation.isFocused() && navigation.canGoBack()) {
+        navigation.dispatch({
+          ...StackActions.pop(),
+          source: route.key,
+        });
+      }
+    }, 50),
+    [navigation, route.key]
+  );
+
+  const isModal = use(ModalPresentationContext);
+  const isParentHeaderShown = use(HeaderShownContext);
+
+  const statusBarHeight =
+    options.headerStatusBarHeight !== undefined
+      ? options.headerStatusBarHeight
+      : isModal || isParentHeaderShown
+        ? 0
+        : insets.top;
+
+  return (
+    <HeaderSegment
+      {...options}
+      title={getHeaderTitle(options, route.name)}
+      progress={progress}
+      layout={layout}
+      modal={isModal}
+      headerBackTitle={
+        options.headerBackTitle !== undefined ? options.headerBackTitle : previousTitle
+      }
+      headerStatusBarHeight={statusBarHeight}
+      onGoBack={back ? goBack : undefined}
+      backHref={back ? back.href : undefined}
+      styleInterpolator={styleInterpolator}
+    />
+  );
+});

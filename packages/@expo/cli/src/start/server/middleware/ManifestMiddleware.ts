@@ -1,14 +1,8 @@
-import {
-  ExpoConfig,
-  ExpoGoConfig,
-  getConfig,
-  PackageJSONConfig,
-  ProjectConfig,
-} from '@expo/config';
-import { resolveEntryPoint, getMetroServerRoot } from '@expo/config/paths';
+import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
+import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
-import path from 'path';
 import { resolve } from 'url';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
@@ -17,51 +11,23 @@ import {
   getBaseUrlFromExpoConfig,
   getAsyncRoutesFromExpoConfig,
   createBundleUrlPathFromExpoConfig,
-  convertPathToModuleSpecifier,
 } from './metroOptions';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
-import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import type { RuntimePlatform } from './resolvePlatform';
+import { parsePlatformHeader } from './resolvePlatform';
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
-import { UrlCreator } from '../UrlCreator';
+import type { UrlCreator } from '../UrlCreator';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-import { getPlatformBundlers, PlatformBundlers } from '../platformBundlers';
+import type { PlatformBundlers } from '../platformBundlers';
+import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
-
-const supportedPlatforms = ['ios', 'android', 'web', 'none'];
-
-export function getEntryWithServerRoot(
-  projectRoot: string,
-  props: { platform: string; pkg?: PackageJSONConfig }
-) {
-  if (!supportedPlatforms.includes(props.platform)) {
-    throw new CommandError(
-      `Failed to resolve the project's entry file: The platform "${props.platform}" is not supported.`
-    );
-  }
-  return convertPathToModuleSpecifier(
-    path.relative(getMetroServerRoot(projectRoot), resolveEntryPoint(projectRoot, props))
-  );
-}
-
-/** Get the main entry module ID (file) relative to the project root. */
-export function resolveMainModuleName(
-  projectRoot: string,
-  props: { platform: string; pkg?: PackageJSONConfig }
-): string {
-  const entryPoint = getEntryWithServerRoot(projectRoot, props);
-
-  debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
-
-  return convertPathToModuleSpecifier(stripExtension(entryPoint, 'js'));
-}
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -145,10 +111,15 @@ export abstract class ManifestMiddleware<
 
     const isHermesEnabled = isEnableHermesManaged(projectConfig.exp, platform);
 
+    // Resolve the signed-in CLI user to pass through the manifest
+    const user = await getUserAsync();
+    const username = getActorDisplayName(user);
+
     // Create the manifest and set fields within it
     const expoGoConfig = this.getExpoGoConfig({
       mainModuleName,
       hostname,
+      username: username !== 'anonymous' ? username : undefined,
     });
 
     const hostUri = this.options.constructUrl({ scheme: '', hostname });
@@ -182,10 +153,6 @@ export abstract class ManifestMiddleware<
 
   /** Get the main entry module ID (file) relative to the project root. */
   private resolveMainModuleName(props: { pkg: PackageJSONConfig; platform: string }): string {
-    let entryPoint = getEntryWithServerRoot(this.projectRoot, props);
-
-    debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
-
     // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
     // in the future (TODO) we should move this logic into a Webpack plugin and use
     // a generated file name like we do on web.
@@ -193,10 +160,12 @@ export abstract class ManifestMiddleware<
     // // TODO: Move this into BundlerDevServer and read this info from self.
     // const isNativeWebpack = server instanceof WebpackBundlerDevServer && server.isTargetingNative();
     if (this.options.isNativeWebpack) {
-      entryPoint = 'index.js';
+      return 'index';
     }
 
-    return stripExtension(entryPoint, 'js');
+    const entry = resolveRelativeEntryPoint(this.projectRoot, props);
+    debug(`Resolved entry point: ${entry} (project root: ${this.projectRoot})`);
+    return entry;
   }
 
   /** Parse request headers into options. */
@@ -266,9 +235,11 @@ export abstract class ManifestMiddleware<
   private getExpoGoConfig({
     mainModuleName,
     hostname,
+    username,
   }: {
     mainModuleName: string;
     hostname?: string | null;
+    username?: string;
   }): ExpoGoConfig {
     return {
       // localhost:8081
@@ -284,6 +255,8 @@ export abstract class ManifestMiddleware<
       },
       // Indicates the name of the main bundle.
       mainModuleName,
+      // The signed-in CLI username, used by Expo Go to verify account match.
+      ...(username ? { username } : undefined),
     };
   }
 

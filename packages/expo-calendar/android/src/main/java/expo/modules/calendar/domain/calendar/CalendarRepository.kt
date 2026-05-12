@@ -32,7 +32,7 @@ class CalendarRepository(context: Context) {
   }
 
   suspend fun findCalendarById(calendarId: String): CalendarEntity? = withContext(Dispatchers.IO) {
-    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toInt().toLong())
+    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toLong())
     val cursor = contentResolver.query(
       uri,
       findCalendarByIdQueryFields,
@@ -46,7 +46,7 @@ class CalendarRepository(context: Context) {
     }
   }
 
-  suspend fun createCalendar(calendarInput: NewCalendarInput): Int {
+  suspend fun createCalendar(calendarInput: NewCalendarInput): Long {
     val uriBuilder = CalendarContract.Calendars.CONTENT_URI
       .buildUpon()
       .appendQueryParameter(CalendarContract.CALLER_IS_SYNCADAPTER, "true")
@@ -60,12 +60,12 @@ class CalendarRepository(context: Context) {
     val calendarId = requireNotNull(calendarUri?.lastPathSegment) {
       "Couldn't decode calendar ID from inserted content URI"
     }
-    return calendarId.toInt()
+    return calendarId.toLong()
   }
 
-  suspend fun updateCalendar(updateInput: CalendarUpdateInput): Int {
-    val calendarId = updateInput.id.toInt()
-    val updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toLong())
+  suspend fun updateCalendar(updateInput: CalendarUpdateInput): Long {
+    val calendarId = updateInput.id.toLong()
+    val updateUri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId)
     withContext(Dispatchers.IO) {
       contentResolver.update(updateUri, updateInput.toContentValues(), null, null)
     }
@@ -74,7 +74,7 @@ class CalendarRepository(context: Context) {
 
   @Throws(SecurityException::class)
   suspend fun deleteCalendar(calendarId: String): Boolean {
-    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toInt().toLong())
+    val uri = ContentUris.withAppendedId(CalendarContract.Calendars.CONTENT_URI, calendarId.toLong())
     val rows = withContext(Dispatchers.IO) {
       contentResolver.delete(uri, null, null)
     }

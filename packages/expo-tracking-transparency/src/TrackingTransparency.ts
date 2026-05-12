@@ -1,11 +1,11 @@
 import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  UnavailabilityError,
   createPermissionHook,
-} from 'expo-modules-core';
+  type PermissionResponse,
+  PermissionStatus,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+} from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
@@ -150,4 +150,10 @@ export function isAvailable(): boolean {
   return Boolean(ExpoTrackingTransparency);
 }
 
-export { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions };
+// TODO(@kitten): Remove re-exports from EMC
+export {
+  type PermissionResponse,
+  PermissionStatus,
+  type PermissionExpiration,
+  type PermissionHookOptions,
+};

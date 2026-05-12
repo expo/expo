@@ -3,9 +3,9 @@
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
-    "outDir": "build",
-    "rootDir": "src",
-    "lib": ["DOM"],
-    "sourceMap": true
+    "rootDir": "./src",
+    "outDir": "./build",
+    "sourceMap": true,
+    "types": ["node"]
   },
 }

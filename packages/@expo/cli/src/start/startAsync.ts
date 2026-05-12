@@ -1,24 +1,30 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { getLogFile, shouldReduceLogs } from '../events';
+import {
+  checkDependencies,
+  printDependencyCheckResult,
+  type DependencyCheckRef,
+} from './checkDependenciesOnStart';
 import { SimulatorAppPrerequisite } from './doctor/apple/SimulatorAppPrerequisite';
 import { getXcodeVersionAsync } from './doctor/apple/XcodePrerequisite';
-import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
-import { Options, resolvePortsAsync } from './resolveOptions';
+import type { Options } from './resolveOptions';
+import { resolvePortsAsync } from './resolveOptions';
 import * as Log from '../log';
-import { BundlerStartOptions } from './server/BundlerDevServer';
-import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerManager';
+import type { BundlerStartOptions } from './server/BundlerDevServer';
+import type { MultiBundlerStartOptions } from './server/DevServerManager';
+import { DevServerManager } from './server/DevServerManager';
+import { maybeCreateMCPServerAsync } from './server/MCP';
 import { openPlatformsAsync } from './server/openPlatforms';
-import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
+import type { PlatformBundlers } from './server/platformBundlers';
+import { getPlatformBundlers } from './server/platformBundlers';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
-import { maybeCreateMCPServerAsync } from './server/MCP';
 import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
-
-const debug = require('debug')('expo:start');
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -69,9 +75,22 @@ export async function startAsync(
   options: Options,
   settings: { webOnly?: boolean }
 ) {
-  Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+  if (!shouldReduceLogs()) {
+    Log.log(chalk.gray(`Starting project at ${projectRoot}`));
+    const logFile = getLogFile();
+    if (!isInteractive() && logFile) {
+      Log.log(chalk.gray(`Logs: ${logFile}`));
+    }
+  }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
+
+  // Start dependency version check in the background as early as possible (non-blocking).
+  // The result will be displayed in the TUI once it resolves.
+  let dependencyCheckRef: DependencyCheckRef | undefined;
+  if (!env.EXPO_OFFLINE && !env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly) {
+    dependencyCheckRef = checkDependencies(projectRoot, exp, pkg);
+  }
 
   if (exp.platforms?.includes('ios') && process.platform !== 'win32') {
     // If Xcode could potentially be used, then we should eagerly perform the
@@ -109,10 +128,6 @@ export async function startAsync(
     await devServerManager.bootstrapTypeScriptAsync();
   }
 
-  if (!env.EXPO_NO_DEPENDENCY_VALIDATION && !settings.webOnly && !options.devClient) {
-    await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
-  }
-
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);
 
@@ -128,6 +143,7 @@ export async function startAsync(
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
+      dependencyCheckRef,
     });
   } else {
     // Display the server location in CI...
@@ -137,6 +153,10 @@ export async function startAsync(
         console.info(`[__EXPO_E2E_TEST:server] ${JSON.stringify({ url: defaultServerUrl })}`);
       }
       Log.log(chalk`Waiting on {underline ${defaultServerUrl}}`);
+    }
+    // In non-interactive mode, print the check outside of an interface, if it's available
+    if (dependencyCheckRef?.result) {
+      printDependencyCheckResult(dependencyCheckRef.result);
     }
   }
 

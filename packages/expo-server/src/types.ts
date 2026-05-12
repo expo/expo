@@ -1,4 +1,12 @@
 import type { _ImmutableHeaders, _ImmutableRequest } from './ImmutableRequest';
+import type {
+  GenerateMetadataFunction,
+  Metadata,
+  MetadataIconDescriptor,
+  MetadataImage,
+  MetadataValue,
+  MetadataValueArray,
+} from './metadata';
 
 /**
  * An immutable version of the Fetch API's `Headers` object. It cannot be mutated or modified.
@@ -62,7 +70,7 @@ export interface MiddlewareMatcher {
  *   },
  * };
  * ```
- * @see https://docs.expo.dev/router/reference/middleware/
+ * @see https://docs.expo.dev/router/web/middleware/
  */
 export interface MiddlewareSettings {
   /** Matcher definition that restricts the middleware to run conditionally. */
@@ -93,3 +101,12 @@ export type LoaderFunction<T = any> = (
   request: ImmutableRequest | undefined,
   params: Record<string, string | string[]>
 ) => Promise<T> | T;
+
+export type {
+  GenerateMetadataFunction,
+  Metadata,
+  MetadataIconDescriptor,
+  MetadataImage,
+  MetadataValue,
+  MetadataValueArray,
+};
