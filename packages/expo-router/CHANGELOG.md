@@ -26,6 +26,7 @@
 ### 🐛 Bug fixes
 
 - Emit `pageFocused` navigation event after the focused screen has committed, so consumers like expo-observe report accurate TTR for heavy screens. ([@Ubax](https://github.com/Ubax)) ([#45723](https://github.com/expo/expo/pull/45723) by [@Ubax](https://github.com/Ubax))
+- Avoid bundling Material Symbols fonts on Android when native tabs do not use Material icons. ([#43614](https://github.com/expo/expo/issues/43614) by [@mvincentong](https://github.com/mvincentong))
 
 ### 💡 Others
 

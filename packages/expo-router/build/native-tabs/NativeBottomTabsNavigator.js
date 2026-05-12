@@ -44,10 +44,13 @@ const NativeBottomTabsRouter_1 = require("./NativeBottomTabsRouter");
 const NativeTabTrigger_1 = require("./NativeTabTrigger");
 const NativeTabsView_1 = require("./NativeTabsView");
 const utils_1 = require("./utils");
+const Route_1 = require("../Route");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
 const linking_1 = require("../link/linking");
 const native_1 = require("../react-navigation/native");
 const children_1 = require("../utils/children");
+const Protected_1 = require("../views/Protected");
+const Screen_1 = require("../views/Screen");
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
 exports.NativeTabsContext = react_2.default.createContext(false);
@@ -132,9 +135,28 @@ function NativeTabsNavigator({ children, backBehavior = defaultBackBehavior, lab
 }
 const createNativeTabNavigator = (0, native_1.createNavigatorFactory)(NativeTabsNavigator);
 const NativeTabsNavigatorWithContext = (0, withLayoutContext_1.withLayoutContext)(createNativeTabNavigator().Navigator, undefined, true);
+const TriggerScreen = Screen_1.Screen;
+function convertNativeTabTriggerToScreen(child, contextKey) {
+    const { name, listeners } = child.props;
+    if (!name) {
+        throw new Error(`<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`);
+    }
+    if (process.env.NODE_ENV !== 'production') {
+        if (['component', 'getComponent'].some((key) => key in child.props)) {
+            throw new Error(`<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`);
+        }
+    }
+    const options = (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props);
+    if (options.hidden === false) {
+        return (0, jsx_runtime_1.jsx)(TriggerScreen, { name: name, options: options, listeners: listeners }, name);
+    }
+    return ((0, jsx_runtime_1.jsx)(Protected_1.Protected, { guard: false, children: (0, jsx_runtime_1.jsx)(Screen_1.Screen, { name: name }) }, name));
+}
 function NativeTabsNavigatorWrapper(props) {
+    const contextKey = (0, Route_1.useContextKey)();
     const triggerChildren = (0, react_2.useMemo)(() => (0, children_1.getAllChildrenOfType)(props.children, NativeTabTrigger_1.NativeTabTrigger), [props.children]);
+    const triggerScreens = (0, react_2.useMemo)(() => triggerChildren.map((child) => convertNativeTabTriggerToScreen(child, contextKey)), [contextKey, triggerChildren]);
     const nonTriggerChildren = (0, react_2.useMemo)(() => (0, children_1.getAllChildrenNotOfType)(props.children, NativeTabTrigger_1.NativeTabTrigger), [props.children]);
-    return ((0, jsx_runtime_1.jsx)(NativeTabsNavigatorWithContext, { ...props, children: triggerChildren, nonTriggerChildren: nonTriggerChildren }));
+    return ((0, jsx_runtime_1.jsx)(NativeTabsNavigatorWithContext, { ...props, children: triggerScreens, nonTriggerChildren: nonTriggerChildren }));
 }
 //# sourceMappingURL=NativeBottomTabsNavigator.js.map

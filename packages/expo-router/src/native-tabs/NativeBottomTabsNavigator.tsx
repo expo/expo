@@ -3,17 +3,19 @@
 import React, { use, useCallback, useMemo, useRef } from 'react';
 
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
-import { NativeTabTrigger } from './NativeTabTrigger';
+import { convertTabPropsToOptions, NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
 import type {
   InternalNativeTabsProps,
   NativeTabNavigationEventMap,
   NativeTabOptions,
+  NativeTabTriggerProps,
   NativeTabsProps,
   NativeTabsViewTabItem,
   OnTabChangeEventPayload,
 } from './types';
 import { convertIconColorPropToObject, convertLabelStylePropToObject } from './utils';
+import { useContextKey } from '../Route';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import { getPathFromState } from '../link/linking';
 import type {
@@ -22,7 +24,10 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { createNavigatorFactory, useNavigationBuilder } from '../react-navigation/native';
+import type { ScreenProps } from '../useScreens';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { Protected } from '../views/Protected';
+import { Screen } from '../views/Screen';
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
@@ -176,10 +181,50 @@ const NativeTabsNavigatorWithContext = withLayoutContext<
   NativeTabNavigationEventMap
 >(createNativeTabNavigator().Navigator, undefined, true);
 
+const TriggerScreen = Screen as React.ComponentType<
+  ScreenProps<NativeTabOptions, TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>
+>;
+
+function convertNativeTabTriggerToScreen(
+  child: React.ReactElement<NativeTabTriggerProps>,
+  contextKey?: string
+) {
+  const { name, listeners } = child.props;
+  if (!name) {
+    throw new Error(
+      `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`
+    );
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    if ((['component', 'getComponent'] as const).some((key) => key in child.props)) {
+      throw new Error(
+        `<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`
+      );
+    }
+  }
+
+  const options = convertTabPropsToOptions(child.props);
+  if (options.hidden === false) {
+    return <TriggerScreen key={name} name={name} options={options} listeners={listeners} />;
+  }
+
+  return (
+    <Protected key={name} guard={false}>
+      <Screen name={name} />
+    </Protected>
+  );
+}
+
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
+  const contextKey = useContextKey();
   const triggerChildren = useMemo(
     () => getAllChildrenOfType(props.children, NativeTabTrigger),
     [props.children]
+  );
+  const triggerScreens = useMemo(
+    () => triggerChildren.map((child) => convertNativeTabTriggerToScreen(child, contextKey)),
+    [contextKey, triggerChildren]
   );
   const nonTriggerChildren = useMemo(
     () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
@@ -189,7 +234,7 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   return (
     <NativeTabsNavigatorWithContext
       {...props}
-      children={triggerChildren}
+      children={triggerScreens}
       nonTriggerChildren={nonTriggerChildren}
     />
   );

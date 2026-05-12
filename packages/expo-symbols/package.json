@@ -14,6 +14,10 @@
   },
   "exports": {
     ".": "./build/index.js",
+    "./materialImageSource": {
+      "types": "./build/materialImageSource.d.ts",
+      "default": "./build/materialImageSource.js"
+    },
     "./androidWeights/*": "./build/android/weights/*/index.js"
   },
   "keywords": [

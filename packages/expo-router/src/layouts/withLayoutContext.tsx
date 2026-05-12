@@ -9,7 +9,6 @@ import type {
 import { Children, forwardRef, useMemo } from 'react';
 
 import { useContextKey } from '../Route';
-import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { PickPartial } from '../types';
 import type { ScreenProps } from '../useScreens';
@@ -41,26 +40,6 @@ export function useFilterScreenChildren(
           protectedScreens.add(child.props.name);
         } else {
           screens.push(child.props);
-        }
-        return;
-      }
-
-      if (isNativeTabTrigger(child, contextKey)) {
-        if (exclude) {
-          protectedScreens.add(child.props.name);
-        } else {
-          const options = convertTabPropsToOptions(child.props);
-          if (options.hidden === false) {
-            screens.push({
-              ...child.props,
-              options,
-            });
-          } else {
-            // - hidden = undefined -> then the route was not specified in navigator
-            // - hidden = true -> then the route is hidden
-            // In this cases we should treat the tab as protected
-            protectedScreens.add(child.props.name);
-          }
         }
         return;
       }

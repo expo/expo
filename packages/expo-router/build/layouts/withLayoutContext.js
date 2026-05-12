@@ -5,7 +5,6 @@ exports.withLayoutContext = withLayoutContext;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const Route_1 = require("../Route");
-const NativeTabTrigger_1 = require("../native-tabs/NativeTabTrigger");
 const useScreens_1 = require("../useScreens");
 const IsWithinLayoutContext_1 = require("./IsWithinLayoutContext");
 const Protected_1 = require("../views/Protected");
@@ -22,27 +21,6 @@ function useFilterScreenChildren(children, { isCustomNavigator, contextKey, } = 
                 }
                 else {
                     screens.push(child.props);
-                }
-                return;
-            }
-            if ((0, NativeTabTrigger_1.isNativeTabTrigger)(child, contextKey)) {
-                if (exclude) {
-                    protectedScreens.add(child.props.name);
-                }
-                else {
-                    const options = (0, NativeTabTrigger_1.convertTabPropsToOptions)(child.props);
-                    if (options.hidden === false) {
-                        screens.push({
-                            ...child.props,
-                            options,
-                        });
-                    }
-                    else {
-                        // - hidden = undefined -> then the route was not specified in navigator
-                        // - hidden = true -> then the route is hidden
-                        // In this cases we should treat the tab as protected
-                        protectedScreens.add(child.props.name);
-                    }
                 }
                 return;
             }

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Export the Material Symbols image source helper from a dedicated subpath. ([#43614](https://github.com/expo/expo/issues/43614) by [@mvincentong](https://github.com/mvincentong))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

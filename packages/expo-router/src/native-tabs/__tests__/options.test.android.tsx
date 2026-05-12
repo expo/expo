@@ -8,6 +8,12 @@ import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 import { appendIconOptions } from '../utils/optionsIconConverter';
 
+const mockGetMaterialSymbolSourceAsync = jest.fn();
+
+jest.mock('expo-symbols/materialImageSource', () => ({
+  unstable_getMaterialSymbolSourceAsync: mockGetMaterialSymbolSourceAsync,
+}));
+
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   const actualModule = jest.requireActual(
@@ -147,6 +153,10 @@ describe('Icons', () => {
 });
 
 describe(appendIconOptions, () => {
+  beforeEach(() => {
+    mockGetMaterialSymbolSourceAsync.mockReset();
+  });
+
   const ICON_FAMILY = {
     getImageSource: (name: 'a' | 'b' | 'c') => Promise.resolve({ uri: name }),
   };
@@ -195,5 +205,23 @@ describe(appendIconOptions, () => {
         src: { uri: 'yyy' },
       },
     });
+  });
+
+  it('when material icon is used, promise is set without loading material symbols synchronously', () => {
+    const options: NativeTabOptions = {};
+    const props: NativeTabsTriggerIconProps = {
+      md: 'home',
+    };
+    appendIconOptions(options, props);
+
+    expect(options).toEqual({
+      icon: { src: expect.any(Promise) },
+    });
+
+    const src = options.icon && 'src' in options.icon ? options.icon.src : undefined;
+    if (src instanceof Promise) {
+      src.catch(() => {});
+    }
+    expect(mockGetMaterialSymbolSourceAsync).not.toHaveBeenCalled();
   });
 });
