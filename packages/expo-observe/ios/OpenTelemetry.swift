@@ -11,10 +11,6 @@ struct OTStringValue: Codable, Sendable {
  Tagged union mirroring the OTLP `AnyValue` shape — encodes as an object with
  exactly one of `stringValue` / `intValue` / `doubleValue` / `boolValue` /
  `arrayValue` / `kvlistValue`, depending on the variant.
-
- OTLP encodes 64-bit integers as JSON strings to avoid precision loss; we follow
- that convention so collectors that rely on the protobuf-JSON mapping accept the
- payload.
  */
 enum OTAnyValue: Codable, Sendable {
   case string(String)

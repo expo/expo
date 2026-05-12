@@ -154,9 +154,12 @@ internal struct ObservabilityManager {
     request.allHTTPHeaderFields = ["Content-Type": "application/json"]
     request.httpBody = try body.toJSONData([])
 
+    #if DEBUG
     observeLogger.debug("[EAS Observe] Sending the request to \(endpointUrl) with body:")
-    // Use `print` so the JSON can be copied without including the log level emojis.
+    // Use `print` so the JSON can be copied without including the log level emojis. Wrapped in
+    // `#if DEBUG` so release builds don't pay for a second pretty-printed encode of the payload.
     print(try body.toJSONString(.prettyPrinted))
+    #endif
 
     let (responseData, urlResponse) = try await URLSession.shared.data(for: request)
 
