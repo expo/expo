@@ -6,9 +6,8 @@ import SQLite3
 /**
  SQLite-backed storage for sessions, metrics, logs and crash reports.
 
- All read/write methods are isolated to `AppMetricsActor`. The connection itself is opened with
- `SQLITE_OPEN_FULLMUTEX`, but our higher-level data is not — the actor isolation is what guarantees
- consistent reads.
+ All read/write methods are isolated to `AppMetricsActor`. The connection is opened with
+ `SQLITE_OPEN_NOMUTEX`, so SQLite assumes a single caller — actor isolation is what guarantees that.
  */
 final class MetricsDatabase {
   /**
@@ -97,6 +96,17 @@ final class MetricsDatabase {
         try fileManager.removeItem(at: url)
       }
     }
+  }
+
+  /**
+   Schema version recorded in the open database. `nil` only on a freshly created file before
+   `createSchemaIfNeeded` has stamped a version row — which shouldn't be observable from outside
+   `init`. Exposed primarily so tests can verify migration behavior without reaching into the
+   underlying `SQLiteDatabase`.
+   */
+  @AppMetricsActor
+  var schemaVersion: Int? {
+    return try? Self.readSchemaVersion(database: database)
   }
 
   // MARK: - Sessions

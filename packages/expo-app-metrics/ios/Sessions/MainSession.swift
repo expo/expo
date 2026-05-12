@@ -44,14 +44,10 @@ public final class MainSession: Session, @unchecked Sendable {
   @AppMetricsActor
   func storeCrashReport(_ crashReport: CrashReport) {
     logger.warn("[AppMetrics] Received crash report:\n\(crashReport)")
-    let encoder = JSONEncoder()
-    encoder.dateEncodingStrategy = .iso8601
+    guard let payload = encodeAsJSONString(crashReport) else {
+      return
+    }
     do {
-      let data = try encoder.encode(crashReport)
-      guard let payload = String(data: data, encoding: .utf8) else {
-        logger.warn("[AppMetrics] Crash report payload was not valid UTF-8 — skipping database write")
-        return
-      }
       try AppMetrics.database.setCrashReport(sessionId: self.id, payload: payload)
     } catch {
       logger.warn("[AppMetrics] Failed to persist crash report for session \(self.id): \(error.localizedDescription)")

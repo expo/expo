@@ -17,7 +17,7 @@ struct MetricsDatabaseTests {
   @Test
   func `creates schema with current version on first open`() throws {
     try withTemporaryDatabase { database in
-      let version = try readSchemaVersion(database: database)
+      let version = database.schemaVersion
       #expect(version == MetricsDatabase.currentSchemaVersion)
     }
   }
@@ -49,7 +49,7 @@ struct MetricsDatabaseTests {
         // Reopening should detect the mismatch, wipe the file, and start fresh.
         let database = try MetricsDatabase(directoryUrl: directoryUrl)
         let restoredSession = try database.getSession(id: "from-another-build")
-        let restoredVersion = try readSchemaVersion(database: database)
+        let restoredVersion = database.schemaVersion
         #expect(restoredSession == nil)
         #expect(restoredVersion == MetricsDatabase.currentSchemaVersion)
       }
@@ -597,16 +597,6 @@ private func makeLogRow(
     attributes: attributes,
     droppedAttributesCount: droppedAttributesCount
   )
-}
-
-@AppMetricsActor
-private func readSchemaVersion(database: MetricsDatabase) throws -> Int? {
-  let statement = try database.database.prepare("SELECT version FROM schema_version LIMIT 1")
-  var value: Int?
-  try statement.forEachRow { row in
-    value = row.int(at: 0)
-  }
-  return value
 }
 
 @AppMetricsActor

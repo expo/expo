@@ -48,6 +48,10 @@ public struct StoredSession: Codable, Sendable {
         requestHeaders: decodeJSONDictionary(session.appUpdateRequestHeaders)
       )
     )
+    // Device columns are nullable in the schema but always populated when a row is written —
+    // `DeviceInfo.current` resolves all four fields synchronously on the main thread. A nil here
+    // means the row was inserted from an older build that didn't have the column, in which case
+    // an empty string is a reasonable "we don't know" sentinel for the dispatch payload.
     self.device = DeviceInfo(
       modelName: session.deviceName ?? "",
       modelIdentifier: session.deviceModel ?? "",
@@ -75,22 +79,6 @@ public struct StoredSession: Codable, Sendable {
         timestamp: log.timestamp
       )
     }
-    self.crashReport = decode(CrashReport.self, from: row.crashReportJSON)
+    self.crashReport = decodeFromJSONString(CrashReport.self, from: row.crashReportJSON)
   }
-}
-
-private func decodeJSONDictionary<V>(_ json: String?) -> [String: V]? {
-  guard let json, let data = json.data(using: .utf8) else {
-    return nil
-  }
-  return try? JSONSerialization.jsonObject(with: data) as? [String: V]
-}
-
-private func decode<T: Decodable>(_ type: T.Type, from json: String?) -> T? {
-  guard let json, let data = json.data(using: .utf8) else {
-    return nil
-  }
-  let decoder = JSONDecoder()
-  decoder.dateDecodingStrategy = .iso8601
-  return try? decoder.decode(type, from: data)
 }

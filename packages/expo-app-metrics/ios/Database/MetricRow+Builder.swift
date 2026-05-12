@@ -34,15 +34,3 @@ extension LogRow {
     )
   }
 }
-
-private func encodeAsJSONString(_ value: AnyCodable) -> String? {
-  let encoder = JSONEncoder()
-  encoder.dateEncodingStrategy = .iso8601
-  do {
-    let data = try encoder.encode(value)
-    return String(data: data, encoding: .utf8)
-  } catch {
-    logger.warn("[AppMetrics] Failed to JSON-encode params/attributes for storage: \(error.localizedDescription)")
-    return nil
-  }
-}

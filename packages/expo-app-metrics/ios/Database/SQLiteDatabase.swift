@@ -18,7 +18,10 @@ struct SQLiteDatabase: ~Copyable {
       at: fileUrl.deletingLastPathComponent(),
       withIntermediateDirectories: true
     )
-    let flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX
+    // `NOMUTEX` opens the connection in multi-thread mode (no per-connection mutex). Callers must
+    // serialize access externally; in this module that's `AppMetricsActor`. Avoids the per-call
+    // cost of `FULLMUTEX`'s serialized mode.
+    let flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_NOMUTEX
     var openedHandle: OpaquePointer?
     let result = sqlite3_open_v2(fileUrl.path, &openedHandle, flags, nil)
     guard result == SQLITE_OK, let openedHandle else {
@@ -70,7 +73,10 @@ struct SQLiteDatabase: ~Copyable {
   }
 
   /**
-   Runs `body` inside a transaction, rolling back if it throws.
+   Runs `body` inside a transaction, rolling back if it throws. The original error always wins — a
+   rollback failure is logged but does not replace the cause, since the cause is what the caller
+   needs to diagnose the failed write. A failed rollback does mean the connection is left in an open
+   transaction; the next `BEGIN` will report that, which is the right place to notice it.
    */
   func transaction<T>(_ body: () throws -> T) throws -> T {
     try execute("BEGIN")
@@ -79,7 +85,11 @@ struct SQLiteDatabase: ~Copyable {
       try execute("COMMIT")
       return value
     } catch {
-      try? execute("ROLLBACK")
+      do {
+        try execute("ROLLBACK")
+      } catch let rollbackError {
+        logger.warn("[AppMetrics] Failed to roll back transaction: \(rollbackError.localizedDescription)")
+      }
       throw error
     }
   }

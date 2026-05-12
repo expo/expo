@@ -12,7 +12,6 @@ extension SessionRow {
     let app = AppInfo.current
     let device = DeviceInfo.current
     let updates = app.updatesInfo
-    let requestHeaders: String? = updates?.requestHeaders.flatMap { encodeAsJSON($0) }
 
     return SessionRow(
       id: session.id,
@@ -27,7 +26,7 @@ extension SessionRow {
       appBuildNumber: app.buildNumber,
       appUpdateId: updates?.updateId,
       appUpdateRuntimeVersion: updates?.runtimeVersion,
-      appUpdateRequestHeaders: requestHeaders,
+      appUpdateRequestHeaders: encodeAsJSONString(updates?.requestHeaders),
       appEasBuildId: app.easBuildId,
       deviceOs: device.systemName,
       deviceOsVersion: device.systemVersion,
@@ -39,11 +38,4 @@ extension SessionRow {
       languageTag: Locale.preferredLanguages.first
     )
   }
-}
-
-private func encodeAsJSON(_ value: [String: String]) -> String? {
-  guard let data = try? JSONSerialization.data(withJSONObject: value) else {
-    return nil
-  }
-  return String(data: data, encoding: .utf8)
 }
