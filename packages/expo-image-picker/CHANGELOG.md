@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the crop editor overflow menu background color. ([#44324](https://github.com/expo/expo/issues/44324) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 - Updated permission hooks and permission type imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))

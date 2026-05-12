@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Expo.ImagePicker.Crop" parent="Base.Theme.AppCompat">
+        <item name="actionBarPopupTheme">@style/ThemeOverlay.Expo.ImagePicker.Crop.Popup</item>
+        <item name="actionOverflowMenuStyle">@style/Widget.Expo.ImagePicker.Crop.OverflowMenu</item>
+        <item name="android:actionOverflowMenuStyle">@style/Widget.Expo.ImagePicker.Crop.OverflowMenu</item>
+    </style>
+
+    <style name="ThemeOverlay.Expo.ImagePicker.Crop.Popup" parent="ThemeOverlay.AppCompat">
+        <item name="android:colorBackground">@color/expoCropBackgroundColor</item>
+        <item name="android:textColorPrimary">@color/expoCropToolbarActionTextColor</item>
+        <item name="colorBackground">@color/expoCropBackgroundColor</item>
+    </style>
+
+    <style name="Widget.Expo.ImagePicker.Crop.OverflowMenu" parent="Widget.AppCompat.PopupMenu.Overflow">
+        <item name="android:popupBackground">@color/expoCropBackgroundColor</item>
+        <item name="popupBackground">@color/expoCropBackgroundColor</item>
+    </style>
+</resources>
