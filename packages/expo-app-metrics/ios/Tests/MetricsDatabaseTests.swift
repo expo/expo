@@ -220,6 +220,24 @@ struct MetricsDatabaseTests {
   }
 
   @Test
+  func `init deactivates sessions that were still active from a previous launch`() async throws {
+    try await withTemporaryDirectory { directoryUrl in
+      // Seed the file with a session left in `isActive = 1` (the previous process never reached
+      // `stop()`). Then reopen and confirm `init` flipped it inactive.
+      do {
+        let database = try MetricsDatabase(directoryUrl: directoryUrl)
+        try database.insert(session: makeSessionRow(id: "orphaned-active"))
+      }
+
+      let database = try MetricsDatabase(directoryUrl: directoryUrl)
+      let active = try await AppMetricsActor.isolated {
+        return try database.getAllActiveSessions().map(\.id)
+      }
+      #expect(active.isEmpty)
+    }
+  }
+
+  @Test
   func `init prunes sessions past the retention window`() async throws {
     try await withTemporaryDirectory { directoryUrl in
       // Seed the file with one row past the retention cutoff and one well inside it, then drop the

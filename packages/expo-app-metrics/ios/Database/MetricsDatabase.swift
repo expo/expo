@@ -41,7 +41,31 @@ final class MetricsDatabase: Sendable {
     self.fileUrl = directoryUrl.appendingPathComponent("\(fileName).db")
     self.database = try Self.openConnection(fileUrl: fileUrl)
     try createSchemaIfNeeded()
+    scheduleDeactivateOrphanedSessions()
     schedulePruneExpiredSessions()
+  }
+
+  /**
+   Marks any session that was still flagged active when the previous process exited (force-quit,
+   OOM, crash before `stop()` could run) as inactive. The cutoff is captured before any new session
+   row is inserted, so the just-launched main session won't be touched: tasks drain on
+   `AppMetricsActor` in FIFO order, and `Session.init` enqueues its INSERT after this task.
+
+   `weak self` for the same reason as `schedulePruneExpiredSessions` — a transient database can
+   safely deinit before its scheduled task runs.
+   */
+  private func scheduleDeactivateOrphanedSessions() {
+    let cutoff = Date.now.ISO8601Format()
+    AppMetricsActor.isolated { [weak self] in
+      guard let self else {
+        return
+      }
+      do {
+        try self.deactivateAllSessionsBefore(timestamp: cutoff)
+      } catch {
+        logger.warn("[AppMetrics] Failed to deactivate orphaned sessions: \(error.localizedDescription)")
+      }
+    }
   }
 
   /**
