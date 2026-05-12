@@ -2,11 +2,9 @@ export const checkLibraries = async (
   packageNames: string[]
 ): Promise<Record<string, ReactNativeDirectoryCheckResult> | null> => {
   try {
-    const response = await fetch('https://reactnative.directory/api/libraries/check', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ packages: packageNames }),
-    });
+    const response = await fetch(
+      `https://reactnative.directory/api/libraries/check?packages=${packageNames.join(',')}`
+    );
     if (response.ok) {
       return (await response.json()) as Record<string, ReactNativeDirectoryCheckResult>;
     } else {

@@ -8,7 +8,8 @@ jest.mock('../../../log');
 describe(checkPackagesCompatibility, () => {
   it(`warns about one unsupported package`, async () => {
     nock('https://reactnative.directory')
-      .post('/api/libraries/check')
+      .get('/api/libraries/check')
+      .query({ packages: 'react-native-code-push' })
       .reply(200, {
         'react-native-code-push': { newArchitecture: 'unsupported' },
       });
@@ -23,7 +24,10 @@ describe(checkPackagesCompatibility, () => {
 
   it(`warns about multiple unsupported package`, async () => {
     nock('https://reactnative.directory')
-      .post('/api/libraries/check')
+      .get('/api/libraries/check')
+      .query({
+        packages: '@react-native-community/blur,@gorhom/bottom-sheet,react-native-code-push',
+      })
       .reply(200, {
         '@react-native-community/blur': { newArchitecture: 'unsupported' },
         '@gorhom/bottom-sheet': { newArchitecture: 'unsupported' },
@@ -46,7 +50,8 @@ describe(checkPackagesCompatibility, () => {
 
   it(`does not warn about supported or unknown package`, async () => {
     nock('https://reactnative.directory')
-      .post('/api/libraries/check')
+      .get('/api/libraries/check')
+      .query({ packages: 'expo-image,expo-image-picker' })
       .reply(200, {
         'expo-image': { newArchitecture: 'supported' },
         'expo-image-picker': { newArchitecture: undefined },
@@ -61,7 +66,8 @@ describe(checkPackagesCompatibility, () => {
     let wasCalled = false;
 
     nock('https://reactnative.directory')
-      .post('/api/libraries/check')
+      .get('/api/libraries/check')
+      .query({ packages: '@expo-google-fonts/inter,@expo/metro-runtime,@expo/styleguide' })
       .reply(200, () => {
         wasCalled = true;
         return {};

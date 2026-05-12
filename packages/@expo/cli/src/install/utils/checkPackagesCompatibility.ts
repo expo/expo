@@ -24,13 +24,9 @@ export async function checkPackagesCompatibility(packages: string[]) {
       return;
     }
 
-    const response = await fetch('https://reactnative.directory/api/libraries/check', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ packages: packagesToCheck }),
-    });
+    const response = await fetch(
+      `https://reactnative.directory/api/libraries/check?packages=${packagesToCheck.join(',')}`
+    );
 
     if (!response.ok) {
       Log.log(chalk.gray(ERROR_MESSAGE));
