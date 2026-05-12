@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [iOS] Apply `weight` from the `font` SwiftUI modifier when a custom `family` is set (variable / custom fonts). ([#45659](https://github.com/expo/expo/pull/45659) by [@foratbahrani](https://github.com/foratbahrani))
+- Fix `useNativeState` recreating the `ObservableState` when initial value changes; the seed is now captured once via `useRef`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

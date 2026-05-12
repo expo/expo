@@ -43,6 +43,10 @@
       "types": "./build/community/picker/index.d.ts",
       "default": "./src/community/picker/index.tsx"
     },
+    "./community/slider": {
+      "types": "./build/community/slider/index.d.ts",
+      "default": "./src/community/slider/index.tsx"
+    },
     "./community/masked-view": {
       "types": "./build/community/masked-view/index.d.ts",
       "default": "./src/community/masked-view/index.tsx"

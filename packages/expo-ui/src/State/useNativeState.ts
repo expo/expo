@@ -1,5 +1,6 @@
 import { requireNativeModule } from 'expo';
 import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
+import { useRef } from 'react';
 
 import { worklets } from './optionalWorklets';
 
@@ -19,14 +20,16 @@ export type ObservableState<T> = SharedObject & {
 };
 
 /**
- * Creates an observable native state that is automatically cleaned up when the component unmounts.
+ * Creates an observable native state that is automatically cleaned up when the
+ * component unmounts. `initialValue` is captured once on the first render
  */
 export function useNativeState<T>(initialValue: T): ObservableState<T> {
+  const initialValueRef = useRef(initialValue);
   return useReleasingSharedObject(() => {
-    const state = new ExpoUI.ObservableState({ value: initialValue });
+    const state = new ExpoUI.ObservableState({ value: initialValueRef.current });
     defineValueProperty(state);
     return state;
-  }, [JSON.stringify(initialValue)]) as ObservableState<T>;
+  }, []) as ObservableState<T>;
 }
 
 type NativeObservableState = {

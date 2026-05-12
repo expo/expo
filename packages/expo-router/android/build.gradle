@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.router'
-version = '56.1.2'
+version = '56.1.3'
 
 android {
   namespace "expo.modules.router"
   defaultConfig {
     versionCode 1
-    versionName "56.1.2"
+    versionName "56.1.3"
   }
   lintOptions {
     abortOnError false

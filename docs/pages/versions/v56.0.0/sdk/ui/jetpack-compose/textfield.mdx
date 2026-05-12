@@ -260,10 +260,27 @@ When `onValueChange` is marked with the `'worklet'` directive, it runs synchrono
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, Text, useNativeState } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+import { useEffectEvent } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const phone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
+
+  const handleValueChange = useEffectEvent((v: string) => {
+    'worklet';
+    const digits = v.replace(/\D/g, '').slice(0, 10);
+    let formatted = digits;
+    if (digits.length > 6) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    } else if (digits.length > 3) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    }
+    if (formatted !== v) {
+      phone.value = formatted;
+      // Snaps to end for demo. Real masks need smarter cursor handling.
+      selection.value = { start: formatted.length, end: formatted.length };
+    }
+  });
 
   return (
     <Host matchContents>
@@ -272,20 +289,7 @@ export default function WorkletPhoneMaskExample() {
         selection={selection}
         keyboardOptions={{ keyboardType: 'phone' }}
         modifiers={[fillMaxWidth()]}
-        onValueChange={v => {
-          'worklet';
-          const digits = v.replace(/\D/g, '').slice(0, 10);
-          let formatted = digits;
-          if (digits.length > 6) {
-            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-          } else if (digits.length > 3) {
-            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-          }
-          if (formatted !== v) {
-            phone.value = formatted;
-            selection.value = { start: formatted.length, end: formatted.length };
-          }
-        }}>
+        onValueChange={handleValueChange}>
         <TextField.Placeholder>
           <Text>(555) 123-4567</Text>
         </TextField.Placeholder>
