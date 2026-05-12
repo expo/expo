@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ChartView` support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
