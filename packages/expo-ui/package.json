@@ -51,6 +51,10 @@
       "types": "./build/community/masked-view/index.d.ts",
       "default": "./src/community/masked-view/index.tsx"
     },
+    "./community/menu": {
+      "types": "./build/community/menu/index.d.ts",
+      "default": "./src/community/menu/index.tsx"
+    },
     "./babel-plugin": {
       "types": "./plugin/babel-plugin.d.ts",
       "default": "./plugin/babel-plugin.js"
