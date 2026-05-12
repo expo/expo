@@ -91,6 +91,35 @@ struct OpenTelemetryTests {
     #expect(custom.toOTMetric().name == "expo.unknown.customMetric")
   }
 
+  @Test
+  func `navigation metric names are mapped correctly`() {
+    let cold = Event.Metric(
+      category: "navigation",
+      name: "cold_ttr",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil
+    )
+    #expect(cold.toOTMetric().name == "expo.navigation.cold_ttr")
+
+    let warm = Event.Metric(
+      category: "navigation",
+      name: "warm_ttr",
+      value: 1.0,
+      timestamp: "2026-01-01T00:00:00Z",
+      sessionId: testSessionId,
+      parentSessionId: nil,
+      routeName: nil,
+      updateId: nil,
+      customParams: nil
+    )
+    #expect(warm.toOTMetric().name == "expo.navigation.warm_ttr")
+  }
+
   // MARK: - Metric structure
 
   @Test

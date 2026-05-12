@@ -88,7 +88,7 @@ afterEach(() => {
 });
 
 describe('initListeners', () => {
-  it('records TTR with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
+  it('records cold_ttr with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
     const now = performance.now();
     jest.spyOn(performance, 'now').mockReturnValue(now + 100);
     focus(events, 'a');
@@ -99,14 +99,14 @@ describe('initListeners', () => {
       sessionId: mockSessionId,
       timestamp: expect.any(String),
       category: 'navigation',
-      name: 'ttr',
+      name: 'cold_ttr',
       routeName: '/a',
       value: expect.closeTo(0.1, 2),
-      params: { isInitial: true, isAppLaunch: true, routeParams: {} },
+      params: { isAppLaunch: true, routeParams: {} },
     });
   });
 
-  it('records TTR with isAppLaunch=false on subsequent focuses', async () => {
+  it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'a');
     await flushAsync();
@@ -117,14 +117,14 @@ describe('initListeners', () => {
     await flushAsync();
 
     expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
     expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
-      isInitial: true,
       isAppLaunch: false,
       routeParams: {},
     });
   });
 
-  it('records TTR with isInitial=false when revisiting a previously rendered screen', async () => {
+  it('records warm_ttr when revisiting a previously rendered screen', async () => {
     focus(events, 'a');
     await flushAsync();
 
@@ -137,18 +137,18 @@ describe('initListeners', () => {
     await flushAsync();
 
     expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
     expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
-      isInitial: true,
       isAppLaunch: true,
       routeParams: {},
     });
+    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
     expect(mockAddCustomMetric.mock.calls[1][0].params).toEqual({
-      isInitial: true,
       isAppLaunch: false,
       routeParams: {},
     });
+    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
     expect(mockAddCustomMetric.mock.calls[2][0].params).toEqual({
-      isInitial: false,
       isAppLaunch: false,
       routeParams: {},
     });

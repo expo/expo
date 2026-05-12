@@ -34,6 +34,7 @@ export function initListeners(storage, navigationEvents) {
         const timestamp = new Date().toISOString();
         const isInitial = !storage.renderedScreensIds.has(e.screenId);
         storage.renderedScreensIds.add(e.screenId);
+        const name = isInitial ? 'cold_ttr' : 'warm_ttr';
         const mainSessionId = (await AppMetrics.getMainSession())?.id;
         if (!mainSessionId) {
             return;
@@ -46,10 +47,10 @@ export function initListeners(storage, navigationEvents) {
                 sessionId: mainSessionId,
                 timestamp,
                 category: 'navigation',
-                name: 'ttr',
+                name,
                 routeName: e.pathname,
                 value: appLaunchTtrSeconds,
-                params: { isInitial, isAppLaunch: true, routeParams: e.params },
+                params: { isAppLaunch: true, routeParams: e.params },
             });
             return;
         }
@@ -66,10 +67,10 @@ export function initListeners(storage, navigationEvents) {
                 sessionId: mainSessionId,
                 timestamp,
                 category: 'navigation',
-                name: 'ttr',
+                name,
                 routeName: e.pathname,
                 value: (now - dispatchTime) / 1000,
-                params: { isInitial, isAppLaunch: false, routeParams: e.params },
+                params: { isAppLaunch: false, routeParams: e.params },
             });
         }
         storage.pendingActions.length = 0;

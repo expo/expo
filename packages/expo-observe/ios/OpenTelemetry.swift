@@ -197,6 +197,10 @@ let metricNameMap = [
 
   // Updates
   "updates/updateDownloadTime": "expo.updates.download_time",
+
+  // Navigation
+  "navigation/cold_ttr": "expo.navigation.cold_ttr",
+  "navigation/warm_ttr": "expo.navigation.warm_ttr"
 ]
 
 nonisolated(unsafe) let formatter = ISO8601DateFormatter()
