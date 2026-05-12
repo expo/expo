@@ -58,7 +58,7 @@ function Screen(props) {
             selectedIcon: androidSelectedIcon,
             standardAppearance: androidAppearance,
             ...shared.nativeAndroidOverrides,
-        }, title: shared.title, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
+        }, title: shared.title, preventNativeSelection: options.disabled, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
 }
 const supportedTabBarItemLabelVisibilityModesSet = new Set(types_1.SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES);
 //# sourceMappingURL=NativeTabsView.android.js.map
