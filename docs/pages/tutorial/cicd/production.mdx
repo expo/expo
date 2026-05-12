@@ -217,8 +217,8 @@ To test our workflow, let's create a release branch and push it to our GitHub re
 Open the EAS dashboard and find the workflow run. Since no build exists yet for this fingerprint, the `build` jobs should run, and the `update` jobs should be grayed out.
 
 <ContentSpotlight
-  alt="EAS Workflows run with production workflow jobs."
-  src="/static/images/tutorial/cicd/production-01.png"
+  alt="EAS Workflows dashboard showing a release-branch production run with fingerprint, get-build, and Android plus iOS build jobs."
+  src="/static/images/tutorial/cicd/eas-workflows-production-build-jobs.png"
   className="max-w-160"
 />
 
@@ -234,8 +234,8 @@ Now, let's make a TypeScript/JavaScript only change in our example project on th
 After the workflow runs, notice in the EAS dashboard that the fingerprint matches the build from the last push. The `build` jobs are skipped entirely, and the `update` jobs publish an OTA update.
 
 <ContentSpotlight
-  alt="EAS Workflows run with production workflow jobs."
-  src="/static/images/tutorial/cicd/production-02.png"
+  alt="EAS Workflows production run reusing existing native builds via fingerprint match and publishing Android and iOS over-the-air updates."
+  src="/static/images/tutorial/cicd/eas-workflows-production-update-jobs.png"
   className="max-w-160"
 />
 

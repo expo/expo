@@ -92,16 +92,16 @@ Let's run the workflow manually using the command:
 On the EAS dashboard, notice that it says "Triggered manually" under the **Workflow graph** tab. Anytime the **Trigger** is set to **Manual**, it means the workflow was created using the `eas workflow:run` command.
 
 <ContentSpotlight
-  alt="Workflow running manually on EAS dashboard to create development builds for Android and iOS."
-  src="/static/images/tutorial/cicd/development-builds-01.png"
+  alt="EAS Workflows dashboard showing a manually-triggered run that creates development builds for Android and iOS in parallel."
+  src="/static/images/tutorial/cicd/eas-workflows-development-build-manual-run.png"
   className="max-w-160"
 />
 
 Although the logs for each build are shown within the workflows interface, clicking the build ID (for example, `ef90d1f` is the Android build ID shown above) opens the EAS Build page.
 
 <ContentSpotlight
-  alt="EAS Build page for an Android development build, showing the build status, fingerprint, commit, and the expanded log output."
-  src="/static/images/tutorial/cicd/development-builds-02.png"
+  alt="EAS Build details page for an Android development build, showing the build status, fingerprint hash, commit SHA, and expanded log output."
+  src="/static/images/tutorial/cicd/eas-build-android-development-build-logs.png"
   className="max-w-160"
 />
 
@@ -297,10 +297,9 @@ Let's assume we made some TypeScript/JavaScript changes to our Expo project, lik
 This triggers a new workflow that completes in seconds. On the EAS dashboard, both Android and iOS builds are skipped because a matching build already exists from the previous section.
 
 <ContentSpotlight
-  alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
-  src="/static/images/tutorial/cicd/development-builds-03.png"
+  alt="EAS Workflows run where the fingerprint and get-build jobs skip the Android and iOS build jobs because compatible existing builds were found."
+  src="/static/images/tutorial/cicd/eas-workflows-fingerprint-skips-existing-build.png"
   className="max-w-160"
-  caption="In the above image, notice that the workflow checked the hash changes via fingerprint from the previous runs, found it unchanged, and skipped creating both builds."
 />
 
 Our team pulls the latest from the `main` branch and runs `npx expo start`. The existing development build picks up the JS changes.
@@ -386,10 +385,9 @@ Commit and push the updated workflow along with the test file to `main`:
 After triggering the workflow, open the EAS dashboard and notice the flow of the jobs inside our workflow.
 
 <ContentSpotlight
-  alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
-  src="/static/images/tutorial/cicd/development-builds-04.png"
+  alt="EAS Workflows run reusing an existing development build through fingerprint matching, skipping both Android and iOS build jobs."
+  src="/static/images/tutorial/cicd/eas-workflows-fingerprint-reuses-build.png"
   className="max-w-160"
-  caption='In the above image, we can see that the "run_tests" job runs first. Once it passes, the "fingerprint" and "get-build" jobs run, followed by the build jobs (if needed).'
 />
 
 </Step>

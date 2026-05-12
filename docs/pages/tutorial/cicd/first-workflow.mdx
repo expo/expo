@@ -91,8 +91,8 @@ The `eas workflow:run` command uploads the workflow file to EAS and runs any job
 Open the URL from the previous step in a browser window. On the workflow page, we can see the `greet` job and its status. Once the job completes, expand the step output to see the logged message: `Hello, Workflows`.
 
 <ContentSpotlight
-  alt="View job logs in EAS dashboard."
-  src="/static/images/tutorial/cicd/first-workflow-01.png"
+  alt="EAS Workflows dashboard showing expanded job logs for a Hello World workflow run."
+  src="/static/images/tutorial/cicd/eas-workflows-job-logs-dashboard.png"
   className="max-w-160"
 />
 
@@ -167,8 +167,8 @@ Commit the workflow file and push it to the `main` branch:
 Let's open our project's [Workflow page](https://expo.dev/accounts/[account]/projects/[project]/workflows) on the EAS dashboard to see the new job.
 
 <ContentSpotlight
-  alt="View the automatically triggered workflow job in EAS dashboard from GitHub."
-  src="/static/images/tutorial/cicd/first-workflow-02.png"
+  alt="EAS Workflows dashboard showing a workflow run automatically triggered by a push to the GitHub repository's main branch."
+  src="/static/images/tutorial/cicd/eas-workflows-github-triggered-run.png"
   className="max-w-160"
 />
 
@@ -233,8 +233,8 @@ Run the following command from a terminal window to see the chained jobs in acti
 Open the EAS dashboard link shared by the EAS CLI. Under **Logs**, notice that the `greet` job runs first and once it completes, the `show_info` job runs and renders the Markdown content with the output from the previous job.
 
 <ContentSpotlight
-  alt="View chained jobs in EAS dashboard."
-  src="/static/images/tutorial/cicd/first-workflow-03.png"
+  alt="EAS Workflows dashboard showing two chained jobs running sequentially after the first job completes."
+  src="/static/images/tutorial/cicd/eas-workflows-chained-jobs.png"
   className="max-w-160"
 />
 

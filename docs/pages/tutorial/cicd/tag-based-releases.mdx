@@ -154,16 +154,16 @@ Make a TypeScript/JavaScript change in our example project, commit it, and push 
 The workflow triggers on the `v0.1.0` tag. Open the EAS dashboard, and under **Workflows**, notice "Deploy to production" running with `refs/tags/v0.1.0` as its branch:
 
 <ContentSpotlight
-  alt="EAS Workflows run with tag-based production workflow jobs."
-  src="/static/images/tutorial/cicd/tags-01.png"
+  alt="EAS Workflows dashboard showing a tag-triggered production workflow run with fingerprint, get-build, and update jobs for Android and iOS."
+  src="/static/images/tutorial/cicd/eas-workflows-tag-based-production-run.png"
   className="max-w-160"
 />
 
 Since this is the first production run with the fingerprint generated for a tag-based release, the `build` jobs run for both Android and iOS. Subsequent tags that point to TypeScript/JavaScript changes will skip the build jobs and go straight to `update` jobs.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing build jobs running for Android and iOS."
-  src="/static/images/tutorial/cicd/tags-02.png"
+  alt="EAS Workflows dashboard showing parallel Android and iOS production build jobs for a v0.1.0 tag release."
+  src="/static/images/tutorial/cicd/eas-workflows-tag-based-build-android-ios.png"
   className="max-w-160"
 />
 

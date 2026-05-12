@@ -135,8 +135,8 @@ Run the workflow manually using the following command:
 In the EAS dashboard, notice that the workflow follows the same fingerprint pattern we implemented for development builds. Since we are creating the preview build for the first time, it runs the build jobs for Android and iOS. If we push another commit to the `main` branch without changing native code, the workflow will skip the build jobs since compatible builds already exist.
 
 <ContentSpotlight
-  alt="Workflow running with fingerprint and get-build jobs skipping the build jobs since compatible builds already exist."
-  src="/static/images/tutorial/cicd/preview-builds-01.png"
+  alt="EAS Workflows preview run where the fingerprint and get-build jobs skip the build jobs because compatible Android and iOS builds already exist."
+  src="/static/images/tutorial/cicd/eas-workflows-preview-fingerprint-skip.png"
   className="max-w-160"
 />
 
@@ -207,19 +207,17 @@ Run the workflow manually using the following command:
 On the EAS dashboard, we can verify that the `Notify on Slack` job runs successfully.
 
 <ContentSpotlight
-  alt="In the EAS dashboard, the Notify on Slack job runs successfully after the build jobs."
-  src="/static/images/tutorial/cicd/preview-builds-02.png"
+  alt="EAS Workflows preview run showing the Notify on Slack job completing successfully after the Android and iOS build jobs."
+  src="/static/images/tutorial/cicd/eas-workflows-preview-slack-notify-job.png"
   className="max-w-160"
-  caption="The Notify on Slack job runs successfully after the build jobs complete."
 />
 
 We can also verify this in the Slack channel integrated with the app.
 
 <ContentSpotlight
-  alt="Slack notification with the status of preview builds for Android and iOS."
-  src="/static/images/tutorial/cicd/preview-builds-03.png"
+  alt="A Slack message posted by EAS Workflows showing the completion status of Android and iOS preview builds for an Expo project."
+  src="/static/images/tutorial/cicd/eas-workflows-preview-slack-notification.png"
   className="max-w-90"
-  caption="A Slack notification showing the status of preview builds for Android and iOS."
 />
 
 </Step>
@@ -281,18 +279,17 @@ Now, let's make a visible change in the Expo project (for example, change a text
 Open a pull request from `test-preview` to `main` on GitHub. The workflow will run automatically after we have created a pull request. On the EAS dashboard, we can verify that the `publish_preview` job runs first and the `comment` job runs after it succeeds.
 
 <ContentSpotlight
-  alt="In the EAS dashboard, the PR preview workflow runs after creating a pull request, with the publish_preview job followed by the comment job."
-  src="/static/images/tutorial/cicd/preview-builds-04.png"
+  alt="EAS Workflows pull-request preview run showing the publish_preview job followed by the comment job that posts the update link to GitHub."
+  src="/static/images/tutorial/cicd/eas-workflows-preview-pr-publish-comment.png"
   className="max-w-160"
 />
 
 On the GitHub pull request, a comment should appear with a link or QR code to test the update on a device.
 
 <ContentSpotlight
-  alt="A comment on the GitHub pull request with a link to the update preview."
-  src="/static/images/tutorial/cicd/preview-builds-05.png"
+  alt="A GitHub pull request comment posted by EAS Workflows linking to an EAS Update preview for the proposed changes."
+  src="/static/images/tutorial/cicd/eas-workflows-preview-github-pr-comment.png"
   className="max-w-160"
-  caption="A comment on the GitHub pull request with a link to the update preview."
 />
 
 Using the link or QR code in the comment, we can now open the update on our device or emulator/simulator and test the changes.
