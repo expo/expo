@@ -1,6 +1,9 @@
 name: PR Contributor Labeler
 
 on:
+  # pull_request_target is required so fork PRs get a write token to add labels.
+  # Safe because the only checkout is a sparse, base-branch read of
+  # .github/partner-allowlist.json — no fork code is fetched or executed.
   pull_request_target:
     types: [opened, reopened]
 
@@ -12,12 +15,12 @@ jobs:
   label:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           sparse-checkout: |
             .github/partner-allowlist.json
           sparse-checkout-cone-mode: false
-      - uses: actions/github-script@v7
+      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
         env:
           AFFILIATIONS: |
             facebook=meta
