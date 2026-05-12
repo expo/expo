@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI provides four icon button components that match the official Jetpack Compose [IconButton API](https://developer.android.com/develop/ui/compose/components/icon-button): `IconButton`, `FilledIconButton`, `FilledTonalIconButton`, and `OutlinedIconButton`. All variants share the same props and accept composable children for content.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/iconbutton/android-light.webp"
+  darkSource="/static/images/expo-ui/iconbutton/android-dark.webp"
+  alt="Filled, filled tonal, and standard Material 3 icon buttons"
+/>
 
 ## Installation
 

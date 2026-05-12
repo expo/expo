@@ -29,7 +29,7 @@ export const Table = ({
         '[&_p]:text-sm',
         '[&_li]:text-sm',
         '[&_span]:text-sm',
-        '[&_code_span]:text-inherit',
+        '[&_code_span]:text-xs',
         '[&_strong]:text-sm',
         '[&_blockquote_div]:text-sm',
         '[&_blockquote_code]:px-1 [&_blockquote_code]:py-0',

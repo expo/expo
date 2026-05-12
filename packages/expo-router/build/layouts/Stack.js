@@ -11,6 +11,7 @@ const stack_utils_1 = require("./stack-utils");
 const StackToolbar_1 = require("./stack-utils/toolbar/StackToolbar");
 StackClient_1.default.Screen = stack_utils_1.StackScreen;
 StackClient_1.default.Header = stack_utils_1.StackHeader;
+StackClient_1.default.Title = stack_utils_1.StackTitle;
 StackClient_1.default.Toolbar = StackToolbar_1.StackToolbar;
 exports.default = StackClient_1.default;
 //# sourceMappingURL=Stack.js.map

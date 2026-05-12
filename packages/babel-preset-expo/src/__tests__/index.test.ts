@@ -311,35 +311,6 @@ export * as default from './Animated';
     ).toBe(code);
   });
 
-  it(`auto-includes the @expo/ui babel plugin alongside reanimated`, () => {
-    // Regression test: the auto-include for `@expo/ui/babel-plugin` must live
-    // in its own IIFE. Sharing the reanimated/worklets fallback chain caused
-    // the chain's early return to skip @expo/ui entirely whenever reanimated
-    // was resolvable.
-    const api = {
-      caller: (cb: (caller: any) => unknown) =>
-        cb({
-          name: 'metro',
-          platform: 'ios',
-          engine: 'hermes',
-          isDev: false,
-          supportsStaticESM: false,
-        }),
-      assertVersion: () => {},
-    };
-
-    const config = (preset as any)(api, {});
-    const pluginNames = (config.plugins ?? [])
-      .flat()
-      .filter((p: any): p is Function => typeof p === 'function')
-      .map((p: any) => p.name);
-
-    // Both plugins must be present. If the @expo/ui auto-include slips back
-    // into the reanimated/worklets fallback chain, reanimated's early return
-    // drops `expoUiPlugin` from the list.
-    expect(pluginNames).toEqual(expect.arrayContaining(['WorkletsBabelPlugin', 'expoUiPlugin']));
-  });
-
   it(`does not alias @expo/vector-icons in the transformer`, () => {
     const options = {
       babelrc: false,

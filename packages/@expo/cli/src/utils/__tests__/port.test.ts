@@ -1,6 +1,11 @@
 import { freePortAsync, testPortAsync } from '../freeport';
 import { getRunningProcess } from '../getRunningProcess';
-import { choosePortAsync, ensurePortAvailabilityAsync } from '../port';
+import {
+  choosePortAsync,
+  ensurePortAvailabilityAsync,
+  getFreePortAsync,
+  resolvePortAsync,
+} from '../port';
 import { confirmAsync } from '../prompts';
 
 jest.mock('../freeport', () => ({
@@ -41,9 +46,9 @@ describe(ensurePortAvailabilityAsync, () => {
 
 describe(choosePortAsync, () => {
   it(`returns any port when given port is 0`, async () => {
-    jest.mocked(freePortAsync).mockResolvedValueOnce(1000);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(1024);
     const port = await choosePortAsync('/', { defaultPort: 0 });
-    expect(port).toBe(1000);
+    expect(port).toBe(1024);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
   it(`returns same port when given port is available`, async () => {
@@ -86,6 +91,23 @@ describe(choosePortAsync, () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
     expect(port).toBe(null);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe(resolvePortAsync, () => {
+  it(`finds the first available port from the fallback when port is 0`, async () => {
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8081);
+    const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
+    expect(port).toBe(8081);
+    expect(freePortAsync).toHaveBeenCalledWith(8081, [null, 'localhost']);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`finds the next available port from the fallback when port is 0 and fallback is busy`, async () => {
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
+    expect(port).toBe(8082);
+    expect(freePortAsync).toHaveBeenCalledWith(8081, [null, 'localhost']);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
 });

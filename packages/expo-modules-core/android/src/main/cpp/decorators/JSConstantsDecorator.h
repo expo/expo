@@ -2,9 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <react/jni/ReadableNativeMap.h>
-#include <folly/dynamic.h>
+#include "../ExpoHeader.pch"
 
 #include "JSDecorator.h"
 #include "../JNIFunctionBody.h"

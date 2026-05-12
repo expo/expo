@@ -8,11 +8,7 @@
 
 import type { TransformResultDependency } from '@expo/metro/metro/DeltaBundler';
 import countLines from '@expo/metro/metro/lib/countLines';
-import type {
-  JsTransformerConfig,
-  JsTransformOptions,
-  JsOutput,
-} from '@expo/metro/metro-transform-worker';
+import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import { relative, dirname } from 'node:path';
 
 import { getBrowserslistTargets } from './browserslist';
@@ -32,7 +28,11 @@ import { toPosixPath } from '../utils/filePath';
 
 export interface TransformResponse {
   readonly dependencies: readonly TransformResultDependency[];
-  readonly output: readonly JsOutput[];
+  // `ExpoJsOutput` widens `data.map` to `SerializableSourceMap |
+  // MetroSourceMapSegmentTuple[]`. Metro readers still see plain tuples
+  // because the `Bundler.transformFile` wrapper swaps the
+  // `SerializableSourceMap` for an `Array.isArray`-true Proxy first.
+  readonly output: readonly ExpoJsOutput[];
 }
 
 const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;

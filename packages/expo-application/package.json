@@ -1,6 +1,6 @@
 {
   "name": "expo-application",
-  "version": "55.0.8",
+  "version": "56.0.3",
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "main": "build/Application.js",
   "types": "build/Application.d.ts",
@@ -30,9 +30,10 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/application/",
   "dependencies": {},
   "devDependencies": {
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

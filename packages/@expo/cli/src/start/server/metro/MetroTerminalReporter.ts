@@ -1,7 +1,7 @@
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
-import { stripVTControlCharacters } from 'util';
+import { format as utilFormat, stripVTControlCharacters } from 'util';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import type {
@@ -22,6 +22,7 @@ import {
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
 import { events, shouldReduceLogs } from '../../../events';
 import { stripAnsi } from '../../../utils/ansi';
+import { isInteractive } from '../../../utils/interactive';
 
 type ClientLogLevel =
   | 'trace'
@@ -97,6 +98,19 @@ export class MetroTerminalReporter extends TerminalReporter {
     terminal: Terminal
   ) {
     super(terminal);
+  }
+
+  /**
+   * Suppress status messages in non-interactive mode.
+   * In TTY mode, Terminal overwrites status lines in-place (progress bars).
+   * In non-TTY mode, Terminal writes status via a 3500ms throttle, producing
+   * permanent output that interleaves with log messages like "Bundled Xms".
+   */
+  _getStatusMessage(): string {
+    if (!isInteractive()) {
+      return '';
+    }
+    return super._getStatusMessage();
   }
 
   _log(event: TerminalReportableEvent): void {
@@ -321,8 +335,17 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
-  #onClientLog(evt: { type: 'client_log'; level?: ClientLogLevel; data: unknown[] }) {
-    const { level = 'log', data } = evt;
+  #onClientLog(evt: {
+    type: 'client_log';
+    level?: ClientLogLevel;
+    data: unknown[];
+    mode?: string;
+  }) {
+    const { level = 'log' } = evt;
+    // Apply printf-style format substitution (e.g. %s, %d) that browsers handle
+    // natively in console methods but Node/Metro terminal logging does not.
+    const data = applyConsoleFormatting(evt.data);
+    const platformTag = getPlatformTagForClientLog(evt.mode);
     if (level === 'warn' || (level as string) === 'error') {
       let hasStack = false;
       const parsed = data.map((msg) => {
@@ -385,7 +408,7 @@ export class MetroTerminalReporter extends TerminalReporter {
               : symbolicated;
 
           event('client_log', { level, data: symbolicated });
-          logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
+          logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...filtered);
         })();
         return;
       }
@@ -393,7 +416,7 @@ export class MetroTerminalReporter extends TerminalReporter {
 
     event('client_log', { level, data });
     // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-    logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...data);
+    logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...data);
   }
 
   #captureLog(evt: TerminalReportableEvent) {
@@ -538,11 +561,51 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
   );
 }
 
+/** Apply printf-style format substitutions (%s, %d, %i, %f, %o, %O) that browsers handle natively */
+function applyConsoleFormatting(data: unknown[]): unknown[] {
+  if (data.length <= 1 || typeof data[0] !== 'string' || !/%[sdifoO%]/.test(data[0])) {
+    return data;
+  }
+  return [utilFormat(...(data as [string, ...unknown[]]))];
+}
+
+/** @returns formatted platform name for a client log event, or null if no prefix should be shown */
+function getPlatformTagForClientLog(mode?: string): string | null {
+  switch (mode) {
+    case 'ios':
+      return 'iOS';
+    case 'android':
+      return 'Android';
+    case 'web':
+      return 'Web';
+    case 'dom':
+      return 'DOM';
+    default:
+      return null;
+  }
+}
+
 /** @returns platform specific tag for a `BundleDetails` object */
 function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): string {
   const platform = bundleDetails?.platform ?? null;
   if (platform) {
-    const formatted = { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform;
+    let formatted: string;
+    switch (platform) {
+      case 'ios':
+        formatted = 'iOS';
+        break;
+      case 'android':
+        formatted = 'Android';
+        break;
+      case 'web':
+        formatted = 'Web';
+        break;
+      case 'dom':
+        formatted = 'DOM';
+        break;
+      default:
+        formatted = platform;
+    }
     return `${chalk.bold(formatted)} `;
   }
 

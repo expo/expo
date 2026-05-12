@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI provides four FloatingActionButton variants matching the Material Design 3 [`FloatingActionButton`](https://developer.android.com/develop/ui/compose/components/fab) API:
 
@@ -19,6 +20,13 @@ Expo UI provides four FloatingActionButton variants matching the Material Design
 Each component uses slot-based children (`.Icon` and, for `ExtendedFloatingActionButton`, `.Text`) to compose content.
 
 > **Note:** If you need multiple action buttons in a floating toolbar, use [`HorizontalFloatingToolbar`](/versions/latest/sdk/ui/jetpack-compose/horizontalfloatingtoolbar/) instead.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/floatingactionbutton/android-light.webp"
+  darkSource="/static/images/expo-ui/floatingactionbutton/android-dark.webp"
+  alt="Small, regular, and large Material 3 floating action buttons"
+/>
 
 ## Installation
 

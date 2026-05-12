@@ -1,1 +1,1 @@
-{"version":3,"file":"SymbolView.d.ts","sourceRoot":"","sources":["../src/SymbolView.tsx"],"names":[],"mappings":"AACA,OAAO,EAAW,KAAK,GAAG,EAAE,MAAM,OAAO,CAAC;AAG1C,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAQ5D,wBAAgB,UAAU,CAAC,KAAK,EAAE,eAAe,GAAG,GAAG,CAAC,OAAO,CA+B9D"}
+{"version":3,"file":"SymbolView.d.ts","sourceRoot":"","sources":["../src/SymbolView.tsx"],"names":[],"mappings":"AACA,OAAO,EAAgC,KAAK,GAAG,EAAE,MAAM,OAAO,CAAC;AAG/D,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,sBAAsB,CAAC;AAQ5D,wBAAgB,UAAU,CAAC,KAAK,EAAE,eAAe,GAAG,GAAG,CAAC,OAAO,CAsC9D"}

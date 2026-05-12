@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
+#include "ExpoHeader.pch"
 
 #include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>

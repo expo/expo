@@ -1035,7 +1035,7 @@ properties.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1278,7 +1278,7 @@ properties.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1721,7 +1721,7 @@ value depending on the state of the credential.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1974,7 +1974,7 @@ refresh operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -2278,7 +2278,7 @@ sign-in operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -2605,7 +2605,7 @@ sign-out operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -3161,7 +3161,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -3662,7 +3662,7 @@ may be
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4284,7 +4284,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4616,7 +4616,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4968,7 +4968,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -7310,7 +7310,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -7920,7 +7920,7 @@ available on this device.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -8514,7 +8514,7 @@ After calling this function, the listener will no longer receive any events from
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -8652,7 +8652,7 @@ After calling this function, the listener will no longer receive any events from
         class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
       >
         <table
-          class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+          class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
             class="border-b-default bg-subtle border-b"
@@ -8923,7 +8923,7 @@ After calling this function, the listener will no longer receive any events from
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"

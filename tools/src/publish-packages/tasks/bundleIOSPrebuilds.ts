@@ -27,7 +27,7 @@ const IOS_PREBUILD_PACKAGES = [
   'expo-modules-core',
   'expo-print',
   'expo-sensors',
-  //'expo-ui', // Until we have support for worklets (3rd party frameworks) in prebuilds, we can't include this package because it has a dependency on react-native-worklets
+  'expo-ui',
   'expo-video',
 ];
 

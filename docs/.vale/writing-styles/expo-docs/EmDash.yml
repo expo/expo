@@ -1,9 +1,11 @@
 extends: substitution
-message: "Instead of '-' or '--', use '&mdash;'. Markdown renders this nicely."
+message: "Use '%s' instead. Markdown renders this nicely."
 link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md#use-mdash'
 level: suggestion
 scope: raw
-# Look for ' - ' (space, hyphen, space) or ' -- ' (space, two hyphens, space)
+nonword: true
+# Look for ' - ' (space, hyphen, space), ' -- ' (space, two hyphens, space), or '—' (Unicode em-dash, U+2014)
 swap:
   ' - ': ' &mdash; '
   ' -- ': ' &mdash; '
+  '—': '&mdash;'

@@ -5,7 +5,6 @@ import { Tabs, type TabsScreenProps } from 'react-native-screens';
 
 import { HrefPreview } from '../../link/preview/HrefPreview';
 import { renderRouter, within } from '../../testing-library';
-import { appendIconOptions } from '../NativeTabTrigger';
 import { NativeTabs } from '../NativeTabs';
 import type {
   DrawableIcon,
@@ -15,6 +14,7 @@ import type {
   SrcIcon,
 } from '../common/elements';
 import type { NativeTabOptions } from '../types';
+import { appendIconOptions } from '../utils/optionsIconConverter';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');

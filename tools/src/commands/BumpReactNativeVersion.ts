@@ -14,6 +14,7 @@ const APPS_DIR = path.join(EXPO_DIR, 'apps');
 const PACKAGES_DIR = path.join(EXPO_DIR, 'packages');
 const TEMPLATES_DIR = path.join(EXPO_DIR, 'templates');
 
+const ROOT_PACKAGE_JSON_PATH = path.join(EXPO_DIR, 'package.json');
 const BUNDLED_NATIVE_MODULES_PATH = path.join(EXPO_DIR, 'packages/expo/bundledNativeModules.json');
 
 const REACT_NATIVE_PACKAGE = 'react-native';
@@ -46,6 +47,10 @@ async function main(options: { version?: string }) {
     if (updated) {
       totalUpdated++;
     }
+  }
+
+  if (await updateRootResolutions(newVersion)) {
+    totalUpdated++;
   }
 
   await updateBundledNativeModules(newVersion);
@@ -83,8 +88,11 @@ async function findAllPackageJsonPaths(): Promise<string[]> {
     '**/__fixtures__/**',
   ];
 
+  // Expo Go Vendored third-party modules shouldn't have their react-native versions bumped
+  const appsIgnore = [...ignore, 'expo-go/modules/**'];
+
   const [appPaths, packagePaths, templatePaths] = await Promise.all([
-    glob('**/package.json', { cwd: APPS_DIR, ignore }),
+    glob('**/package.json', { cwd: APPS_DIR, ignore: appsIgnore }),
     glob('**/package.json', { cwd: PACKAGES_DIR, ignore }),
     glob('*/package.json', { cwd: TEMPLATES_DIR, ignore }),
   ]);
@@ -131,6 +139,39 @@ async function updatePackageJson(packageJsonPath: string, newVersion: string): P
     await JsonFile.writeAsync(packageJsonPath, json);
     const relativePath = path.relative(EXPO_DIR, packageJsonPath);
     logger.log(`  Updated ${chalk.cyan(relativePath)}`);
+  }
+
+  return modified;
+}
+
+/**
+ * Updates react-native and @react-native/* versions in the root package.json's
+ * `resolutions` field. Returns true if the file was modified.
+ */
+async function updateRootResolutions(newVersion: string): Promise<boolean> {
+  const json = await JsonFile.readAsync(ROOT_PACKAGE_JSON_PATH);
+  const resolutions = json.resolutions as Record<string, string> | undefined;
+  if (!resolutions) return false;
+
+  let modified = false;
+
+  for (const [name, currentVersion] of Object.entries(resolutions)) {
+    if (name === REACT_NATIVE_PACKAGE || name.startsWith(REACT_NATIVE_SCOPE)) {
+      if (currentVersion === '*') continue;
+
+      const prefix = currentVersion.match(/^([~^]?)/)?.[1] ?? '';
+      const updatedVersion = `${prefix}${newVersion}`;
+
+      if (currentVersion !== updatedVersion) {
+        resolutions[name] = updatedVersion;
+        modified = true;
+      }
+    }
+  }
+
+  if (modified) {
+    await JsonFile.writeAsync(ROOT_PACKAGE_JSON_PATH, json);
+    logger.log(`  Updated ${chalk.cyan('package.json')} (resolutions)`);
   }
 
   return modified;

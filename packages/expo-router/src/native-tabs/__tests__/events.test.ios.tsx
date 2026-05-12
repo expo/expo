@@ -110,7 +110,7 @@ it('emits tabPress event onNativeFocusChange', () => {
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
@@ -127,7 +127,7 @@ it('emits tabPress event onNativeFocusChange', () => {
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
@@ -144,7 +144,7 @@ it('emits tabPress event onNativeFocusChange', () => {
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
@@ -218,7 +218,7 @@ it('does not pop stack on repeated tab press', async () => {
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
@@ -235,7 +235,7 @@ it('does not pop stack on repeated tab press', async () => {
       provenance: 0,
       isRepeated: false,
       hasTriggeredSpecialEffect: false,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 
@@ -260,7 +260,7 @@ it('does not pop stack on repeated tab press', async () => {
       provenance: 0,
       isRepeated: true,
       hasTriggeredSpecialEffect: true,
-      isNativeAction: true,
+      actionOrigin: 'user',
     },
   } as NativeSyntheticEvent<TabSelectedEvent>);
 

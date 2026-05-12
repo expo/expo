@@ -18,6 +18,13 @@ data class PendingMetric(
   val addedAt: String
 )
 
+@Entity(tableName = "pending_logs")
+data class PendingLog(
+  @PrimaryKey val logId: String,
+  // ISO 8601 timestamp
+  val addedAt: String
+)
+
 @Dao
 interface PendingMetricDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -33,9 +40,26 @@ interface PendingMetricDao {
   suspend fun deleteOlderThan(cutoffTimestamp: String)
 }
 
-@Database(entities = [PendingMetric::class], version = 1, exportSchema = false)
+@Dao
+interface PendingLogDao {
+  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  suspend fun insertAll(logs: List<PendingLog>)
+
+  @Query("SELECT logId FROM pending_logs")
+  suspend fun getAllLogIds(): List<String>
+
+  @Query("DELETE FROM pending_logs WHERE logId IN (:logIds)")
+  suspend fun deleteByIds(logIds: List<String>)
+
+  @Query("DELETE FROM pending_logs WHERE addedAt < :cutoffTimestamp")
+  suspend fun deleteOlderThan(cutoffTimestamp: String)
+}
+
+@Database(entities = [PendingMetric::class, PendingLog::class], version = 2, exportSchema = false)
 abstract class ObserveDatabase : RoomDatabase() {
   abstract fun pendingMetricDao(): PendingMetricDao
+
+  abstract fun pendingLogDao(): PendingLogDao
 
   companion object {
     @Volatile

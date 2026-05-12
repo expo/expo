@@ -73,7 +73,7 @@ Defaults to `true` for server environments, and `false` for client environments 
 ];
 ```
 
-This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
+This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx).
 
 ### [`jsxImportSource`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#importsource)
 
@@ -159,10 +159,6 @@ Enable transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegi
 > **Note:** If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
 
 ### `enableBabelRuntime`
-
-Passed to `@react-native/babel-preset`.
-
-### `disableFlowStripTypesTransform`
 
 Passed to `@react-native/babel-preset`.
 

@@ -591,6 +591,24 @@ export const scrollDismissesKeyboard = (
 export const scrollDisabled = (disabled: boolean = true) =>
   createModifier('scrollDisabled', { disabled });
 
+/**
+ * Controls the visibility of scroll indicators for scrollable views.
+ * Mirrors SwiftUI's `scrollIndicators(_:axes:)` modifier.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: prefer showing indicators (may still be hidden by the system).
+ * - `'hidden'`: prefer hiding indicators (may still be shown by the system).
+ * - `'never'`: never show indicators.
+ * @param axes - Axes to apply the visibility to. Defaults to `'both'`.
+ * @platform ios 16.0+
+ * @platform tvos 16.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/scrollindicators(_:axes:)).
+ */
+export const scrollIndicators = (
+  visibility: 'automatic' | 'visible' | 'hidden' | 'never',
+  axes: 'vertical' | 'horizontal' | 'both' = 'both'
+) => createModifier('scrollIndicators', { visibility, axes });
+
 export type UnitPointValue =
   | 'zero'
   | 'topLeading'
@@ -1313,6 +1331,7 @@ export type BuiltInModifier =
   | ReturnType<typeof containerRelativeFrame>
   | ReturnType<typeof scrollContentBackground>
   | ReturnType<typeof scrollDisabled>
+  | ReturnType<typeof scrollIndicators>
   | ReturnType<typeof defaultScrollAnchor>
   | ReturnType<typeof defaultScrollAnchorForRole>
   | ReturnType<typeof scrollTargetBehavior>

@@ -4,7 +4,6 @@ import semver from 'semver';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackageAccess } from './checkPackageAccess';
 import { loadRequestedParcels } from './loadRequestedParcels';
-import { packPackageToTarball } from './packPackageToTarball';
 import { publishAndroidArtifacts } from './publishAndroidPackages';
 import { publishPackages } from './publishPackages';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
@@ -139,7 +138,6 @@ export const publishCanaryPipeline = new Task<TaskArgs>(
       publishAndroidArtifacts,
       addTemplateTarball,
       bundleIOSPrebuilds,
-      packPackageToTarball,
       publishPackages,
       cleanWorkingTree,
     ],

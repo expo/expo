@@ -1,12 +1,12 @@
 #pragma once
 
+#include "../ExpoHeader.pch"
+
 #if WORKLETS_ENABLED
 
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
 
 #endif
-
-#include <fbjni/fbjni.h>
 
 namespace jni = facebook::jni;
 

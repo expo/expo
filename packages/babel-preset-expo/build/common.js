@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBundler = getBundler;
 exports.getPlatform = getPlatform;
+exports.getEngine = getEngine;
 exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.getIsReactServer = getIsReactServer;
 exports.getIsDev = getIsDev;
@@ -13,6 +14,7 @@ exports.getIsProd = getIsProd;
 exports.getIsNodeModule = getIsNodeModule;
 exports.getBaseUrl = getBaseUrl;
 exports.getReactCompiler = getReactCompiler;
+exports.getStaticESM = getStaticESM;
 exports.getIsServer = getIsServer;
 exports.getIsDomComponent = getIsDomComponent;
 exports.getIsLoaderBundle = getIsLoaderBundle;
@@ -54,7 +56,11 @@ function getPlatform(caller) {
         return 'web';
     }
     // unknown
-    return caller.platform;
+    return caller.platform ?? null;
+}
+function getEngine(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.engine ?? 'default';
 }
 function getPossibleProjectRoot(caller) {
     assertExpoBabelCaller(caller);
@@ -103,6 +109,10 @@ function getBaseUrl(caller) {
 function getReactCompiler(caller) {
     assertExpoBabelCaller(caller);
     return caller?.supportsReactCompiler ?? false;
+}
+function getStaticESM(caller) {
+    assertExpoBabelCaller(caller);
+    return caller?.supportsStaticESM;
 }
 function getIsServer(caller) {
     assertExpoBabelCaller(caller);

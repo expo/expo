@@ -44,7 +44,6 @@ import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-@DelicateCoroutinesApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
   private lateinit var audioManager: AudioManager
@@ -200,6 +199,7 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
+  @OptIn(DelicateCoroutinesApi::class)
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
 

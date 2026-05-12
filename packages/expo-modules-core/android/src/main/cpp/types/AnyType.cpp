@@ -2,7 +2,6 @@
 
 #include "AnyType.h"
 #include "FrontendConverterProvider.h"
-#include "../JSIContext.h"
 
 namespace expo {
 AnyType::AnyType(

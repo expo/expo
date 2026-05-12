@@ -17,6 +17,7 @@ declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetric
     triggerCrash(): void;
     startSession(metadata?: string): string;
     stopSession(sessionId: string): void;
+    getMainSession(): Promise<null>;
 }
 declare const _default: typeof ExpoAppMetricsModule;
 export default _default;

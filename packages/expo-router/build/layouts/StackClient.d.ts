@@ -1,5 +1,5 @@
 import type { ComponentProps } from 'react';
-import { type StackScreenProps, StackSearchBar } from './stack-utils';
+import { type StackScreenProps, StackSearchBar, StackTitle } from './stack-utils';
 import { type ParamListBase, type StackNavigationState, StackRouter as RNStackRouter, type RouteProp } from '../react-navigation/native';
 import type { NativeStackNavigationEventMap, NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { Protected } from '../views/Protected';
@@ -157,12 +157,13 @@ export declare const stackRouterOverride: NonNullable<ComponentProps<typeof RNSt
  */
 declare const Stack: ((props: ComponentProps<typeof RNStack>) => import("react/jsx-runtime").JSX.Element) & {
     Screen: (({ children, options, ...rest }: StackScreenProps) => import("react/jsx-runtime").JSX.Element) & {
-        Title: typeof import("./stack-utils").StackScreenTitle;
+        Title: typeof StackTitle;
         BackButton: typeof import("./stack-utils").StackScreenBackButton;
     };
     Protected: import("react").FunctionComponent<import("../views/Protected").ProtectedProps>;
     Header: typeof import("./stack-utils/StackHeaderComponent").StackHeaderComponent;
     SearchBar: typeof StackSearchBar;
+    Title: typeof StackTitle;
     Toolbar: {
         (props: import("./stack-utils").StackToolbarProps): import("react/jsx-runtime").JSX.Element;
         Button: import("react").FC<import("./stack-utils").StackToolbarButtonProps>;

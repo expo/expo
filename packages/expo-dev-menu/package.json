@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "55.0.9",
+  "version": "56.0.6",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",
@@ -32,19 +32,20 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu-interface": "workspace:55.0.1"
+    "expo-dev-menu-interface": "workspace:~56.0.0"
   },
   "devDependencies": {
     "@babel/preset-typescript": "^7.7.4",
     "@testing-library/react-native": "^13.3.0",
     "@types/node": "^22.14.0",
     "babel-preset-expo": "workspace:*",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "react": "19.2.3",
-    "react-native": "0.85.2"
+    "react-native": "0.85.3"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "expo": "*",
     "react-native": "*"
   }
 }

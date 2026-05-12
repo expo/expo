@@ -37,11 +37,21 @@ public protocol AnyDynamicType: CustomStringConvertible, Sendable {
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
 
   /**
+   Runtime-aware `castToJS`.
+   */
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue
+
+  /**
    Converts the given native value directly to `JavaScriptValue`.
    The default implementation uses `convertResult` and then `castToJS`, but dynamic types
    can override it to avoid unnecessary intermediate representations.
    */
   func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue
+
+  /**
+   Runtime-aware `convertToJS`.
+   */
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue
 
   /**
    Converts function's result to the type that can later be converted to a JS value.
@@ -60,9 +70,19 @@ extension AnyDynamicType {
     return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
   }
 
+  // Default forwards to the legacy `castToJS`, dropping `runtime`
+  public func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    return try castToJS(value, appContext: appContext)
+  }
+
   public func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
     let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: self)
     return try castToJS(result, appContext: appContext)
+  }
+
+  public func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: self)
+    return try castToJS(result, appContext: appContext, in: runtime)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {

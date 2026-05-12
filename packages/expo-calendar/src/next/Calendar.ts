@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
 import type {
@@ -7,10 +7,10 @@ import type {
   DialogEventResult,
   EntityTypes,
   Event,
-  OpenEventDialogResult,
   RecurringEventOptions,
   Reminder,
   ReminderStatus,
+  PermissionResponse,
 } from '../Calendar';
 import InternalExpoCalendar from './ExpoCalendar';
 import { stringifyDateValues, stringifyIfDate, getNullableDetailsFields } from '../utils';
@@ -18,8 +18,6 @@ import type {
   ModifiableEventProperties,
   ModifiableReminderProperties,
   ModifiableCalendarProperties,
-  CalendarDialogOpenParamsNext,
-  CalendarDialogParamsNext,
   ModifiableAttendeeProperties,
   AddEventWithFormOptions,
 } from './ExpoCalendar.types';
@@ -48,18 +46,6 @@ export class ExpoCalendarAttendee extends InternalExpoCalendar.ExpoCalendarAtten
  * Represents a calendar event object that can be accessed and modified using the Expo Calendar Next API.
  */
 export class ExpoCalendarEvent extends InternalExpoCalendar.ExpoCalendarEvent {
-  override async openInCalendar(
-    params?: CalendarDialogOpenParamsNext
-  ): Promise<OpenEventDialogResult> {
-    // We have to pass null here because the core doesn't support skipping the first param
-    return super.openInCalendar(params ?? null);
-  }
-
-  override async editInCalendar(params?: CalendarDialogParamsNext): Promise<DialogEventResult> {
-    // We have to pass null here because the core doesn't support skipping the first param
-    return await super.editInCalendar(params ?? null);
-  }
-
   override getOccurrenceSync(recurringEventOptions: RecurringEventOptions = {}): ExpoCalendarEvent {
     const result = super.getOccurrenceSync(stringifyDateValues(recurringEventOptions));
     Object.setPrototypeOf(result, ExpoCalendarEvent.prototype);
@@ -285,19 +271,17 @@ export async function listEvents(
 
 /**
  * Asks the user to grant permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to request write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
  * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export const requestCalendarPermissions = InternalExpoCalendar.requestCalendarPermissions;
 
 /**
- * Check or request permissions to access the calendar.
- * This uses both `getCalendarPermissionsAsync` and `requestCalendarPermissionsAsync` to interact
- * with the permissions.
- *
- * @example
- * ```ts
- * const [status, requestPermission] = Calendar.useCalendarPermissions();
- * ```
+ * Checks user's permissions for accessing user's calendars.
+ * @param writeOnly - On iOS, whether to check write-only access, which allows creating calendar events
+ * without reading existing calendars or events. This does not grant permission to create, update, or delete calendars.
+ * @return A promise that resolves to an object of type [`PermissionResponse`](#permissionresponse).
  */
 export const getCalendarPermissions = InternalExpoCalendar.getCalendarPermissions;
 
@@ -362,4 +346,38 @@ export {
   createEventInCalendarAsync,
   openEventInCalendarAsync,
 } from '../Calendar';
-export { useCalendarPermissions, useRemindersPermissions } from '../Calendar';
+
+/**
+ * Check or request permissions to access the user's calendars.
+ * This uses both `getCalendarPermissions` and `requestCalendarPermissions` to interact
+ * with the permissions.
+ * On iOS, `writeOnly` requests permission to create calendar events without reading
+ * existing calendars or events. It does not grant permission to create, update, or delete calendars.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useCalendarPermissions();
+ * ```
+ */
+export const useCalendarPermissions = createPermissionHook<
+  PermissionResponse,
+  { writeOnly?: boolean }
+>({
+  getMethod: (options) => getCalendarPermissions(options?.writeOnly),
+  requestMethod: (options) => requestCalendarPermissions(options?.writeOnly),
+});
+
+/**
+ * Check or request permissions to access the user's reminders.
+ * This uses both `getRemindersPermissions` and `requestRemindersPermissions` to interact
+ * with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Calendar.useRemindersPermissions();
+ * ```
+ */
+export const useRemindersPermissions = createPermissionHook({
+  getMethod: getRemindersPermissions,
+  requestMethod: requestRemindersPermissions,
+});

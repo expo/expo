@@ -56,7 +56,7 @@ import type { IconProps, IconSelectSpec } from './types';
  * <Icon name="star.fill" size={24} />
  * ```
  */
-export function Icon(_props: IconProps) {
+export function Icon(props: IconProps) {
   return null;
 }
 
@@ -76,7 +76,7 @@ export function Icon(_props: IconProps) {
  * <Icon name={STAR} size={24} />
  * ```
  */
-Icon.select = (_spec: IconSelectSpec): SFSymbol | ImageSourcePropType => {
+Icon.select = (spec: IconSelectSpec): SFSymbol | ImageSourcePropType => {
   // Web `<Icon>` renders nothing, so the return value is never consumed.
   // The cast keeps the call-site type matching iOS/Android so consumers don't
   // have to handle a wider union just to support web.

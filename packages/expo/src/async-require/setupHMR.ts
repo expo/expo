@@ -1,6 +1,6 @@
 import HMRClient from './hmr';
 
-if (typeof window !== 'undefined' && typeof window.$$EXPO_INITIAL_PROPS !== 'undefined') {
+if (typeof window !== 'undefined') {
   // Sets up developer tools for web platforms when running in a webview. This ensures that logs are visible in the terminal.
   // We assume full control over the console and send JavaScript logs to Metro.
   const LEVELS = [
@@ -21,9 +21,6 @@ if (typeof window !== 'undefined' && typeof window.$$EXPO_INITIAL_PROPS !== 'und
       originalFunction.apply(console, args);
     };
   });
-  HMRClient.log('log', [`[webview] Logs will also appear in the Safari/Chrome debug console`]);
-} else {
-  HMRClient.log('log', [`[web] Logs will appear in the browser console`]);
 }
 
 // This is called native on native platforms

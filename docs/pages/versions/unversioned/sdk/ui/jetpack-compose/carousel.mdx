@@ -8,10 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI provides three carousel components matching the official Jetpack Compose [Carousel](https://developer.android.com/develop/ui/compose/components/carousel) API: `HorizontalCenteredHeroCarousel`, `HorizontalMultiBrowseCarousel`, and `HorizontalUncontainedCarousel`.
 
 > **Note:** Carousel is a horizontally scrollable component, so the parent `Host` must provide a finite width on the scroll axis. Use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width). See [Match contents in Host reference](host/#match-contents) for details.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/carousel/android-light.webp"
+  darkSource="/static/images/expo-ui/carousel/android-dark.webp"
+  alt="Material 3 multi-browse carousel with a hero item and smaller peek items"
+/>
 
 ## Installation
 

@@ -64,9 +64,14 @@ describe('parseAndValidateArgs', () => {
     expect(exitMock).toHaveBeenCalledWith(expect.any(String), 0);
   });
 
-  test('prints help and exits when transform has no paths', async () => {
-    await expect(parseAndValidateArgs([TRANSFORM])).rejects.toThrow();
-    expect(exitMock).toHaveBeenCalledWith(expect.any(String), 0);
+  test('exits with code 1 and warns about missing paths when transform has no paths', async () => {
+    await expect(parseAndValidateArgs([TRANSFORM])).rejects.toThrow(/path/i);
+    expect(exitMock).toHaveBeenCalledTimes(1);
+    const [message, code] = exitMock.mock.calls[0];
+    expect(message).toEqual(expect.stringContaining(TRANSFORM));
+    expect(message).toEqual(expect.stringContaining('src/**/*.{ts,tsx,js,jsx}'));
+    expect(message).toEqual(expect.stringContaining('--help'));
+    expect(code).toBeUndefined();
   });
 
   test('exits with code 1 when an unknown flag is passed', async () => {
@@ -80,6 +85,15 @@ describe('parseAndValidateArgs', () => {
   test('exits with code 1 when transform is unknown', async () => {
     await expect(parseAndValidateArgs(['does-not-exist', 'src'])).rejects.toThrow(
       /Transform "does-not-exist" does not exist. Valid options:/
+    );
+    expect(exitMock).toHaveBeenCalledWith(
+      expect.stringContaining('Transform "does-not-exist" does not exist. Valid options:')
+    );
+  });
+
+  test('validates transform before checking for paths', async () => {
+    await expect(parseAndValidateArgs(['does-not-exist'])).rejects.toThrow(
+      /Transform "does-not-exist" does not exist/
     );
     expect(exitMock).toHaveBeenCalledWith(
       expect.stringContaining('Transform "does-not-exist" does not exist. Valid options:')

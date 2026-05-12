@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI provides five button components that match the official Jetpack Compose [Button API](https://developer.android.com/develop/ui/compose/components/button): `Button` (filled), `FilledTonalButton`, `OutlinedButton`, `ElevatedButton`, and `TextButton`. All variants share the same props and accept composable children for content.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/button/android-light.webp"
+  darkSource="/static/images/expo-ui/button/android-dark.webp"
+  alt="Filled, outlined, and text buttons showing the Material 3 emphasis hierarchy"
+/>
 
 | Type         | Appearance                                    | Purpose                                                                                                                                                                               |
 | ------------ | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

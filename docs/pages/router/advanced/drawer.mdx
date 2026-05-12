@@ -16,21 +16,39 @@ A navigation drawer is a common pattern in mobile apps, it allows users to swipe
 
 ## Installation
 
-<Tabs>
-<Tab label="SDK 54 and later">
+In **SDK 56 and later**, the drawer navigator is bundled in `expo-router` and uses [`react-native-drawer-layout`](https://www.npmjs.com/package/react-native-drawer-layout) under the hood.
 
-To use [drawer navigator](https://reactnavigation.org/docs/drawer-navigator) you'll need to install some additional dependencies if you do not have them already. On Android and iOS, the drawer navigator requires `react-native-reanimated` and `react-native-worklets` to drive its animations. On web, this is handled by CSS animations.
+On Android and iOS, the drawer requires `react-native-reanimated` and `react-native-worklets` to drive its animations. On web, animation is handled by CSS.
+
+<Tabs>
+
+<Tab label="SDK 56 and later">
+
+To use the drawer navigator, install these dependencies if you do not have them already:
 
 <Terminal
   cmd={[
-    '$ npx expo install @react-navigation/drawer react-native-reanimated react-native-worklets',
+    '$ npx expo install react-native-reanimated react-native-worklets react-native-gesture-handler',
   ]}
 />
 
 </Tab>
+
+<Tab label="SDK 54 and 55">
+
+To use [drawer navigator](https://reactnavigation.org/docs/drawer-navigator), install these dependencies if you do not have them already:
+
+<Terminal
+  cmd={[
+    '$ npx expo install @react-navigation/drawer react-native-reanimated react-native-worklets react-native-gesture-handler',
+  ]}
+/>
+
+</Tab>
+
 <Tab label="SDK 53 and earlier">
 
-To use [drawer navigator](https://reactnavigation.org/docs/drawer-navigator) you'll need to install some additional dependencies if you do not have them already. On Android and iOS, the drawer navigator requires `react-native-reanimated` and `react-native-gesture-handler` to drive its animations. On web, this is handled by CSS animations.
+To use [drawer navigator](https://reactnavigation.org/docs/drawer-navigator), install these dependencies if you do not have them already:
 
 <Terminal
   cmd={[
@@ -39,6 +57,7 @@ To use [drawer navigator](https://reactnavigation.org/docs/drawer-navigator) you
 />
 
 </Tab>
+
 </Tabs>
 
 ## Usage

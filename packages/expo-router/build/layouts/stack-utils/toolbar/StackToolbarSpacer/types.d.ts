@@ -3,6 +3,9 @@ export interface StackToolbarSpacerProps {
      * Whether the spacer should be hidden.
      *
      * @default false
+     *
+     * @platform android
+     * @platform ios
      */
     hidden?: boolean;
     /**
@@ -11,6 +14,11 @@ export interface StackToolbarSpacerProps {
      * In Left/Right placements, width is required.
      * In Bottom placement, if width is not provided, the spacer will be flexible
      * and expand to fill available space.
+     *
+     * > **Note:** On Android, `width` is required in every placement.
+     *
+     * @platform android
+     * @platform ios
      */
     width?: number;
     /**

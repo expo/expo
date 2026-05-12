@@ -180,10 +180,19 @@ const renderAPI = (
 ) => {
   try {
     let data: GeneratedData[] = [];
-    const isRouterPackage = (name?: string) => !!name && name.startsWith('expo-router');
-    const shouldDeriveRouterComponents = Array.isArray(packageName)
-      ? packageName.some(isRouterPackage)
-      : isRouterPackage(packageName);
+    // `deriveComponentsFromProps` synthesizes a derived component entry
+    // for each static property typed as `React.FC<X>` or similar. It
+    // powers compound-component APIs like `Stack.Screen` in `expo-router`
+    // and `FieldGroup.Section` in `expo-ui`.
+    //
+    // Scope the opt-in to those package families so unrelated docs aren't
+    // affected if their props happen to match the heuristic. Drop the gate
+    // when more packages adopt the pattern.
+    const isCompoundComponentsPackage = (name?: string) =>
+      !!name && (name.startsWith('expo-router') || name.startsWith('expo-ui'));
+    const shouldDeriveCompoundComponents = Array.isArray(packageName)
+      ? packageName.some(isCompoundComponentsPackage)
+      : isCompoundComponentsPackage(packageName);
 
     if (Array.isArray(packageName)) {
       data = packageName
@@ -305,7 +314,7 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry) || isRouterUiComponentOverride(entry)
     );
-    const componentsWithDerived = shouldDeriveRouterComponents
+    const componentsWithDerived = shouldDeriveCompoundComponents
       ? deriveComponentsFromProps(components)
       : components;
     const componentsPropNames = new Set(

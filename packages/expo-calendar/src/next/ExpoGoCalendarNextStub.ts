@@ -52,11 +52,11 @@ class ExpoGoCalendarNextStub {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  async requestCalendarPermissions(): Promise<PermissionResponse> {
+  async requestCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 
-  async getCalendarPermissions(): Promise<PermissionResponse> {
+  async getCalendarPermissions(writeOnly?: boolean): Promise<PermissionResponse> {
     throw new Error('Calendar@next functionality is not available in Expo Go');
   }
 

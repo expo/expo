@@ -3,13 +3,38 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct, SPMTarget } from './SPMConfig.types';
 import { SPMPackage } from './SPMPackage';
 import { createAsyncSpinner, hasFileContentChanged } from './Utils';
-import logger from '../Logger';
+
+/**
+ * Ensures `destPath` is a hardlink to `sourcePath`. For staged headers, inode equality
+ * is the source of truth — clang's `#pragma once` keys on inode, so a stale dest with
+ * identical bytes but a different inode is processed as a separate header within the
+ * same TU and produces redefinition errors. This is reachable when the package manager
+ * rewrites the source file with the same content but a fresh inode (pnpm reinstalls
+ * into a new content-addressed `.pnpm/` dir on patch-hash or version changes).
+ */
+export async function refreshHardlinkIfNeeded(
+  sourcePath: string,
+  destPath: string
+): Promise<boolean> {
+  const srcStat = await fs.stat(sourcePath);
+  const destStat = await fs.lstat(destPath).catch(() => null);
+  if (destStat && destStat.ino === srcStat.ino && destStat.dev === srcStat.dev) {
+    return false;
+  }
+  if (destStat) {
+    await fs.remove(destPath);
+  }
+  await fs.ensureDir(path.dirname(destPath));
+  await fs.link(sourcePath, destPath);
+  return true;
+}
 
 /**
  * Writes content to file only if it differs from existing content.
@@ -42,7 +67,7 @@ export const SPMGenerator = {
     buildType: BuildFlavor,
     artifacts?: DownloadedDependencies
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `📦 Generating Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
     );
     // Use SPMPackage to generate Package.swift
@@ -73,7 +98,7 @@ export const SPMGenerator = {
    */
   generateIsolatedSourcesForTargetsAsync: async (pkg: SPMPackageSource, product: SPMProduct) => {
     const loggerTitle = `${chalk.green(pkg.packageName)}/${chalk.green(product.name)}`;
-    logger.info(`📂 Generating files for ${loggerTitle}`);
+    logger.verbose(`📂 Generating files for ${loggerTitle}`);
 
     // Walk through all targets for the product and collect source files to copy into spm code structure
     for (const target of product.targets) {
@@ -243,16 +268,11 @@ export const SPMGenerator = {
               path.basename(file)
             );
 
-            await fs.ensureDir(path.dirname(destinationFilePath));
-            if (hasFileContentChanged(sourceFilePath, destinationFilePath)) {
+            const linked = await refreshHardlinkIfNeeded(sourceFilePath, destinationFilePath);
+            if (linked) {
               spinner.info(
                 `Linking header file for target ${chalk.green(target.name)} ${path.basename(file)}...`
               );
-              // Remove existing file before creating hardlink
-              if (await fs.pathExists(destinationFilePath)) {
-                await fs.remove(destinationFilePath);
-              }
-              await fs.link(sourceFilePath, destinationFilePath);
             }
           }
         }
@@ -357,7 +377,7 @@ ${allImports.join('\n')}
     pkg: SPMPackageSource,
     product: SPMProduct
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `🧹 Cleaning generated source code for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)}...`
     );
 

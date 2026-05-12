@@ -15,6 +15,33 @@ Expo offers a novel approach to work with modern web code directly in a native a
 While the Expo native runtime generally does not support elements like `<div>` or `<img>`, there may be instances where you need to quickly incorporate web components. In such cases, DOM components provide a useful solution.
 
 <Prerequisites>
+  <Requirement title="Expo SDK 55 and earlier: react-native-webview">
+    <Tabs>
+      <Tab label="SDK 56 and later">
+        DOM components use [`@expo/dom-webview`](https://www.npmjs.com/package/@expo/dom-webview) by default and no additional installation is required.
+
+        <Collapsible summary="How to opt out of @expo/dom-webview and use react-native-webview instead?">
+        If you want to use `react-native-webview` instead, install it and opt out via the `dom` prop:
+
+        <Terminal cmd={['$ npx expo install react-native-webview']} />
+
+        ```tsx App.tsx (native)
+        import DOMComponent from './my-component';
+
+        export default function App() {
+          return <DOMComponent dom={{ useExpoDOMWebView: false }} />;
+        }
+        ```
+        </Collapsible>
+
+      </Tab>
+      <Tab label="SDK 55 and earlier">
+        Install `react-native-webview` in your project:
+        <Terminal cmd={['$ npx expo install react-native-webview']} />
+      </Tab>
+    </Tabs>
+
+  </Requirement>
   <Requirement title="Expo CLI and the Expo Metro Config">
     If you already run your project with `npx expo [command]` (for example, if you created it with `npx create-expo-app`), you're all set.
 
@@ -34,36 +61,6 @@ While the Expo native runtime generally does not support elements like `<div>` o
 </Prerequisites>
 
 ## Usage
-
-<Tabs>
-
-<Tab label="SDK 56 and later">
-
-DOM components use [`@expo/dom-webview`](https://www.npmjs.com/package/@expo/dom-webview) by default and no additional install is required.
-
-If you want to use `react-native-webview` instead, install it and opt out via the `dom` prop:
-
-<Terminal cmd={['$ npx expo install react-native-webview']} />
-
-```tsx App.tsx (native)
-import DOMComponent from './my-component';
-
-export default function App() {
-  return <DOMComponent dom={{ useExpoDOMWebView: false }} />;
-}
-```
-
-</Tab>
-
-<Tab label="SDK 55 and earlier">
-
-Install `react-native-webview` in your project:
-
-<Terminal cmd={['$ npx expo install react-native-webview']} />
-
-</Tab>
-
-</Tabs>
 
 To render a React component to the DOM, add the `'use dom'` directive to the top of the web component file:
 

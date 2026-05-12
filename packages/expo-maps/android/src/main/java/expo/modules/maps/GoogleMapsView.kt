@@ -239,19 +239,27 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       }
     }
 
-    LaunchedEffect(cameraState.position) {
+    LaunchedEffect(cameraState.position, wasLoaded.value) {
       // We don't want to send the event when the map is not loaded yet
       if (!wasLoaded.value) {
         return@LaunchedEffect
       }
 
       val position = cameraState.position
+      val bounds = cameraState.projection?.visibleRegion?.latLngBounds ?: return@LaunchedEffect
+      val latitudeDelta = bounds.northeast.latitude - bounds.southwest.latitude
+      val rawLongitudeDelta = bounds.northeast.longitude - bounds.southwest.longitude
+      // We need to subtract 360 from longitude delta when crossing the antimeridian to get the correct value
+      val longitudeDelta = if (rawLongitudeDelta < 0) rawLongitudeDelta + 360.0 else rawLongitudeDelta
+
       onCameraMove(
         CameraMoveEvent(
           Coordinates(position.target.latitude, position.target.longitude),
           position.zoom,
           position.tilt,
-          position.bearing
+          position.bearing,
+          latitudeDelta,
+          longitudeDelta
         )
       )
     }

@@ -36,7 +36,8 @@ File-based routing library for React Native and web applications. Built on top o
 │   │   └── stack-utils/       # Stack utilities
 │   │       ├── Agents.md  # Read this file before modifying components in this directory
 │   │       ├── StackScreen.tsx, StackSearchBar.tsx  # Screen and search bar components
-│   │       ├── screen/        # Title (StackScreenTitle) and BackButton (StackScreenBackButton)
+│   │       ├── StackTitle.tsx # Stack.Title
+│   │       ├── screen/        # BackButton (StackScreenBackButton);
 │   │       └── toolbar/       # StackToolbar* components
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)

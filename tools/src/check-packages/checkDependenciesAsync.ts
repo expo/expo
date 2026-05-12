@@ -261,8 +261,9 @@ function createExternalImportValidator(pkg: Package) {
         }
         // NOTE: Loose check to see if a dependency is pinned
         const isLoose = /[~|^><=](\s*\d+\.)/.test(versionRange) || versionRange === '*';
+        const isPrerelease = versionRange.includes('-');
         const isPinned = /^\d+\.\d+\.\d+$/.test(versionRange);
-        return !isLoose || isPinned;
+        return !isPrerelease && (!isLoose || isPinned);
       }
       return null;
     },

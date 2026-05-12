@@ -21,6 +21,9 @@ extension UIColor: Convertible {
     if let value = value as? Int {
       return try colorFromArgb(UInt64(value)) as! Self
     }
+    if let value = value as? Double {
+      return try colorFromArgb(UInt64(value)) as! Self
+    }
 
     // Handle `PlatformColor` and `DynamicColorIOS`
     if let opaqueValue = value as? [String: Any] {

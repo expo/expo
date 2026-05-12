@@ -6,6 +6,8 @@ export type {
   MiddlewareFunction,
 } from 'expo-server';
 
+export { createStaticLoader, createServerLoader } from 'expo-server';
+
 export type RequestHandler = (
   request: Request,
   params: Record<string, string>
