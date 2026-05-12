@@ -114,6 +114,7 @@ class NetworkModule : Module() {
     }
 
     OnDestroy {
+      mainHandler.removeCallbacks(emitRunnable)
       connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
