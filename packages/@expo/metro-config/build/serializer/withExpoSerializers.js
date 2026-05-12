@@ -12,16 +12,8 @@ const jsc_safe_url_1 = require("jsc-safe-url");
 const debugId_1 = require("./debugId");
 const environmentVariableSerializerPlugin_1 = require("./environmentVariableSerializerPlugin");
 const serializeChunks_1 = require("./serializeChunks");
+const sourceMap_1 = require("./sourceMap");
 const env_1 = require("../env");
-// Lazy-loaded to avoid pulling in metro-source-map and @babel/traverse at startup (~100ms savings)
-let _sourceMapString;
-function getSourceMapString() {
-    if (!_sourceMapString) {
-        _sourceMapString =
-            require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-    }
-    return _sourceMapString;
-}
 // Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
 let _reconcileTransformSerializerPlugin;
 function getReconcileTransformSerializerPlugin() {
@@ -38,7 +30,7 @@ function getTreeShakeSerializer() {
     }
     return _treeShakeSerializer;
 }
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString chain at startup
+// Lazy-loaded to avoid pulling in metro's getAppendScripts at startup
 let _baseJSBundle;
 function getBaseJSBundle() {
     if (!_baseJSBundle) {
@@ -135,7 +127,7 @@ function createDefaultExportCustomSerializer(config, configOptions = {}) {
             })).code;
         }
         const getEnsuredMaps = () => {
-            bundleMap ??= getSourceMapString()([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
+            bundleMap ??= (0, sourceMap_1.sourceMapString)([...premodulesToBundle, ...(0, serializeChunks_1.getSortedModules)([...graph.dependencies.values()], options)], {
                 excludeSource: options.serializerOptions?.excludeSource ?? false,
                 processModuleFilter: options.processModuleFilter,
                 shouldAddToIgnoreList: options.shouldAddToIgnoreList,

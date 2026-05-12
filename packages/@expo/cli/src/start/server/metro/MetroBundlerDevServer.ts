@@ -8,15 +8,7 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
-import {
-  sourceMapGeneratorNonBlocking,
-  type SourceMapGeneratorOptions,
-} from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
-import type {
-  Module,
-  DeltaResult,
-  TransformInputOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
+import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
 import type {
   default as MetroHmrServer,
   Client as MetroHmrClient,
@@ -28,6 +20,7 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
@@ -2239,7 +2232,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           prepend = [];
         }
 
-        bundleMap = await sourceMapStringAsync(
+        bundleMap = await sourceMapStringNonBlocking(
           [
             //
             ...prepend,
@@ -2349,15 +2342,6 @@ function wrapBundle(str: string) {
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
   return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
-}
-
-async function sourceMapStringAsync(
-  modules: readonly Module[],
-  options: SourceMapGeneratorOptions
-): Promise<string> {
-  return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
-    excludeSource: options.excludeSource,
-  });
 }
 
 function unique<T>(array: T[]): T[] {

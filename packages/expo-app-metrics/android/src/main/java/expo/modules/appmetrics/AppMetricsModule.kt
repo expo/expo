@@ -2,8 +2,15 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
+import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.logevents.Severity
+import expo.modules.appmetrics.logevents.attributesToJsonObject
+import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
+import expo.modules.appmetrics.logevents.validateEventBody
+import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.JsSession
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.updates.UpdatesMonitoring
@@ -67,6 +74,35 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         scope.launch {
           saveStartupMetricsIfNotSaved()
+        }
+      }
+
+      Function("logEvent") { name: String, options: LogEventOptions? ->
+        val validatedName = validateEventName(name) ?: return@Function
+        val validatedBody = validateEventBody(options?.body)
+        val sanitized = sanitizeLogEventAttributes(options?.attributes)
+        val severity = options?.severity ?: Severity.INFO
+
+        scope.launch {
+          // Attach any pending startup metrics first so the session has them
+          // alongside whatever's being logged. The session row itself is
+          // already persisted eagerly in `OnCreate`, so this is purely about
+          // ordering startup-metric writes ahead of caller-driven log events.
+          saveStartupMetricsIfNotSaved()
+          sessionManager.addLogs(
+            listOf(
+              LogRecord(
+                sessionId = appSessionId,
+                timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
+                name = validatedName,
+                body = validatedBody,
+                severity = severity.rawValue,
+                attributes = sanitized.attributes?.let { Json.encodeToString(attributesToJsonObject(it)) },
+                droppedAttributesCount = sanitized.droppedCount
+              )
+            ),
+            sessionId = appSessionId
+          )
         }
       }
 
@@ -180,9 +216,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
         scope.launch {
-          // Ensure the session row exists before inserting the metric,
-          // since the session may not have been saved yet if the download
-          // completes before markInteractive or app backgrounding.
+          // Attach any pending startup metrics first so the download-time
+          // metric lands alongside them. The session row itself is already
+          // persisted eagerly in `OnCreate`.
           saveStartupMetricsIfNotSaved()
           sessionManager.addMetrics(listOf(metric), sessionId = appSessionId)
         }

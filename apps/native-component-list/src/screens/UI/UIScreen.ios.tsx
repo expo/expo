@@ -59,6 +59,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+  {
     name: 'Community MaskedView replacement',
     route: 'ui/community-masked-view',
     options: {},

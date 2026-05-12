@@ -25,12 +25,14 @@ object MetricsConstants {
 }
 
 @Database(
-  entities = [Metric::class, Session::class],
-  version = 14,
+  entities = [Metric::class, LogRecord::class, Session::class],
+  version = 15,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
   abstract fun metricDao(): MetricDao
+
+  abstract fun logDao(): LogDao
 
   abstract fun sessionDao(): SessionDao
 
@@ -122,8 +124,49 @@ data class SessionWithMetrics(
     parentColumn = "id",
     entityColumn = "sessionId"
   )
-  @Field val metrics: List<Metric>
+  @Field val metrics: List<Metric>,
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "sessionId"
+  )
+  @Field val logs: List<LogRecord> = emptyList()
 ) : Record
+
+@Entity(
+  tableName = "logs",
+  indices = [Index("sessionId")],
+  foreignKeys = [
+    ForeignKey(
+      entity = Session::class,
+      parentColumns = ["id"],
+      childColumns = ["sessionId"],
+      onDelete = ForeignKey.CASCADE
+    )
+  ]
+)
+@Serializable
+data class LogRecord(
+  @PrimaryKey @Field val logId: String = UUID.randomUUID().toString(),
+  @Field val sessionId: String,
+  // ISO 8601 date string
+  @Field val timestamp: String,
+  @Field val name: String,
+  @Field val body: String? = null,
+  // Lowercase severity case name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`).
+  @Field val severity: String,
+  // JSON string. Typed encoding happens at OTel time, not at storage time.
+  @Field val attributes: String? = null,
+  @Field val droppedAttributesCount: Int = 0
+) : Record
+
+data class SessionWithLogs(
+  @Embedded val session: Session,
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "sessionId"
+  )
+  val logs: List<LogRecord>
+)
 
 @Dao
 interface MetricDao {
@@ -135,6 +178,18 @@ interface MetricDao {
 
   @Delete
   suspend fun delete(metrics: List<Metric>)
+}
+
+@Dao
+interface LogDao {
+  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  suspend fun insertAll(logs: List<LogRecord>)
+
+  @Delete
+  suspend fun delete(logs: List<LogRecord>)
+
+  @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
+  suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
 }
 
 @Dao
@@ -194,4 +249,8 @@ interface SessionDao {
   @Transaction
   @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN metrics m ON s.id = m.sessionId WHERE m.metricId IN (:metricIds)")
   suspend fun getSessionsWithMetricsByMetricIds(metricIds: List<String>): List<SessionWithMetrics>
+
+  @Transaction
+  @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN logs l ON s.id = l.sessionId WHERE l.logId IN (:logIds)")
+  suspend fun getSessionsWithLogsByLogIds(logIds: List<String>): List<SessionWithLogs>
 }

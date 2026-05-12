@@ -25,7 +25,12 @@ class SessionManager(
     suspend fun onMetricsInserted(metricIds: List<String>)
   }
 
+  fun interface LogsInsertListener {
+    suspend fun onLogsInserted(logIds: List<String>)
+  }
+
   private val metricsInsertListeners = CopyOnWriteArrayList<MetricsInsertListener>()
+  private val logsInsertListeners = CopyOnWriteArrayList<LogsInsertListener>()
 
   fun addMetricsInsertListener(listener: MetricsInsertListener) {
     metricsInsertListeners.add(listener)
@@ -33,6 +38,14 @@ class SessionManager(
 
   fun removeMetricsInsertListener(listener: MetricsInsertListener) {
     metricsInsertListeners.remove(listener)
+  }
+
+  fun addLogsInsertListener(listener: LogsInsertListener) {
+    logsInsertListeners.add(listener)
+  }
+
+  fun removeLogsInsertListener(listener: LogsInsertListener) {
+    logsInsertListeners.remove(listener)
   }
 
   fun createSessionId(): String = UUID.randomUUID().toString()
@@ -139,6 +152,27 @@ class SessionManager(
     database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
   }
 
+  suspend fun addLogs(
+    logs: List<LogRecord>,
+    sessionId: String
+  ) {
+    val logsWithSession = logs.map { it.copy(sessionId = sessionId) }
+    database.logDao().insertAll(logsWithSession)
+    val logIds = logsWithSession.map { it.logId }
+    logsInsertListeners.forEach { listener ->
+      try {
+        listener.onLogsInserted(logIds)
+      } catch (e: Exception) {
+        Log.e(TAG, "LogsInsertListener failed", e)
+      }
+    }
+  }
+
+  suspend fun cleanupOldLogs() {
+    val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
+    database.logDao().deleteLogsOlderThan(cutoffTimestamp)
+  }
+
   suspend fun updateEnvironmentForActiveSessions(environment: String) {
     database.sessionDao().updateEnvironmentForActiveSessions(environment)
   }
@@ -163,6 +197,30 @@ class SessionManager(
             .flatMap { it.metrics }
             .distinctBy { it.metricId }
             .filter { it.metricId in metricIdSet }
+        )
+      }
+  }
+
+  suspend fun getSessionsWithLogs(logIds: List<String>): List<SessionWithLogs> {
+    val logIdSet = logIds.toSet()
+    if (logIds.size <= SQLITE_MAX_BIND_VARIABLES) {
+      return database.sessionDao().getSessionsWithLogsByLogIds(logIds).map { sessionWithLogs ->
+        sessionWithLogs.copy(logs = sessionWithLogs.logs.filter { it.logId in logIdSet })
+      }
+    }
+
+    val allResults = logIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
+      database.sessionDao().getSessionsWithLogsByLogIds(chunk)
+    }
+    return allResults
+      .groupBy { it.session.id }
+      .map { (_, sessions) ->
+        SessionWithLogs(
+          session = sessions.first().session,
+          logs = sessions
+            .flatMap { it.logs }
+            .distinctBy { it.logId }
+            .filter { it.logId in logIdSet }
         )
       }
   }

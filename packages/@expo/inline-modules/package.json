@@ -1,6 +1,6 @@
 {
   "name": "@expo/inline-modules",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "The Expo inline modules",
   "main": "build/index.js",
   "scripts": {

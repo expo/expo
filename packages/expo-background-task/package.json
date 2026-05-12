@@ -1,6 +1,6 @@
 {
   "name": "expo-background-task",
-  "version": "56.0.5",
+  "version": "56.0.6",
   "description": "Expo Android and iOS module for Background Task APIs",
   "main": "build/BackgroundTask.js",
   "types": "build/BackgroundTask.d.ts",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/background-task/",
   "dependencies": {
-    "expo-task-manager": "workspace:~56.0.5"
+    "expo-task-manager": "workspace:~56.0.6"
   },
   "devDependencies": {
     "expo": "workspace:*",

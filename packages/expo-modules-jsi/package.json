@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-jsi",
-  "version": "56.0.2",
+  "version": "56.0.3",
   "description": "The JavaScript Interface for Expo Modules",
   "main": "index.js",
   "sideEffects": [],

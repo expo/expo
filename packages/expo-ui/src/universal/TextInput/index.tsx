@@ -124,3 +124,4 @@ export function TextInput({
 }
 
 export * from './types';
+export { type ObservableState } from '../State';

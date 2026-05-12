@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-11
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed launch-time crash in apps with source-built React Native. ([#45636](https://github.com/expo/expo/pull/45636) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.2 — 2026-05-08
 
 ### 🐛 Bug fixes

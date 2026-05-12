@@ -28,8 +28,13 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
   'expo-ui/community/picker': ['community/picker/index.tsx', 'expo-ui'],
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
+  'expo-ui/community/slider': ['community/slider/index.tsx', 'expo-ui'],
 
   // Swift UI
+  'expo-ui/swift-ui/accessorywidgetbackground': [
+    'swift-ui/AccessoryWidgetBackground/index.tsx',
+    'expo-ui',
+  ],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
@@ -160,6 +165,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/fieldgroup': ['universal/FieldGroup/index.ts', 'expo-ui'],
   'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
   'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
@@ -239,6 +245,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-router/color': ['color/index.ts', 'expo-router'],
   'expo-router/native-tabs': ['native-tabs/index.ts', 'expo-router'],
   'expo-router/split-view': ['split-view/index.ts', 'expo-router'],
+  'expo-router/experimental-stack': ['layouts/experimental-stack/index.tsx', 'expo-router'],
   'expo-router/ui': ['ui/index.ts', 'expo-router'],
   'expo-screen-capture': ['ScreenCapture.ts'],
   'expo-screen-orientation': ['ScreenOrientation.ts'],

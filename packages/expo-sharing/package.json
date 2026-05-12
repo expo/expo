@@ -1,6 +1,6 @@
 {
   "name": "expo-sharing",
-  "version": "56.0.5",
+  "version": "56.0.6",
   "description": "Provides a way to share files directly with other compatible applications.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

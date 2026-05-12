@@ -13,6 +13,8 @@ import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-conf
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
@@ -125,6 +127,16 @@ class LogRespectingTerminal extends Terminal {
     console.info = sendLog;
     console.warn = sendStderr;
     console.error = sendStderr;
+
+    // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
+    process.on('exit', () => {
+      if (!this.#drainingStderr && this.#stderrQueue.length) {
+        this.#drainingStderr = true;
+        this.status('');
+        const lines = this.#stderrQueue.splice(0);
+        process.stderr.write(lines.join('\n') + '\n');
+      }
+    });
   }
 
   /** Write to stderr without corrupting Terminal's cursor tracking. */
@@ -493,6 +505,12 @@ export async function instantiateMetroAsync(
       fileBuffer
     );
   };
+
+  // Layered on top of the prune patch above. Both fresh worker results
+  // and cache hits flow through `Bundler.transformFile`, so wrapping
+  // here covers both.
+  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
 
   setEventReporter(eventsSocket.reportMetroEvent);
 

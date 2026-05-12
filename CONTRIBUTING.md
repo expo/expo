@@ -63,6 +63,23 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 
 `ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
 
+### (Optional) Speed up Android native builds with ccache
+
+[ccache](https://ccache.dev/) caches C/C++ compilation results so rebuilds of native code are nearly instant when source files haven't changed.
+
+1. Install ccache: `brew install ccache`
+2. Add to your `~/.zshrc` (or `~/.bashrc`):
+   ```sh
+   export CMAKE_C_COMPILER_LAUNCHER="ccache"
+   export CMAKE_CXX_COMPILER_LAUNCHER="ccache"
+   ```
+3. Enable precompiled header support (required by some modules like `expo-modules-core`):
+   ```sh
+   ccache -o sloppiness=pch_defines,time_macros
+   ```
+
+The repo's `.envrc` automatically sets `CCACHE_BASEDIR` via direnv, so cache is shared across git worktrees with no extra setup.
+
 ### Set up iOS
 
 If you will be working with the iOS project, ensure **ruby 3.3** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.3`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.

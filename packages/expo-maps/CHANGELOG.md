@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
@@ -30,6 +34,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- [android] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#45327](https://github.com/expo/expo/pull/45327) by [@nishan](https://github.com/intergalacticspacehighway))
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
@@ -53,6 +58,8 @@ _This version does not introduce any user-facing changes._
 _This version does not introduce any user-facing changes._
 
 ## 55.0.13 - 2026-04-02
+
+- [android] Trigger `onCameraMove` on initial mount when map is ready. ([#45327](https://github.com/expo/expo/pull/45327) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 

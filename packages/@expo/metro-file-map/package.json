@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-file-map",
-  "version": "56.0.0",
+  "version": "56.0.1",
   "description": "A metro-file-map fork for Expo used with the Metro bundler",
   "main": "build/index.js",
   "types": "build/index.d.ts",

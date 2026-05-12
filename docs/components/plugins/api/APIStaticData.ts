@@ -241,6 +241,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   IterableIterator:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Iterator',
   KeepAwakeListener: '/versions/latest/sdk/keep-awake/#keepawakelistenerevent',
+  KeyboardTypeOptions: 'https://reactnative.dev/docs/textinput#keyboardtype',
   LocationCallback: '/versions/latest/sdk/location/#locationcallbacklocation',
   LocationErrorCallback: '/versions/latest/sdk/location/#locationerrorcallbackreason',
   LocationHeadingCallback: '/versions/latest/sdk/location/#locationheadingcallbacklocation',
@@ -273,6 +274,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   RefObject: 'https://react.dev/reference/react/useRef',
   RegExp: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp',
   Required: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#requiredtype',
+  ReturnKeyTypeOptions: 'https://reactnative.dev/docs/textinput#returnkeytype',
   Response: 'https://developer.mozilla.org/en-US/docs/Web/API/Response',
   RootParamList: 'https://reactnavigation.org/docs/typescript/#navigator-specific-types',
   RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-object',

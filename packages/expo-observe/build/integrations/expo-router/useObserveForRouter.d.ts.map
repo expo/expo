@@ -1,0 +1,1 @@
+{"version":3,"file":"useObserveForRouter.d.ts","sourceRoot":"","sources":["../../../src/integrations/expo-router/useObserveForRouter.ts"],"names":[],"mappings":"AAAA,OAAO,UAAqC,MAAM,kBAAkB,CAAC;AAMrE,KAAK,eAAe,GAAG,CAAC,OAAO,UAAU,CAAC,CAAC,iBAAiB,CAAC,CAAC;AAE9D,wBAAgB,mBAAmB,IAAI,eAAe,GAAG,IAAI,CAwD5D"}

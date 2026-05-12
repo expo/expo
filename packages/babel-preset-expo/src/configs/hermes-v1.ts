@@ -12,6 +12,10 @@
 
 import type { ConfigAPI, PluginItem } from '@babel/core';
 
+import { fixHermesV1AsyncArrowNonSimpleParams } from '../plugins/fix-hermes-v1-async-arrow-non-simple-params';
+import { fixHermesV1ClassInFinally } from '../plugins/fix-hermes-v1-class-in-finally';
+import { fixHermesV1SuperInObjectAccessor } from '../plugins/fix-hermes-v1-super-in-object-accessor';
+
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
@@ -22,6 +26,11 @@ export interface HermesV1ConfigOptions {
 /** The JS syntax preset used with Hermes v1 (SDK 56+) */
 module.exports = function (_api: ConfigAPI, _options: HermesV1ConfigOptions) {
   const plugins: PluginItem[] = [
+    // NOTE(@kitten): See individual plugins for which Hermes v1 fixes they correspond to
+    [fixHermesV1AsyncArrowNonSimpleParams],
+    [fixHermesV1SuperInObjectAccessor],
+    [fixHermesV1ClassInFinally],
+
     [require('@babel/plugin-transform-block-scoping')],
     [require('@babel/plugin-transform-class-static-block'), { loose }],
     [require('@babel/plugin-transform-async-generator-functions')],

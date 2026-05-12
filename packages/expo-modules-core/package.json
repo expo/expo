@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-core",
-  "version": "56.0.5",
+  "version": "56.0.6",
   "description": "The core of Expo Modules architecture",
   "main": "src/index.ts",
   "types": "build/index.d.ts",
@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@expo/expo-modules-macros-plugin": "~0.0.8",
-    "expo-modules-jsi": "workspace:~56.0.2",
+    "expo-modules-jsi": "workspace:~56.0.3",
     "invariant": "^2.2.4"
   },
   "peerDependencies": {
