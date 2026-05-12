@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed loading Xcode asset catalog images by resource name. ([#22018](https://github.com/expo/expo/issues/22018) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-06
