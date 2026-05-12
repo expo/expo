@@ -11,13 +11,13 @@ import expo.modules.updates.UpdatesController
  * Resolve a [ReactHost] to reload, in order of preference:
  *   1. `(context.applicationContext as? ReactApplication)?.reactHost`, works for every app
  *       whose host `Application` implements [ReactApplication].
- *   2. [UpdatesController.reactHost], populated by the expo-modules-core `onDidCreateReactHost`
- *      lifecycle callback for brownfield consumers whose `Application` does not implement
- *      [ReactApplication].
+ *   2. [UpdatesController.instance].reactHost, populated by the expo-modules-core
+ *      `onDidCreateReactHost` lifecycle callback for brownfield consumers whose `Application`
+ *      does not implement [ReactApplication].
  */
 internal fun resolveReactHostForRestart(context: Context): ReactHost? =
   (context.applicationContext as? ReactApplication)?.reactHost
-    ?: UpdatesController.reactHost
+    ?: UpdatesController.instance.reactHost.get()
 
 /**
  * An extension for [ReactHost] to restart the app
