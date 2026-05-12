@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo';
+import { type PermissionResponse } from 'expo';
 import type { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 declare const _default: {
     getProviderStatusAsync(): Promise<{

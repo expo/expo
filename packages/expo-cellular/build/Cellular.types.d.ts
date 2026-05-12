@@ -1,9 +1,4 @@
-export {
-  type PermissionResponse,
-  PermissionStatus,
-  type PermissionExpiration,
-  type PermissionHookOptions,
-} from 'expo';
+export { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions, } from 'expo';
 /**
  * Describes the current generation of the cellular connection. It is an enum with these possible
  * values:

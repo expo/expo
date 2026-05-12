@@ -21,12 +21,7 @@ export type BrightnessEvent = {
      */
     brightness: number;
 };
-export {
-  type PermissionExpiration,
-  type PermissionHookOptions,
-  type PermissionResponse,
-  PermissionStatus,
-} from 'expo';
+export { type PermissionExpiration, type PermissionHookOptions, type PermissionResponse, PermissionStatus, } from 'expo';
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
  * permissions.

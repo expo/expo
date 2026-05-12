@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo';
+import { type PermissionResponse } from 'expo';
 import type { AudioMode, AudioPlayerOptions, AudioPlaylistOptions, AudioPlaylistStatus, AudioSource, AudioStatus, PreloadOptions, RecordingOptions, RecordingStatus } from './Audio.types';
 import type { AudioPlayer, AudioSample } from './AudioModule.types';
 import * as AudioModule from './AudioModule.web';

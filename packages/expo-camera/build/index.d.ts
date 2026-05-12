@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo';
+import { type PermissionResponse } from 'expo';
 import type { BarcodeScanningResult, BarcodeType } from './Camera.types';
 export { default as CameraView } from './CameraView';
 /**

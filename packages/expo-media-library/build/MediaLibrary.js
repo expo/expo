@@ -9,7 +9,8 @@ if (isExpoGo && !loggedExpoGoWarning) {
     loggedExpoGoWarning = true;
 }
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus } from 'expo';
+export { PermissionStatus, } from 'expo';
+export {} from 'expo-modules-core';
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;

@@ -534,12 +534,7 @@ export type ScanningOptions = {
  * The available barcode types that can be scanned.
  */
 export type BarcodeType = 'aztec' | 'ean13' | 'ean8' | 'qr' | 'pdf417' | 'upc_e' | 'datamatrix' | 'code39' | 'code93' | 'itf14' | 'codabar' | 'code128' | 'upc_a';
-export {
-  type PermissionResponse,
-  PermissionStatus,
-  type PermissionExpiration,
-  type PermissionHookOptions,
-} from 'expo';
+export { type PermissionResponse, PermissionStatus, type PermissionExpiration, type PermissionHookOptions, } from 'expo';
 export { type EventSubscription as Subscription } from 'expo-modules-core';
 export type PhotoResult = {
     /**

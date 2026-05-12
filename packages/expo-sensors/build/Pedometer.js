@@ -74,4 +74,5 @@ const defaultPermissionsResponse = {
 };
 // TODO(@kitten): Remove re-exports from EMC
 export { PermissionStatus } from 'expo';
+export {} from 'expo-modules-core';
 //# sourceMappingURL=Pedometer.js.map
