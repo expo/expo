@@ -1,0 +1,33 @@
+---
+title: Type generation reference
+description: A reference for expo-type-information pacakge.
+---
+
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+import { Terminal } from '~/ui/components/Snippet';
+
+## Configuration
+
+First install the `expo-type-information` package.
+
+<Terminal cmd={['$ npm install expo-type-information']} />
+
+To use this package you also need to have sourcekitten installed.
+
+<Terminal cmd={['$ brew install sourcekitten']} />
+
+## Limitations
+
+1. Only Swift expo modules are supported now.
+
+2. In the provided files there has to be only one native module defined.
+   This assumption simplifies the typescript generation part and it works for how the expo modules are normally defined.
+
+3. Nested classes will not be resolved fully.
+   The sourcekitten has a limit on resolving nested closures, so classes defined in your module may not resolve fully.
+
+## CLI
+
+## Functions
+
+expo

@@ -1,0 +1,65 @@
+---
+title: 'Tutorial: Generate module TS interface'
+sidebar_title: Generate module TS interface
+description: A tutorial on using `expo-type-generation` package to create ts interface for a module.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+import { Terminal } from '~/ui/components/Snippet';
+
+## Setup your project
+
+First install the `expo-type-information` package.
+
+<Terminal cmd={['$ npm install expo-type-information']} />
+
+To use this package you also need to have sourcekitten installed.
+
+<Terminal cmd={['$ brew install sourcekitten']} />
+
+## Generating inline modules interface
+
+Let's build on the inline modules example (TODO ADD REF). In the last tutorial we've build an example app with an inline module and an inline view. Your project structure should look like this:
+
+<FileTree
+  files={[
+    'app/FirstInlineModule.kt',
+    'app/FirstInlineModule.swift',
+    'app/FirstInlineView.swift',
+    'app/FirstInlineView.kt',
+    'app/index.ts',
+  ]}
+/>
+
+Remember that we used to have an index file in which we directly reference inline modules using `requireNativeModule` and `requireNativeView`, however they return an `any` type which maybe hard to use.
+
+```tsx app/index.tsx
+import { requireNativeModule, requireNativeView } from 'expo';
+import { StyleSheet, Text, View } from 'react-native';
+
+const FirstInlineModule = requireNativeModule('FirstInlineModule');
+const FirstInlineView = requireNativeView('FirstInlineView');
+
+export default function InlineModulesDemoComponent() {
+  return (
+    <>
+      <View style={styles.textBox}>
+        <Text style={styles.text}> {FirstInlineModule.Hello} </Text>
+      </View>
+      <FirstInlineView style={styles.inlineView} url="https://docs.expo.dev/modules/" />
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  textBox: { height: 100, justifyContent: 'flex-end', alignItems: 'center' },
+  text: { fontSize: 26 },
+  inlineView: { flex: 1 },
+});
+```
+
+We will now use the `expo-type-information` package to generate a TS interface for these modules. When in the root of the project run the following command:
+
+<Terminal cmd={['$ npx expo-type-information --app-json ./app.json -w']} />
+
+## Expo module interface
