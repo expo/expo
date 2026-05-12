@@ -343,6 +343,10 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     formattedMessage = @"The project you requested requires a newer version of Expo Go.";
     fixInstructions = @"Download the latest version of Expo Go from the App Store.";
     showTryAgainButton = false;
+  } else if ([errorCode isEqualToString:@"EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED"]) {
+    formattedMessage = @"This project was published with a precompiled Hermes bytecode bundle. Expo Go runs plain JavaScript bundles, so it can't load this update.";
+    fixInstructions = @"Open this project in a [development build](https://docs.expo.dev/develop/development-builds/introduction/) instead, or use **eas update --no-bytecode**.";
+    showTryAgainButton = false;
   } else if ([errorCode isEqualToString:@"NO_COMPATIBLE_EXPERIENCE_FOUND"]){
     formattedMessage = rawMessage; // No compatible experience found at ${originalUrl}. Only ${currentSdkVersions} are supported.
   } else if ([errorCode isEqualToString:@"EXPERIENCE_NOT_VIEWABLE"]) {
@@ -392,6 +396,8 @@ NSString * const EXShowTryAgainButtonKey = @"showTryAgainButton";
     return @"Project is incompatible with this version of Expo Go";
   } else if ([errorCode isEqualToString:@"SNACK_NOT_FOUND_FOR_SDK_VERSION"]) {
     return @"This Snack is incompatible with this version of Expo Go";
+  } else if ([errorCode isEqualToString:@"EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED"]) {
+    return @"Project is incompatible with Expo Go";
   }
   return nil;
 }
