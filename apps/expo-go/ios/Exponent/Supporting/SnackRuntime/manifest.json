@@ -1,6 +1,6 @@
 {
-  "id": "local-1776748356536",
-  "createdAt": "2026-04-21T05:12:36.536Z",
+  "id": "local-1778543314315",
+  "createdAt": "2026-05-11T23:48:34.315Z",
   "runtimeVersion": "exposdk:unknown",
   "metadata": {
     "source": "local-build",
@@ -179,6 +179,13 @@
       "type": "png"
     },
     {
+      "key": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "contentType": "image/png",
+      "nsBundleDir": "SnackRuntime/assets",
+      "nsBundleFilename": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
+      "type": "png"
+    },
+    {
       "key": "7d40544b395c5949f4646f5e150fe020",
       "contentType": "image/png",
       "nsBundleDir": "SnackRuntime/assets",
@@ -204,13 +211,6 @@
       "contentType": "image/png",
       "nsBundleDir": "SnackRuntime/assets",
       "nsBundleFilename": "2d0a9133e39524f138be6d4db9f4851f",
-      "type": "png"
-    },
-    {
-      "key": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
-      "contentType": "image/png",
-      "nsBundleDir": "SnackRuntime/assets",
-      "nsBundleFilename": "0a328cd9c1afd0afe8e3b1ec5165b1b4",
       "type": "png"
     },
     {
