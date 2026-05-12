@@ -5,27 +5,30 @@ description: Learn how to trigger production deployments from Git tags with EAS 
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { BranchVsTagTrigger } from '~/ui/components/FlowDiagram/Diagrams/BranchVsTagTrigger';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Pushing to a release branch fires the production workflow on every commit, whether the team meant that commit as a release or not.
+Pushing to a release branch runs the production workflow on every commit, whether the team meant that commit as a release or not.
 
 ## Learning outcomes
 
 - Switch the production workflow trigger from a `release/*` branch to a Git tag matching `v*.*.*`
-- Cut a release by pushing a tag from `main` and watch the workflow fire on the EAS dashboard
+- Cut a release by pushing a tag from `main` and watch the workflow run on the EAS dashboard
 - Match pre-release tags like `v*.*.*-rc.*` to run the workflow on release candidates without shipping them to app users
 
 ## Tags as release events
 
-EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow fires only when a tag matching a glob pattern is pushed to the remote. Unlike a branch that can be updated over time, a Git tag is a one-time event tied to a specific commit and version, which makes it well-suited for marking releases.
+EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow runs only when a tag matching a glob pattern is pushed to the remote. Unlike a branch that can be updated over time, a Git tag is a one-time event tied to a specific commit and version, which makes it well-suited for marking releases.
 
 A tag-based release workflow fits teams that:
 
 - Want the version number in Git to match the version shipped to app users
 - Release from `main` directly rather than maintaining long-lived release branches
 - Want a clear audit trail of every release commit by version
+
+<BranchVsTagTrigger />
 
 ## Switch production.yml to a tag trigger
 

@@ -5,6 +5,7 @@ description: Learn how to automate production deployments with EAS Workflows usi
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { BuildOrUpdate } from '~/ui/components/FlowDiagram/Diagrams/BuildOrUpdate';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
@@ -45,6 +46,8 @@ The table below shows how each workflow's trigger defines its purpose:
 | **.eas/workflows/production.yml** | `on.push.branches: ['release/*']` | `production`  | CD workflow that runs on every push to a release branch.                                                                                          |
 
 The above files coexist inside a project's GitHub repository without any conflict. Each uses a different build profile and a trigger.
+
+<BuildOrUpdate />
 
 ## The `build` job type for production builds
 
@@ -194,7 +197,7 @@ jobs:
       platform: ios
 ```
 
-Our workflow only builds production-ready app binaries or publishes OTA updates.Automating store submission is a common next step discussed below in the [Automate app store submissions](#automate-app-store-submissions) section.
+Our workflow only builds production-ready app binaries or publishes OTA updates. Automating store submission is a common next step discussed below in the [Automate app store submissions](#automate-app-store-submissions) section.
 
 </Step>
 
