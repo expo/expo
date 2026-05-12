@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `'..'` at root handling to align with Metro ([#45687](https://github.com/expo/expo/pull/45687) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.1 — 2026-05-11
