@@ -28,6 +28,7 @@ export type SwipeActionsGroupProps = {
 export declare function Actions({ edge, allowsFullSwipe, children, }: SwipeActionsGroupProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Applies native SwiftUI swipe actions to its non-slot children.
+ * @platform ios
  */
 declare function SwipeActionsComponent(props: SwipeActionsProps): import("react/jsx-runtime").JSX.Element;
 declare const SwipeActions: typeof SwipeActionsComponent & {
