@@ -273,7 +273,6 @@ export const useBackgroundPermissions = createPermissionHook({
 export async function hasServicesEnabledAsync() {
     return await ExpoLocation.hasServicesEnabledAsync();
 }
-// @needsAudit
 /**
  * Checks user's permissions for accessing motion activity data.
  * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
@@ -284,12 +283,11 @@ export async function hasServicesEnabledAsync() {
 export async function getMotionActivityPermissionsAsync() {
     return await ExpoLocation.getMotionActivityPermissionsAsync();
 }
-// @needsAudit
 /**
  * Asks the user to grant permissions for motion activity detection.
  * On Android 10+, this requests the `ACTIVITY_RECOGNITION` runtime permission.
  * On iOS, this triggers the system prompt for Motion and Fitness access the first time it is called.
- * @return A promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
+ * @return a promise that fulfills with an object of type [`PermissionResponse`](#permissionresponse).
  *
  * @platform android
  * @platform ios
@@ -297,7 +295,6 @@ export async function getMotionActivityPermissionsAsync() {
 export async function requestMotionActivityPermissionsAsync() {
     return await ExpoLocation.requestMotionActivityPermissionsAsync();
 }
-// @needsAudit
 /**
  * Checks or requests permissions for motion activity detection.
  * This uses both `requestMotionActivityPermissionsAsync` and `getMotionActivityPermissionsAsync`
@@ -316,19 +313,19 @@ export const useMotionActivityPermissions = createPermissionHook({
     requestMethod: requestMotionActivityPermissionsAsync,
 });
 // --- Motion activity
-// @needsAudit
 /**
  * Fetches the current motion activity status of the device by subscribing to the first available
  * activity update and immediately unsubscribing afterwards.
  * The returned promise fulfills with the same object shape as the `watchMotionActivityAsync`
  * callback.
  *
- * The method uses the platform's motion coprocessor (iOS) or Google Play Services activity
- * recognition (Android) and does **not** require location permissions. On iOS, the system will
- * prompt the user for Motion and Fitness access the first time this method is called.
+ * The method uses the  Google Play Services activity
+ * recognition (Android) or platform's motion coprocessor (iOS) and does **not** require location permissions.
  * On Android 10+, the `ACTIVITY_RECOGNITION` runtime permission must be granted beforehand.
+ *  On iOS, the system will prompt the user for Motion and Fitness access the first time this method is called.
  *
- * @return A promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).
+ *
+ * @return a promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).
  *
  * @platform android
  * @platform ios
@@ -350,7 +347,6 @@ export async function getMotionActivityAsync() {
         }
     });
 }
-// @needsAudit
 /**
  * Subscribes to motion activity updates from the device. The callback fires whenever the
  * platform's motion coprocessor detects a change in the user's activity. Only foreground use
@@ -362,7 +358,7 @@ export async function getMotionActivityAsync() {
  * @param errorHandler This function is called if the platform reports an error (for example,
  * when activity recognition permission is denied). It receives a string message as the
  * first argument.
- * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
+ * @return a promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  *
  * @platform android
  * @platform ios
