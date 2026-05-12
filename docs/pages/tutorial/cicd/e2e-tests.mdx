@@ -14,7 +14,7 @@ Broken navigation flows and crashing screens often slip past code review because
 ## Learning outcomes
 
 - Write [Maestro](https://maestro.mobile.dev/) flow files for navigation and screen-content tests
-- Run E2E tests against Android and iOS development builds in a workflow
+- Run E2E tests against Android and iOS [development builds](/develop/development-builds/introduction/) in a workflow
 - Trigger E2E tests automatically on pull requests with `on.pull_request` or on demand with `on.pull_request_labeled`
 
 > **important** The Maestro job type in EAS Workflows is currently in [alpha](/more/release-statuses/#alpha).
@@ -27,7 +27,7 @@ The pipeline from previous chapters builds our project and delivers updates, wit
 
 ## Set up E2E tests
 
-For Android and iOS, we need to add a special build profile for E2E tests. This profile skips credential setup for Android and allows running our iOS build inside a simulator.
+For Android and iOS, we need to add a special [build profile](/build/eas-json/) for E2E tests. This profile skips credential setup for Android and allows running our iOS build inside a simulator.
 
 <Step label="1">
 

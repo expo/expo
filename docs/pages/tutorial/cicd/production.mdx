@@ -11,19 +11,19 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-Rebuilding the app for every production change is resourceful when most changes are TypeScript/JavaScript only.
+Rebuilding the app for every production change is wasteful when most changes are TypeScript/JavaScript only.
 
 ## Learning outcomes
 
 - Trigger production deployments from a `release/*` branch instead of every push to `main`
-- Branch between a native build and an OTA update based on the project fingerprint
+- Branch between a native build and an [OTA update](/eas-update/introduction/) based on the project fingerprint
 - Automate app store submissions as a follow-up step in the production workflow
 
 <Prerequisites>
 
 <Requirement title="EAS Build configured for production">
 
-EAS CLI prompts to generate credentials the first time we trigger a build for a profile. Trigger the production build manually for both Android and iOS so the credentials exist before the workflow runs using the command below:
+[EAS CLI](/eas/cli/) prompts to generate credentials the first time we trigger a build for a profile. Trigger the production build manually for both Android and iOS so the credentials exist before the workflow runs using the command below:
 
 <Terminal cmd={['$ eas build --profile production --platform all']} />
 
@@ -243,7 +243,7 @@ After the workflow runs, notice in the EAS dashboard that the fingerprint matche
 
 ## Automate app store submissions
 
-The workflow we have built in this chapter only builds production-ready app binaries or publishes OTA updates to an existing production app. Automating store submission is a common next step in a production release workflow.
+The workflow we have built in this chapter only builds production-ready app binaries or publishes OTA updates to an existing production app. Automating [store submission](/build/automate-submissions/) is a common next step in a production release workflow.
 
 EAS Workflows provides a `submit` pre-packaged job for automating app store submissions. It requires us to manage our app store credentials with EAS CLI. It also requires us to fulfill app store requirements, such as manually uploading the first Android release (**.aab**) to the Google Play Store. iOS has its own Apple Developer Program enrollment and signing credentials to set up.
 

@@ -23,7 +23,7 @@ Sharing in-progress mobile changes with teammates and PR reviewers often require
 
 <Requirement title="expo-updates installed">
 
-Install the `expo-updates` library:
+Install the [`expo-updates`](/versions/latest/sdk/updates/) library:
 
 <Terminal
   cmd={{
@@ -42,7 +42,7 @@ To configure EAS Update, run:
 
 <Terminal cmd={['$ eas update:configure']} />
 
-The above command adds the update URL and runtime version to **app.json**, and adds a `channel` field to each build profile in **eas.json**.
+The above command adds the update URL and runtime version to **app.json**, and adds a [`channel`](/eas-update/deployment/) field to each build profile in **eas.json**.
 
 </Requirement>
 
@@ -52,7 +52,7 @@ To receive PR preview updates, reviewers need a preview build with `expo-updates
 
 <Terminal cmd={['$ eas build --profile preview --platform all']} />
 
-Since `expo-updates` is a native library, this build embeds both its native code and the channel from **eas.json**. Running the above command will also allow EAS CLI to generate credentials the first time we trigger a preview build.
+Since `expo-updates` is a native library, this build embeds both its native code and the channel from **eas.json**. Running the above command will also allow EAS CLI to generate [credentials](/app-signing/app-credentials/) the first time we trigger a preview build.
 
 </Requirement>
 
