@@ -150,5 +150,8 @@ public final class ExpoUIModule: Module {
 
     // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
     ExpoUIView(SyncToggleView.self)
+
+    // Experimental: lazy list whose rows are produced by a UI-runtime worklet.
+    ExpoUIView(ExperimentalListView.self)
   }
 }

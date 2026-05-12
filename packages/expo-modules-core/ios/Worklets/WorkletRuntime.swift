@@ -29,4 +29,8 @@ public class WorkletRuntime: JavaScriptRuntime, @unchecked Sendable {
   public func execute(_ serializable: JavaScriptSerializable, arguments: [Any] = []) {
     handle.executeWorklet(serializable, arguments: arguments)
   }
+
+  public func executeReturningValue(_ serializable: JavaScriptSerializable, arguments: [Any] = []) -> Any? {
+    return handle.executeWorkletReturningValue(serializable, arguments: arguments)
+  }
 }

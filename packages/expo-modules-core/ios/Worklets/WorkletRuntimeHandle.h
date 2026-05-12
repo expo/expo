@@ -30,6 +30,9 @@ NS_SWIFT_NAME(WorkletRuntimeHandle)
 - (void)executeWorklet:(EXJavaScriptSerializable *)serializable
              arguments:(NSArray *)arguments;
 
+- (nullable id)executeWorkletReturningValue:(EXJavaScriptSerializable *)serializable
+                                  arguments:(NSArray *)arguments;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -26,4 +26,20 @@ internal final class WorkletCallback: SharedObject {
     }
     worklet.execute(on: runtime, arguments: arguments)
   }
+
+  func invokeReturning(arguments: [Any] = []) -> Any? {
+    guard let worklet else {
+      #if DEBUG
+      log.warn("WorkletCallback.invokeReturning: worklet is nil, the callback will not run.")
+      #endif
+      return nil
+    }
+    guard let runtime = appContext?._uiRuntime as? WorkletRuntime else {
+      #if DEBUG
+      log.warn("WorkletCallback.invokeReturning: UI worklet runtime is not available, the callback will not run.")
+      #endif
+      return nil
+    }
+    return worklet.executeReturningValue(on: runtime, arguments: arguments)
+  }
 }

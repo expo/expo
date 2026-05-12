@@ -34,6 +34,10 @@ public class Worklet: AnySerializable {
     runtime.execute(serializable.jsSerializable, arguments: arguments)
   }
 
+  public func executeReturningValue(on runtime: WorkletRuntime, arguments: [Any] = []) -> Any? {
+    return runtime.executeReturningValue(serializable.jsSerializable, arguments: arguments)
+  }
+
   // MARK: - AnyArgument
 
   public static func getDynamicType() -> AnyDynamicType {

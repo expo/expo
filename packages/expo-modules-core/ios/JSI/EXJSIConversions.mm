@@ -34,6 +34,49 @@ static jsi::Value createUint8Array(jsi::Runtime &runtime, NSData *data)
   return uint8ArrayCtor.callAsConstructor(runtime, arrayBufferObject);
 }
 
+id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value)
+{
+  if (value.isUndefined() || value.isNull()) {
+    return nil;
+  }
+  if (value.isBool()) {
+    return @(value.getBool());
+  }
+  if (value.isNumber()) {
+    return @(value.getNumber());
+  }
+  if (value.isString()) {
+    return [NSString stringWithUTF8String:value.getString(runtime).utf8(runtime).c_str()];
+  }
+  if (!value.isObject()) {
+    return nil;
+  }
+  jsi::Object obj = value.getObject(runtime);
+  if (obj.isFunction(runtime)) {
+    return nil;
+  }
+  if (obj.isArray(runtime)) {
+    jsi::Array arr = obj.getArray(runtime);
+    size_t count = arr.size(runtime);
+    NSMutableArray *result = [NSMutableArray arrayWithCapacity:count];
+    for (size_t i = 0; i < count; i++) {
+      id element = convertJSIValueToObjCObject(runtime, arr.getValueAtIndex(runtime, i));
+      [result addObject:element ?: [NSNull null]];
+    }
+    return result;
+  }
+  jsi::Array propertyNames = obj.getPropertyNames(runtime);
+  size_t propertyCount = propertyNames.size(runtime);
+  NSMutableDictionary *result = [NSMutableDictionary dictionaryWithCapacity:propertyCount];
+  for (size_t i = 0; i < propertyCount; i++) {
+    jsi::String nameString = propertyNames.getValueAtIndex(runtime, i).getString(runtime);
+    NSString *key = [NSString stringWithUTF8String:nameString.utf8(runtime).c_str()];
+    id converted = convertJSIValueToObjCObject(runtime, obj.getProperty(runtime, nameString));
+    result[key] = converted ?: [NSNull null];
+  }
+  return result;
+}
+
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value)
 {
   if (!value || value == (id)kCFNull) {

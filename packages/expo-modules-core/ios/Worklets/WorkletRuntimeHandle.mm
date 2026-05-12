@@ -45,4 +45,12 @@
                                    arguments:arguments];
 }
 
+- (nullable id)executeWorkletReturningValue:(EXJavaScriptSerializable *)serializable
+                                  arguments:(NSArray *)arguments
+{
+  return [_provider executeWorkletReturningValueWithRuntimeHandle:_runtimeHandle
+                                                     serializable:serializable
+                                                        arguments:arguments];
+}
+
 @end

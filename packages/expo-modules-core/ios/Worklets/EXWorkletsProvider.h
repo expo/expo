@@ -35,6 +35,11 @@ NS_SWIFT_NAME(WorkletsProvider)
                               arguments:(NSArray *)arguments
     NS_SWIFT_NAME(executeWorklet(runtimeHandle:serializable:arguments:));
 
+- (nullable id)executeWorkletReturningValueWithRuntimeHandle:(id)runtimeHandle
+                                                 serializable:(EXJavaScriptSerializable *)serializable
+                                                    arguments:(NSArray *)arguments
+    NS_SWIFT_NAME(executeWorkletReturningValue(runtimeHandle:serializable:arguments:));
+
 @end
 
 // The adapter pod registers its provider in `+load`; the main pod's runtime

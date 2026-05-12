@@ -12,6 +12,8 @@ namespace expo {
 
 jsi::Value convertObjCObjectToJSIValue(jsi::Runtime &runtime, id value);
 
+id convertJSIValueToObjCObject(jsi::Runtime &runtime, const jsi::Value &value);
+
 } // namespace expo
 
 #endif // __cplusplus

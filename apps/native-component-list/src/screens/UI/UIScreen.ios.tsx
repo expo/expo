@@ -267,6 +267,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ExperimentalList (worklet renderItem)',
+    route: 'ui/experimental-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExperimentalListScreen'));
+    },
+  },
+  {
     name: 'ScrollView component',
     route: 'ui/scrollview',
     options: {},

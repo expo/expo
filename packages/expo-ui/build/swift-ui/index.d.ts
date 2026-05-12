@@ -34,6 +34,7 @@ export * from './Spacer';
 export * from './Stepper';
 export * from './Text';
 export { useNativeState } from '../State/useNativeState';
+export * from './ExperimentalList';
 export * from './SyncToggle';
 export * from './TabView';
 export * from './Toggle';

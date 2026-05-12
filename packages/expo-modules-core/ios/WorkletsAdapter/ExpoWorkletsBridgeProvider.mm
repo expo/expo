@@ -217,4 +217,35 @@ static jsi::Value callWorklet(jsi::Runtime &rt, std::shared_ptr<worklets::Serial
   });
 }
 
+- (nullable id)executeWorkletReturningValueWithRuntimeHandle:(id)runtimeHandle
+                                                 serializable:(EXJavaScriptSerializable *)serializable
+                                                    arguments:(NSArray *)arguments
+{
+  ExpoWorkletsRuntimeHandle *runtimeWrapper = runtimeHandleFromOpaqueHandle(runtimeHandle, @"execute");
+  ExpoWorkletsSerializableHandle *serializableWrapper = serializableHandleFromSerializable(serializable, @"execute");
+  if (!runtimeWrapper || !serializableWrapper) {
+    return nil;
+  }
+
+  auto workletRuntime = runtimeWrapper->runtime.lock();
+  if (!workletRuntime) {
+    NSLog(@"[ExpoModulesWorklets] Warning: Cannot execute worklet; the worklet runtime has been destroyed");
+    return nil;
+  }
+
+  auto worklet = std::dynamic_pointer_cast<worklets::SerializableWorklet>(serializableWrapper->serializable);
+  if (!worklet) {
+    NSLog(@"[ExpoModulesWorklets] Warning: Cannot execute worklet; the given serializable is not a worklet");
+    return nil;
+  }
+
+  id result = nil;
+  workletRuntime->executeSync([worklet, arguments, &result](jsi::Runtime &rt) -> jsi::Value {
+    jsi::Value value = callWorklet(rt, worklet, arguments);
+    result = expo::convertJSIValueToObjCObject(rt, value);
+    return value;
+  });
+  return result;
+}
+
 @end
