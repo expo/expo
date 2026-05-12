@@ -3,7 +3,7 @@
 const cloneDeep = require('lodash/cloneDeep');
 const isEqual = require('lodash/isEqual');
 // Derive the Expo Jest preset from the React Native one
-const jestPreset = cloneDeep(require('react-native/jest-preset'));
+const jestPreset = cloneDeep(require('@react-native/jest-preset'));
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 const { resolveBabelConfig } = require('./src/resolveBabelConfig');
