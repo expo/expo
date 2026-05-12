@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Switch from `react-native/jest-preset` to `@react-native/jest-preset` ([#45699](https://github.com/expo/expo/pull/45699) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
