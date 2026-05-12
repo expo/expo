@@ -121,7 +121,7 @@ export declare class NativeFileSystemFile {
     validatePath(): void;
     /**
      * Retrieves text from the file.
-     * @returns A promise fulfilled with the contents of the file as string.
+     * @returns A promise that resolves to the contents of the file as string.
      */
     text(): Promise<string>;
     /**
@@ -131,7 +131,7 @@ export declare class NativeFileSystemFile {
     textSync(): string;
     /**
      * Retrieves content of the file as base64.
-     * @returns A promise fulfilled with the contents of the file as a base64 string.
+     * @returns A promise that resolves to the contents of the file as a base64 string.
      */
     base64(): Promise<string>;
     /**
@@ -141,7 +141,7 @@ export declare class NativeFileSystemFile {
     base64Sync(): string;
     /**
      * Retrieves byte content of the entire file.
-     * @returns A promise fulfilled with the contents of the file as a `Uint8Array`.
+     * @returns A promise that resolves to the contents of the file as a `Uint8Array`.
      */
     bytes(): Promise<Uint8Array<ArrayBuffer>>;
     /**

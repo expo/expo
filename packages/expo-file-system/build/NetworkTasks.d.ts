@@ -33,13 +33,13 @@ export declare class UploadTask {
     /**
      * Starts the upload operation.
      *
-     * This method can only be called once, while the task is `idle`. The promise is fulfilled
+     * This method can only be called once, while the task is `idle`. The promise resolves
      * with response metadata and body for completed HTTP responses, including non-2xx status codes.
      * It is rejected when the file cannot be read, the request fails, or the task is cancelled.
      *
      * If `options.signal` is aborted, the promise is rejected with an `AbortError`.
      *
-     * @returns A promise fulfilled with the upload response.
+     * @returns A promise that resolves to the upload response.
      */
     uploadAsync(): Promise<UploadResult>;
     /**
@@ -102,19 +102,19 @@ export declare class DownloadTask {
     /**
      * Starts the download operation.
      *
-     * This method can only be called once, while the task is `idle`. The promise is fulfilled with
+     * This method can only be called once, while the task is `idle`. The promise resolves with
      * the downloaded file when the transfer completes, or with `null` if the task is paused before
      * completion. It is rejected when the request fails or the task is cancelled.
      *
      * If `options.signal` is aborted, the promise is rejected with an `AbortError`.
      *
-     * @returns A promise fulfilled with the downloaded file, or `null` when the task is paused.
+     * @returns A promise that resolves to the downloaded file, or `null` when the task is paused.
      */
     downloadAsync(): Promise<File | null>;
     /**
      * Requests pausing the active download operation.
      *
-     * The pending `downloadAsync()` or `resumeAsync()` promise is fulfilled with `null` after native
+     * The pending `downloadAsync()` or `resumeAsync()` promise resolves with `null` after native
      * code produces resume data and the task enters the `paused` state. Use `pauseAsync()` if you
      * need to wait until the task is ready to resume or save.
      */
@@ -123,17 +123,17 @@ export declare class DownloadTask {
      * Requests pausing the active download operation and waits until the task reaches the `paused`
      * state.
      *
-     * @returns A promise fulfilled after resume data is available.
+     * @returns A promise that resolves after resume data is available.
      */
     pauseAsync(): Promise<void>;
     /**
      * Resumes a paused download operation.
      *
-     * The promise is fulfilled with the downloaded file when the transfer completes, or with `null`
+     * The promise resolves with the downloaded file when the transfer completes, or with `null`
      * if the task is paused again before completion. It is rejected when the request fails or the task
      * is cancelled.
      *
-     * @returns A promise fulfilled with the downloaded file, or `null` when the task is paused.
+     * @returns A promise that resolves to the downloaded file, or `null` when the task is paused.
      */
     resumeAsync(): Promise<File | null>;
     /**

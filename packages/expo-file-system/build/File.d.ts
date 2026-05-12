@@ -28,7 +28,7 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
      * @param destination - The destination directory or file. If a directory is provided, the resulting filename will be determined based on the response headers.
      * @param options - Download options. When the destination already contains a file, the promise rejects with a `DestinationAlreadyExists` error unless `options.idempotent` is set to `true`. With `idempotent: true`, the download overwrites the existing file instead of failing.
      *
-     * @returns A promise fulfilled with the downloaded file. When the server responds with
+     * @returns A promise that resolves to the downloaded file. When the server responds with
      * a non-2xx HTTP status, the promise rejects with an `UnableToDownload` error whose
      * message includes the status code. No file is created in that scenario.
      *
@@ -108,13 +108,13 @@ export declare class File extends ExpoFileSystem.FileSystemFile implements Blob 
     /**
      * Uploads this file to a server and starts the request immediately.
      *
-     * The promise is fulfilled with response metadata and body for completed HTTP responses,
+     * The promise resolves with the HTTP response metadata and body for any completed response,
      * including non-2xx status codes. It is rejected only when the file cannot be read, the
      * request fails, or the upload is cancelled.
      *
      * @param url The URL to upload the file to.
      * @param options Upload options.
-     * @returns A promise fulfilled with the upload response.
+     * @returns A promise that resolves to the upload result.
      */
     upload(url: string, options?: UploadOptions): Promise<UploadResult>;
     /**
