@@ -22,6 +22,7 @@ public class DevMenuManager: NSObject {
   var window: DevMenuWindow?
   var fabWindow: DevMenuFABWindow?
   private var isNavigatingHome = false
+  private var didHandleInitialContentAppear = false
 
   /// True when the current Snack session is a lesson or playground.
   /// Forces the FAB to stay visible even if the user disabled the preference.
@@ -278,17 +279,17 @@ public class DevMenuManager: NSObject {
   }
 
   @objc private func handleContentDidAppear() {
-    NotificationCenter.default.removeObserver(
-      self,
-      name: Notification.Name("RCTContentDidAppearNotification"),
-      object: nil
-    )
-
-    if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
-      openMenu()
-    } else {
-      updateFABVisibility()
+    // Onboarding / auto-launch should only run once per process. The FAB visibility
+    // update must run on every app load so the FAB picks up the new session state
+    // (e.g. switching between lessons).
+    if !didHandleInitialContentAppear {
+      didHandleInitialContentAppear = true
+      if shouldShowOnboarding() || DevMenuPreferences.showsAtLaunch {
+        openMenu()
+        return
+      }
     }
+    updateFABVisibility()
   }
 
   private func bundleDisplayName() -> String {
