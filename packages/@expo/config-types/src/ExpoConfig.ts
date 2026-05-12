@@ -611,6 +611,10 @@ export interface AndroidIntentFiltersData {
    */
   pathPattern?: string;
   /**
+   * Advanced pattern for paths that should be matched by the filter. Available on Android 12 (API level 31) and later.
+   */
+  pathAdvancedPattern?: string;
+  /**
    * Prefix for paths that should be matched by the filter, e.g. `/records/` will match `/records/123`
    */
   pathPrefix?: string;

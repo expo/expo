@@ -17,6 +17,7 @@ type ManifestData = {
     $: {
         [key: string]: string | undefined;
         'android:host'?: string;
+        'android:pathAdvancedPattern'?: string;
         'android:pathPrefix'?: string;
         'android:scheme'?: string;
     };

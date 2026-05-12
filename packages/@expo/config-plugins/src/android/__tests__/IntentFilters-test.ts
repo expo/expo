@@ -58,6 +58,39 @@ describe('Android intent filters', () => {
     expect(getMainActivity(androidManifestJson)!['intent-filter']).toHaveLength(1);
   });
 
+  it(`writes pathAdvancedPattern intent filter data to android manifest`, async () => {
+    const androidManifestJson = setAndroidIntentFilters(
+      {
+        android: {
+          intentFilters: [
+            {
+              action: 'VIEW',
+              data: {
+                scheme: 'https',
+                host: 'example.com',
+                pathAdvancedPattern: '/records/[0-9]+',
+              },
+              category: ['BROWSABLE', 'DEFAULT'],
+            },
+          ],
+        },
+      },
+      await getFixtureManifestAsync()
+    );
+
+    const [, generatedIntentFilter] = getMainActivity(androidManifestJson)!['intent-filter']!;
+
+    expect(generatedIntentFilter.data).toEqual([
+      {
+        $: {
+          'android:scheme': 'https',
+          'android:host': 'example.com',
+          'android:pathAdvancedPattern': '/records/[0-9]+',
+        },
+      },
+    ]);
+  });
+
   xit(`does not duplicate android intent filters`, async () => {
     let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = setAndroidIntentFilters(

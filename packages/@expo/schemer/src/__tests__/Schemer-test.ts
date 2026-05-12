@@ -61,6 +61,27 @@ describe('Holistic Unit Test', () => {
     expect(await validator.validateSchemaAsync(good)).toBeUndefined();
   });
 
+  it('validates android intent filter pathAdvancedPattern data', async () => {
+    await expect(
+      validator.validateSchemaAsync({
+        ...good,
+        android: {
+          intentFilters: [
+            {
+              action: 'VIEW',
+              data: {
+                scheme: 'https',
+                host: 'example.com',
+                pathAdvancedPattern: '/records/[0-9]+',
+              },
+              category: ['BROWSABLE', 'DEFAULT'],
+            },
+          ],
+        },
+      })
+    ).resolves.toBeUndefined();
+  });
+
   it('bad example app.json schema', async () => {
     expectSchemerErrorToMatchSnapshot(
       await expectSchemerToThrowAsync(() => validator.validateSchemaAsync(bad))

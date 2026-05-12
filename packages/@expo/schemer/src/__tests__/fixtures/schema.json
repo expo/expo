@@ -357,6 +357,10 @@
             "description": "Pattern for paths that should be matched by the filter, e.g. `.*`. Must begin with `/`",
             "type": "string"
           },
+          "pathAdvancedPattern": {
+            "description": "Advanced pattern for paths that should be matched by the filter. Available on Android 12 (API level 31) and later.",
+            "type": "string"
+          },
           "pathPrefix": {
             "description": "Prefix for paths that should be matched by the filter, e.g. `/records/` will match `/records/123`",
             "type": "string"
