@@ -295,6 +295,15 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform web
    */
   badgeTextColor?: ColorValue;
+  /**
+   * When `true`, the tab bar lifts above the keyboard (input method editor, or IME) instead of being overlaid by it. By default, the keyboard overlays the tab bar.
+   *
+   * Requires `windowSoftInputMode="adjustResize"`. Has no effect on Android API levels earlier than 30 (Android 11).
+   *
+   * @default false
+   * @platform android
+   */
+  tabBarRespectsIMEInsets?: boolean;
   // #endregion android props
   /**
    * Listeners for navigation events on all tabs.

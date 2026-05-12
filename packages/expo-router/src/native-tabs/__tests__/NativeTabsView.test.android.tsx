@@ -1,7 +1,7 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import React from 'react';
 import { Button, View } from 'react-native';
-import { Tabs } from 'react-native-screens';
+import { Tabs, type TabsHostProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -23,6 +23,28 @@ jest.mock('react-native-screens', () => {
 });
 
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
+
+it.each([
+  { value: undefined, expected: false },
+  { value: true, expected: true },
+  { value: false, expected: false },
+] as {
+  value: NativeTabsProps['tabBarRespectsIMEInsets'];
+  expected: NonNullable<TabsHostProps['android']>['tabBarRespectsIMEInsets'];
+}[])('forwards tabBarRespectsIMEInsets=$value to Tabs.Host', ({ value, expected }) => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs tabBarRespectsIMEInsets={value}>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  expect(TabsHost.mock.calls[0][0].android?.tabBarRespectsIMEInsets).toBe(expected);
+});
 
 describe('unstable_nativeProps', () => {
   it('forwards top-level raw props to Tabs.Host', () => {
