@@ -77,9 +77,9 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
 
     AsyncFunction("getAllSessions") { () -> [StoredSession] in
       return try await AppMetricsActor.isolated {
-        return try AppMetrics.database
+        return try AppMetrics.database?
           .getAllSessionsWithChildren()
-          .map { StoredSession(from: $0) }
+          .map { StoredSession(from: $0) } ?? []
       }.value
     }
 

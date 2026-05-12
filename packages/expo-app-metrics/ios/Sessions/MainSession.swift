@@ -48,7 +48,7 @@ public final class MainSession: Session, @unchecked Sendable {
       return
     }
     do {
-      try AppMetrics.database.setCrashReport(sessionId: self.id, payload: payload)
+      try AppMetrics.database?.setCrashReport(sessionId: self.id, payload: payload)
     } catch {
       logger.warn("[AppMetrics] Failed to persist crash report for session \(self.id): \(error.localizedDescription)")
     }

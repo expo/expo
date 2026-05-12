@@ -32,7 +32,7 @@ public class Session: MetricsReceiver, @unchecked Sendable {
     AppMetricsActor.isolated { [self] in
       let environment = AppMetricsUserDefaults.environment ?? AppMetricsUserDefaults.getDefaultEnvironment()
       do {
-        try AppMetrics.database.insert(session: SessionRow.snapshot(of: self, environment: environment))
+        try AppMetrics.database?.insert(session: SessionRow.snapshot(of: self, environment: environment))
       } catch {
         logger.warn("[AppMetrics] Failed to insert session row: \(error.localizedDescription)")
       }
@@ -80,12 +80,12 @@ public class Session: MetricsReceiver, @unchecked Sendable {
 
     AppMetricsActor.isolated { [self] in
       do {
-        try AppMetrics.database.updateSessionActiveStatus(
+        try AppMetrics.database?.updateSessionActiveStatus(
           id: self.id,
           isActive: false,
           endTimestamp: endDate.ISO8601Format()
         )
-        try AppMetrics.database.insert(metric: MetricRow.from(metric: durationMetric, sessionId: self.id))
+        try AppMetrics.database?.insert(metric: MetricRow.from(metric: durationMetric, sessionId: self.id))
       } catch {
         logger.warn("[AppMetrics] Failed to finalize session \(self.id): \(error.localizedDescription)")
       }
@@ -120,7 +120,7 @@ public class Session: MetricsReceiver, @unchecked Sendable {
   @AppMetricsActor
   public func receiveMetric(_ metric: Metric) {
     do {
-      try AppMetrics.database.insert(metric: MetricRow.from(metric: metric, sessionId: self.id))
+      try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: self.id))
     } catch {
       logger.warn("[AppMetrics] Failed to insert metric \"\(metric.getMetricKey())\" for session \(self.id): \(error.localizedDescription)")
     }
@@ -129,7 +129,7 @@ public class Session: MetricsReceiver, @unchecked Sendable {
   @AppMetricsActor
   public func receiveLog(_ log: LogRecord) {
     do {
-      try AppMetrics.database.insert(log: LogRow.from(log: log, sessionId: self.id))
+      try AppMetrics.database?.insert(log: LogRow.from(log: log, sessionId: self.id))
     } catch {
       logger.warn("[AppMetrics] Failed to insert log \"\(log.name)\" for session \(self.id): \(error.localizedDescription)")
     }

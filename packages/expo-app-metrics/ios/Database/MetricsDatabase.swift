@@ -27,10 +27,31 @@ final class MetricsDatabase: Sendable {
   let fileUrl: URL
 
   convenience init(fileName: String = "metrics") throws {
-    let directoryUrl = try FileManager.default
+    let directoryUrl = try Self.defaultDirectoryUrl()
+    try self.init(directoryUrl: directoryUrl, fileName: fileName)
+  }
+
+  /**
+   Opens the database, falling back to a wipe-and-retry on the first failure. The retry exists for
+   the rare case where the on-disk file is corrupted in a way the schema-mismatch path can't detect
+   (e.g. truncated WAL after a power loss). Throws the second error if the retry also fails — the
+   caller (`AppMetrics.database`) decides what to do with that.
+   */
+  static func openWipingOnFailure(fileName: String = "metrics") throws -> MetricsDatabase {
+    let directoryUrl = try defaultDirectoryUrl()
+    do {
+      return try MetricsDatabase(directoryUrl: directoryUrl, fileName: fileName)
+    } catch {
+      logger.warn("[AppMetrics] Opening the metrics database failed (\(error.localizedDescription)); wiping the file and retrying.")
+      try? removeDatabaseFile(at: directoryUrl.appendingPathComponent("\(fileName).db"))
+      return try MetricsDatabase(directoryUrl: directoryUrl, fileName: fileName)
+    }
+  }
+
+  private static func defaultDirectoryUrl() throws -> URL {
+    return try FileManager.default
       .url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
       .appendingPathComponent("ExpoAppMetrics")
-    try self.init(directoryUrl: directoryUrl, fileName: fileName)
   }
 
   /**

@@ -23,13 +23,20 @@ public struct AppMetrics {
   }
   #endif
 
+  /**
+   The shared metrics database, or `nil` in release builds if the database could not be opened even
+   after a wipe-and-retry. In DEBUG we trap with `assertionFailure` so developers see the failure
+   immediately; in release we keep the host app running because telemetry should never be
+   load-bearing for the user's primary work — callers degrade naturally via `?.`.
+   */
   @AppMetricsActor
-  static let database: MetricsDatabase = {
+  static let database: MetricsDatabase? = {
     do {
-      return try MetricsDatabase()
+      return try MetricsDatabase.openWipingOnFailure()
     } catch {
-      logger.error("[AppMetrics] Failed to open the metrics database: \(error.localizedDescription)")
-      preconditionFailure("MetricsDatabase failed to open: \(error)")
+      logger.error("[AppMetrics] Failed to open the metrics database after a wipe-and-retry: \(error.localizedDescription). Continuing without persistence — metrics and logs from this launch will be dropped.")
+      assertionFailure("MetricsDatabase failed to open: \(error)")
+      return nil
     }
   }()
 
@@ -40,19 +47,21 @@ public struct AppMetrics {
 
   /**
    Returns metric rows whose `id` is greater than `cursor`, in ascending id order. Consumers persist
-   the largest seen id and pass it back on subsequent calls to fetch only newer rows.
+   the largest seen id and pass it back on subsequent calls to fetch only newer rows. Empty when the
+   database failed to open.
    */
   @AppMetricsActor
   public static func getMetrics(afterId cursor: Int64) throws -> [MetricRow] {
-    return try database.getMetrics(afterId: cursor)
+    return try database?.getMetrics(afterId: cursor) ?? []
   }
 
   /**
-   Returns log rows whose `id` is greater than `cursor`, in ascending id order.
+   Returns log rows whose `id` is greater than `cursor`, in ascending id order. Empty when the
+   database failed to open.
    */
   @AppMetricsActor
   public static func getLogs(afterId cursor: Int64) throws -> [LogRow] {
-    return try database.getLogs(afterId: cursor)
+    return try database?.getLogs(afterId: cursor) ?? []
   }
 
   /**
@@ -61,7 +70,7 @@ public struct AppMetrics {
    */
   @AppMetricsActor
   public static func getSessions(ids: [String]) throws -> [SessionRow] {
-    return try database.getSessions(ids: ids)
+    return try database?.getSessions(ids: ids) ?? []
   }
 
   /**
@@ -71,7 +80,7 @@ public struct AppMetrics {
    */
   @AppMetricsActor
   public static func getMaxMetricId() throws -> Int64? {
-    return try database.getMaxMetricId()
+    return try database?.getMaxMetricId() ?? nil
   }
 
   /**
@@ -79,7 +88,7 @@ public struct AppMetrics {
    */
   @AppMetricsActor
   public static func getMaxLogId() throws -> Int64? {
-    return try database.getMaxLogId()
+    return try database?.getMaxLogId() ?? nil
   }
 
   // MARK: - Environment
@@ -89,7 +98,7 @@ public struct AppMetrics {
     guard AppMetricsUserDefaults.environment != environment else { return }
     AppMetricsUserDefaults.environment = environment
     do {
-      try database.updateEnvironmentForActiveSessions(environment: environment)
+      try database?.updateEnvironmentForActiveSessions(environment: environment)
     } catch {
       logger.warn("[AppMetrics] Failed to propagate environment to active sessions: \(error.localizedDescription)")
     }

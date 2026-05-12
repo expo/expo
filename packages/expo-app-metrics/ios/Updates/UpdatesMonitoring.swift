@@ -27,7 +27,7 @@ internal class UpdatesMonitoring: MetricReporter {
           )
           AppInfo.current = patched
           do {
-            try AppMetrics.database.updateAppUpdatesInfoForActiveSessions(
+            try AppMetrics.database?.updateAppUpdatesInfoForActiveSessions(
               updateId: updatesInfo.updateId,
               runtimeVersion: updatesInfo.runtimeVersion,
               requestHeadersJSON: encodeAsJSONString(updatesInfo.requestHeaders)
