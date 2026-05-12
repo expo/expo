@@ -156,10 +156,11 @@ export class RootPathUtils {
     const right = pos === 0 ? normalPath : normalPath.slice(pos);
     if (right.length === 0) {
       return left;
-    } else if (pos > this.#rootDepth * UP_FRAGMENT_SEP_LENGTH) {
-      // When we walk above the filesystem root, we emit the remaining path as is.
-      // This is important on Windows, since we're canonicalizing cross-device paths
-      // as relative paths from rootDir
+    } else if (IS_WIN32 && pos > this.#rootDepth * UP_FRAGMENT_SEP_LENGTH) {
+      // On a real file system, navigating to `..` at the top level (posix `/`
+      // or Windows drive) is a no-op, but we can't respect that on Windows
+      // because Metro uses e.g. `..\..\D:\foo` to represent cross-drive
+      // relative paths.
       return right;
     }
     // left may already end in a path separator only if it is a filesystem root,
