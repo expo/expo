@@ -7,7 +7,12 @@ const path = require('node:path');
 function resolveBabelConfig(projectRoot) {
   // Project-wide configs (babel.config.*) apply to all files including those
   // in node_modules, so Babel's default resolution handles everything.
-  const projectWideConfigs = ['babel.config.js', 'babel.config.cjs', 'babel.config.mjs', 'babel.config.json'];
+  const projectWideConfigs = [
+    'babel.config.js',
+    'babel.config.cjs',
+    'babel.config.mjs',
+    'babel.config.json',
+  ];
   const hasProjectWideConfig = projectWideConfigs.some((configFileName) =>
     fs.existsSync(path.resolve(projectRoot, configFileName))
   );
