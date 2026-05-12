@@ -60,7 +60,7 @@ data class SnackbarShowOptions(
   @Field val message: String = "",
   @Field val actionLabel: String? = null,
   @Field val withDismissAction: Boolean = false,
-  @Field val duration: String = "short"
+  @Field val duration: String? = null
 ) : Record
 
 @OptimizedComposeProps
@@ -79,9 +79,11 @@ fun FunctionalComposableScope.SnackbarHostContent(
 
   showSnackbar.handle { options ->
     val duration = when (options.duration) {
+      "short" -> SnackbarDuration.Short
       "long" -> SnackbarDuration.Long
       "indefinite" -> SnackbarDuration.Indefinite
-      else -> SnackbarDuration.Short
+      // M3 default: indefinite when there's an action label, else short.
+      else -> if (options.actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite
     }
     val result = try {
       withContext(scope.coroutineContext) {
