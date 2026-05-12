@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Apply `weight` from the `font` SwiftUI modifier when a custom `family` is set (variable / custom fonts). ([#45659](https://github.com/expo/expo/pull/45659) by [@foratbahrani](https://github.com/foratbahrani))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-11
