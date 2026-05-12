@@ -372,7 +372,7 @@ for more details.
       </p>
     </div>
     <div
-      class="[&>*]:last:mb-0!"
+      class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&>*:last-child]:mb-0!"
     >
       <div
         class="border-palette-gray4 border-t first:border-t-0"
