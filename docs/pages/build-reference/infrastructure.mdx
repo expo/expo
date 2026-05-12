@@ -82,21 +82,9 @@ The worker also sets these top-level Gradle properties on `GRADLE_OPTS`:
 
 > **warning** The worker sets `org.gradle.jvmargs` via `GRADLE_OPTS`, which overrides any `org.gradle.jvmargs` defined in your project's **gradle.properties**.
 
-#### Overriding `GRADLE_OPTS` in eas.json
+#### Overriding `GRADLE_OPTS`
 
-You can replace the worker default by setting `GRADLE_OPTS` under a build profile's `env` in **eas.json**. Project environment values take precedence over the worker's default values.
-
-```json eas.json
-{
-  "build": {
-    "production": {
-      "env": {
-        "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.parallel=true -Dorg.gradle.daemon=false"
-      }
-    }
-  }
-}
-```
+You can replace the worker default by setting `GRADLE_OPTS` under a build profile's [`env`](/eas/json/#env) in **eas.json**, in a [workflow file](/eas/workflows/syntax/#jobsjob_idenv), or with [EAS Environment Variables](/eas/environment-variables/). Project environment values take precedence over the worker's default values.
 
 ### Android server images
 
