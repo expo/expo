@@ -12,7 +12,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.edit
 import kotlinx.coroutines.delay
@@ -26,7 +25,6 @@ private const val FAB_POSITION_UNSET = -1f
 class FabState(
   initialOffset: Offset,
   var fabAreaBounds: Offset,
-  var dragBounds: Rect,
   val prefs: SharedPreferences
 ) {
   val animatedOffset = Animatable(initialOffset, Offset.VectorConverter)
@@ -54,7 +52,7 @@ class FabState(
 }
 
 @Composable
-fun rememberFabState(fabAreaBounds: Offset, totalFabSizePx: Offset): FabState {
+fun rememberFabState(fabAreaBounds: Offset): FabState {
   val context = LocalContext.current
   val prefs = remember { context.getSharedPreferences(FAB_PREFS, Context.MODE_PRIVATE) }
 
@@ -71,19 +69,10 @@ fun rememberFabState(fabAreaBounds: Offset, totalFabSizePx: Offset): FabState {
     }
   }
 
-  val halfFab = Offset(totalFabSizePx.x / 2f, totalFabSizePx.y / 2f)
-  val dragBounds = Rect(
-    left = -halfFab.x,
-    top = -halfFab.y,
-    right = fabAreaBounds.x + halfFab.x,
-    bottom = fabAreaBounds.y + halfFab.y
-  )
-
-  val state = remember { FabState(initialOffset, fabAreaBounds, dragBounds, prefs) }
+  val state = remember { FabState(initialOffset, fabAreaBounds, prefs) }
   // We can't simply update the entire state when the bounds change,
   // because it would result in resetting the interaction state (isPressed, isDragging).
   state.fabAreaBounds = fabAreaBounds
-  state.dragBounds = dragBounds
 
   LaunchedEffect(state.lastInteractionTime) {
     state.isIdle = false

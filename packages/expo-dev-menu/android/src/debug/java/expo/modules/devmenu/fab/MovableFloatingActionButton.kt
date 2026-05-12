@@ -21,6 +21,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
@@ -59,7 +60,16 @@ fun MovableFloatingActionButton(
       y = constraints.maxHeight - totalFabSizePx.y
     )
 
-    val fab = rememberFabState(bounds, totalFabSizePx)
+    val halfFab = Offset(totalFabSizePx.x / 2f, totalFabSizePx.y / 2f)
+    val dragBounds = Rect(
+      left = -halfFab.x,
+      top = -halfFab.y,
+      right = bounds.x + halfFab.x,
+      bottom = bounds.y + halfFab.y
+    )
+
+    val fab = rememberFabState(bounds)
+
     val isFabDisplayable = state.showFab &&
       !state.isInPictureInPictureMode &&
       bounds.x >= 0f &&
@@ -140,12 +150,7 @@ fun MovableFloatingActionButton(
 
                   drag(pointerId) { change ->
                     dragOffset = (dragOffset + change.positionChange())
-                      .coerceIn(
-                        minX = fab.dragBounds.left,
-                        maxX = fab.dragBounds.right,
-                        minY = fab.dragBounds.top,
-                        maxY = fab.dragBounds.bottom
-                      )
+                      .coerceIn(dragBounds)
                     dragDistance += change.positionChange().getDistance()
                     velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
 
