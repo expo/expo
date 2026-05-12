@@ -30,10 +30,8 @@ export type SnackbarProps = {
     modifiers?: ModifierConfig[];
 };
 /**
- * Styling configuration for the snackbar rendered by `SnackbarHost`. Mirrors
- * Compose's `Snackbar(snackbarData, ...)` overload used inside `SnackbarHost`'s
- * snackbar lambda. Place as a child of `SnackbarHost` — message content comes
- * from each `show()` call, this component only contributes styling.
+ * Styling configuration for the snackbar shown by `SnackbarHost`. Pass as a
+ * child to override colors or place the action on a new line.
  */
 export declare function Snackbar(props: SnackbarProps): import("react/jsx-runtime").JSX.Element;
 /**
@@ -60,22 +58,22 @@ export type SnackbarShowOptions = {
     withDismissAction?: boolean;
     /**
      * How long to show the snackbar. Defaults to `'short'` when an `actionLabel`
-     * is not provided, and `'indefinite'` when it is — matching Compose.
+     * is not provided, and `'indefinite'` when it is, matching Compose.
      */
     duration?: SnackbarDuration;
 };
 export type SnackbarHostRef = {
     /**
      * Shows a snackbar and resolves with `'actionPerformed'` when the user taps
-     * the action, or `'dismissed'` when it times out, is swiped away, or the
-     * dismiss-action button is tapped. Subsequent calls queue and show after the
-     * current snackbar is dismissed.
+     * the action, or `'dismissed'` when it times out or the dismiss-action
+     * button is tapped. Subsequent calls queue and show after the current
+     * snackbar is dismissed.
      */
-    show: (options: SnackbarShowOptions) => Promise<SnackbarResult>;
+    showSnackbar: (options: SnackbarShowOptions) => Promise<SnackbarResult>;
 };
 export type SnackbarHostProps = {
     /**
-     * Ref exposing the imperative `show` method.
+     * Ref exposing the imperative `showSnackbar` method.
      */
     ref?: Ref<SnackbarHostRef>;
     /**
@@ -90,7 +88,7 @@ export type SnackbarHostProps = {
 };
 /**
  * A Material 3 [SnackbarHost](https://developer.android.com/develop/ui/compose/components/snackbar)
- * that displays snackbars triggered via its ref's `show` method.
+ * that displays snackbars triggered via its ref's `showSnackbar` method.
  */
 export declare function SnackbarHost(props: SnackbarHostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

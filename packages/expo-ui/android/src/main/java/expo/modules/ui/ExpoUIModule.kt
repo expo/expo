@@ -595,10 +595,10 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView<SnackbarHostProps>("SnackbarHostView") {
-      val show by AsyncFunction<SnackbarShowOptions>()
+      val showSnackbar by AsyncFunction<SnackbarShowOptions>()
 
       Content { props ->
-        SnackbarHostContent(props, show)
+        SnackbarHostContent(props, showSnackbar)
       }
     }
 

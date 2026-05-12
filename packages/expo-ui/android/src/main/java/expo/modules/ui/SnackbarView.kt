@@ -30,14 +30,7 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
-// --- SnackbarView ---
-//
-// Class-based marker view that carries styling props for a child of
-// `SnackbarHost`. Mirrors the role of the `Snackbar(snackbarData, ...)`
-// composable inside Compose's `SnackbarHost(hostState) { data -> Snackbar(data, ...) }`
-// lambda — content comes from `SnackbarData`, this view only contributes styling.
-// When rendered standalone (no `SnackbarHost` parent) it intentionally renders
-// nothing.
+// Holds styling props that `SnackbarHost` reads via `findChildOfType`.
 
 @OptimizedComposeProps
 data class SnackbarViewProps(
@@ -56,7 +49,7 @@ class SnackbarView(context: Context, appContext: AppContext) :
 
   @Composable
   override fun ComposableScope.Content() {
-    // Intentionally empty — this view is a styling marker for SnackbarHost.
+    // Empty by design: `SnackbarHost` renders the snackbar using the props above.
   }
 }
 
@@ -78,13 +71,13 @@ data class SnackbarHostProps(
 @Composable
 fun FunctionalComposableScope.SnackbarHostContent(
   props: SnackbarHostProps,
-  show: AsyncFunctionHandle<SnackbarShowOptions>
+  showSnackbar: AsyncFunctionHandle<SnackbarShowOptions>
 ) {
   val hostState = remember { SnackbarHostState() }
   val scope = rememberCoroutineScope()
   val snackbarConfig = findChildOfType<SnackbarView>(view)
 
-  show.handle { options ->
+  showSnackbar.handle { options ->
     val duration = when (options.duration) {
       "long" -> SnackbarDuration.Long
       "indefinite" -> SnackbarDuration.Indefinite
@@ -100,7 +93,8 @@ fun FunctionalComposableScope.SnackbarHostContent(
         )
       }
     } catch (_: CancellationException) {
-      // The compose scope can be cancelled if the view is disposed mid-show.
+      // The compose scope can be cancelled if the view is disposed before user dismisses the snackbar or performs the action. 
+      // In that case, we treat it as if the snackbar was dismissed.
       SnackbarResult.Dismissed
     }
     when (result) {

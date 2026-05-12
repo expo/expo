@@ -23,7 +23,7 @@ export default function SnackbarScreen() {
   const [lastResult, setLastResult] = React.useState<string>('');
 
   const showShort = async () => {
-    const result = await defaultHostRef.current?.show({
+    const result = await defaultHostRef.current?.showSnackbar({
       message: 'Item archived',
       actionLabel: 'Undo',
       duration: 'short',
@@ -32,7 +32,7 @@ export default function SnackbarScreen() {
   };
 
   const showWithDismissAction = async () => {
-    const result = await defaultHostRef.current?.show({
+    const result = await defaultHostRef.current?.showSnackbar({
       message: 'New email received',
       withDismissAction: true,
       duration: 'long',
@@ -41,7 +41,7 @@ export default function SnackbarScreen() {
   };
 
   const showIndefinite = async () => {
-    const result = await defaultHostRef.current?.show({
+    const result = await defaultHostRef.current?.showSnackbar({
       message: 'Connection lost, tap to retry',
       actionLabel: 'Retry',
       duration: 'indefinite',
@@ -50,7 +50,7 @@ export default function SnackbarScreen() {
   };
 
   const showStyled = async () => {
-    const result = await styledHostRef.current?.show({
+    const result = await styledHostRef.current?.showSnackbar({
       message: 'Saved with custom colors',
       actionLabel: 'OK',
       duration: 'short',
