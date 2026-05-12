@@ -20,7 +20,7 @@ export var BrightnessMode;
     BrightnessMode[BrightnessMode["MANUAL"] = 2] = "MANUAL";
 })(BrightnessMode || (BrightnessMode = {}));
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus } from 'expo';
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
  * permissions.

@@ -361,8 +361,8 @@ export {
   type PermissionExpiration,
   type PermissionResponse as EXPermissionResponse,
   type PermissionHookOptions,
-  type EventSubscription as Subscription,
-} from 'expo-modules-core';
+} from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
 
 function arrayize<T>(item: T | T[]): T[] {
   if (Array.isArray(item)) {

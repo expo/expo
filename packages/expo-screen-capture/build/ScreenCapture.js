@@ -196,5 +196,5 @@ const defaultPermissionsResponse = {
     status: PermissionStatus.GRANTED,
 };
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus } from 'expo';
 //# sourceMappingURL=ScreenCapture.js.map

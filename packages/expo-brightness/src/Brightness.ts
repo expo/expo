@@ -35,7 +35,7 @@ export {
   type PermissionHookOptions,
   type PermissionResponse,
   PermissionStatus,
-} from 'expo-modules-core';
+} from 'expo';
 
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app

@@ -25,5 +25,5 @@ export var AndroidNotificationPriority;
     AndroidNotificationPriority["MAX"] = "max";
 })(AndroidNotificationPriority || (AndroidNotificationPriority = {}));
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus } from 'expo';
 //# sourceMappingURL=Notifications.types.js.map

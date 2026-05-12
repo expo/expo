@@ -288,7 +288,13 @@ export type PagedInfo<T> = {
 };
 export type AssetRef = Asset | string;
 export type AlbumRef = Album | string;
-export { PermissionStatus, type PermissionExpiration, type PermissionResponse as EXPermissionResponse, type PermissionHookOptions, type EventSubscription as Subscription, } from 'expo-modules-core';
+export {
+  PermissionStatus,
+  type PermissionExpiration,
+  type PermissionResponse as EXPermissionResponse,
+  type PermissionHookOptions,
+} from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
 /**
  * Possible media types.
  */

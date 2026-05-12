@@ -1,4 +1,5 @@
-import { PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import invariant from 'invariant';
 import ExponentPedometer from './ExponentPedometer';
 // @needsAudit
@@ -72,5 +73,5 @@ const defaultPermissionsResponse = {
     status: PermissionStatus.GRANTED,
 };
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus } from 'expo';
 //# sourceMappingURL=Pedometer.js.map

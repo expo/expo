@@ -219,9 +219,5 @@ const defaultPermissionsResponse: PermissionResponse = {
 };
 
 // TODO(@kitten): Remove re-exports from EMC
-export {
-  type EventSubscription as Subscription,
-  type PermissionResponse,
-  PermissionStatus,
-  type PermissionHookOptions,
-} from 'expo-modules-core';
+export { type PermissionResponse, PermissionStatus, type PermissionHookOptions } from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
