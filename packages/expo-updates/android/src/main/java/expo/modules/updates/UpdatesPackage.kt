@@ -38,6 +38,10 @@ class UpdatesPackage : Package {
         UpdatesController.initialize(context, useDeveloperSupport)
       }
 
+      override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
+        UpdatesController.reactHost = reactNativeHost
+      }
+
       override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
         UpdatesController.instance.onDidCreateDevSupportManager(devSupportManager)
       }

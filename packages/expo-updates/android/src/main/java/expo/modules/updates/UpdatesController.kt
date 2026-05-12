@@ -2,6 +2,7 @@ package expo.modules.updates
 
 import android.content.Context
 import com.facebook.react.ReactApplication
+import com.facebook.react.ReactHost
 import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.logging.UpdatesErrorCode
@@ -24,6 +25,13 @@ object UpdatesController {
 
   @Volatile
   private var overrideConfiguration: UpdatesConfiguration? = null
+
+  /**
+   * Populated automatically by ReactNativeHostHandler.onDidCreateReactHost
+   */
+  @Volatile
+  @JvmStatic
+  var reactHost: ReactHost? = null
 
   @JvmStatic
   val instance: IUpdatesController
