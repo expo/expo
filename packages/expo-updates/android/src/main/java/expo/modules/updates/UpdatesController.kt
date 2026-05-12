@@ -31,7 +31,7 @@ object UpdatesController {
    */
   @Volatile
   @JvmStatic
-  var reactHost: ReactHost? = null
+  var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   @JvmStatic
   val instance: IUpdatesController

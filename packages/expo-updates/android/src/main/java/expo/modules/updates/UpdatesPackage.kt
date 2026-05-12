@@ -39,7 +39,7 @@ class UpdatesPackage : Package {
       }
 
       override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
-        UpdatesController.reactHost = reactNativeHost
+        UpdatesController.instance.reactHost = WeakReference(reactNativeHost)
       }
 
       override fun onDidCreateDevSupportManager(devSupportManager: DevSupportManager) {
