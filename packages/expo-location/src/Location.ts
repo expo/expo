@@ -398,10 +398,10 @@ export const useMotionActivityPermissions = createPermissionHook({
  * callback.
  *
  * The method uses the  Google Play Services activity
- * recognition (Android) or platform's motion coprocessor (iOS) and does **not** require location permissions. 
+ * recognition (Android) or platform's motion coprocessor (iOS) and does **not** require location permissions.
  * On Android 10+, the `ACTIVITY_RECOGNITION` runtime permission must be granted beforehand.
  *  On iOS, the system will prompt the user for Motion and Fitness access the first time this method is called.
- * 
+ *
  *
  * @return a promise which fulfills with a [`MotionActivityObject`](#motionactivityobject).
  *

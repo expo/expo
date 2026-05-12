@@ -536,7 +536,7 @@ export enum MotionActivityConfidence {
  * The type of physical activity the user is currently performing.
  *
  * On Android it maps to `DetectedActivity` constants from Google Play Services.
- * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority 
+ * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority
  * truthy property wins).
  */
 export enum MotionActivityType {
@@ -578,7 +578,7 @@ export type MotionActivityState = {
   /**
    * Confidence level of the detection.
    * On Android, each activity type has its own confidence derived from the
-   * `DetectedActivity` probability value. On iOS, this is the overall reading confidence from 
+   * `DetectedActivity` probability value. On iOS, this is the overall reading confidence from
    * `CMMotionActivityConfidence`, shared by all detected activities.
    */
   confidence: MotionActivityConfidence;
