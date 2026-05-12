@@ -41,8 +41,8 @@ internal fun isInternetReachable(
 
   var isReachable =
     capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-    capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) &&
-    !isInternetSuspended
+      capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) &&
+      !isInternetSuspended
 
   if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
     isReachable = isReachable && capabilities.linkDownstreamBandwidthKbps != 0

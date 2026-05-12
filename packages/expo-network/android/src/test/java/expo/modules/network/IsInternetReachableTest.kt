@@ -100,7 +100,10 @@ class IsInternetReachableTest {
   fun `returns true when connected on pre-API 29`() {
     val networkInfo = ShadowNetworkInfo.newInstance(
       NetworkInfo.DetailedState.CONNECTED,
-      ConnectivityManager.TYPE_WIFI, 0, true, NetworkInfo.State.CONNECTED
+      ConnectivityManager.TYPE_WIFI,
+      0,
+      true,
+      NetworkInfo.State.CONNECTED
     )
     every { connectivityManager.activeNetwork } returns network
     every { connectivityManager.getNetworkCapabilities(network) } returns capabilities
@@ -116,7 +119,10 @@ class IsInternetReachableTest {
   fun `returns false when suspended on pre-API 29`() {
     val networkInfo = ShadowNetworkInfo.newInstance(
       NetworkInfo.DetailedState.SUSPENDED,
-      ConnectivityManager.TYPE_WIFI, 0, true, NetworkInfo.State.SUSPENDED
+      ConnectivityManager.TYPE_WIFI,
+      0,
+      true,
+      NetworkInfo.State.SUSPENDED
     )
     every { connectivityManager.activeNetwork } returns network
     every { connectivityManager.getNetworkCapabilities(network) } returns capabilities
