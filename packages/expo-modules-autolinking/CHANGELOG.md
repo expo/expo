@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+[iOS] Added fallback to source for missing framework slice
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-11
