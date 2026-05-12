@@ -75,6 +75,11 @@ function isRegularFile(node: FileNode | null | undefined): boolean {
   return node != null && node[H.SYMLINK] === 0;
 }
 
+// POSIX systems don't keep track of exact symlink loops, since they're rare.
+// Instead, they set a maximum number of followed symlinks, which is cheaper.
+// Imitating this allowed us to delete the Set that tracked symlink loops
+const SYMLOOP_MAX = 40;
+
 interface DeserializedSnapshotInput {
   rootDir: string;
   fileSystemData: DirectoryNode;
@@ -683,11 +688,7 @@ export default class TreeFS implements MutableFileSystem {
   ): WalkResult {
     // We'll update the target if we hit a symlink.
     let targetNormalPath = requestedNormalPath;
-    // Lazy-initialised set of seen target paths, to detect symlink cycles.
-    let seen: Set<string> | undefined;
-    // Set when a symlink is followed, to allow fallback population outside
-    // the boundary for paths reachable transitively through symlinks.
-    let followedSymlink = false;
+    let followedSymlinks = 0;
     let fromIdx = startPathIdx;
     let parentNode = startNode;
     let ancestorOfRootIdx: number | undefined = startAncestorOfRootIdx;
@@ -728,7 +729,7 @@ export default class TreeFS implements MutableFileSystem {
               parentNode,
               segmentName,
               parentCanonicalPath,
-              followedSymlink
+              followedSymlinks > 0
             );
             if (segmentNode != null) {
               ancestorOfRootIdx = undefined;
@@ -877,20 +878,14 @@ export default class TreeFS implements MutableFileSystem {
         // itself (i.e. the basename of the normal target path) onwards.
         unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path.sep) + 1;
 
-        if (seen == null) {
-          // Optimisation: set this lazily only when we've encountered a symlink
-          seen = new Set([requestedNormalPath]);
-        }
-        if (seen.has(targetNormalPath)) {
-          // TODO: Warn `Symlink cycle detected: ${[...seen, node].join(' -> ')}`
+        followedSymlinks++;
+        if (followedSymlinks >= SYMLOOP_MAX) {
           return {
             canonicalMissingPath: targetNormalPath,
             exists: false,
             missingSegmentName: segmentName,
           };
         }
-        seen.add(targetNormalPath);
-        followedSymlink = true;
         fromIdx = 0;
         parentNode = this.#rootNode;
         ancestorOfRootIdx = 0;
@@ -922,7 +917,7 @@ export default class TreeFS implements MutableFileSystem {
     skipFallback: boolean
   ): WalkResult {
     let targetNormalPath = requestedNormalPath;
-    let seen: Set<string> | undefined;
+    let followedSymlinks = 0;
     let followedSymlink = false;
     let fromIdx = startPathIdx;
     let parentNode = startNode;
@@ -1074,17 +1069,14 @@ export default class TreeFS implements MutableFileSystem {
 
         unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path.sep) + 1;
 
-        if (seen == null) {
-          seen = new Set([requestedNormalPath]);
-        }
-        if (seen.has(targetNormalPath)) {
+        followedSymlinks++;
+        if (followedSymlinks >= SYMLOOP_MAX) {
           return {
             canonicalMissingPath: targetNormalPath,
             exists: false,
             missingSegmentName: segmentName,
           };
         }
-        seen.add(targetNormalPath);
         followedSymlink = true;
         fromIdx = 0;
         parentNode = this.#rootNode;
@@ -1117,7 +1109,7 @@ export default class TreeFS implements MutableFileSystem {
     onSegment: MakeDirsSegmentCallback | undefined
   ): WalkResult {
     let targetNormalPath = requestedNormalPath;
-    let seen: Set<string> | undefined;
+    let followedSymlinks = 0;
     let fromIdx = startPathIdx;
     let parentNode = startNode;
     let ancestorOfRootIdx: number | undefined = startAncestorOfRootIdx;
@@ -1219,17 +1211,14 @@ export default class TreeFS implements MutableFileSystem {
 
         unseenPathFromIdx = normalSymlinkTarget.lastIndexOf(path.sep) + 1;
 
-        if (seen == null) {
-          seen = new Set([requestedNormalPath]);
-        }
-        if (seen.has(targetNormalPath)) {
+        followedSymlinks++;
+        if (followedSymlinks >= SYMLOOP_MAX) {
           return {
             canonicalMissingPath: targetNormalPath,
             exists: false,
             missingSegmentName: segmentName,
           };
         }
-        seen.add(targetNormalPath);
         fromIdx = 0;
         parentNode = this.#rootNode;
         ancestorOfRootIdx = 0;
