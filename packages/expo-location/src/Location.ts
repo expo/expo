@@ -456,7 +456,10 @@ export async function watchMotionActivityAsync(
   return {
     remove() {
       MotionActivitySubscriber.unregisterCallback(watchId);
-      errorHandler && LocationErrorSubscriber.unregisterCallback(watchId);
+      // forgetCallback instead of unregisterCallback: removeWatchAsync is already
+      // called above; calling it again for the error subscriber would hit the
+      // location-permission guard and throw for motion-activity-only callers.
+      errorHandler && LocationErrorSubscriber.forgetCallback(watchId);
     },
   };
 }

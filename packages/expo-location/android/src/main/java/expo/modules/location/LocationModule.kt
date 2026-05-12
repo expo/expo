@@ -90,7 +90,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   private var mGeocoderPaused = false
 
   // Motion activity
-  private var mMotionActivityWatchId = 0
+  private val mMotionActivityWatchIds = mutableSetOf<Int>()
   private var mMotionActivityPendingIntent: PendingIntent? = null
   private var mMotionActivityReceiverRegistered = false
   private val mMotionActivityReceiver = object : BroadcastReceiver() {
@@ -103,23 +103,20 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         .groupBy { it.toMotionActivityType() }
         .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
 
-      sendEvent(
-        MOTION_ACTIVITY_EVENT_NAME,
-        mapOf(
-          "watchId" to mMotionActivityWatchId,
-          "activity" to MotionActivityObjectRecord(
-            activities = MotionActivitiesRecord(
-              automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
-              cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
-              running = confidenceByType.stateFor(MotionActivityType.RUNNING),
-              walking = confidenceByType.stateFor(MotionActivityType.WALKING),
-              stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
-              unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
-            ),
-            timestamp = System.currentTimeMillis().toDouble()
-          )
-        )
+      val activity = MotionActivityObjectRecord(
+        activities = MotionActivitiesRecord(
+          automotive = confidenceByType.stateFor(MotionActivityType.AUTOMOTIVE),
+          cycling = confidenceByType.stateFor(MotionActivityType.CYCLING),
+          running = confidenceByType.stateFor(MotionActivityType.RUNNING),
+          walking = confidenceByType.stateFor(MotionActivityType.WALKING),
+          stationary = confidenceByType.stateFor(MotionActivityType.STATIONARY),
+          unknown = confidenceByType.stateFor(MotionActivityType.UNKNOWN)
+        ),
+        timestamp = System.currentTimeMillis().toDouble()
       )
+      for (id in mMotionActivityWatchIds) {
+        sendEvent(MOTION_ACTIVITY_EVENT_NAME, mapOf("watchId" to id, "activity" to activity))
+      }
     }
   }
 
@@ -260,8 +257,11 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     AsyncFunction("removeWatchAsync") { watchId: Int ->
       // Motion activity does not require location permissions - check it first.
-      if (mMotionActivityWatchId != 0 && watchId == mMotionActivityWatchId) {
-        stopMotionActivityWatch()
+      if (mMotionActivityWatchIds.contains(watchId)) {
+        mMotionActivityWatchIds.remove(watchId)
+        if (mMotionActivityWatchIds.isEmpty()) {
+          stopMotionActivityWatch()
+        }
         return@AsyncFunction
       }
 
@@ -813,7 +813,11 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
   // region motion activity
 
   private suspend fun startMotionActivityWatch(watchId: Int) {
-    mMotionActivityWatchId = watchId
+    val alreadyRunning = mMotionActivityWatchIds.isNotEmpty()
+    mMotionActivityWatchIds.add(watchId)
+    if (alreadyRunning) {
+      return
+    }
     registerMotionActivityReceiver()
     val pendingIntent = getOrCreateMotionActivityPendingIntent()
     suspendCoroutine { continuation ->
@@ -821,7 +825,10 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
         .requestActivityUpdates(MOTION_ACTIVITY_INTERVAL_MS, pendingIntent)
         .addOnSuccessListener { continuation.resume(Unit) }
         .addOnFailureListener { e ->
-          stopMotionActivityWatch()
+          mMotionActivityWatchIds.remove(watchId)
+          if (mMotionActivityWatchIds.isEmpty()) {
+            stopMotionActivityWatch()
+          }
           continuation.resumeWithException(MotionActivityUnavailableException(e))
         }
     }
@@ -836,17 +843,33 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       }
     unregisterMotionActivityReceiver()
     mMotionActivityPendingIntent = null
-    mMotionActivityWatchId = 0
+    mMotionActivityWatchIds.clear()
   }
 
   private fun pauseMotionActivityWatch() {
+    if (mMotionActivityWatchIds.isEmpty()) {
+      return
+    }
+    val pendingIntent = mMotionActivityPendingIntent ?: return
+    ActivityRecognition.getClient(mContext)
+      .removeActivityUpdates(pendingIntent)
+      .addOnFailureListener { e ->
+        Log.w(TAG, "Failed to pause activity updates: ${e.message}")
+      }
     unregisterMotionActivityReceiver()
   }
 
   private fun resumeMotionActivityWatch() {
-    if (mMotionActivityWatchId != 0) {
-      registerMotionActivityReceiver()
+    if (mMotionActivityWatchIds.isEmpty()) {
+      return
     }
+    registerMotionActivityReceiver()
+    val pendingIntent = getOrCreateMotionActivityPendingIntent()
+    ActivityRecognition.getClient(mContext)
+      .requestActivityUpdates(MOTION_ACTIVITY_INTERVAL_MS, pendingIntent)
+      .addOnFailureListener { e ->
+        Log.w(TAG, "Failed to resume activity updates: ${e.message}")
+      }
   }
 
   private fun registerMotionActivityReceiver() {

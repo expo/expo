@@ -33,7 +33,8 @@ public final class LocationModule: Module {
         [
           EXLocationPermissionRequester(),
           EXForegroundPermissionRequester(),
-          EXBackgroundLocationPermissionRequester()
+          EXBackgroundLocationPermissionRequester(),
+          MotionActivityPermissionRequester()
         ],
         withPermissionsManager: permissionsManager
       )

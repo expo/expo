@@ -51,6 +51,20 @@ class Subscriber {
             this.eventSubscription = null;
         }
     }
+    /**
+     * Removes a callback locally without calling native removeWatchAsync.
+     * Use when another subscriber will handle the native teardown for the same id.
+     */
+    forgetCallback(id) {
+        if (!this.callbacks[id]) {
+            return;
+        }
+        delete this.callbacks[id];
+        if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
+            this.eventSubscription.remove();
+            this.eventSubscription = null;
+        }
+    }
     trigger(event) {
         const watchId = event.watchId;
         const callback = this.callbacks[watchId];

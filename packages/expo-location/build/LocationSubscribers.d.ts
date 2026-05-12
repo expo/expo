@@ -24,6 +24,11 @@ declare class Subscriber<CallbackType extends LocationCallback | LocationHeading
      * Unregisters a callback with given id and revokes the subscription if possible.
      */
     unregisterCallback(id: number): void;
+    /**
+     * Removes a callback locally without calling native removeWatchAsync.
+     * Use when another subscriber will handle the native teardown for the same id.
+     */
+    forgetCallback(id: number): void;
     trigger(event: EventObject): void;
 }
 export declare const LocationSubscriber: Subscriber<LocationCallback>;
