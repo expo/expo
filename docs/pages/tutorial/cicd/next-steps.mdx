@@ -1,0 +1,100 @@
+---
+title: Next steps
+description: Learn about the next steps in your journey with EAS Workflows.
+---
+
+import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
+import { EasSubmitIcon } from '@expo/styleguide-icons/custom/EasSubmitIcon';
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
+import { LayersTwo02Icon } from '@expo/styleguide-icons/outline/LayersTwo02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Congratulations! You've completed the CI/CD tutorial and built a full pipeline for an Expo app with [EAS Workflows](/eas/workflows/introduction/). Every push, pull request, and version tag is now wired to the right automation, from development builds through production releases and web deploys.
+
+## EAS Workflows references
+
+<BoxLink
+  title="EAS Workflows syntax reference"
+  description="See the complete syntax reference for workflow files, including triggers, jobs, expressions, and conditional execution."
+  href="/eas/workflows/syntax/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Pre-packaged jobs"
+  description="See the catalog of pre-packaged job types for builds, updates, fingerprinting, submissions, deploys, Slack notifications, and more."
+  href="/eas/workflows/pre-packaged-jobs/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="EAS environment variables"
+  description="Learn how to define and use environment variables in EAS Workflows for secrets, config, and per-environment values."
+  href="/eas/environment-variables/"
+  Icon={BookOpen02Icon}
+/>
+
+## Related EAS services
+
+<BoxLink
+  title="EAS Build"
+  description="See EAS Build documentation to learn more about compiling and signing Android and iOS apps."
+  href="/build/introduction/"
+  Icon={BuildIcon}
+/>
+
+<BoxLink
+  title="EAS Update"
+  description="See EAS Update documentation to learn more about publishing over-the-air updates and customizable rollout strategies."
+  href="/eas-update/introduction/"
+  Icon={LayersTwo02Icon}
+/>
+
+<BoxLink
+  title="EAS Submit"
+  description="See EAS Submit documentation to learn more about uploading app binaries to the Google Play Store and Apple App Store from one CLI command."
+  href="/submit/introduction/"
+  Icon={EasSubmitIcon}
+/>
+
+<BoxLink
+  title="EAS Hosting"
+  description="See EAS Hosting documentation to learn more about deploying Expo Router and React Native web apps."
+  href="/eas/hosting/introduction/"
+  Icon={Cloud01Icon}
+/>
+
+## Relevant guides
+
+<BoxLink
+  title="Automate submissions"
+  description="See the automate submissions guide to enable automatic submissions to app stores after every EAS Build."
+  href="/build/automate-submissions/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="App credentials"
+  description="See the app credentials guide to learn more about credentials requirements for Android and iOS production builds and submissions."
+  href="/app-signing/app-credentials/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Custom builds"
+  description="See the custom builds documentation to extend EAS Build with your own configuration and build steps."
+  href="/custom-builds/get-started/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="GitHub Actions with EAS Update"
+  description="See the GitHub Actions guide on how to publish updates with EAS Update from a GitHub Actions workflow."
+  href="/eas-update/github-actions/"
+  Icon={BookOpen02Icon}
+/>
+
+We hope you enjoyed this tutorial. If you have any questions or feedback, don't hesitate to reach out to us on [Discord](https://chat.expo.dev/), or share your experience on [X](https://x.com/expo).

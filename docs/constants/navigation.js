@@ -649,6 +649,7 @@ export const learn = [
       makePage('tutorial/cicd/production.mdx'),
       makePage('tutorial/cicd/tag-based-releases.mdx'),
       makePage('tutorial/cicd/web-deployments.mdx'),
+      makePage('tutorial/cicd/next-steps.mdx'),
     ],
     { expanded: true }
   ),
