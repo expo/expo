@@ -19,47 +19,45 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 > **Note:** Using worklets requires installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) in your project. `useNativeState` itself works without them, but the synchronous UI-thread updates shown below depend on the worklet runtime.
 
-The example below masks a phone number as the user types. The formatting and the write to `maskedPhone.value` both happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
+The example below masks a phone number as the user types. The formatting and the writes to `maskedPhone.value` (text) and `selection.value` (cursor position) all happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
 
 ```tsx WorkletPhoneMaskExample.tsx
-import { Host, TextField, TextFieldRef, useNativeState } from '@expo/ui/swift-ui';
+import { Host, TextField, useNativeState } from '@expo/ui/swift-ui';
 import { keyboardType } from '@expo/ui/swift-ui/modifiers';
-import { useCallback, useRef } from 'react';
-import { runOnJS } from 'react-native-worklets';
+import { useEffectEvent } from 'react';
 
 export default function WorkletPhoneMaskExample() {
-  const phoneRef = useRef<TextFieldRef>(null);
   const maskedPhone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
 
-  const setPhoneCursor = useCallback((position: number) => {
-    phoneRef.current?.setSelection(position, position);
-  }, []);
+  const handleTextChange = useEffectEvent((v: string) => {
+    'worklet';
+    const digits = v.replace(/\D/g, '').slice(0, 10);
+    let formatted: string;
+    if (digits.length === 0) {
+      formatted = '';
+    } else if (digits.length <= 3) {
+      formatted = digits;
+    } else if (digits.length <= 6) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    } else {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    if (formatted !== v) {
+      maskedPhone.value = formatted;
+      // Snaps to end for demo. Real masks need smarter cursor handling.
+      selection.value = { start: formatted.length, end: formatted.length };
+    }
+  });
 
   return (
     <Host matchContents>
       <TextField
-        ref={phoneRef}
         text={maskedPhone}
+        selection={selection}
         placeholder="(555) 123-4567"
         modifiers={[keyboardType('phone-pad')]}
-        onTextChange={v => {
-          'worklet';
-          const digits = v.replace(/\D/g, '').slice(0, 10);
-          let formatted: string;
-          if (digits.length === 0) {
-            formatted = '';
-          } else if (digits.length <= 3) {
-            formatted = digits;
-          } else if (digits.length <= 6) {
-            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-          } else {
-            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-          }
-          if (formatted !== v) {
-            maskedPhone.value = formatted;
-            runOnJS(setPhoneCursor)(formatted.length);
-          }
-        }}
+        onTextChange={handleTextChange}
       />
     </Host>
   );

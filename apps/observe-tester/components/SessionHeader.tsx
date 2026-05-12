@@ -12,6 +12,7 @@ export function SessionHeader({ session }: { session: Session }) {
     ? formatDuration(endDate.getTime() - startDate.getTime())
     : 'still running';
   const crashed = session.type === 'main' && !!session.crashReport;
+  const routeName = session.metrics.find((m) => m.name === 'timeToInteractive')?.routeName;
 
   return (
     <View style={styles.container}>
@@ -32,6 +33,7 @@ export function SessionHeader({ session }: { session: Session }) {
       <Field label="Ended" value={endDate ? formatDateTime(endDate) : '—'} />
       <Field label="Duration" value={duration} />
       <Field label="Metrics" value={String(session.metrics.length)} />
+      {routeName ? <Field label="Initial route" value={routeName} monospace /> : null}
       <Field
         label="Session ID"
         value={session.id}

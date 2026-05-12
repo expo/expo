@@ -216,6 +216,32 @@ describe('createFallbackFilesystem', () => {
 
       expect(result!.get('file.js')?.[0]).toBe(999); // preserved
     });
+
+    test('skips .git and .hg directories', () => {
+      vol.fromJSON({
+        '/project/src/keep.js': 'a',
+        '/project/src/.git/HEAD': 'ref',
+        '/project/src/.hg/store/data': 'binary',
+      });
+      const fallback = createFallback();
+      const result = fallback.readdir('src', '/project/src', undefined);
+
+      expect(result).toBeInstanceOf(Map);
+      expect(result!.has('keep.js')).toBe(true);
+      expect(result!.has('.git')).toBe(false);
+      expect(result!.has('.hg')).toBe(false);
+    });
+
+    test('skips .git and .hg even when ignore would not match them', () => {
+      vol.fromJSON({
+        '/project/src/.git/HEAD': 'ref',
+        '/project/src/keep.js': 'a',
+      });
+      const fallback = createFallback({ ignore: () => false });
+      const result = fallback.readdir('src', '/project/src', undefined);
+
+      expect(result!.has('.git')).toBe(false);
+    });
   });
 
   describe('directory marking (isFallbackDir)', () => {

@@ -8,18 +8,16 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Button matches the official SwiftUI [Button API](https://developer.apple.com/documentation/swiftui/button) and supports styling via the [`buttonStyle`](modifiers/#buttonstylestyle), [`controlSize`](modifiers/#controlsizesize), and other modifiers.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/button/ios-light.webp"
-    darkSource="/static/images/expo-ui/button/ios-dark.webp"
-    alt="Two iOS 26 Liquid Glass buttons — a glassProminent Get started above a glass Learn more"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/button/ios-light.webp"
+  darkSource="/static/images/expo-ui/button/ios-dark.webp"
+  alt="Two iOS 26 Liquid Glass buttons — a glassProminent Get started above a glass Learn more"
+/>
 
 ## Installation
 

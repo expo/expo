@@ -1,5 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
-import { PermissionStatus } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
 
 import type { MediaTypeObject, SortByObject } from './MediaLibrary';
 

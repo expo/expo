@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
 import type { AudioMode, AudioSource } from './Audio.types';
 export { AudioPlayerWeb } from './AudioPlayer.web';
 export { AudioPlaylistWeb } from './AudioPlaylist.web';

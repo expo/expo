@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 
@@ -43,12 +44,14 @@ class ObservabilityBackgroundWorker(
     )
 
     val pendingMetricsManager = PendingMetricsManager(context)
+    val pendingLogsManager = PendingLogsManager(context)
 
     BaseObservabilityManager(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
       pendingMetricsManager = pendingMetricsManager,
+      pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
       isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
@@ -81,7 +84,8 @@ class ObservabilityBackgroundWorker(
       // This also adds a side benefit of cleaning up even if dispatch fails
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
-      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics")
+      observabilityManager.dispatchUnsentLogs()
+      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
       Result.success()
     } catch (e: Exception) {
       Log.e(OBSERVE_TAG, "Failed to dispatch metrics", e)

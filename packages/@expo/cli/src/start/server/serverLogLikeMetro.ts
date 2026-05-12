@@ -4,11 +4,9 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { SourcePosition } from '@expo/metro/metro-source-map/Consumer/types';
 import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
 import chalk from 'chalk';
 import path from 'path';
-import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
 import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
@@ -194,35 +192,13 @@ function augmentLogsInternal(projectRoot: string) {
             const customStack = args[1];
 
             try {
+              // `error.stack` is already symbolicated by Node's source map support
+              // (registered by `@expo/require-utils` when the SSR bundle is compiled), so the
+              // parsed frames already point at original sources. We just reformat them.
               const parsedStack = parseErrorStack(customStack);
-              const symbolicatedStack = parsedStack.map((line) => {
-                // TODO(@kitten): Is there overlap here with metro-source-map?
-                const mapped = mapSourcePosition({
-                  // TODO(@kitten): Check if these non-null casts are correct and cannot fail
-                  source: line.file!,
-                  line: line.lineNumber!,
-                  column: line.column!,
-                }) as SourcePosition;
-
-                const fallbackName = mapped.name ?? '<unknown>';
-                return {
-                  file: mapped.source ?? null,
-                  lineNumber: mapped.line ?? null,
-                  column: mapped.column ?? null,
-                  // Attempt to preserve the react component name if possible.
-                  methodName: line.methodName
-                    ? line.methodName === '<unknown>'
-                      ? fallbackName
-                      : line.methodName
-                    : fallbackName,
-                  arguments: line.arguments ?? [],
-                };
-              });
-
-              // Replace args[1] with the formatted stack.
-              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, symbolicatedStack, true);
+              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, parsedStack, true);
             } catch {
-              // If symbolication fails, log the original stack.
+              // If parsing fails, log the original stack.
               args.push('\n' + formatStackLikeMetro(projectRoot, customStack));
             }
           } else {

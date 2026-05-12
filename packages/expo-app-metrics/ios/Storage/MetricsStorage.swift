@@ -80,6 +80,14 @@ public final class MetricsStorage: Sendable {
   }
 
   /**
+   Returns the session with the given id from any entry, or `nil` if no such session exists.
+   */
+  @AppMetricsActor
+  public func findSession(byId id: String) -> Session? {
+    return getAllSessions().first { $0.id == id }
+  }
+
+  /**
    Returns unexpired and non-empty entries.
    */
   @AppMetricsActor

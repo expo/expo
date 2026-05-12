@@ -20,13 +20,8 @@ import {
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import { stableHash } from '@expo/metro/metro-cache';
 import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
-import {
-  fromRawMappings,
-  functionMapBabelPlugin,
-  toBabelSegments,
-  toSegmentTuple,
-} from '@expo/metro/metro-source-map';
-import type { FBSourceFunctionMap, MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
+import { functionMapBabelPlugin } from '@expo/metro/metro-source-map';
+import type { FBSourceFunctionMap } from '@expo/metro/metro-source-map';
 import * as metroTransformPlugins from '@expo/metro/metro-transform-plugins';
 import type {
   JsTransformerConfig,
@@ -47,9 +42,16 @@ import type {
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
-import { countLinesAndTerminateMap } from './count-lines';
 import { shouldMinify } from './resolveOptions';
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import {
+  countLinesAndTerminateSourceMap,
+  emptySourceMap,
+  packDecodedMappings,
+  packRawMappings,
+  type SerializableSourceMap,
+} from '../serializer/packedMap';
+import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -134,24 +136,13 @@ export const minifyCode = async (
   filename: string,
   code: string,
   source: string,
-  map: MetroSourceMapSegmentTuple[],
+  rawMappings: readonly BabelSourceMapSegment[],
   reserved: string[] = []
 ): Promise<{
   code: string;
-  map: MetroSourceMapSegmentTuple[];
+  sourceMap: SerializableSourceMap;
 }> => {
-  const sourceMap = fromRawMappings([
-    {
-      code,
-      source,
-      map,
-      // functionMap is overridden by the serializer
-      functionMap: null,
-      path: filename,
-      // isIgnored is overriden by the serializer
-      isIgnored: false,
-    },
-  ]).toMap(undefined, {});
+  const sourceMap = rawMappingsToEncodedMap({ filename, source, rawMappings });
 
   const minify = getMinifier(config.minifierPath);
 
@@ -166,7 +157,9 @@ export const minifyCode = async (
 
     return {
       code: minified.code,
-      map: minified.map ? toBabelSegments(minified.map).map(toSegmentTuple) : [],
+      sourceMap: minified.map
+        ? packDecodedMappings({ mappings: minified.map.mappings, names: minified.map.names })
+        : emptySourceMap(),
     };
   } catch (error: any) {
     if (error.constructor.name === 'JS_Parse_Error') {
@@ -514,20 +507,25 @@ async function transformJS(
     file.code
   );
 
-  // NOTE: incorrectly typed upstream
-  let map = (result as any)?.rawMappings.map(toSegmentTuple) ?? [];
+  // `rawMappings` is omitted from `@types/babel__generator`'s
+  // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+  const rawMappings =
+    (result as { rawMappings?: BabelSourceMapSegment[] } | null)?.rawMappings ?? [];
   let code = result.code;
+  let sourceMap: SerializableSourceMap;
 
   // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
   if (minify) {
-    ({ map, code } = await minifyCode(
+    ({ sourceMap, code } = await minifyCode(
       config,
       file.filename,
       result.code,
       file.code,
-      map,
+      rawMappings,
       reserved
     ));
+  } else {
+    sourceMap = packRawMappings(rawMappings);
   }
 
   const possibleReconcile: ReconcileTransformSettings | undefined =
@@ -554,7 +552,7 @@ async function transformJS(
       : undefined;
 
   let lineCount;
-  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
   // that React Compiler and other Babel plugins may add.
@@ -563,7 +561,11 @@ async function transformJS(
       data: {
         code,
         lineCount,
-        map,
+        // Reconcile re-runs Babel codegen and replaces `data.map` via
+        // `installPackedMap` before any reader sees it, so the sourceMap emitted
+        // here would be discarded — short-circuit to an empty Array to skip
+        // the work and avoid GC pressure on optimize builds.
+        map: possibleReconcile ? [] : sourceMap,
         functionMap: file.functionMap,
         hasCjsExports: file.hasCjsExports,
         reactServerReference: file.reactServerReference,
@@ -699,12 +701,12 @@ async function transformJSON(
     config.unstable_disableModuleWrapping === true
       ? JsFileWrapping.jsonToCommonJS(file.code)
       : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
-  let map: MetroSourceMapSegmentTuple[] = [];
+  let sourceMap: SerializableSourceMap = emptySourceMap();
 
   const minify = shouldMinify(options);
 
   if (minify) {
-    ({ map, code } = await minifyCode(config, file.filename, code, file.code, map));
+    ({ sourceMap, code } = await minifyCode(config, file.filename, code, file.code, []));
   }
 
   let jsType: JSFileType;
@@ -718,11 +720,11 @@ async function transformJSON(
   }
 
   let lineCount;
-  ({ lineCount, map } = countLinesAndTerminateMap(code, map));
+  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
 
   const output: ExpoJsOutput[] = [
     {
-      data: { code, lineCount, map, functionMap: null },
+      data: { code, lineCount, map: sourceMap, functionMap: null },
       type: jsType,
     },
   ];
@@ -821,6 +823,10 @@ export async function transform(
   return transformJSWithBabel(file, context);
 }
 
+// NOTE: Increment if cache becomes incompatible (original value would be '')
+// 1. Added new packed source map format
+const CACHE_VERSION = '1';
+
 export function getCacheKey(
   config: JsTransformerConfig,
   opts?: Readonly<{ projectRoot: string }>
@@ -864,9 +870,12 @@ export function getCacheKey(
       })
     : '';
 
-  return [filesKey, stableHash(remainingConfig).toString('hex'), babelTransformerCacheKey].join(
-    '$'
-  );
+  const keyParts: string[] = [];
+  if (CACHE_VERSION) {
+    keyParts.push(CACHE_VERSION);
+  }
+  keyParts.push(filesKey, stableHash(remainingConfig).toString('hex'), babelTransformerCacheKey);
+  return keyParts.join('$');
 }
 
 /**

@@ -8,18 +8,16 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI ZStack matches the official SwiftUI [ZStack API](https://developer.apple.com/documentation/swiftui/zstack) and overlays its children on top of each other.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/zstack/ios-light.webp"
-    darkSource="/static/images/expo-ui/zstack/ios-dark.webp"
-    alt="Three colored rounded squares stacked along the z-axis with diagonal offsets in a ZStack"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/zstack/ios-light.webp"
+  darkSource="/static/images/expo-ui/zstack/ios-dark.webp"
+  alt="Three colored rounded squares stacked along the z-axis with diagonal offsets in a ZStack"
+/>
 
 ## Installation
 

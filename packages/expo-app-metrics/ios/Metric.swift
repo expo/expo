@@ -11,6 +11,10 @@ public struct Metric: Codable, Sendable {
     case memory
     case session
     case updates
+    case navigation
+    // TODO(@ubax): support arbitrary user-defined string categories from JS;
+    // Until then `JsMetric.toMetric()` drops the category when the raw string 
+    // doesn't match a case here.
   }
 
   public let category: Metric.Category?

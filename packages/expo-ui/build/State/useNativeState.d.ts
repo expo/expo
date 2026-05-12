@@ -12,7 +12,8 @@ export type ObservableState<T> = SharedObject & {
     value: T;
 };
 /**
- * Creates an observable native state that is automatically cleaned up when the component unmounts.
+ * Creates an observable native state that is automatically cleaned up when the
+ * component unmounts. `initialValue` is captured once on the first render
  */
 export declare function useNativeState<T>(initialValue: T): ObservableState<T>;
 //# sourceMappingURL=useNativeState.d.ts.map

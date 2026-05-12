@@ -212,6 +212,10 @@ export interface ExpoConfig {
    */
   experiments?: {
     /**
+     * Enables Expo's On-Demand Filesystem allowing Metro bundling outside of the watchFolders and with package manager global virtual stores.
+     */
+    onDemandFilesystem?: boolean;
+    /**
      * Apply Expo Autolinking's search results to Metro's module resolution. This forces your project's dependencies on `react`, `react-dom`, and `react-native`, and the autolinked versions of any Expo and React Native modules to be resolved when bundling your app. This prevents version misalignment and is useful for monorepos and to prevent conflicts.
      */
     autolinkingModuleResolution?: boolean;
@@ -234,10 +238,6 @@ export interface ExpoConfig {
      * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
      */
     supportsTVOnly?: boolean;
-    /**
-     * Enable React-based CSS support for native platforms. Only supports a subset of CSS properties, class names selectors, and has no cascading.
-     */
-    functionalCSS?: boolean;
     /**
      * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
      */

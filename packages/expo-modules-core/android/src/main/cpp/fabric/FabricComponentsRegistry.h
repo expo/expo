@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
+#include "../ExpoHeader.pch"
 #include <CoreComponentsRegistry.h>
 #include <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 

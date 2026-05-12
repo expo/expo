@@ -1,6 +1,8 @@
+import type { ReactNavigationState } from '../global-state/types';
+import type { NavigationAction } from '../react-navigation';
 export interface BasePageEvent {
     pathname: string;
-    params: Record<string, string>;
+    params: Record<string, string | string[]>;
     screenId: string;
 }
 /**
@@ -19,5 +21,12 @@ export interface PageBlurredEvent extends BasePageEvent {
 }
 export interface PageRemoved extends BasePageEvent {
     type: 'pageRemoved';
+}
+export interface ActionDispatchedEvent {
+    type: 'actionDispatched';
+    /** The action type from the dispatched NavigationAction (e.g. `NAVIGATE`). */
+    actionType: NavigationAction['type'];
+    payload: NavigationAction['payload'];
+    state: ReactNavigationState;
 }
 //# sourceMappingURL=types.d.ts.map

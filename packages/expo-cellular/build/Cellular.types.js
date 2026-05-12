@@ -1,5 +1,5 @@
 // TODO(@kitten): Remove
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus, } from 'expo';
 // @needsAudit
 /**
  * Describes the current generation of the cellular connection. It is an enum with these possible

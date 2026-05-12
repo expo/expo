@@ -122,8 +122,7 @@ export { useNavigationState } from './useNavigationState';
 export { usePreventRemove } from './usePreventRemove';
 export { usePreventRemoveContext } from './usePreventRemoveContext';
 /**
- * @deprecated Inside an Expo Router screen, prefer hooks like `useLocalSearchParams()`,
- * `usePathname()`, and `useSegments()` from `expo-router`. Will be removed in a future SDK.
+ * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */
 export { useRoute } from './useRoute';
 export { useStateForPath } from './useStateForPath';

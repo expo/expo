@@ -8,6 +8,7 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Segmented buttons let app users choose from a small set of options displayed side by side in a row. They map to the official Jetpack Compose [Segmented Button](https://developer.android.com/develop/ui/compose/components/segmented-button) API.
 
@@ -15,6 +16,13 @@ There are two container types:
 
 - **`SingleChoiceSegmentedButtonRow`**: only one button can be selected at a time (like radio buttons).
 - **`MultiChoiceSegmentedButtonRow`**: multiple buttons can be toggled independently (like checkboxes).
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/segmentedbutton/android-light.webp"
+  darkSource="/static/images/expo-ui/segmentedbutton/android-dark.webp"
+  alt="Single-choice segmented button row with Day, Week, and Month options"
+/>
 
 ## Installation
 

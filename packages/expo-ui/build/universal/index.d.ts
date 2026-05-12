@@ -12,6 +12,6 @@ export * from './FieldGroup';
 export * from './Icon';
 export * from './Spacer';
 export * from './State';
-export * from './TextInput';
+export { TextInput, type TextInputProps, type TextInputRef } from './TextInput';
 export type { UniversalStyle, UniversalAlignment, UniversalBaseProps } from './types';
 //# sourceMappingURL=index.d.ts.map

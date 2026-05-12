@@ -45,6 +45,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AbstractWatcher = void 0;
 const events_1 = __importDefault(require("events"));
 const path = __importStar(require("path"));
+const isVcsPath_1 = __importDefault(require("../lib/isVcsPath"));
 const common_1 = require("./common");
 class AbstractWatcher {
     root;
@@ -59,8 +60,8 @@ class AbstractWatcher {
         this.ignored = ignored;
         this.globs = globs;
         this.doIgnore = ignored
-            ? (filePath) => (0, common_1.posixPathMatchesPattern)(ignored, filePath)
-            : () => false;
+            ? (filePath) => (0, isVcsPath_1.default)(filePath) || (0, common_1.posixPathMatchesPattern)(ignored, filePath)
+            : isVcsPath_1.default;
         this.root = path.resolve(dir);
     }
     onFileEvent(listener) {

@@ -1,5 +1,5 @@
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus } from 'expo';
 export * from './ExpoAudio';
 export * from './AudioConstants';
 export * from './RecordingConstants';

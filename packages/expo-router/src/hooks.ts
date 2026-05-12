@@ -6,6 +6,7 @@ import React, { use, useMemo } from 'react';
 import { LocalRouteParamsContext, useContextKey } from './Route';
 import { INTERNAL_SLOT_NAME } from './constants';
 import { getRouteInfoFromState } from './global-state/getRouteInfoFromState';
+import { getCachedRouteInfo } from './global-state/routeInfoCache';
 import { store, useRouteInfo } from './global-state/router-store';
 import type { ImperativeRouter } from './imperative-api';
 import { router } from './imperative-api';
@@ -412,4 +413,15 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   }
 
   return result;
+}
+
+/**
+ * Returns route info for a screen it is called from.
+ *
+ * @experimental
+ */
+export function useCurrentRouteInfo() {
+  const state = useStateForPath();
+  const routeInfo = useMemo(() => (state ? getCachedRouteInfo(state) : undefined), [state]);
+  return routeInfo;
 }

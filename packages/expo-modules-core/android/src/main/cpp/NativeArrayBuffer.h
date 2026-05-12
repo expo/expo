@@ -1,15 +1,12 @@
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 #include "JSIContext.h"
 
 #include <fbjni/ByteBuffer.h>
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
 
 #include "TypedArray.h"
-
-#include <memory>
 
 namespace expo {
 

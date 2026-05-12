@@ -145,8 +145,7 @@ Object.defineProperty(exports, "usePreventRemove", { enumerable: true, get: func
 var usePreventRemoveContext_1 = require("./usePreventRemoveContext");
 Object.defineProperty(exports, "usePreventRemoveContext", { enumerable: true, get: function () { return usePreventRemoveContext_1.usePreventRemoveContext; } });
 /**
- * @deprecated Inside an Expo Router screen, prefer hooks like `useLocalSearchParams()`,
- * `usePathname()`, and `useSegments()` from `expo-router`. Will be removed in a future SDK.
+ * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */
 var useRoute_1 = require("./useRoute");
 Object.defineProperty(exports, "useRoute", { enumerable: true, get: function () { return useRoute_1.useRoute; } });

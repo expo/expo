@@ -85,48 +85,66 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       expect(pathRelative).toHaveBeenCalled();
     });
 
-    test.each([
-      p('..'),
-      p('../..'),
-      p('../../'),
-      p('normal/path'),
-      p('normal/path/'),
-      p('../normal/path'),
-      p('../normal/path/'),
-      p('../../normal/path'),
-      p('../../../normal/path'),
-    ])(`normalToAbsolute('%s') matches path.resolve`, (normalPath) => {
-      let expected = mockPathModule.resolve(rootDir, normalPath);
-      // Unlike path.resolve, we expect to preserve trailing separators.
-      if (normalPath.endsWith(sep) && !expected.endsWith(sep)) {
-        expected += sep;
-      }
-      expect(pathUtils.normalToAbsolute(normalPath)).toEqual(expected);
-    });
+    // normalToAbsolute is documented to take normal (root-relative, no
+    // redundant indirections) paths; inputs with more '..'s than rootDepth
+    // are non-canonical and out of contract.
+    const normalToAbsoluteInputs =
+      rootDir === p('/project/root')
+        ? [
+            p('..'),
+            p('../..'),
+            p('../../'),
+            p('normal/path'),
+            p('normal/path/'),
+            p('../normal/path'),
+            p('../normal/path/'),
+            p('../../normal/path'),
+          ]
+        : [p('..'), p('../..'), p('../../'), p('normal/path'), p('normal/path/')];
 
-    test.each([
-      p('..'),
-      p('../root'),
-      p('../root/path'),
-      p('../project'),
-      p('../project/'),
-      p('../../project/root'),
-      p('../../project/root/'),
-      p('../../../normal/path'),
-      p('../../../normal/path/'),
-      p('../../..'),
-    ])(`relativeToNormal('%s') matches path.resolve + path.relative`, (relativePath) => {
-      let expected = mockPathModule.relative(
-        rootDir,
-        mockPathModule.resolve(rootDir, relativePath)
-      );
-      // Unlike native path.resolve + path.relative, we expect to preserve
-      // trailing separators. (Consistent with path.normalize.)
-      if (relativePath.endsWith(sep) && !expected.endsWith(sep) && expected !== '') {
-        expected += sep;
+    test.each(normalToAbsoluteInputs)(
+      `normalToAbsolute('%s') matches path.resolve`,
+      (normalPath) => {
+        let expected = mockPathModule.resolve(rootDir, normalPath);
+        // Unlike path.resolve, we expect to preserve trailing separators.
+        if (normalPath.endsWith(sep) && !expected.endsWith(sep)) {
+          expected += sep;
+        }
+        expect(pathUtils.normalToAbsolute(normalPath)).toEqual(expected);
       }
-      expect(pathUtils.relativeToNormal(relativePath)).toEqual(expected);
-    });
+    );
+
+    // relativeToNormal no longer collapses non-canonical leading '..' chains
+    // (no in-function clip); inputs are expected to be canonical for rootDir.
+    const relativeToNormalInputs =
+      rootDir === p('/project/root')
+        ? [
+            p('..'),
+            p('../root'),
+            p('../root/path'),
+            p('../project'),
+            p('../project/'),
+            p('../../project/root'),
+            p('../../project/root/'),
+            p('../../..'),
+          ]
+        : [p('..')];
+
+    test.each(relativeToNormalInputs)(
+      `relativeToNormal('%s') matches path.resolve + path.relative`,
+      (relativePath) => {
+        let expected = mockPathModule.relative(
+          rootDir,
+          mockPathModule.resolve(rootDir, relativePath)
+        );
+        // Unlike native path.resolve + path.relative, we expect to preserve
+        // trailing separators. (Consistent with path.normalize.)
+        if (relativePath.endsWith(sep) && !expected.endsWith(sep) && expected !== '') {
+          expected += sep;
+        }
+        expect(pathUtils.relativeToNormal(relativePath)).toEqual(expected);
+      }
+    );
   });
 
   test.each([
@@ -258,4 +276,90 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       expect(pattern.test(p('src/foo.js'))).toBe(false);
     });
   });
+
+  // See: https://github.com/facebook/metro/pull/1696
+  // When a path and rootDir differ in drives on Windows, we expect the resulting
+  // path to have an anchor (D:) on the new drive
+  if (platform === 'win32') {
+    describe('cross-drive absolute paths (Windows)', () => {
+      test.each(['C:\\project\\root', 'C:\\'])(
+        'path.relative returns cross-drive target as-is from rootDir=%s',
+        (rootDir) => {
+          expect(mockPathModule.relative(rootDir, 'D:\\some\\file.js')).toEqual(
+            'D:\\some\\file.js'
+          );
+        }
+      );
+
+      // Pin the ..-chain encoding so we keep the "normal paths are root-
+      // relative" invariant; only normalToAbsolute observes the cross-drive
+      // case and returns the absolute remainder.
+      test.each([
+        ['C:\\project\\root', 'D:\\some\\file.js', '..\\..\\..\\D:\\some\\file.js'],
+        ['C:\\project\\root', 'D:\\some\\', '..\\..\\..\\D:\\some\\'],
+        ['C:\\project\\root', 'D:\\', '..\\..\\..\\D:\\'],
+        ['C:\\', 'D:\\some\\file.js', '..\\D:\\some\\file.js'],
+        ['C:\\', 'D:\\', '..\\D:\\'],
+        ['D:\\project\\root', 'C:\\file.js', '..\\..\\..\\C:\\file.js'],
+      ])(
+        'absoluteToNormal emits a ..-chain (rootDir=%s, X=%s -> %s)',
+        (rootDir, absolutePath, expectedNormal) => {
+          pathUtils = new RootPathUtils(rootDir);
+          expect(pathUtils.absoluteToNormal(absolutePath)).toEqual(expectedNormal);
+        }
+      );
+
+      test.each([
+        ['C:\\project\\root', 'D:\\some\\file.js'],
+        ['C:\\project\\root', 'D:\\some\\'],
+        ['C:\\project\\root', 'D:\\'],
+        ['C:\\', 'D:\\some\\file.js'],
+        ['C:\\', 'D:\\some\\'],
+        ['C:\\', 'D:\\'],
+        ['D:\\project\\root', 'C:\\file.js'],
+        ['D:\\project\\root', 'C:\\'],
+      ])(
+        'normalToAbsolute(absoluteToNormal(X)) === X for rootDir=%s, X=%s',
+        (rootDir, absolutePath) => {
+          pathUtils = new RootPathUtils(rootDir);
+          const normal = pathUtils.absoluteToNormal(absolutePath);
+          expect(pathUtils.normalToAbsolute(normal)).toEqual(absolutePath);
+        }
+      );
+
+      test.each([
+        ['C:\\project\\root', 'D:\\dir\\sub', 'extra\\file.js'],
+        ['C:\\project\\root', 'D:\\', 'foo.js'],
+        ['C:\\', 'D:\\dir', 'sub\\file.js'],
+      ])(
+        'joinNormalToRelative round-trips cross-drive (rootDir=%s, base=%s, rel=%s)',
+        (rootDir, baseAbsolute, relativePath) => {
+          pathUtils = new RootPathUtils(rootDir);
+          const baseNormal = pathUtils.absoluteToNormal(baseAbsolute);
+          const { normalPath } = pathUtils.joinNormalToRelative(baseNormal, relativePath);
+          expect(pathUtils.normalToAbsolute(normalPath)).toEqual(
+            mockPathModule.join(baseAbsolute, relativePath)
+          );
+        }
+      );
+
+      test.each([
+        ['C:\\project\\root', 'link', 'D:\\target.js'],
+        ['C:\\project\\root', 'a\\b\\link', 'D:\\sub\\target.js'],
+        // 'D:\\' hits a distinct path: the leading trailing-separator strip
+        // turns it into 'D:', which path.win32.isAbsolute rejects, so this
+        // falls through to the relative branch instead of absoluteToNormal.
+        ['C:\\project\\root', 'link', 'D:\\'],
+        ['C:\\', 'link', 'D:\\target.js'],
+        ['C:\\', 'link', 'D:\\'],
+      ])(
+        'resolveSymlinkToNormal round-trips a cross-drive target (rootDir=%s, %s -> %s)',
+        (rootDir, symlinkNormalPath, readlinkResult) => {
+          pathUtils = new RootPathUtils(rootDir);
+          const normal = pathUtils.resolveSymlinkToNormal(symlinkNormalPath, readlinkResult);
+          expect(pathUtils.normalToAbsolute(normal)).toEqual(readlinkResult);
+        }
+      );
+    });
+  }
 });

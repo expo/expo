@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+## 56.0.6 — 2026-05-11
+
+### 💡 Others
+
+- [iOS] `AppContext.setRuntime` now takes the native React `RuntimeScheduler` pointer and a dispatch trampoline alongside the runtime pointer. ([#45636](https://github.com/expo/expo/pull/45636) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.5 — 2026-05-08
+
+### 🐛 Bug fixes
+
+- [iOS] Fix dictionary/array returns from sync functions invoked in the worklet runtime. ([#45419](https://github.com/expo/expo/pull/45419) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix unsetting border width on views with border radius causing views to disappear ([#45467](https://github.com/expo/expo/pull/45467) by [@fractalbeauty](https://github.com/fractalbeauty))
+
 ## 56.0.4 — 2026-05-07
 
 _This version does not introduce any user-facing changes._

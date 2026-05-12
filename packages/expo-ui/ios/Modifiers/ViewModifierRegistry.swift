@@ -1118,23 +1118,6 @@ internal struct ListSectionMargins: ViewModifier, Record {
   }
 }
 
-internal enum AxisOptions: String, Enumerable {
-  case horizontal
-  case vertical
-  case both
-
-  func toAxis() -> Axis.Set {
-    switch self {
-    case .vertical:
-      return .vertical
-    case .horizontal:
-      return .horizontal
-    case .both:
-      return [.vertical, .horizontal]
-    }
-  }
-}
-
 internal struct GridCellUnsizedAxes: ViewModifier, Record {
   @Field var axes: AxisOptions?
 
@@ -1889,6 +1872,10 @@ extension ViewModifierRegistry {
 
     register("scrollDisabled") { params, appContext, _ in
       return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollIndicators") { params, appContext, _ in
+      return try ScrollIndicatorsModifier(from: params, appContext: appContext)
     }
 
     register("tabViewStyle") { params, appContext, _ in

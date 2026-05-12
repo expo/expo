@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 56.0.6 — 2026-05-11
+
+### 🛠 Breaking changes
+
+- Replace source-map representation used internally, and source-map format returned by transformer, reducing peak and retained memory usage ([#45594](https://github.com/expo/expo/pull/45594) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `postcss@^8.5.14` ([#45626](https://github.com/expo/expo/pull/45626) by [@kitten](https://github.com/kitten))
+
+## 56.0.5 — 2026-05-08
+
+### 💡 Others
+
+- Thread `excludeSource` through to source map serialization ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
+- Rename cache then asynchronously delete to remove `--clear` penalty ([#45553](https://github.com/expo/expo/pull/45553) by [@kitten](https://github.com/kitten))
+
 ## 56.0.4 — 2026-05-07
 
 ### 💡 Others

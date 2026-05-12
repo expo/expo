@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
+- Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
+- Fix `useNativeState` recreating the `ObservableState` when initial value changes; the seed is now captured once via `useRef`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
+
+## 56.0.5 — 2026-05-11
+
+### 🎉 New features
+
+- [iOS] Added the `scrollIndicators(visibility, axes?)` SwiftUI modifier in `@expo/ui/swift-ui/modifiers`, wrapping SwiftUI's `scrollIndicators(_:axes:)`. ([#45649](https://github.com/expo/expo/pull/45649) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [iOS] Consolidated the duplicate `AxisOptions` / `AxisSetType` enums into a single `AxisOptions` in `Convertibles/AxisOptions.swift`. ([#45649](https://github.com/expo/expo/pull/45649) by [@vonovak](https://github.com/vonovak))
+
+## 56.0.4 — 2026-05-08
+
+### 💡 Others
+
+- [universal] Refactored web components to use `StyleSheet.create` instead of inline styles, added `react-native-web` type declarations, and tightened prop handling. ([#45485](https://github.com/expo/expo/pull/45485) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.3 — 2026-05-07
 

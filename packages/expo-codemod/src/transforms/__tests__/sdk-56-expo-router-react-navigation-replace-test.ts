@@ -2,6 +2,15 @@ import { applyTransform } from 'jscodeshift/dist/testUtils';
 
 import transform from '../sdk-56-expo-router-react-navigation-replace';
 
+let errorSpy: jest.Mock;
+beforeEach(() => {
+  errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 // Default parser (babel): covers plain JS and syntactically-unambiguous TS.
 const run = (source: string): string =>
   applyTransform(transform, {}, { source, path: 'this/is/test.tsx' });
@@ -200,56 +209,86 @@ describe('merging duplicate imports', () => {
 describe('unsupported import styles', () => {
   test('throws on default import from @react-navigation/native', () => {
     const input = `import Navigation from '@react-navigation/native';`;
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported.'
     );
+    expect(message).toContain('Only named imports can be rewritten by this codemod.');
+    expect(message).toContain('Replace this import with named imports and re-run the codemod.');
   });
 
   test('throws on namespace import from @react-navigation/native', () => {
     const input = `import * as Nav from '@react-navigation/native';`;
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - namespace import (import * as ...) from "@react-navigation/native" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - namespace import (import * as ...) from "@react-navigation/native" is not supported.'
     );
+    expect(message).toContain('Only named imports can be rewritten by this codemod.');
+    expect(message).toContain('Replace this import with named imports and re-run the codemod.');
   });
 
   test('throws on default import from @react-navigation/stack', () => {
     const input = `import Stack from '@react-navigation/stack';`;
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - default import from "@react-navigation/stack" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - default import from "@react-navigation/stack" is not supported.'
     );
+    expect(message).toContain('Only named imports can be rewritten by this codemod.');
+    expect(message).toContain('Replace this import with named imports and re-run the codemod.');
   });
 
   test('throws on namespace import from @react-navigation/bottom-tabs', () => {
     const input = `import * as Tabs from '@react-navigation/bottom-tabs';`;
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - namespace import (import * as ...) from "@react-navigation/bottom-tabs" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - namespace import (import * as ...) from "@react-navigation/bottom-tabs" is not supported.'
     );
+    expect(message).toContain('Only named imports can be rewritten by this codemod.');
+    expect(message).toContain('Replace this import with named imports and re-run the codemod.');
   });
 
   test('throws on default import from @react-navigation/material-top-tabs', () => {
     const input = `import TopTabs from '@react-navigation/material-top-tabs';`;
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - default import from "@react-navigation/material-top-tabs" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - default import from "@react-navigation/material-top-tabs" is not supported.'
     );
+    expect(message).toContain('Only named imports can be rewritten by this codemod.');
+    expect(message).toContain('Replace this import with named imports and re-run the codemod.');
   });
 
   test('throws when default import is mixed with named imports', () => {
     const input = `import Navigation, { useNavigation } from '@react-navigation/native';`;
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported.'
     );
+    expect(message).toContain('Only named imports can be rewritten by this codemod.');
+    expect(message).toContain('Replace this import with named imports and re-run the codemod.');
   });
 
   test('collects all errors when multiple unsupported imports exist', () => {
@@ -257,12 +296,16 @@ describe('unsupported import styles', () => {
       `import Navigation from '@react-navigation/native';`,
       `import * as Stack from '@react-navigation/stack';`,
     ].join('\n');
-    expect(() => run(input)).toThrow(
-      'Unsupported import style(s) found:\n' +
-        'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported. ' +
-        'Replace with named imports before running this codemod.\n' +
-        'this/is/test.tsx:2 - namespace import (import * as ...) from "@react-navigation/stack" is not supported. ' +
-        'Replace with named imports before running this codemod.'
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Unsupported import style');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - default import from "@react-navigation/native" is not supported.'
+    );
+    expect(message).toContain(
+      'this/is/test.tsx:2 - namespace import (import * as ...) from "@react-navigation/stack" is not supported.'
     );
   });
 
@@ -274,6 +317,92 @@ describe('unsupported import styles', () => {
     const output = run(input);
     expect(output).toContain(`import React from 'react'`);
     expect(output).toContain(`from "expo-router/react-navigation"`);
+  });
+});
+
+describe('unsupported packages (no direct equivalent)', () => {
+  test('throws on import from @react-navigation/native-stack', () => {
+    const input = `import { createNativeStackNavigator } from '@react-navigation/native-stack';`;
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Migration required');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - import from "@react-navigation/native-stack" cannot be migrated.'
+    );
+    expect(message).toContain(
+      'Use the `Stack` layout (https://docs.expo.dev/router/advanced/stack/) instead'
+    );
+  });
+
+  test('throws on import from @react-navigation/drawer', () => {
+    const input = `import { createDrawerNavigator } from '@react-navigation/drawer';`;
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Migration required');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - import from "@react-navigation/drawer" cannot be migrated.'
+    );
+    expect(message).toContain(
+      'Use the `Drawer` layout (https://docs.expo.dev/router/advanced/drawer/) instead'
+    );
+  });
+
+  test('throws on type-only import from @react-navigation/native-stack', () => {
+    const input = `import type { NativeStackScreenProps } from '@react-navigation/native-stack';`;
+    runTS(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Migration required');
+    expect(message).toContain(
+      'undefined:1 - import from "@react-navigation/native-stack" cannot be migrated.'
+    );
+  });
+
+  test('throws on default import from @react-navigation/drawer', () => {
+    // Unsupported package check runs before unsupported import-style check.
+    const input = `import Drawer from '@react-navigation/drawer';`;
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('Migration required');
+    expect(message).toContain(
+      'this/is/test.tsx:1 - import from "@react-navigation/drawer" cannot be migrated.'
+    );
+  });
+
+  test('reports all unsupported packages found in a file', () => {
+    const input = [
+      `import { createNativeStackNavigator } from '@react-navigation/native-stack';`,
+      `import { createDrawerNavigator } from '@react-navigation/drawer';`,
+    ].join('\n');
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain(
+      'this/is/test.tsx:1 - import from "@react-navigation/native-stack" cannot be migrated.'
+    );
+    expect(message).toContain(
+      'this/is/test.tsx:2 - import from "@react-navigation/drawer" cannot be migrated.'
+    );
+  });
+
+  test('throws even when other react-navigation imports would otherwise be rewritten', () => {
+    const input = [
+      `import { useNavigation } from '@react-navigation/native';`,
+      `import { createDrawerNavigator } from '@react-navigation/drawer';`,
+    ].join('\n');
+    run(input);
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    expect(errorSpy.mock.calls[0]).toHaveLength(1);
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('import from "@react-navigation/drawer" cannot be migrated');
   });
 });
 

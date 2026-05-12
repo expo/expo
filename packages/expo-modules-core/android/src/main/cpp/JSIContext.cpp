@@ -1,21 +1,17 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JSIContext.h"
 #include "Exceptions.h"
-#include "ExpoModulesHostObject.h"
 #include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "JSIUtils.h"
 #include "SharedObject.h"
-#include "SharedRef.h"
-#include "NativeModule.h"
 #include "decorators/JSDecoratorsBridgingObject.h"
 #include "decorators/JSClassesDecorator.h"
 
 #include <fbjni/detail/Meta.h>
-#include <fbjni/fbjni.h>
 
-#include <memory>
 #include <shared_mutex>
 
 namespace jni = facebook::jni;

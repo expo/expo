@@ -1,6 +1,7 @@
 import ExpoObserve from './module';
 
-export { default as AppMetrics, AppMetricsRoot } from 'expo-app-metrics';
+export { default as AppMetrics } from 'expo-app-metrics';
+export { ObserveRoot } from './ObserveRoot';
 
 ExpoObserve.setBundleDefaults({
   environment: process.env.NODE_ENV ?? 'production',
@@ -9,3 +10,4 @@ ExpoObserve.setBundleDefaults({
 
 export { default } from './module';
 export * from './types';
+export { useObserve } from './useObserve';

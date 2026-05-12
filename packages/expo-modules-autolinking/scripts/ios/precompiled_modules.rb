@@ -29,7 +29,9 @@
 require 'fileutils'
 require 'json'
 require 'net/http'
+require 'open3'
 require 'set'
+require 'tempfile'
 require 'uri'
 
 module Expo
@@ -76,6 +78,8 @@ module Expo
     @framework_owner_map = nil          # Hash: framework_name -> owning_pod_name
     @failed_remote_downloads = Set.new
     @warned_no_prebuilt_react = false
+    @target_platform = nil
+    @xcframework_slice_cache = nil
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -113,11 +117,24 @@ module Expo
         false
       end
 
-      # Sets the list of package name patterns that should be built from source
-      # instead of using precompiled xcframeworks. Patterns are treated as regexes
-      # (e.g., ".*" for all, "expo-audio" for exact match, "expo-.*" for prefix).
+      def configure(target_platform: nil, build_from_source: nil)
+        self.target_platform = target_platform unless target_platform.nil?
+        self.build_from_source = build_from_source unless build_from_source.nil?
+      end
+
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
+      end
+
+      def target_platform=(platform)
+        normalized = normalize_xcframework_platform(platform)
+        return if @target_platform == normalized
+
+        @target_platform = normalized
+        @all_bundled_frameworks = nil
+        @claimed_vendored_frameworks = nil
+        @framework_owner_map = nil
+        @xcframework_slice_cache = nil
       end
 
       # Checks if a pod is configured to be built from source via buildFromSource.
@@ -1785,6 +1802,7 @@ module Expo
         product_name = pod_info[:product_name] || pod_name
         tarball = resolve_prebuilt_tarball(pod_info, product_name, build_flavor, pod_name)
         return { available: false, reason: :missing_tarball, path: tarball } unless File.exist?(tarball)
+        return { available: false, reason: :missing_platform_slice, path: tarball } unless xcframework_supports_target_platform?(tarball)
 
         { available: true, resolved: [pod_info, product_name, tarball] }
       end
@@ -1840,6 +1858,74 @@ module Expo
 
         download_remote_tarball(remote_url, remote_tarball, pod_name || product_name, flavor)
         remote_tarball
+      end
+
+      def normalize_xcframework_platform(platform)
+        name = platform.respond_to?(:name) ? platform.name : platform
+        name = name.string_name if name.respond_to?(:string_name)
+        normalized = name.to_s.downcase
+        normalized == 'osx' ? 'macos' : normalized
+      end
+
+      def xcframework_supports_target_platform?(path)
+        return true unless @target_platform
+
+        @xcframework_slice_cache ||= {}
+        cache_key = [path, @target_platform]
+        return @xcframework_slice_cache[cache_key] if @xcframework_slice_cache.key?(cache_key)
+
+        @xcframework_slice_cache[cache_key] = begin
+          info_plists = File.directory?(path) ? [read_plist(File.join(path, 'Info.plist'))] : read_xcframework_info_plists_from_tarball(path)
+          info_plists.any? && info_plists.all? { |info_plist| info_plist_supports_target_platform?(info_plist) }
+        end
+      end
+
+      def info_plist_supports_target_platform?(info_plist)
+        return false unless info_plist
+
+        available_libraries = info_plist['AvailableLibraries']
+        return false unless available_libraries.is_a?(Array)
+
+        available_libraries.any? do |library|
+          normalize_xcframework_platform(library['SupportedPlatform']) == @target_platform
+        end
+      end
+
+      def read_xcframework_info_plists_from_tarball(tarball)
+        entries_output, status = Open3.capture2e('tar', 'tzf', tarball)
+        unless status.success?
+          Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{entries_output.strip}"
+          return []
+        end
+
+        entries = entries_output.lines.map(&:strip)
+        plist_entries = entries.select { |entry| entry.end_with?('.xcframework/Info.plist') }
+        Pod::UI.warn "[Expo-precompiled] No XCFramework Info.plist found in #{File.basename(tarball)}" if plist_entries.empty?
+
+        plist_entries.filter_map do |entry|
+          plist_data, plist_status = Open3.capture2e('tar', 'xOzf', tarball, entry)
+          unless plist_status.success?
+            Pod::UI.warn "[Expo-precompiled] Failed to extract #{entry} from #{File.basename(tarball)}: #{plist_data.strip}"
+            next
+          end
+
+          Tempfile.create(['expo-xcframework-info', '.plist']) do |file|
+            file.binmode
+            file.write(plist_data)
+            file.flush
+            read_plist(file.path)
+          end
+        end
+      rescue StandardError => e
+        Pod::UI.warn "[Expo-precompiled] Failed to inspect #{File.basename(tarball)}: #{e.message}"
+        []
+      end
+
+      def read_plist(path)
+        Xcodeproj::Plist.read_from_path(path)
+      rescue StandardError => e
+        Pod::UI.warn "[Expo-precompiled] Failed to read #{File.basename(path)}: #{e.message}"
+        nil
       end
 
       def failed_remote_downloads
@@ -2120,6 +2206,8 @@ module Expo
           'prebuilt config not found'
         when :missing_tarball
           'prebuilt tarball not found'
+        when :missing_platform_slice
+          "prebuilt xcframework does not contain a slice for #{@target_platform}"
         when :dependency_unavailable
           reason = format_prebuilt_unavailable_reason(reason: info[:dependency_reason], path: info[:dependency_path])
           "dependency #{info[:dependency]} is not using prebuilt: #{reason}"

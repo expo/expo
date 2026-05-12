@@ -160,7 +160,6 @@ const CACHE_BREAKER = '12';
 const CHANGE_INTERVAL = 30;
 
 const NODE_MODULES = path.sep + 'node_modules' + path.sep;
-const VCS_DIRECTORIES = /[/\\]\.(git|hg)[/\\]/.source;
 const WATCHMAN_REQUIRED_CAPABILITIES = [
   'field-content.sha1hex',
   'relative_root',
@@ -278,20 +277,9 @@ export default class FileMap extends EventEmitter {
       this.#startupPerfLogger?.point('constructor_start');
     }
 
-    // Add VCS_DIRECTORIES to provided ignorePattern
-    let ignorePattern;
-    if (options.ignorePattern) {
-      const inputIgnorePattern = options.ignorePattern;
-      if (inputIgnorePattern instanceof RegExp) {
-        ignorePattern = new RegExp(
-          inputIgnorePattern.source.concat('|' + VCS_DIRECTORIES),
-          inputIgnorePattern.flags
-        );
-      } else {
-        throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
-      }
-    } else {
-      ignorePattern = new RegExp(VCS_DIRECTORIES);
+    const ignorePattern: RegExp | null = options.ignorePattern ?? null;
+    if (ignorePattern && !(ignorePattern instanceof RegExp)) {
+      throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
     }
 
     this.#console = options.console || globalThis.console;
@@ -379,6 +367,7 @@ export default class FileMap extends EventEmitter {
         }
 
         const rootDir = this.#options.rootDir;
+        const ignorePattern = this.#options.ignorePattern;
         this.#startupPerfLogger?.point('constructFileSystem_start');
         const processFile: ProcessFileFunction = async (normalPath, metadata, opts) => {
           const result = await this.#fileProcessor.processRegularFile(normalPath, metadata, {
@@ -394,7 +383,7 @@ export default class FileMap extends EventEmitter {
           ? createFallbackFilesystem({
               rootPathUtils: this.#pathUtils,
               extensions: this.#options.extensions,
-              ignore: (filePath) => this.#options.ignorePattern.test(filePath),
+              ignore: ignorePattern ? (filePath) => ignorePattern.test(filePath) : () => false,
               includeSymlinks: this.#options.enableSymlinks,
             })
           : null;
@@ -525,6 +514,19 @@ export default class FileMap extends EventEmitter {
       watchmanDeferStates,
     } = this.#options;
 
+    const ignoreForCrawl = (() => {
+      if (ignorePattern && !retainAllFiles) {
+        return (filePath: string) =>
+          ignorePattern.test(filePath) || filePath.includes(NODE_MODULES);
+      } else if (ignorePattern) {
+        return (filePath: string) => ignorePattern.test(filePath);
+      } else if (!retainAllFiles) {
+        return (filePath: string) => filePath.includes(NODE_MODULES);
+      } else {
+        return () => false;
+      }
+    })();
+
     this.#watcher = new Watcher({
       abortSignal: this.#crawlerAbortController.signal,
       computeSha1,
@@ -532,12 +534,10 @@ export default class FileMap extends EventEmitter {
       enableSymlinks,
       extensions,
       forceNodeFilesystemAPI,
-      healthCheckFilePrefix: this.#options.healthCheck.filePrefix,
-      // TODO: Refactor out the two different ignore strategies here.
-      ignoreForCrawl: (filePath) => {
-        const ignoreMatched = ignorePattern.test(filePath);
-        return ignoreMatched || (!retainAllFiles && filePath.includes(NODE_MODULES));
-      },
+      healthCheckFilePrefix: this.#options.healthCheck.enabled
+        ? this.#options.healthCheck.filePrefix
+        : null,
+      ignoreForCrawl,
       ignorePatternForWatch: ignorePattern,
       perfLogger: this.#startupPerfLogger,
       previousState,
@@ -842,7 +842,8 @@ export default class FileMap extends EventEmitter {
 
       // Ignore files (including symlinks) whose path matches ignorePattern
       // (we don't ignore node_modules in watch mode)
-      if (this.#options.ignorePattern.test(absoluteFilePath)) {
+      // TODO(@kitten): Can be dropped, assuming that regexes aren't violating constraints
+      if (this.#options.ignorePattern?.test(absoluteFilePath) === true) {
         return;
       }
 

@@ -6,7 +6,34 @@
 
 ### 🎉 New features
 
+- Add a name to injected suspense boundaries for easier debugging ([#45501](https://github.com/expo/expo/pull/45501) by [@rubennorte](https://github.com/rubennorte))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+- Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
+
+## 56.1.3 — 2026-05-12
+
+_This version does not introduce any user-facing changes._
+
+## 56.1.2 — 2026-05-11
+
+### 🎉 New features
+
+- export new useCurrentRouteInfo hook ([#45566](https://github.com/expo/expo/pull/45566) by [@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.25.0 ([#45644](https://github.com/expo/expo/pull/45644) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Fix drawer toggle asset path. ([#45170](https://github.com/expo/expo/pull/45170) by [@sleda](https://github.com/sleda))
+
+## 56.1.1 — 2026-05-08
+
+### 🎉 New features
+
+- export useRoute hook from expo-router ([#45557](https://github.com/expo/expo/pull/45557) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others
 

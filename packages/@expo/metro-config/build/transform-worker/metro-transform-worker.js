@@ -63,8 +63,9 @@ const metroTransformPlugins = __importStar(require("@expo/metro/metro-transform-
 const node_assert_1 = __importDefault(require("node:assert"));
 const assetTransformer = __importStar(require("./asset-transformer"));
 const collect_dependencies_1 = __importStar(require("./collect-dependencies"));
-const count_lines_1 = require("./count-lines");
 const resolveOptions_1 = require("./resolveOptions");
+const packedMap_1 = require("../serializer/packedMap");
+const sourceMap_1 = require("../serializer/sourceMap");
 const transform_plugins_1 = require("../transform-plugins");
 const getMinifier_1 = require("./utils/getMinifier");
 class InvalidRequireCallError extends Error {
@@ -94,19 +95,8 @@ function getDynamicDepsBehavior(inPackages, filename) {
             throw new Error(`invalid value for dynamic deps behavior: \`${inPackages}\``);
     }
 }
-const minifyCode = async (config, filename, code, source, map, reserved = []) => {
-    const sourceMap = (0, metro_source_map_1.fromRawMappings)([
-        {
-            code,
-            source,
-            map,
-            // functionMap is overridden by the serializer
-            functionMap: null,
-            path: filename,
-            // isIgnored is overriden by the serializer
-            isIgnored: false,
-        },
-    ]).toMap(undefined, {});
+const minifyCode = async (config, filename, code, source, rawMappings, reserved = []) => {
+    const sourceMap = (0, sourceMap_1.rawMappingsToEncodedMap)({ filename, source, rawMappings });
     const minify = (0, getMinifier_1.getMinifier)(config.minifierPath);
     try {
         const minified = await minify({
@@ -118,7 +108,9 @@ const minifyCode = async (config, filename, code, source, map, reserved = []) =>
         });
         return {
             code: minified.code,
-            map: minified.map ? (0, metro_source_map_1.toBabelSegments)(minified.map).map(metro_source_map_1.toSegmentTuple) : [],
+            sourceMap: minified.map
+                ? (0, packedMap_1.packDecodedMappings)({ mappings: minified.map.mappings, names: minified.map.names })
+                : (0, packedMap_1.emptySourceMap)(),
         };
     }
     catch (error) {
@@ -380,12 +372,17 @@ async function transformJS(file, { config, options }) {
         sourceFileName: file.filename,
         sourceMaps: true,
     }, file.code);
-    // NOTE: incorrectly typed upstream
-    let map = result?.rawMappings.map(metro_source_map_1.toSegmentTuple) ?? [];
+    // `rawMappings` is omitted from `@types/babel__generator`'s
+    // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+    const rawMappings = result?.rawMappings ?? [];
     let code = result.code;
+    let sourceMap;
     // NOTE: We might want to enable this on native + hermes when tree shaking is enabled.
     if (minify) {
-        ({ map, code } = await (0, exports.minifyCode)(config, file.filename, result.code, file.code, map, reserved));
+        ({ sourceMap, code } = await (0, exports.minifyCode)(config, file.filename, result.code, file.code, rawMappings, reserved));
+    }
+    else {
+        sourceMap = (0, packedMap_1.packRawMappings)(rawMappings);
     }
     const possibleReconcile = optimize && collectDependenciesOptions
         ? {
@@ -409,7 +406,7 @@ async function transformJS(file, { config, options }) {
         }
         : undefined;
     let lineCount;
-    ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
+    ({ lineCount, sourceMap } = (0, packedMap_1.countLinesAndTerminateSourceMap)(code, sourceMap));
     // Clean the AST for tree shaking by stripping non-serializable values (Symbols, functions, etc.)
     // that React Compiler and other Babel plugins may add.
     const output = [
@@ -417,7 +414,11 @@ async function transformJS(file, { config, options }) {
             data: {
                 code,
                 lineCount,
-                map,
+                // Reconcile re-runs Babel codegen and replaces `data.map` via
+                // `installPackedMap` before any reader sees it, so the sourceMap emitted
+                // here would be discarded — short-circuit to an empty Array to skip
+                // the work and avoid GC pressure on optimize builds.
+                map: possibleReconcile ? [] : sourceMap,
                 functionMap: file.functionMap,
                 hasCjsExports: file.hasCjsExports,
                 reactServerReference: file.reactServerReference,
@@ -518,10 +519,10 @@ async function transformJSON(file, { options, config }) {
     let code = config.unstable_disableModuleWrapping === true
         ? JsFileWrapping.jsonToCommonJS(file.code)
         : JsFileWrapping.wrapJson(file.code, config.globalPrefix);
-    let map = [];
+    let sourceMap = (0, packedMap_1.emptySourceMap)();
     const minify = (0, resolveOptions_1.shouldMinify)(options);
     if (minify) {
-        ({ map, code } = await (0, exports.minifyCode)(config, file.filename, code, file.code, map));
+        ({ sourceMap, code } = await (0, exports.minifyCode)(config, file.filename, code, file.code, []));
     }
     let jsType;
     if (file.type === 'asset') {
@@ -534,10 +535,10 @@ async function transformJSON(file, { options, config }) {
         jsType = 'js/module';
     }
     let lineCount;
-    ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
+    ({ lineCount, sourceMap } = (0, packedMap_1.countLinesAndTerminateSourceMap)(code, sourceMap));
     const output = [
         {
-            data: { code, lineCount, map, functionMap: null },
+            data: { code, lineCount, map: sourceMap, functionMap: null },
             type: jsType,
         },
     ];
@@ -612,6 +613,9 @@ async function transform(config, projectRoot, filename, data, options) {
     };
     return transformJSWithBabel(file, context);
 }
+// NOTE: Increment if cache becomes incompatible (original value would be '')
+// 1. Added new packed source map format
+const CACHE_VERSION = '1';
 function getCacheKey(config, opts) {
     const { 
     // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
@@ -643,7 +647,12 @@ function getCacheKey(config, opts) {
             extendsBabelConfigPath: config.extendsBabelConfigPath,
         })
         : '';
-    return [filesKey, (0, metro_cache_1.stableHash)(remainingConfig).toString('hex'), babelTransformerCacheKey].join('$');
+    const keyParts = [];
+    if (CACHE_VERSION) {
+        keyParts.push(CACHE_VERSION);
+    }
+    keyParts.push(filesKey, (0, metro_cache_1.stableHash)(remainingConfig).toString('hex'), babelTransformerCacheKey);
+    return keyParts.join('$');
 }
 /**
  * Produces a Babel template that transforms an "import(...)" call into a

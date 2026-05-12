@@ -40,6 +40,7 @@ exports.setHasAttemptedToHideSplash = setHasAttemptedToHideSplash;
 const getRouteInfoFromState_1 = require("./getRouteInfoFromState");
 const routeInfoCache_1 = require("./routeInfoCache");
 const href_1 = require("../link/href");
+const navigation_1 = require("../navigationEvents/navigation");
 const SplashScreen = __importStar(require("../views/Splash"));
 exports.storeRef = {
     current: {},
@@ -90,6 +91,7 @@ exports.store = {
         exports.storeRef.current.routeInfo = routeInfo;
     },
     onReady() {
+        (0, navigation_1.handleNavigationOnReady)();
         if (!hasAttemptedToHideSplash) {
             setHasAttemptedToHideSplash(true);
             // NOTE(EvanBacon): `navigationRef.isReady` is sometimes not true when state is called initially.

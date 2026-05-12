@@ -2,7 +2,7 @@ import type { SharedRefType } from 'expo';
 import type { Ref } from 'react';
 import type { ProcessedColorValue, StyleProp, ViewStyle } from 'react-native';
 
-import type { CameraPosition, Coordinates } from '../shared.types';
+import type { CameraMoveEvent, CameraPosition, Coordinates } from '../shared.types';
 
 /**
  * @platform ios
@@ -530,15 +530,9 @@ export type AppleMapsViewProps = {
 
   /**
    * Lambda invoked when the map was moved by the user.
+   * Also runs once on initial mount with the starting viewport.
    */
-  onCameraMove?: (event: {
-    coordinates: Coordinates;
-    latitudeDelta: number;
-    longitudeDelta: number;
-    zoom: number;
-    tilt: number;
-    bearing: number;
-  }) => void;
+  onCameraMove?: (event: CameraMoveEvent) => void;
 };
 
 /**

@@ -1,9 +1,5 @@
-import {
-  type PermissionResponse as EXPermissionResponse,
-  createPermissionHook,
-  UnavailabilityError,
-  type EventSubscription,
-} from 'expo-modules-core';
+import { type PermissionResponse as EXPermissionResponse, createPermissionHook } from 'expo';
+import { UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import MediaLibrary from './ExpoMediaLibrary';
@@ -365,8 +361,8 @@ export {
   type PermissionExpiration,
   type PermissionResponse as EXPermissionResponse,
   type PermissionHookOptions,
-  type EventSubscription as Subscription,
-} from 'expo-modules-core';
+} from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
 
 function arrayize<T>(item: T | T[]): T[] {
   if (Array.isArray(item)) {

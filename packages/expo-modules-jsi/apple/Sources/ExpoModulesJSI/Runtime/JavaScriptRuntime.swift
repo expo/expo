@@ -38,28 +38,55 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
   lazy var runtimeActor: JavaScriptRuntimeActor = JavaScriptRuntimeActor(runtime: self)
 
   /**
-   Creates a runtime from the JSI runtime.
+   Creates a runtime from the JSI runtime. The scheduler runs tasks synchronously
+   on the caller's thread — for the React-backed runtime, use
+   `init(unsafePointer:nativeScheduler:dispatch:)` instead.
    */
   internal init(_ runtime: facebook.jsi.Runtime) {
     self.pointee = runtime
-    self.scheduler = expo.RuntimeScheduler(runtime)
+    self.scheduler = expo.RuntimeScheduler()
   }
 
   /**
-   Creates Hermes runtime.
+   Creates a standalone Hermes runtime. Scheduled tasks run synchronously —
+   no React scheduler is wired up.
    */
   public init() {
     self.pointee = expo.createHermesRuntime()
-    self.scheduler = expo.RuntimeScheduler(pointee)
+    self.scheduler = expo.RuntimeScheduler()
   }
 
   /**
    Creates a runtime from a raw pointer to the underlying `facebook.jsi.Runtime`.
+   Scheduled tasks run synchronously — for the React-backed runtime, use
+   `init(unsafePointer:nativeScheduler:dispatch:)` instead.
    */
   public init(unsafePointer: UnsafeMutableRawPointer) {
     let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
     self.pointee = runtime
-    self.scheduler = expo.RuntimeScheduler(runtime)
+    self.scheduler = expo.RuntimeScheduler()
+  }
+
+  /**
+   Creates a runtime bound to a host-provided React `RuntimeScheduler`. Calls to
+   `schedule(...)` / `.execute(...)` dispatch through `dispatch`, which the host
+   implements against the real `react::RuntimeScheduler`. This is the path the
+   React Native factory uses.
+
+   - `unsafePointer`: raw pointer to the underlying `facebook::jsi::Runtime`.
+   - `scheduler`: raw pointer to the `react::RuntimeScheduler` instance.
+   - `dispatch`: raw pointer to a C function with signature
+     `void (*)(void *scheduler, int priority, void (^callback)())`.
+   */
+  public init(
+    unsafePointer: UnsafeMutableRawPointer,
+    scheduler: UnsafeMutableRawPointer,
+    dispatch: UnsafeRawPointer
+  ) {
+    let runtime = unsafeBitCast(unsafePointer, to: facebook.jsi.Runtime.self)
+    let fn = unsafeBitCast(dispatch, to: expo.RuntimeScheduler.ScheduleFn.self)
+    self.pointee = runtime
+    self.scheduler = expo.RuntimeScheduler(scheduler, fn)
   }
 
   /**
@@ -348,8 +375,8 @@ open class JavaScriptRuntime: Equatable, @unchecked Sendable {
    Schedules a closure to be executed with granted synchronized access to the runtime.
    */
   public func schedule(priority: SchedulerPriority = .normal, @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> sending Void) -> Void {
-    let reactPriority = facebook.react.SchedulerPriority(rawValue: priority.rawValue) ?? .NormalPriority
-    scheduler.scheduleTask(reactPriority) {
+    let cxxPriority = expo.RuntimeScheduler.Priority(rawValue: priority.rawValue) ?? .NormalPriority
+    scheduler.scheduleTask(cxxPriority) {
       JavaScriptActor.assumeIsolated(closure)
     }
   }

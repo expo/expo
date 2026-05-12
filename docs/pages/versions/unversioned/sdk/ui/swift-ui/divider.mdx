@@ -8,18 +8,16 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Divider matches the official SwiftUI [Divider API](https://developer.apple.com/documentation/swiftui/divider) and creates a visual separator between content.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/divider/ios-light.webp"
-    darkSource="/static/images/expo-ui/divider/ios-dark.webp"
-    alt="Divider separating a heading from body text"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/divider/ios-light.webp"
+  darkSource="/static/images/expo-ui/divider/ios-dark.webp"
+  alt="Divider separating a heading from body text"
+/>
 
 ## Installation
 

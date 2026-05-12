@@ -8,10 +8,18 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI HorizontalFloatingToolbar wraps the official Jetpack Compose [`HorizontalFloatingToolbar`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-horizontal-floating-toolbar.html) and displays a horizontal toolbar that floats above content, containing action buttons.
 
 > **Note:** If you only need a single floating button, use [`FloatingActionButton`](/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/) instead.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/horizontalfloatingtoolbar/android-light.webp"
+  darkSource="/static/images/expo-ui/horizontalfloatingtoolbar/android-dark.webp"
+  alt="Pill-shaped floating toolbar with three icon buttons and a separate primary FAB"
+/>
 
 ## Installation
 

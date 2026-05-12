@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 56.0.6 — 2026-05-11
+
+### 🐛 Bug fixes
+
+- Apply fix-up transform for Hermes v1 250829098 resolving undefined for async arrow functions with non-simple params ([#45601](https://github.com/expo/expo/pull/45601) by [@kitten](https://github.com/kitten))
+- Apply fix-up transform for Hermes v1 250829098 misdeclaring classes in finally blocks ([#45601](https://github.com/expo/expo/pull/45601) by [@kitten](https://github.com/kitten))
+- Apply fix-up transform for Hermes v1 250829098 mishandling super.prop accesses in computed object property methods ([#45601](https://github.com/expo/expo/pull/45601) by [@kitten](https://github.com/kitten))
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.4 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

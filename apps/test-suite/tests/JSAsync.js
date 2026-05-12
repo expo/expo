@@ -785,5 +785,115 @@ export function test({ describe, it, xit, expect }) {
         expect(stack.indexOf('buildError') >= 0).toBe(true);
       });
     });
+
+    describe('destructuring + state lifting', () => {
+      // See: https://github.com/expo/expo/issues/45592
+      it('awaits after destructuring in arrow params', async () => {
+        const f = async ({ b: _ }) => 42;
+        const actual = await f({ b: 1 });
+        expect(actual).toBe(42);
+      });
+
+      it('object destructure with rename', async () => {
+        const f = async ({ b: x }) => x;
+        expect(await f({ b: 42 })).toBe(42);
+      });
+
+      it('object destructure with default', async () => {
+        const f = async ({ b = 7 }) => b;
+        expect(await f({})).toBe(7);
+      });
+
+      it('object destructure with rest', async () => {
+        const f = async ({ a, ...rest }) => rest;
+        expect(await f({ a: 1, b: 2, c: 3 })).toEqual({ b: 2, c: 3 });
+      });
+
+      it('nested object destructure', async () => {
+        const f = async ({ a: { b } }) => b;
+        expect(await f({ a: { b: 42 } })).toBe(42);
+      });
+
+      it('array destructure', async () => {
+        const f = async ([a, b]) => a + b;
+        expect(await f([1, 2])).toBe(3);
+      });
+
+      it('array destructure with rest', async () => {
+        const f = async ([a, ...rest]) => rest;
+        expect(await f([1, 2, 3, 4])).toEqual([2, 3, 4]);
+      });
+
+      it('async arrow with default-value param', async () => {
+        const f = async (x = 7) => x;
+        expect(await f()).toBe(7);
+        expect(await f(9)).toBe(9);
+      });
+
+      it('async arrow with rest param', async () => {
+        const f = async (...rest) => rest.length;
+        expect(await f(1, 2, 3)).toBe(3);
+      });
+
+      it('value visible through .then()', async () => {
+        const f = async ({ b: _ }) => 42;
+        const seen = await new Promise((resolve) => {
+          f({ b: 1 }).then((v) => resolve(v));
+        });
+        expect(seen).toBe(42);
+      });
+
+      it('value visible through Promise.all', async () => {
+        const f = async ({ b }) => b;
+        const results = await Promise.all([f({ b: 1 }), f({ b: 2 }), f({ b: 3 })]);
+        expect(results).toEqual([1, 2, 3]);
+      });
+
+      it('control: async arrow with plain (non-destructured) params', async () => {
+        const f = async (a, b) => 42;
+        expect(await f(1, 2)).toBe(42);
+      });
+
+      it('control: async function declaration with destructured param', async () => {
+        async function f({ b }) {
+          return 42;
+        }
+        expect(await f({ b: 1 })).toBe(42);
+      });
+
+      it('control: async function expression with destructured param', async () => {
+        const f = async function ({ b }) {
+          return 42;
+        };
+        expect(await f({ b: 1 })).toBe(42);
+      });
+
+      it('control: class async method with destructured param', async () => {
+        class C {
+          async m({ b }) {
+            return 42;
+          }
+        }
+        expect(await new C().m({ b: 1 })).toBe(42);
+      });
+
+      it('control: object shorthand async method with destructured param', async () => {
+        const o = {
+          async m({ b }) {
+            return 42;
+          },
+        };
+        expect(await o.m({ b: 1 })).toBe(42);
+      });
+
+      it('control: arrow with body destructure (not in params)', async () => {
+        const f = async (x) => {
+          const { b } = x;
+          void b;
+          return 42;
+        };
+        expect(await f({ b: 1 })).toBe(42);
+      });
+    });
   });
 }
