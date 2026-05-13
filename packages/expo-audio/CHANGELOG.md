@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`.
+
 ### 💡 Others
 
 ## 56.0.11 — 2026-05-26
