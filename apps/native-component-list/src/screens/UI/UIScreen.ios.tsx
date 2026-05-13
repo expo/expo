@@ -243,6 +243,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Symbol Effect',
+    route: 'ui/symbol-effect',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SymbolEffectScreen'));
+    },
+  },
+  {
     name: 'Glass Effect',
     route: 'ui/glass-effect',
     options: {},
