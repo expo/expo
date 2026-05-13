@@ -47,6 +47,7 @@ const serverLocationContext_1 = require("./global-state/serverLocationContext");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
 const LinkPreviewContext_1 = require("./link/preview/LinkPreviewContext");
+const navigation_1 = require("./navigationEvents/navigation");
 const primitives_1 = require("./primitives");
 const native_1 = require("./react-navigation/native");
 const screensFeatureFlags_1 = require("./screensFeatureFlags");
@@ -86,6 +87,11 @@ function ExpoRoot({ wrapper: ParentWrapper = react_1.Fragment, ...props }) {
 const initialUrl = react_native_1.Platform.OS === 'web' && typeof window !== 'undefined'
     ? new URL(window.location.href)
     : undefined;
+// TODO(@ubax): Refactor onReady logic and use listeners pattern
+function onNavigationReady() {
+    (0, navigation_1.handleNavigationOnReady)();
+    router_store_1.store.onReady();
+}
 function ContextNavigator({ context, location: initialLocation = initialUrl, wrapper: WrapperComponent = react_1.Fragment, linking = {}, }) {
     // location and linking.getInitialURL are both used to initialize the router state
     //  - location is used on web and during static rendering
@@ -126,7 +132,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
             return null;
         }
     }
-    return ((0, jsx_runtime_1.jsx)(storeContext_1.StoreContext.Provider, { value: store, children: (0, jsx_runtime_1.jsx)(NavigationContainer_1.NavigationContainer, { ref: store.navigationRef, initialState: store.state, linking: store.linking, onUnhandledAction: onUnhandledAction, onStateChange: store.onStateChange, documentTitle: documentTitle, onReady: store.onReady, children: (0, jsx_runtime_1.jsx)(serverLocationContext_1.ServerContext.Provider, { value: serverContext, children: (0, jsx_runtime_1.jsx)(WrapperComponent, { children: (0, jsx_runtime_1.jsx)(Content, {}) }) }) }) }));
+    return ((0, jsx_runtime_1.jsx)(storeContext_1.StoreContext.Provider, { value: store, children: (0, jsx_runtime_1.jsx)(NavigationContainer_1.NavigationContainer, { ref: store.navigationRef, initialState: store.state, linking: store.linking, onUnhandledAction: onUnhandledAction, onStateChange: store.onStateChange, documentTitle: documentTitle, onReady: onNavigationReady, children: (0, jsx_runtime_1.jsx)(serverLocationContext_1.ServerContext.Provider, { value: serverContext, children: (0, jsx_runtime_1.jsx)(WrapperComponent, { children: (0, jsx_runtime_1.jsx)(Content, {}) }) }) }) }));
 }
 function Content() {
     const children = [(0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.INTERNAL_SLOT_NAME, component: router_store_1.store.rootComponent })];
