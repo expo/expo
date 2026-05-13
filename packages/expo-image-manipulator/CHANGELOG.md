@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Save manipulated images in the scoped cache directory. ([#22141](https://github.com/expo/expo/issues/22141) by [@mvincentong](https://github.com/mvincentong))
+- [Android] Save manipulated images in the scoped cache directory. ([#45708](https://github.com/expo/expo/pull/45708) by [@mvincentong](https://github.com/mvincentong))
 
 ### 💡 Others
 
