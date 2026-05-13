@@ -3,13 +3,13 @@ title: Menu
 description: A menu compatible with @react-native-menu/menu.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android', 'ios']
+platforms: ['android', 'ios',  'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A `MenuView` component with an API compatible with `@react-native-menu/menu`. Supports both single-tap (default) and long-press (`shouldOpenOnLongPress`) triggers.
+A `MenuView` component with an API compatible with [`@react-native-menu/menu`](https://www.npmjs.com/package/@react-native-menu/menu). Supports both single-tap (default) and long-press (`shouldOpenOnLongPress`) triggers.
 
 Under the hood this component wraps the platform-specific `@expo/ui` primitives:
 

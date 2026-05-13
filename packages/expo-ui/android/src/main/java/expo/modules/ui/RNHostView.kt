@@ -98,19 +98,15 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           .fillMaxSize()
           .then(reportSizeToYogaNodeModifier())
       }
-      val userModifiers = ModifierRegistry.applyModifiers(
-        props.modifiers,
-        appContext,
-        scope,
-        globalEventDispatcher
-      )
+      val modifiers = sizingModifier
+        .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher)
 
       AndroidView(
         factory = {
           (wrapper.parent as? ViewGroup)?.removeView(wrapper)
           wrapper
         },
-        modifier = sizingModifier.then(userModifiers)
+        modifier = modifiers
       )
     }
   }
