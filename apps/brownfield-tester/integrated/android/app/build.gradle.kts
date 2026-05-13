@@ -57,16 +57,76 @@ dependencies {
 
 val projectRoot = File(rootDir.absoluteFile, "../../expo-app").absolutePath
 
+/**
+ * Executes a Node command via ProcessBuilder, then validates and returns the canonical [File]
+ * for the resolved path.
+ *
+ * Validation steps (throws [IllegalStateException] on failure):
+ *  1. Output must be non-empty.
+ *  2. Output must be a single line (no embedded newlines – guards against injection).
+ *  3. Resolved canonical path must be absolute.
+ *  4. Resolved canonical path must start with one of [allowedRoots] (path-traversal guard).
+ */
+fun resolveNodePath(command: List<String>, workingDir: File, allowedRoots: List<File>): File {
+    val raw = ProcessBuilder(command)
+        .directory(workingDir)
+        .start()
+        .inputStream
+        .bufferedReader()
+        .readText()
+        .trim()
+
+    check(raw.isNotEmpty()) {
+        "Node command returned empty output.\nCommand: $command"
+    }
+    check(!raw.contains('\n') && !raw.contains('\r')) {
+        "Node command returned multi-line output — possible injection.\nCommand: $command\nOutput: $raw"
+    }
+
+    val canonical = File(raw).canonicalFile
+
+    check(canonical.isAbsolute) {
+        "Resolved path is not absolute: $canonical\nCommand: $command"
+    }
+
+    val canonicalRoots = allowedRoots.map { it.canonicalFile }
+    check(canonicalRoots.any { canonical.path.startsWith(it.path + File.separator) || canonical.path == it.path }) {
+        "Resolved path '$canonical' is outside allowed roots: $canonicalRoots\nCommand: $command"
+    }
+
+    return canonical
+}
+
+val allowedRoots = listOf(
+    rootDir.canonicalFile,
+    File(projectRoot).canonicalFile
+)
+
 react {
     root = File(projectRoot)
-    entryFile = file(listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile
-    reactNativeDir = file(listOf("node", "--print", "require.resolve('react-native/package.json')").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile.parentFile
-    hermesCommand = file(listOf("node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile.parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"
-    codegenDir = file(listOf("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile.parentFile
+    entryFile = resolveNodePath(
+        listOf("node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"),
+        rootDir, allowedRoots
+    )
+    reactNativeDir = resolveNodePath(
+        listOf("node", "--print", "require.resolve('react-native/package.json')"),
+        rootDir, allowedRoots
+    ).parentFile
+    hermesCommand = resolveNodePath(
+        listOf("node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })"),
+        rootDir, allowedRoots
+    ).parentFile.absolutePath + "/hermesc/%OS-BIN%/hermesc"
+    codegenDir = resolveNodePath(
+        listOf("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })"),
+        rootDir, allowedRoots
+    ).parentFile
     enableBundleCompression = false
 
     // Use Expo CLI to bundle the app, this ensures the Metro config works correctly with Expo projects.
-    cliFile = file(listOf("node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })").let { ProcessBuilder(it).directory(rootDir).start().inputStream.bufferedReader().readText().trim() }).canonicalFile
+    cliFile = resolveNodePath(
+        listOf("node", "--print", "require.resolve('@expo/cli', { paths: [require.resolve('expo/package.json')] })"),
+        rootDir, allowedRoots
+    )
     bundleCommand = "export:embed"
 
     /* Autolinking */
