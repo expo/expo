@@ -1,7 +1,8 @@
-// note(Simek): https://github.com/react-native-community/directory/blob/main/pages/api/libraries/check.ts
+// note(Simek): reference https://github.com/react-native-community/directory/blob/main/pages/api/libraries/check.ts
 import chalk from 'chalk';
 
 import { Log } from '../../log';
+import { chunk } from '../../utils/array';
 import { fetch } from '../../utils/fetch';
 import { learnMore } from '../../utils/link';
 
@@ -10,6 +11,9 @@ export type ReactNativeDirectoryCheckResult = {
   newArchitecture: 'supported' | 'unsupported' | 'untested';
 };
 
+export type DirectoryCheckResponse = Record<string, ReactNativeDirectoryCheckResult>;
+
+export const MAX_PACKAGES_PER_QUERY = 50;
 const ERROR_MESSAGE =
   'Unable to fetch compatibility data from React Native Directory. Skipping check.';
 
@@ -24,18 +28,28 @@ export async function checkPackagesCompatibility(packages: string[]) {
       return;
     }
 
-    const response = await fetch(
-      `https://reactnative.directory/api/libraries/check?packages=${packagesToCheck.join(',')}`
+    const chunkedPackages = chunk(packagesToCheck, MAX_PACKAGES_PER_QUERY);
+
+    const results = await Promise.allSettled<DirectoryCheckResponse>(
+      chunkedPackages.map((packageChunk) =>
+        fetch(
+          `https://reactnative.directory/api/libraries/check?${new URLSearchParams({ packages: packageChunk.join(',') })}`
+        ).then((response) => {
+          if (!response.ok) {
+            throw new Error(ERROR_MESSAGE);
+          }
+          return response.json();
+        })
+      )
     );
 
-    if (!response.ok) {
+    const packageMetadata = results.reduce<DirectoryCheckResponse>((acc, result) => {
+      if (result.status === 'fulfilled') {
+        return { ...acc, ...result.value };
+      }
       Log.log(chalk.gray(ERROR_MESSAGE));
-    }
-
-    const packageMetadata = (await response.json()) as Record<
-      string,
-      ReactNativeDirectoryCheckResult
-    >;
+      return acc;
+    }, {});
 
     const incompatiblePackages = packagesToCheck.filter(
       (packageName) => packageMetadata[packageName]?.newArchitecture === 'unsupported'
