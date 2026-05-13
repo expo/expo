@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `associatedCookies` in `Network.requestWillBeSentExtraInfo` CDP events serializing as a JSON object instead of an array. ([#45720](https://github.com/expo/expo/pull/45720) by [@huntie](https://github.com/huntie))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-13
