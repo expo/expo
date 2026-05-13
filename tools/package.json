@@ -89,7 +89,7 @@
     "eslint": "^9.39.4",
     "eslint-config-universe": "workspace:^15.1.0",
     "eslint-plugin-lodash": "^7.4.0",
-    "prettier": "^3.3.3",
+    "prettier": "^3.8.3",
     "taskr": "1.1.0",
     "typescript": "^6.0.3"
   },
