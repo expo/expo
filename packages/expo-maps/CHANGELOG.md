@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 55.0.18 — 2026-05-13
+
+### 🎉 New features
+
 - [android] Add `latitudeDelta` and `longitudeDelta` to `onCameraMove` event payload. ([#45327](https://github.com/expo/expo/pull/45327) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
 - [android] Trigger `onCameraMove` on initial mount when map is ready. ([#45327](https://github.com/expo/expo/pull/45327) by [@nishan](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 55.0.17 — 2026-05-05
 

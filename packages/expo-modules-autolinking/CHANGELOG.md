@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 55.0.22 — 2026-05-13
+
+### 🐛 Bug fixes
+
+[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
 
 ## 55.0.21 — 2026-05-05
 

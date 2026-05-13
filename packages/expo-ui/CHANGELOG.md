@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [android] Add `ExposedDropdownMenuBox` component. ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 55.0.16 — 2026-05-13
+
+### 🎉 New features
+
+- [android] Add `ExposedDropdownMenuBox` component. ([#44201](https://github.com/expo/expo/pull/44201) by [@vonovak](https://github.com/vonovak))
 
 ## 55.0.15 — 2026-05-05
 
