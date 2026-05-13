@@ -36,7 +36,8 @@ export class AbstractWatcher implements WatcherBackend {
     this.ignored = ignored;
     this.globs = globs;
     this.doIgnore = ignored
-      ? (filePath: string) => isWatcherExcluded(filePath) || posixPathMatchesPattern(ignored, filePath)
+      ? (filePath: string) =>
+          isWatcherExcluded(filePath) || posixPathMatchesPattern(ignored, filePath)
       : isWatcherExcluded;
 
     this.root = path.resolve(dir);
