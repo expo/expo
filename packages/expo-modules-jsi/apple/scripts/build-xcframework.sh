@@ -15,10 +15,11 @@
 #   - Cleans .swiftinterface files for cross-compiler compatibility
 #
 # Usage:
-#   PODS_ROOT=/path/to/Pods ./build-xcframework.sh [--clean]
+#   ./build-xcframework.sh [--clean]
 #
 # Environment:
-#   PODS_ROOT       (required) Path to the CocoaPods Pods directory
+#   PODS_ROOT       Path to the CocoaPods Pods directory. Defaults to
+#                   $EXPO_ROOT_DIR/apps/bare-expo/ios/Pods (set by direnv).
 #   PLATFORM_NAME   (optional) Build for a specific platform (e.g. iphoneos, iphonesimulator).
 #                   When unset, builds for both iphoneos and iphonesimulator.
 
@@ -35,6 +36,8 @@ SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
 source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+
+resolve_pods_root "$PACKAGE_DIR"
 
 CLEAN=false
 
