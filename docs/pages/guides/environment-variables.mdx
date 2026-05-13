@@ -66,7 +66,7 @@ You may choose to commit the default **.env** file or other standard configurati
 
 #### Environment variables and `NODE_ENV`
 
-`NODE_ENV` is the standard Node.js variable that identifies the current mode (`development`, `production`, or `test`). Expo CLI sets it automatically for you in commands like `npx expo start` (sets `development`) and `npx expo export` (forces `production`), so you typically don't need to set it manually. The guidance below is about not using `NODE_ENV` to alter which **.env** file is loaded &mdash; not about avoiding `NODE_ENV` altogether.
+`NODE_ENV` is the standard Node.js variable that identifies which mode your code is running in (typically `development`, `production`, or `test`). Tools like module resolvers, bundlers, and test runners read it to decide how to build, install, or run your code.
 
 We recommend against using `NODE_ENV` to switch between **.env** files (such as **.env.test** and **.env.production**). While it is technically possible (`NODE_ENV=test npx expo start` will load **.env.test**) &mdash; it may not behave as you would expect. For example, `npx expo export` always forces `NODE_ENV` to `production`, so `NODE_ENV=test npx expo export` will not actually run the command with the `NODE_ENV` set to `test`.
 
