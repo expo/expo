@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../ExpoHeader.pch"
-#include <react/fabric/StateWrapperImpl.h>
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;
