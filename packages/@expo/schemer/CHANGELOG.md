@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add Android `pathAdvancedPattern` intent filter schema support. ([#45684](https://github.com/expo/expo/pull/45684) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 2.2.1 — 2026-05-06

@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add Android `pathAdvancedPattern` intent filter support. ([#26116](https://github.com/expo/expo/issues/26116) by [@mvincentong](https://github.com/mvincentong))
+- Add Android `pathAdvancedPattern` intent filter support. ([#45684](https://github.com/expo/expo/pull/45684) by [@mvincentong](https://github.com/mvincentong))
 
 ### 🐛 Bug fixes
 
