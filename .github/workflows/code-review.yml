@@ -6,7 +6,7 @@ on:
       pullNumber:
         description: 'Number of the pull request to review'
         required: true
-  pull_request_target:
+  pull_request:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -14,17 +14,24 @@ concurrency:
 
 jobs:
   code_review:
+    # Auto-run only on same-repo PRs. Fork PRs don't get EXPO_BOT_GITHUB_TOKEN
+    # under `pull_request`, so the review would fail anyway — skip cleanly
+    # instead of leaving a red check. Maintainers can review a fork PR
+    # manually via workflow_dispatch.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: 'pnpm'
@@ -45,7 +52,7 @@ jobs:
       #     swift build -c release
       #     cp .build/release/swiftlint /usr/local/bin/
       # - name: 📦 Make an artifact
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       #   with:
       #     name: swiftlint
       #     path: SwiftLint/.build

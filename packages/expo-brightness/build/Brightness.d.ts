@@ -1,4 +1,5 @@
-import { type EventSubscription, type PermissionResponse } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { type EventSubscription } from 'expo-modules-core';
 export declare enum BrightnessMode {
     /**
      * Means that the current brightness mode cannot be determined.
@@ -20,7 +21,7 @@ export type BrightnessEvent = {
      */
     brightness: number;
 };
-export { type PermissionExpiration, type PermissionHookOptions, type PermissionResponse, PermissionStatus, } from 'expo-modules-core';
+export { type PermissionExpiration, type PermissionHookOptions, type PermissionResponse, PermissionStatus, } from 'expo';
 /**
  * Returns whether the Brightness API is enabled on the current device. This does not check the app
  * permissions.

@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo';
 declare class ExpoGoCalendarNextStub {
     static readonly ExpoCalendar: {
         new (): {

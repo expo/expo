@@ -1789,10 +1789,10 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       '@expo/config':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config-plugins
       '@expo/devcert':
         specifier: ^1.2.1
@@ -1804,19 +1804,19 @@ importers:
         specifier: workspace:^0.9.2
         version: link:../image-utils
       '@expo/inline-modules':
-        specifier: workspace:^0.0.5
+        specifier: workspace:^0.0.6
         version: link:../inline-modules
       '@expo/json-file':
         specifier: workspace:^10.1.0
         version: link:../json-file
       '@expo/log-box':
-        specifier: workspace:^56.0.7
+        specifier: workspace:^56.0.8
         version: link:../log-box
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
       '@expo/metro-config':
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../metro-config
       '@expo/metro-file-map':
         specifier: workspace:^56.0.1
@@ -1831,13 +1831,13 @@ importers:
         specifier: workspace:^0.6.0
         version: link:../plist
       '@expo/prebuild-config':
-        specifier: workspace:^56.0.5
+        specifier: workspace:^56.0.6
         version: link:../prebuild-config
       '@expo/require-utils':
         specifier: workspace:^56.1.0
         version: link:../require-utils
       '@expo/router-server':
-        specifier: workspace:^56.0.6
+        specifier: workspace:^56.0.7
         version: link:../router-server
       '@expo/schema-utils':
         specifier: workspace:^56.0.0
@@ -1915,8 +1915,8 @@ importers:
         specifier: ^3.4.0
         version: 3.4.0
       picomatch:
-        specifier: ^4.0.3
-        version: 4.0.3
+        specifier: ^4.0.4
+        version: 4.0.4
       pretty-format:
         specifier: ^29.7.0
         version: 29.7.0
@@ -2105,10 +2105,10 @@ importers:
   packages/@expo/config:
     dependencies:
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config-plugins
       '@expo/config-types':
-        specifier: workspace:^56.0.2
+        specifier: workspace:^56.0.3
         version: link:../config-types
       '@expo/json-file':
         specifier: workspace:^10.1.0
@@ -2154,7 +2154,7 @@ importers:
   packages/@expo/config-plugins:
     dependencies:
       '@expo/config-types':
-        specifier: workspace:^56.0.2
+        specifier: workspace:^56.0.3
         version: link:../config-types
       '@expo/json-file':
         specifier: workspace:~10.1.0
@@ -2226,6 +2226,9 @@ importers:
       json-schema-to-typescript:
         specifier: ^15.0.0
         version: 15.0.4
+      prettier:
+        specifier: ^3.8.3
+        version: 3.8.3
       semver:
         specifier: ^7.7.4
         version: 7.7.4
@@ -2406,7 +2409,7 @@ importers:
   packages/@expo/inline-modules:
     dependencies:
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config-plugins
     devDependencies:
       '@types/jest':
@@ -2447,7 +2450,7 @@ importers:
   packages/@expo/local-build-cache-provider:
     dependencies:
       '@expo/config':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config
       chalk:
         specifier: ^4.1.2
@@ -2530,7 +2533,7 @@ importers:
         specifier: ^7.20.5
         version: 7.29.1
       '@expo/config':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config
       '@expo/env':
         specifier: workspace:~2.2.0
@@ -2578,8 +2581,8 @@ importers:
         specifier: ^1.30.1
         version: 1.32.0
       picomatch:
-        specifier: ^4.0.3
-        version: 4.0.3
+        specifier: ^4.0.4
+        version: 4.0.4
       postcss:
         specifier: ^8.5.14
         version: 8.5.14
@@ -2670,7 +2673,7 @@ importers:
   packages/@expo/metro-runtime:
     dependencies:
       '@expo/log-box':
-        specifier: workspace:^56.0.7
+        specifier: workspace:^56.0.8
         version: link:../log-box
       anser:
         specifier: ^1.4.9
@@ -2789,13 +2792,13 @@ importers:
   packages/@expo/prebuild-config:
     dependencies:
       '@expo/config':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../config-plugins
       '@expo/config-types':
-        specifier: workspace:^56.0.2
+        specifier: workspace:^56.0.3
         version: link:../config-types
       '@expo/image-utils':
         specifier: workspace:^0.9.2
@@ -2810,7 +2813,7 @@ importers:
         specifier: ^4.3.1
         version: 4.4.3
       expo-modules-autolinking:
-        specifier: workspace:~56.0.4
+        specifier: workspace:~56.0.5
         version: link:../../expo-modules-autolinking
       resolve-from:
         specifier: ^5.0.0
@@ -2875,13 +2878,13 @@ importers:
   packages/@expo/router-server:
     dependencies:
       '@expo/metro-runtime':
-        specifier: workspace:^56.0.6
+        specifier: workspace:^56.0.7
         version: link:../metro-runtime
       debug:
         specifier: ^4.3.4
         version: 4.4.3
       expo-constants:
-        specifier: workspace:^56.0.7
+        specifier: workspace:^56.0.9
         version: link:../../expo-constants
       expo-font:
         specifier: workspace:^56.0.3
@@ -2924,8 +2927,8 @@ importers:
         specifier: ^6.0.0
         version: 6.0.0(@jest/test-result@29.7.0)(@tsd/typescript@6.0.3)(jest-runner@29.7.0)
       react-server-dom-webpack:
-        specifier: ~19.0.1
-        version: 19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+        specifier: ~19.0.6
+        version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
       tsd:
         specifier: ^0.33.0
         version: 0.33.0
@@ -3102,7 +3105,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-widgets:
-        specifier: workspace:^56.0.6
+        specifier: workspace:^56.0.7
         version: link:../expo-widgets
     devDependencies:
       '@babel/core':
@@ -3208,8 +3211,8 @@ importers:
         specifier: 3.4.0
         version: 3.4.0
       picomatch:
-        specifier: ^2.3.1
-        version: 2.3.1
+        specifier: ^2.3.2
+        version: 2.3.2
       prompts:
         specifier: ^2.4.2
         version: 2.4.2
@@ -3443,13 +3446,13 @@ importers:
         specifier: ^7.20.0
         version: 7.29.2
       '@expo/cli':
-        specifier: workspace:^56.1.2
+        specifier: workspace:^56.1.3
         version: link:../@expo/cli
       '@expo/config':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../@expo/config
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../@expo/config-plugins
       '@expo/devtools':
         specifier: workspace:~56.0.2
@@ -3458,31 +3461,31 @@ importers:
         specifier: workspace:~56.0.4
         version: link:../@expo/dom-webview
       '@expo/fingerprint':
-        specifier: workspace:^0.17.4
+        specifier: workspace:^0.18.0
         version: link:../@expo/fingerprint
       '@expo/local-build-cache-provider':
-        specifier: workspace:^56.0.3
+        specifier: workspace:^56.0.4
         version: link:../@expo/local-build-cache-provider
       '@expo/log-box':
-        specifier: workspace:^56.0.7
+        specifier: workspace:^56.0.8
         version: link:../@expo/log-box
       '@expo/metro':
         specifier: ~56.0.0
         version: 56.0.0
       '@expo/metro-config':
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../@expo/metro-config
       '@ungap/structured-clone':
         specifier: ^1.3.0
         version: 1.3.0
       babel-preset-expo:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../babel-preset-expo
       expo-asset:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.8
         version: link:../expo-asset
       expo-constants:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       expo-file-system:
         specifier: workspace:~56.0.4
@@ -3494,10 +3497,10 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-keep-awake
       expo-modules-autolinking:
-        specifier: workspace:~56.0.4
+        specifier: workspace:~56.0.5
         version: link:../expo-modules-autolinking
       expo-modules-core:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../expo-modules-core
       pretty-format:
         specifier: ^29.7.0
@@ -3631,7 +3634,7 @@ importers:
         specifier: workspace:^0.9.2
         version: link:../@expo/image-utils
       expo-constants:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -3690,13 +3693,13 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       expo-crypto:
         specifier: workspace:~56.0.3
         version: link:../expo-crypto
       expo-linking:
-        specifier: workspace:~56.0.5
+        specifier: workspace:~56.0.6
         version: link:../expo-linking
       expo-web-browser:
         specifier: workspace:~56.0.4
@@ -3724,7 +3727,7 @@ importers:
   packages/expo-background-fetch:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3740,7 +3743,7 @@ importers:
   packages/expo-background-task:
     dependencies:
       expo-task-manager:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../expo-task-manager
     devDependencies:
       '@types/node':
@@ -3843,10 +3846,10 @@ importers:
         specifier: ^5.2.0
         version: 5.2.2
       expo-build-properties:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../expo-build-properties
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       ora:
         specifier: ^5.4.1
@@ -4101,16 +4104,16 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.9
         version: link:../expo-dev-launcher
       expo-dev-menu:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.8
         version: link:../expo-dev-menu
       expo-dev-menu-interface:
         specifier: workspace:~56.0.0
         version: link:../expo-dev-menu-interface
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       expo-updates-interface:
         specifier: workspace:~56.0.1
@@ -4135,10 +4138,10 @@ importers:
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
       expo-dev-menu:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.8
         version: link:../expo-dev-menu
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       react-native:
         specifier: 0.85.3
@@ -4592,7 +4595,7 @@ importers:
   packages/expo-linking:
     dependencies:
       expo-constants:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       invariant:
         specifier: ^2.2.4
@@ -4820,7 +4823,7 @@ importers:
         specifier: ^13.0.0
         version: 13.0.6
       jest-expo:
-        specifier: workspace:~56.0.0
+        specifier: workspace:~56.0.1
         version: link:../jest-expo
       jest-snapshot-prettier:
         specifier: npm:prettier@^2
@@ -4999,7 +5002,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -5027,7 +5030,7 @@ importers:
   packages/expo-observe:
     dependencies:
       expo-app-metrics:
-        specifier: workspace:~56.0.6
+        specifier: workspace:~56.0.7
         version: link:../expo-app-metrics
       expo-eas-client:
         specifier: workspace:~56.0.0
@@ -5084,16 +5087,16 @@ importers:
   packages/expo-router:
     dependencies:
       '@expo/log-box':
-        specifier: workspace:^56.0.7
+        specifier: workspace:^56.0.8
         version: link:../@expo/log-box
       '@expo/metro-runtime':
-        specifier: workspace:^56.0.6
+        specifier: workspace:^56.0.7
         version: link:../@expo/metro-runtime
       '@expo/schema-utils':
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
       '@expo/ui':
-        specifier: workspace:^56.0.5
+        specifier: workspace:^56.0.6
         version: link:../expo-ui
       '@radix-ui/react-slot':
         specifier: ^1.2.0
@@ -5123,7 +5126,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       expo-constants:
-        specifier: workspace:^56.0.7
+        specifier: workspace:^56.0.9
         version: link:../expo-constants
       expo-glass-effect:
         specifier: workspace:^56.0.4
@@ -5132,7 +5135,7 @@ importers:
         specifier: workspace:^56.0.4
         version: link:../expo-image
       expo-linking:
-        specifier: workspace:^56.0.5
+        specifier: workspace:^56.0.6
         version: link:../expo-linking
       expo-server:
         specifier: workspace:^56.0.0
@@ -5244,8 +5247,8 @@ importers:
         specifier: ~0.21.0
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-server-dom-webpack:
-        specifier: ~19.0.4
-        version: 19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+        specifier: ~19.0.6
+        version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
       tsd:
         specifier: ^0.33.0
         version: 0.33.0
@@ -5340,10 +5343,10 @@ importers:
   packages/expo-sharing:
     dependencies:
       '@expo/config-plugins':
-        specifier: workspace:^56.0.3
+        specifier: workspace:^56.0.4
         version: link:../@expo/config-plugins
       '@expo/config-types':
-        specifier: workspace:^56.0.2
+        specifier: workspace:^56.0.3
         version: link:../@expo/config-types
       '@expo/plist':
         specifier: workspace:^0.6.0
@@ -5389,7 +5392,7 @@ importers:
   packages/expo-splash-screen:
     dependencies:
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../@expo/config-plugins
       '@expo/image-utils':
         specifier: workspace:^0.9.2
@@ -5753,7 +5756,7 @@ importers:
         specifier: workspace:~56.0.0
         version: link:../expo-eas-client
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       expo-structured-headers:
         specifier: workspace:~56.0.0
@@ -5832,8 +5835,8 @@ importers:
         specifier: ^3.2.0
         version: 3.6.0
       picomatch:
-        specifier: ^4.0.2
-        version: 4.0.3
+        specifier: ^4.0.4
+        version: 4.0.4
       ts-node:
         specifier: ^10.9.2
         version: 10.9.2(@swc/core@1.15.18)(@types/node@22.19.15)(typescript@6.0.3)
@@ -5900,7 +5903,7 @@ importers:
         specifier: workspace:^0.6.0
         version: link:../@expo/plist
       '@expo/ui':
-        specifier: workspace:~56.0.5
+        specifier: workspace:~56.0.6
         version: link:../expo-ui
       react:
         specifier: 19.2.3
@@ -6049,12 +6052,15 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
     devDependencies:
+      '@react-native/jest-preset':
+        specifier: 0.85.3
+        version: 0.85.3(@babel/core@7.29.0)(react@19.2.3)
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
       react-server-dom-webpack:
-        specifier: ~19.0.4
-        version: 19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+        specifier: ~19.0.6
+        version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
 
   packages/patch-project:
     dependencies:
@@ -6062,10 +6068,10 @@ importers:
         specifier: 1.0.0-alpha.24
         version: 1.0.0-alpha.24
       '@expo/config':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../@expo/config
       '@expo/config-plugins':
-        specifier: workspace:~56.0.3
+        specifier: workspace:~56.0.4
         version: link:../@expo/config-plugins
       '@expo/env':
         specifier: workspace:~2.2.0
@@ -13764,12 +13770,12 @@ packages:
   picocolors@1.1.1:
     resolution: {integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==}
 
-  picomatch@2.3.1:
-    resolution: {integrity: sha512-JU3teHTNjmE2VCGFzuY8EXzCDVwEqB2a8fsIvwaStHhAWJEeVd1o1QD80CU6+ZdEXXSLbSsuLwJjkCBWqRQUVA==}
+  picomatch@2.3.2:
+    resolution: {integrity: sha512-V7+vQEJ06Z+c5tSye8S+nHUfI51xoXIXjHQ99cQtKUkQqqO1kO/KCJUfZXuB47h/YBlDhah2H3hdUGXn8ie0oA==}
     engines: {node: '>=8.6'}
 
-  picomatch@4.0.3:
-    resolution: {integrity: sha512-5gTmgEY/sqK6gFXLIsQNH19lWb4ebPDLA4SdLP7dsWkIXHWlG66oPuVvXSGFPppYZz8ZDZq0dYYrbHfBCVUb1Q==}
+  picomatch@4.0.4:
+    resolution: {integrity: sha512-QP88BAKvMam/3NxH6vj2o21R6MjxZUAd6nlwAS/pnGvN9IVLocLHxGYIzFhg6fUQ+5th6P4dv4eW9jX3DSIj7A==}
     engines: {node: '>=12'}
 
   pidtree@0.6.0:
@@ -13959,6 +13965,11 @@ packages:
 
   prettier@3.5.3:
     resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
+    engines: {node: '>=14'}
+    hasBin: true
+
+  prettier@3.8.3:
+    resolution: {integrity: sha512-7igPTM53cGHMW8xWuVTydi2KO233VFiTNyF5hLJqpilHfmn8C8gPf+PS7dUT64YcXFbiMGZxS9pCSxL/Dxm/Jw==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -14348,10 +14359,9 @@ packages:
       '@types/react':
         optional: true
 
-  react-server-dom-webpack@19.0.4:
-    resolution: {integrity: sha512-z49wXjknNnbgLgTAuTKLsbDQmkcQT4MXizLCVH2odd7BRVssJuWiydY3Todq/m3HSjoJRnutPE2SpyzksTaXow==}
+  react-server-dom-webpack@19.0.6:
+    resolution: {integrity: sha512-WfyiWmlEQZhm+18sx2vVzVT/gchJV/3MmkF7OssBuwJ1Ik8TgzDjP0mzEl+h7sVzKcUfshGGpXxugJa7RKJ0mQ==}
     engines: {node: '>=0.10.0'}
-    deprecated: High Security Vulnerability in React Server Components
     peerDependencies:
       react: 19.2.3
       react-dom: 19.2.3
@@ -18431,7 +18441,7 @@ snapshots:
       detect-libc: 2.1.2
       is-glob: 4.0.3
       node-addon-api: 7.1.1
-      picomatch: 4.0.3
+      picomatch: 4.0.4
     optionalDependencies:
       '@parcel/watcher-android-arm64': 2.5.6
       '@parcel/watcher-darwin-arm64': 2.5.6
@@ -20045,7 +20055,7 @@ snapshots:
   anymatch@3.1.3:
     dependencies:
       normalize-path: 3.0.0
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   arg@4.1.3: {}
 
@@ -22012,9 +22022,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  fdir@6.5.0(picomatch@4.0.3):
+  fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
-      picomatch: 4.0.3
+      picomatch: 4.0.4
 
   fetch-nodeshim@0.4.10: {}
 
@@ -23361,7 +23371,7 @@ snapshots:
       chalk: 4.1.2
       ci-info: 3.9.0
       graceful-fs: 4.2.11
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   jest-validate@29.7.0:
     dependencies:
@@ -24118,7 +24128,7 @@ snapshots:
   micromatch@4.0.8:
     dependencies:
       braces: 3.0.3
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   mime-db@1.52.0: {}
 
@@ -24443,7 +24453,7 @@ snapshots:
       ansi-styles: 6.2.3
       cross-spawn: 7.0.6
       memorystream: 0.3.1
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       pidtree: 0.6.0
       read-package-json-fast: 4.0.0
       shell-quote: 1.8.3
@@ -24707,9 +24717,9 @@ snapshots:
 
   picocolors@1.1.1: {}
 
-  picomatch@2.3.1: {}
+  picomatch@2.3.2: {}
 
-  picomatch@4.0.3: {}
+  picomatch@4.0.4: {}
 
   pidtree@0.6.0: {}
 
@@ -24876,6 +24886,8 @@ snapshots:
   prettier@2.8.8: {}
 
   prettier@3.5.3: {}
+
+  prettier@3.8.3: {}
 
   pretty-bytes@5.6.0: {}
 
@@ -25358,7 +25370,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-server-dom-webpack@19.0.4(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18)):
+  react-server-dom-webpack@19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18)):
     dependencies:
       acorn-loose: 8.5.2
       neo-async: 2.6.2
@@ -25437,7 +25449,7 @@ snapshots:
 
   readdirp@3.6.0:
     dependencies:
-      picomatch: 2.3.1
+      picomatch: 2.3.2
 
   readdirp@4.1.2: {}
 
@@ -26369,8 +26381,8 @@ snapshots:
 
   tinyglobby@0.2.15:
     dependencies:
-      fdir: 6.5.0(picomatch@4.0.3)
-      picomatch: 4.0.3
+      fdir: 6.5.0(picomatch@4.0.4)
+      picomatch: 4.0.4
 
   tmp@0.2.5: {}
 
@@ -26423,7 +26435,7 @@ snapshots:
 
   ts-declaration-location@1.0.7(typescript@6.0.3):
     dependencies:
-      picomatch: 4.0.3
+      picomatch: 4.0.4
       typescript: 6.0.3
 
   ts-interface-checker@0.1.13: {}

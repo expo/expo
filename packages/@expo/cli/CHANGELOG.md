@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 56.1.3 — 2026-05-13
+
+### 💡 Others
+
+- Target only the first compatible device architecture during Android debug builds to speed up build time. ([#44907](https://github.com/expo/expo/pull/44907) by [@AntoineThibi](https://github.com/AntoineThibi))
+- Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
 ## 56.1.2 — 2026-05-12
 
 _This version does not introduce any user-facing changes._

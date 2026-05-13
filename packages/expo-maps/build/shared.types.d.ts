@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo';
 export type Coordinates = {
     /**
      * The latitude of the coordinate.

@@ -49,7 +49,7 @@ const path = __importStar(require("path"));
 const perf_hooks_1 = require("perf_hooks");
 const planQuery_1 = require("./planQuery");
 const RootPathUtils_1 = require("../../lib/RootPathUtils");
-const isVcsPath_1 = __importDefault(require("../../lib/isVcsPath"));
+const isWatcherExcluded_1 = __importDefault(require("../../lib/isWatcherExcluded"));
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("../../lib/normalizePathSeparatorsToPosix"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("../../lib/normalizePathSeparatorsToSystem"));
 const WATCHMAN_WARNING_INITIAL_DELAY_MILLISECONDS = 10000;
@@ -248,7 +248,7 @@ async function watchmanCrawl({ abortSignal, computeSha1, extensions, ignore, inc
                 // Whether watchman can return exists: false in a fresh instance
                 // response is unknown, but there's nothing we need to do in that case.
             }
-            else if (!(0, isVcsPath_1.default)(fileData.name) && !ignore(filePath)) {
+            else if (!(0, isWatcherExcluded_1.default)(fileData.name) && !ignore(filePath)) {
                 const { mtime_ms, size } = fileData;
                 (0, invariant_1.default)(mtime_ms != null && size != null, 'missing file data in watchman response');
                 const mtime = typeof mtime_ms === 'number' ? mtime_ms : mtime_ms.toNumber();

@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "56.0.7",
+  "version": "56.0.10",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -45,7 +45,7 @@
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "expo-eas-client": "workspace:~56.0.0",
-    "expo-manifests": "workspace:~56.0.1",
+    "expo-manifests": "workspace:~56.0.3",
     "expo-structured-headers": "workspace:~56.0.0",
     "expo-updates-interface": "workspace:~56.0.1",
     "getenv": "^2.0.0",
@@ -71,7 +71,7 @@
     "express": "^5.1.0",
     "form-data": "^4.0.4",
     "memfs": "^3.2.0",
-    "picomatch": "^4.0.2",
+    "picomatch": "^4.0.4",
     "ts-node": "^10.9.2",
     "xstate": "^4.37.2"
   },

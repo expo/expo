@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-05-13
+
+### 🎉 New features
+
+- Add `ChartView` support. ([#45674](https://github.com/expo/expo/pull/45674) by [@jakex7](https://github.com/jakex7))
+
 ## 56.0.6 — 2026-05-11
 
 _This version does not introduce any user-facing changes._

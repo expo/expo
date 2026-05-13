@@ -47,9 +47,6 @@ export function useObserveForRouter() {
                 routeName: pathname,
             });
         }
-        if (process.env.EXPO_OS !== 'android') {
-            return;
-        }
         if (!storage) {
             throw new Error('[expo-observe] markInteractive was called without an active ObserveProvider. Wrap your app in ObserveRoot from expo-observe.');
         }
