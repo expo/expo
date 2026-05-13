@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Target only the first compatible device architecture during Android debug builds to speed up build time. ([#44907](https://github.com/expo/expo/pull/44907) by [@AntoineThibi](https://github.com/AntoineThibi))
+
 ## 56.1.2 — 2026-05-12
 
 _This version does not introduce any user-facing changes._
