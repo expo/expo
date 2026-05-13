@@ -127,10 +127,15 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
       'Creates ts interface for every Swift inline module in the project. The ts interface consists of two files Module.generated.ts and Module.tsx, the first one is regenerated with each run of the command and the second one will not be regenerated if user changes it.'
     )
     .requiredOption(
-      '-a --app-json <appJsonPathPath>',
+      '-a --app-json <appJsonPath>',
       'A path to the `app.json` where the inline.modules.watchedDirectories are defined.'
     )
     .option('-w --watcher', 'Starts a watcher that checks for changes in inline modules files.')
+    .option(
+      '-t, --type-inference <typeInference>',
+      'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.',
+      'SIMPLE_INFERENCE'
+    )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
       const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {

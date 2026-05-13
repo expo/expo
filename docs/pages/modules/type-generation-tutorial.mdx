@@ -7,6 +7,12 @@ description: A tutorial on using `expo-type-generation` package to create ts int
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 
+> **warning** This tutorial is for macOS users, as the `expo-type-information` package works only on macOS.
+
+Writing Expo Modules often means writing the module interface multiple times: in Swift, in Kotlin and in TypeScript. The `expo-type-information` package automates that by extracting type definitions directly from your Swift code to generate TypeScript interfaces.
+
+In this tutorial you will learn how to use the `expo-type-information` package to generate TypeScript interface for both **inline modules** and **regular Expo modules**.
+
 ## Setup your project
 
 First install the `expo-type-information` package.
@@ -19,7 +25,7 @@ To use this package you also need to have sourcekitten installed.
 
 ## Generating inline modules interface
 
-Let's build on the inline modules example (TODO ADD REF). In the last tutorial we've build an example app with an inline module and an inline view. Your project structure should look like this:
+Let's build on the inline modules example (TODO ADD REF). In that tutorial we've built an example app with an inline module and an inline view. In your project you should have:
 
 <FileTree
   files={[
@@ -31,7 +37,7 @@ Let's build on the inline modules example (TODO ADD REF). In the last tutorial w
   ]}
 />
 
-Remember that we used to have an index file in which we directly reference inline modules using `requireNativeModule` and `requireNativeView`, however they return an `any` type which maybe hard to use.
+Remember that we used to have an index file in which we directly reference inline modules using `requireNativeModule` and `requireNativeView`, however they return an `any` type which provides no type safety and doesn't allow for autocompletion.
 
 ```tsx app/index.tsx
 import { requireNativeModule, requireNativeView } from 'expo';
@@ -108,7 +114,7 @@ const FirstInlineModule: FirstInlineModuleNativeModuleType =
 export const Hello: string = FirstInlineModule.Hello;
 ```
 
-This file is supposed to be the "stable" interface for your module. If you change it, it won't be regenerated. The hash at the top of the file ensures that the CLI knows whether the file was modified and will regenerate it if it wasn't. If you want it to be regenerated you can always just delete it.
+This file is supposed to be the "stable" interface for your module. The CLI uses the file hash to detect manual changes. If you customize this file, the CLI will stop overwriting it, allowing you to add custom logic or helper functions while keeping your native types synced in the "generated" file.
 
 In our case we just reexport the `Hello` constant from the native module.
 
@@ -158,7 +164,7 @@ export default function ExpoWebViewComponent(props: ExpoWebViewProps) {
 }
 ```
 
-The "stable" file is also a bit different then in the previous case. It now has a default export with a `ExpoWebViewComponent` wrapper over the native `FirstInlineView` view. Note however that as this is a default export there can only be one view defined in an inline-module, for this "stable" file to work properly.
+The "stable" file is also a bit different than in the previous case. It now has a default export with a `ExpoWebViewComponent` wrapper over the native `FirstInlineView` view. Note however that as this is a default export there can only be one view defined in an inline-module, for this "stable" file to work properly.
 
 With these generated files we can now easily use inline modules and inline views from TypeScript. The `app/index.tsx` used to be
 
@@ -223,7 +229,7 @@ To see the watcher in action make sure that you have the previous command still 
   cmdCopy="npx expo-type-information inline-modules-interface --app-json ./app.json --watcher"
 />
 
-And let's add a new function too the FirstInlineModule:
+And let's add a new function to the FirstInlineModule:
 
 ```Swift app/FirstInlineModule.swift
 internal import ExpoModulesCore
@@ -275,7 +281,7 @@ export function ConcatStrings(str1: string, strings: string[]) {
 
 If this file hasn't been updated, you've probably changed it! If you want it regenerated, you need to remove it first and then change the Swift module to trigger the watcher.
 
-You can now use the new function in you app
+You can now use the new function in your app
 
 ```tsx app/index.tsx
 import { StyleSheet, Text, View } from 'react-native';
@@ -354,14 +360,14 @@ Now run a command to generate the interface
 
 <Terminal
   cmd={['$ npx expo-type-information module-interface --module ./expo-settings']}
-  cmdCopy="npx expo-type-information module-interface --moudle ./expo-settings"
+  cmdCopy="npx expo-type-information module-interface --module ./expo-settings"
 />
 
 If you intend on changing the file and want to see how the interface changes, add the `--watcher` (short `-w`) flag to the command.
 
 <Terminal
   cmd={['$ npx expo-type-information module-interface --module ./expo-settings -w']}
-  cmdCopy="npx expo-type-information module-interface --moudle ./expo-settings -w"
+  cmdCopy="npx expo-type-information module-interface --module ./expo-settings -w"
 />
 
 The `--module` option (short `-m`) is a path to the root folder of the module. After running this command you should see 3 new generated files in the module package.
@@ -387,7 +393,7 @@ export enum Theme {
 }
 ```
 
-The `*.types.ts` file contains the definitions of all types defined in the module. In our case we've only declared a `Theme` enum which has correctly been put in the file. Note however that in contrary to the `ExpoSettings.types.ts` from the tutorial, the events type have not been generated. The `expo-type-information` tool is new and powerful, however not every option is yet implemented module events being one of these.
+The `*.types.ts` file contains the definitions of all types defined in the module. In our case we've only declared a `Theme` enum which has correctly been put in the file. Note however that in contrast to the `ExpoSettings.types.ts` from the tutorial, the events type have not been generated. The `expo-type-information` tool is new and powerful, however not every option is yet implemented, module events being one of them.
 
 ```tsx expo-settings/src/ExpoSettingsModule.ts
 // File hash: 21a1653e3cadc31ac359d32209987615e0feb20925c494864a9038013a3416b6
@@ -416,4 +422,4 @@ export type * from './ExpoSettings.types';
 export { default as ExpoSettings } from './ExpoSettingsModule';
 ```
 
-The index file differs from the example event more. Opposed to wrapping each module method in a separate function, we've opted to just reexport the module object.
+The index file differs from the example even more. Opposed to wrapping each module method in a separate function, we've opted to just reexport the module object.

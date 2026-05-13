@@ -1,38 +1,82 @@
+/**
+ * Represents the kind of a parsed identifier from a native file.
+ */
 export declare enum IdentifierKind {
     BASIC = 0,
     ENUM = 1,
     RECORD = 2,
     CLASS = 3
 }
+/**
+ * Represents a parametrized type, that is a generic type with specified parameters e.g. Map<string, number>.
+ */
 export type ParametrizedType = {
     name: TypeIdentifier;
     types: Type[];
 };
+/**
+ * Represents an argument passed to a function or constructor.
+ */
 export type Argument = {
     name: string | undefined;
     type: Type;
 };
+/**
+ * Represents a single field within a record or a struct.
+ */
 export type Field = Argument;
+/**
+ * Represents a struct or dictionary-like record consisting of named fields.
+ */
 export type RecordType = {
     name: string;
     fields: Field[];
 };
+/**
+ * Represents a single case inside an enum declaration.
+ */
 export type EnumCase = string;
+/**
+ * Represents an enum type, containing its name and all associated cases.
+ */
 export type EnumType = {
     name: string;
     cases: EnumCase[];
 };
+/**
+ * Represents a union or a sum type where a value can be one of several different types.
+ */
 export type SumType = {
     types: Type[];
 };
+/**
+ * Represents a dictionary type, defining the explicit types for its keys and values.
+ */
 export type DictionaryType = {
     key: Type;
     value: Type;
 };
+/**
+ * Represents an optional type that can also resolve to null or undefined.
+ * > **Note:** The information that this type is optional is implicit and exists only in the type system and on the parent type. There is no field on the `OptionalType` object that explicitly indicates that.
+ */
 export type OptionalType = Type;
+/**
+ * Represents a list or array of a specific type.
+ * > **Note:** The information that this type is array is implicit and exists only in the type system and on the parent type. There is no field on the `ArrayType` object that explicitly indicates that.
+ */
 export type ArrayType = Type;
+/**
+ * Represents a type identifier as a string reference.
+ */
 export type TypeIdentifier = string;
+/**
+ * Represents an anonymous type, a one that is not named instead written directly in the code, such as inline generics, arrays, or optionals.
+ */
 export type AnonymousType = ParametrizedType | SumType | OptionalType | DictionaryType | ArrayType;
+/**
+ * Categorizes the type node within the abstract syntax tree.
+ */
 export declare enum TypeKind {
     BASIC = 0,
     IDENTIFIER = 1,
@@ -42,6 +86,9 @@ export declare enum TypeKind {
     ARRAY = 5,
     DICTIONARY = 6
 }
+/**
+ * Represents a basic type that is not user defined.
+ */
 export declare enum BasicType {
     ANY = 0,
     STRING = 1,
@@ -49,40 +96,70 @@ export declare enum BasicType {
     BOOLEAN = 3,
     VOID = 4,
     UNDEFINED = 5,
+    /** Represents a type that couldn't be resolved */
     UNRESOLVED = 6
 }
+/**
+ * Represents an abstract type node.
+ */
 export type Type = {
     kind: TypeKind;
     type: BasicType | TypeIdentifier | AnonymousType;
 };
+/**
+ * Represents a DSL property declaration.
+ */
 export type PropertyDeclaration = ConstantDeclaration;
+/**
+ * Represents a DSL view declaration.
+ */
 export type ViewDeclaration = ModuleClassDeclaration;
+/**
+ * Represents a DSL event declaration.
+ */
 export type EventDeclaration = string;
 /**
- * Retain information of where the thing was defined in the file.
+ * Retains information of where the thing was defined in the file.
  * As collecting type information is written in asynchronous way it is non-deterministic.
- * To make it deterministic we just sort the declaration by the definitionOffset, maintianing the same ordering as in original file.
+ * To make it deterministic we just sort the declaration by the definitionOffset, maintaining the same ordering as in original file.
+ * @header TypeInfoTypes
  */
 export type DefinitionOffset = {
     definitionOffset: number;
 };
+/**
+ * Represents a DSL constant declaration.
+ */
 export type ConstantDeclaration = {
     name: string;
     type: Type;
 } & DefinitionOffset;
+/**
+ * Represents a DSL function declaration.
+ * @hideType
+ */
 export type FunctionDeclaration = {
     name: string;
     returnType: Type;
     arguments: Argument[];
     parameters: Type[];
 } & DefinitionOffset;
+/**
+ * Represents a DSL prop declaration.
+ */
 export type PropDeclaration = {
     name: string;
     arguments: Argument[];
 } & DefinitionOffset;
+/**
+ * Represents a DSL class constructor declaration.
+ */
 export type ConstructorDeclaration = {
     arguments: Argument[];
 } & DefinitionOffset;
+/**
+ * Represents a DSL native class declaration.
+ */
 export type ClassDeclaration = {
     name: string;
     constructor: ConstructorDeclaration | null;
@@ -90,6 +167,9 @@ export type ClassDeclaration = {
     asyncMethods: FunctionDeclaration[];
     properties: PropertyDeclaration[];
 } & DefinitionOffset;
+/**
+ * Represents a DSL module declaration.
+ */
 export type ModuleClassDeclaration = {
     name: string;
     constructor: ConstructorDeclaration | null;
@@ -102,12 +182,24 @@ export type ModuleClassDeclaration = {
     views: ViewDeclaration[];
     events: EventDeclaration[];
 } & DefinitionOffset;
+/**
+ * Represents a definition of an identifier.
+ */
 export type IdentifierDefinition = {
     kind: IdentifierKind;
     definition: string | RecordType | EnumType | ClassDeclaration;
 };
+/**
+ * Maps type identifier strings to their definition objects.
+ */
 export type TypeIdentifierDefinitionMap = Map<string, IdentifierDefinition>;
+/**
+ * Serialized version of the `TypeIdentifierDefinitionMap`.
+ */
 export type TypeIdentifierDefinitionList = [string, IdentifierDefinition][];
+/**
+ * Serialized version of the `FileTypeInformation`, suitable for JSON storage or testing environments.
+ */
 export type FileTypeInformationSerialized = {
     usedTypeIdentifiersList: string[];
     declaredTypeIdentifiersList: string[];
@@ -121,6 +213,7 @@ export type FileTypeInformationSerialized = {
  * FileTypeInformation object abstracts over type related information in a file.
  * The abstraction is closely related to Typescript and expo NativeModules (both to be independent of the actual native side
  * and to give accurate information about what and how we can use the given module).
+ * @header TypeInfoTypes
  */
 export type FileTypeInformation = {
     /**
@@ -159,19 +252,21 @@ export type FileTypeInformation = {
 };
 /**
  * Used for testing purposes, maps Sets and Maps to Arrays and returns FileTypeInformationSerialized object which can be written to a JSON.
- * @param param0 FileTypeInformation object to serialize.
- * @returns FileTypeInformationSerialized object.
+ * @param fileTypeinformation `FileTypeInformation` object to serialize.
+ * @returns a `FileTypeInformationSerialized` object.
+ * @header TypeInformationAbstraction
  */
 export declare function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers, inferredTypeParametersCount, typeIdentifierDefinitionMap, moduleClasses, records, enums, }: FileTypeInformation): FileTypeInformationSerialized;
 /**
- * Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns FileTypeInformation object.
- * @param param0 FileTypeInformationSerialized object to deserialize.
- * @returns FileTypeInformation object.
+ *  * Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns FileTypeInformation object.
+ * @param fileTypeinformationSerialized `FileTypeInformationSerialized` object to deserialize.
+ * @returns `FileTypeInformation` object.
+ * @header TypeInformationAbstraction
  */
 export declare function deserializeTypeInformation({ usedTypeIdentifiersList, declaredTypeIdentifiersList, inferredTypeParametersCountList, typeIdentifierDefinitionList, moduleClasses, records, enums, }: FileTypeInformationSerialized): FileTypeInformation;
 /**
  * Defines the level of type inference to apply when extracting type information.
- * Note: In case where type inference is on, it may take more then twice the time to compute the type information.
+ * > **Note:** In case where type inference is on, it may take more then twice the time to compute the type information.
  */
 export declare enum TypeInferenceOption {
     /** No type inference will be performed. */
@@ -181,11 +276,17 @@ export declare enum TypeInferenceOption {
     /** Preprocesses the file by injecting returns to extract more type info from sourcekitten. */
     PREPROCESS_AND_INFERENCE = 2
 }
+/**
+ * Defines an input option for extracting type information directly from a raw string of source code.
+ */
 export type StringInputOption = {
     type: 'string';
     fileContent: string;
     language: 'Swift';
 };
+/**
+ * Defines an input option for extracting type information from a set of physical files.
+ */
 export type FileInputOption = {
     type: 'file';
     inputFileAbsolutePaths: string[];
@@ -204,6 +305,7 @@ export type GetFileTypeInformationOptions = {
  * If a raw string is provided, or if the `PREPROCESS_AND_INFERENCE` inference option is selected,
  * the function will create a temporary file with the (optionally preprocessed) content to facilitate parsing.
  * @param options - Configuration object containing the input source (file or string) and the desired level of type inference.
- * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it returns `null`.
+ * @returns A promise that resolves to a `FileTypeInformation` object if the input was parsed successfully. Otherwise, it resolves to `null`.
+ * @header TypeInformationAbstraction
  */
 export declare function getFileTypeInformation({ input, typeInference, }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null>;

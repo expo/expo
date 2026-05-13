@@ -5,7 +5,7 @@ const commandUtils_1 = require("./commandUtils");
 const typeInformation_1 = require("../typeInformation");
 function typeInformationCommand(cli) {
     return (0, commandUtils_1.addCommonOptions)(cli.command('type-information'))
-        .description('Parse Swift module type information and output a FileTypeInformation JSON.')
+        .description('Parses Swift module type information and outputs a FileTypeInformation JSON.')
         .action(async (options) => {
         const parsedArgs = await (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {

@@ -48,10 +48,10 @@ const easDirectories = [
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
-  .filter((entity) => entity.isDirectory())
-  .map((dir) => dir.name)
+  .filter(entity => entity.isDirectory())
+  .map(dir => dir.name)
   .filter(
-    (name) =>
+    name =>
       name !== 'api' &&
       name !== 'versions' &&
       ![
@@ -733,17 +733,17 @@ const versionsReference = VERSIONS.reduce(
         'Expo SDK',
         shiftEntryToFront(
           pagesFromDir(`versions/${version}/sdk`).filter(
-            (entry) => !entry.inExpoGo && !['Router', 'UI'].includes(entry.name)
+            entry => !entry.inExpoGo && !['Router', 'UI'].includes(entry.name)
           ),
-          (entry) => entry.name === 'Expo'
+          entry => entry.name === 'Expo'
         ),
         { expanded: true }
       ),
       makeSection(
         'Third-party libraries',
         shiftEntryToFront(
-          pagesFromDir(`versions/${version}/sdk`).filter((entry) => entry.inExpoGo),
-          (entry) => entry.name === 'Overview'
+          pagesFromDir(`versions/${version}/sdk`).filter(entry => entry.inExpoGo),
+          entry => entry.name === 'Overview'
         ),
         { expanded: true }
       ),
@@ -870,12 +870,12 @@ function pagesFromDir(dir) {
   const entities = fs.readdirSync(dirPath, { withFileTypes: true });
 
   const files = entities
-    .filter((entity) => entity.isFile() && entity.name !== 'metadata.json')
-    .map((file) => makePage(path.join(dir, file.name)));
+    .filter(entity => entity.isFile() && entity.name !== 'metadata.json')
+    .map(file => makePage(path.join(dir, file.name)));
 
   const folders = entities
-    .filter((entity) => entity.isDirectory())
-    .map((folder) => {
+    .filter(entity => entity.isDirectory())
+    .map(folder => {
       const folderPages = pagesFromDir(path.join(dir, folder.name));
       const sortedFolderPages = folderPages.sort((a, b) => {
         // prioritize index files first
@@ -947,5 +947,5 @@ function pageUrl(file) {
 }
 
 function shiftEntryToFront(array, findFunction) {
-  return [...array.filter(findFunction), ...array.filter((item) => !findFunction(item))];
+  return [...array.filter(findFunction), ...array.filter(item => !findFunction(item))];
 }

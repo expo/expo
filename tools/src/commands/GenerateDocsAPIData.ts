@@ -182,6 +182,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-blur': ['index.ts'],
   'expo-blob': ['ExpoBlob.types.ts'],
+  'expo-type-information': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
   'expo-brownfield': ['index.ts'],
   'expo-build-properties': [['withBuildProperties.ts', 'pluginConfig.ts']],
