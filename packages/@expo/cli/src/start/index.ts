@@ -28,6 +28,7 @@ export const expoStart: Command = async (argv) => {
       '--localhost': Boolean,
       '--offline': Boolean,
       '--go': Boolean,
+      '--minimal': Boolean,
       // Aliases
       '-h': '--help',
       '-c': '--clear',
@@ -71,6 +72,7 @@ export const expoStart: Command = async (argv) => {
         `--localhost                     Same as --host localhost`,
         ``,
         `--offline                       Skip network requests and use anonymous manifest signatures`,
+        `--minimal                       Hide the keybindings table on startup`,
         chalk`--https                         Start the dev server with https protocol. {bold Deprecated in favor of --tunnel}`,
         `--scheme <scheme>               Custom URI protocol to use when launching an app`,
         chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,

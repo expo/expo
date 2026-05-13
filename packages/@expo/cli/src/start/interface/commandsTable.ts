@@ -22,6 +22,8 @@ export type StartOptions = {
   platforms?: ExpoConfig['platforms'];
   mcpServer?: McpServer;
   dependencyCheckRef?: DependencyCheckRef;
+  /** Hide the keybindings table on startup. The `?` keybinding can still surface it on demand. */
+  minimal?: boolean;
 };
 
 export const printHelp = (): void => {
@@ -39,7 +41,7 @@ export const printItem = (text: string, opts?: { dim: boolean }): string => {
 };
 
 export function printUsage(
-  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>,
+  options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'minimal'>,
   { verbose, rows }: { verbose: boolean; rows?: number }
 ) {
   const isMac = process.platform === 'darwin';
@@ -81,6 +83,13 @@ export function printUsage(
       { key: 'c', msg: 'show project QR' },
       {},
     ]).print();
+  }
+
+  // `--minimal` skips the keybindings table on startup so the QR code stays in view.
+  // The "Press ? │ show all commands" hint printed by the caller is the escape hatch.
+  if (options.minimal) {
+    printPrefix({ short: false });
+    return;
   }
 
   const table = logCommandsTable([

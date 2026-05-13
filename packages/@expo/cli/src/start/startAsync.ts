@@ -144,6 +144,7 @@ export async function startAsync(
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
       mcpServer,
       dependencyCheckRef,
+      minimal: options.minimal,
     });
   } else {
     // Display the server location in CI...

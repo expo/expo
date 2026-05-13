@@ -37,7 +37,7 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckRef'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckRef' | 'minimal'>
 ) {
   // Spend one-tick waiting for the dependency check result
   if (options.dependencyCheckRef) {

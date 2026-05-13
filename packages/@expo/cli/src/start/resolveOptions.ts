@@ -23,6 +23,8 @@ export type Options = {
   devClient: boolean;
   scheme: string | null;
   host: 'localhost' | 'lan' | 'tunnel';
+  /** Hide the keybindings table on startup. */
+  minimal: boolean;
 };
 
 export async function resolveOptionsAsync(projectRoot: string, args: any): Promise<Options> {
@@ -79,6 +81,8 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
 
     scheme,
     host,
+
+    minimal: !!args['--minimal'],
   };
 }
 

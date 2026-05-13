@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `--minimal` flag to `expo start` to hide the keybindings table on startup, keeping the QR code visible in large terminals. Press `?` to show all commands. ([#45701](https://github.com/expo/expo/pull/45701) by [@gsdv](https://github.com/gsdv))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

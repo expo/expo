@@ -33,7 +33,7 @@ export class DevServerManagerActions {
   printDevServerInfo(
     options: Pick<
       StartOptions,
-      'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'dependencyCheckRef'
+      'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'dependencyCheckRef' | 'minimal'
     >
   ) {
     // Keep track of approximately how much space we have to print our usage guide
