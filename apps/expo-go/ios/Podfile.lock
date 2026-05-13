@@ -11,13 +11,13 @@ PODS:
     - ExpoModulesTestCore
   - EXApplication (56.0.3):
     - ExpoModulesCore
-  - EXConstants (56.0.8):
+  - EXConstants (56.0.9):
     - ExpoModulesCore
   - EXJSONUtils (56.0.0)
   - EXJSONUtils/Tests (56.0.0)
-  - EXManifests (56.0.2):
+  - EXManifests (56.0.3):
     - ExpoModulesCore
-  - EXManifests/Tests (56.0.2):
+  - EXManifests/Tests (56.0.3):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - Expo (56.0.0-preview.10):
@@ -352,7 +352,7 @@ PODS:
     - ExpoModulesCore
   - EXStructuredHeaders (56.0.0)
   - EXStructuredHeaders/Tests (56.0.0)
-  - EXUpdates (56.0.8):
+  - EXUpdates (56.0.10):
     - boost
     - DoubleConversion
     - EASClient
@@ -386,7 +386,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - EXUpdates/Tests (56.0.8):
+  - EXUpdates/Tests (56.0.10):
     - boost
     - DoubleConversion
     - EASClient
@@ -4640,9 +4640,9 @@ SPEC CHECKSUMS:
   DoubleConversion: cb417026b2400c8f53ae97020b2be961b59470cb
   EASClient: 2321f8d99fa86c710a6f68e017f3b54366baed9f
   EXApplication: e6040c92edc5522accd62852342e6b14742d42c0
-  EXConstants: a440590a508ca573d1d9ed459a3c914cb54b5c94
+  EXConstants: 98c1080d565bbb5d69f9c28627b0a0ee25f7e1c5
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
-  EXManifests: e20226d12c44cb2d27fca73c274287ff0012b40b
+  EXManifests: 67869a6d8efa7cb53a7b8b53f451d378c124073f
   Expo: d3943cd06103528b47732342f154781a2717b913
   ExpoAsset: cd59c97de137fe4af1efe5033d2c660f85f0442d
   ExpoAudio: 6936d74a0a9af194b17daa1c6dbd9a6c9b5caff7
@@ -4706,7 +4706,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 116c2563d2bd3a1e98326a267020e25fea8af79e
   ExpoWebBrowser: fb9b5a94ebaa3483987f4acf4af6fd85c401df3e
   EXStructuredHeaders: 9e89bcdd636ae2ecb59995cfba3230f5d7547c08
-  EXUpdates: 1808b051d7ebaa9be95ef936b6339a768c5ee4cd
+  EXUpdates: 04500920c23767311cad687296658ff5df42be15
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 473b935415b82ae4f7f9aa9d5b3378491143ccbf

@@ -8,7 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `associatedCookies` in `Network.requestWillBeSentExtraInfo` CDP events serializing as a JSON object instead of an array. ([#45720](https://github.com/expo/expo/pull/45720) by [@huntie](https://github.com/huntie))
+- [Android] Avoid remounting Jetpack Compose views during same-frame React Native reparenting. ([#45711](https://github.com/expo/expo/pull/45711) by [@mvincentong](https://github.com/mvincentong))
+- [Android] Fixed `associatedCookies` in `Network.requestWillBeSentExtraInfo` CDP events serializing as a JSON object instead of an array. ([#45720](https://github.com/expo/expo/pull/45720) by [@huntie](https://github.com/huntie))
 
 ### 💡 Others
 

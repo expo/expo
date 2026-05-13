@@ -2884,7 +2884,7 @@ importers:
         specifier: ^4.3.4
         version: 4.4.3
       expo-constants:
-        specifier: workspace:^56.0.8
+        specifier: workspace:^56.0.9
         version: link:../../expo-constants
       expo-font:
         specifier: workspace:^56.0.3
@@ -3485,7 +3485,7 @@ importers:
         specifier: workspace:~56.0.8
         version: link:../expo-asset
       expo-constants:
-        specifier: workspace:~56.0.8
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       expo-file-system:
         specifier: workspace:~56.0.4
@@ -3634,7 +3634,7 @@ importers:
         specifier: workspace:^0.9.2
         version: link:../@expo/image-utils
       expo-constants:
-        specifier: workspace:~56.0.8
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -3693,7 +3693,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.8
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       expo-crypto:
         specifier: workspace:~56.0.3
@@ -3849,7 +3849,7 @@ importers:
         specifier: workspace:~56.0.7
         version: link:../expo-build-properties
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       ora:
         specifier: ^5.4.1
@@ -4104,16 +4104,16 @@ importers:
   packages/expo-dev-client:
     dependencies:
       expo-dev-launcher:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.9
         version: link:../expo-dev-launcher
       expo-dev-menu:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.8
         version: link:../expo-dev-menu
       expo-dev-menu-interface:
         specifier: workspace:~56.0.0
         version: link:../expo-dev-menu-interface
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       expo-updates-interface:
         specifier: workspace:~56.0.1
@@ -4138,10 +4138,10 @@ importers:
         specifier: workspace:^56.0.0
         version: link:../@expo/schema-utils
       expo-dev-menu:
-        specifier: workspace:~56.0.7
+        specifier: workspace:~56.0.8
         version: link:../expo-dev-menu
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       react-native:
         specifier: 0.85.3
@@ -4595,7 +4595,7 @@ importers:
   packages/expo-linking:
     dependencies:
       expo-constants:
-        specifier: workspace:~56.0.8
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       invariant:
         specifier: ^2.2.4
@@ -4919,7 +4919,7 @@ importers:
         specifier: ^22.14.0
         version: 22.19.15
       expo-type-information:
-        specifier: ^0.0.1
+        specifier: workspace:^0.0.1
         version: link:../expo-type-information
       glob:
         specifier: ^13.0.0
@@ -5002,7 +5002,7 @@ importers:
         specifier: workspace:~56.0.3
         version: link:../expo-application
       expo-constants:
-        specifier: workspace:~56.0.8
+        specifier: workspace:~56.0.9
         version: link:../expo-constants
       react:
         specifier: 19.2.3
@@ -5126,7 +5126,7 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
       expo-constants:
-        specifier: workspace:^56.0.8
+        specifier: workspace:^56.0.9
         version: link:../expo-constants
       expo-glass-effect:
         specifier: workspace:^56.0.4
@@ -5756,7 +5756,7 @@ importers:
         specifier: workspace:~56.0.0
         version: link:../expo-eas-client
       expo-manifests:
-        specifier: workspace:~56.0.1
+        specifier: workspace:~56.0.3
         version: link:../expo-manifests
       expo-structured-headers:
         specifier: workspace:~56.0.0

@@ -180,19 +180,23 @@ private let semConvSchemaUrl = "https://opentelemetry.io/schemas/1.27.0"
 
 // This must be kept in sync with the INTERNAL_TO_OTEL map in universe
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
+// Keyed by "<category>/<name>" — mirrors the (category, name) pair used by the
+// Android port so the same metric name under a different category never silently
+// collides.
 let metricNameMap = [
-  "timeToInteractive": "expo.app_startup.tti",
-  "timeToFirstRender": "expo.app_startup.ttr",
-  "coldLaunchTime": "expo.app_startup.cold_launch_time",
-  "warmLaunchTime": "expo.app_startup.warm_launch_time",
-  "bundleLoadTime": "expo.app_startup.bundle_load_time",
+  // App startup
+  "appStartup/timeToInteractive": "expo.app_startup.tti",
+  "appStartup/timeToFirstRender": "expo.app_startup.ttr",
+  "appStartup/coldLaunchTime": "expo.app_startup.cold_launch_time",
+  "appStartup/warmLaunchTime": "expo.app_startup.warm_launch_time",
+  "appStartup/bundleLoadTime": "expo.app_startup.bundle_load_time",
 
-  // Legacy metrics - will be removed in a future release
-  "loadTime": "expo.app_startup.load_time",
-  "launchTime": "expo.app_startup.launch_time",
+  // Legacy app startup metrics - will be removed in a future release
+  "appStartup/loadTime": "expo.app_startup.load_time",
+  "appStartup/launchTime": "expo.app_startup.launch_time",
 
   // Updates
-  "updateDownloadTime": "expo.updates.download_time"
+  "updates/updateDownloadTime": "expo.updates.download_time",
 ]
 
 nonisolated(unsafe) let formatter = ISO8601DateFormatter()
@@ -224,9 +228,10 @@ extension Event.Metric {
       attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))
     }
 
+    let lookupKey = "\(self.category ?? "unknown")/\(self.name)"
     return OTMetric(
       unit: "s",
-      name: metricNameMap[self.name] ?? "expo.app_startup.\(self.name)",
+      name: metricNameMap[lookupKey] ?? "expo.unknown.\(self.name)",
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
           timeUnixNano: nsFromISODateString(),

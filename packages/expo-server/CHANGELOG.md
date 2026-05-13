@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add guards for `AbortController` state for `vendor/http` conversion ([#45676](https://github.com/expo/expo/pull/45676) by [@kitten](https://github.com/kitten))
+
 ## 56.0.1 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

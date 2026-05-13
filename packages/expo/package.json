@@ -88,7 +88,7 @@
     "@ungap/structured-clone": "^1.3.0",
     "babel-preset-expo": "workspace:~56.0.7",
     "expo-asset": "workspace:~56.0.8",
-    "expo-constants": "workspace:~56.0.8",
+    "expo-constants": "workspace:~56.0.9",
     "expo-file-system": "workspace:~56.0.4",
     "expo-font": "workspace:~56.0.3",
     "expo-keep-awake": "workspace:~56.0.3",

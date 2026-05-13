@@ -14,7 +14,7 @@
   "dependencies": {
     "@expo/ui": "~56.0.6",
     "expo": "~56.0.0-preview.10",
-    "expo-constants": "~56.0.8",
+    "expo-constants": "~56.0.9",
     "expo-device": "~56.0.4",
     "expo-font": "~56.0.3",
     "expo-glass-effect": "~56.0.4",

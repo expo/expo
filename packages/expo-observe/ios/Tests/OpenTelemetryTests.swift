@@ -88,7 +88,7 @@ struct OpenTelemetryTests {
   @Test
   func `unknown metric names use fallback pattern`() {
     let custom = makeMetric(name: "customMetric", value: 1.0, timestamp: "2026-01-01T00:00:00Z")
-    #expect(custom.toOTMetric().name == "expo.app_startup.customMetric")
+    #expect(custom.toOTMetric().name == "expo.unknown.customMetric")
   }
 
   // MARK: - Metric structure

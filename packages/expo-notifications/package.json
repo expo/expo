@@ -46,7 +46,7 @@
     "abort-controller": "^3.0.0",
     "badgin": "^1.1.5",
     "expo-application": "workspace:~56.0.3",
-    "expo-constants": "workspace:~56.0.8"
+    "expo-constants": "workspace:~56.0.9"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

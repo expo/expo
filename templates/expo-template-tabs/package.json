@@ -13,7 +13,7 @@
   "dependencies": {
     "expo": "~56.0.0-preview.10",
     "expo-symbols": "~56.0.5",
-    "expo-constants": "~56.0.8",
+    "expo-constants": "~56.0.9",
     "expo-font": "~56.0.3",
     "expo-linking": "~56.0.6",
     "expo-router": "~56.1.4",

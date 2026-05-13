@@ -63,6 +63,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   };
   indicatorColor?: ColorValue;
   hidden?: boolean;
+  disabled?: boolean;
   specialEffects?: TabsScreenProps['specialEffects'];
   nativeProps?: NativeScreenProps;
   disableAutomaticContentInsets?: boolean;
@@ -454,6 +455,23 @@ export interface NativeTabTriggerProps {
    * @platform iOS
    */
   disableScrollToTop?: boolean;
+  /**
+   * If `true`, the tab is shown but cannot be selected by tapping it in the
+   * tab bar.
+   *
+   * > **Note:** This only suppresses the native tap interaction. JavaScript
+   * > navigation such as  `router.push()` or `<Link />` still navigates to
+   * > the tab. Use this for tabs that should appear visible but be temporarily inert,
+   * > and gate navigation in your own code if you need to fully prevent access.
+   *
+   * Unlike `hidden`, the tab remains visible in the tab bar.
+   *
+   * @default false
+   *
+   * @platform android
+   * @platform ios
+   */
+  disabled?: boolean;
   /**
    * The children of the trigger.
    *
