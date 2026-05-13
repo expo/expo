@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <jsi/jsi.h>
+#include "IRuntimeCompat.h"
 
 namespace jsi = facebook::jsi;
 
@@ -26,19 +26,19 @@ enum class TypedArrayKind {
   BigUint64Array = 11,
 };
 
-bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj);
+bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
 /**
  * Returns the `TypedArrayKind` of the given typed-array object, derived from its
  * `constructor.name` (e.g. `Uint8Array`, `Float32Array`).
  */
-TypedArrayKind getTypedArrayKind(jsi::Runtime &runtime, const jsi::Object &jsObj);
+TypedArrayKind getTypedArrayKind(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
 /**
  * Returns the underlying `ArrayBuffer` backing the given typed-array object.
  * Throws if the object has no attached ArrayBuffer.
  */
-jsi::ArrayBuffer getTypedArrayBuffer(jsi::Runtime &runtime, const jsi::Object &jsObj);
+jsi::ArrayBuffer getTypedArrayBuffer(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
 } // namespace expo
 
