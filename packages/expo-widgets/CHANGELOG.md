@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Support configurable widgets. ([#45726](https://github.com/expo/expo/pull/45726) by [@jakex7](https://github.com/jakex7))
+- Improve RedBox messages.
 
 ### 🐛 Bug fixes
 

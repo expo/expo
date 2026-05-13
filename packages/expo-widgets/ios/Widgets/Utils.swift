@@ -20,7 +20,7 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
   return entries.compactMap(\.self)
 }
 
-func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
+public func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
   var props: [String: Any] = ["message": message]
   if let stack {
     props["stack"] = stack
@@ -32,9 +32,9 @@ public func evaluateLayout(
   layout: String,
   props: [String: Any],
   environment: [String: Any]
-) -> [String: Any]? {
+) -> [String: Any] {
   guard let context = createWidgetContext(layout: layout) else {
-    return nil
+    return createRedBox(message: "Could not create context for layout evaluation.")
   }
 
   let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
@@ -44,7 +44,7 @@ public func evaluateLayout(
     print("[ExpoWidgets] Layout evaluation failed: \(exception)")
     return createRedBox(message: exception.toString())
   }
-  return result?.toObject() as? [String: Any]
+  return result?.toObject() as? [String: Any] ?? createRedBox(message: "Expo widget render did not produce any results.")
 }
 
 func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
@@ -52,7 +52,7 @@ func getLiveActivityNodes(forName name: String, props: String = "{}", environmen
   let propsData = props.data(using: .utf8)
   let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
   guard let context = createWidgetContext(layout: layout) else {
-    return [:]
+    return ["banner": createRedBox(message: "Could not create context for layout evaluation.")]
   }
 
   var widgetEnvironment = environment
@@ -67,7 +67,7 @@ func getLiveActivityNodes(forName name: String, props: String = "{}", environmen
     return ["banner": createRedBox(message: exception.toString())]
   }
 
-  return result?.toObject() as? [String: Any] ?? [:]
+  return result?.toObject() as? [String: Any] ?? ["banner": createRedBox(message: "Expo widget render did not produce any results.")]
 }
 
 func getLiveActivityUrl(forName name: String) -> URL? {

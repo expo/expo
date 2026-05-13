@@ -1,5 +1,5 @@
 public enum WidgetsStorage {
-  static var appGroupIdentifier: String? = Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
+  public static var appGroupIdentifier: String? = Bundle.main.object(forInfoDictionaryKey: "ExpoWidgetsAppGroupIdentifier") as? String
   static let defaults = UserDefaults(suiteName: appGroupIdentifier)
 
   static func set(_ value: [String: Any], forKey key: String) {
