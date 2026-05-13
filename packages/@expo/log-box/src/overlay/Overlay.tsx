@@ -17,7 +17,8 @@ import ShowMoreButton from './ShowMoreButton';
 import { StackTraceList } from './StackTraceList';
 import { DevServerContext, useDevServer } from '../ContextDevServer';
 import * as LogBoxData from '../Data/LogBoxData';
-import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
+import type { LogBoxLog } from '../Data/LogBoxLog';
+import { useLogs } from '../Data/LogBoxLog';
 import type { Message, LogLevel, StackType } from '../Data/Types';
 import { classNames } from '../utils/classNames';
 import { getFormattedStackTrace } from '../utils/devServerEndpoints';
@@ -292,7 +293,8 @@ function LogBoxContent({
         />
 
         {
-          <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
+          <div
+            style={{ padding: '0 1rem 3.5rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
             {codeFrames.map(([key, codeFrame]) => {
               // If no frame from a stack is expanded, likely no frame is from user code, let's not show the code snippet.
               // This avoid cluttering the overlay with irrelevant code frames of node_modules and internals.

@@ -1,7 +1,7 @@
 import * as osascript from '@expo/osascript';
 import { execFileSync } from 'child_process';
 
-import { Device } from './adb';
+import type { Device } from './adb';
 
 const debug = require('debug')('expo:start:platforms:android:activateWindow') as typeof console.log;
 

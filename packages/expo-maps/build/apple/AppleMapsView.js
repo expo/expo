@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { requireNativeView } from 'expo';
 import * as React from 'react';
 import { Platform, processColor } from 'react-native';
@@ -60,6 +61,6 @@ export const AppleMapsView = React.forwardRef(({ onMapClick, onMarkerClick, onAn
     if (!NativeView) {
         return null;
     }
-    return (<NativeView {...props} ref={nativeRef} polylines={parsedPolylines} polygons={parsedPolygons} circles={parsedCircles} annotations={parsedAnnotations} onMapClick={onNativeMapClick} onMarkerClick={onNativeMarkerClick} onAnnotationClick={onNativeAnnotationClick} onCameraMove={onNativeCameraMove} onPolylineClick={onNativePolylineClick} onPolygonClick={onNativePolygonClick} onCircleClick={onNativeCircleClick}/>);
+    return (_jsx(NativeView, { ...props, ref: nativeRef, polylines: parsedPolylines, polygons: parsedPolygons, circles: parsedCircles, annotations: parsedAnnotations, onMapClick: onNativeMapClick, onMarkerClick: onNativeMarkerClick, onAnnotationClick: onNativeAnnotationClick, onCameraMove: onNativeCameraMove, onPolylineClick: onNativePolylineClick, onPolygonClick: onNativePolygonClick, onCircleClick: onNativeCircleClick }));
 });
 //# sourceMappingURL=AppleMapsView.js.map

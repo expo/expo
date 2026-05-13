@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { type ModifierConfig, ViewEvent } from '../../types';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {
@@ -47,6 +47,16 @@ export type SliderProps = {
    * @default 1
    */
   max?: number;
+  /**
+   * Lower limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `lowerLimit` during drag.
+   */
+  lowerLimit?: number;
+  /**
+   * Upper limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `upperLimit` during drag.
+   */
+  upperLimit?: number;
   /**
    * Whether the slider is enabled for user interaction.
    * @default true

@@ -1,6 +1,6 @@
 import { type ColorValue } from 'react-native';
 import type { ModifierConfig, ViewEvent } from '../../types';
-import { ShapeJSXElement, ShapeRecordProps } from '../Shape';
+import { type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
 /**
  * Colors for button elements.
  */
@@ -64,35 +64,35 @@ export declare function transformButtonProps(props: Omit<ButtonProps, 'children'
  * A filled button component.
  */
 export declare const Button: {
-    (props: ButtonProps): import("react").JSX.Element;
+    (props: ButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * A filled tonal button component.
  */
 export declare const FilledTonalButton: {
-    (props: ButtonProps): import("react").JSX.Element;
+    (props: ButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * An outlined button component.
  */
 export declare const OutlinedButton: {
-    (props: ButtonProps): import("react").JSX.Element;
+    (props: ButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * An elevated button component.
  */
 export declare const ElevatedButton: {
-    (props: ButtonProps): import("react").JSX.Element;
+    (props: ButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 /**
  * A text button component.
  */
 export declare const TextButton: {
-    (props: ButtonProps): import("react").JSX.Element;
+    (props: ButtonProps): import("react/jsx-runtime").JSX.Element;
     displayName: string;
 };
 export {};

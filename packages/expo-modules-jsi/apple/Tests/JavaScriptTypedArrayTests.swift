@@ -133,17 +133,18 @@ struct JavaScriptTypedArrayTests {
     #expect(typedArray.getProperty("length").getInt() == 7)
   }
 
-  // MARK: - getUnsafeMutableRawPointer
+  // MARK: - Direct memory access
 
   @Test
-  func `write through raw pointer is visible in JS`() throws {
+  func `writes through withUnsafeMutableBytes are visible in JS`() throws {
     let value = try runtime.eval("new Uint8Array(3)")
     let typedArray = value.getTypedArray()
-    let ptr = typedArray.getUnsafeMutableRawPointer()
 
-    ptr.storeBytes(of: 42, toByteOffset: 0, as: UInt8.self)
-    ptr.storeBytes(of: 99, toByteOffset: 1, as: UInt8.self)
-    ptr.storeBytes(of: 255, toByteOffset: 2, as: UInt8.self)
+    typedArray.withUnsafeMutableBytes { bytes in
+      bytes[0] = 42
+      bytes[1] = 99
+      bytes[2] = 255
+    }
 
     let result = try runtime.eval("val => [val[0], val[1], val[2]]").getFunction().call(arguments: value).getArray()
     #expect(result[0].getInt() == 42)
@@ -152,15 +153,78 @@ struct JavaScriptTypedArrayTests {
   }
 
   @Test
-  func `raw pointer reflects JS writes`() throws {
+  func `withUnsafeBytes reflects JS writes`() throws {
     let value = try runtime.eval("new Uint8Array([0, 0, 0])")
     let typedArray = value.getTypedArray()
-    let ptr = typedArray.getUnsafeMutableRawPointer()
 
     try runtime.eval("val => { val[1] = 77 }").getFunction().call(arguments: value)
 
-    let byte = ptr.load(fromByteOffset: 1, as: UInt8.self)
-    #expect(byte == 77)
+    typedArray.withUnsafeBytes { bytes in
+      #expect(bytes[1] == 77)
+    }
+  }
+
+  @Test
+  func `data survives JS garbage collection`() throws {
+    // Create the typed array and immediately drop any JS-side reference to it.
+    let typedArray = try runtime.eval("(() => new Uint8Array([1, 2, 3, 4]))()").getTypedArray()
+
+    // The backing ArrayBuffer should remain alive because `JavaScriptTypedArray` holds it.
+    try runtime.eval("gc() && gc() && gc()")
+
+    typedArray.withUnsafeBytes { bytes in
+      #expect(bytes[0] == 1)
+      #expect(bytes[3] == 4)
+    }
+  }
+
+  @Test
+  func `withUnsafeBufferPointer reads elements with typed access`() throws {
+    let typedArray = try runtime.eval("new Int32Array([-1, 2, -3, 4])").getTypedArray()
+
+    typedArray.withUnsafeBufferPointer(as: Int32.self) { elements in
+      #expect(elements.count == typedArray.length)
+      #expect(elements[0] == -1)
+      #expect(elements[1] == 2)
+      #expect(elements[2] == -3)
+      #expect(elements[3] == 4)
+    }
+  }
+
+  @Test
+  func `writes through withUnsafeMutableBufferPointer are visible in JS`() throws {
+    let value = try runtime.eval("new Int32Array(3)")
+    let typedArray = value.getTypedArray()
+
+    typedArray.withUnsafeMutableBufferPointer(as: Int32.self) { elements in
+      elements[0] = -100
+      elements[1] = 0
+      elements[2] = Int32.max
+    }
+
+    let result = try runtime.eval("val => [val[0], val[1], val[2]]").getFunction().call(arguments: value).getArray()
+    #expect(result[0].getInt() == -100)
+    #expect(result[1].getInt() == 0)
+    #expect(Int32(result[2].getInt()) == Int32.max)
+  }
+
+  @Test
+  func `withUnsafeBytes covers view range, not full buffer`() throws {
+    let typedArray = try runtime.eval("""
+      var buf = new ArrayBuffer(16);
+      new Uint8Array(buf).fill(0xAA);
+      new Uint8Array(buf, 4, 8)
+    """).getTypedArray()
+
+    #expect(typedArray.byteOffset == 4)
+    #expect(typedArray.byteLength == 8)
+
+    typedArray.withUnsafeBytes { bytes in
+      #expect(bytes.count == 8)
+      for byte in bytes {
+        #expect(byte == 0xAA)
+      }
+    }
   }
 
   // MARK: - asValue round-trip

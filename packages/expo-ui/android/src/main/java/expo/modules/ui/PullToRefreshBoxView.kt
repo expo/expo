@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.ui.convertibles.ContentAlignment
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 data class PullToRefreshIndicatorProps(
@@ -24,6 +25,7 @@ data class PullToRefreshIndicatorProps(
   @Field val modifiers: ModifierList = emptyList()
 ) : Record
 
+@OptimizedComposeProps
 data class PullToRefreshBoxProps(
   val isRefreshing: Boolean = false,
   val contentAlignment: ContentAlignment? = null,

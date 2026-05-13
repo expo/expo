@@ -219,7 +219,11 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
 
       for propertyName in object.getPropertyNames() {
         let property = object.getProperty(propertyName)
-        result[propertyName] = property.getAny()
+        // Undefined property values are dropped so the resulting dictionary only
+        // carries keys that were actually assigned a value on the JS side.
+        if !property.isUndefined() {
+          result[propertyName] = property.getAny()
+        }
       }
       return result
     }
@@ -258,7 +262,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
       FatalError.runtimeLost()
     }
     assert(isString(), "Value is not a string")
-    return String(pointee.getString(jsiRuntime).utf16(jsiRuntime))
+    return String(pointee.getString(jsiRuntime).utf8(jsiRuntime))
   }
 
   /**
@@ -313,7 +317,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
       FatalError.runtimeLost()
     }
     assert(isTypedArray(), "Value is not a typed array")
-    return JavaScriptTypedArray(runtime, expo.TypedArray(runtime.pointee, pointee.getObject(runtime.pointee)))
+    return JavaScriptTypedArray(runtime, pointee.getObject(runtime.pointee))
   }
 
   /**
@@ -443,7 +447,7 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable, Error 
     guard let jsiRuntime = runtime?.pointee else {
       FatalError.runtimeLost()
     }
-    return String(pointee.toString(jsiRuntime).utf16(jsiRuntime))
+    return String(pointee.toString(jsiRuntime).utf8(jsiRuntime))
   }
 
   /**

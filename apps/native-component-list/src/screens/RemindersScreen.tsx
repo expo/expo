@@ -75,7 +75,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
       await Calendar.createReminderAsync(calendar.id!, newReminder);
       Alert.alert('Reminder saved successfully');
       this._findReminders(calendar.id!);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
@@ -84,7 +84,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
     try {
       const newReminder = await Calendar.getReminderAsync(reminder.id!);
       Alert.alert('Reminder found using getReminderAsync', JSON.stringify(newReminder));
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Error finding reminder', e.message);
     }
   };
@@ -103,7 +103,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
       await Calendar.updateReminderAsync(reminder.id!, newReminder);
       Alert.alert('Reminder saved successfully');
       this._findReminders(calendar.id!);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Reminder not saved successfully', e.message);
     }
   };
@@ -114,7 +114,7 @@ export default class RemindersScreen extends React.Component<Props, State> {
       await Calendar.deleteReminderAsync(reminderId);
       Alert.alert('Reminder deleted successfully');
       this._findReminders(calendar.id!);
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Reminder not deleted successfully', e.message);
     }
   };

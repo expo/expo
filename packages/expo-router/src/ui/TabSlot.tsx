@@ -1,9 +1,11 @@
-import { ComponentProps, ReactElement, useState } from 'react';
+import type { ComponentProps, ReactElement } from 'react';
+import { useState } from 'react';
 import { Platform, StyleSheet } from 'react-native';
 import { ScreenContainer, Screen } from 'react-native-screens';
 
-import { TabContext, TabsDescriptor } from './TabContext';
-import { TabListProps } from './TabList';
+import type { TabsDescriptor } from './TabContext';
+import { TabContext } from './TabContext';
+import type { TabListProps } from './TabList';
 import { useNavigatorContext } from '../views/Navigator';
 
 export type TabSlotProps = ComponentProps<typeof ScreenContainer> & {
@@ -57,7 +59,7 @@ export function useTabSlot({
   renderFn = defaultTabsSlotRender,
 }: TabSlotProps = {}) {
   const { state, descriptors } = useNavigatorContext();
-  const focusedRouteKey = state.routes[state.index].key;
+  const focusedRouteKey = state.routes[state.index]!.key;
   const [loaded, setLoaded] = useState({ [focusedRouteKey]: true });
 
   if (!loaded[focusedRouteKey]) {
@@ -77,7 +79,7 @@ export function useTabSlot({
             {renderFn(descriptor, {
               index,
               isFocused: state.index === index,
-              loaded: loaded[route.key],
+              loaded: loaded[route.key]!,
               detachInactiveScreens,
             })}
           </TabContext.Provider>

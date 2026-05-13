@@ -6,7 +6,7 @@ import path from 'path';
 import * as Cache from './Cache';
 import * as Download from './Download';
 import * as Ico from './Ico';
-import { ImageOptions } from './Image.types';
+import type { ImageOptions } from './Image.types';
 import { env } from './env';
 import * as Jimp from './jimp';
 import * as Sharp from './sharp';

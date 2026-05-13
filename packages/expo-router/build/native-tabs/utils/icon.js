@@ -2,9 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.convertIconColorPropToObject = convertIconColorPropToObject;
 exports.useAwaitedScreensIcon = useAwaitedScreensIcon;
-exports.convertOptionsIconToRNScreensPropsIcon = convertOptionsIconToRNScreensPropsIcon;
-exports.convertOptionsIconToIOSPropsIcon = convertOptionsIconToIOSPropsIcon;
-exports.convertOptionsIconToAndroidPropsIcon = convertOptionsIconToAndroidPropsIcon;
 exports.convertComponentSrcToImageSource = convertComponentSrcToImageSource;
 const react_1 = require("react");
 const children_1 = require("../../utils/children");
@@ -49,47 +46,6 @@ function useAwaitedScreensIcon(icon) {
 }
 function isAwaitedIcon(icon) {
     return !icon || !('src' in icon && icon.src instanceof Promise);
-}
-function convertOptionsIconToRNScreensPropsIcon(icon, iconColor) {
-    if (!icon) {
-        return undefined;
-    }
-    return {
-        ios: convertOptionsIconToIOSPropsIcon(icon, iconColor),
-        android: convertOptionsIconToAndroidPropsIcon(icon),
-    };
-}
-function convertOptionsIconToIOSPropsIcon(icon, iconColor) {
-    if (icon && 'sf' in icon && icon.sf) {
-        return {
-            type: 'sfSymbol',
-            name: icon.sf,
-        };
-    }
-    if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
-        const imageSource = 'xcasset' in icon && icon.xcasset
-            ? { uri: icon.xcasset }
-            : icon.src;
-        const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
-        const effectiveRenderingMode = renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
-        if (effectiveRenderingMode === 'original') {
-            return { type: 'imageSource', imageSource };
-        }
-        return { type: 'templateSource', templateSource: imageSource };
-    }
-    return undefined;
-}
-function convertOptionsIconToAndroidPropsIcon(icon) {
-    if (icon && 'drawable' in icon && icon.drawable) {
-        return {
-            type: 'drawableResource',
-            name: icon.drawable,
-        };
-    }
-    if (icon && 'src' in icon && icon.src) {
-        return { type: 'imageSource', imageSource: icon.src };
-    }
-    return undefined;
 }
 function convertComponentSrcToImageSource(src, renderingMode) {
     let result;

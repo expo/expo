@@ -7,16 +7,19 @@
  */
 // A fork of the upstream babel-transformer that uses Expo-specific babel defaults
 // and adds support for web and Node.js environments via `isServer` on the Babel caller.
-import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import type {
+  BabelTransformer,
+  BabelTransformerArgs,
+  BabelTransformerCacheKeyOptions,
+} from '@expo/metro/metro-babel-transformer';
+import { getCacheKey as getFileCacheKey } from '@expo/metro/metro-cache-key';
 import assert from 'node:assert';
-import path from 'path';
-import resolveFrom from 'resolve-from';
+import path from 'node:path';
 
 import type { TransformOptions } from './babel-core';
-import { loadBabelConfig } from './loadBabelConfig';
+import { loadPartialConfigSync } from './babel-core';
+import { loadBabelConfig, resolveBabelrcName } from './loadBabelConfig';
 import { transformSync } from './transformSync';
-import { getPkgVersionFromPath } from './utils/getPkgVersion';
-import { transitiveResolveFrom } from './utils/transitiveResolveFrom';
 
 export type ExpoBabelCaller = TransformOptions['caller'] & {
   babelRuntimeVersion?: string;
@@ -37,7 +40,8 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
   projectRoot: string;
   /** When true, indicates this bundle should contain only the loader export */
   isLoaderBundle?: boolean;
-  isHermesV1?: boolean;
+  /** When true, indicates this file is part of a DOM component bundle */
+  isDomComponent?: boolean;
 };
 
 const debug = require('debug')('expo:metro-config:babel-transformer') as typeof console.log;
@@ -62,20 +66,6 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
 const memoizeWarning = memoize((message: string) => {
   debug(message);
 });
-
-function getIsHermesV1(projectRoot: string): boolean {
-  const hermesCompilerPackageJsonPath = transitiveResolveFrom(projectRoot, [
-    'react-native/package.json',
-    'hermes-compiler/package.json',
-  ]);
-  if (!hermesCompilerPackageJsonPath) {
-    return true;
-  }
-  const hermesVersion = getPkgVersionFromPath(hermesCompilerPackageJsonPath);
-  // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
-  const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
-  return !isLegacyHermes;
-}
 
 function getBabelCaller({
   filename,
@@ -129,8 +119,6 @@ function getBabelCaller({
     // Pass the engine to babel so we can automatically transpile for the correct
     // target environment.
     engine: stringOrUndefined(options.customTransformOptions?.engine),
-    // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
-    isHermesV1: getIsHermesV1(options.projectRoot),
 
     // Provide the project root for accurately reading the Expo config.
     projectRoot: options.projectRoot,
@@ -164,6 +152,8 @@ function getBabelCaller({
       ? true
       : undefined,
 
+    isDomComponent: options.customTransformOptions?.dom != null ? true : undefined,
+
     // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
     // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
     // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
@@ -186,9 +176,10 @@ const transform: BabelTransformer['transform'] = ({
   const OLD_BABEL_ENV = process.env.BABEL_ENV;
   process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
 
-  const { enableBabelRCLookup = true } = options;
-
   try {
+    const { enableBabelRCLookup } = options;
+    const { exts, presets } = loadBabelConfig(options);
+
     const babelConfig: TransformOptions = {
       // ES modules require sourceType='module' but OSS may not always want that
       sourceType: 'unambiguous',
@@ -207,12 +198,19 @@ const transform: BabelTransformer['transform'] = ({
       filename,
       highlightCode: true,
 
-      // Load the project babel config file.
-      ...loadBabelConfig(options),
+      root: options.projectRoot, // Default value
 
-      babelrc: enableBabelRCLookup,
-      ...(enableBabelRCLookup === false && { configFile: false }),
+      babelrcRoots: enableBabelRCLookup ? options.projectRoot : false, // Default value
+      // NOTE(@kitten): This will and has always only searched `projectRoot`, excluding node_modules and other workspaces
+      // As such, we'll only enable it when `enableBabelRCLookup` is explicitly enabled for non-node_modules
+      babelrc: enableBabelRCLookup ? !filename.includes('node_modules') : false,
+      // NOTE(@kitten): This used to duplicate the config file, which is already piped into `extends`
+      // However, for deprecated/legacy behaviour, we'll still enable it when `enableBabelRCLookup` is explicitly enabled
+      configFile: !!enableBabelRCLookup, // Otherwise duplicates our search below
 
+      // Add the discovered config file
+      extends: exts,
+      presets,
       plugins,
 
       // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
@@ -239,7 +237,7 @@ const transform: BabelTransformer['transform'] = ({
     return { ast: result.ast, metadata: result.metadata };
   } finally {
     // Restore the old process.env.BABEL_ENV
-    if (OLD_BABEL_ENV != null) {
+    if (OLD_BABEL_ENV == null) {
       // We have to treat this as a special case because writing undefined to
       // an environment variable coerces it to the string 'undefined'. To
       // unset it, we must delete it.
@@ -251,8 +249,46 @@ const transform: BabelTransformer['transform'] = ({
   }
 };
 
+/**
+ * Generates a cache key component based on the user's Babel configuration files.
+ * This uses Babel's loadPartialConfig to resolve which config files apply
+ * to the project, and includes their contents in the cache key so that changes
+ * to babel.config.js, .babelrc, or any file they reference will invalidate the
+ * transform cache.
+ *
+ * This is called once by the main thread (not on worker instances).
+ */
+function getCacheKey(options?: BabelTransformerCacheKeyOptions): string {
+  if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
+    return '';
+  }
+
+  // In Expo, we pass the `extendsBabelConfigPath` ourselves, but if we're not using this with the Expo CLI
+  // we re-resolve the Babel config, same as in `loadBabelConfig`
+  const configName = options.extendsBabelConfigPath ?? resolveBabelrcName(options.projectRoot);
+  if (!configName) {
+    return '';
+  }
+
+  const partialConfig = loadPartialConfigSync({
+    cwd: options.projectRoot,
+    root: options.projectRoot,
+    extends: path.resolve(options.projectRoot, configName),
+    configFile: false,
+    babelrc: false,
+  });
+
+  const files = partialConfig?.files;
+  if (files == null || files.size === 0) {
+    return '';
+  }
+
+  return getFileCacheKey([...files].sort());
+}
+
 const babelTransformer: BabelTransformer = {
   transform,
+  getCacheKey,
 };
 
 module.exports = babelTransformer;

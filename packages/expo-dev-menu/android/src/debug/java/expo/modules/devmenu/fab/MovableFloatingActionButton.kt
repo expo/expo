@@ -14,12 +14,14 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.platform.LocalDensity
@@ -48,7 +50,11 @@ fun MovableFloatingActionButton(
   margin: Dp = Margin,
   onPress: () -> Unit = {}
 ) {
-  BoxWithConstraints(modifier = modifier.fillMaxSize()) {
+  BoxWithConstraints(
+    modifier = modifier
+      .safeDrawingPadding()
+      .fillMaxSize()
+  ) {
     val totalFabSize = DpSize(fabSize.width + margin * 2, fabSize.height + margin * 2)
     val totalFabSizePx = with(LocalDensity.current) {
       Offset(totalFabSize.width.toPx(), totalFabSize.height.toPx())
@@ -58,7 +64,16 @@ fun MovableFloatingActionButton(
       y = constraints.maxHeight - totalFabSizePx.y
     )
 
-    val fab = rememberFabState(bounds, totalFabSizePx)
+    val halfFab = Offset(totalFabSizePx.x / 2f, totalFabSizePx.y / 2f)
+    val dragBounds = Rect(
+      left = -halfFab.x,
+      top = -halfFab.y,
+      right = bounds.x + halfFab.x,
+      bottom = bounds.y + halfFab.y
+    )
+
+    val fab = rememberFabState(bounds)
+
     val isFabDisplayable = state.showFab &&
       !state.isInPictureInPictureMode &&
       bounds.x >= 0f &&
@@ -70,7 +85,7 @@ fun MovableFloatingActionButton(
     LaunchedEffect(state.isOpen) {
       if (state.isOpen) {
         fab.restingOffset = fab.animatedOffset.value
-        val isOnLeftSide = fab.animatedOffset.value.x < fab.bounds.safe.x / 2f
+        val isOnLeftSide = fab.animatedOffset.value.x < fab.fabAreaBounds.x / 2f
         val offScreenX = if (isOnLeftSide) -totalFabSizePx.x else constraints.maxWidth.toFloat()
         fab.animatedOffset.animateTo(
           targetValue = Offset(offScreenX, fab.animatedOffset.value.y),
@@ -97,14 +112,13 @@ fun MovableFloatingActionButton(
       previousBounds?.let {
         val oldX = fab.animatedOffset.value.x
         val oldY = fab.animatedOffset.value.y
-        val newX = (oldX / previousBounds.x) * fab.bounds.safe.x
-        val newY = (oldY / previousBounds.y) * fab.bounds.safe.y
+        val newX = (oldX / previousBounds.x) * fab.fabAreaBounds.x
+        val newY = (oldY / previousBounds.y) * fab.fabAreaBounds.y
         val newTarget = calculateTargetPosition(
           currentPosition = Offset(newX, newY),
           velocity = ExpoVelocityTracker.PointF(0f, 0f),
-          bounds = fab.bounds.safe,
-          totalFabWidth = totalFabSizePx.x,
-          minY = fab.bounds.safeMinY
+          bounds = fab.fabAreaBounds,
+          totalFabWidth = totalFabSizePx.x
         )
 
         fab.animatedOffset.snapTo(newTarget)
@@ -140,7 +154,7 @@ fun MovableFloatingActionButton(
 
                   drag(pointerId) { change ->
                     dragOffset = (dragOffset + change.positionChange())
-                      .coerceIn(minX = -fab.bounds.halfFab.x, maxX = fab.bounds.drag.x, minY = -fab.bounds.halfFab.y, maxY = fab.bounds.drag.y)
+                      .coerceIn(dragBounds)
                     dragDistance += change.positionChange().getDistance()
                     velocityTracker.registerPosition(dragOffset.x, dragOffset.y)
 
@@ -187,7 +201,12 @@ private fun CoroutineScope.handleRelease(
   totalFabSizePx: Offset
 ) {
   val velocity = velocityTracker.calculateVelocity()
-  val newOffset = calculateTargetPosition(fab.animatedOffset.value, velocity, fab.bounds.safe, totalFabSizePx.x, fab.bounds.safeMinY)
+  val newOffset = calculateTargetPosition(
+    currentPosition = fab.animatedOffset.value,
+    velocity = velocity,
+    bounds = fab.fabAreaBounds,
+    totalFabWidth = totalFabSizePx.x
+  )
 
   velocityTracker.clear()
   launch {

@@ -119,6 +119,19 @@ class RecordOptions(
   @Field val forDuration: Double?
 ) : Record
 
+enum class AudioStreamEncoding(val value: String) : Enumerable {
+  FLOAT32("float32"),
+  INT16("int16")
+}
+
+class AudioStreamOptions : Record {
+  @Field var sampleRate: Int = 48000
+
+  @Field var channels: Int = 1
+
+  @Field var encoding: AudioStreamEncoding = AudioStreamEncoding.FLOAT32
+}
+
 enum class RecordingSource(val value: String) : Enumerable {
   CAMCORDER("camcorder"),
   DEFAULT("default"),

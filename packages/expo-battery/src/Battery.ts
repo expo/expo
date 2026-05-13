@@ -1,12 +1,12 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 
 import {
-  BatteryLevelEvent,
+  type BatteryLevelEvent,
   BatteryState,
-  BatteryStateEvent,
-  PowerModeEvent,
-  PowerState,
+  type BatteryStateEvent,
+  type PowerModeEvent,
+  type PowerState,
 } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 
@@ -286,10 +286,12 @@ export function usePowerState(): PowerState {
 }
 
 export {
-  BatteryLevelEvent,
+  type BatteryLevelEvent,
   BatteryState,
-  BatteryStateEvent,
-  PowerModeEvent,
-  PowerState,
-  EventSubscription as Subscription,
-};
+  type BatteryStateEvent,
+  type PowerModeEvent,
+  type PowerState,
+} from './Battery.types';
+
+// TODO(@kitten): Remove re-exports from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';

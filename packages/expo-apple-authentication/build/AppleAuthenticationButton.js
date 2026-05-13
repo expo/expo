@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import ExpoAppleAuthenticationButton from './ExpoAppleAuthenticationButton';
 // @needsAudit
 /**
@@ -33,6 +34,6 @@ export default function AppleAuthenticationButton({ onPress, ...restProps }) {
         }
         return null;
     }
-    return <ExpoAppleAuthenticationButton onButtonPress={onPress} {...restProps}/>;
+    return _jsx(ExpoAppleAuthenticationButton, { onButtonPress: onPress, ...restProps });
 }
 //# sourceMappingURL=AppleAuthenticationButton.js.map

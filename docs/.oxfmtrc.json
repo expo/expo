@@ -25,12 +25,12 @@
     ".swc",
     ".wrangler",
     ".worker-test",
-    ".yarn",
     ".vale",
     "node_modules",
     "out",
     "public",
     "pages/versions/latest",
-    "next-env.d.ts"
+    "next-env.d.ts",
+    "ui/components/EASCLIReference/data/eas-cli-commands.json"
   ]
 }

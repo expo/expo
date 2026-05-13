@@ -1,6 +1,5 @@
 package expo.modules.kotlin.types.descriptors
 
-import android.util.Log
 import io.github.lukmccall.pika.PTypeDescriptor
 import kotlin.reflect.typeOf
 import io.github.lukmccall.pika.typeDescriptorOf as pikaTypeDescriptorOf
@@ -25,7 +24,7 @@ internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {
       }
     }
 
-    PTypeDescriptor.Star -> error("Star projections are not supported")
+    PTypeDescriptor.Star -> RawTypeDescriptor.Star
   }
 }
 
@@ -42,9 +41,6 @@ internal inline fun <reified T> ctTypeDescriptorOf(): TypeDescriptor {
 
 inline fun <reified T> typeDescriptorOf(): TypeDescriptor {
   val typeDescriptor = runCatching { ctTypeDescriptorOf<T>() }
-    .onFailure {
-      Log.e("ExpoModulesCore", "Failed to get type info for ${T::class.java.name}", it)
-    }
     .getOrNull()
 
   if (typeDescriptor != null) {

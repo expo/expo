@@ -29,6 +29,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import android.graphics.Color as GraphicsColor
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class ShapeType(val value: String) : Enumerable {
   STAR("star"),
@@ -48,6 +49,7 @@ data class CornerRadii(
   @Field val bottomEnd: Float = 0f
 ) : Record
 
+@OptimizedComposeProps
 data class ShapeProps(
   val cornerRounding: Float = 0.0f,
   val smoothing: Float = 0.0f,

@@ -22,9 +22,12 @@ const server :Workerd.Worker = (
     (name = "_expo/loaders/request.js", commonJsModule = embed "_expo/loaders/request.js"),
     (name = "_expo/loaders/response.js", commonJsModule = embed "_expo/loaders/response.js"),
     (name = "_expo/loaders/(group)/index.js", commonJsModule = embed "_expo/loaders/(group)/index.js"),
+    (name = "_expo/loaders/static-helper.js", commonJsModule = embed "_expo/loaders/static-helper.js"),
+    (name = "_expo/loaders/server-helper.js", commonJsModule = embed "_expo/loaders/server-helper.js"),
   ],
   bindings = [
     (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),
+    (name = "E2E_ROUTER_SERVER_RENDERING", text = "true"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [

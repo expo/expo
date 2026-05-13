@@ -106,3 +106,5 @@ export function Text({
     </SwiftUIText>
   );
 }
+
+export * from './types';

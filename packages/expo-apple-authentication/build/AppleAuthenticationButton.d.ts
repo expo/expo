@@ -1,4 +1,4 @@
-import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
+import type { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 /**
  * This component displays Apple's proprietary "Sign In with Apple" / "Continue with Apple" button
  * using the native [`ASAuthorizationAppleIDButton`](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton).
@@ -25,5 +25,5 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): import("react").JSX.Element | null;
+export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): import("react/jsx-runtime").JSX.Element | null;
 //# sourceMappingURL=AppleAuthenticationButton.d.ts.map

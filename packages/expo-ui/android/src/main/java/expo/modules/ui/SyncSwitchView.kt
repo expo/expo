@@ -6,7 +6,9 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.state.ObservableState
 import expo.modules.ui.state.WorkletCallback
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class SyncSwitchProps(
   val isOn: ObservableState? = null,
   val onCheckedChangeSync: WorkletCallback? = null,

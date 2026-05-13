@@ -1,4 +1,4 @@
-import React, { type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { type SplitHostProps } from 'react-native-screens/experimental';
 import { SplitViewColumn, SplitViewInspector } from './elements';
 /**
@@ -7,7 +7,7 @@ import { SplitViewColumn, SplitViewInspector } from './elements';
 export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
     children?: ReactNode;
 }
-declare function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps): React.JSX.Element;
+declare function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps): import("react/jsx-runtime").JSX.Element;
 export declare const SplitView: typeof SplitViewNavigator & {
     Column: typeof SplitViewColumn;
     Inspector: typeof SplitViewInspector;

@@ -1,4 +1,5 @@
 import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
 import { addPbxGroup } from './addPbxGroup';
@@ -50,10 +51,13 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 
     addTargetDependency(xcodeProject, target);
 
-    const swiftWidgetFiles = getFileUris().filter((file) => file.endsWith('.swift'));
+    const projectRoot = config.modRequest.platformProjectRoot;
+    const targetDirectory = path.join(projectRoot, targetName);
+    const relativePaths = getFileUris().map((file) => path.relative(targetDirectory, file));
+    const swiftWidgetFiles = relativePaths.filter((file) => file.endsWith('.swift'));
 
     addBuildPhases(xcodeProject, {
-      targetUuid,
+      targetUuid: target.uuid,
       groupName,
       productFile,
       widgetFiles: swiftWidgetFiles,
@@ -61,7 +65,7 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
 
     addPbxGroup(xcodeProject, {
       targetName,
-      widgetFiles: getFileUris(),
+      widgetFiles: relativePaths,
     });
 
     return config;

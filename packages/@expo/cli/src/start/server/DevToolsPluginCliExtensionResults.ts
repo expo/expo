@@ -1,6 +1,5 @@
-import z from 'zod';
-
-import { DevToolsPluginOutput, DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
+import type { DevToolsPluginOutput } from './DevToolsPlugin.schema';
+import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
 
 /**
  * Class that collects and manages output from executed plugin commands

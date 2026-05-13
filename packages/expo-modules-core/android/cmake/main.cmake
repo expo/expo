@@ -68,24 +68,33 @@ target_link_libraries(
 )
 
 if (REACT_NATIVE_WORKLETS_DIR)
-  add_library(worklets SHARED IMPORTED)
-
-  if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
-    set(BUILD_TYPE "debug")
+  find_package(react-native-worklets CONFIG QUIET)
+  if (react-native-worklets_FOUND)
+    target_link_libraries(
+      expo-modules-core
+      PRIVATE
+      react-native-worklets::worklets
+    )
   else ()
-    set(BUILD_TYPE "release")
+    add_library(worklets SHARED IMPORTED)
+
+    if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+      set(BUILD_TYPE "debug")
+    else ()
+      set(BUILD_TYPE "release")
+    endif ()
+
+    set_target_properties(
+      worklets
+      PROPERTIES
+      IMPORTED_LOCATION
+      "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
+    )
+
+    target_link_libraries(
+      expo-modules-core
+      PRIVATE
+      worklets
+    )
   endif ()
-
-  set_target_properties(
-    worklets
-    PROPERTIES
-    IMPORTED_LOCATION
-    "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
-  )
-
-  target_link_libraries(
-    expo-modules-core
-    PRIVATE
-    worklets
-  )
 endif ()

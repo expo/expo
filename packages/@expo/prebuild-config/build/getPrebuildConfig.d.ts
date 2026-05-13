@@ -1,5 +1,5 @@
 import { getConfig } from '@expo/config';
-import { ModPlatform } from '@expo/config-plugins';
+import type { ModPlatform } from '@expo/config-plugins';
 export declare function getPrebuildConfigAsync(projectRoot: string, props: {
     bundleIdentifier?: string;
     packageName?: string;

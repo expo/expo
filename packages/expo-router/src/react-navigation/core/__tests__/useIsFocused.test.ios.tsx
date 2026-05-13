@@ -1,7 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { type ParamListBase } from '../../routers';
+import type { ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -20,7 +20,7 @@ test('renders correct focus state', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -63,7 +63,7 @@ test('returns correct focus state after conditional rendering', () => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
-      <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
     );
   };
 

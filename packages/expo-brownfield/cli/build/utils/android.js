@@ -25,9 +25,23 @@ const findBrownfieldLibrary = () => {
             .readdirSync(androidPath, { withFileTypes: true })
             .filter((item) => item.isDirectory());
         const brownfieldLibrary = subdirectories.find((directory) => {
-            const directoryPath = node_path_1.default.join(androidPath, directory.name);
-            const files = node_fs_1.default.readdirSync(directoryPath, { recursive: true });
-            return files.some((file) => typeof file === 'string' && file.endsWith('ReactNativeHostManager.kt'));
+            const directoryPath = node_path_1.default.resolve(androidPath, directory.name);
+            const directories = [directoryPath];
+            let target;
+            while ((target = directories.shift()) != null) {
+                const entries = node_fs_1.default.readdirSync(target, { withFileTypes: true });
+                for (const entry of entries) {
+                    const childPath = node_path_1.default.join(target, entry.name);
+                    if (entry.isDirectory()) {
+                        directories.push(childPath);
+                    }
+                    else if (entry.isFile()) {
+                        if (entry.name === 'ReactNativeHostManager.kt')
+                            return true;
+                    }
+                }
+            }
+            return false;
         });
         if (brownfieldLibrary) {
             return brownfieldLibrary.name;
@@ -38,6 +52,7 @@ const findBrownfieldLibrary = () => {
         const errorMessage = error instanceof Error ? error.message : '';
         error_1.default.handle('android-library-unknown-error', errorMessage);
     }
+    return;
 };
 exports.findBrownfieldLibrary = findBrownfieldLibrary;
 const printAndroidConfig = (config) => {
@@ -89,3 +104,4 @@ const runTask = async (task, verbose, dryRun) => {
     });
 };
 exports.runTask = runTask;
+//# sourceMappingURL=android.js.map

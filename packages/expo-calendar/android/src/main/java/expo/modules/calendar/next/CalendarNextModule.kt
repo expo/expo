@@ -115,7 +115,16 @@ class CalendarNextModule : Module() {
       ExpoCalendar.getById(calendarId, calendarRepository, expoCalendarFactory)
     }
 
-    AsyncFunction("requestCalendarPermissions") { promise: Promise ->
+    AsyncFunction("getCalendarPermissions") { _: Boolean?, promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        appContext.permissions,
+        promise,
+        Manifest.permission.READ_CALENDAR,
+        Manifest.permission.WRITE_CALENDAR
+      )
+    }
+
+    AsyncFunction("requestCalendarPermissions") { _: Boolean?, promise: Promise ->
       Permissions.askForPermissionsWithPermissionsManager(
         appContext.permissions,
         promise,

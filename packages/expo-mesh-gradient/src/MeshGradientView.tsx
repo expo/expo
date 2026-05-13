@@ -1,7 +1,8 @@
 import { requireNativeView } from 'expo';
-import { Platform, processColor, ProcessedColorValue } from 'react-native';
+import type { ProcessedColorValue } from 'react-native';
+import { Platform, processColor } from 'react-native';
 
-import { MeshGradientViewProps } from './MeshGradient.types';
+import type { MeshGradientViewProps } from './MeshGradient.types';
 
 const NativeView = requireNativeView<
   Omit<MeshGradientViewProps, 'colors'> & {

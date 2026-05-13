@@ -61,3 +61,5 @@ const innerStyle: React.CSSProperties = {
 const dragIndicatorSpacing: React.CSSProperties = {
   paddingTop: 16,
 };
+
+export * from './types';

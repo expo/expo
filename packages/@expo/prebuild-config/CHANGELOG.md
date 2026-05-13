@@ -8,7 +8,31 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `STATUS_BAR_PLUGIN` deprecation warning shown on prebuild for default `create-expo-app` template by no longer auto-populating `androidStatusBar.backgroundColor` from the splash background color. ([#43444](https://github.com/expo/expo/issues/43444)) ([#43453](https://github.com/expo/expo/pull/43453) by [@zoontek](https://github.com/zoontek))
+### 💡 Others
+
+## 56.0.5 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-08
+
+### 🐛 Bug fixes
+
+- Remove unnecessary warning when no icon is defined in the Expo config. ([#45515](https://github.com/expo/expo/pull/45515) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
 
 ### 💡 Others
 
@@ -17,6 +41,49 @@
 - Make splash screen `backgroundColor` optional, defaulting to `#ffffff`. ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - Removed unused `withAndroidSplashLegacyMainActivity` file. ([#43516](https://github.com/expo/expo/pull/43516) by [@zoontek](https://github.com/zoontek))
 - Removed deprecated plugins. ([#43918](https://github.com/expo/expo/pull/43918) by [@kudo](https://github.com/kudo))
+- [Internal] Drop peer dependency looping back to `expo` ([#45125](https://github.com/expo/expo/pull/45125) by [@kitten](https://github.com/kitten))
+
+## 55.0.17 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-02-26
+
+### 🐛 Bug fixes
+
+- Fixed `STATUS_BAR_PLUGIN` deprecation warning shown on prebuild for default `create-expo-app` template by no longer auto-populating `androidStatusBar.backgroundColor` from the splash background color. ([#43444](https://github.com/expo/expo/issues/43444)) ([#43453](https://github.com/expo/expo/pull/43453) by [@zoontek](https://github.com/zoontek))
 
 ## 55.0.7 — 2026-02-25
 

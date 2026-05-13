@@ -1,5 +1,5 @@
-import { NativeSession } from './NativeSession';
-import { NativeStatement } from './NativeStatement';
+import type { NativeSession } from './NativeSession';
+import type { NativeStatement } from './NativeStatement';
 
 /**
  * A class that represents an instance of the SQLite database.

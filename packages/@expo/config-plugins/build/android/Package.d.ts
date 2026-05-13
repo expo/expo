@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '../Plugin.types';
 export declare const withPackageGradle: ConfigPlugin;
 export declare const withPackageRefactor: ConfigPlugin;
 export declare function getPackage(config: Pick<ExpoConfig, 'android'>): string | null;

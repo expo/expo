@@ -12,7 +12,7 @@ export declare const MaybeScreenContainer: ({ enabled, ...rest }: ViewProps & {
     enabled: boolean;
     hasTwoStates: boolean;
     children: React.ReactNode;
-}) => React.JSX.Element;
-export declare function MaybeScreen({ visible, children, ...rest }: Props): React.JSX.Element;
+}) => import("react/jsx-runtime").JSX.Element;
+export declare function MaybeScreen({ visible, children, ...rest }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=ScreenFallback.d.ts.map

@@ -1,5 +1,5 @@
 ---
-modificationDate: September 17th, 2025
+modificationDate: May 12th, 2026
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -44,15 +44,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 - [npm cache deployed with Kubernetes](/build-reference/caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](/build-reference/caching/#android-dependencies)
-- Global Gradle configuration in **~/.gradle/gradle.properties**:
-
-  ```ini ~/.gradle/gradle.properties
-  org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
-  org.gradle.parallel=true
-  org.gradle.configureondemand=true
-  org.gradle.daemon=false
-  ```
-
+- Gradle JVM args are injected via the `GRADLE_OPTS` environment variable when the build environment is provisioned. See [Gradle JVM args](#gradle-jvm-args) below.
 - Global npm configuration in **~/.npmrc**:
 
   ```ini ~/.npmrc
@@ -67,6 +59,32 @@ Android builders run on virtual machines in an isolated environment. Every build
   npmRegistryServer: 'http://npm.production.caches.eas-build.internal'
   enableImmutableInstalls: false
   ```
+
+### Gradle JVM args
+
+EAS Build sets the `GRADLE_OPTS` environment variable on the build VM (the worker) before Gradle runs. The values depend on the [resource class](/eas/json/#resourceclass) you select:
+
+| Resource class | `-Xmx` (max heap) |
+| -------------- | ----------------- |
+| `medium`       | `4g`              |
+| `large`        | `8g`              |
+
+In addition to `-Xmx`, the worker passes the following JVM args to the Gradle build JVM via `-Dorg.gradle.jvmargs`:
+
+- `-XX:MaxMetaspaceSize=1g`
+- `-XX:+HeapDumpOnOutOfMemoryError`
+- `-Dfile.encoding=UTF-8`
+
+The worker also sets these top-level Gradle properties on `GRADLE_OPTS`:
+
+- `-Dorg.gradle.parallel=true`
+- `-Dorg.gradle.daemon=false`
+
+> **warning** The worker sets `org.gradle.jvmargs` via `GRADLE_OPTS`, which overrides any `org.gradle.jvmargs` defined in your project's **gradle.properties**.
+
+#### Overriding `GRADLE_OPTS`
+
+You can replace the worker default by setting `GRADLE_OPTS` under a build profile's [`env`](/eas/json/#env) in **eas.json**, in a [workflow file](/eas/workflows/syntax/#jobsjob_idenv), or with [EAS Environment Variables](/eas/environment-variables/). Project environment values take precedence over the worker's default values.
 
 ### Android server images
 

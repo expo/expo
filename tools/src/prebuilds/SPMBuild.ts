@@ -34,7 +34,7 @@ export const SPMBuild = {
     platform?: BuildPlatform,
     hermesIncludeDirs?: string[]
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `🏗  Build Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)} [${buildType.toLowerCase()}]`
     );
 
@@ -69,7 +69,7 @@ export const SPMBuild = {
       );
     }
 
-    logger.info(`🏗  Swift package successfully built.`);
+    logger.verbose(`🏗  Swift package successfully built.`);
   },
 
   /**
@@ -84,7 +84,7 @@ export const SPMBuild = {
     buildType: BuildFlavor
   ): Promise<void> => {
     const buildFolderToClean = SPMBuild.getPackageBuildPath(pkg, product, buildType);
-    logger.info(
+    logger.verbose(
       `🧹 Cleaning build folder ${chalk.green(path.relative(pkg.buildPath, buildFolderToClean))}...`
     );
     await fs.remove(buildFolderToClean);
@@ -414,7 +414,7 @@ async function resolveSPMDependenciesAndPatch(packageDir: string): Promise<void>
         'public typealias NetworkUnreachable = (_ReachabilityRef) -> ()'
       );
       fs.writeFileSync(reachabilitySource, content, 'utf8');
-      logger.info('🩹 Patched Reachability.swift (library evolution typealias fix)');
+      logger.verbose('🩹 Patched Reachability.swift (library evolution typealias fix)');
     }
   }
 }
@@ -854,7 +854,7 @@ export async function buildSharedSPMDependencyAsync(
     return;
   }
 
-  logger.info(
+  logger.verbose(
     `🔨 Building shared SPM dependency ${chalk.cyan(productName)} [${buildType.toLowerCase()}]...`
   );
 
@@ -890,7 +890,7 @@ export async function buildSharedSPMDependencyAsync(
     // Package.swift changed or first run — resolve from scratch
     await resolveSPMDependenciesAndPatch(buildDir);
   } else {
-    logger.info(`   ⏭️  SPM dependencies already resolved (Package.swift unchanged)`);
+    logger.verbose(`   ⏭️  SPM dependencies already resolved (Package.swift unchanged)`);
   }
 
   // Build from the dependency's own checkout so we get a framework with the correct
@@ -973,7 +973,7 @@ export async function buildSharedSPMDependencyAsync(
     const externalInterDeps = interDeps.filter((d) => d !== productName);
 
     if (externalInterDeps.length > 0) {
-      logger.info(
+      logger.verbose(
         `   🔗 ${productName} depends on shared deps: ${externalInterDeps.map((d) => chalk.cyan(d)).join(', ')}`
       );
 
@@ -981,7 +981,7 @@ export async function buildSharedSPMDependencyAsync(
       for (const interDepName of externalInterDeps) {
         const interDep = allSharedDeps.get(interDepName);
         if (interDep && !Frameworks.hasSharedSPMDepFramework(interDepName, buildType)) {
-          logger.info(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
+          logger.verbose(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
           await buildSharedSPMDependencyAsync(interDep, buildType, allSharedDeps, platforms);
         }
       }

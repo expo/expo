@@ -5,12 +5,13 @@ import { glob } from 'glob';
 import inquirer from 'inquirer';
 import path from 'path';
 
+import { ensureBareExpoDependencies } from './ensureBareExpoDependencies';
+import { updateAndroidProjects } from './updateAndroidProjects';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { ExpoModuleConfig, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import type { CommandOptions, Parcel, TaskArgs } from '../types';
-import { updateAndroidProjects } from './updateAndroidProjects';
 
 const EXCLUDE = ['expo-module-template'];
 
@@ -85,7 +86,7 @@ async function cleanupStaleBuildDirectories(): Promise<void> {
 export const publishAndroidArtifacts = new Task<TaskArgs>(
   {
     name: 'publishAndroidArtifacts',
-    dependsOn: [updateAndroidProjects],
+    dependsOn: [updateAndroidProjects, ensureBareExpoDependencies],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     // If only templates are being published, skip Android artifacts step entirely

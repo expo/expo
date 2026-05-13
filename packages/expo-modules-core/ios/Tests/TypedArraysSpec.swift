@@ -37,9 +37,9 @@ final class TypedArraysSpec: ExpoSpec {
           ])
           .asArray()
 
-        expect(array[0]?.getInt()) == 0 // Remains unset
-        expect(array[1]?.getInt()) == randomInt
-        expect(array[2]?.getInt()) == 0 // Remains unset
+        expect(array[0].getInt()) == 0 // Remains unset
+        expect(array[1].getInt()) == randomInt
+        expect(array[2].getInt()) == 0 // Remains unset
       }
 
       // Gets a slice from the array from index 1 to 3
@@ -50,7 +50,7 @@ final class TypedArraysSpec: ExpoSpec {
             "expo.modules.TypedArrays.uint16_subscript_range_get(typedArray, 1, 3)"
           ])
           .asArray()
-          .map({ try $0?.asInt() })
+          .map({ try $0.asInt() })
 
         expect(values.count) == 3
         expect(values[0]) == 8
@@ -70,19 +70,19 @@ final class TypedArraysSpec: ExpoSpec {
           ])
           .asArray()
 
-        expect(values[0]?.getInt()) == 0 // Remains unset
-        expect(values[1]?.getInt()) == random1
-        expect(values[2]?.getInt()) == random2
-        expect(values[3]?.getInt()) == 0 // Remains unset
+        expect(values[0].getInt()) == 0 // Remains unset
+        expect(values[1].getInt()) == random1
+        expect(values[2].getInt()) == random2
+        expect(values[3].getInt()) == 0 // Remains unset
       }
 
       it("returns itself") {
-        let input = try runtime.eval("typedArray = new Float32Array([1.2, 3.4]); typedArray").asTypedArray()
-        let output = try runtime.eval("expo.modules.TypedArrays.return(typedArray)").asTypedArray()
+        try JavaScriptActor.assumeIsolated { () -> Void in
+          let input = TypedArray.create(from: try runtime.eval("typedArray = new Float32Array([1.2, 3.4]); typedArray").asTypedArray())
+          let output = TypedArray.create(from: try runtime.eval("expo.modules.TypedArrays.return(typedArray)").asTypedArray())
 
-        expect(input.getProperty("0").getDouble()) == output.getProperty("0").getDouble()
-        expect(input.getProperty("1").getDouble()) == output.getProperty("1").getDouble()
-        expect(input.getUnsafeMutableRawPointer()) == output.getUnsafeMutableRawPointer()
+          expect(input.rawPointer) == output.rawPointer
+        }
       }
 
       it("writes to unsafe raw pointer") {
@@ -93,18 +93,20 @@ final class TypedArraysSpec: ExpoSpec {
             "Array.from(expo.modules.TypedArrays.writeToUnsafeRawPointer(typedArray))",
           ])
           .asArray()
-          .map({ $0?.getInt() ?? 0 })
+          .map({ $0.getInt() })
 
         // Assume that at least one element should have changed
         expect(values.filter({ $0 != 0 }).count) >= 1
       }
 
       it("returns a correct slice when created from a buffer") {
-        let array = try runtime.eval("new Uint8Array(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).buffer, 3, 5)").asTypedArray()
-        expect(array.getProperty("byteOffset").getInt()) == 3
-        expect(array.getProperty("byteLength").getInt()) == 5
-        expect(array.getProperty("0").getInt()) == 3
-        expect(array.getProperty("4").getInt()) == 7
+        try JavaScriptActor.assumeIsolated {
+          let array = try runtime.eval("new Uint8Array(new Uint8Array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]).buffer, 3, 5)").asTypedArray()
+          expect(array.getProperty("byteOffset").getInt()) == 3
+          expect(array.getProperty("byteLength").getInt()) == 5
+          expect(array.getProperty("0").getInt()) == 3
+          expect(array.getProperty("4").getInt()) == 7
+        }
       }
 
       // TODO: Test throwing NotTypedArrayException and ArrayTypeMismatchException
@@ -132,13 +134,13 @@ fileprivate final class TypedArraysModule: Module {
       array[start...end] = values
     }
 
-    Function("return") { (array: TypedArray) -> JavaScriptTypedArray in
-      return array.jsTypedArray
+    Function("return") { (array: TypedArray) -> TypedArray in
+      return array
     }
 
-    Function("writeToUnsafeRawPointer") { (array: TypedArray) -> JavaScriptTypedArray in
+    Function("writeToUnsafeRawPointer") { (array: TypedArray) -> TypedArray in
       let _ = SecRandomCopyBytes(kSecRandomDefault, array.byteLength, array.rawPointer)
-      return array.jsTypedArray
+      return array
     }
   }
 }

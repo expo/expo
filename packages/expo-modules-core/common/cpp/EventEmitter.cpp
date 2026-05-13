@@ -1,9 +1,4 @@
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#else
 #include "JSIUtils.h"
-#endif
-
 #include "EventEmitter.h"
 #include "LazyObject.h"
 
@@ -202,7 +197,7 @@ jsi::Value createEventSubscription(jsi::Runtime &runtime, const std::string &eve
 
 #pragma mark - Public API
 
-void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments) {
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments) {
   emitEvent(runtime, emitter, eventName, arguments.data(), arguments.size());
 }
 

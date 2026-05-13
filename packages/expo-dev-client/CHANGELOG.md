@@ -4,15 +4,139 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+### 💡 Others
+
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
-### 🐛 Bug fixes
+## 55.0.32 - 2026-05-04
 
-### 💡 Others
+_This version does not introduce any user-facing changes._
+
+## 55.0.31 - 2026-05-04
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.30 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.29 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.28 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.27 - 2026-04-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.26 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.25 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.24 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.23 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.22 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.21 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.20 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-03-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-04
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.9 — 2026-02-25
 

@@ -306,6 +306,8 @@ internal struct ClipShapeModifier: ViewModifier, Record {
       content.clipShape(makeCapsule(style: roundedCornerStyle))
     case .circle:
       content.clipShape(Circle())
+    case .containerRelativeShape:
+      content.clipShape(ContainerRelativeShape())
     case .ellipse:
       content.clipShape(Ellipse())
     case .rectangle:
@@ -493,11 +495,16 @@ internal struct LayoutPriorityModifier: ViewModifier, Record {
 }
 
 internal struct AspectRatioModifier: ViewModifier, Record {
-  @Field var ratio: Double = 1.0
+  @Field var ratio: Double?
   @Field var contentMode: String = "fit"
 
   func body(content: Content) -> some View {
-    content.aspectRatio(ratio, contentMode: contentMode == "fill" ? .fill : .fit)
+    let mode: ContentMode = contentMode == "fill" ? .fill : .fit
+    if let ratio {
+      content.aspectRatio(ratio, contentMode: mode)
+    } else {
+      content.aspectRatio(contentMode: mode)
+    }
   }
 }
 
@@ -526,6 +533,8 @@ internal struct MaskModifier: ViewModifier, Record {
       content.mask(makeCapsule(style: roundedCornerStyle))
     case .circle:
       content.mask(Circle())
+    case .containerRelativeShape:
+      content.mask(ContainerRelativeShape())
     case .ellipse:
       content.mask(Ellipse())
     case .rectangle:
@@ -985,6 +994,22 @@ internal struct LineSpacing: ViewModifier, Record {
   }
 }
 
+internal struct LineHeight: ViewModifier, Record {
+  @Field var value: CGFloat?
+
+  func body(content: Content) -> some View {
+    if let value {
+      if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
+        content.lineHeight(.exact(points: value))
+      } else {
+        content
+      }
+    } else {
+      content
+    }
+  }
+}
+
 internal enum Prominence: String, Enumerable {
   case standard
   case increased
@@ -1090,23 +1115,6 @@ internal struct ListSectionMargins: ViewModifier, Record {
 #else
     content
 #endif
-  }
-}
-
-internal enum AxisOptions: String, Enumerable {
-  case horizontal
-  case vertical
-  case both
-
-  func toAxis() -> Axis.Set {
-    switch self {
-    case .vertical:
-      return .vertical
-    case .horizontal:
-      return .horizontal
-    case .both:
-      return [.vertical, .horizontal]
-    }
   }
 }
 
@@ -1614,6 +1622,10 @@ extension ViewModifierRegistry {
       return try OnDisappearModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
 
+    register("onGeometryChange") { params, appContext, eventDispatcher in
+      return try OnGeometryChangeModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("refreshable") { params, appContext, eventDispatcher in
       return try RefreshableModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
     }
@@ -1762,6 +1774,10 @@ extension ViewModifierRegistry {
       return try LineSpacing(from: params, appContext: appContext)
     }
 
+    register("lineHeight") { params, appContext, _ in
+      return try LineHeight(from: params, appContext: appContext)
+    }
+
     register("lineLimit") { params, appContext, _ in
       return try LineLimitModifier(from: params, appContext: appContext)
     }
@@ -1826,6 +1842,14 @@ extension ViewModifierRegistry {
       return try ScrollTargetLayoutModifier(from: params, appContext: appContext)
     }
 
+    register("id") { params, appContext, _ in
+      return try IDModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollPosition") { params, appContext, eventDispatcher in
+      return try ScrollPositionModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
     register("pickerStyle") { params, appContext, _ in
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
@@ -1848,6 +1872,18 @@ extension ViewModifierRegistry {
 
     register("scrollDisabled") { params, appContext, _ in
       return try ScrollDisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("scrollIndicators") { params, appContext, _ in
+      return try ScrollIndicatorsModifier(from: params, appContext: appContext)
+    }
+
+    register("tabViewStyle") { params, appContext, _ in
+      return try TabViewStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("indexViewStyle") { params, appContext, _ in
+      return try IndexViewStyleModifier(from: params, appContext: appContext)
     }
 
     register("defaultScrollAnchor") { params, appContext, _ in
@@ -1916,6 +1952,10 @@ extension ViewModifierRegistry {
 
     register("onSubmit") { params, appContext, eventDispatcher in
       return try OnSubmitModifier(from: params, appContext: appContext, eventDispatcher: eventDispatcher)
+    }
+
+    register("containerBackground") { params, appContext, _ in
+      return try ContainerBackgroundModifier(from: params, appContext: appContext)
     }
   }
 }

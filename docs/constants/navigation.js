@@ -300,6 +300,7 @@ export const general = [
     makeGroup('Migration', [
       makePage('router/migrate/from-react-navigation.mdx'),
       makePage('router/migrate/from-expo-webpack.mdx'),
+      makePage('router/migrate/sdk-55-to-56.mdx'),
     ]),
   ]),
   makeSection(
@@ -379,6 +380,11 @@ export const general = [
     'More',
     [
       makePage('workflow/upgrading-expo-sdk-walkthrough.mdx'),
+      makeSection('SDK libraries migration', [
+        makePage('guides/sdk-libraries-migration/media-library.mdx'),
+        makePage('guides/sdk-libraries-migration/calendar.mdx'),
+        makePage('guides/sdk-libraries-migration/contacts.mdx'),
+      ]),
       makeSection('Assorted', [
         makePage('guides/authentication.mdx'),
         makePage('guides/using-hermes.mdx'),
@@ -395,6 +401,7 @@ export const general = [
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
         makePage('guides/expo-ui-swift-ui/extending.mdx'),
+        makePage('guides/expo-ui-jetpack-compose/extending.mdx'),
       ]),
       makeSection('Troubleshooting', [
         makePage('troubleshooting/overview.mdx'),
@@ -582,6 +589,16 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
+  makeSection('Expo Observe', [
+    makePage('eas/observe/introduction.mdx'),
+    makePage('eas/observe/get-started.mdx'),
+    makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/configuration.mdx'),
+    makeGroup('Reference', [
+      makePage('eas/observe/reference/metrics.mdx'),
+      makePage('eas/observe/reference/troubleshooting.mdx'),
+    ]),
+  ]),
   makeSection('Distribution', [
     makePage('distribution/introduction.mdx'),
     makePage('distribution/app-stores.mdx'),
@@ -682,7 +699,6 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
-    makePage('archive/glossary.mdx'),
   ]),
 ];
 
@@ -703,11 +719,19 @@ const versionsReference = VERSIONS.reduce(
             }),
           ]
         : []),
+      ...(fs.existsSync(path.resolve(PAGES_DIR, `versions/${version}/sdk/ui`))
+        ? [
+            makeSection('Expo UI', pagesFromDir(`versions/${version}/sdk/ui`), {
+              expanded: true,
+              hideIcon: true,
+            }),
+          ]
+        : []),
       makeSection(
         'Expo SDK',
         shiftEntryToFront(
           pagesFromDir(`versions/${version}/sdk`).filter(
-            entry => !entry.inExpoGo && entry.name !== 'Router'
+            entry => !entry.inExpoGo && !['Router', 'UI'].includes(entry.name)
           ),
           entry => entry.name === 'Expo'
         ),
@@ -730,6 +754,7 @@ const versionsReference = VERSIONS.reduce(
         [
           makePage('more/expo-cli.mdx'),
           makePage('more/create-expo.mdx'),
+          makePage('more/create-expo-module.mdx'),
           makePage('more/qr-codes.mdx'),
           makePage('more/release-statuses.mdx'),
           makePage('more/glossary-of-terms.mdx'),

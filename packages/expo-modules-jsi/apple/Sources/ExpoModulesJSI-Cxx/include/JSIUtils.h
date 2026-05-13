@@ -87,6 +87,16 @@ inline jsi::Function createHostFunction(jsi::Runtime &runtime, const char *name,
   return createHostFunction(runtime, propName, closure);
 }
 
+/**
+ Returns whether `object` is backed by any `jsi::HostObject` subclass — this includes
+ host objects created by `expo::HostObject::makeObject`, by other React Native subsystems,
+ and by JS engines themselves. Wraps the templated `jsi::Object::isHostObject<T>` so the
+ check is callable from Swift, where C++ function templates cannot be imported directly.
+ */
+inline bool isHostObject(jsi::Runtime &runtime, const jsi::Object &object) {
+  return object.isHostObject<jsi::HostObject>(runtime);
+}
+
 jsi::Runtime* createHermesRuntime();
 
 inline jsi::Value evaluateJavaScript(jsi::Runtime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
@@ -121,13 +131,6 @@ inline jsi::Value callAsConstructor(jsi::Runtime &runtime, const jsi::Function &
  */
 inline jsi::Value valueFromArrayBuffer(jsi::Runtime &runtime, const jsi::ArrayBuffer &arrayBuffer) {
   return jsi::Value(runtime, arrayBuffer);
-}
-
-/**
- * Converts a `expo::TypedArray` to a `jsi::Value`.
- */
-inline jsi::Value valueFromTypedArray(jsi::Runtime &runtime, const TypedArray &typedArray) {
-  return jsi::Value(runtime, typedArray);
 }
 
 /**

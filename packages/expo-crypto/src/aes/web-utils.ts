@@ -1,4 +1,4 @@
-import { BinaryInput } from './aes.types';
+import type { BinaryInput } from './aes.types';
 
 export function hexToUintArray(hexString: string): Uint8Array {
   const byteLength = hexString.length / 2;

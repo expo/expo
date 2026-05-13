@@ -1,5 +1,5 @@
 import { CodedError, UnavailabilityError } from 'expo-modules-core';
-import { AppleAuthenticationOperation, } from './AppleAuthentication.types';
+import { AppleAuthenticationOperation } from './AppleAuthentication.types';
 import ExpoAppleAuthentication from './ExpoAppleAuthentication';
 // @needsAudit
 /**

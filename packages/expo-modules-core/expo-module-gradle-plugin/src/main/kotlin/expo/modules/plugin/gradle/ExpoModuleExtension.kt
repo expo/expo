@@ -44,9 +44,20 @@ open class ExpoModuleExtension(val project: Project) {
 
   var canBePublished: Boolean = true
 
+  var enableCompileTimeOptimization: Boolean =
+    findBoolProperty("expo.enableCompileTimeOptimization", default = true)
+
   internal var pomConfigurator: POMConfigurator? = null
 
   fun pom(configurator: POMConfigurator) {
     pomConfigurator = configurator
+  }
+
+  private fun findBoolProperty(name: String, default: Boolean): Boolean {
+    val propertyValue = project.findProperty(name)?.toString() ?: return default
+    if (!propertyValue.equals("true", ignoreCase = true) && !propertyValue.equals("false", ignoreCase = true)) {
+      error("Property '$name' must be either 'true' or 'false', but found '$propertyValue'.")
+    }
+    return propertyValue.toBoolean()
   }
 }

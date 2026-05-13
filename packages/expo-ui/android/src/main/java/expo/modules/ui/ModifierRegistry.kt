@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.selection.selectable
@@ -46,9 +47,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.layout.onVisibilityChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import expo.modules.kotlin.AppContext
@@ -122,6 +126,12 @@ internal data class WrapContentWidthParams(
 @OptimizedRecord
 internal data class WrapContentHeightParams(
   @Field val alignment: AlignmentType? = null
+) : Record
+
+@OptimizedRecord
+internal data class DefaultMinSizeParams(
+  @Field val minWidth: Float? = null,
+  @Field val minHeight: Float? = null
 ) : Record
 
 @OptimizedRecord
@@ -322,6 +332,14 @@ object ModifierRegistry {
   }
 
   /**
+   * Unregisters a previously registered modifier. Pair with `register` from
+   * `OnCreate` / `OnDestroy` to avoid leaking factories between module reloads.
+   */
+  fun unregister(type: String) {
+    modifierFactories.remove(type)
+  }
+
+  /**
    * Applies an array of modifier configs to build a Compose Modifier chain.
    */
   @Composable
@@ -399,6 +417,14 @@ object ModifierRegistry {
     register("height") { map, _, _, _ ->
       val params = recordFromMap<HeightParams>(map)
       Modifier.height(params.height.dp)
+    }
+
+    register("defaultMinSize") { map, _, _, _ ->
+      val params = recordFromMap<DefaultMinSizeParams>(map)
+      Modifier.defaultMinSize(
+        minWidth = params.minWidth?.dp ?: androidx.compose.ui.unit.Dp.Unspecified,
+        minHeight = params.minHeight?.dp ?: androidx.compose.ui.unit.Dp.Unspecified
+      )
     }
 
     register("wrapContentWidth") { map, _, _, _ ->
@@ -552,6 +578,13 @@ object ModifierRegistry {
       } ?: Modifier
     }
 
+    register("semantics") { map, _, _, _ ->
+      val params = recordFromMap<SemanticsParams>(map)
+      params.contentType.toContentType()?.let { ct ->
+        Modifier.semantics { contentType = ct }
+      } ?: Modifier
+    }
+
     register("clip") { map, _, _, _ ->
       val params = recordFromMap<ClipParams>(map)
       params.shape?.let { shape ->
@@ -563,9 +596,24 @@ object ModifierRegistry {
       val params = recordFromMap<OnVisibilityChangedParams>(map)
       Modifier.onVisibilityChanged(
         minDurationMs = params.minDurationMs,
-        minFractionVisible = params.minFractionVisible,
+        minFractionVisible = params.minFractionVisible
       ) { isVisible ->
         eventDispatcher("onVisibilityChanged", mapOf("isVisible" to isVisible))
+      }
+    }
+
+    register("onSizeChanged") { _, _, _, eventDispatcher ->
+      val density = LocalDensity.current
+      Modifier.onSizeChanged { size ->
+        with(density) {
+          eventDispatcher(
+            "onSizeChanged",
+            mapOf(
+              "width" to size.width.toDp().value,
+              "height" to size.height.toDp().value
+            )
+          )
+        }
       }
     }
 

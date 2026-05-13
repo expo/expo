@@ -1,5 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  Encodes `Encodable` objects or values to `JavaScriptValue`. This implementation is incomplete,
  but it supports basic use cases with structs defined by the user and when the default `Encodable` implementation is used.
@@ -101,15 +103,21 @@ private struct JSValueEncodingContainer: SingleValueEncodingContainer {
 
 /**
  Keyed container that encodes to a JavaScript object.
+
+ - Note: This is a `class` (rather than `struct` like `JSArrayEncodingContainer` below)
+   because it holds a non-copyable `JavaScriptObject`. A struct property of a non-copyable
+   type makes the containing struct non-copyable too, which conflicts with
+   `KeyedEncodingContainerProtocol`'s expectation of a copyable conformer. Using a class
+   sidesteps the constraint via reference semantics.
  */
-private struct JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
+private class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
   private weak var runtime: JavaScriptRuntime?
   private let valueHolder: JSValueHolder
   private var object: JavaScriptObject
 
   init(to valueHolder: JSValueHolder, runtime: JavaScriptRuntime) {
     let object = runtime.createObject()
-    valueHolder.value = JavaScriptValue.from(object, runtime: runtime)
+    valueHolder.value = object.asValue()
 
     self.runtime = runtime
     self.object = object
@@ -121,11 +129,11 @@ private struct JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingContainer
   // Unused, but required by the protocol.
   var codingPath: [any CodingKey] = []
 
-  mutating func encodeNil(forKey key: Key) throws {
+  func encodeNil(forKey key: Key) throws {
     object.setProperty(key.stringValue, value: JavaScriptValue.null)
   }
 
-  mutating func encode<ValueType: Encodable>(_ value: ValueType, forKey key: Key) throws {
+  func encode<ValueType: Encodable>(_ value: ValueType, forKey key: Key) throws {
     guard let runtime else {
       // Do nothing when the runtime is already deallocated
       return
@@ -135,19 +143,19 @@ private struct JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingContainer
     object.setProperty(key.stringValue, value: encoder.value)
   }
 
-  mutating func nestedContainer<NestedKey: CodingKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
+  func nestedContainer<NestedKey: CodingKey>(keyedBy keyType: NestedKey.Type, forKey key: Key) -> KeyedEncodingContainer<NestedKey> {
     fatalError("JSValueEncoder does not support nested containers")
   }
 
-  mutating func nestedUnkeyedContainer(forKey key: Key) -> any UnkeyedEncodingContainer {
+  func nestedUnkeyedContainer(forKey key: Key) -> any UnkeyedEncodingContainer {
     fatalError("JSValueEncoder does not support nested containers")
   }
 
-  mutating func superEncoder() -> any Encoder {
+  func superEncoder() -> any Encoder {
     fatalError("superEncoder() is not implemented in JSValueEncoder")
   }
 
-  mutating func superEncoder(forKey key: Key) -> any Encoder {
+  func superEncoder(forKey key: Key) -> any Encoder {
     return self.superEncoder()
   }
 }
@@ -172,7 +180,7 @@ private struct JSArrayEncodingContainer: UnkeyedEncodingContainer {
   var count: Int = 0
 
   mutating func encodeNil() throws {
-    items.append(.null)
+    items.append(JavaScriptValue.null)
   }
 
   mutating func encode<ValueType: Encodable>(_ value: ValueType) throws {
@@ -184,10 +192,10 @@ private struct JSArrayEncodingContainer: UnkeyedEncodingContainer {
     try value.encode(to: encoder)
 
     items.append(encoder.value)
-    valueHolder.value = .from(items, runtime: runtime)
+    valueHolder.value = .representing(value: items, in: runtime)
   }
 
-  mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey: CodingKey {
+  mutating func nestedContainer<NestedKey>(keyedBy keyType: NestedKey.Type) -> KeyedEncodingContainer<NestedKey> where NestedKey : CodingKey {
     fatalError("JSValueEncoder does not support nested containers")
   }
 

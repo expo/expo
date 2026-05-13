@@ -30,6 +30,7 @@ import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
 import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetBucketId
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
@@ -50,6 +51,7 @@ class AssetLegacyDelegate(
   val assetDeleter: AssetDeleter,
   val systemPermissionsDelegate: SystemPermissionsDelegate,
   val assetFactory: AssetFactory,
+  val assetMover: AssetMover,
   context: Context
 ) : AssetDelegate {
   private val contextRef = WeakReference(context)
@@ -155,7 +157,7 @@ class AssetLegacyDelegate(
     if (contentResolver.queryAlbumTitle(albumId) == null) {
       return emptyList()
     }
-    return listOf(Album(albumId, assetDeleter, assetFactory, contextRef.getOrThrow()))
+    return listOf(Album(albumId, assetDeleter, assetFactory, assetMover, contextRef.getOrThrow()))
   }
 
   override suspend fun getLocation(): Location? {

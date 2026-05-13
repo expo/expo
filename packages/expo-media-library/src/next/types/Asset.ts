@@ -1,9 +1,9 @@
-import { Album } from './Album';
-import { AssetInfo } from './AssetInfo';
-import { Location } from './Location';
-import { MediaSubtype } from './MediaSubtype';
-import { MediaType } from './MediaType';
-import { Shape } from './Shape';
+import type { Album } from './Album';
+import type { AssetInfo } from './AssetInfo';
+import type { Location } from './Location';
+import type { MediaSubtype } from './MediaSubtype';
+import type { MediaType } from './MediaType';
+import type { Shape } from './Shape';
 
 /**
  * Represents a single media asset on the device (image, video, or audio).

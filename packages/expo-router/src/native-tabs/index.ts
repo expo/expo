@@ -13,6 +13,7 @@ export type {
   NativeTabsProps,
   NativeTabTriggerProps,
   NativeTabsLabelStyle,
+  NativeTabsHostNativeProps,
   SymbolOrImageSource,
   NativeTabsTabBarItemLabelVisibilityMode,
   NativeTabsBlurEffect,

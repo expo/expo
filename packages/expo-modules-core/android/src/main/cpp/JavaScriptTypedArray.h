@@ -1,13 +1,10 @@
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "TypedArray.h"
 #include "JavaScriptObject.h"
 
-#include <fbjni/fbjni.h>
 #include <fbjni/ByteBuffer.h>
-#include <jsi/jsi.h>
-
-#include <memory>
 
 namespace expo {
 

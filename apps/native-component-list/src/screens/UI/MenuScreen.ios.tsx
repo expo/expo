@@ -9,6 +9,7 @@ import {
   Section,
   Divider,
   Picker,
+  RNHostView,
 } from '@expo/ui/swift-ui';
 import {
   buttonStyle,
@@ -18,6 +19,7 @@ import {
   tag,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
+import { Pressable, Text as RNText } from 'react-native';
 
 export default function MenuScreen() {
   const [selectedIndex, setSelectedIndex] = React.useState<number | undefined>(1);
@@ -51,6 +53,30 @@ export default function MenuScreen() {
           <Menu label={<Text modifiers={[foregroundStyle('accentColor')]}>Custom Label</Text>}>
             <Button onPress={() => console.log('Action 1')} label="Action 1" />
             <Button onPress={() => console.log('Action 2')} label="Action 2" />
+          </Menu>
+        </Section>
+
+        <Section title="RN Pressable label">
+          <Menu
+            label={
+              <RNHostView matchContents>
+                <Pressable
+                  onPress={() => console.log('RN trigger pressed')}
+                  style={{
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                    alignSelf: 'flex-start',
+                    backgroundColor: '#9B59B6',
+                  }}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>
+                    RN Pressable Trigger
+                  </RNText>
+                </Pressable>
+              </RNHostView>
+            }>
+            <Button onPress={() => console.log('Item 1')} label="Item 1" />
+            <Button onPress={() => console.log('Item 2')} label="Item 2" />
           </Menu>
         </Section>
 

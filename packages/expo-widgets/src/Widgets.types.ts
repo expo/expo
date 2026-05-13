@@ -1,7 +1,7 @@
 import { SharedObject } from 'expo';
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import { after } from './Widgets';
+import type { after } from './Widgets';
 
 /**
  * The rendering mode of the widget as provided by WidgetKit.

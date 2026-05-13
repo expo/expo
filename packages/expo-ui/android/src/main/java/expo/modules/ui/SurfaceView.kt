@@ -13,7 +13,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
-
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 data class SurfaceBorder(
@@ -21,6 +21,7 @@ data class SurfaceBorder(
   @Field val color: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class SurfaceProps(
   val color: Color? = null,
   val contentColor: Color? = null,

@@ -1,7 +1,7 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { Options } from './resolveOptions';
+import type { Options } from './resolveOptions';
 import { Log } from '../../log';
 import { WebSupportProjectPrerequisite } from '../../start/doctor/web/WebSupportProjectPrerequisite';
 import { getPlatformBundlers } from '../../start/server/platformBundlers';

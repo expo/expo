@@ -1,4 +1,5 @@
-import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
+import type { SQLiteDatabase } from '../SQLiteDatabase';
+import { openDatabaseAsync } from '../SQLiteDatabase';
 import { SQLiteStatement } from '../SQLiteStatement';
 
 jest.mock('expo/devtools', () => ({

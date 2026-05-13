@@ -38,23 +38,23 @@ export type ListItemProps = {
 /**
  * A list item matching Compose's `ListItem`.
  */
-declare function ListItemComponent(props: ListItemProps): import("react").JSX.Element;
+declare function ListItemComponent(props: ListItemProps): import("react/jsx-runtime").JSX.Element;
 declare namespace ListItemComponent {
     var HeadlineContent: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var OverlineContent: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var SupportingContent: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var LeadingContent: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var TrailingContent: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { ListItemComponent as ListItem };
 //# sourceMappingURL=index.d.ts.map

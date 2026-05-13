@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 import type { ExpoWidgetsEvents, LiveActivityComponent, LiveActivityDismissalPolicy, NativeLiveActivity, PushTokenEvent, WidgetEnvironment, WidgetTimelineEntry } from './Widgets.types';
 /**
  * Represents a widget instance. Provides methods to manage the widget's timeline.

@@ -33,7 +33,7 @@ export const SidebarSingleEntry = ({
         <LinkBase
           href={href}
           className={mergeClasses(
-            'text-secondary flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm leading-[100!%]',
+            'text-secondary flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm leading-[100%]!',
             'hocus:bg-element',
             'focus-visible:relative focus-visible:z-10',
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',

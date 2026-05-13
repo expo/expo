@@ -1,19 +1,24 @@
 import { NativeModule, registerWebModule } from 'expo';
 export * from './types';
 class ExpoAppMetricsModule extends NativeModule {
-    addCustomMetricToSession(sessionId, metric) {
+    addCustomMetricToSession(metric) {
         throw new Error('Method not implemented.');
     }
     async markFirstRender() { }
-    async markInteractive() { }
+    async markInteractive(attributes) { }
+    logEvent(name, options) { }
     async getStoredEntries() {
         return [];
     }
     async clearStoredEntries() { }
-    startSession(metadata) {
-        return '';
+    async getAllSessions() {
+        return [];
     }
-    stopSession(sessionId) { }
+    simulateCrashReport() { }
+    triggerCrash() { }
+    async getMainSession() {
+        return null;
+    }
 }
 export default registerWebModule(ExpoAppMetricsModule, 'ExpoAppMetrics');
 //# sourceMappingURL=module.web.js.map

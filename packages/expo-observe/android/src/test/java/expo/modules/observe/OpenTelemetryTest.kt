@@ -1,5 +1,7 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.AppStartupMetric
+import expo.modules.appmetrics.MetricCategory
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -24,8 +26,12 @@ class OpenTelemetryTest {
     appIdentifier = "dev.expo.observe.demo",
     appVersion = "1.0.0",
     appBuildNumber = "1",
-    appUpdateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
     appEasBuildId = null,
+    appUpdatesInfo = Metadata.AppUpdatesInfo(
+      updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+      runtimeVersion = null,
+      requestHeaders = null
+    ),
     languageTag = "en-US",
     deviceOs = "Android",
     deviceOsVersion = "16",
@@ -39,11 +45,12 @@ class OpenTelemetryTest {
   private fun makeMetric(
     name: String,
     value: Double,
-    timestamp: String
+    timestamp: String,
+    category: String = "appStartup"
   ) = EASMetric(
     sessionId = testSessionId,
     timestamp = timestamp,
-    category = "appStartup",
+    category = category,
     name = name,
     value = value
   )
@@ -62,26 +69,106 @@ class OpenTelemetryTest {
 
   // -- Metric name mapping --
 
+  private fun nameFor(category: String, name: String): String =
+    EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = category,
+      name = name,
+      value = 1.0
+    ).toOTMetric().name
+
   @Test
-  fun `known metric names are mapped correctly`() {
-    assertEquals("expo.app_startup.ttr", makeMetric("timeToFirstRender", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.tti", makeMetric("timeToInteractive", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.bundle_load_time", makeMetric("bundleLoadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.cold_launch_time", makeMetric("coldLaunchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.warm_launch_time", makeMetric("warmLaunchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
+  fun `toOTMetric maps every known app startup pair to its OTel name`() {
+    val appStartup = MetricCategory.AppStartup.categoryName
 
-    // Legacy metrics
-    assertEquals("expo.app_startup.load_time", makeMetric("loadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-    assertEquals("expo.app_startup.launch_time", makeMetric("launchTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
-
-    // Updates
-    assertEquals("expo.updates.download_time", makeMetric("updateDownloadTime", 1.0, "2026-01-01T00:00:00.000Z").toOTMetric().name)
+    assertEquals("expo.app_startup.tti", nameFor(appStartup, AppStartupMetric.TimeToInteractive.metricName))
+    assertEquals("expo.app_startup.ttr", nameFor(appStartup, AppStartupMetric.TimeToFirstRender.metricName))
+    assertEquals("expo.app_startup.cold_launch_time", nameFor(appStartup, AppStartupMetric.ColdLaunchTime.metricName))
+    assertEquals("expo.app_startup.warm_launch_time", nameFor(appStartup, AppStartupMetric.WarmLaunchTime.metricName))
+    assertEquals("expo.app_startup.bundle_load_time", nameFor(appStartup, AppStartupMetric.BundleLoadTime.metricName))
   }
 
   @Test
-  fun `unknown metric names use fallback pattern`() {
-    val metric = makeMetric("customMetric", 1.0, "2026-01-01T00:00:00.000Z")
-    assertEquals("expo.app_startup.customMetric", metric.toOTMetric().name)
+  fun `toOTMetric maps legacy app startup names to their OTel names`() {
+    val appStartup = MetricCategory.AppStartup.categoryName
+
+    // Legacy names emitted only by older clients — kept in the map for back-compat.
+    assertEquals("expo.app_startup.load_time", nameFor(appStartup, "loadTime"))
+    assertEquals("expo.app_startup.launch_time", nameFor(appStartup, "launchTime"))
+  }
+
+  @Test
+  fun `toOTMetric maps the updates download_time pair to its OTel name`() {
+    assertEquals(
+      "expo.updates.download_time",
+      nameFor(MetricCategory.Updates.categoryName, "updateDownloadTime")
+    )
+  }
+
+  @Test
+  fun `toOTMetric maps every known navigation pair to its OTel name`() {
+    val navigation = MetricCategory.Navigation.categoryName
+
+    assertEquals("expo.navigation.tti", nameFor(navigation, "tti"))
+    assertEquals("expo.navigation.ttr", nameFor(navigation, "ttr"))
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown for an unmapped name in a known category`() {
+    // Known category, name is not in the map.
+    assertEquals(
+      "expo.unknown.customMetric",
+      nameFor(MetricCategory.AppStartup.categoryName, "customMetric")
+    )
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown when category mismatches a known name`() {
+    // The pair (frameRate, timeToInteractive) is not in the map, so even though
+    // `timeToInteractive` is a known metric name under `appStartup`, it falls back.
+    assertEquals(
+      "expo.unknown.timeToInteractive",
+      nameFor(MetricCategory.FrameRate.categoryName, AppStartupMetric.TimeToInteractive.metricName)
+    )
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown for a fully unknown category and name`() {
+    assertEquals("expo.unknown.someValue", nameFor("somethingNew", "someValue"))
+  }
+
+  @Test
+  fun `toOTMetric falls back to expo_unknown for the updates category with an unmapped name`() {
+    // `updates` is in the map only for `updateDownloadTime`; anything else under it falls back.
+    assertEquals(
+      "expo.unknown.somethingElse",
+      nameFor(MetricCategory.Updates.categoryName, "somethingElse")
+    )
+  }
+
+  fun `navigation metric carries route name and custom params attributes`() {
+    val metric = EASMetric(
+      sessionId = testSessionId,
+      timestamp = "2026-01-01T00:00:00.000Z",
+      category = "navigation",
+      name = "ttr",
+      value = 0.25,
+      routeName = "/home",
+      customParams = JsonObject(
+        mapOf(
+          "isInitial" to JsonPrimitive(true),
+          "isAppLaunch" to JsonPrimitive(false)
+        )
+      )
+    )
+    val attrs = metric.toOTMetric().gauge.dataPoints[0].attributes
+      .associate { it.key to it.value.stringValue }
+
+    assertEquals("/home", attrs["expo.route_name"])
+    val parsed = Json.parseToJsonElement(attrs["expo.custom_params"]!!).jsonObject
+    assertEquals(true, parsed["isInitial"]!!.jsonPrimitive.content.toBoolean())
+    assertEquals(false, parsed["isAppLaunch"]!!.jsonPrimitive.content.toBoolean())
   }
 
   // -- Metric structure --
@@ -161,10 +248,12 @@ class OpenTelemetryTest {
       category = "appStartup",
       name = "bundleLoadTime",
       value = 1.0,
-      customParams = JsonObject(mapOf(
-        "screen" to JsonPrimitive("dashboard"),
-        "variant" to JsonPrimitive("A")
-      ))
+      customParams = JsonObject(
+        mapOf(
+          "screen" to JsonPrimitive("dashboard"),
+          "variant" to JsonPrimitive("A")
+        )
+      )
     )
     val otMetric = metric.toOTMetric()
     val attrs = otMetric.gauge.dataPoints[0].attributes.associate { it.key to it.value.stringValue }
@@ -230,11 +319,45 @@ class OpenTelemetryTest {
     assertEquals("kotlin", attrs["telemetry.sdk.language"])
     assertEquals("Observe", attrs["expo.app.name"])
     assertEquals("1", attrs["expo.app.build_number"])
+    // Backward-compat key
     assertEquals("9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9", attrs["expo.app.update_id"])
+    // New key
+    assertEquals("9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9", attrs["expo.app.updates.id"])
     assertEquals("55.0.0", attrs["expo.sdk.version"])
     assertEquals("0.83.1", attrs["expo.react_native.version"])
     assertEquals(testEasClientId, attrs["expo.eas_client.id"])
     assertNull(attrs["expo.eas_build.id"])
+  }
+
+  @Test
+  fun `toOTMetadata emits update runtime version and channel when present`() {
+    val metadata = testMetadata.copy(
+      appUpdatesInfo = Metadata.AppUpdatesInfo(
+        updateId = "9b3b89b6-2a3f-4d8c-8e2d-2db9f5d1f2a9",
+        runtimeVersion = "1.0.0",
+        requestHeaders = mapOf(
+          "expo-channel-name" to "production",
+          "expo-runtime-version" to "1.0.0"
+        )
+      )
+    )
+    val event = Event(metadata = metadata, metrics = emptyList())
+    val attrs = event.toOTMetadata(testEasClientId).attributes.associate { it.key to it.value.stringValue }
+
+    assertEquals("1.0.0", attrs["expo.app.updates.runtime_version"])
+    assertEquals("production", attrs["expo.app.updates.channel"])
+  }
+
+  @Test
+  fun `toOTMetadata excludes update attributes when appUpdatesInfo is null`() {
+    val metadata = testMetadata.copy(appUpdatesInfo = null)
+    val event = Event(metadata = metadata, metrics = emptyList())
+    val keys = event.toOTMetadata(testEasClientId).attributes.map { it.key }
+
+    assertFalse(keys.contains("expo.app.update_id"))
+    assertFalse(keys.contains("expo.app.updates.id"))
+    assertFalse(keys.contains("expo.app.updates.runtime_version"))
+    assertFalse(keys.contains("expo.app.updates.channel"))
   }
 
   // -- Full OTEvent --
@@ -383,5 +506,50 @@ class OpenTelemetryTest {
     val sessionAttr = dpAttrs[0].jsonObject
     assertEquals("session.id", sessionAttr["key"]!!.jsonPrimitive.content)
     assertEquals(testSessionId, sessionAttr["value"]!!.jsonObject["stringValue"]!!.jsonPrimitive.content)
+  }
+}
+
+/**
+ * Test-only convenience for pulling the inner string out of an [OTAnyValue].
+ * Returns `null` for non-string variants — the metric tests in this file only
+ * produce string-valued attributes, so a null result is a real assertion
+ * failure.
+ */
+internal val OTAnyValue.stringValue: String?
+  get() = (this as? OTAnyValue.Str)?.value
+
+@RunWith(RobolectricTestRunner::class)
+@Config(manifest = Config.NONE, sdk = [28])
+class LogEventToOTLogRecordTest {
+  private fun makeLog(severity: String): LogEvent =
+    LogEvent(
+      sessionId = "session-1",
+      timestamp = "2025-01-01T00:00:00.000Z",
+      name = "auth.login_failed",
+      body = "invalid_credentials",
+      severity = severity,
+      attributes = null,
+      droppedAttributesCount = 0
+    )
+
+  @Test
+  fun `renders severityText and severityNumber consistently for known cases`() {
+    val warn = makeLog(severity = "warn").toOTLogRecord()
+    assertEquals("WARN", warn.severityText)
+    assertEquals(13, warn.severityNumber)
+
+    val error = makeLog(severity = "error").toOTLogRecord()
+    assertEquals("ERROR", error.severityText)
+    assertEquals(17, error.severityNumber)
+  }
+
+  @Test
+  fun `falls back to INFO consistently for an unknown severity string`() {
+    // The previous code uppercased the raw value verbatim while the number
+    // path fell back to 9, producing internally-inconsistent records like
+    // (severityText="FROBNICATE", severityNumber=9). This pins the fix.
+    val ot = makeLog(severity = "frobnicate").toOTLogRecord()
+    assertEquals("INFO", ot.severityText)
+    assertEquals(9, ot.severityNumber)
   }
 }

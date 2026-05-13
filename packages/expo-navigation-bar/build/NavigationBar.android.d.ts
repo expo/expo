@@ -1,4 +1,4 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 import type { NavigationBarProps, NavigationBarStyle, NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 export declare function setStyle(style: NavigationBarStyle): void;
 export declare function NavigationBar({ style, hidden }: NavigationBarProps): null;

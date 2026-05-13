@@ -1,7 +1,8 @@
 import { Platform } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
-import { LocationObject, LocationAccuracy, LocationOptions } from './Location.types';
+import type { LocationObject, LocationOptions } from './Location.types';
+import { LocationAccuracy } from './Location.types';
 import { LocationSubscriber } from './LocationSubscribers';
 
 type GeolocationSuccessCallback = (data: LocationObject) => void;

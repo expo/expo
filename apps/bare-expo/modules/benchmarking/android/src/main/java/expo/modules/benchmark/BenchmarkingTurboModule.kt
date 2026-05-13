@@ -1,6 +1,7 @@
 package expo.modules.benchmark
 
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -18,6 +19,10 @@ class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBen
     // For some reason, isBlockingSynchronousMethod doesn't let functions be Void/Unit
     // so returning a dummy number
     return 0.0
+  }
+
+  override fun nothingAsync(promise: Promise) {
+    promise.resolve(null)
   }
 
   override fun addNumbers(a: Double, b: Double): Double {
@@ -38,7 +43,7 @@ class BenchmarkingTurboModule(reactContext: ReactApplicationContext) : NativeBen
     return sum
   }
 
-  override fun echoObject(point: ReadableMap): WritableMap {
+  override fun passthroughDict(point: ReadableMap): WritableMap {
     val result = Arguments.createMap()
     result.putDouble("x", point.getDouble("x"))
     result.putDouble("y", point.getDouble("y"))

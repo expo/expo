@@ -20,6 +20,7 @@ import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import java.io.Serializable
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 open class ChipPressedEvent : Record, Serializable
@@ -27,44 +28,63 @@ open class ChipPressedEvent : Record, Serializable
 @OptimizedRecord
 class AssistChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val leadingIconContentColor: Color? = null
+
   @Field val trailingIconContentColor: Color? = null
 }
 
 @OptimizedRecord
 class FilterChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val iconColor: Color? = null
+
   @Field val selectedContainerColor: Color? = null
+
   @Field val selectedLabelColor: Color? = null
+
   @Field val selectedLeadingIconColor: Color? = null
+
   @Field val selectedTrailingIconColor: Color? = null
 }
 
 @OptimizedRecord
 class InputChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val leadingIconColor: Color? = null
+
   @Field val trailingIconColor: Color? = null
+
   @Field val selectedContainerColor: Color? = null
+
   @Field val selectedLabelColor: Color? = null
+
   @Field val selectedLeadingIconColor: Color? = null
+
   @Field val selectedTrailingIconColor: Color? = null
 }
 
 @OptimizedRecord
 class SuggestionChipColors : Record {
   @Field val containerColor: Color? = null
+
   @Field val labelColor: Color? = null
+
   @Field val iconContentColor: Color? = null
 }
 
 @OptimizedRecord
 class ChipBorder : Record {
   @Field val width: Float = 1f
+
   @Field val color: Color? = null
 }
 
@@ -82,6 +102,7 @@ private fun FunctionalComposableScope.slotContent(slotName: String): (@Composabl
 
 // region AssistChip
 
+@OptimizedComposeProps
 data class AssistChipProps(
   val enabled: Boolean = true,
   val colors: AssistChipColors = AssistChipColors(),
@@ -138,6 +159,7 @@ fun FunctionalComposableScope.AssistChipContent(
 
 // region FilterChip
 
+@OptimizedComposeProps
 data class FilterChipProps(
   val selected: Boolean = false,
   val enabled: Boolean = true,
@@ -199,6 +221,7 @@ fun FunctionalComposableScope.FilterChipContent(
 
 // region InputChip
 
+@OptimizedComposeProps
 data class InputChipProps(
   val enabled: Boolean = true,
   val selected: Boolean = false,
@@ -262,6 +285,7 @@ fun FunctionalComposableScope.InputChipContent(
 
 // region SuggestionChip
 
+@OptimizedComposeProps
 data class SuggestionChipProps(
   val enabled: Boolean = true,
   val colors: SuggestionChipColors = SuggestionChipColors(),

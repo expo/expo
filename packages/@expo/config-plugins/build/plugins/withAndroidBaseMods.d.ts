@@ -1,7 +1,7 @@
-import { ForwardedBaseModOptions } from './createBaseMod';
-import { ExportedConfig } from '../Plugin.types';
+import type { ForwardedBaseModOptions } from './createBaseMod';
+import type { ExportedConfig } from '../Plugin.types';
 import { Manifest, Paths, Properties, Resources } from '../android';
-import { AndroidManifest } from '../android/Manifest';
+import type { AndroidManifest } from '../android/Manifest';
 export declare function sortAndroidManifest(obj: AndroidManifest): Manifest.AndroidManifest;
 declare const defaultProviders: {
     dangerous: import("./createBaseMod").BaseModProviderMethods<unknown, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;

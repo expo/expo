@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("SharedRef")
+@JavaScriptActor
 struct SharedRefTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {

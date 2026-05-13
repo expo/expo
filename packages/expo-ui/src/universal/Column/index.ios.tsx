@@ -1,7 +1,8 @@
 import { VStack } from '@expo/ui/swift-ui';
 
 import { transformToModifiers } from '../transformStyle';
-import type { ColumnProps, UniversalAlignment } from './types';
+import type { UniversalAlignment } from '../types';
+import type { ColumnProps } from './types';
 
 const alignmentMap: Record<UniversalAlignment, 'leading' | 'center' | 'trailing'> = {
   start: 'leading',
@@ -45,3 +46,5 @@ export function Column({
     </VStack>
   );
 }
+
+export * from './types';

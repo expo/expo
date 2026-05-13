@@ -40,9 +40,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     self.runtime = runtime
 
     // Create function that is the promise setup. It is called immediately on `callAsConstructor`.
-    let setup = runtime.createFunction { [resolveFunction, rejectFunction] this, arguments in
-      resolveFunction.reset(arguments[0])
-      rejectFunction.reset(arguments[1])
+    let setup = runtime.createFunction { [weak resolveFunction, weak rejectFunction] this, arguments in
+      resolveFunction?.reset(arguments[0])
+      rejectFunction?.reset(arguments[1])
       return .undefined
     }
 
@@ -120,14 +120,16 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     guard let runtime else {
       return
     }
-    let onFulfilled = runtime.createFunction { [deferredPromise] this, arguments in
+    let onFulfilled = runtime.createFunction { [weak deferredPromise] this, arguments in
+      guard let deferredPromise else { return .undefined }
       let value = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.resolve(value)
       }
       return .undefined
     }
-    let onRejected = runtime.createFunction { [deferredPromise] this, arguments in
+    let onRejected = runtime.createFunction { [weak deferredPromise] this, arguments in
+      guard let deferredPromise else { return .undefined }
       let error = arguments[0]
       Task.immediate_polyfill {
         await deferredPromise.reject(error)

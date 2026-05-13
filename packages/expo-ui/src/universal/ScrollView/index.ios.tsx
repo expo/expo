@@ -74,3 +74,5 @@ export function ScrollView({
     </SwiftUIScrollView>
   );
 }
+
+export * from './types';

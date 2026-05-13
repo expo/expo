@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CardContent = CardContent;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 // This component will render a page which overflows the screen
@@ -86,7 +87,7 @@ function CardContent({ enabled, layout, style, ...rest }) {
         setFill(width === layout.width && height === layout.height);
         return unsubscribe;
     }, [layout.height, layout.width]);
-    return (<react_native_1.View {...rest} pointerEvents="box-none" style={[enabled && fill ? styles.page : styles.card, style]}/>);
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { ...rest, pointerEvents: "box-none", style: [enabled && fill ? styles.page : styles.card, style] }));
 }
 const styles = react_native_1.StyleSheet.create({
     page: {

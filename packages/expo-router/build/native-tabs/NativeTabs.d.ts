@@ -16,14 +16,14 @@ import type { NativeTabsProps } from './types';
  * }
  * ```
  */
-export declare const NativeTabs: ((props: NativeTabsProps) => import("react").JSX.Element) & {
+export declare const NativeTabs: ((props: NativeTabsProps) => import("react/jsx-runtime").JSX.Element) & {
     Trigger: ((props: import("./types").NativeTabTriggerProps) => null) & {
-        Label: import("react").FC<import("./common/elements").NativeTabsTriggerLabelProps>;
-        Icon: import("react").FC<import("./common/elements").NativeTabsTriggerIconProps>;
-        Badge: import("react").FC<import("./common/elements").NativeTabsTriggerBadgeProps>;
+        Label: import("react").FC<import(".").NativeTabsTriggerLabelProps>;
+        Icon: import("react").FC<import(".").NativeTabsTriggerIconProps>;
+        Badge: import("react").FC<import(".").NativeTabsTriggerBadgeProps>;
         VectorIcon: typeof import("..").VectorIcon;
     };
-    BottomAccessory: import("react").FC<import("./common/elements").NativeTabsBottomAccessoryProps> & {
+    BottomAccessory: import("react").FC<import(".").NativeTabsBottomAccessoryProps> & {
         usePlacement: () => "regular" | "inline";
     };
 };

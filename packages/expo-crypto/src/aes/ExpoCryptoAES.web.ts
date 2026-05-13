@@ -1,13 +1,13 @@
 import { registerWebModule, NativeModule } from 'expo';
 
-import {
+import type {
   AESDecryptOptions,
   AESEncryptOptions,
-  AESKeySize,
   AESSealedDataConfig,
   BinaryInput,
   GCMTagByteLength,
 } from './aes.types';
+import { AESKeySize } from './aes.types';
 import {
   base64ToUintArray,
   binaryInputBytes,

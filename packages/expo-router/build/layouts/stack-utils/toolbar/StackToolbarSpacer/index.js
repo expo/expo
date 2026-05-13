@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarSpacer = void 0;
 exports.convertStackToolbarSpacerPropsToRNHeaderItem = convertStackToolbarSpacerPropsToRNHeaderItem;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const native_1 = require("./native");
 const context_1 = require("../context");
 /**
@@ -10,6 +11,8 @@ const context_1 = require("../context");
  *
  * In left/right placements, width is required.
  * In bottom placement, if width is not provided, creates a flexible spacer that expands to fill space.
+ *
+ * > **Note:** Flexible spacers are iOS-only. On Android, `width` is a required property
  *
  * @example
  * ```tsx
@@ -55,7 +58,7 @@ const StackToolbarSpacer = (props) => {
     if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
     }
-    return <native_1.NativeToolbarSpacer {...props} hidesSharedBackground={!props.sharesBackground}/>;
+    return (0, jsx_runtime_1.jsx)(native_1.NativeToolbarSpacer, { ...props, hidesSharedBackground: !props.sharesBackground });
 };
 exports.StackToolbarSpacer = StackToolbarSpacer;
 function convertStackToolbarSpacerPropsToRNHeaderItem(props) {

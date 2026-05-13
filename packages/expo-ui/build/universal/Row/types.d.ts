@@ -1,5 +1,4 @@
 import type { UniversalAlignment, UniversalBaseProps } from '../types';
-export type { UniversalAlignment };
 /**
  * Props for the [`Row`](#row) component, a horizontal layout container.
  */

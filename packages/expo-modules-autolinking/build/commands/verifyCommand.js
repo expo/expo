@@ -81,13 +81,13 @@ async function verifySearchResults(results, options) {
         }
         else {
             switch (revision.source) {
-                case 2 /* DependencyResolutionSource.RN_CLI_LOCAL */:
+                case dependencies_1.DependencyResolutionSource.RN_CLI_LOCAL:
                     groups.reactNativeProjectConfig.push(revision);
                     break;
-                case 1 /* DependencyResolutionSource.SEARCH_PATH */:
+                case dependencies_1.DependencyResolutionSource.SEARCH_PATH:
                     groups.searchPaths.push(revision);
                     break;
-                case 0 /* DependencyResolutionSource.RECURSIVE_RESOLUTION */:
+                case dependencies_1.DependencyResolutionSource.RECURSIVE_RESOLUTION:
                     groups.dependencies.push(revision);
                     break;
             }

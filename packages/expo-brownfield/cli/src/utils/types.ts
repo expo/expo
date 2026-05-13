@@ -46,7 +46,23 @@ export interface IosConfig extends CommonConfig {
   output: 'frameworks' | PackageConfiguration;
   scheme: string;
   simulator: string;
+  usePrebuilds: boolean;
   workspace: string;
+}
+
+export interface ModuleXCFramework {
+  /** XCFramework basename (e.g. `ExpoImage`, `SDWebImage`). Becomes the binaryTarget name. */
+  name: string;
+  /** Absolute path to the owning `Pods/<PodName>/` directory. */
+  podDir: string;
+  /** Absolute path to the `<name>.xcframework` directory. */
+  xcframeworkPath: string;
+  /**
+   * The pod's main product name — the one that matches the `artifacts/<product>-{debug,release}.tar.gz`
+   * tarball pattern. Differs from `name` for SPM-dependency xcframeworks (e.g. SDWebImage bundled
+   * alongside ExpoImage has `name: "SDWebImage"` but `mainProduct: "ExpoImage"`).
+   */
+  mainProduct: string;
 }
 
 export interface TasksConfigAndroid extends CommonConfig {

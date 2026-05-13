@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicBoolType: AnyDynamicType {
   static let shared = DynamicBoolType()
 
@@ -31,6 +33,13 @@ internal struct DynamicBoolType: AnyDynamicType {
       return jsValue.getBool()
     }
     throw Conversions.ConversionToNativeFailedException((kind: jsValue.kind, nativeType: Bool.self))
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let value = value as? Bool {
+      return value ? .true() : .false()
+    }
+    throw Conversions.ConversionToJSFailedException((kind: .bool, nativeType: ValueType.self))
   }
 
   var description: String {

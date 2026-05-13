@@ -4,6 +4,6 @@ type Props = {
     size?: number;
     style?: StyleProp<TextStyle>;
 };
-export declare function MissingIcon({ color, size, style }: Props): import("react").JSX.Element;
+export declare function MissingIcon({ color, size, style }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=MissingIcon.d.ts.map

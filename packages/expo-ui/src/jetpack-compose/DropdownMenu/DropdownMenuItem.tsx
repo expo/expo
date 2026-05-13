@@ -1,7 +1,7 @@
 import { requireNativeView } from 'expo';
-import { ColorValue } from 'react-native';
+import type { ColorValue } from 'react-native';
 
-import { ModifierConfig, ViewEvent } from '../../types';
+import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {
@@ -22,12 +22,10 @@ export type DropdownMenuItemElementColors = {
   textColor?: ColorValue;
   /** Color of the text when the menu item is disabled. */
   disabledTextColor?: ColorValue;
-  // TODO: At the moment IconView's tint color defaults to Color.Unspecified instead of LocalContentColor.current.
-  // Thus the color override will not work for icons. At the moment icon color can only be set directly in IconView.
-  // leadingIconColor?: ColorValue;
-  // trailingIconColor?: ColorValue;
-  // disabledLeadingIconColor?: ColorValue;
-  // disabledTrailingIconColor?: ColorValue;
+  leadingIconColor?: ColorValue;
+  trailingIconColor?: ColorValue;
+  disabledLeadingIconColor?: ColorValue;
+  disabledTrailingIconColor?: ColorValue;
 };
 
 /**

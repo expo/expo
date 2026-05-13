@@ -12,6 +12,8 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import host.exp.exponent.brownfield.ReactNativeFragment
 import host.exp.exponent.brownfield.ReactNativeHostManager
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
@@ -19,7 +21,7 @@ import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        ReactNativeHostManager.shared.initialize(this.application)
+        ReactNativeHostManager.shared.initialize(this.application, listOf(BrownfieldTestPackage()))
 
         val rootLayout =
             LinearLayout(this).apply {
@@ -32,6 +34,17 @@ class MainActivity : AppCompatActivity(), DefaultHardwareBackBtnHandler {
                     )
                 setPadding(dpToPx(16), dpToPx(24), dpToPx(16), dpToPx(24))
             }
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
+            view.setPadding(
+                systemBars.left + dpToPx(16),
+                systemBars.top + dpToPx(24),
+                systemBars.right + dpToPx(16),
+                systemBars.bottom + dpToPx(24)
+            )
+            WindowInsetsCompat.CONSUMED
+        }
 
         val button =
             Button(this).apply {

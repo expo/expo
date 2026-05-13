@@ -79,6 +79,38 @@ export const UIUniversalScreens = [
       return optionalRequire(() => require('./BottomSheetScreen'));
     },
   },
+  {
+    name: `${SCREEN_NAME_PREFIX}FieldGroup`,
+    route: 'ui-universal/field-group',
+    options: { title: 'FieldGroup' },
+    getComponent() {
+      return optionalRequire(() => require('./FieldGroupScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}Spacer`,
+    route: 'ui-universal/spacer',
+    options: { title: 'Spacer' },
+    getComponent() {
+      return optionalRequire(() => require('./SpacerScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}Icon`,
+    route: 'ui-universal/icon',
+    options: { title: 'Icon' },
+    getComponent() {
+      return optionalRequire(() => require('./IconScreen'));
+    },
+  },
+  {
+    name: `${SCREEN_NAME_PREFIX}TextInput`,
+    route: 'ui-universal/text-input',
+    options: { title: 'TextInput' },
+    getComponent() {
+      return optionalRequire(() => require('./TextInputScreen'));
+    },
+  },
 ];
 
 function stripPrefix(elements: ListElement[]): ListElement[] {

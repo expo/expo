@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("SharedObject")
+@JavaScriptActor
 struct SharedObjectTests {
   let appContext: AppContext
   var runtime: ExpoRuntime {
@@ -119,10 +120,17 @@ struct SharedObjectTests {
     #expect(try isReturningItself.asBool() == true)
   }
 
+  @Test
+  func `releases the native object when JS reference is garbage-collected`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval("(() => { new expo.modules.SharedObjectModule.SharedObjectExample() })()")
+    try runtime.eval("gc() && gc() && gc()")
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
   // MARK: - Native object
 
   @Test
-  @MainActor
   func `emits events`() throws {
     // Create the shared object
     let jsObject = try runtime
@@ -151,6 +159,49 @@ struct SharedObjectTests {
     #expect(try result.getProperty("number").asInt() == 123)
     #expect(try result.getProperty("string").asString() == "test")
     #expect(try result.getProperty("record").asObject().getProperty("boolean").asBool() == true)
+  }
+
+  @Test
+  func `emits NativeArrayBuffer`() throws {
+    let jsObject = try runtime
+      .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
+      .asObject()
+
+    try runtime.eval([
+      "result = null",
+      "sharedObject.addListener('buffer event', (payload) => { result = payload })"
+    ])
+
+    let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
+
+    let nativeBuffer = NativeArrayBuffer.allocate(size: 16, initializeToZero: false)
+    nativeBuffer.withUnsafeBytes { raw in
+      let mutable = UnsafeMutableRawPointer(mutating: raw.baseAddress!)
+      for index in 0..<16 {
+        mutable.storeBytes(of: UInt8(index + 1), toByteOffset: index, as: UInt8.self)
+      }
+    }
+
+    let payload: [String: Any] = [
+      "data": nativeBuffer,
+      "length": 16
+    ]
+
+    nativeObject?.emit(event: "buffer event", arguments: payload)
+
+    let resultValue = try runtime.eval("result")
+    #expect(!resultValue.isNull() && !resultValue.isUndefined())
+
+    let result = try resultValue.asObject()
+    let dataProperty = result.getProperty("data")
+
+    #expect(dataProperty.isArrayBuffer())
+    #expect(try result.getProperty("length").asInt() == 16)
+
+    let firstByte = try runtime.eval("new Uint8Array(result.data)[0]").asInt()
+    let lastByte = try runtime.eval("new Uint8Array(result.data)[15]").asInt()
+    #expect(firstByte == 1)
+    #expect(lastByte == 16)
   }
 }
 

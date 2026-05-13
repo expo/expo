@@ -4,12 +4,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withIosSplashColors = exports.SPLASHSCREEN_COLORSET_PATH = void 0;
-const debug_1 = __importDefault(require("debug"));
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const InterfaceBuilder_1 = require("./InterfaceBuilder");
-const debug = (0, debug_1.default)('expo:expo-splash-screen:ios:splash-colorset');
 exports.SPLASHSCREEN_COLORSET_PATH = 'Images.xcassets/SplashScreenBackground.colorset';
 const darkAppearances = [{ appearance: 'luminosity', value: 'dark' }];
 const withIosSplashColors = (config, splash) => {
@@ -69,8 +67,6 @@ async function writeColorsContentsJsonFileAsync({ assetPath, backgroundColor, da
             appearances: darkAppearances,
         });
     }
-    debug(`create colors contents.json:`, assetPath);
-    debug(`use colors:`, colors);
     await fs_1.default.promises.mkdir(assetPath, { recursive: true });
     await fs_1.default.promises.writeFile(path_1.default.join(assetPath, 'Contents.json'), JSON.stringify({
         colors,

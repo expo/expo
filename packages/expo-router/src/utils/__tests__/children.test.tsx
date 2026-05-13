@@ -32,15 +32,15 @@ describe(filterAllowedChildrenElements, () => {
     const filtered = filterAllowedChildrenElements(children, [A, C]);
 
     expect(filtered).toHaveLength(2);
-    expect(filtered[0].type).toBe(A);
-    expect(filtered[1].type).toBe(C);
+    expect(filtered[0]!.type).toBe(A);
+    expect(filtered[1]!.type).toBe(C);
   });
 
   it('filterAllowedChildrenElements accepts a single child', () => {
     const single = <A />;
     const filtered = filterAllowedChildrenElements(single, [A]);
     expect(filtered).toHaveLength(1);
-    expect(filtered[0].type).toBe(A);
+    expect(filtered[0]!.type).toBe(A);
   });
 
   it('filterAllowedChildrenElements does not match components by shape, only by reference', () => {
@@ -51,7 +51,7 @@ describe(filterAllowedChildrenElements, () => {
     const filtered = filterAllowedChildrenElements(children, [AClone]);
     // only AClone should match
     expect(filtered).toHaveLength(1);
-    expect(filtered[0].type).toBe(AClone);
+    expect(filtered[0]!.type).toBe(AClone);
   });
 });
 
@@ -102,8 +102,8 @@ describe('getAllChildrenOfType', () => {
     const children = [<A label="a1" />, <B label="b1" />, <A label="a2" />, <C label="c1" />];
     const result = getAllChildrenOfType(children, A);
     expect(result).toHaveLength(2);
-    expect(result[0].type).toBe(A);
-    expect(result[1].type).toBe(A);
+    expect(result[0]!.type).toBe(A);
+    expect(result[1]!.type).toBe(A);
   });
 
   it('returns empty array when no matches', () => {

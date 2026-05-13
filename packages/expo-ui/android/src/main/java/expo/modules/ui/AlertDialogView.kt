@@ -11,6 +11,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedRecord
 data class AlertDialogColors(
@@ -28,6 +29,7 @@ data class ExpoDialogProperties(
   @Field val decorFitsSystemWindows: Boolean = true
 ) : Record
 
+@OptimizedComposeProps
 data class AlertDialogProps(
   val colors: AlertDialogColors = AlertDialogColors(),
   val tonalElevation: Double? = null,

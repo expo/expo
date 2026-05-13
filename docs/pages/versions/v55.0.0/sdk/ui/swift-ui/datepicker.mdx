@@ -169,9 +169,12 @@ export default function GraphicalDatePickerExample() {
 
 ## Disabled picker
 
+You can make the picker non-interactive using the `disabled` modifier.
+
 ```tsx DisabledDatePickerExample.tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
+import { disabled } from '@expo/ui/swift-ui/modifiers';
 
 export default function DisabledDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -185,7 +188,7 @@ export default function DisabledDatePickerExample() {
         onDateChange={date => {
           setSelectedDate(date);
         }}
-        disabled
+        modifiers={[disabled()]}
       />
     </Host>
   );
@@ -194,11 +197,12 @@ export default function DisabledDatePickerExample() {
 
 ## Custom locale
 
-Use the `locale` prop to display the picker in a specific locale.
+Apply the `environment` modifier with the `locale` key to display the picker in a specific locale.
 
 ```tsx LocaleDatePickerExample.tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
+import { environment } from '@expo/ui/swift-ui/modifiers';
 
 export default function LocaleDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -212,7 +216,7 @@ export default function LocaleDatePickerExample() {
         onDateChange={date => {
           setSelectedDate(date);
         }}
-        locale="fr_FR"
+        modifiers={[environment('locale', 'fr_FR')]}
       />
     </Host>
   );
@@ -221,11 +225,12 @@ export default function LocaleDatePickerExample() {
 
 ## Custom time zone
 
-Use the `timeZone` prop to display the picker in a specific IANA time zone.
+Apply the `environment` modifier with the `timeZone` key to display the picker in a specific IANA time zone.
 
 ```tsx TimeZoneDatePickerExample.tsx
 import { useState } from 'react';
 import { Host, DatePicker } from '@expo/ui/swift-ui';
+import { environment } from '@expo/ui/swift-ui/modifiers';
 
 export default function TimeZoneDatePickerExample() {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -239,61 +244,7 @@ export default function TimeZoneDatePickerExample() {
         onDateChange={date => {
           setSelectedDate(date);
         }}
-        timeZone="Asia/Tokyo"
-      />
-    </Host>
-  );
-}
-```
-
-## Custom locale
-
-Use the `locale` prop to display the picker in a specific locale.
-
-```tsx LocaleDatePickerExample.tsx
-import { useState } from 'react';
-import { Host, DatePicker } from '@expo/ui/swift-ui';
-
-export default function LocaleDatePickerExample() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  return (
-    <Host matchContents>
-      <DatePicker
-        title="Sélectionner la date"
-        selection={selectedDate}
-        displayedComponents={['date']}
-        onDateChange={date => {
-          setSelectedDate(date);
-        }}
-        locale="fr_FR"
-      />
-    </Host>
-  );
-}
-```
-
-## Custom time zone
-
-Use the `timeZone` prop to display the picker in a specific IANA time zone.
-
-```tsx TimeZoneDatePickerExample.tsx
-import { useState } from 'react';
-import { Host, DatePicker } from '@expo/ui/swift-ui';
-
-export default function TimeZoneDatePickerExample() {
-  const [selectedDate, setSelectedDate] = useState(new Date());
-
-  return (
-    <Host matchContents>
-      <DatePicker
-        title="Tokyo time"
-        selection={selectedDate}
-        displayedComponents={['date', 'hourAndMinute']}
-        onDateChange={date => {
-          setSelectedDate(date);
-        }}
-        timeZone="Asia/Tokyo"
+        modifiers={[environment('timeZone', 'Asia/Tokyo')]}
       />
     </Host>
   );

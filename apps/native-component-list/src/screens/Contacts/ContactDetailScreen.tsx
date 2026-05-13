@@ -94,8 +94,8 @@ function ContactDetailView({
     try {
       await Contacts.removeContactAsync(id);
       navigation.goBack();
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
   };
 
@@ -238,8 +238,8 @@ function ContactDetailView({
         [Contacts.Fields.ID]: id,
         [Contacts.Fields.Image]: { uri },
       });
-    } catch ({ message }) {
-      console.error(message);
+    } catch (error: any) {
+      console.error(error.message);
     }
 
     loadAsync();

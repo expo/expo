@@ -1,5 +1,4 @@
-import React from 'react';
-import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
+import type { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
 /**
  * A component that allows you to configure your status bar declaratively.
  *
@@ -9,7 +8,7 @@ import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
  * This component is built on top of the [StatusBar](https://reactnative.dev/docs/statusbar)
  * component exported from React Native, and it provides defaults that work better for Expo users.
  */
-export declare function StatusBar({ style, hideTransitionAnimation, animated, hidden }: StatusBarProps): React.JSX.Element;
+export declare function StatusBar({ style, hideTransitionAnimation, animated, hidden }: StatusBarProps): import("react/jsx-runtime").JSX.Element;
 export declare namespace StatusBar {
     var setStyle: (style: StatusBarStyle, animated?: boolean) => void;
     var setHidden: (hidden: boolean, animation?: StatusBarAnimation) => void;
