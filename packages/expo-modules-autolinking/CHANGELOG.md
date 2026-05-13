@@ -20,7 +20,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`.
+- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
 
 ## 56.0.4 — 2026-05-11
 
