@@ -11,7 +11,6 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll create our example app's production version and submit it to the Google Play Store. We'll also explore how to automate the creation and release of new app versions.
@@ -319,18 +318,4 @@ For subsequent releases in future, we can streamline the process by combining bu
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={7}
-  name="EAS_TUTORIAL"
-  summary={
-    <>
-      We successfully created a production-ready Android build, discussed manual and automated
-      uploading to Google Play Store using <CODE>eas submit</CODE>, and automated the release
-      process with the <CODE>--auto-submit</CODE>.
-    </>
-  }
-  nextChapterDescription="
-In the next chapter, learn about the process of creating a production build for iOS."
-  nextChapterTitle="Create a production build for iOS"
-  nextChapterLink="/tutorial/eas/ios-production-build/"
-/>
+<ProgressTracker name="EAS_TUTORIAL" currentChapterSlug="/tutorial/eas/android-production-build" />

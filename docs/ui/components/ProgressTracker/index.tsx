@@ -7,124 +7,36 @@ import { P } from '~/ui/components/Text';
 
 import { Checkbox } from '../Form/Checkbox';
 import { SuccessCheckmark } from './SuccessCheckmark';
-import { Chapter } from './TutorialData';
+import { TUTORIAL_CHAPTERS, TUTORIAL_TRAILERS, type TutorialName } from './TutorialData';
 
 type ProgressTrackerProps = {
-  currentChapterIndex: number;
-  name: string;
-  summary: string;
-  nextChapterTitle?: string;
-  nextChapterDescription?: string;
-  nextChapterLink?: string;
+  name: TutorialName;
+  currentChapterSlug: string;
 };
 
-export function ProgressTracker({
-  currentChapterIndex,
-  name,
-  summary,
-  nextChapterTitle,
-  nextChapterDescription,
-  nextChapterLink,
-}: ProgressTrackerProps) {
-  const {
-    chapters,
-    setChapters,
-    getStartedChapters,
-    setGetStartedChapters,
-    cicdChapters,
-    setCicdChapters,
-  } = useTutorialChapterCompletion();
-  const isGetStartedTutorial = name === 'GET_STARTED';
-  const isCicdTutorial = name === 'CICD_TUTORIAL';
-  const currentChapter = isCicdTutorial
-    ? cicdChapters[currentChapterIndex]
-    : isGetStartedTutorial
-      ? getStartedChapters[currentChapterIndex]
-      : chapters[currentChapterIndex];
+export function ProgressTracker({ name, currentChapterSlug }: ProgressTrackerProps) {
+  const { isCompleted, setCompleted } = useTutorialChapterCompletion();
 
-  const handleChapterComplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
-  };
+  const chapters = TUTORIAL_CHAPTERS[name];
+  const currentIndex = chapters.findIndex(c => c.slug === currentChapterSlug);
 
-  const handleGetStartedChapterComplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
-
-  const handleChapterIncomplete = () => {
-    const updatedChapters = chapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setChapters(updatedChapters);
-  };
-
-  const handleGetStartedChapterIncomplete = () => {
-    const updatedChapters = getStartedChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setGetStartedChapters(updatedChapters);
-  };
-
-  const handleCicdChapterComplete = () => {
-    const updatedChapters = cicdChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: true };
-      }
-      return chapter;
-    });
-    setCicdChapters(updatedChapters);
-  };
-
-  const handleCicdChapterIncomplete = () => {
-    const updatedChapters = cicdChapters.map((chapter: Chapter, index: number) => {
-      if (index === currentChapterIndex) {
-        return { ...chapter, completed: false };
-      }
-      return chapter;
-    });
-    setCicdChapters(updatedChapters);
-  };
-
-  const handleCheckboxChange = () => {
-    if (currentChapter.completed) {
-      handleChapterIncomplete();
-    } else {
-      handleChapterComplete();
+  if (currentIndex === -1) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn(
+        `[ProgressTracker] chapter slug "${currentChapterSlug}" not found in ${name}. ` +
+          'Update TutorialData.ts or fix the currentChapterSlug prop.'
+      );
     }
-  };
+    return null;
+  }
 
-  const handleCheckboxChangeForGetStarted = () => {
-    if (currentChapter.completed) {
-      handleGetStartedChapterIncomplete();
-    } else {
-      handleGetStartedChapterComplete();
-    }
-  };
+  const currentChapter = chapters[currentIndex];
+  const nextChapter = chapters[currentIndex + 1];
+  const nextLink = nextChapter
+    ? { title: nextChapter.title, slug: nextChapter.slug }
+    : TUTORIAL_TRAILERS[name];
 
-  const handleCheckboxChangeForCicd = () => {
-    if (currentChapter.completed) {
-      handleCicdChapterIncomplete();
-    } else {
-      handleCicdChapterComplete();
-    }
-  };
+  const completed = isCompleted(name, currentChapterSlug);
 
   return (
     <>
@@ -133,7 +45,7 @@ export function ProgressTracker({
           size="sm"
           className={mergeClasses(
             'mx-auto flex items-center justify-center grayscale transition duration-300',
-            currentChapter.completed && 'border-palette-green5 grayscale-0'
+            completed && 'border-palette-green5 grayscale-0'
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
@@ -141,28 +53,24 @@ export function ProgressTracker({
             <BookOpen02Icon className="text-icon-secondary max-md-gutters:hidden mr-2 size-6!" />{' '}
             {currentChapter.title}
           </p>
-          <p className="text-secondary max-w-[60ch] pb-2 text-center leading-normal">{summary}</p>
+          <p className="text-secondary max-w-[60ch] pb-2 text-center leading-normal">
+            {currentChapter.summary}
+          </p>
         </div>
         <div className="flex items-center justify-center">
           <Checkbox
-            id={`chapter-${currentChapterIndex}`}
-            checked={currentChapter.completed}
-            label={
-              currentChapter.completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'
-            }
-            onChange={
-              isCicdTutorial
-                ? handleCheckboxChangeForCicd
-                : isGetStartedTutorial
-                  ? handleCheckboxChangeForGetStarted
-                  : handleCheckboxChange
-            }
+            id={`chapter-${currentChapterSlug}`}
+            checked={completed}
+            label={completed ? 'Mark this chapter as unread' : 'Mark this chapter as read'}
+            onChange={() => {
+              setCompleted(name, currentChapterSlug, !completed);
+            }}
           />
         </div>
       </div>
       <>
-        <P className="my-4">{nextChapterDescription}</P>
-        <BoxLink href={nextChapterLink} title={`Next: ${nextChapterTitle}`} Icon={BookOpen02Icon} />
+        <P className="my-4">{currentChapter.nextDescription}</P>
+        <BoxLink href={nextLink.slug} title={`Next: ${nextLink.title}`} Icon={BookOpen02Icon} />
       </>
     </>
   );
