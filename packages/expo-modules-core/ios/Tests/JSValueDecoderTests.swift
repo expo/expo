@@ -444,4 +444,117 @@ struct JSValueDecoderTests {
     let user = try #require(any as? User)
     #expect(user == User(name: "Anna", age: 30))
   }
+
+  // MARK: - More error cases
+
+  @Test
+  func `throws typeMismatch when expecting array but got primitive`() throws {
+    #expect(throws: DecodingError.self) {
+      _ = try decode([Int].self, from: "42")
+    }
+  }
+
+  @Test
+  func `wraps Convertible coercion failures as dataCorrupted`() throws {
+    struct Wrapper: Decodable {
+      let url: URL
+    }
+    #expect(throws: DecodingError.self) {
+      _ = try decode(Wrapper.self, from: "({url: 42})")
+    }
+  }
+
+  // MARK: - Unkeyed container — direct surface via custom init(from:)
+
+  @Test
+  func `unkeyed decodeNil reports null elements without advancing past non-null`() throws {
+    struct NullThenInt: Decodable {
+      let first: Int?
+      let second: Int
+      init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        if try container.decodeNil() {
+          self.first = nil
+        } else {
+          self.first = try container.decode(Int.self)
+        }
+        self.second = try container.decode(Int.self)
+      }
+    }
+
+    let nullFirst = try decode(NullThenInt.self, from: "[null, 7]")
+    #expect(nullFirst.first == nil)
+    #expect(nullFirst.second == 7)
+
+    let intFirst = try decode(NullThenInt.self, from: "[3, 7]")
+    #expect(intFirst.first == 3)
+    #expect(intFirst.second == 7)
+  }
+
+  @Test
+  func `unkeyed decodeIfPresent returns nil at end and skips null`() throws {
+    struct ThreeMaybeInts: Decodable {
+      let values: [Int?]
+      init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        var collected: [Int?] = []
+        while !container.isAtEnd {
+          collected.append(try container.decodeIfPresent(Int.self))
+        }
+        self.values = collected
+      }
+    }
+
+    let result = try decode(ThreeMaybeInts.self, from: "[1, null, 3]")
+    #expect(result.values == [1, nil, 3])
+  }
+
+  @Test
+  func `unkeyed nestedContainer throws typeMismatch when element is not an object`() throws {
+    struct PullsObject: Decodable {
+      init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        _ = try container.nestedContainer(keyedBy: AnyCodingKey.self)
+      }
+    }
+    #expect(throws: DecodingError.self) {
+      _ = try decode(PullsObject.self, from: "[1]")
+    }
+  }
+
+  @Test
+  func `unkeyed nestedUnkeyedContainer throws typeMismatch when element is not an array`() throws {
+    struct PullsArray: Decodable {
+      init(from decoder: Decoder) throws {
+        var container = try decoder.unkeyedContainer()
+        _ = try container.nestedUnkeyedContainer()
+      }
+    }
+    #expect(throws: DecodingError.self) {
+      _ = try decode(PullsArray.self, from: "[1]")
+    }
+  }
+
+  // MARK: - Keyed container — allKeys / contains
+
+  @Test
+  func `keyed allKeys and contains expose JS object property names`() throws {
+    struct KeyReport: Decodable {
+      let keys: [String]
+      let hasFoo: Bool
+      let hasMissing: Bool
+
+      init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: AnyCodingKey.self)
+        self.keys = container.allKeys.map(\.stringValue).sorted()
+        self.hasFoo = container.contains(AnyCodingKey(stringValue: "foo"))
+        self.hasMissing = container.contains(AnyCodingKey(stringValue: "missing"))
+      }
+    }
+
+    let result = try decode(KeyReport.self, from: "({foo: 1, bar: 2})")
+    #expect(result.keys == ["bar", "foo"])
+    #expect(result.hasFoo == true)
+    #expect(result.hasMissing == false)
+  }
 }
