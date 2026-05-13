@@ -48,7 +48,8 @@ const react_2 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
-const hooks_1 = require("./hooks");
+// Direct import to prevent a require cycle
+const useCurrentRouteInfo_1 = require("./hooks/useCurrentRouteInfo");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
 const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
@@ -262,7 +263,7 @@ function getQualifiedRouteComponent(value) {
 function AnalyticsListeners({ navigation, screenId, }) {
     const isFirstRenderRef = react_2.default.useRef(true);
     const hasBlurredRef = react_2.default.useRef(true);
-    const routeInfo = (0, hooks_1.useCurrentRouteInfo)();
+    const routeInfo = (0, useCurrentRouteInfo_1.useCurrentRouteInfo)();
     const isFocused = navigation.isFocused();
     if (isFirstRenderRef.current) {
         isFirstRenderRef.current = false;
