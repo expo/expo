@@ -28,8 +28,8 @@ public final class ImageView: ExpoView {
   var loadingOptions: SDWebImageOptions = [
     .retryFailed, // Don't blacklist URLs that failed downloading
     .handleCookies, // Handle cookies stored in the shared `HTTPCookieStore`
-    // Images from cache are `AnimatedImage`s. BlurRadius is done via a SDImageBlurTransformer
-    // so this flag needs to be enabled. Beware most transformers cannot manage animated images.
+    // Images from cache are `AnimatedImage`s. Keep animated transform support enabled; per-frame
+    // transforms that are not safe for request-time animation processing are applied below.
     .transformAnimatedImage
   ]
 
@@ -454,13 +454,20 @@ public final class ImageView: ExpoView {
       return nil
     }
     sdImageView.animationTransformer = nil
+
+    let shouldResize = allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale)
+
+    if image.sd_isAnimated {
+      let resizeSize: CGSize? = shouldResize ? idealSize * scale : nil
+      sdImageView.animationTransformer = createAnimatedImageTransformPipeline(
+        resizeSize: resizeSize,
+        blurRadius: blurRadius
+      )
+      return image
+    }
+
     // Downscale the image only when necessary
-    if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      if image.sd_isAnimated {
-        let size = idealSize * scale
-        sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
-        return image
-      }
+    if shouldResize {
       return resize(image: image, toSize: idealSize, scale: scale)
     }
     return image
@@ -854,4 +861,28 @@ func localAssetName(from url: URL?) -> String? {
   }
 
   return path.isEmpty ? nil : path
+}
+
+func createAnimatedImageTransformPipeline(resizeSize: CGSize?, blurRadius: CGFloat) -> SDImageTransformer? {
+  var transformers: [SDImageTransformer] = []
+
+  if let resizeSize {
+    transformers.append(SDImageResizingTransformer(size: resizeSize, scaleMode: .fill))
+  }
+  if blurRadius > 0 {
+    transformers.append(SDImageBlurTransformer(radius: blurRadius))
+  }
+
+  return createImageTransformPipeline(transformers)
+}
+
+func createImageTransformPipeline(_ transformers: [SDImageTransformer]) -> SDImageTransformer? {
+  switch transformers.count {
+  case 0:
+    return nil
+  case 1:
+    return transformers[0]
+  default:
+    return SDImagePipelineTransformer(transformers: transformers)
+  }
 }
