@@ -41,7 +41,7 @@ If you plan to contribute to the documentation, run `npm run setup:docs`.
 
 ### Set up Android
 
-If you plan to contribute to Android, run `npm run setup:native`. This command does the following for you:
+If you plan to contribute to Android, run `pnpm run setup:native`. This command does the following for you:
 
 - Downloads submodules (like `react-native`) with `git submodule update --init`
 - Ensures pnpm is installed
