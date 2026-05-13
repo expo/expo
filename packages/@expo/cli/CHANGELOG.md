@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Switch React Native Directory compatibility check request from POST to GET. ([#45673](https://github.com/expo/expo/pull/45673) by [@simek](https://github.com/simek))
+
 ## 56.1.2 — 2026-05-12
 
 _This version does not introduce any user-facing changes._
