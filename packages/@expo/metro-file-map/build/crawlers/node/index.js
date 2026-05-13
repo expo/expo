@@ -58,15 +58,21 @@ function find(roots, extensions, ignore, includeSymlinks, rootDir, console, prev
         fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
             activeCalls--;
             if (err) {
-                console.warn(`Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`);
+                // NOTE(@kitten): This isn't necessarily a problem and we can ignore this
+                /*
+                console.warn(
+                  `Error "${(err as any).code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
+                );
+                */
             }
             else {
                 for (let idx = 0; idx < entries.length; idx++) {
                     const entry = entries[idx];
                     const name = entry.name;
                     // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
+                    // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
                     const isDirectory = entry.isDirectory();
-                    if (isDirectory && (name === '.git' || name === '.hg')) {
+                    if (isDirectory && (name === '.git' || name === '.hg' || name === '.cxx')) {
                         continue;
                     }
                     const file = directory + path.sep + name;
