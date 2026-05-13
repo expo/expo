@@ -16,6 +16,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     project.afterEvaluate { project ->
       setupSourceSets(project)
       setupCopyingAutolinking(project)
+      ensureEntryPointBuildConfigFields(project)
       setupCopyingNativeLibsForType(project, "Release")
       setupCopyingNativeLibsForType(project, "Debug")
       setupHostAppArtifactForwardingForRelease(project)
@@ -117,6 +118,45 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
     brownfieldProject.tasks.named("preBuild").configure { task ->
       task.dependsOn("copyAutolinkingSources")
     }
+  }
+
+  /**
+   * Inject the `IS_*` BuildConfig fields that React Native's autolinking-generated
+   * `ReactNativeApplicationEntryPoint.java` references (`IS_EDGE_TO_EDGE_ENABLED`,
+   * `IS_HERMES_ENABLED`, `IS_NEW_ARCHITECTURE_ENABLED`).
+   *
+   * React Native's gradle plugin populates these fields for `com.android.application` modules,
+   * but the `:brownfield` module is a `com.android.library`. The brownfield setup copies the
+   * generated entry point into the library and rewrites its `BuildConfig` package qualifier
+   * (see [setupCopyingAutolinking]), so the rewritten reference resolves against the library's
+   * own `BuildConfig` — which would otherwise be missing the fields and fail to compile with
+   * `cannot find symbol: variable IS_EDGE_TO_EDGE_ENABLED`.
+   *
+   * Scoping this to the brownfield library (rather than patching `@react-native/gradle-plugin`
+   * to inject the fields for every library) keeps the change targeted to the module that
+   * actually needs them — third-party RN libraries (reanimated, screens, etc.) don't get
+   * unrelated `IS_*` constants stamped into their `BuildConfig`.
+   *
+   * @param brownfieldProject The brownfield project.
+   */
+  private fun ensureEntryPointBuildConfigFields(brownfieldProject: Project) {
+    val libraryExtension = getLibraryExtension(brownfieldProject)
+    libraryExtension.buildFeatures.buildConfig = true
+    libraryExtension.defaultConfig.buildConfigField(
+      "boolean",
+      "IS_NEW_ARCHITECTURE_ENABLED",
+      brownfieldProject.findProperty("newArchEnabled")?.toString() ?: "true",
+    )
+    libraryExtension.defaultConfig.buildConfigField(
+      "boolean",
+      "IS_HERMES_ENABLED",
+      brownfieldProject.findProperty("hermesEnabled")?.toString() ?: "true",
+    )
+    libraryExtension.defaultConfig.buildConfigField(
+      "boolean",
+      "IS_EDGE_TO_EDGE_ENABLED",
+      "true",
+    )
   }
 
   /**

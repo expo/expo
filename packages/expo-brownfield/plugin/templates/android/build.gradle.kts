@@ -21,22 +21,14 @@ android {
     minSdk = 24
     consumerProguardFiles("consumer-rules.pro")
     buildConfigField(
-        "boolean",
-        "IS_NEW_ARCHITECTURE_ENABLED",
-        properties["newArchEnabled"].toString(),
-    )
-    buildConfigField("boolean", "IS_HERMES_ENABLED", properties["hermesEnabled"].toString())
-    buildConfigField(
         "String",
         "REACT_NATIVE_RELEASE_LEVEL",
         "\"${findProperty("reactNativeReleaseLevel") ?: "stable"}\"",
     )
-    // TODO(pmleczek): Investigate why this has to be added for brownfield
-    buildConfigField(
-      "boolean",
-      "IS_EDGE_TO_EDGE_ENABLED",
-      "true", // Edge-to-edge is mandatory in Android 16+
-    )
+    // IS_NEW_ARCHITECTURE_ENABLED, IS_HERMES_ENABLED, and IS_EDGE_TO_EDGE_ENABLED are
+    // injected by ExpoBrownfieldSetupPlugin.ensureEntryPointBuildConfigFields so the
+    // autolinking-generated ReactNativeApplicationEntryPoint.java compiles against this
+    // library's BuildConfig.
   }
 
   buildTypes {
