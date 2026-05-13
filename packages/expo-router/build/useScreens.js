@@ -287,10 +287,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
     }, [routeInfo?.params, routeInfo?.pathname, screenId]);
     const isFocused = navigation.isFocused();
     // Emit `pageFocused` from an effect — not during render — so it fires after the
-    // focused screen's content has committed. expo-observe uses this event for TTR
-    // (time-to-render); emitting during render reports TTR before the screen exists.
-    // The blur/focus listener below handles re-focus; this useEffect handles the
-    // initial-mount-focused case. `hasBlurredRef` dedupes across both paths.
+    // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
     (0, react_2.useEffect)(() => {
         if (isFocused && routeInfo && hasBlurredRef.current) {
             navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
