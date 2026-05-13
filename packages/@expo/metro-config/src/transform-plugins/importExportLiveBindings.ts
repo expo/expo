@@ -16,6 +16,7 @@ import {
 } from './helpers';
 
 export interface Options {
+  readonly performConstantFolding?: boolean;
   readonly resolve: boolean;
   readonly out?: {
     isESModule: boolean;
@@ -94,9 +95,16 @@ export function importExportLiveBindingsPlugin({
     return moduleSpecifiers;
   };
 
-  const addImport = (path: NodePath, state: State, source: ModuleRequest): ID => {
+  const addImport = (
+    path: NodePath,
+    state: State,
+    source: ModuleRequest,
+    sideEffect: boolean = false
+  ): ID => {
     const moduleSpecifiers = addModuleSpecifiers(state, source);
-    moduleSpecifiers.sideEffect = true;
+    if (sideEffect || !state.opts.performConstantFolding) {
+      moduleSpecifiers.sideEffect = true;
+    }
     let id = moduleSpecifiers[ImportDeclarationKind.REQUIRE];
     if (!id) {
       id = path.scope.generateUid(source.value);
@@ -173,7 +181,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          addImport(path, state, source);
+          addImport(path, state, source, true);
           path.remove();
           return;
         }
@@ -286,7 +294,7 @@ export function importExportLiveBindingsPlugin({
         }
         const source: ModuleRequest = path.node.source;
         if (!path.node.specifiers.length) {
-          addImport(path, state, source);
+          addImport(path, state, source, true);
           path.remove();
           return;
         }
@@ -428,13 +436,15 @@ export function importExportLiveBindingsPlugin({
                   : assignExportHelper;
               const exportBindings = t.getBindingIdentifiers(declaration, false, true);
               for (const exportName in exportBindings) {
-                state.exportDeclarations.push({
-                  statement: withLocation(
-                    exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
-                    exportStatement.loc
-                  ),
-                  local: undefined,
-                });
+                if (exportBindings[exportName] != null) {
+                  state.exportDeclarations.push({
+                    statement: withLocation(
+                      exportHelper(t, exportName, t.identifier(exportBindings[exportName].name)),
+                      exportStatement.loc
+                    ),
+                    local: undefined,
+                  });
+                }
               }
             }
           }

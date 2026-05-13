@@ -1,23 +1,25 @@
 package expo.modules.ui
 
-import android.content.Context
 import android.graphics.Color
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoComposeView
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.Modifier
-import expo.modules.kotlin.AppContext
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 class SliderColors : Record {
   @Field
   val thumbColor: Color? = null
@@ -35,44 +37,96 @@ class SliderColors : Record {
   val inactiveTickColor: Color? = null
 }
 
+@OptimizedComposeProps
 data class SliderProps(
-  val value: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val min: MutableState<Float> = mutableFloatStateOf(0.0f),
-  val max: MutableState<Float> = mutableFloatStateOf(1.0f),
-  val steps: MutableState<Int> = mutableIntStateOf(0),
-  val elementColors: MutableState<SliderColors> = mutableStateOf(SliderColors()),
-  val modifiers: MutableState<List<ExpoModifier>> = mutableStateOf(emptyList())
+  val value: Float = 0.0f,
+  val min: Float = 0.0f,
+  val max: Float = 1.0f,
+  val lowerLimit: Float? = null,
+  val upperLimit: Float? = null,
+  val steps: Int = 0,
+  val enabled: Boolean = true,
+  val colors: SliderColors = SliderColors(),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-class SliderView(context: Context, appContext: AppContext) :
-  ExpoComposeView<SliderProps>(context, appContext) {
-  override val props = SliderProps()
-  private val onValueChanged by EventDispatcher()
+@OptimizedRecord
+data class SliderValueChangedEvent(
+  @Field val value: Float
+) : Record
 
-  @Composable
-  override fun ComposableScope.Content() {
-    val (value) = props.value
-    val (min) = props.min
-    val (max) = props.max
-    val (steps) = props.steps
-    val (colors) = props.elementColors
-    DynamicTheme {
-      Slider(
-        value = value.coerceAtLeast(min).coerceAtMost(max),
-        valueRange = min..max,
-        steps = steps,
-        onValueChange = {
-          onValueChanged(mapOf("value" to it))
-        },
-        colors = SliderDefaults.colors(
-          thumbColor = colors.thumbColor.compose,
-          activeTrackColor = colors.activeTrackColor.compose,
-          inactiveTrackColor = colors.inactiveTrackColor.compose,
-          activeTickColor = colors.activeTickColor.compose,
-          inactiveTickColor = colors.inactiveTickColor.compose
-        ),
-        modifier = Modifier.fromExpoModifiers(props.modifiers.value)
-      )
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FunctionalComposableScope.SliderContent(props: SliderProps) {
+  val onValueChange by remember { this@SliderContent.EventDispatcher<SliderValueChangedEvent>() }
+  val onValueChangeFinished by remember { this@SliderContent.EventDispatcher<Unit>() }
+  val interactionSource = remember { MutableInteractionSource() }
+
+  val effectiveLower = maxOf(props.min, props.lowerLimit ?: Float.NEGATIVE_INFINITY)
+  val effectiveUpper = minOf(props.max, props.upperLimit ?: Float.POSITIVE_INFINITY)
+
+  var localValue by remember { mutableFloatStateOf(props.value.coerceIn(effectiveLower, effectiveUpper)) }
+  var isDragging by remember { mutableStateOf(false) }
+  val clampedPropsValue = props.value.coerceIn(effectiveLower, effectiveUpper)
+  var prevPropsValue by remember { mutableFloatStateOf(clampedPropsValue) }
+
+  if (clampedPropsValue != prevPropsValue) {
+    prevPropsValue = clampedPropsValue
+    if (!isDragging) {
+      localValue = clampedPropsValue
     }
   }
+
+  val thumbSlotView = findChildSlotView(view, "thumb")
+  val trackSlotView = findChildSlotView(view, "track")
+
+  val sliderColors = SliderDefaults.colors(
+    thumbColor = props.colors.thumbColor.compose,
+    activeTrackColor = props.colors.activeTrackColor.compose,
+    inactiveTrackColor = props.colors.inactiveTrackColor.compose,
+    activeTickColor = props.colors.activeTickColor.compose,
+    inactiveTickColor = props.colors.inactiveTickColor.compose
+  )
+
+  Slider(
+    value = localValue,
+    valueRange = props.min..props.max,
+    steps = props.steps,
+    enabled = props.enabled,
+    interactionSource = interactionSource,
+    onValueChange = {
+      val clamped = it.coerceIn(effectiveLower, effectiveUpper)
+      isDragging = true
+      localValue = clamped
+      onValueChange(SliderValueChangedEvent(clamped))
+    },
+    onValueChangeFinished = {
+      isDragging = false
+      onValueChangeFinished(Unit)
+    },
+    colors = sliderColors,
+    thumb = { sliderState ->
+      if (thumbSlotView != null) {
+        with(UIComposableScope()) { with(thumbSlotView) { Content() } }
+      } else {
+        SliderDefaults.Thumb(
+          interactionSource = interactionSource,
+          colors = sliderColors,
+          enabled = props.enabled
+        )
+      }
+    },
+    track = { sliderState ->
+      if (trackSlotView != null) {
+        with(UIComposableScope()) { with(trackSlotView) { Content() } }
+      } else {
+        SliderDefaults.Track(
+          sliderState = sliderState,
+          colors = sliderColors,
+          enabled = props.enabled
+        )
+      }
+    },
+    modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  )
 }

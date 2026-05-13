@@ -1,23 +1,12 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JavaCallback.h"
 #include "JSIContext.h"
 #include "types/JNIToJSIConverter.h"
 #include "Exceptions.h"
 
-#include "JSIUtils.h"
-#include "JNIUtils.h"
-
-#include <fbjni/fbjni.h>
-#include <fbjni/fbjni.h>
-#include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
-
-#include <functional>
-
 namespace expo {
-
-#if REACT_NATIVE_TARGET_VERSION >= 75
 
 JavaCallback::CallbackContext::CallbackContext(
   jsi::Runtime &rt,
@@ -29,20 +18,6 @@ JavaCallback::CallbackContext::CallbackContext(
     jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
     resolveHolder(std::move(resolveHolder)),
     rejectHolder(std::move(rejectHolder)) {}
-
-#else
-
-JavaCallback::CallbackContext::CallbackContext(
-  jsi::Runtime &rt,
-  std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
-  std::optional<jsi::Function> resolveHolder,
-  std::optional<jsi::Function> rejectHolder
-) : rt(rt),
-    jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
-    resolveHolder(std::move(resolveHolder)),
-    rejectHolder(std::move(rejectHolder)) {}
-
-#endif
 
 void JavaCallback::CallbackContext::invalidate() {
   resolveHolder.reset();
@@ -66,6 +41,8 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeJavaScriptArrayBuffer),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeNativeArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
                    makeNativeMethod("invokeIntArray", JavaCallback::invokeIntArray),
                    makeNativeMethod("invokeLongArray", JavaCallback::invokeLongArray),
@@ -73,7 +50,6 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeDoubleArray", JavaCallback::invokeDoubleArray),
                  });
 }
-
 
 jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
   JSIContext *jsiContext,
@@ -184,7 +160,11 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  invokeJSFunction(result->toStdString());
+  JNIEnv *env = jni::Environment::current();
+  const char *rawValue = env->GetStringUTFChars(result.get(), nullptr);
+  std::string parsedResult = rawValue;
+  env->ReleaseStringUTFChars(result.get(), rawValue);
+  invokeJSFunction(parsedResult);
 }
 
 void JavaCallback::invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result) {
@@ -209,6 +189,15 @@ void JavaCallback::invokeWritableMap(jni::alias_ref<react::WritableNativeMap::ja
 }
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
+  invokeJSFunction(jni::make_global(result));
+}
+
+void JavaCallback::invokeJavaScriptArrayBuffer(
+  jni::alias_ref<JavaScriptArrayBuffer::javaobject> result) {
+  invokeJSFunction(jni::make_global(result));
+}
+
+void JavaCallback::invokeNativeArrayBuffer(jni::alias_ref<NativeArrayBuffer::javaobject> result) {
   invokeJSFunction(jni::make_global(result));
 }
 

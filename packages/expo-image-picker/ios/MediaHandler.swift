@@ -91,10 +91,15 @@ internal struct MediaHandler {
       }
       let fileSize = getFileSize(from: targetUrl)
 
-      let base64 =
-        options.base64
-        ? try ImageUtils.readBase64From(
-          imageData: imageData, orImageFileUrl: targetUrl, tryReadingFile: fileWasCopied) : nil
+      let base64: String?
+      if options.base64 {
+        base64 = try ImageUtils.readJpegBase64From(image: image,
+                                                   compressionQuality: options.quality,
+                                                   orFileUrl: targetUrl,
+                                                   tryReadingFile: fileWasCopied)
+      } else {
+        base64 = nil
+      }
 
       let exif = options.exif ? await ImageUtils.readExifFrom(mediaInfo: mediaInfo) : nil
       let size = CGSize(width: image.size.width, height: image.size.height)
@@ -245,7 +250,7 @@ internal struct MediaHandler {
       for: videoResource, toFile: pairedVideoUrl, options: nil)
 
     let fileSize = getFileSize(from: photoUrl)
-    let mimeType = getMimeType(from: photoUrl.pathExtension)
+    let mimeType = getMimeType(from: photoResource, fileExtension: photoUrl.pathExtension)
     let base64 = options.base64 ? imageData.base64EncodedString() : nil
     let exif = options.exif ? ImageUtils.readExifFrom(data: imageData) : nil
 
@@ -275,7 +280,7 @@ internal struct MediaHandler {
       throw FailedToReadVideoSizeException()
     }
     let duration = VideoUtils.readDurationFrom(url: fileUrl)
-    let mimeType = getMimeType(from: fileUrl.pathExtension)
+    let mimeType = getMimeType(from: videoResource, fileExtension: fileUrl.pathExtension)
     let fileSize = getFileSize(from: fileUrl)
 
     return AssetInfo(
@@ -295,6 +300,24 @@ internal struct MediaHandler {
     return UTType(filenameExtension: pathExtension)?.preferredMIMEType
   }
 
+  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {
+    let utType: UTType? = if #available(iOS 26.0, *) {
+      asset?.contentType ?? UTType(filenameExtension: fileExtension)
+    } else {
+      UTType(filenameExtension: fileExtension)
+    }
+    return utType?.preferredMIMEType
+  }
+
+  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {
+    let utType: UTType? = if #available(iOS 26.0, *) {
+      resource.contentType
+    } else {
+      UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)
+    }
+    return utType?.preferredMIMEType
+  }
+
   // MARK: - Video
 
   func handleVideo(mediaInfo: MediaInfo) async throws -> AssetInfo {
@@ -310,13 +333,16 @@ internal struct MediaHandler {
         let fileExtension = getFileExtension(from: originalFilename)
         let destinationUrl = try generateUrl(withFileExtension: fileExtension)
 
+        let resourceOptions = PHAssetResourceRequestOptions()
+        resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
+
         try await PHAssetResourceManager.default().writeData(
           for: resource,
           toFile: destinationUrl,
-          options: nil
+          options: resourceOptions
         )
 
-        let mimeType = getMimeType(from: destinationUrl.pathExtension)
+        let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
         return try buildVideoResult(
           for: destinationUrl,
           withName: originalFilename,
@@ -350,7 +376,7 @@ internal struct MediaHandler {
     let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedUrl : targetUrl
 
     let asset = mediaInfo[.phAsset] as? PHAsset
-    let mimeType = getMimeType(from: targetUrl.pathExtension)
+    let mimeType = getMimeType(from: asset, fileExtension: targetUrl.pathExtension)
     let fileName = asset?.value(forKey: "filename") as? String
     let fileSize = getFileSize(from: targetUrl)
 
@@ -389,10 +415,12 @@ internal struct MediaHandler {
 
           // Stream the resource into our cache directory. This API is asynchronous but doesn't require
           // a temporary file like `loadFileRepresentation`.
-          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: nil)
+          let resourceOptions = PHAssetResourceRequestOptions()
+          resourceOptions.isNetworkAccessAllowed = options.shouldDownloadFromNetwork
 
-          // Build and return the result using the helper.
-          let mimeType = getMimeType(from: destinationUrl.pathExtension)
+          try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
+
+          let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
           return try buildVideoResult(
             for: destinationUrl,
             withName: originalFilename,

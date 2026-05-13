@@ -1,4 +1,3 @@
-import { composeSourceMaps } from '@expo/metro/metro-source-map';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -7,12 +6,17 @@ import path from 'path';
 import process from 'process';
 import resolveFrom from 'resolve-from';
 
+import { composeSourceMaps } from './sourceMap';
+
 const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 
 function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
 
   const reactNativeRoot = path.dirname(resolveFrom(projectRoot, 'react-native/package.json'));
+  const hermesCompilerRoot = path.dirname(
+    resolveFrom(reactNativeRoot, 'hermes-compiler/package.json')
+  );
 
   const hermescPaths = [
     // Override hermesc dir by environment variables
@@ -22,6 +26,9 @@ function importHermesCommandFromProject(projectRoot: string): string {
 
     // Building hermes from source
     `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
+
+    // react-native 0.83+ moved hermesc to a separate package
+    `${hermesCompilerRoot}/hermesc/${platformExecutable}`,
 
     // Prebuilt hermesc in official react-native 0.69+
     `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,

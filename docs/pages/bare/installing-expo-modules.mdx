@@ -38,7 +38,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.81. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.83. For previous versions, check the [native upgrade helper](/bare/upgrade) to see how these files are customized.
 
 <InstallSection packageName="expo" cmd={['$ npm install expo']} hideBareInstructions />
 
@@ -54,10 +54,10 @@ Once installation is complete, apply the changes from the following diffs to con
 
 Optionally, you can also add additional delegate methods to your **AppDelegate.swift**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.swift](https://github.com/expo/expo/blob/sdk-54/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift#L24-L42).
 
-Save all of your changes and update your iOS Deployment Target in Xcode to `iOS 15.1`:
+Save all of your changes and update your iOS Deployment Target in Xcode to <code>iOS 15.1</code>:
 
 - Open **your-project-name.xcworkspace** in Xcode, select your project in the left sidebar.
-- Select **Targets** > **your-project-name** > **Build Settings** > **iOS Deployment Target** and set it to `iOS 15.1`.
+- Select **Targets** > **your-project-name** > **Build Settings** > **iOS Deployment Target** and set it to <code>iOS 15.1</code>.
 
 The last step is to install the project's CocoaPods again to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the **Podfile**:
 
@@ -126,7 +126,12 @@ fi
 
 And add support the `"main"` field in **package.json** by making the following change to **AppDelegate.swift**:
 
-```diff AppDelegate.swift
+<DiffBlock
+  raw={`diff --git a/ios/AppDelegate.swift b/ios/AppDelegate.swift
+index 0000000..1111111 100644
+--- a/ios/AppDelegate.swift
++++ b/ios/AppDelegate.swift
+@@ -1,7 +1,7 @@
    override func bundleURL() -> URL? {
  #if DEBUG
 -    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
@@ -134,7 +139,8 @@ And add support the `"main"` field in **package.json** by making the following c
  #else
      Bundle.main.url(forResource: "main", withExtension: "jsbundle")
  #endif
-```
+   }`}
+/>
 
 </Collapsible>
 

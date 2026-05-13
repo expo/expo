@@ -1,12 +1,13 @@
 import { mergeClasses } from '@expo/styleguide';
 
+import { AdditionalProps } from '~/common/headingManager';
 import { MONOSPACE, RawH3 } from '~/ui/components/Text';
 
 import { CommentData, CommentTagData } from '../APIDataTypes';
 import { getCodeHeadingWithBaseNestingLevel, getTagNamesList } from '../APISectionUtils';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
-type Props = {
+type Props = AdditionalProps & {
   name: string;
   comment?: CommentData;
   baseNestingLevel?: number;
@@ -20,21 +21,23 @@ export function APIBoxHeader({
   platforms,
   baseNestingLevel = 3,
   deprecated = false,
+  ...additionalProps
 }: Props) {
   const HeaderComponent = getCodeHeadingWithBaseNestingLevel(baseNestingLevel, RawH3);
+  const tags = [...(getTagNamesList(comment) ?? []), ...(additionalProps?.tags ?? [])];
   return (
     <div
       className={mergeClasses(
         'mb-2.5 flex flex-wrap justify-between px-4 pt-3',
         'max-md-gutters:flex-col max-md-gutters:gap-y-1.5',
-        '[&_h3]:!mb-0'
+        '[&_h3]:mb-0!'
       )}>
-      <HeaderComponent tags={getTagNamesList(comment)}>
+      <HeaderComponent {...additionalProps} tags={tags}>
         <MONOSPACE
           weight="medium"
           className={mergeClasses(
-            '!wrap-anywhere !text-base !leading-snug',
-            deprecated && 'text-secondary line-through decoration-quaternary decoration-[0.5px]'
+            'text-base! leading-snug! wrap-anywhere!',
+            deprecated && 'text-secondary decoration-quaternary line-through decoration-[0.5px]'
           )}>
           {name}
         </MONOSPACE>

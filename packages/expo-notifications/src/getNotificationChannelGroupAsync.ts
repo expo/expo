@@ -1,4 +1,4 @@
-import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
+import type { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 
 /**
  * Fetches information about a single notification channel group.
@@ -9,7 +9,7 @@ import { NotificationChannelGroup } from './NotificationChannelGroupManager.type
  * @platform android
  * @header channels
  */
-export default async function getNotificationChannelGroupAsync(
+export async function getNotificationChannelGroupAsync(
   groupId: string
 ): Promise<NotificationChannelGroup | null> {
   console.debug('Notification channels feature is only supported on Android.');

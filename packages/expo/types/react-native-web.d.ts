@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { StyleProp } from 'react-native';
 import * as RN from 'react-native';
 
@@ -93,7 +95,7 @@ declare module 'react-native' {
     /** @platform web */
     transitionDelay?: string | string[];
     /** @platform web */
-    transitionDuration?: string | string[];
+    transitionDuration?: string | string[] | number;
     /** @platform web */
     transitionProperty?: string | string[];
     /** @platform web */

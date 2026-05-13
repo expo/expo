@@ -11,6 +11,15 @@ public class EASClientID : NSObject {
       UUID.init().uuidString
     })!
   }
+
+  /// Converts a UUID to a deterministic value in [0, 1] using the least significant
+  /// 64 bits (bytes 8–15) interpreted as an unsigned integer fraction of UInt64.max.
+  public static func deterministicUniformValue(_ uuid: UUID) -> Double {
+    let value = withUnsafeBytes(of: uuid.uuid) {
+      $0.load(fromByteOffset: 8, as: UInt64.self).bigEndian
+    }
+    return Double(value) / Double(UInt64.max)
+  }
 }
 
 extension UserDefaults {

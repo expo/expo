@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal enum EventObservingType: String {
   case startObserving
   case stopObserving
@@ -40,7 +42,8 @@ public struct EventObservingDecorator: JavaScriptObjectDecorator {
    Decorates the given object with `startObserving` and `stopObserving` functions.
    These functions are automatically called by the `EventEmitter` implementation.
    */
-  func decorate(object: JavaScriptObject, appContext: AppContext) throws {
+  @JavaScriptActor
+  func decorate(object: borrowing JavaScriptObject, appContext: AppContext) throws {
     // We need to keep track the number of observed events
     // so we can call observers not attached to any event in the right moment.
     var observingEvents: Int = 0

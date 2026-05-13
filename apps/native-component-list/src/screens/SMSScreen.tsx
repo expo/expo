@@ -30,7 +30,7 @@ export default function SMSScreen() {
 
         setTimeout(() => setState({ result: undefined }), 5000);
       }
-    } catch (e) {
+    } catch (e: any) {
       setError(e.message);
 
       setTimeout(() => setError(undefined), 10000);
@@ -57,7 +57,7 @@ export default function SMSScreen() {
 
         setTimeout(() => setState({ result: undefined }), 5000);
       }
-    } catch (e) {
+    } catch (e: any) {
       setError(e.message);
       setTimeout(() => setError(undefined), 10000);
     }

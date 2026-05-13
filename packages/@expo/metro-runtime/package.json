@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-runtime",
-  "version": "6.1.2",
+  "version": "56.0.6",
   "description": "Tools for making advanced Metro bundler features work",
   "sideEffects": true,
   "main": "src/index.ts",
@@ -9,12 +9,19 @@
   "keywords": [],
   "author": "650 Industries, Inc.",
   "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./build/index.d.ts",
+      "default": "./src/index.ts"
+    },
+    "./rsc/runtime.js": "./rsc/runtime.js",
+    "./rsc/runtime": "./rsc/runtime.js",
+    "./package.json": "./package.json"
+  },
   "files": [
     "build",
     "src",
     "rsc",
-    "async-require.js",
-    "async-require.d.ts",
     "assets",
     "!**/__tests__"
   ],
@@ -23,7 +30,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -32,6 +38,7 @@
     "url": "https://github.com/expo/expo.git"
   },
   "peerDependencies": {
+    "@expo/log-box": "workspace:^56.0.7",
     "expo": "*",
     "react": "*",
     "react-dom": "*",
@@ -43,13 +50,17 @@
     }
   },
   "dependencies": {
-    "@expo/log-box": "0.0.13-canary-20251023-4c86f95",
+    "@expo/log-box": "workspace:^56.0.7",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10",
     "pretty-format": "^29.7.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "react-dom": "19.1.1"
+    "@types/react": "~19.2.0",
+    "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "react-dom": "19.2.3"
   }
 }

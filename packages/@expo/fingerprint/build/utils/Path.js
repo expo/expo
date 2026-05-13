@@ -62,7 +62,7 @@ function buildDirMatchObjects(ignorePathMatchObjects, minimatchOptions = { dot: 
     for (const pattern of negatedIgnorePaths) {
         for (let i = 0; i < dirIgnorePatterns.length; ++i) {
             const existingPattern = dirIgnorePatterns[i];
-            if (isSubDirectory(existingPattern, pattern)) {
+            if (existingPattern != null && isSubDirectory(existingPattern, pattern)) {
                 dirIgnorePatterns.splice(i, 1);
             }
         }

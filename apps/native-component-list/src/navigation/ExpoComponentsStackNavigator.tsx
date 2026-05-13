@@ -8,6 +8,7 @@ import { optionalRequire } from './routeBuilder';
 import { TabBackground } from '../components/TabBackground';
 import TabIcon from '../components/TabIcon';
 import { Layout } from '../constants';
+import { BlurScreens } from '../screens/BlurView/BlurViewScreen';
 import { CameraScreens } from '../screens/Camera/CameraScreen';
 import { componentScreensToListElements } from '../screens/ComponentListScreen';
 import ExpoComponents from '../screens/ExpoComponentsScreen';
@@ -16,6 +17,7 @@ import { GLScreens } from '../screens/GL/GLScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
 import { SVGScreens } from '../screens/SVG/SVGScreen';
 import { UIScreens } from '../screens/UI/UIScreen';
+import { UIUniversalScreens } from '../screens/UIUniversal/UIUniversalScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
 
@@ -52,6 +54,7 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/BlurView/BlurViewScreen'));
     },
     name: 'BlurView',
+    route: 'blur',
   },
   {
     getComponent() {
@@ -227,12 +230,6 @@ const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Audio/AV/VideoScreen'));
-    },
-    name: 'Video (expo-av)',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/Video/VideoScreen'));
     },
     name: 'Video (expo-video)',
@@ -242,6 +239,12 @@ const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/UI/UIScreen'));
     },
     name: 'Expo UI',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/UIUniversal/UIUniversalScreen'));
+    },
+    name: 'Expo UI (Universal)',
   },
   {
     getComponent() {
@@ -303,11 +306,13 @@ const ScreensList: ScreenConfig[] = [
 export const Screens: ScreenConfig[] = [
   ...ScreensList,
 
+  ...BlurScreens,
   ...GLScreens,
   ...CameraScreens,
   ...ImageScreens,
   ...VideoScreens,
   ...UIScreens,
+  ...UIUniversalScreens,
   ...SVGScreens,
   ...MapsScreens,
 ];

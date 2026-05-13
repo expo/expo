@@ -3,7 +3,8 @@ import React from 'react';
 import { View } from 'react-native-web';
 
 import type { ImageNativeProps, ImageSource, ImageLoadEventData, ImageRef } from './Image.types';
-import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
+import type { AnimationManagerNode } from './web/AnimationManager';
+import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/imageStyles';
 import useSourceSelection from './web/useSourceSelection';
@@ -70,6 +71,7 @@ export default function ExpoImage({
   onLoadEnd,
   onDisplay,
   priority,
+  loading,
   blurRadius,
   recyclingKey,
   style,
@@ -119,6 +121,7 @@ export default function ExpoImage({
               accessibilityLabel={accessibilityLabel ?? alt}
               cachePolicy={cachePolicy}
               priority={priority}
+              loading={loading}
               tintColor={tintColor}
               draggable={draggable}
             />
@@ -151,6 +154,7 @@ export default function ExpoImage({
           className={className}
           cachePolicy={cachePolicy}
           priority={priority}
+          loading={loading}
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}

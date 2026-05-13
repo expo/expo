@@ -15,7 +15,7 @@ public struct ViewDefinitionBuilder<ViewType: UIView> {
   }
 
   /**
-   Accepts `Events` definition element of `View`.
+   Accepts `ViewName` definition element of `View`.
    */
   public static func buildExpression(_ element: ViewNameDefinition) -> AnyViewDefinitionElement {
     return element

@@ -3,10 +3,8 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   contentContainer: {
     flex: 1,
-    padding: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 50,
   },
   controlsContainer: {
     alignSelf: 'stretch',
@@ -33,6 +31,8 @@ export const styles = StyleSheet.create({
   video: {
     width: 300,
     height: 225,
+    borderColor: 'black',
+    borderWidth: 1,
   },
   button: {
     margin: 5,

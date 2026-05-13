@@ -52,7 +52,10 @@ function getUpdatesBaseURL(): string | null {
   // If updates is installed and enabled, and we're not running from an embedded launch, we should serve the DOM Components from the `.expo-internal` directory
   if (shouldServeDomFromUpdates) {
     const localAssets = ExpoUpdates?.localAssets ?? {};
-    const anyLocalAsset = Object.values(localAssets)[0];
+    const anyLocalAsset = Object.values(localAssets).find(
+      (asset) =>
+        !asset.startsWith('file:///android_res/') && !asset.startsWith('file:///android_asset/')
+    );
     if (anyLocalAsset) {
       // Try to get the `.expo-internal` directory from the first local asset
       return anyLocalAsset.slice(0, anyLocalAsset.lastIndexOf('/'));

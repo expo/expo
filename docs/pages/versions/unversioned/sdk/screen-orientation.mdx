@@ -4,7 +4,7 @@ description: A universal library for managing a device's screen orientation.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-screen-orientation'
 packageName: 'expo-screen-orientation'
 iconUrl: '/static/images/packages/expo-screen-orientation.png'
-platforms: ['android', 'ios', 'web']
+platforms: ['android', 'ios', 'web', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -79,6 +79,23 @@ You can configure `expo-screen-orientation` using its built-in [config plugin](/
 2. Tick the `Requires Full Screen` checkbox in Xcode. It should be located under **Project Target** > **General** > **Deployment Info**.
 
 </ConfigReactNative>
+
+## Per-screen orientation with Expo Router
+
+If you use [Expo Router](/router/introduction/), you can set the orientation per screen using the `orientation` option on [`Stack.Screen`](/router/advanced/stack/). This is powered by `react-native-screens` and is the recommended approach for per-screen orientation in stack navigators.
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function Layout() {
+  return (
+    <Stack>
+      <Stack.Screen name="index" options={{ orientation: 'portrait' }} />
+      <Stack.Screen name="landscape" options={{ orientation: 'landscape' }} />
+    </Stack>
+  );
+}
+```
 
 ## API
 

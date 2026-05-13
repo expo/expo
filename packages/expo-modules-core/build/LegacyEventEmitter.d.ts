@@ -1,5 +1,5 @@
 import { NativeEventEmitter } from 'react-native';
-import { EventSubscription } from './EventEmitter';
+import type { EventSubscription } from './EventEmitter';
 type NativeModule = {
     __expo_module_name__?: string;
     startObserving?: () => void;

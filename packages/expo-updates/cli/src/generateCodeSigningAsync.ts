@@ -60,6 +60,6 @@ export async function generateCodeSigningAsync(
   );
   log(`Generated code signing certificate output in ${certificateOutputDir}.`);
   log(
-    `To automatically configure this project for code signing, run \`yarn expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`
+    `To automatically configure this project for code signing, run \`expo-updates codesigning:configure --certificate-input-directory=${certificateOutput} --key-input-directory=${keyOutput}\`.`
   );
 }

@@ -2,8 +2,7 @@ package expo.modules.kotlin.jni
 
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.InvalidExpectedType
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 /**
  * A basic class that represents metadata about the expected type.
@@ -185,30 +184,30 @@ class ExpectedType(
       SingleType(CppType.MAP, arrayOf(valueType))
     )
 
-    fun fromKType(type: KType): ExpectedType {
-      val kClass = type.classifier as? KClass<*>
-        ?: throw IllegalArgumentException("Cannot obtain KClass from '$type'")
-      when (kClass) {
-        Int::class -> return ExpectedType(SingleType(CppType.INT))
-        Long::class -> return ExpectedType(SingleType(CppType.LONG))
-        Double::class -> return ExpectedType(SingleType(CppType.DOUBLE))
-        Float::class -> return ExpectedType(SingleType(CppType.FLOAT))
-        Boolean::class -> return ExpectedType(SingleType(CppType.BOOLEAN))
-        String::class -> return ExpectedType(SingleType(CppType.STRING))
+    fun fromTypeDescriptor(typeDescriptor: TypeDescriptor): ExpectedType {
+      val jClass = typeDescriptor.jClass
+      @Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
+      when (jClass) {
+        Int::class.java, java.lang.Integer::class.java -> return ExpectedType(SingleType(CppType.INT))
+        Long::class.java, java.lang.Long::class.java -> return ExpectedType(SingleType(CppType.LONG))
+        Double::class.java, java.lang.Double::class.java -> return ExpectedType(SingleType(CppType.DOUBLE))
+        Float::class.java, java.lang.Float::class.java -> return ExpectedType(SingleType(CppType.FLOAT))
+        Boolean::class.java, java.lang.Boolean::class.java -> return ExpectedType(SingleType(CppType.BOOLEAN))
+        String::class.java -> return ExpectedType(SingleType(CppType.STRING))
       }
-      if (kClass.java.isAssignableFrom(List::class.java)) {
-        val argType = type.arguments.firstOrNull()?.type
+      if (jClass.isAssignableFrom(List::class.java)) {
+        val argType = typeDescriptor.params.firstOrNull()
         if (argType != null) {
-          return forList(fromKType(argType))
+          return forList(fromTypeDescriptor(argType))
         }
       }
-      if (kClass.java.isAssignableFrom(Map::class.java)) {
-        val argType = type.arguments.getOrNull(1)?.type
+      if (jClass.isAssignableFrom(Map::class.java)) {
+        val argType = typeDescriptor.params.getOrNull(1)
         if (argType != null) {
-          return forMap(fromKType(argType))
+          return forMap(fromTypeDescriptor(argType))
         }
       }
-      throw InvalidExpectedType(type)
+      throw InvalidExpectedType(typeDescriptor)
     }
 
     fun merge(

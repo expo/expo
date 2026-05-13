@@ -6,10 +6,14 @@
  */
 
 import { ctx } from 'expo-router/_ctx';
-import { getReactNavigationConfig } from 'expo-router/build/getReactNavigationConfig';
-import { getRoutes, type Options } from 'expo-router/build/getRoutes';
+import {
+  getReactNavigationConfig,
+  getRoutes,
+  type GetRoutesOptions,
+} from 'expo-router/internal/routing';
+import type { RoutesManifest } from 'expo-server/private';
 
-import { type ExpoRouterServerManifestV1, getServerManifest } from '../getServerManifest';
+import { getServerManifest } from '../getServerManifest';
 import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
 
 /**
@@ -20,25 +24,27 @@ import { loadStaticParamsAsync } from '../loadStaticParamsAsync';
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 export async function getBuildTimeServerManifestAsync(
-  options: Options = {}
-): Promise<ExpoRouterServerManifestV1> {
+  options: GetRoutesOptions = {}
+): Promise<RoutesManifest<string>> {
   const routeTree = getRoutes(ctx, {
     platform: 'web',
     ...options,
   });
 
-  if (!routeTree) {
-    throw new Error('No routes found');
+  // Evaluate all static params; skip for SSR mode where routes are matched at runtime
+  if (routeTree && !options.skipStaticParams) {
+    await loadStaticParamsAsync(routeTree);
   }
 
-  // Evaluate all static params
-  await loadStaticParamsAsync(routeTree);
-
+  // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+  // has no route tree set up. This can happen when we build against a project that
+  // isn't an expo-router project or not fully set up yet, but has expo-router options
+  // in the app.json already
   return getServerManifest(routeTree, options);
 }
 
 /** Get the linking manifest from a Node.js process. */
-export async function getManifest(options: Options = {}) {
+export async function getManifest(options: GetRoutesOptions = {}) {
   const routeTree = getRoutes(ctx, {
     preserveApiRoutes: true,
     preserveRedirectAndRewrites: true,
@@ -46,12 +52,14 @@ export async function getManifest(options: Options = {}) {
     ...options,
   });
 
-  if (!routeTree) {
-    throw new Error('No routes found');
+  if (routeTree) {
+    // Evaluate all static params
+    await loadStaticParamsAsync(routeTree);
   }
 
-  // Evaluate all static params
-  await loadStaticParamsAsync(routeTree);
-
+  // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+  // has no route tree set up. This can happen when we build against a project that
+  // isn't an expo-router project or not fully set up yet, but has expo-router options
+  // in the app.json already
   return getReactNavigationConfig(routeTree, false);
 }

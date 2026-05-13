@@ -3,19 +3,16 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class EllipseViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-}
+public final class EllipseViewProps: UIBaseViewProps {}
 
-internal struct EllipseView: ExpoSwiftUI.View {
-  @ObservedObject var props: EllipseViewProps
+public struct EllipseView: ExpoSwiftUI.View {
+  @ObservedObject public var props: EllipseViewProps
 
-  var body: some View {
+  public init(props: EllipseViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Ellipse()
-      .modifier(CommonViewModifiers(props: props))
   }
 }

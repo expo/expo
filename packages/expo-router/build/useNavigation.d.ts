@@ -1,5 +1,5 @@
-import { NavigationProp, NavigationState } from '@react-navigation/native';
-import { Href } from './types';
+import type { NavigationProp, NavigationState } from './react-navigation/native';
+import type { Href } from './types';
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a

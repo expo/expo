@@ -14,6 +14,7 @@ void JavaScriptArrayBuffer::registerNatives() {
                    makeNativeMethod("read8Byte", JavaScriptArrayBuffer::read<int64_t>),
                    makeNativeMethod("readFloat", JavaScriptArrayBuffer::read<float>),
                    makeNativeMethod("readDouble", JavaScriptArrayBuffer::read<double>),
+                   makeNativeMethod("toDirectBuffer", JavaScriptArrayBuffer::toDirectBuffer),
                  });
 }
 
@@ -21,14 +22,7 @@ JavaScriptArrayBuffer::JavaScriptArrayBuffer(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::ArrayBuffer> jsObject
 ) : runtimeHolder(std::move(runtime)), arrayBuffer(std::move(jsObject)) {
-  runtimeHolder.ensureRuntimeIsValid();
-}
-
-JavaScriptArrayBuffer::JavaScriptArrayBuffer(
-  WeakRuntimeHolder runtime,
-  std::shared_ptr<jsi::ArrayBuffer> jsObject
-) : runtimeHolder(std::move(runtime)), arrayBuffer(std::move(jsObject)) {
-  runtimeHolder.ensureRuntimeIsValid();
+  assert((!runtimeHolder.expired()) && "JS Runtime was used after deallocation");
 }
 
 jni::local_ref<JavaScriptArrayBuffer::javaobject> JavaScriptArrayBuffer::newInstance(
@@ -45,8 +39,29 @@ jni::local_ref<JavaScriptArrayBuffer::javaobject> JavaScriptArrayBuffer::newInst
 }
 
 int JavaScriptArrayBuffer::size() {
-  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-  return (int) arrayBuffer->size(jsRuntime);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return (int) arrayBuffer->size(rawRuntime);
+}
+
+uint8_t *JavaScriptArrayBuffer::data() {
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return arrayBuffer->data(rawRuntime);
+}
+
+jni::local_ref<jni::JByteBuffer> JavaScriptArrayBuffer::toDirectBuffer() {
+  auto buffer = jni::JByteBuffer::wrapBytes(data(), size());
+  buffer->order(jni::JByteOrder::nativeOrder());
+  return buffer;
+}
+
+std::shared_ptr<jsi::ArrayBuffer> JavaScriptArrayBuffer::jsiArrayBuffer() {
+  return this->arrayBuffer;
 }
 
 }

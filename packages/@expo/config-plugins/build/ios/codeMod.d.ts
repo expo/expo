@@ -1,4 +1,4 @@
-import { CodeBlock } from '../utils/commonCodeMod';
+import type { CodeBlock } from '../utils/commonCodeMod';
 interface InsertContentFunctionOptions {
     position: 'head' | 'tail' | 'tailBeforeLastReturn';
     indent?: number;

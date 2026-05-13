@@ -8,9 +8,11 @@ on:
     branches: [main]
     paths:
       - .github/workflows/test-react-native-nightly.yml
+      - packages/create-expo-nightly/**
   pull_request:
     paths:
       - .github/workflows/test-react-native-nightly.yml
+      - packages/create-expo-nightly/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -25,37 +27,35 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: latest
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
       - name: 💎 Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
         run: gem install cocoapods xcpretty
-      - name: ♻️ Restore workspace node modules
-        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v3
-        id: workspace-modules-cache
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
-        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: ⭐️ Create test-nightlies Project (New Architecture)
-        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
+      - name: ⭐️ Create test-nightlies Project
+        run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
       - name: 🍏 Query available simulator device ID
         run: |
@@ -63,7 +63,7 @@ jobs:
           xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0)'
           DEVICE_ID=$(defaults read com.apple.iphonesimulator CurrentDeviceUDID || xcrun simctl list devices available -j | jq -r '.devices | to_entries[] | select(.value | length > 0) | select(.key | startswith("com.apple.CoreSimulator.SimRuntime.iOS")) | .value[] | select(.isAvailable == true) | .udid' | head -n 1)
           echo "DEVICE_ID=$DEVICE_ID" >> $GITHUB_ENV
-      - name: 🍏 Build iOS Project (New Architecture)
+      - name: 🍏 Build iOS Project
         run: |
           pod install --project-directory=ios
           xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
@@ -73,41 +73,17 @@ jobs:
           NODE_ENV: production
           CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
-          name: ios-builds-oldArch-${{ matrix.build-type }}
-          path: ${{ runner.temp }}/test-nightlies/ios/build/**/testnightlies.app/
-      - name: 🍏 Build iOS Project (Old Architecture)
-        run: |
-          jq '.expo.newArchEnabled = false' app.json > app.json.tmp
-          mv -f app.json.tmp app.json
-          cat app.json
-          npx expo prebuild -p ios --no-install --clean --template .expo/expo-template-bare-minimum-*.tgz
-          pod install --project-directory=ios
-          xcodebuild -workspace ios/testnightlies.xcworkspace -scheme testnightlies -configuration $CONFIGURATION -sdk iphonesimulator -destination "id=$DEVICE_ID" -derivedDataPath "ios/build" | xcpretty
-        shell: bash
-        working-directory: ${{ runner.temp }}/test-nightlies
-        env:
-          NODE_ENV: production
-          CONFIGURATION: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
-      - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
-        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
-        with:
-          name: ios-builds-newArch-${{ matrix.build-type }}
+          name: ios-builds-arch-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/ios/build/**/testnightlies.app/
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: React Native Nightly (iOS)
 
   android-build:
@@ -121,39 +97,33 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      - name: 🧹 Cleanup GitHub Linux runner disk space
+        uses: ./.github/actions/cleanup-linux-disk-space
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
-          submodules: true
+          version: 10
       - name: 🚀 Setup Bun
-        uses: oven-sh/setup-bun@v1
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
           bun-version: latest
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
         with:
           distribution: 'temurin'
           java-version: '17'
-      - name: ♻️ Restore workspace node modules
-        # Use restore only cache here because we don't want to nightly react-native version saving back to the cache
-        uses: actions/cache/restore@v3
-        id: workspace-modules-cache
-        with:
-          path: |
-            node_modules
-            packages/*/node_modules
-            packages/@expo/*/node_modules
-          key: ${{ runner.os }}-workspace-modules-${{ hashFiles('yarn.lock') }}
-      - name: 🧶 Install node modules in root dir
-        if: steps.workspace-modules-cache.outputs.cache-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: ⭐️ Create test-nightlies Project (New Architecture)
-        run: yarn prepare && bun build/index.js --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }} --enable-new-architecture true
+      - name: 📦 Install node modules in root dir
+        run: pnpm install --frozen-lockfile
+      - name: ⭐️ Create test-nightlies Project
+        run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
-      - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
-        run: |
-          cd android && ./gradlew preBuild
-        working-directory: ${{ runner.temp }}/test-nightlies
-      - name: 🤖 Build Android project (New Architecture)
+      - name: 🤖 Build Android project
         run: |
           cd android && ./gradlew ":app:assemble$VARIANT"
         shell: bash
@@ -162,38 +132,15 @@ jobs:
           NODE_ENV: production
           VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
         with:
-          name: android-builds-oldArch-${{ matrix.build-type }}
-          path: ${{ runner.temp }}/test-nightlies/android/app/build/outputs/apk/
-      - name: 🤖 Build Android project (Old Architecture)
-        run: |
-          jq '.expo.newArchEnabled = false' app.json > app.json.tmp
-          mv -f app.json.tmp app.json
-          cat app.json
-          npx expo prebuild -p android --no-install --clean --template .expo/expo-template-bare-minimum-*.tgz
-          cd android && ./gradlew ":app:assemble$VARIANT"
-        shell: bash
-        working-directory: ${{ runner.temp }}/test-nightlies
-        env:
-          NODE_ENV: production
-          VARIANT: ${{ matrix.build-type == 'release' && 'Release' || 'Debug' }}
-      - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
-        if: ${{ github.event_name == 'workflow_dispatch' && matrix.build-type == 'release' }} # Only archive release builds
-        with:
-          name: android-builds-newArch-${{ matrix.build-type }}
+          name: android-builds-${{ matrix.build-type }}
           path: ${{ runner.temp }}/test-nightlies/android/app/build/outputs/apk/
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: React Native Nightly (Android)

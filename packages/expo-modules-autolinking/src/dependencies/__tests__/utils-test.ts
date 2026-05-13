@@ -63,6 +63,19 @@ describe(mergeWithDuplicate, () => {
     });
   });
 
+  it('copies version from duplicate with identical path to returned resolution', () => {
+    const a = { ...BASE_RESOLUTION, version: '', path: 'a' };
+    const b = { ...BASE_RESOLUTION, version: '1.0.0', path: 'a' };
+    expect(mergeWithDuplicate({ ...b }, { ...a })).toMatchObject({
+      path: 'a',
+      version: '1.0.0',
+    });
+    expect(mergeWithDuplicate({ ...a }, { ...b })).toMatchObject({
+      path: 'a',
+      version: '1.0.0',
+    });
+  });
+
   it('merges duplicates', () => {
     const a = {
       ...BASE_RESOLUTION,
@@ -98,6 +111,22 @@ describe(mergeWithDuplicate, () => {
     expect(mergeWithDuplicate(a, b)).toMatchObject({
       path: 'x',
       duplicates: [expect.objectContaining({ path: 'a' }), expect.objectContaining({ path: 'b' })],
+    });
+  });
+
+  it('merges a duplicate and deduplicates', () => {
+    const a = {
+      ...BASE_RESOLUTION,
+      path: 'x',
+      duplicates: [{ ...BASE_RESOLUTION, path: 'a' }],
+    };
+    const b = {
+      ...BASE_RESOLUTION,
+      path: 'a',
+    };
+    expect(mergeWithDuplicate(a, b)).toMatchObject({
+      path: 'x',
+      duplicates: a.duplicates,
     });
   });
 });
@@ -160,6 +189,33 @@ describe(filterMapResolutionResult, () => {
     expect(result).toEqual({
       a: { name: 'a', special: 'a!' },
       b: { name: 'b', special: 'b!' },
+    });
+  });
+
+  it('searches duplicates when a SEARCH_PATH module has not matched', async () => {
+    const a = {
+      ...BASE_RESOLUTION,
+      source: DependencyResolutionSource.SEARCH_PATH,
+      name: 'nope',
+      duplicates: [
+        {
+          ...BASE_RESOLUTION,
+          path: '/fake/path/2',
+        },
+      ],
+    };
+
+    const result = await filterMapResolutionResult({ a }, async (resolution) => {
+      switch (resolution.name) {
+        case 'nope':
+          return null;
+        default:
+          return { name: resolution.name, special: `${resolution.path}` };
+      }
+    });
+
+    expect(result).toEqual({
+      test: { name: 'test', special: '/fake/path/2' },
     });
   });
 });

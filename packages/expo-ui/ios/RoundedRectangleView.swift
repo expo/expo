@@ -3,21 +3,18 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class RoundedRectangleViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+public final class RoundedRectangleViewProps: UIBaseViewProps {
   @Field var cornerRadius: CGFloat = 0
 }
 
-internal struct RoundedRectangleView: ExpoSwiftUI.View {
-  @ObservedObject var props: RoundedRectangleViewProps
+public struct RoundedRectangleView: ExpoSwiftUI.View {
+  @ObservedObject public var props: RoundedRectangleViewProps
 
-  var body: some View {
+  public init(props: RoundedRectangleViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     RoundedRectangle(cornerRadius: props.cornerRadius)
-      .modifier(CommonViewModifiers(props: props))
   }
 }

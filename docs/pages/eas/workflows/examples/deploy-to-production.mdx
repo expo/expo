@@ -24,12 +24,13 @@ When you're ready to deliver changes to your users, you can build and submit to 
   className="mb-4"
   videoId="o-peODF6E2o"
   title="Expo Golden Workflow: Deploy your app to production with an automated workflow"
+  description="Automate your production releases with EAS Workflows to build, submit to app stores, or send an update when new builds aren't needed."
 />
 
 ## Get started
 
-<Prerequisites numberOfRequirements={3}>
-  <Requirement number={1} title="Set up EAS Build">
+<Prerequisites>
+  <Requirement title="Set up EAS Build">
     To set up EAS Build, follow this guide:
 
     <BoxLink
@@ -41,7 +42,7 @@ When you're ready to deliver changes to your users, you can build and submit to 
 
   </Requirement>
 
-  <Requirement number={2} title="Set up EAS Submit">
+  <Requirement title="Set up EAS Submit">
     To set up EAS Submit, follow the Google Play Store and Apple App Store submissions guides:
 
     <BoxLink
@@ -58,7 +59,7 @@ When you're ready to deliver changes to your users, you can build and submit to 
     />
 
   </Requirement>
-  <Requirement number={3} title="Set up EAS Update">
+  <Requirement title="Set up EAS Update">
   And finally, you'll need to set up EAS Update, which you can do with:
 
 <Terminal cmd={['$ eas update:configure']} />
@@ -83,6 +84,7 @@ jobs:
   fingerprint:
     name: Fingerprint
     type: fingerprint
+    environment: production
   get_android_build:
     name: Check for existing android build
     needs: [fingerprint]

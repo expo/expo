@@ -6,7 +6,8 @@ import prompts from 'prompts';
 
 import * as Android from './Android';
 import * as Ios from './Ios';
-import { CommandError, Options } from './Options';
+import type { Options } from './Options';
+import { CommandError } from './Options';
 
 function fileExists(filePath: string): boolean {
   try {
@@ -64,7 +65,7 @@ function ensureUriString(uri: any): string {
 async function normalizeUriProtocolAsync(uri: any): Promise<string> {
   const trimmedUri = ensureUriString(uri);
   const [protocol] = trimmedUri.split(':');
-  const normalizedUri = protocol.toLowerCase();
+  const normalizedUri = protocol?.toLowerCase();
   if (normalizedUri !== uri) {
     // Create a warning.
     if (normalizedUri) {

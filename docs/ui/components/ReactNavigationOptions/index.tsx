@@ -11,18 +11,15 @@ type ReactNavigationOption = {
   name: string;
   description: string;
   platform: 'Both' | 'iOS only' | 'Android only';
-  category: 'header' | 'other';
+  category: 'header' | 'other' | 'tabBar';
+  origin: string;
 };
 
 type ReactNavigationOptionsData = {
-  source: string;
-  sourceUrl: string;
+  sources: { id: string; name: string; url: string }[];
   fetchedAt: string;
   totalOptions: number;
-  categories: {
-    header: number;
-    other: number;
-  };
+  categories: Record<string, number>;
   options: ReactNavigationOption[];
 };
 
@@ -86,10 +83,15 @@ export const ReactNavigationOptions = ({
   const sortedOptions = filteredOptions.sort((a, b) => a.name.localeCompare(b.name));
 
   if (category && sortedOptions.length === 0) {
-    return <div className="text-sm text-secondary">No options found for category: {category}</div>;
+    return <div className="text-secondary text-sm">No options found for category: {category}</div>;
   }
 
-  const defaultTitle = category ? 'Header options' : 'Screen options';
+  const categoryTitles: Record<string, string> = {
+    header: 'Header options',
+    tabBar: 'Tab bar options',
+  };
+
+  const defaultTitle = category ? (categoryTitles[category] ?? 'Options') : 'Screen options';
 
   return (
     <div>

@@ -10,6 +10,32 @@
 
 ### 💡 Others
 
+## 0.5.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.0 — 2026-01-21
+
+### 💡 Others
+
+- Bump `node-forge` dependency range to `^1.3.3` ([#41753](https://github.com/expo/expo/pull/41753) by [@kitten](https://github.com/kitten))
+
+## 0.3.8 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
 ## 0.3.7 — 2025-09-11
 
 _This version does not introduce any user-facing changes._

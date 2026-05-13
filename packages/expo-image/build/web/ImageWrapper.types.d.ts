@@ -1,6 +1,6 @@
-import { CSSProperties, SyntheticEvent } from 'react';
-import { SrcSetSource } from './useSourceSelection';
-import { ImageContentPositionObject, ImageProps, ImageSource } from '../Image.types';
+import type { CSSProperties, SyntheticEvent } from 'react';
+import type { SrcSetSource } from './useSourceSelection';
+import type { ImageContentPositionObject, ImageProps, ImageSource } from '../Image.types';
 export type OnErrorEvent = (({ source }: {
     source: ImageSource | null;
 }) => void) | undefined | null;
@@ -21,6 +21,7 @@ export type ImageWrapperProps = {
     contentPosition?: ImageContentPositionObject;
     hashPlaceholderContentPosition?: ImageContentPositionObject;
     priority?: string | null;
+    loading?: ImageProps['loading'];
     style: CSSProperties;
     tintColor?: string | null;
     hashPlaceholderStyle?: CSSProperties;

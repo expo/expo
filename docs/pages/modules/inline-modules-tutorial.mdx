@@ -1,0 +1,276 @@
+---
+title: 'Tutorial: Create an inline module'
+sidebar_title: Create an inline module
+description: A tutorial on creating a native module and view directly in your Expo project using inline modules.
+---
+
+import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+> **warning** Inline modules are [experimental](/more/release-statuses/#experimental). The API is subject to breaking changes.
+
+In this tutorial, you will create an example native module and a native view directly inside your Expo project's **app** directory using inline modules.
+Unlike the standard Expo Modules, inline modules don't require a separate package or `create-expo-module` scaffolding.
+You write Kotlin and Swift files alongside your app code, and Expo discovers them automatically.
+
+<Step label="1">
+
+## Setup your project
+
+Open the [app config](/workflow/configuration/) and set the `expo.experiments.inlineModules.watchedDirectories` to `["app"]`:
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["app"]
+      }
+    }
+  }
+}
+```
+
+Defining `expo.experiments.inlineModules` enables inline modules functionalities in an Expo project.
+
+In `expo.experiments.inlineModules.watchedDirectories` you can specify in which directories your inline modules live.
+Note that not all directories are allowed. For more information, see the [inline modules reference](/modules/inline-modules-reference).
+
+</Step>
+
+<Step label="2">
+
+## Run prebuild
+
+Run the prebuild command to generate **android** and **ios** native projects with the inline modules setup.
+
+<Terminal cmdCopy="npx expo prebuild" cmd={['$ npx expo prebuild']} />
+
+</Step>
+
+<Step label="3">
+
+## Create an inline module
+
+For Android, create a Kotlin file called **FirstInlineModule.kt** inside the **app** directory and add a module similar to the following:
+
+```kotlin app/FirstInlineModule.kt
+package app
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class FirstInlineModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Constant("Hello") { ->
+      "Hello Android inline modules!"
+    }
+  }
+}
+```
+
+For iOS, create a Swift file called **FirstInlineModule.swift** inside the **app** directory:
+
+```swift app/FirstInlineModule.swift
+internal import ExpoModulesCore
+
+class FirstInlineModule: Module {
+  public func definition() -> ModuleDefinition {
+    Constant("Hello") {
+      return "Hello iOS inline modules!"
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="4">
+
+## Use the module in your app
+
+In your app's TypeScript/JavaScript code you can use the module in the following way:
+
+```tsx app/index.tsx
+import { requireNativeModule } from 'expo';
+import { Text } from 'react-native';
+
+const FirstInlineModule = requireNativeModule('FirstInlineModule');
+
+export default function InlineModulesDemoComponent() {
+  return <Text> {FirstInlineModule.Hello} </Text>;
+}
+```
+
+Now, you can run the example app:
+
+<Terminal
+  cmd={[
+    '# Run the example app on Android',
+    '$ npx expo run:android',
+    '',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
+  ]}
+/>
+
+After running the above command(s), you will see the app with text constant coming from the native android/iOS module.
+
+</Step>
+
+<Step label="5">
+## Create a native view
+
+To create a native view inside the **app** directory, let's use the `ExpoWebView` example.
+
+For Android, create a Kotlin file called **FirstInlineView.kt** inside the **app** directory and add a view similar to the following:
+
+```kotlin app/FirstInlineView.kt
+package app
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import java.net.URL
+
+import android.content.Context
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ExpoView
+
+class FirstInlineView : Module() {
+  override fun definition() = ModuleDefinition {
+    View(ExpoWebView::class) {
+      Events("onLoad")
+
+      Prop("url") { view: ExpoWebView, url: URL? ->
+        view.webView.loadUrl(url.toString())
+      }
+    }
+  }
+}
+
+class ExpoWebView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+  private val onLoad by EventDispatcher()
+
+  internal val webView = WebView(context).also {
+    it.layoutParams = LayoutParams(
+      LayoutParams.MATCH_PARENT,
+      LayoutParams.MATCH_PARENT
+    )
+
+    it.webViewClient = object : WebViewClient() {
+      override fun onPageFinished(view: WebView, url: String) {
+        onLoad(mapOf("url" to url))
+      }
+    }
+
+    addView(it)
+  }
+}
+```
+
+For iOS, create a Swift file called **FirstInlineView.swift** inside the **app** directory:
+
+```swift app/FirstInlineView.swift
+internal import ExpoModulesCore
+import WebKit
+
+class FirstInlineView: Module {
+  public func definition() -> ModuleDefinition {
+    View(ExpoWebView.self) {
+      Events("onLoad")
+
+      Prop("url") { (view, url: URL) in
+        if view.webView.url != url {
+          let urlRequest = URLRequest(url: url)
+          view.webView.load(urlRequest)
+        }
+      }
+    }
+  }
+}
+
+class ExpoWebView: ExpoView, WKNavigationDelegate {
+  let webView = WKWebView()
+  let onLoad = EventDispatcher()
+
+  required init(appContext: AppContext? = nil) {
+    super.init(appContext: appContext)
+    clipsToBounds = true
+    webView.navigationDelegate = self
+    addSubview(webView)
+  }
+
+  override func layoutSubviews() {
+    webView.frame = bounds
+  }
+
+  func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    if let url = webView.url {
+      onLoad([
+        "url": url.absoluteString
+      ])
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="6">
+## Use the native view in your app
+You use the inline view in a similar way to the inline module:
+
+```tsx app/index.tsx
+import { requireNativeModule, requireNativeView } from 'expo';
+import { StyleSheet, Text, View } from 'react-native';
+
+const FirstInlineModule = requireNativeModule('FirstInlineModule');
+const FirstInlineView = requireNativeView('FirstInlineView');
+
+export default function InlineModulesDemoComponent() {
+  return (
+    <>
+      <View style={styles.textBox}>
+        <Text style={styles.text}> {FirstInlineModule.Hello} </Text>
+      </View>
+      <FirstInlineView style={styles.inlineView} url="https://docs.expo.dev/modules/" />
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  textBox: { height: 100, justifyContent: 'flex-end', alignItems: 'center' },
+  text: { fontSize: 26 },
+  inlineView: { flex: 1 },
+});
+```
+
+Now run your example app by compiling it using `npx expo run:android` or `npx expo run:ios` command.
+
+After running the above command(s), you will see the app with a text constant coming from the native android/iOS module and a web view coming from a native view.
+
+</Step>
+
+Congratulations! You've created your first Expo inline module and view.
+
+## Next steps
+
+<BoxLink
+  title="Expo inline modules reference"
+  description="A reference on how to create inline modules using Kotlin and Swift."
+  href="/modules/inline-modules-reference"
+  Icon={Grid01Icon}
+/>
+
+<BoxLink
+  title="Tutorial: Creating a native module"
+  description="A tutorial on creating a native module that persists settings with Expo Modules API."
+  href="/modules/native-module-tutorial/"
+  Icon={Grid01Icon}
+/>

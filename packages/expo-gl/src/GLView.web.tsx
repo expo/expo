@@ -4,8 +4,8 @@ import * as React from 'react';
 import { Dimensions } from 'react-native';
 
 import Canvas from './Canvas';
-import { WebGLObject } from './GLView';
-import {
+import type { WebGLObject } from './GLView';
+import type {
   GLViewProps,
   ExpoWebGLRenderingContext,
   GLSnapshot,
@@ -254,10 +254,6 @@ export class GLView extends React.Component<GLViewWebProps> {
 
     const gl = this.getGLContextOrReject();
     return await GLView.takeSnapshotAsync(gl, options);
-  }
-
-  public async startARSessionAsync(): Promise<void> {
-    throw new UnavailabilityError('GLView', 'startARSessionAsync');
   }
 
   public async createCameraTextureAsync(): Promise<void> {

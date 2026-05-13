@@ -84,7 +84,11 @@ interface ModuleDefinition {
 
 type ModuleList = Map<ModuleID, ModuleDefinition | null>;
 
-export type RequireFn = (id: ModuleID | VerboseModuleNameForDev) => Exports;
+export interface RequireFn {
+  (id: ModuleID | VerboseModuleNameForDev, moduleIdHint?: string): Exports;
+  Refresh?: any;
+  Systrace?: any;
+}
 
 export type DefineFn = (
   factory: FactoryFn,
@@ -115,7 +119,7 @@ const { hasOwnProperty } = {};
 if (__DEV__) {
   // UPSTREAM: https://github.com/facebook/metro/commit/15fef8ebcf5ae0a13e7f0925a22d4211dde95e02
   global.$RefreshReg$ = global.$RefreshReg$ ?? (() => {});
-  global.$RefreshSig$ = global.$RefreshSig$ ?? (() => type => type);
+  global.$RefreshSig$ = global.$RefreshSig$ ?? (() => (type) => type);
 }
 
 function clear(): ModuleList {
@@ -251,12 +255,12 @@ function shouldPrintRequireCycle(modules: readonly (string | null | undefined)[]
   return modules.every((module) => !isIgnored(module));
 }
 
-function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any | Exports {
+function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev, moduleIdHint?: string): any | Exports {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedDefault !== EMPTY) {
     return modules.get(moduleId)!.importedDefault;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = metroRequire(moduleId, moduleIdHint);
   const importedDefault: any | Exports = exports && exports.__esModule ? exports.default : exports;
 
   return (modules.get(moduleId)!.importedDefault = importedDefault);
@@ -264,13 +268,14 @@ function metroImportDefault(moduleId: ModuleID | VerboseModuleNameForDev): any |
 metroRequire.importDefault = metroImportDefault;
 
 function metroImportAll(
-  moduleId: ModuleID | VerboseModuleNameForDev
+  moduleId: ModuleID | VerboseModuleNameForDev,
+  moduleIdHint?: string
 ): any | Exports | Record<string, any> {
   if (modules.has(moduleId) && modules.get(moduleId)?.importedAll !== EMPTY) {
     return modules.get(moduleId)!.importedAll;
   }
 
-  const exports: Exports = metroRequire(moduleId);
+  const exports: Exports = metroRequire(moduleId, moduleIdHint);
   let importedAll: Exports | Record<string, any>;
 
   if (exports && exports.__esModule) {
@@ -518,11 +523,7 @@ function loadModuleImplementation(
       if (Refresh != null) {
         // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
         const prefixedModuleId = __METRO_GLOBAL_PREFIX__ + ' ' + moduleId;
-        registerExportsForReactRefresh(
-          Refresh,
-          moduleObject.exports,
-          prefixedModuleId,
-        );
+        registerExportsForReactRefresh(Refresh, moduleObject.exports, prefixedModuleId);
       }
     }
 
@@ -854,8 +855,11 @@ if (__DEV__) {
     const prevExports = mod.publicModule.exports;
     mod.publicModule.exports = {};
     hot._didAccept = false;
-    hot._acceptCallback = null;
-    hot._disposeCallback = null;
+
+    // NOTE(@kitten): accept() may widen this again, so we upcast this assignment
+    hot._acceptCallback = null as HotModuleReloadingCallback | null;
+    hot._disposeCallback = null as HotModuleReloadingCallback | null;
+
     metroRequire(id);
 
     if (mod.hasError) {
@@ -875,7 +879,6 @@ if (__DEV__) {
 
     if (hot._acceptCallback) {
       try {
-        // @ts-expect-error
         hot._acceptCallback();
       } catch (error) {
         console.error(`Error while calling accept handler for module ${id}: `, error);
@@ -990,11 +993,7 @@ if (__DEV__) {
     return signature;
   };
 
-  var registerExportsForReactRefresh = (
-    Refresh: any,
-    moduleExports: Exports,
-    moduleID: string
-  ) => {
+  var registerExportsForReactRefresh = (Refresh: any, moduleExports: Exports, moduleID: string) => {
     Refresh.register(moduleExports, moduleID + ' %exports%');
     if (moduleExports == null || typeof moduleExports !== 'object') {
       // Exit if we can't iterate over exports.
@@ -1022,7 +1021,7 @@ if (__DEV__) {
   // having to make them publicly available.
 
   var requireSystrace = function requireSystrace() {
-    return global[__METRO_GLOBAL_PREFIX__ + '__SYSTRACE'] || metroRequire.Systrace;
+    return global[__METRO_GLOBAL_PREFIX__ + '__SYSTRACE'] || (metroRequire as RequireFn).Systrace;
   };
 
   // UPSTREAM: https://github.com/facebook/metro/commit/c8de6512c63c3c0f6556446f8aec924380ac2014
@@ -1035,8 +1034,7 @@ if (__DEV__) {
     return (
       global[__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] ||
       global[global.__METRO_GLOBAL_PREFIX__ + '__ReactRefresh'] ||
-      // @ts-expect-error: missing prop
-      metroRequire.Refresh
+      (metroRequire as RequireFn).Refresh
     );
   };
 }

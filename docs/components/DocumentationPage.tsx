@@ -1,24 +1,28 @@
 import { mergeClasses } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
 import { useRouter } from 'next/compat/router';
-import { useEffect, useState, createRef, type PropsWithChildren, useRef, useCallback } from 'react';
+import { useEffect, useState, type PropsWithChildren, useRef, useCallback, useMemo } from 'react';
 
-import { InlineHelp } from 'ui/components/InlineHelp';
-import { PageHeader } from 'ui/components/PageHeader';
 import * as RoutesUtils from '~/common/routes';
-import { appendSectionToRoute, isRouteActive } from '~/common/routes';
-import { versionToText } from '~/common/utilities';
+import { appendSectionToRoute, getBreadcrumbTrail, isRouteActive } from '~/common/routes';
+import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationHead from '~/components/DocumentationHead';
-import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
+import DocumentationNestedScrollLayout, {
+  DocumentationNestedScrollLayoutHandles,
+} from '~/components/DocumentationNestedScrollLayout';
+import { buildBreadcrumbListSchema, buildTechArticleSchema } from '~/constants/structured-data';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { PageMetadata } from '~/types/common';
 import { AskPageAIOverlay } from '~/ui/components/AskPageAI';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { InlineHelp } from '~/ui/components/InlineHelp';
+import { PageHeader } from '~/ui/components/PageHeader';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar/Sidebar';
+import { StructuredData } from '~/ui/components/StructuredData';
 import {
   TableOfContentsHandles,
   TableOfContentsWithManager,
@@ -33,6 +37,7 @@ export default function DocumentationPage({
   title,
   description,
   packageName,
+  cliVersion,
   sourceCodeUrl,
   iconUrl,
   children,
@@ -48,17 +53,29 @@ export default function DocumentationPage({
   const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isAskAIExpanded, setAskAIExpanded] = useState(false);
   const [didChatForceSidebarCollapse, setDidChatForceSidebarCollapse] = useState(false);
+  const [isImmersiveMode, setImmersiveMode] = useState(false);
   const { version } = usePageApiVersion();
   const router = useRouter();
 
-  const layoutRef = createRef<DocumentationNestedScrollLayout>();
+  const layoutRef = useRef<DocumentationNestedScrollLayoutHandles | null>(null);
   const tableOfContentsRef = useRef<TableOfContentsHandles>(null);
 
   const pathname = router?.pathname ?? '/';
   const routes = RoutesUtils.getRoutes(pathname, version);
   const sidebarActiveGroup = RoutesUtils.getPageSection(pathname);
+  const breadcrumbTrail = getBreadcrumbTrail(routes, pathname);
+  const breadcrumbSchema = buildBreadcrumbListSchema(breadcrumbTrail);
+  const canonicalUrl =
+    version !== 'unversioned' && !RoutesUtils.isInternalPath(pathname)
+      ? RoutesUtils.getCanonicalUrl(pathname)
+      : undefined;
+  const techArticleSchema =
+    title && canonicalUrl
+      ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
+      : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
+  const markdownPath = RoutesUtils.getMarkdownPath(currentPath);
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
   const isLatestConfigPage = currentPath.startsWith('/versions/latest/config/');
   const isAskAIEligiblePage = isLatestSdkPage || isLatestConfigPage;
@@ -68,21 +85,22 @@ export default function DocumentationPage({
     (expanded: boolean) => {
       setAskAIExpanded(expanded);
       if (expanded) {
-        if (!isSidebarCollapsed) {
+        const shouldCollapseSidebar = !isSidebarCollapsed && !isImmersiveMode;
+        setDidChatForceSidebarCollapse(shouldCollapseSidebar);
+        if (shouldCollapseSidebar) {
           setSidebarCollapsed(true);
-          setDidChatForceSidebarCollapse(true);
-        } else {
-          setDidChatForceSidebarCollapse(false);
         }
         return;
       }
 
       if (didChatForceSidebarCollapse) {
-        setSidebarCollapsed(false);
         setDidChatForceSidebarCollapse(false);
+        if (!isImmersiveMode) {
+          setSidebarCollapsed(false);
+        }
       }
     },
-    [didChatForceSidebarCollapse, isSidebarCollapsed]
+    [didChatForceSidebarCollapse, isImmersiveMode, isSidebarCollapsed]
   );
 
   useEffect(() => {
@@ -110,10 +128,41 @@ export default function DocumentationPage({
     handleAskAIExpandedChange(false);
   };
 
-  const handleSidebarToggle = () => {
-    setSidebarCollapsed(previous => !previous);
+  const enterImmersiveMode = useCallback(() => {
+    setImmersiveMode(true);
+    setSidebarCollapsed(true);
+  }, []);
+
+  const exitImmersiveMode = useCallback(() => {
+    setImmersiveMode(false);
+    if (!didChatForceSidebarCollapse) {
+      setSidebarCollapsed(false);
+    }
+  }, [didChatForceSidebarCollapse]);
+
+  const toggleImmersiveMode = useCallback(() => {
+    if (isImmersiveMode) {
+      exitImmersiveMode();
+    } else {
+      enterImmersiveMode();
+    }
+  }, [enterImmersiveMode, exitImmersiveMode, isImmersiveMode]);
+
+  const handleSidebarToggle = useCallback(() => {
     setDidChatForceSidebarCollapse(false);
-  };
+    if (isImmersiveMode) {
+      setSidebarCollapsed(false);
+      exitImmersiveMode();
+      return;
+    }
+
+    if (isSidebarCollapsed) {
+      setSidebarCollapsed(false);
+      return;
+    }
+
+    enterImmersiveMode();
+  }, [enterImmersiveMode, exitImmersiveMode, isImmersiveMode, isSidebarCollapsed]);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -167,13 +216,54 @@ export default function DocumentationPage({
     }
   };
 
-  const handleContentScroll = (contentScrollPosition: number) => {
-    window.requestAnimationFrame(() => {
-      if (tableOfContentsRef.current?.handleContentScroll) {
-        tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
+  const handleContentScroll = useMemo(
+    () =>
+      throttle((contentScrollPosition: number) => {
+        window.requestAnimationFrame(() => {
+          if (tableOfContentsRef.current?.handleContentScroll) {
+            tableOfContentsRef.current.handleContentScroll(contentScrollPosition);
+          }
+        });
+      }, 150),
+    []
+  );
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleKeydown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented) {
+        return;
       }
-    });
-  };
+
+      let isMac = false;
+      if (typeof navigator !== 'undefined') {
+        if ('userAgentData' in navigator && navigator.userAgentData?.platform) {
+          isMac = navigator.userAgentData.platform === 'macOS';
+        } else if (navigator.userAgent) {
+          isMac = navigator.userAgent.toLowerCase().includes('mac');
+        }
+      }
+      const isModPressed = isMac ? event.metaKey : event.ctrlKey;
+
+      if (isModPressed && event.shiftKey && event.key === 'Enter') {
+        event.preventDefault();
+        toggleImmersiveMode();
+        return;
+      }
+
+      if (event.key === 'Escape' && isImmersiveMode) {
+        exitImmersiveMode();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeydown);
+    return () => {
+      window.removeEventListener('keydown', handleKeydown);
+    };
+  }, [exitImmersiveMode, isImmersiveMode, toggleImmersiveMode]);
 
   const sidebarElement = <Sidebar routes={routes} />;
   const headerElement = (
@@ -215,28 +305,31 @@ export default function DocumentationPage({
   const nextPage = flattenStructure[pageIndex + 1];
 
   const hideSidebarRight = hideTOC ?? false;
+  const shouldHideSidebarRight = hideSidebarRight || isImmersiveMode;
+  const isNavigationCollapsed = isSidebarCollapsed || isImmersiveMode;
 
   return (
     <>
       <DocumentationNestedScrollLayout
-        ref={layoutRef}
+        layoutRef={layoutRef}
         header={headerElement}
         sidebar={sidebarElement}
         sidebarRight={<TableOfContentsWithManager ref={tableOfContentsRef} />}
         sidebarActiveGroup={sidebarActiveGroup}
-        hideTOC={hideSidebarRight}
+        hideTOC={shouldHideSidebarRight}
         isMobileMenuVisible={isMobileMenuVisible}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}
         onSidebarToggle={handleSidebarToggle}
-        isSidebarCollapsed={isSidebarCollapsed}
+        isSidebarCollapsed={isNavigationCollapsed}
         isChatExpanded={isAskAIExpanded}>
+        {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
+        {techArticleSchema && <StructuredData id="tech-article" data={techArticleSchema} />}
         <DocumentationHead
           title={title}
           description={description}
-          canonicalUrl={
-            version !== 'unversioned' ? RoutesUtils.getCanonicalUrl(pathname) : undefined
-          }>
+          canonicalUrl={canonicalUrl}
+          markdownPath={markdownPath}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
@@ -245,14 +338,15 @@ export default function DocumentationPage({
           )}
           {(version === 'unversioned' ||
             RoutesUtils.isPreviewPath(pathname) ||
-            RoutesUtils.isArchivePath(pathname)) && <meta name="robots" content="noindex" />}
+            RoutesUtils.isArchivePath(pathname) ||
+            RoutesUtils.isInternalPath(pathname)) && <meta name="robots" content="noindex" />}
           {searchRank && <meta name="searchRank" content={String(searchRank)} />}
           {searchPosition && <meta name="searchPosition" content={String(searchPosition)} />}
         </DocumentationHead>
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'bg-gradient-to-b from-default to-transparent opacity-90'
+            'from-default bg-linear-to-b to-transparent opacity-90'
           )}
         />
         <main
@@ -261,7 +355,7 @@ export default function DocumentationPage({
             'max-lg-gutters:px-4 max-lg-gutters:pt-5'
           )}>
           {version && version === 'unversioned' && (
-            <InlineHelp type="default" size="sm" className="!mb-5 !inline-flex w-full">
+            <InlineHelp type="default" size="sm" className="mb-5! inline-flex! w-full">
               This is documentation for the next SDK version. For up-to-date documentation, see the{' '}
               <A href={pathname.replace('unversioned', 'latest')}>latest version</A> (
               {versionToText(LATEST_VERSION)}).
@@ -271,6 +365,7 @@ export default function DocumentationPage({
             <PageHeader
               title={title}
               description={description}
+              cliVersion={cliVersion}
               sourceCodeUrl={sourceCodeUrl}
               packageName={packageName}
               iconUrl={iconUrl}
@@ -282,6 +377,12 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
+              file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer

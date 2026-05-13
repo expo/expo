@@ -16,7 +16,8 @@ exports.renderRscAsync = renderRscAsync;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const node_path_1 = __importDefault(require("node:path"));
 const rsc_renderer_1 = require("./rsc-renderer");
-const debug = require('debug')('expo:router:server:rsc-renderer');
+const debug_1 = require("../utils/debug");
+const debug = (0, debug_1.createDebug)('expo:router:server:rsc-renderer');
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map();
 function serverRequire(...targetOutputModulePath) {
@@ -67,19 +68,21 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         resolveClientEntry(file, isServer) {
             debug('resolveClientEntry', file, { isServer });
             if (isServer) {
-                if (!(file in actionManifest)) {
+                const actionManifestFile = actionManifest[file];
+                if (actionManifestFile == null) {
                     throw new Error(`Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`);
                 }
-                const [id, chunk] = actionManifest[file];
+                const [id, chunk] = actionManifestFile;
                 return {
                     id,
                     chunks: chunk ? [chunk] : [],
                 };
             }
-            if (!(file in ssrManifest)) {
+            const ssrManifestFile = ssrManifest[file];
+            if (ssrManifestFile == null) {
                 throw new Error(`Could not find file in SSR manifest: ${file}`);
             }
-            const [id, chunk] = ssrManifest[file];
+            const [id, chunk] = ssrManifestFile;
             return {
                 id,
                 chunks: chunk ? [chunk] : [],

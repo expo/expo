@@ -1,6 +1,8 @@
 // This file configures the runtime environment to increase compatibility with WinterCG.
 // https://wintercg.org/
 
+import '../../types';
+
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
@@ -27,3 +29,17 @@ installFormDataPatch(FormData);
 // Polyfill async iterator symbol for Hermes.
 // @ts-expect-error: readonly property only applies when the engine supports it
 Symbol.asyncIterator ??= Symbol.for('Symbol.asyncIterator');
+
+const useRnFetch =
+  process.env.EXPO_PUBLIC_USE_RN_FETCH === '1' || process.env.EXPO_PUBLIC_USE_RN_FETCH === 'true';
+
+if (!useRnFetch) {
+  // Reading `Headers` triggers RN's polyfill chain, which also installs
+  // `Request` and `Response`. Must run before we replace `fetch` below.
+  if (!globalThis.Headers) {
+    throw new Error(
+      "expo/fetch expected `globalThis.Headers` to be installed by React Native's fetch polyfill."
+    );
+  }
+  install('fetch', () => require('./fetch').fetch);
+}

@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
+import expo.modules.devmenu.api.DevMenuApi
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.branch.BranchManager
 import host.exp.exponent.di.NativeModuleDepsProvider
@@ -30,6 +31,11 @@ abstract class ExpoApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
+
+    // The performance monitor in Expo Go doesn't require overlay permission.
+    DevMenuApi.configure(
+      performanceMonitorNeedsOverlayPermission = false
+    )
 
     ExpoViewBuildConfig.DEBUG = isDebug
     ExpoViewBuildConfig.USE_EMBEDDED_KERNEL = shouldUseEmbeddedKernel()
@@ -57,7 +63,6 @@ abstract class ExpoApplication : Application() {
     Exponent.initialize(this, this)
 
     NativeModuleDepsProvider.instance.add(Kernel::class.java, KernelProvider.instance)
-    NativeModuleDepsProvider.instance.add(DevMenuManager::class.java, DevMenuManager())
     NativeModuleDepsProvider.instance.inject(ExpoApplication::class.java, this)
 
     BranchManager.initialize(this)

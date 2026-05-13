@@ -1,6 +1,9 @@
 import { ThemeProvider } from 'ThemeProvider';
+import { ObserveRoot } from 'expo-observe';
 import * as Splashscreen from 'expo-splash-screen';
 import React from 'react';
+import * as DevMenu from 'expo-dev-menu';
+import ExpoObserve from 'expo-observe';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 
@@ -10,6 +13,23 @@ try {
 } catch {
   // do nothing
 }
+
+DevMenu.registerDevMenuItems([
+  {
+    name: 'Action 1',
+    callback: () => {
+      console.log('Action 1 executed');
+    },
+    shouldCollapse: true,
+  },
+  {
+    name: 'Action 2',
+    callback: () => {
+      console.log('Action 2 executed');
+    },
+    shouldCollapse: false,
+  },
+]);
 
 Splashscreen.setOptions({ fade: true, duration: 800 });
 
@@ -46,6 +66,11 @@ function useLoaded() {
   return isLoaded;
 }
 
+ExpoObserve.configure({
+  dispatchingEnabled: true,
+  sampleRate: 0.9,
+});
+
 export default function Main() {
   React.useEffect(() => {
     try {
@@ -68,5 +93,9 @@ export default function Main() {
 
   const isLoaded = useLoaded();
 
-  return <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>;
+  return (
+    <ObserveRoot>
+      <ThemeProvider>{isLoaded ? <MainNavigator /> : null}</ThemeProvider>
+    </ObserveRoot>
+  );
 }

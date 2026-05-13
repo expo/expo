@@ -19,7 +19,7 @@ export function APIParamDetailsBlock({ param, sdkVersion, className }: Props) {
   return (
     <div
       className={mergeClasses(
-        'flex flex-col gap-0.5 border-l-2 border-secondary pl-2.5 text-xs text-secondary',
+        'border-secondary text-secondary flex flex-col gap-0.5 border-l-2 pl-2.5 text-sm',
         className
       )}
       key={param.name}>

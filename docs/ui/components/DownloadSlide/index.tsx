@@ -15,16 +15,16 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
       download
       href={imageUrl}
       className={mergeClasses(
-        'relative flex items-stretch overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
+        'border-default bg-default relative flex items-stretch overflow-hidden rounded-lg border shadow-xs transition',
         'hocus:opacity-80 hocus:shadow-sm',
         'max-sm-gutters:flex-col',
-        '[&+hr]:!mt-6',
+        '[&+hr]:mt-6!',
         className
       )}
       aria-label="Download slide">
       <div
         className={mergeClasses(
-          'relative flex max-w-[200px] items-center justify-center border-r border-secondary bg-element',
+          'border-secondary bg-element relative flex max-w-[200px] items-center justify-center border-r',
           'max-sm-gutters:max-w-full max-sm-gutters:border-b max-sm-gutters:border-r-0'
         )}>
         <img
@@ -34,14 +34,14 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
           aria-label={`Download slide: ${title}`}
         />
       </div>
-      <div className="flex flex-col justify-center gap-1 bg-default px-4 py-2">
-        <p className="flex items-center gap-1.5 text-sm font-medium leading-normal">{title}</p>
+      <div className="bg-default flex flex-col justify-center gap-1 px-4 py-2">
+        <p className="flex items-center gap-1.5 text-sm leading-normal font-medium">{title}</p>
         {description && (
-          <p className="flex items-center gap-2 text-xs text-secondary">{description}</p>
+          <p className="text-secondary flex items-center gap-2 text-sm">{description}</p>
         )}
       </div>
       <Download03Icon
-        className="icon-md my-auto ml-auto mr-4 shrink-0 text-icon-secondary max-sm-gutters:hidden"
+        className="icon-md text-icon-secondary max-sm-gutters:hidden my-auto mr-4 ml-auto shrink-0"
         aria-hidden="true"
       />
     </a>

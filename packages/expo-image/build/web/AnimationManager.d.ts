@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageTransition } from '../Image.types';
+import type { ImageTransition } from '../Image.types';
 type Callbacks = {
     onReady?: (() => void) | null;
     onAnimationFinished?: (() => void) | null;
@@ -24,7 +24,7 @@ export declare function getAnimatorFromTransition(transition: ImageTransition | 
     animateOutClass: string;
     containerClass: string;
     timingFunction: "ease-in-out" | "ease-in" | "ease-out" | "linear" | null;
-    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down";
+    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down" | "sf:replace" | "sf:down-up" | "sf:up-up" | "sf:off-up";
     duration: number;
 } | null;
 export default function AnimationManager({ children: renderFunction, initial, transition, recyclingKey, }: {
@@ -32,6 +32,6 @@ export default function AnimationManager({ children: renderFunction, initial, tr
     initial: AnimationManagerNode | null;
     transition: ImageTransition | null | undefined;
     recyclingKey?: string | null | undefined;
-}): React.JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=AnimationManager.d.ts.map

@@ -5,7 +5,7 @@
   "compilerOptions": {
     "lib": ["es2022", "dom", "dom.iterable"],
     "sourceMap": true,
-    "outDir": "./build/cjs",
-    "typeRoots": ["../cli/ts-declarations"]
+    "rootDir": "./src",
+    "outDir": "./build/cjs"
   }
 }

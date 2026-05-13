@@ -1,8 +1,6 @@
+#include "ExpoHeader.pch"
 #include "MethodMetadata.h"
 #include "JSIContext.h"
-#include "JavaScriptValue.h"
-#include "JavaScriptObject.h"
-#include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
@@ -10,9 +8,6 @@
 #include "JSReferencesCache.h"
 
 #include <utility>
-#include <functional>
-#include <unistd.h>
-#include <optional>
 
 #include <react/bridging/LongLivedObject.h>
 
@@ -37,11 +32,7 @@ jni::local_ref<JavaCallback::JavaPart> createJavaCallback(
     std::move(rejectFunction)
   );
 
-#if REACT_NATIVE_TARGET_VERSION >= 75
   facebook::react::LongLivedObjectCollection::get(rt).add(callbackContext);
-#else
-  facebook::react::LongLivedObjectCollection::get().add(callbackContext);
-#endif
 
   return JavaCallback::newInstance(jsiContext, std::move(callbackContext));
 }
@@ -84,7 +75,7 @@ try {                             \
   throwNewJavaException(                                       \
     UnexpectedException::create(                               \
       "[" + this->info.name + "] Cannot convert '" + stringRepresentation + \
-      "' to a Kotlin type.").get()                             \
+      "' to a Kotlin type. " + exception.what()).get()                             \
   );                              \
 }
 
@@ -198,7 +189,7 @@ jsi::Value MethodMetadata::callSync(
   jni::JniLocalScope scope(env, (int) count);
 
   auto result = this->callJNISync(env, rt, thisValue, args, count);
-  return convert(env, rt, result);
+  return convert(env, rt, this->info.returnType, result);
 }
 
 jsi::Function MethodMetadata::toAsyncFunction(

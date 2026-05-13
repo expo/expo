@@ -50,6 +50,7 @@ const LAUNCH_PICKER_PARAMETERS: FunctionParameter[] = [
       { name: 'exif', type: 'boolean', initial: false },
       { name: 'base64', type: 'boolean', initial: false },
       { name: 'legacy', type: 'boolean', initial: false },
+      { name: 'shouldDownloadFromNetwork', type: 'boolean', initial: false },
       {
         name: 'videoExportPreset',
         type: 'enum',

@@ -210,6 +210,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private var loadedSource: GlideModelProvider? = null
 
   /**
+   * Currently loaded placeholder
+   */
+  private var loadedPlaceholder: GlideModelProvider? = null
+
+  /**
    * Whether the transformation matrix should be reapplied
    */
   private var transformationMatrixChanged = false
@@ -460,6 +465,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
       shouldRerender = false
       loadedSource = null
+      loadedPlaceholder = null
       transformationMatrixChanged = false
       clearViewBeforeChangingSource = false
       return true
@@ -514,7 +520,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         return@trace
       }
 
-      val shouldRerender = sourceToLoad != loadedSource || shouldRerender || (sourceToLoad == null && placeholder != null)
+      val shouldRerender = sourceToLoad != loadedSource || placeholder != loadedPlaceholder || shouldRerender || (sourceToLoad == null && placeholder != null)
       if (!shouldRerender && !shouldRerenderBecauseOfResize) {
         // In the case where the source didn't change, but the transformation matrix has to be
         // recalculated, we can apply the new transformation right away.
@@ -535,6 +541,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
       this.shouldRerender = false
       loadedSource = sourceToLoad
+      loadedPlaceholder = placeholder
       val options = bestSource?.createGlideOptions(context)
       val propOptions = createPropOptions()
 

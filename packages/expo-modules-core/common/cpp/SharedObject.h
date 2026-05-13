@@ -5,6 +5,7 @@
 #ifdef __cplusplus
 
 #include <jsi/jsi.h>
+
 #include "JSIUtils.h"
 #include "ObjectDeallocator.h"
 #include "EventEmitter.h"

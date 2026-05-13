@@ -37,11 +37,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getStateFromPath = getStateFromPath;
-const native_1 = require("@react-navigation/native");
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const findFocusedRoute_1 = require("./findFocusedRoute");
 const expo = __importStar(require("./getStateFromPath-forks"));
 const constants_1 = require("../constants");
+const native_1 = require("../react-navigation/native");
 /**
  * Utility to parse a path string to initial state object accepted by the container.
  * This is useful for deep linking when we need to handle the incoming URL.
@@ -107,7 +107,7 @@ segments = []
             return { name };
         });
         if (routes.length) {
-            return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.url.hash);
+            return createNestedStateObject(expoPath, routes, initialRoutes, [], expoPath.hash);
         }
         return undefined;
     }
@@ -126,7 +126,7 @@ segments = []
         // );
         // END FORK
         if (match) {
-            return createNestedStateObject(expoPath, match.routeNames.map((name) => ({ name })), initialRoutes, configs, expoPath.url.hash);
+            return createNestedStateObject(expoPath, match.routeNames.map((name) => ({ name })), initialRoutes, configs, expoPath.hash);
         }
         return undefined;
     }
@@ -137,7 +137,7 @@ segments = []
     const { routes, remainingPath } = matchAgainstConfigs(remaining, configWithRegexes);
     if (routes !== undefined) {
         // This will always be empty if full path matched
-        current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.url.hash);
+        current = createNestedStateObject(expoPath, routes, initialRoutes, configs, expoPath.hash);
         remaining = remainingPath;
         result = current;
     }
@@ -300,8 +300,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                 const decodedParamSegment = expo.safelyDecodeURIComponent(
                 // const decodedParamSegment = decodeURIComponent(
                 // The param segments appear every second item starting from 2 in the regex match result
-                match[(acc.pos + 1) * 2]
-                    // Remove trailing slash
+                match[(acc.pos + 1) * 2] // Remove trailing slash
                     .replace(/\/$/, ''));
                 // END FORK
                 Object.assign(acc.matchedParams, {
@@ -335,6 +334,7 @@ const matchAgainstConfigs = (remaining, configs) => {
                     const offset = numInitialSegments ? numInitialSegments - 1 : 0;
                     // START FORK
                     // const value = matchedParams[p]?.[index + offset];
+                    // TODO(@kitten): Assess which is intended, non-optional or getParamValue accepting undefined
                     const value = expo.getParamValue(p, matchedParams[p]?.[index + offset]);
                     // END FORK
                     if (value) {

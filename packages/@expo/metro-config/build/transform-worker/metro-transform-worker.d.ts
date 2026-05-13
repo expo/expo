@@ -9,11 +9,12 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/index.js#L1
  */
 import { types as t } from '@babel/core';
-import type { ParseResult } from '@babel/core';
-import type { MetroSourceMapSegmentTuple } from '@expo/metro/metro-source-map';
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
-import { InvalidRequireCallError as InternalInvalidRequireCallError, CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
-import { ExpoJsOutput } from '../serializer/jsOutput';
+import type { CollectedDependencies, Options as CollectDependenciesOptions } from './collect-dependencies';
+import { InvalidRequireCallError as InternalInvalidRequireCallError } from './collect-dependencies';
+import type { ExpoJsOutput } from '../serializer/jsOutput';
+import { type SerializableSourceMap } from '../serializer/packedMap';
+import { type BabelSourceMapSegment } from '../serializer/sourceMap';
 export { JsTransformOptions };
 interface TransformResponse {
     readonly dependencies: CollectedDependencies['dependencies'];
@@ -24,24 +25,27 @@ export declare class InvalidRequireCallError extends Error {
     filename: string;
     constructor(innerError: InternalInvalidRequireCallError, filename: string);
 }
-export declare const minifyCode: (config: Pick<JsTransformerConfig, "minifierPath" | "minifierConfig">, filename: string, code: string, source: string, map: MetroSourceMapSegmentTuple[], reserved?: string[]) => Promise<{
+export declare const minifyCode: (config: Pick<JsTransformerConfig, "minifierPath" | "minifierConfig">, filename: string, code: string, source: string, rawMappings: readonly BabelSourceMapSegment[], reserved?: string[]) => Promise<{
     code: string;
-    map: MetroSourceMapSegmentTuple[];
+    sourceMap: SerializableSourceMap;
 }>;
-export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, collectLocations, }: {
+export declare function applyImportSupport<TFile extends t.File>(ast: TFile, { filename, options, importDefault, importAll, collectLocations, performConstantFolding, }: {
     filename: string;
     options: Pick<JsTransformOptions, 'experimentalImportSupport' | 'inlineRequires' | 'nonInlinedRequires' | 'customTransformOptions'>;
     importDefault: string;
     importAll: string;
     collectLocations?: boolean;
+    performConstantFolding?: boolean;
 }): {
     ast: TFile;
     metadata?: any;
 };
 export declare function transform(config: JsTransformerConfig, projectRoot: string, filename: string, data: Buffer, options: JsTransformOptions): Promise<TransformResponse>;
-export declare function getCacheKey(config: JsTransformerConfig): string;
-export declare function collectDependenciesForShaking(ast: ParseResult, options: CollectDependenciesOptions): Readonly<{
-    ast: import("@babel/parser").ParseResult<t.File>;
+export declare function getCacheKey(config: JsTransformerConfig, opts?: Readonly<{
+    projectRoot: string;
+}>): string;
+export declare function collectDependenciesForShaking(ast: t.File, options: CollectDependenciesOptions): Readonly<{
+    ast: t.File;
     dependencyMapName: string;
     dependencies: readonly Readonly<{
         data: import("./collect-dependencies").DependencyData;

@@ -9,7 +9,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class OnSurfaceCreateRecord(
   @Field val exglCtxId: Int
 ) : Record
@@ -21,7 +23,7 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
   private var glContext = GLContext(
     appContext
       .registry
-      .getModule<GLObjectManagerModule>()
+      .getModule<GLModule>()
   )
 
   private val exglContextId: Int

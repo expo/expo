@@ -1,0 +1,105 @@
+---
+title: Icon
+description: A platform-native icon — SF Symbol on iOS, Material Symbol on Android.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A platform-native icon. On Android, it renders a Material Symbol XML vector drawable supplied through [`@expo/material-symbols`](https://github.com/expo/expo/tree/main/packages/material-symbols) (other XML vector drawable assets aren't officially supported). On iOS, it renders an [SF Symbol](https://developer.apple.com/sf-symbols/)
+
+> **Note:** `Icon` does not render on web.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Cross-platform icon with `Icon.select`
+
+[`Icon.select`](#selectspec) picks the right asset for the current platform. Pair it with [`@expo/ui/babel-plugin`](https://github.com/expo/expo/tree/sdk-56/packages/expo-ui/plugin) (auto-loaded by `babel-preset-expo`) so Metro can tree-shake the unused side per platform.
+
+```tsx IconSelectExample.tsx
+import { Host, Icon } from '@expo/ui';
+
+export default function IconSelectExample() {
+  return (
+    <Host matchContents>
+      <Icon
+        name={Icon.select({
+          ios: 'star.fill',
+          android: import('@expo/material-symbols/star.xml'),
+        })}
+        size={32}
+        color="orange"
+      />
+    </Host>
+  );
+}
+```
+
+### Hoisted `Icon.select`
+
+Hoist the [`Icon.select`](#selectspec) call when reusing the same icon across multiple call sites.
+
+```tsx HoistedIconExample.tsx
+import { Host, Row, Icon } from '@expo/ui';
+
+const STAR = Icon.select({
+  ios: 'star.fill',
+  android: import('@expo/material-symbols/star.xml'),
+});
+
+export default function HoistedIconExample() {
+  return (
+    <Host matchContents>
+      <Row spacing={4}>
+        <Icon name={STAR} size={20} color="gold" />
+        <Icon name={STAR} size={20} color="gold" />
+        <Icon name={STAR} size={20} color="gold" />
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Platform-specific files
+
+Inside an **.android.tsx** file, import the XML asset directly. Inside an **.ios.tsx** file, pass the SF Symbol name as a string.
+
+```tsx Icon.android.tsx
+import StarIcon from '@expo/material-symbols/star.xml';
+import { Host, Icon } from '@expo/ui';
+
+export default function StarRow() {
+  return (
+    <Host matchContents>
+      <Icon name={StarIcon} size={24} />
+    </Host>
+  );
+}
+```
+
+```tsx Icon.ios.tsx
+import { Host, Icon } from '@expo/ui';
+
+export default function StarRow() {
+  return (
+    <Host matchContents>
+      <Icon name="star.fill" size={24} />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Icon } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/icon" apiName="Icon" />

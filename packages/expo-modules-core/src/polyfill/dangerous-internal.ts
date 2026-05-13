@@ -26,5 +26,9 @@ export function installExpoGlobalPolyfill() {
     expoModulesCoreVersion: undefined,
     cacheDir: undefined,
     documentsDir: undefined,
+
+    installOnUIRuntime: () => {
+      throw new Error('Method not implemented.');
+    },
   };
 }

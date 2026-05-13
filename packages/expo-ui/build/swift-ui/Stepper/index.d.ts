@@ -5,9 +5,9 @@ export type StepperProps = {
      */
     label: string;
     /**
-     * The initial/default value of the stepper.
+     * The current value of the stepper.
      */
-    defaultValue?: number;
+    value?: number;
     /**
      * The step value for increment/decrement operations.
      */
@@ -23,7 +23,7 @@ export type StepperProps = {
     /**
      * Called when the stepper value changes.
      */
-    onValueChanged: (value: number) => void;
+    onValueChange: (value: number) => void;
 } & CommonViewModifierProps;
-export declare function Stepper(props: StepperProps): import("react").JSX.Element;
+export declare function Stepper(props: StepperProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

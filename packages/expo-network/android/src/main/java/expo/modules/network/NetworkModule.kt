@@ -2,6 +2,7 @@ package expo.modules.network
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.net.NetworkRequest
@@ -9,6 +10,8 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import expo.modules.kotlin.exception.Exceptions
@@ -28,14 +31,67 @@ class NetworkModule : Module() {
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val connectivityManager: ConnectivityManager
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+  private val mainHandler = Handler(Looper.getMainLooper())
+  private val DELAY_MS = 250
 
   private val networkCallback = object : ConnectivityManager.NetworkCallback() {
     override fun onAvailable(network: android.net.Network) {
-      emitNetworkState()
+      asyncEmitNetworkState(DELAY_MS)
     }
 
-    override fun onLost(network: android.net.Network) {
-      emitNetworkState()
+    override fun onLost(lostNetwork: android.net.Network) {
+      // We intentionally do NOT reuse asyncEmitNetworkState(DELAY_MS) here.
+      //
+      // The 250ms delay used by onAvailable cannot be applied to onLost. On
+      // Android 13+, connectivityManager.activeNetwork continues to return the
+      // just-lost Network object even after the delay. Re-querying it would
+      // emit a stale "isConnected = true" event — the exact bug reported in
+      // https://github.com/expo/expo/issues/37972. This behavior isn't
+      // documented by AOSP as version-specific, so we apply this check
+      // defensively on all API 29+ devices.
+      //
+      // Instead, we compare the lost network against the current active network.
+      // If they match (or activeNetwork is null), there is no replacement
+      // network and we emit a disconnected state directly. If a different
+      // network is active (e.g. cellular), we emit
+      // its state instead.
+      //
+      // Note: android.net.Network.equals() compares by netId, so the check
+      // below is a reliable "same network" comparison.
+      //
+      // We still post to the main looper because sendEvent must run on the
+      // main thread; we just skip the artificial delay.
+      mainHandler.post {
+        try {
+          val activeNetwork = connectivityManager.activeNetwork
+          if (activeNetwork == null || activeNetwork == lostNetwork) {
+            val result = Bundle().apply {
+              putString("type", NetworkStateType.NONE.value)
+              putBoolean("isInternetReachable", false)
+              putBoolean("isConnected", false)
+            }
+            sendEvent(NETWORK_STATE_EVENT_NAME, result)
+          } else {
+            emitNetworkState()
+          }
+        } catch (e: SecurityException) {
+          // Missing ACCESS_NETWORK_STATE permission (or runtime revocation).
+          // Ensure the permission is declared in AndroidManifest.xml and
+          // granted at runtime on devices that require it.
+          Log.w(TAG, "expo-network could not read network state in onLost: missing ACCESS_NETWORK_STATE permission", e)
+        } catch (e: Exception) {
+          // The runnable may outlive the module if the React context is torn
+          // down between the ConnectivityManager.NetworkCallback firing and
+          // the posted runnable executing. In that case, the `connectivityManager`
+          // getter throws `ReactContextLost` when it
+          // attempts to resolve `appContext.reactContext`. Since
+          // unregisterNetworkCallback only prevents future callbacks and
+          // cannot cancel a runnable that is already in the queue, we must
+          // catch teardown-time exceptions here to avoid crashing the
+          // host app's main thread.
+          Log.w(TAG, "expo-network dropped a network state update during teardown (the module or React context is no longer available)", e)
+        }
+      }
     }
   }
 
@@ -87,6 +143,23 @@ class NetworkModule : Module() {
   private fun emitNetworkState() {
     val networkState = fetchNetworkState()
     sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+  }
+
+  /**
+   * Emits the network state with a delay to prevent a race condition.
+   * This delay ensures we read the actual current network state rather than stale information.
+   */
+  private fun asyncEmitNetworkState(delay: Int) {
+    mainHandler.postDelayed({
+      try {
+        emitNetworkState()
+      } catch (e: SecurityException) {
+        Log.w(TAG, "expo-network could not read network state: missing ACCESS_NETWORK_STATE permission", e)
+      } catch (e: Exception) {
+        // See the matching catch in onLost for the lifecycle race this guards.
+        Log.w(TAG, "expo-network dropped a delayed network state update during teardown (the module or React context is no longer available)", e)
+      }
+    }, delay.toLong())
   }
 
   private fun fetchNetworkState(): Bundle {

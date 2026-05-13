@@ -65,7 +65,8 @@ static SEL whenInUseAuthorizationSelector;
   
   return @{
            @"status": @(status),
-           @"scope": scope
+           @"scope": scope,
+           @"accuracy": [self accuracyAuthorizationString]
            };
 }
 

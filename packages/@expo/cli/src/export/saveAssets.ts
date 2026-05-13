@@ -9,10 +9,37 @@ import type { SerialAsset } from '@expo/metro-config/build/serializer/serializer
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import prettyBytes from 'pretty-bytes';
 
 import { Log } from '../log';
 import { env } from '../utils/env';
+
+let bytesFormatter: Intl.NumberFormat | undefined | null;
+
+const prettyBytes = (bytes: number): string => {
+  try {
+    if (bytesFormatter === undefined && typeof Intl === 'object') {
+      bytesFormatter = new Intl.NumberFormat('en', {
+        notation: 'compact',
+        style: 'unit',
+        unit: 'byte',
+        unitDisplay: 'narrow',
+      });
+    }
+    if (bytesFormatter != null) {
+      return bytesFormatter.format(bytes);
+    }
+  } catch {
+    bytesFormatter = null;
+  }
+  // Fall back if ICU is unavailable, which is rare but possible with custom Node.js builds
+  if (bytes >= 900_000) {
+    return `${(bytes / 1_000_000).toFixed(1)}MB`;
+  } else if (bytes >= 900) {
+    return `${(bytes / 1_000).toFixed(1)}KB`;
+  } else {
+    return `${bytes}B`;
+  }
+};
 
 const BLT = '\u203A';
 
@@ -52,6 +79,8 @@ export type ExportAssetDescriptor = {
   apiRouteId?: string;
   /** Expo Router route path for formatting the RSC output. */
   rscId?: string;
+  /** Expo Router route path for formatting the loader module output. */
+  loaderId?: string;
   /** A key for grouping together output files by server- or client-side. */
   targetDomain?: 'server' | 'client';
 };
@@ -76,6 +105,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   const middlewareEntries: [string, ExportAssetDescriptor][] = [];
   const routeEntries: [string, ExportAssetDescriptor][] = [];
   const rscEntries: [string, ExportAssetDescriptor][] = [];
+  const loaderEntries: [string, ExportAssetDescriptor][] = [];
   const remainingEntries: [string, ExportAssetDescriptor][] = [];
 
   let hasServerOutput = false;
@@ -86,6 +116,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
     else if (asset[1].middlewareId != null) middlewareEntries.push(asset);
     else if (asset[1].apiRouteId != null) apiRouteEntries.push(asset);
     else if (asset[1].rscId != null) rscEntries.push(asset);
+    else if (asset[1].loaderId != null) loaderEntries.push(asset);
     else remainingEntries.push(asset);
   }
 
@@ -148,7 +179,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
   const other: [string, ExportAssetDescriptor][] = [];
 
   remainingEntries.forEach(([filepath, asset]) => {
-    if (!filepath.match(/_expo\/static\//)) {
+    if (!filepath.match(/_expo\/(server|static)\//)) {
       other.push([filepath, asset]);
     } else {
       const platform = filepath.match(/_expo\/static\/js\/([^/]+)\//)?.[1] ?? 'web';
@@ -170,7 +201,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
         // Get source map
         const sourceMapIndex = allAssets.findIndex(([fp]) => fp === filePath + '.map');
         if (sourceMapIndex !== -1) {
-          const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0];
+          const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0]!;
           Log.log(chalk.gray(sourceMapFilePath), sizeStr(sourceMapAsset.contents));
         }
       }
@@ -254,6 +285,29 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
       );
       Log.log(
         id,
+        sizeStr(assets.contents),
+        hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
+      );
+    }
+  }
+
+  if (loaderEntries.length) {
+    const loadersWithoutSourcemaps = loaderEntries.filter((entry) => !entry[0].endsWith('.map'));
+    Log.log('');
+    Log.log(chalk.bold`${BLT} Loaders (${loadersWithoutSourcemaps.length}):`);
+
+    for (const [loaderFilename, assets] of loadersWithoutSourcemaps.sort(
+      (a, b) => a[0].length - b[0].length
+    )) {
+      const id = assets.loaderId!;
+      const hasSourceMap = loaderEntries.find(
+        ([filename, entry]) =>
+          filename !== loaderFilename &&
+          entry.loaderId === assets.loaderId &&
+          filename.endsWith('.map')
+      );
+      Log.log(
+        id === '/' ? '/ ' + chalk.gray('(index)') : id,
         sizeStr(assets.contents),
         hasSourceMap ? chalk.gray(`(source map ${sizeStr(hasSourceMap[1].contents)})`) : ''
       );

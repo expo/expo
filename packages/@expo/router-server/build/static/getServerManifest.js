@@ -9,8 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getBuildTimeServerManifestAsync = getBuildTimeServerManifestAsync;
 exports.getManifest = getManifest;
 const _ctx_1 = require("expo-router/_ctx");
-const getReactNavigationConfig_1 = require("expo-router/build/getReactNavigationConfig");
-const getRoutes_1 = require("expo-router/build/getRoutes");
+const routing_1 = require("expo-router/internal/routing");
 const getServerManifest_1 = require("../getServerManifest");
 const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
 /**
@@ -21,30 +20,36 @@ const loadStaticParamsAsync_1 = require("../loadStaticParamsAsync");
  * This is used for the production manifest where we pre-render certain pages and should no longer treat them as dynamic.
  */
 async function getBuildTimeServerManifestAsync(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+    const routeTree = (0, routing_1.getRoutes)(_ctx_1.ctx, {
         platform: 'web',
         ...options,
     });
-    if (!routeTree) {
-        throw new Error('No routes found');
+    // Evaluate all static params; skip for SSR mode where routes are matched at runtime
+    if (routeTree && !options.skipStaticParams) {
+        await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     }
-    // Evaluate all static params
-    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
+    // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+    // has no route tree set up. This can happen when we build against a project that
+    // isn't an expo-router project or not fully set up yet, but has expo-router options
+    // in the app.json already
     return (0, getServerManifest_1.getServerManifest)(routeTree, options);
 }
 /** Get the linking manifest from a Node.js process. */
 async function getManifest(options = {}) {
-    const routeTree = (0, getRoutes_1.getRoutes)(_ctx_1.ctx, {
+    const routeTree = (0, routing_1.getRoutes)(_ctx_1.ctx, {
         preserveApiRoutes: true,
         preserveRedirectAndRewrites: true,
         platform: 'web',
         ...options,
     });
-    if (!routeTree) {
-        throw new Error('No routes found');
+    if (routeTree) {
+        // Evaluate all static params
+        await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
     }
-    // Evaluate all static params
-    await (0, loadStaticParamsAsync_1.loadStaticParamsAsync)(routeTree);
-    return (0, getReactNavigationConfig_1.getReactNavigationConfig)(routeTree, false);
+    // NOTE(@kitten): The route tree can be `null` and should be accepted if the app
+    // has no route tree set up. This can happen when we build against a project that
+    // isn't an expo-router project or not fully set up yet, but has expo-router options
+    // in the app.json already
+    return (0, routing_1.getReactNavigationConfig)(routeTree, false);
 }
 //# sourceMappingURL=getServerManifest.js.map

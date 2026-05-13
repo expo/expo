@@ -14,8 +14,27 @@ class VideoPlayerAudioTracks {
     currentAudioTrack = audioTrack
   }
 
-  func onNewPlayerItemLoaded(playerItem: AVPlayerItem?) {
-    availableAudioTracks = Self.findAvailableAudioTracks(for: playerItem)
+  /// Updates the available audio tracks for a new AVPlayerItem and returns an event with the changes.
+  ///
+  /// - Parameter playerItem: The new `AVPlayerItem` from which to load audio tracks.
+  /// - Returns: A js-ready `AudioTracksChangedEventPayload` containing the list of audio tracks before and after the update.
+  func onNewPlayerItemLoaded(playerItem: AVPlayerItem?) async -> AudioTracksChangedEventPayload {
+    let oldAvailableAudioTracks = availableAudioTracks
+
+    do {
+      availableAudioTracks = try await Self.findAvailableAudioTracks(for: playerItem)
+    } catch {
+      let uri = (playerItem as? VideoPlayerItem)?.videoSource.uri?.absoluteString ?? "the current source"
+      owner?.appContext?.jsLogger.warn("Failed to load available audio tracks for \(uri). Error: \(error)")
+      availableAudioTracks = []
+    }
+
+    await Self.selectDefaultAudioTrackIfNeeded(for: playerItem)
+
+    return AudioTracksChangedEventPayload(
+      availableAudioTracks: availableAudioTracks,
+      oldAvailableAudioTracks: oldAvailableAudioTracks
+    )
   }
 
   func selectAudioTrack(audioTrack: AudioTrack?) {
@@ -31,23 +50,23 @@ class VideoPlayerAudioTracks {
     }
   }
 
-  static func findAvailableAudioTracks(for playerItem: AVPlayerItem?) -> [AudioTrack] {
+  private static func findAvailableAudioTracks(for playerItem: AVPlayerItem?) async throws -> [AudioTrack] {
     var availableAudioTracks: [AudioTrack] = []
 
-    guard let asset = playerItem?.asset else {
+    guard let asset = await playerItem?.asset else {
       return availableAudioTracks
     }
 
-    let mediaSelectionCharacteristics = asset.availableMediaCharacteristicsWithMediaSelectionOptions
+    let mediaSelectionCharacteristics = try await asset.load(.availableMediaCharacteristicsWithMediaSelectionOptions)
 
     for characteristic in mediaSelectionCharacteristics {
       guard characteristic == .audible else {
         continue
       }
 
-      if let group = asset.mediaSelectionGroup(forMediaCharacteristic: characteristic) {
+      if let group = try await asset.loadMediaSelectionGroup(for: characteristic) {
         for option in group.options {
-          guard let audioTrack = AudioTrack.from(mediaSelectionOption: option) else {
+          guard let audioTrack = AudioTrack.from(mediaSelectionOption: option, in: group) else {
             continue
           }
 
@@ -58,15 +77,33 @@ class VideoPlayerAudioTracks {
     return availableAudioTracks
   }
 
-  static func findCurrentAudioTrack(for playerItem: AVPlayerItem?) -> AudioTrack? {
+  private static func selectDefaultAudioTrackIfNeeded(for playerItem: AVPlayerItem?) async {
+    guard let playerItem,
+      let audioGroup = try? await playerItem.asset.loadMediaSelectionGroup(for: .audible) else {
+      return
+    }
+
+    let currentSelection = await playerItem.currentMediaSelection
+    guard currentSelection.selectedMediaOption(in: audioGroup) == nil else {
+      return
+    }
+
+    if let audioOption = audioGroup.defaultOption ?? audioGroup.options.first {
+      await MainActor.run {
+        playerItem.select(audioOption, in: audioGroup)
+      }
+    }
+  }
+
+  static func findCurrentAudioTrack(for playerItem: AVPlayerItem?) async -> AudioTrack? {
     guard
       let currentItem = playerItem,
-      let mediaSelectionGroup = currentItem.asset.mediaSelectionGroup(forMediaCharacteristic: .audible),
-      let selectedMediaOption = currentItem.currentMediaSelection.selectedMediaOption(in: mediaSelectionGroup)
+      let mediaSelectionGroup = try? await currentItem.asset.loadMediaSelectionGroup(for: .audible),
+      let selectedMediaOption = await currentItem.currentMediaSelection.selectedMediaOption(in: mediaSelectionGroup)
     else {
       return nil
     }
 
-    return AudioTrack.from(mediaSelectionOption: selectedMediaOption)
+    return AudioTrack.from(mediaSelectionOption: selectedMediaOption, in: mediaSelectionGroup)
   }
 }

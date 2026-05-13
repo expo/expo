@@ -7,6 +7,7 @@ import android.provider.MediaStore
 import androidx.annotation.DeprecatedSinceApi
 import expo.modules.medialibrary.next.exceptions.QueryCouldNotBeExecuted
 import expo.modules.medialibrary.next.extensions.resolver.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.next.extensions.resolver.safeQuery
 import expo.modules.medialibrary.next.records.SortDescriptor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -26,7 +27,7 @@ class QueryLegacyExecutor(
     val selection = buildSelection()
     val sortOrder = buildSortOrder()
     val selectionArgs = args.toTypedArray()
-    return@withContext contentResolver.query(EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, sortOrder)
+    return@withContext contentResolver.safeQuery(EXTERNAL_CONTENT_URI, projection, selection, selectionArgs, sortOrder)
       ?: throw QueryCouldNotBeExecuted("Cursor is null")
   }
 

@@ -2,12 +2,6 @@ package expo.modules.camera.utils
 
 import androidx.exifinterface.media.ExifInterface
 
-const val VIDEO_2160P = 0
-const val VIDEO_1080P = 1
-const val VIDEO_720P = 2
-const val VIDEO_480P = 3
-const val VIDEO_4x3 = 4
-
 val exifTags = arrayOf(
   arrayOf("string", ExifInterface.TAG_ARTIST),
   arrayOf("int", ExifInterface.TAG_BITS_PER_SAMPLE),
@@ -111,7 +105,7 @@ val exifTags = arrayOf(
   arrayOf("double", ExifInterface.TAG_GPS_DEST_LONGITUDE),
   arrayOf("string", ExifInterface.TAG_GPS_DEST_LONGITUDE_REF),
   arrayOf("int", ExifInterface.TAG_GPS_DIFFERENTIAL),
-  arrayOf("string", ExifInterface.TAG_GPS_H_POSITIONING_ERROR),
+  arrayOf("double", ExifInterface.TAG_GPS_H_POSITIONING_ERROR),
   arrayOf("double", ExifInterface.TAG_GPS_IMG_DIRECTION),
   arrayOf("string", ExifInterface.TAG_GPS_IMG_DIRECTION_REF),
   arrayOf("double", ExifInterface.TAG_GPS_LATITUDE),

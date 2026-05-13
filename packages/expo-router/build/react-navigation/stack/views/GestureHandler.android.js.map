@@ -1,0 +1,1 @@
+{"version":3,"file":"GestureHandler.android.js","sourceRoot":"","sources":["../../../../src/react-navigation/stack/views/GestureHandler.android.tsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,yDAAuC","sourcesContent":["export * from './GestureHandlerNative';\n"]}

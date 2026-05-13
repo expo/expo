@@ -1,10 +1,9 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "ExpoModulesHostObject.h"
 #include "LazyObject.h"
 
-#include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
 #include <react/bridging/LongLivedObject.h>
 
 namespace jsi = facebook::jsi;
@@ -15,15 +14,11 @@ ExpoModulesHostObject::ExpoModulesHostObject(JSIContext *installer)
   : installer(installer) {}
 
 /**
- * Clears jsi references held by JSRegistry and JavaScriptRuntime. 
+ * Clears jsi references held by JSRegistry and JavaScriptRuntime.
  */
 ExpoModulesHostObject::~ExpoModulesHostObject() {
-#if REACT_NATIVE_TARGET_VERSION >= 75
   auto &runtime = installer->runtimeHolder->get();
   facebook::react::LongLivedObjectCollection::get(runtime).clear();
-#else
-  facebook::react::LongLivedObjectCollection::get().clear();
-#endif
   installer->prepareForDeallocation();
 }
 

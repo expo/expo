@@ -12,7 +12,9 @@ import expo.modules.kotlin.records.Record
 import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal class PermissionRequestResponse(
   @Field var canAskAgain: Boolean?,
   @Field var expires: String?,
@@ -31,6 +33,7 @@ internal class PermissionRequestResponse(
   )
 }
 
+@OptimizedRecord
 internal class PermissionDetailsLocationAndroid(
   @Field var accuracy: String
 ) : Record, Serializable {
@@ -39,6 +42,7 @@ internal class PermissionDetailsLocationAndroid(
   )
 }
 
+@OptimizedRecord
 internal class LocationProviderStatus(
   @Field var backgroundModeEnabled: Boolean? = null,
   @Field var gpsAvailable: Boolean? = false,
@@ -61,6 +65,7 @@ internal class Heading(
   }
 }
 
+@OptimizedRecord
 internal class HeadingEventResponse(
   @Field var watchId: Int? = null,
   @Field var heading: Heading? = null
@@ -73,6 +78,7 @@ internal class HeadingEventResponse(
   }
 }
 
+@OptimizedRecord
 internal class LocationResponse(
   @Field var coords: LocationObjectCoords? = null,
   @Field var timestamp: Double? = null,
@@ -103,6 +109,7 @@ internal class LocationResponse(
   }
 }
 
+@OptimizedRecord
 internal class LocationObjectCoords(
   @Field var latitude: Double? = null,
   @Field var longitude: Double? = null,
@@ -146,6 +153,7 @@ internal class LocationObjectCoords(
   }
 }
 
+@OptimizedRecord
 internal class GeocodeResponse(
   @Field var latitude: Double,
   @Field var longitude: Double,
@@ -171,6 +179,7 @@ internal class GeocodeResponse(
   }
 }
 
+@OptimizedRecord
 internal class ReverseGeocodeResponse(
   @Field var city: String?,
   @Field var district: String?,

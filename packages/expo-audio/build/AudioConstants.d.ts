@@ -10,5 +10,10 @@ export type AudioLockScreenOptions = {
      * Whether the seek backward button should be displayed on the lock screen.
      */
     showSeekBackward?: boolean;
+    /**
+     * Whether the audio is a live stream. When `true`, the lock screen will hide the duration
+     * and scrub bar, and disable seek controls.
+     */
+    isLiveStream?: boolean;
 };
 //# sourceMappingURL=AudioConstants.d.ts.map

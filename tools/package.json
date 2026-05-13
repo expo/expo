@@ -9,12 +9,18 @@
     "scripts",
     "templates"
   ],
+  "bin": {
+    "et": "bin/expotools.js",
+    "expotools": "bin/expotools.js"
+  },
   "scripts": {
+    "prepare": "taskr release",
     "build": "taskr release",
     "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "pnpm build && node --test 'build/**/*.test.js'"
   },
   "taskr": {
     "requires": [
@@ -24,12 +30,12 @@
   "author": "support@expo.dev",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.441.0",
     "@expo/commander": "2.21.1",
-    "@expo/json-file": "^8.3.3",
+    "@expo/json-file": "workspace:*",
     "@expo/multipart-body-parser": "^1.1.0",
-    "@expo/osascript": "^2.2.4",
-    "@expo/plist": "^0.3.4",
+    "@expo/osascript": "workspace:*",
+    "@expo/plist": "workspace:*",
+    "@expo/xcpretty": "^4.4.4",
     "@expo/spawn-async": "^1.7.2",
     "@expo/swiftlint": "^0.57.1",
     "@linear/sdk": "^2.6.0",
@@ -37,16 +43,16 @@
     "chalk": "^4.1.2",
     "cli-table3": "^0.6.5",
     "cwait": "^1.1.2",
-    "diff": "^5.1.0",
+    "diff": "^8.0.3",
     "folder-hash": "^4.0.4",
     "fs-extra": "^11.2.0",
     "getenv": "^2.0.0",
-    "glob": "^10.4.1",
+    "glob": "^13.0.0",
     "inquirer": "^8.2.2",
     "jsondiffpatch": "^0.4.1",
     "junit-report-builder": "^1.3.0",
     "lan-network": "^0.1.7",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "marked": "^1.1.0",
     "minimatch": "^3.0.4",
     "npm-packlist": "^5.1.3",
@@ -60,9 +66,9 @@
     "recursive-omit-by": "^2.0.0",
     "semver": "^7.6.3",
     "strip-ansi": "^6.0.0",
-    "tar": "^7.4.3",
+    "tar": "^7.5.12",
     "terminal-link": "^2.1.1",
-    "typedoc": "0.27.6",
+    "typedoc": "^0.28.19",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -76,16 +82,16 @@
     "@types/fs-extra": "^11.0.4",
     "@types/getenv": "^1.0.3",
     "@types/inquirer": "^8.2.10",
-    "@types/node": "~22.13.17",
+    "@types/node": "^22.14.0",
     "@types/npm-registry-fetch": "^8.0.7",
     "@types/semver": "^7.5.8",
     "@types/uuid": "^9.0.2",
-    "eslint": "^8.57.1",
-    "eslint-config-universe": "^14.0.0",
+    "eslint": "^9.39.4",
+    "eslint-config-universe": "workspace:^15.1.0",
     "eslint-plugin-lodash": "^7.4.0",
     "prettier": "^3.3.3",
     "taskr": "1.1.0",
-    "typescript": "^5.9.2"
+    "typescript": "^6.0.3"
   },
   "volta": {
     "node": "22.13.1"

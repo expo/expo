@@ -1,7 +1,6 @@
 import type { RequireContext } from 'expo-router';
-import type { RouteNode } from 'expo-router/build/Route';
-import { type Options as OptionsCore } from 'expo-router/build/getRoutesCore';
-export type Options = Omit<OptionsCore, 'getSystemRoute'>;
+import { type GetRoutesCoreOptions, type RouteNode } from 'expo-router/internal/routing';
+export type Options = Omit<GetRoutesCoreOptions, 'getSystemRoute'>;
 /**
  * Given a Metro context module, return an array of nested routes.
  *
@@ -16,5 +15,5 @@ export type Options = Omit<OptionsCore, 'getSystemRoute'>;
  */
 export declare function getRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
 export declare function getExactRoutes(contextModule: RequireContext, options?: Options): RouteNode | null;
-export { generateDynamic, extrapolateGroups } from 'expo-router/build/getRoutesCore';
+export { generateDynamic, extrapolateGroups } from 'expo-router/internal/routing';
 //# sourceMappingURL=getRoutesSSR.d.ts.map

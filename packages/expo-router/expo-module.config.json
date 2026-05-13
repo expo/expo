@@ -1,7 +1,10 @@
 {
-  "platforms": ["apple", "web"],
+  "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["ExpoHeadModule", "LinkPreviewNativeModule"],
+    "modules": ["ExpoHeadModule", "LinkPreviewNativeModule", "RouterToolbarModule"],
     "appDelegateSubscribers": ["ExpoHeadAppDelegateSubscriber"]
+  },
+  "android": {
+    "modules": ["expo.modules.router.ExpoRouterModule"]
   }
 }

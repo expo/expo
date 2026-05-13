@@ -13,7 +13,12 @@ import java.io.File
 class MailIntentBuilder(
   private val options: MailComposerOptions
 ) {
-  private val mailIntent = Intent(Intent.ACTION_SEND_MULTIPLE)
+  private val mailIntent: Intent =
+    if (options.attachments.isNullOrEmpty()) {
+      Intent(Intent.ACTION_SENDTO)
+    } else {
+      Intent(Intent.ACTION_SEND_MULTIPLE)
+    }
 
   private fun contentUriFromFile(file: File, application: Application): Uri = try {
     FileProvider.getUriForFile(

@@ -3,7 +3,7 @@
 import { TextDecoder, TextEncoder } from 'node:util';
 
 import MockWebSocket from './MockWebSocket';
-import { DevToolsPluginClient } from '../DevToolsPluginClient';
+import type { DevToolsPluginClient } from '../DevToolsPluginClient';
 import { createDevToolsPluginClient } from '../DevToolsPluginClientFactory';
 import { WebSocketBackingStore } from '../WebSocketBackingStore';
 

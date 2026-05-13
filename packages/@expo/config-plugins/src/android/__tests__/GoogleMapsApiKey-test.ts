@@ -1,7 +1,8 @@
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
 import { getGoogleMapsApiKey, setGoogleMapsApiKey } from '../GoogleMapsApiKey';
-import { AndroidManifest, getMainApplicationOrThrow } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
+import { getMainApplicationOrThrow } from '../Manifest';
 
 async function getFixtureManifestAsync() {
   return (await XML.parseXMLAsync(

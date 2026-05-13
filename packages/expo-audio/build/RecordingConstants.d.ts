@@ -1,4 +1,4 @@
-import { type RecordingOptions } from './Audio.types';
+import type { RecordingOptions } from './Audio.types';
 /**
  * Audio output format options for iOS recording.
  *
@@ -117,5 +117,8 @@ export declare enum AudioQuality {
  * };
  * ```
  */
-export declare const RecordingPresets: Record<string, RecordingOptions>;
+export declare const RecordingPresets: {
+    readonly HIGH_QUALITY: RecordingOptions;
+    readonly LOW_QUALITY: RecordingOptions;
+};
 //# sourceMappingURL=RecordingConstants.d.ts.map

@@ -1,94 +1,162 @@
 import { requireNativeView } from 'expo';
-import { ColorValue, StyleProp, ViewStyle } from 'react-native';
+import { type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type ProgressElementColors = {
+/**
+ * Stroke cap style for progress indicators.
+ */
+export type StrokeCap = 'round' | 'butt' | 'square';
+
+/**
+ * Common props shared by all progress indicator variants.
+ */
+export type ProgressCommonConfig = {
   /**
-   * Track color.
-   *
-   * @platform android
+   * The current progress value between `0` and `1`. Omit for indeterminate.
+   */
+  progress?: number | null;
+  /**
+   * Progress indicator color.
+   */
+  color?: ColorValue;
+  /**
+   * Track (background) color.
    */
   trackColor?: ColorValue;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
 };
 
-export type CircularProgressProps = {
+function transformProps<T extends ProgressCommonConfig>(props: T): T {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  } as T;
+}
+
+function createProgressComponent<P extends ProgressCommonConfig>(
+  viewName: string
+): React.ComponentType<P> {
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  function Component(props: P) {
+    return <NativeView {...transformProps(props)} />;
+  }
+  Component.displayName = viewName;
+  return Component;
+}
+
+// region LinearProgressIndicator
+
+/**
+ * Configuration for the stop indicator dot at the end of the determinate linear progress track.
+ * When provided, draws a stop indicator with the given options. Omit to use the Compose default.
+ */
+export type DrawStopIndicatorConfig = {
   /**
-   * Custom styles for the progress component.
-   */
-  style?: StyleProp<ViewStyle>;
-  /**
-   * The current progress value of the slider. This is a number between `0` and `1`.
-   */
-  progress?: number | null;
-  /**
-   * Progress color.
+   * Color of the stop indicator. Defaults to the indicator's color.
    */
   color?: ColorValue;
   /**
-   * Colors for switch's core elements.
-   * @platform android
+   * Stroke cap style for the stop indicator. Defaults to the indicator's strokeCap.
    */
-  elementColors?: ProgressElementColors;
-  /** Modifiers for the component */
-  modifiers?: ExpoModifier[];
+  strokeCap?: StrokeCap;
+  /**
+   * Size of the stop indicator in dp. Defaults to the Material 3 default.
+   */
+  stopSize?: number;
 };
 
-export type LinearProgressProps = {
+export type LinearProgressIndicatorProps = ProgressCommonConfig & {
   /**
-   * Custom styles for the progress component.
+   * Stroke cap style for the indicator ends.
+   * @default 'round'
    */
-  style?: StyleProp<ViewStyle>;
+  strokeCap?: StrokeCap;
   /**
-   * The current progress value of the slider. This is a number between `0` and `1`.
+   * Gap size between the indicator and track in dp.
    */
-  progress?: number | null;
+  gapSize?: number;
   /**
-   * Progress color.
+   * Configuration for the stop indicator dot at the end of the determinate progress track.
    */
-  color?: ColorValue;
-  /**
-   * Colors for switch's core elements.
-   * @platform android
-   */
-  elementColors?: ProgressElementColors;
-  /** Modifiers for the component */
-  modifiers?: ExpoModifier[];
+  drawStopIndicator?: DrawStopIndicatorConfig;
 };
 
-type NativeProgressProps =
-  | CircularProgressProps
-  | (LinearProgressProps & {
-      variant: 'linear' | 'circular';
-    });
-
-const NativeProgressView: React.ComponentType<NativeProgressProps> = requireNativeView(
-  'ExpoUI',
-  'ProgressView'
+/**
+ * A linear progress indicator that displays progress in a horizontal bar.
+ *
+ * Matches the Jetpack Compose `LinearProgressIndicator`.
+ */
+export const LinearProgressIndicator = createProgressComponent<LinearProgressIndicatorProps>(
+  'LinearProgressIndicatorView'
 );
 
-/**
- * Renders a `CircularProgress` component.
- */
-export function CircularProgress(props: CircularProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="circular"
-    />
-  );
-}
+// endregion
+
+// region CircularProgressIndicator
+
+export type CircularProgressIndicatorProps = ProgressCommonConfig & {
+  /**
+   * Width of the circular stroke in dp.
+   */
+  strokeWidth?: number;
+  /**
+   * Stroke cap style for the indicator ends.
+   * @default 'round'
+   */
+  strokeCap?: StrokeCap;
+  /**
+   * Gap size between the indicator and track in dp.
+   */
+  gapSize?: number;
+};
 
 /**
- * Renders a `LinearProgress` component.
+ * A circular progress indicator that displays progress in a circular format.
+ *
+ * Matches the Jetpack Compose `CircularProgressIndicator`.
  */
-export function LinearProgress(props: LinearProgressProps) {
-  return (
-    <NativeProgressView
-      {...props} // @ts-expect-error
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-      variant="linear"
-    />
-  );
-}
+export const CircularProgressIndicator = createProgressComponent<CircularProgressIndicatorProps>(
+  'CircularProgressIndicatorView'
+);
+
+// endregion
+
+// region LinearWavyProgressIndicator
+
+export type LinearWavyProgressIndicatorProps = ProgressCommonConfig & {
+  /**
+   * Size of the stop indicator in dp at the end of the determinate progress track.
+   */
+  stopSize?: number;
+};
+
+/**
+ * A linear progress indicator with wavy animation style.
+ *
+ * Matches the Jetpack Compose `LinearWavyProgressIndicator`.
+ */
+export const LinearWavyProgressIndicator =
+  createProgressComponent<LinearWavyProgressIndicatorProps>('LinearWavyProgressIndicatorView');
+
+// endregion
+
+// region CircularWavyProgressIndicator
+
+export type CircularWavyProgressIndicatorProps = ProgressCommonConfig;
+
+/**
+ * A circular progress indicator with wavy animation style.
+ *
+ * Matches the Jetpack Compose `CircularWavyProgressIndicator`.
+ */
+export const CircularWavyProgressIndicator =
+  createProgressComponent<CircularWavyProgressIndicatorProps>('CircularWavyProgressIndicatorView');
+
+// endregion

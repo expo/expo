@@ -1,4 +1,5 @@
 import { getRoutes } from '../getRoutes';
+import type { RedirectConfig } from '../getRoutesCore';
 import { inMemoryContext } from '../testing-library/context-stubs';
 
 const originalEnv = process.env.NODE_ENV;
@@ -1023,7 +1024,7 @@ describe('redirects', () => {
         {
           internal_stripLoadRoute: true,
           skipGenerated: true,
-          redirects: [{ source: '/old', destination: '/(app)/index' }],
+          redirects: [{ source: '/old', destination: '/(app)/index' } as RedirectConfig],
           preserveRedirectAndRewrites: true,
         }
       )
@@ -1067,7 +1068,7 @@ describe('redirects', () => {
         {
           internal_stripLoadRoute: true,
           skipGenerated: true,
-          redirects: [{ source: '/old/[slug]', destination: '/(app)/[slug]' }],
+          redirects: [{ source: '/old/[slug]', destination: '/(app)/[slug]' } as RedirectConfig],
           preserveRedirectAndRewrites: true,
         }
       )
@@ -1130,7 +1131,7 @@ describe('redirects', () => {
         {
           internal_stripLoadRoute: true,
           skipGenerated: true,
-          redirects: [{ source: 'old/[slug]', destination: '/(app)/[slug]' }],
+          redirects: [{ source: 'old/[slug]', destination: '/(app)/[slug]' } as RedirectConfig],
           preserveRedirectAndRewrites: true,
         }
       )

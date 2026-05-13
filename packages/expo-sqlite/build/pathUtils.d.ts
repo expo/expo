@@ -7,4 +7,5 @@
  * @hidden
  */
 export declare function createDatabasePath(databaseName: string, directory?: string): string;
+export declare function basename(path: string): string;
 //# sourceMappingURL=pathUtils.d.ts.map

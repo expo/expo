@@ -278,7 +278,7 @@ export function test({ describe, expect, it, ...t }: any) {
         expect(player.paused).toBe(true);
         expect(player.muted).toBe(false);
         expect(player.loop).toBe(false);
-        expect(player.shouldCorrectPitch).toBe(false);
+        expect(player.shouldCorrectPitch).toBe(true);
         expect(player.currentTime).toBe(0);
         expect(player.duration).toBeGreaterThan(0);
       });

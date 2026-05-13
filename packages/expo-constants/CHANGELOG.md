@@ -10,7 +10,128 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.16 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-21
+
+### 💡 Others
+
+- Switch app config generation from `@expo/config` to `expo/config` public API ([#44721](https://github.com/expo/expo/pull/44721) by [@kitten](https://github.com/kitten))
+
+## 55.0.14 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-19
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [android] Read projectRoot from expo-autolinking ([#40666](https://github.com/expo/expo/pull/40666) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fixed empty `expoConfig` on Android. ([#41259](https://github.com/expo/expo/pull/41259) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - [Android] Removed unused native dependencies. ([#39763](https://github.com/expo/expo/pull/39763) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Removed references to legacy native modules API. ([#41855](https://github.com/expo/expo/pull/41855) by [@lukmccall](https://github.com/lukmccall))
+
+## 18.0.11 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 18.0.10 - 2025-10-21
+
+_This version does not introduce any user-facing changes._
 
 ## 18.0.9 — 2025-09-16
 

@@ -22,9 +22,13 @@ export function compareSource(a: HashSource, b: HashSource): number {
   const typeResult = typeOrder[a.type] - typeOrder[b.type];
   if (typeResult === 0) {
     if (a.type === 'file' && b.type === 'file') {
-      return a.filePath.localeCompare(b.filePath);
+      const aValue = a.overrideHashKey ?? a.filePath;
+      const bValue = b.overrideHashKey ?? b.filePath;
+      return aValue.localeCompare(bValue);
     } else if (a.type === 'dir' && b.type === 'dir') {
-      return a.filePath.localeCompare(b.filePath);
+      const aValue = a.overrideHashKey ?? a.filePath;
+      const bValue = b.overrideHashKey ?? b.filePath;
+      return aValue.localeCompare(bValue);
     } else if (a.type === 'contents' && b.type === 'contents') {
       return a.id.localeCompare(b.id);
     }

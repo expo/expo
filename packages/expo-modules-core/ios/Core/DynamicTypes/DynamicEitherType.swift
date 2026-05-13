@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
   let eitherType: EitherType.Type
 
@@ -17,8 +19,7 @@ internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
     let types = eitherType.dynamicTypes()
 
     for type in types {
-      if let preliminaryValue = try? type.cast(jsValue: jsValue, appContext: appContext),
-        let value = try? type.cast(preliminaryValue, appContext: appContext) {
+      if let value = try? type.cast(jsValue: jsValue, appContext: appContext) {
         return EitherType(value)
       }
     }
@@ -38,6 +39,30 @@ internal struct DynamicEitherType<EitherType: AnyEither>: AnyDynamicType {
       }
     }
     throw NeitherTypeException(types)
+  }
+
+  func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
+    guard let either = result as? EitherType else {
+      throw Conversions.CastingException<EitherType>(result)
+    }
+
+    let types = eitherType.dynamicTypes()
+
+    // Try each type - one should succeed
+    for type in types {
+      if let converted = try? type.convertResult(either.value, appContext: appContext) {
+        return converted
+      }
+    }
+
+    throw NeitherTypeException(types)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let either = value as? EitherType {
+      return try Conversions.anyToJavaScriptValue(either.value, appContext: appContext)
+    }
+    return try Conversions.anyToJavaScriptValue(value, appContext: appContext)
   }
 
   var description: String {

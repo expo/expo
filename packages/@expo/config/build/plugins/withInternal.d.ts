@@ -1,5 +1,5 @@
-import { ConfigPlugin } from '@expo/config-plugins';
-import { ConfigFilePaths } from '../Config.types';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import type { ConfigFilePaths } from '../Config.types';
 export declare const EXPO_DEBUG: boolean;
 /**
  * Adds the _internal object.

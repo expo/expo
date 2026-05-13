@@ -1,21 +1,19 @@
 package expo.modules.camera.utils
 
-import androidx.exifinterface.media.ExifInterface
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
-
+import androidx.exifinterface.media.ExifInterface
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import kotlin.math.roundToLong
 
 object CameraViewHelper {
-  // Utilities
-
-  @JvmStatic
   fun getExifData(exifInterface: ExifInterface): Bundle {
     val exifMap = Bundle()
     for ((type, name) in exifTags) {
@@ -35,39 +33,34 @@ object CameraViewHelper {
     return exifMap
   }
 
-  @JvmStatic
   @Throws(IllegalArgumentException::class)
   fun setExifData(baseExif: ExifInterface, exifMap: Map<String, Any>) {
-    for ((_, name) in exifTags) {
+    for ((type, name) in exifTags) {
       exifMap[name]?.let {
         // Convert possible type to string before putting into baseExif
         when (it) {
           is String -> baseExif.setAttribute(name, it)
-          is Number -> baseExif.setAttribute(name, it.toDouble().toBigDecimal().toPlainString())
+          is Number -> baseExif.setAttribute(name, toValidExifRational(it, type))
           is Boolean -> baseExif.setAttribute(name, it.toString())
         }
       }
     }
 
-    if (exifMap.containsKey(ExifInterface.TAG_GPS_LATITUDE) &&
-      exifMap.containsKey(ExifInterface.TAG_GPS_LONGITUDE) &&
-      exifMap[ExifInterface.TAG_GPS_LATITUDE] is Number &&
-      exifMap[ExifInterface.TAG_GPS_LONGITUDE] is Number
-    ) {
+    val latitudeValue = exifMap[ExifInterface.TAG_GPS_LATITUDE]
+    val longitudeValue = exifMap[ExifInterface.TAG_GPS_LONGITUDE]
+    if (latitudeValue is Number && longitudeValue is Number) {
       baseExif.setLatLong(
-        exifMap[ExifInterface.TAG_GPS_LATITUDE] as Double,
-        exifMap[ExifInterface.TAG_GPS_LONGITUDE] as Double
+        latitudeValue.toDouble(),
+        longitudeValue.toDouble()
       )
     }
 
-    if (exifMap.containsKey(ExifInterface.TAG_GPS_ALTITUDE) &&
-      exifMap[ExifInterface.TAG_GPS_ALTITUDE] is Number
-    ) {
-      baseExif.setAltitude(exifMap[ExifInterface.TAG_GPS_ALTITUDE] as Double)
+    val altitudeValue = exifMap[ExifInterface.TAG_GPS_ALTITUDE]
+    if (altitudeValue is Number) {
+      baseExif.setAltitude(altitudeValue.toDouble())
     }
   }
 
-  @JvmStatic
   @Throws(IOException::class)
   fun addExifData(baseExif: ExifInterface, additionalExif: ExifInterface) {
     for (tagInfo in exifTags) {
@@ -77,6 +70,15 @@ object CameraViewHelper {
       }
     }
     baseExif.saveAttributes()
+  }
+
+  private fun toValidExifRational(value: Number, type: String): String {
+    if (type == "double") {
+      val scale = 1_000_000L
+      val numerator = (value.toDouble() * scale).roundToLong()
+      return "$numerator/$scale"
+    }
+    return value.toDouble().toBigDecimal().toPlainString()
   }
 
   fun generateSimulatorPhoto(width: Int, height: Int): ByteArray {
@@ -96,7 +98,6 @@ object CameraViewHelper {
 
     val stream = ByteArrayOutputStream()
     fakePhotoBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
-    val fakePhotoByteArray = stream.toByteArray()
-    return fakePhotoByteArray
+    return stream.toByteArray()
   }
 }

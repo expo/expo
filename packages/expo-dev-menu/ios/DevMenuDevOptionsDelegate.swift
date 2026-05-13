@@ -1,21 +1,22 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ExpoModulesCore
 
 class DevMenuDevOptionsDelegate {
-  internal private(set) weak var bridge: RCTBridge?
+  internal private(set) weak var appContext: AppContext?
   internal private(set) weak var devSettings: RCTDevSettings?
 
   #if DEBUG
-  internal private(set) weak var perfMonitor: RCTPerfMonitor?
+  internal private(set) weak var perfMonitor: NSObject?
   #endif
 
-  internal init(forBridge bridge: RCTBridge) {
-    self.bridge = bridge
-    devSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings
+  internal init(forAppContext appContext: AppContext) {
+    self.appContext = appContext
+    devSettings = appContext.nativeModule(named: "DevSettings")
 
-    #if DEBUG
-    perfMonitor = bridge.module(forName: "PerfMonitor") as? RCTPerfMonitor
+    #if DEBUG && !os(macOS)
+    perfMonitor = appContext.nativeModule(named: "PerfMonitor")
     #endif
   }
 
@@ -23,10 +24,7 @@ class DevMenuDevOptionsDelegate {
     // Without this the `expo-splash-screen` will reject
     // No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.
     DevMenuManager.shared.hideMenu()
-
-    DispatchQueue.main.async {
-      RCTTriggerReloadCommandListeners("Dev menu - reload")
-    }
+    appContext?.reloadAppAsync()
   }
 
   internal func toggleElementInsector() {
@@ -34,7 +32,7 @@ class DevMenuDevOptionsDelegate {
   }
 
   internal func openJSInspector() {
-    guard let bundleURL = bridge?.bundleURL else {
+    guard let bundleURL = appContext?.bundleURL else {
       return
     }
     let port = bundleURL.port ?? Int(RCT_METRO_PORT)
@@ -56,8 +54,13 @@ class DevMenuDevOptionsDelegate {
     }
 
     DispatchQueue.main.async {
+      let hide = NSSelectorFromString("hide")
+      let show = NSSelectorFromString("show")
+
       if devSettings.isPerfMonitorShown {
-        perfMonitor.hide()
+        if perfMonitor.responds(to: hide) {
+          perfMonitor.perform(hide)
+        }
       } else {
         let devMenuManager = DevMenuManager.shared
         let devMenuWindow = devMenuManager.window
@@ -67,7 +70,9 @@ class DevMenuDevOptionsDelegate {
           devMenuWindow?.isHidden = true
         }
 
-        perfMonitor.show()
+        if perfMonitor.responds(to: show) {
+          perfMonitor.perform(show)
+        }
 
         if menuWasVisible {
           devMenuWindow?.isHidden = false

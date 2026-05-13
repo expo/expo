@@ -135,13 +135,13 @@ To test your new splash screen, build your app for [internal distribution](/tuto
 
 <Collapsible summary="Not using prebuild?">
 
-If your app does not use [Expo Prebuild](/workflow/prebuild) (formerly the _managed workflow_) to generate the native **android** and **ios** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
+If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild) to generate the native **android** and **ios** directories, then changes in the app config will have no effect. For more information, see [how you can customize the configuration manually](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 </Collapsible>
 
 <Collapsible summary="Troubleshooting: New splash screen not appearing on iOS">
 
-For SDK versions below 52, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
+For SDK 52 and earlier, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
 
 <Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
 
@@ -201,6 +201,13 @@ You may also want to provide a separate icon for older Android devices that do n
 > See [Apple best practices](https://developer.apple.com/design/human-interface-guidelines/app-icons/#Best-practices) to ensure your icon looks professional, such as testing your icon on different wallpapers and avoiding text beside your product's wordmark. Provide an icon that's at least 512x512 pixels.
 
 #### iOS
+
+<VideoBoxLink
+  videoId="RZ_QMym3adw"
+  title="Icon Composer"
+  description="Learn how to use the new Icon Composer to create app icons for an Expo project."
+  className="mb-4"
+/>
 
 For iOS, your app's icon should follow the [Apple Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons/). You can use the [Icon Composer](https://developer.apple.com/icon-composer/) app to create your app icon. This will output a **.icon** directory that you can add to your project's **assets** directory. You can then provide the path to this directory in your app config. Adding support for dark mode is handled in Icon Composer, so you do not need to provide variants when using this approach.
 

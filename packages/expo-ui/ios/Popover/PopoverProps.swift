@@ -1,22 +1,12 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal class PopoverViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+internal class PopoverViewProps: UIBaseViewProps {
   @Field var isPresented: Bool = false
   var onIsPresentedChange = EventDispatcher()
   @Field var attachmentAnchor: PopoverAttachmentAnchorOption?
   @Field var arrowEdge: PopoverArrowEdgeOption?
 }
-
-internal final class PopoverViewContentPorps: ExpoSwiftUI.ViewProps {}
-
-internal final class PopoverViewPopContentPorps: ExpoSwiftUI.ViewProps {}
 
 internal enum PopoverAttachmentAnchorOption: String, Enumerable {
   case top

@@ -222,7 +222,8 @@ export type DefaultPropsDefinitionData = {
 export type TypeGeneralData = {
   name: string;
   comment: CommentData;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
+  children?: PropData[];
   typeParameter?: TypeGeneralData[];
   kind: TypeDocKind;
   variant?: string;
@@ -231,7 +232,7 @@ export type TypeGeneralData = {
 export type TypeDeclarationContentData = {
   name?: string;
   kind?: TypeDocKind;
-  indexSignature?: TypeSignaturesData;
+  indexSignatures?: TypeSignaturesData[];
   signatures?: TypeSignaturesData[];
   parameters?: MethodParamData[];
   children?: PropData[];

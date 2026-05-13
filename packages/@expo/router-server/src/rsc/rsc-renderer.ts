@@ -13,7 +13,7 @@
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 import '@expo/metro-runtime/rsc/runtime';
 
-import { decodeActionId } from 'expo-router/build/rsc/router/utils';
+import { decodeActionId } from 'expo-router/internal/rsc';
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
 
@@ -209,6 +209,10 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     const args = Array.isArray(decodedBody) ? decodedBody : [];
 
     const chunkInfo = serverConfig[actionId];
+
+    if (!chunkInfo) {
+      throw new Error(`Could not find server action "${actionId}" in the server config.`);
+    }
 
     // Load module into memory.
     await Promise.all(chunkInfo.chunks.map((chunk) => globalThis.__webpack_chunk_load__(chunk)));

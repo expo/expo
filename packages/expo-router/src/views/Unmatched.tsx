@@ -1,7 +1,6 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { useRoute } from '@react-navigation/native';
 import { createURL } from 'expo-linking';
 import React from 'react';
 import { StyleSheet, Text, View, Platform, Image } from 'react-native';
@@ -11,6 +10,7 @@ import { NoSSR } from './NoSSR';
 import { Link } from '../link/Link';
 import { useNavigation } from '../useNavigation';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
+import { useRoute } from '../react-navigation/native';
 import { isRoutePreloadedInStack } from '../utils/stack';
 import { Pressable } from '../views/Pressable';
 

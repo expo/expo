@@ -1,5 +1,6 @@
 import type { ConfigAPI, PluginObj, types as t } from '@babel/core';
 export interface Options {
+    readonly performConstantFolding?: boolean;
     readonly resolve: boolean;
     readonly out?: {
         isESModule: boolean;

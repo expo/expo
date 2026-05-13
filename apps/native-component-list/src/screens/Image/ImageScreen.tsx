@@ -166,6 +166,13 @@ export const ImageScreens = [
 if (Platform.OS === 'ios') {
   ImageScreens.push(
     {
+      name: 'SF Symbols',
+      route: 'image/sf-symbols',
+      getComponent() {
+        return optionalRequire(() => require('./ImageSFSymbolScreen'));
+      },
+    },
+    {
       name: 'Live Text Interaction',
       route: 'image/live-text-interaction',
       getComponent() {
@@ -178,8 +185,25 @@ if (Platform.OS === 'ios') {
       getComponent() {
         return optionalRequire(() => require('./ImageHDRScreen'));
       },
+    },
+    {
+      name: 'Cache eviction',
+      route: 'image/cache-eviction',
+      getComponent() {
+        return optionalRequire(() => require('./ImageCacheEvictionScreen'));
+      },
     }
   );
+}
+
+if (Platform.OS === 'web') {
+  ImageScreens.push({
+    name: 'Lazy loading images',
+    route: 'image/lazy-loading',
+    getComponent() {
+      return optionalRequire(() => require('./ImageLazyLoadingScreen'));
+    },
+  });
 }
 
 export default function ImageScreen() {

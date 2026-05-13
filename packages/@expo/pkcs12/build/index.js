@@ -25,11 +25,11 @@ function getFormattedSerialNumber(certificate) {
  */
 function getX509Certificate(p12) {
     const certBagType = node_forge_1.default.pki.oids.certBag;
-    const bags = p12.getBags({ bagType: certBagType })[certBagType];
-    if (!bags || bags.length === 0) {
+    const bag = certBagType != null ? p12.getBags({ bagType: certBagType })[certBagType]?.[0] : undefined;
+    if (bag == null) {
         throw new Error(`PKCS12: No certificates found`);
     }
-    return getX509CertificateFromBag(bags[0]);
+    return getX509CertificateFromBag(bag);
 }
 /**
  * Extracts a certificate from PKCS#12
@@ -40,14 +40,14 @@ function getX509Certificate(p12) {
 function getX509CertificateByFriendlyName(p12, friendlyName) {
     const certBagType = node_forge_1.default.pki.oids.certBag;
     // node-forge converts friendly names to lowercase, so we search by lowercase
-    const bags = p12.getBags({
+    const bag = p12.getBags({
         friendlyName: friendlyName.toLowerCase(),
         bagType: certBagType,
-    }).friendlyName;
-    if (!bags || bags.length === 0) {
+    }).friendlyName?.[0];
+    if (bag == null) {
         return null;
     }
-    return getX509CertificateFromBag(bags[0]);
+    return getX509CertificateFromBag(bag);
 }
 function getX509CertificateFromBag(bag) {
     const { cert, asn1 } = bag;
@@ -64,14 +64,14 @@ function getX509CertificateFromBag(bag) {
 function getX509Asn1ByFriendlyName(p12, friendlyName) {
     const certBagType = node_forge_1.default.pki.oids.certBag;
     // node-forge converts friendly names to lowercase, so we search by lowercase
-    const bags = p12.getBags({
+    const bag = p12.getBags({
         friendlyName: friendlyName.toLowerCase(),
         bagType: certBagType,
-    }).friendlyName;
-    if (!bags || bags.length === 0) {
+    }).friendlyName?.[0];
+    if (bag == null) {
         return null;
     }
-    const { cert, asn1 } = bags[0];
+    const { cert, asn1 } = bag;
     if (cert) {
         return node_forge_1.default.pki.certificateToAsn1(cert);
     }

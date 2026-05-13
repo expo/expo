@@ -2,6 +2,6 @@ import { RawH3 } from '~/ui/components/Text';
 
 <RawH3>app</RawH3>
 
-Contains the app's navigation, which is file-based. The file structure of the **app** directory determines the app's navigation.
+Contains the app's navigation, which is file-based. The file structure of the **src/app** directory determines the app's navigation.
 
-The app has two routes defined by two files: **app/(tabs)/index.tsx** and **app/(tabs)/explore.tsx**. The layout file in **app/(tabs)/\_layout.tsx** sets up the tab navigator.
+The app has two routes defined by two files: **src/app/index.tsx** and **src/app/explore.tsx**. The layout file in **src/app/\_layout.tsx** sets up the tab navigator using the platform-specific **AppTabs** component.

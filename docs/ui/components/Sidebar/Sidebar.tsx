@@ -19,11 +19,11 @@ export const Sidebar = ({ routes = [] }: SidebarProps) => {
   };
 
   return (
-    <nav className="relative w-[280px] bg-default p-4 max-lg-gutters:w-full" data-sidebar>
+    <nav className="bg-default max-lg-gutters:w-full relative w-[280px] p-4" data-sidebar>
       <div
         className={mergeClasses(
           'pointer-events-none fixed left-0 z-10 mt-[-22px] h-8 w-[273px]',
-          'bg-gradient-to-b from-default to-transparent opacity-90',
+          'from-default bg-linear-to-b to-transparent opacity-90',
           'max-lg-gutters:hidden'
         )}
       />

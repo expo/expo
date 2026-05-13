@@ -1,0 +1,88 @@
+import { useEffect, useMemo, useState } from 'react';
+import type { ColorValue, ImageSourcePropType } from 'react-native';
+import type { SFSymbol } from 'sf-symbols-typescript';
+
+import { isChildOfType } from '../../utils/children';
+import { NativeTabsTriggerPromiseIcon, NativeTabsTriggerVectorIcon } from '../common/elements';
+import type { NativeTabOptions, NativeTabsProps, SymbolOrImageSource } from '../types';
+
+export function convertIconColorPropToObject(iconColor: NativeTabsProps['iconColor']): {
+  default?: ColorValue;
+  selected?: ColorValue;
+} {
+  if (iconColor) {
+    if (typeof iconColor === 'object' && ('default' in iconColor || 'selected' in iconColor)) {
+      return iconColor;
+    }
+    return {
+      default: iconColor as ColorValue,
+    };
+  }
+  return {};
+}
+
+export type AwaitedIcon =
+  | {
+      sf?: SFSymbol;
+      xcasset?: string;
+      drawable?: string;
+    }
+  | {
+      src?: ImageSourcePropType;
+      renderingMode?: 'template' | 'original';
+    };
+
+export function useAwaitedScreensIcon(icon: NativeTabOptions['icon']) {
+  const src = icon && typeof icon === 'object' && 'src' in icon ? icon.src : undefined;
+  const renderingMode =
+    icon && typeof icon === 'object' && 'renderingMode' in icon ? icon.renderingMode : undefined;
+  const [awaitedIcon, setAwaitedIcon] = useState<AwaitedIcon | undefined>(undefined);
+
+  useEffect(() => {
+    const loadIcon = async () => {
+      if (src && src instanceof Promise) {
+        const awaitedSrc = await src;
+        if (awaitedSrc) {
+          setAwaitedIcon({ src: awaitedSrc });
+        }
+      }
+    };
+    loadIcon();
+    // Checking `src` rather then icon here, to avoid unnecessary re-renders
+    // The icon object can be recreated, while src should stay the same
+    // In this case as we control `VectorIcon`, it will only change if `family` or `name` props change
+    // So we should be safe with promise resolving
+  }, [src]);
+
+  return useMemo(() => {
+    const resolved = isAwaitedIcon(icon) ? icon : awaitedIcon;
+    if (resolved && renderingMode && 'src' in resolved) {
+      return { ...resolved, renderingMode };
+    }
+    return resolved;
+  }, [awaitedIcon, icon, renderingMode]);
+}
+
+function isAwaitedIcon(icon: NativeTabOptions['icon']): icon is AwaitedIcon {
+  return !icon || !('src' in icon && icon.src instanceof Promise);
+}
+
+export function convertComponentSrcToImageSource(
+  src: React.ReactElement,
+  renderingMode?: 'template' | 'original'
+) {
+  let result: SymbolOrImageSource | undefined;
+  if (isChildOfType(src, NativeTabsTriggerVectorIcon)) {
+    const props = src.props;
+    result = { src: props.family.getImageSource(props.name, 24, 'white') };
+  } else if (isChildOfType(src, NativeTabsTriggerPromiseIcon)) {
+    result = { src: src.props.loader() };
+  } else {
+    console.warn('Only VectorIcon is supported as a React element in Icon.src');
+    return undefined;
+  }
+  if (renderingMode) {
+    result = { ...result, renderingMode };
+  }
+  return result;
+}

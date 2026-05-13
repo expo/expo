@@ -1,6 +1,5 @@
 import type { RequireContext } from 'expo-router';
-import type { RouteNode } from 'expo-router/build/Route';
-import { getExactRoutes } from 'expo-router/build/getRoutes';
+import { getExactRoutes, type RouteNode } from 'expo-router/internal/routing';
 
 import { loadStaticParamsAsync, assertStaticParams } from '../loadStaticParamsAsync';
 
@@ -116,15 +115,16 @@ describe(loadStaticParamsAsync, () => {
           type: 'route',
           children: [],
           contextKey: './red.tsx',
+          parentContextKey: './[color].tsx',
           dynamic: null,
           route: 'red',
-
           entryPoints: ['expo-router/build/views/Navigator.js', './[color].tsx'],
         },
         {
           type: 'route',
           children: [],
           contextKey: './blue.tsx',
+          parentContextKey: './[color].tsx',
           dynamic: null,
           route: 'blue',
           entryPoints: ['expo-router/build/views/Navigator.js', './[color].tsx'],
@@ -225,6 +225,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './[color]/square.tsx',
+              parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
               route: 'square',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
@@ -233,6 +234,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './[color]/triangle.tsx',
+              parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
               route: 'triangle',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
@@ -258,6 +260,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './[color]/square.tsx',
+              parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
               route: 'square',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
@@ -266,6 +269,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './[color]/triangle.tsx',
+              parentContextKey: './[color]/[shape].tsx',
               dynamic: null,
               route: 'triangle',
               entryPoints: ['./_layout.tsx', './[color]/_layout.tsx', './[color]/[shape].tsx'],
@@ -437,6 +441,7 @@ describe(loadStaticParamsAsync, () => {
           type: 'route',
           children: [],
           contextKey: './post/123/456.tsx',
+          parentContextKey: './post/[...post].tsx',
           dynamic: null,
           route: 'post/123/456',
           entryPoints: ['expo-router/build/views/Navigator.js', './post/[...post].tsx'],
@@ -528,6 +533,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './(app)/(index,about)/blog/123.tsx',
+              parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
               entryPoints: [
                 'expo-router/build/views/Navigator.js',
@@ -540,6 +546,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './(app)/(index,about)/blog/abc.tsx',
+              parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
               entryPoints: [
                 'expo-router/build/views/Navigator.js',
@@ -564,6 +571,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './(app)/(index,about)/blog/123.tsx',
+              parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
               entryPoints: [
                 'expo-router/build/views/Navigator.js',
@@ -577,6 +585,7 @@ describe(loadStaticParamsAsync, () => {
               type: 'route',
               children: [],
               contextKey: './(app)/(index,about)/blog/abc.tsx',
+              parentContextKey: './(app)/(index,about)/blog/[post].tsx',
               dynamic: null,
               entryPoints: [
                 'expo-router/build/views/Navigator.js',
@@ -672,6 +681,7 @@ describe(loadStaticParamsAsync, () => {
           type: 'route',
           children: [],
           contextKey: './post/123.tsx',
+          parentContextKey: './post/[post].tsx',
           dynamic: null,
           route: 'post/123',
           entryPoints: ['expo-router/build/views/Navigator.js', './post/[post].tsx'],
@@ -701,6 +711,7 @@ describe(loadStaticParamsAsync, () => {
           type: 'route',
           children: [],
           contextKey: './a/b/c/d/e.tsx',
+          parentContextKey: './a/[b]/c/[d]/[e].tsx',
           dynamic: null,
           route: 'a/b/c/d/e',
           entryPoints: ['expo-router/build/views/Navigator.js', './a/[b]/c/[d]/[e].tsx'],

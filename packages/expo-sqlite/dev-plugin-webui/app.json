@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "web": {
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true,
+      "baseUrl": "/_expo/plugins/expo-sqlite"
+    }
+  }
+}

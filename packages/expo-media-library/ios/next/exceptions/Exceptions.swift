@@ -66,6 +66,12 @@ internal final class QueryValueCouldNotBeParsed: GenericException<String> {
   }
 }
 
+internal final class InvalidQueryArgumentException: GenericException<String> {
+  override var reason: String {
+    "Invalid query argument: \(param)"
+  }
+}
+
 internal final class MediaTypeFailedToParseString: GenericException<String> {
   override var reason: String {
     "Failed to parse string to MediaType: \(param)"

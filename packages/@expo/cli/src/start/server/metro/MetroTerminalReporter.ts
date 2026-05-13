@@ -1,10 +1,10 @@
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
-import { stripVTControlCharacters } from 'util';
+import { format as utilFormat, stripVTControlCharacters } from 'util';
 
 import { logWarning, TerminalReporter } from './TerminalReporter';
-import {
+import type {
   BuildPhase,
   BundleDetails,
   BundleProgress,
@@ -20,8 +20,68 @@ import {
   parseErrorStringToObject,
 } from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
+import { events, shouldReduceLogs } from '../../../events';
+import { stripAnsi } from '../../../utils/ansi';
+import { isInteractive } from '../../../utils/interactive';
+
+type ClientLogLevel =
+  | 'trace'
+  | 'info'
+  | 'error'
+  | 'warn'
+  | 'log'
+  | 'group'
+  | 'groupCollapsed'
+  | 'groupEnd'
+  | 'debug';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
+
+// prettier-ignore
+export const event = events('metro', (t) => [
+  t.event<'bundling:started', {
+    id: string;
+    platform: null | string;
+    environment: null | string;
+    entry: string;
+  }>(),
+  t.event<'bundling:done', {
+    id: string | null;
+    ms: number | null;
+    total: number;
+  }>(),
+  t.event<'bundling:failed', {
+    id: string | null;
+    filename: string | null;
+    message: string | null;
+    importStack: string | null;
+    targetModuleName: string | null;
+    originModulePath: string | null;
+  }>(),
+  t.event<'bundling:progress', {
+    id: string | null;
+    progress: number;
+    current: number;
+    total: number;
+  }>(),
+  t.event<'server_log', {
+    level: 'info' | 'warn' | 'error' | null;
+    data: string | unknown[] | null;
+  }>(),
+  t.event<'client_log', {
+    level: ClientLogLevel | null;
+    data: unknown[] | null;
+  }>(),
+  t.event<'hmr_client_error', {
+    message: string;
+  }>(),
+  t.event<'cache_write_error', {
+    message: string;
+  }>(),
+  t.event<'cache_read_error', {
+    message: string;
+  }>(),
+]);
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -31,14 +91,30 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  * Also removes the giant Metro logo from the output.
  */
 export class MetroTerminalReporter extends TerminalReporter {
+  #lastFailedBuildID: string | undefined;
+
   constructor(
-    public projectRoot: string,
+    public serverRoot: string,
     terminal: Terminal
   ) {
     super(terminal);
   }
 
+  /**
+   * Suppress status messages in non-interactive mode.
+   * In TTY mode, Terminal overwrites status lines in-place (progress bars).
+   * In non-TTY mode, Terminal writes status via a 3500ms throttle, producing
+   * permanent output that interleaves with log messages like "Bundled Xms".
+   */
+  _getStatusMessage(): string {
+    if (!isInteractive()) {
+      return '';
+    }
+    return super._getStatusMessage();
+  }
+
   _log(event: TerminalReportableEvent): void {
+    this.#captureLog(event);
     switch (event.type) {
       case 'unstable_server_log':
         if (typeof event.data?.[0] === 'string') {
@@ -70,67 +146,11 @@ export class MetroTerminalReporter extends TerminalReporter {
       case 'client_log': {
         if (this.shouldFilterClientLog(event)) {
           return;
-        }
-        const { level } = event;
-
-        if (!level) {
+        } else if (event.level != null) {
+          return this.#onClientLog(event);
+        } else {
           break;
         }
-
-        if (level === 'warn' || (level as string) === 'error') {
-          let hasStack = false;
-          const parsed = event.data.map((msg) => {
-            // Quick check to see if an unsymbolicated stack is being logged.
-            if (msg.includes('.bundle//&platform=')) {
-              const stack = parseErrorStringToObject(msg);
-              if (stack) {
-                hasStack = true;
-              }
-              return stack;
-            }
-            return msg;
-          });
-
-          if (hasStack) {
-            (async () => {
-              const symbolicating = parsed.map((p) => {
-                if (typeof p === 'string') return p;
-                return maybeSymbolicateAndFormatJSErrorStackLogAsync(this.projectRoot, level, p);
-              });
-
-              let usefulStackCount = 0;
-              const fallbackIndices: number[] = [];
-              const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
-                if (s.status === 'rejected') {
-                  debug('Error formatting stack', parsed[index], s.reason);
-                  return parsed[index];
-                } else if (typeof s.value === 'string') {
-                  return s.value;
-                } else {
-                  if (!s.value.isFallback) {
-                    usefulStackCount++;
-                  } else {
-                    fallbackIndices.push(index);
-                  }
-                  return s.value.stack;
-                }
-              });
-
-              // Using EXPO_DEBUG we can print all stack
-              const filtered =
-                usefulStackCount && !env.EXPO_DEBUG
-                  ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
-                  : symbolicated;
-
-              logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...filtered);
-            })();
-            return;
-          }
-        }
-
-        // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
-        logLikeMetro(this.terminal.log.bind(this.terminal), level, null, ...event.data);
-        return;
       }
     }
     return super._log(event);
@@ -150,23 +170,11 @@ export class MetroTerminalReporter extends TerminalReporter {
     const platform = env || getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
 
-    let localPath: string;
-
-    if (
+    const localPath =
       typeof progress.bundleDetails?.customTransformOptions?.dom === 'string' &&
       progress.bundleDetails.customTransformOptions.dom.includes(path.sep)
-    ) {
-      // Because we use a generated entry file for DOM components, we need to adjust the logging path so it
-      // shows a unique path for each component.
-      // Here, we take the relative import path and remove all the starting slashes.
-      localPath = progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '');
-    } else {
-      const inputFile = progress.bundleDetails.entryFile;
-
-      localPath = path.isAbsolute(inputFile)
-        ? path.relative(this.projectRoot, inputFile)
-        : inputFile;
-    }
+        ? progress.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
+        : this.#normalizePath(progress.bundleDetails.entryFile);
 
     if (!inProgress) {
       const status = phase === 'done' ? `Bundled ` : `Bundling failed `;
@@ -175,19 +183,28 @@ export class MetroTerminalReporter extends TerminalReporter {
       const startTime = this._bundleTimers.get(progress.bundleDetails.buildID!);
 
       let time: string = '';
+      let ms: number | null = null;
 
       if (startTime != null) {
         const elapsed: bigint = this._getElapsedTime(startTime);
         const micro = Number(elapsed) / 1000;
-        const converted = Number(elapsed) / 1e6;
+        ms = Number(elapsed) / 1e6;
         // If the milliseconds are < 0.5 then it will display as 0, so we display in microseconds.
-        if (converted <= 0.5) {
+        if (ms <= 0.5) {
           const tenthFractionOfMicro = ((micro * 10) / 1000).toFixed(0);
           // Format as microseconds to nearest tenth
           time = chalk.cyan.bold(`0.${tenthFractionOfMicro}ms`);
         } else {
-          time = chalk.dim(converted.toFixed(0) + 'ms');
+          time = chalk.dim(ms.toFixed(0) + 'ms');
         }
+      }
+
+      if (phase === 'done') {
+        event('bundling:done', {
+          id: progress.bundleDetails.buildID ?? null,
+          total: progress.totalFileCount,
+          ms,
+        });
       }
 
       // iOS Bundled 150ms
@@ -199,8 +216,17 @@ export class MetroTerminalReporter extends TerminalReporter {
       );
     }
 
-    const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
+    event('bundling:progress', {
+      id: progress.bundleDetails.buildID ?? null,
+      progress: progress.ratio,
+      total: progress.totalFileCount,
+      current: progress.transformedFileCount,
+    });
+    if (shouldReduceLogs()) {
+      return '';
+    }
 
+    const filledBar = Math.floor(progress.ratio * MAX_PROGRESS_BAR_CHAR_WIDTH);
     const _progress = inProgress
       ? chalk.green.bgGreen(DARK_BLOCK_CHAR.repeat(filledBar)) +
         chalk.bgWhite.white(LIGHT_BLOCK_CHAR.repeat(MAX_PROGRESS_BAR_CHAR_WIDTH - filledBar)) +
@@ -211,7 +237,6 @@ export class MetroTerminalReporter extends TerminalReporter {
             .padStart(progress.totalFileCount.toString().length)}/${progress.totalFileCount})`
         )
       : '';
-
     return (
       platform +
       chalk.reset.dim(`${path.dirname(localPath)}${path.sep}`) +
@@ -223,7 +248,9 @@ export class MetroTerminalReporter extends TerminalReporter {
 
   _logInitializing(port: number, hasReducedPerformance: boolean): void {
     // Don't print a giant logo...
-    this.terminal.log(chalk.dim('Starting Metro Bundler'));
+    if (!shouldReduceLogs()) {
+      this.terminal.log(chalk.dim('Starting Metro Bundler') + '\n');
+    }
   }
 
   shouldFilterClientLog(event: { type: 'client_log'; data: unknown[] }): boolean {
@@ -258,16 +285,176 @@ export class MetroTerminalReporter extends TerminalReporter {
     }
   }
 
+  /**
+   * Workaround to link build ids to bundling errors.
+   * This works because `_logBundleBuildFailed` is called before `_logBundlingError` in synchronous manner.
+   * https://github.com/facebook/metro/blob/main/packages/metro/src/Server.js#L939-L945
+   */
+  _logBundleBuildFailed(buildID: string): void {
+    this.#lastFailedBuildID = buildID;
+    super._logBundleBuildFailed(buildID);
+  }
+
   _logBundlingError(error: SnippetError): void {
-    const moduleResolutionError = formatUsingNodeStandardLibraryError(this.projectRoot, error);
+    const importStack = nearestImportStack(error);
+    const moduleResolutionError = formatUsingNodeStandardLibraryError(this.serverRoot, error);
+
     if (moduleResolutionError) {
-      let message = maybeAppendCodeFrame(moduleResolutionError, error.message);
-      message += '\n\n' + nearestImportStack(error);
-      return this.terminal.log(message);
+      const message = maybeAppendCodeFrame(moduleResolutionError, error.message);
+      event('bundling:failed', {
+        id: this.#lastFailedBuildID ?? null,
+        message: stripAnsi(message) ?? null,
+        importStack: importStack ?? null,
+        filename: error.filename ?? null,
+        targetModuleName: this.#normalizePath(error.targetModuleName),
+        originModulePath: this.#normalizePath(error.originModulePath),
+      });
+
+      return this.terminal.log(importStack ? `${message}\n\n${importStack}` : message);
+    } else {
+      event('bundling:failed', {
+        id: this.#lastFailedBuildID ?? null,
+        message: stripAnsi(error.message) ?? null,
+        importStack: importStack ?? null,
+        filename: error.filename ?? null,
+        targetModuleName: error.targetModuleName ?? null,
+        originModulePath: error.originModulePath ?? null,
+      });
+
+      attachImportStackToRootMessage(error, importStack);
+
+      // NOTE(@kitten): Metro drops the stack forcefully when it finds a `SyntaxError`. However,
+      // this is really unhelpful, since it prevents debugging Babel plugins or reporting bugs
+      // in Babel plugins or a transformer entirely
+      if (error.snippet == null && error.stack != null && error instanceof SyntaxError) {
+        error.message = error.stack;
+        delete error.stack;
+      }
+
+      return super._logBundlingError(error);
+    }
+  }
+
+  #onClientLog(evt: {
+    type: 'client_log';
+    level?: ClientLogLevel;
+    data: unknown[];
+    mode?: string;
+  }) {
+    const { level = 'log' } = evt;
+    // Apply printf-style format substitution (e.g. %s, %d) that browsers handle
+    // natively in console methods but Node/Metro terminal logging does not.
+    const data = applyConsoleFormatting(evt.data);
+    const platformTag = getPlatformTagForClientLog(evt.mode);
+    if (level === 'warn' || (level as string) === 'error') {
+      let hasStack = false;
+      const parsed = data.map((msg) => {
+        // Quick check to see if an unsymbolicated stack is being logged.
+        if (typeof msg === 'string' && msg.includes('.bundle//&platform=')) {
+          const stack = parseErrorStringToObject(msg);
+          if (stack) {
+            hasStack = true;
+          }
+          return stack;
+        }
+        return msg;
+      });
+
+      if (hasStack) {
+        (async () => {
+          const symbolicating = parsed.map((p) => {
+            if (typeof p === 'string') {
+              return p;
+            } else if (
+              p &&
+              typeof p === 'object' &&
+              'message' in p &&
+              typeof p.message === 'string'
+            ) {
+              return maybeSymbolicateAndFormatJSErrorStackLogAsync(
+                this.serverRoot,
+                level,
+                p as any
+              );
+            } else {
+              return null;
+            }
+          });
+
+          let usefulStackCount = 0;
+          const fallbackIndices: number[] = [];
+          const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
+            if (s.status === 'rejected') {
+              debug('Error formatting stack', parsed[index], s.reason);
+              return parsed[index];
+            } else if (!s.value) {
+              return parsed[index];
+            } else if (typeof s.value === 'string') {
+              return s.value;
+            } else {
+              if (!s.value.isFallback) {
+                usefulStackCount++;
+              } else {
+                fallbackIndices.push(index);
+              }
+              return s.value.stack;
+            }
+          });
+
+          // Using EXPO_DEBUG we can print all stack
+          const filtered =
+            usefulStackCount && !env.EXPO_DEBUG
+              ? symbolicated.filter((_, index) => !fallbackIndices.includes(index))
+              : symbolicated;
+
+          event('client_log', { level, data: symbolicated });
+          logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...filtered);
+        })();
+        return;
+      }
     }
 
-    attachImportStackToRootMessage(error);
-    return super._logBundlingError(error);
+    event('client_log', { level, data });
+    // Overwrite the Metro terminal logging so we can improve the warnings, symbolicate stacks, and inject extra info.
+    logLikeMetro(this.terminal.log.bind(this.terminal), level, platformTag, ...data);
+  }
+
+  #captureLog(evt: TerminalReportableEvent) {
+    switch (evt.type) {
+      case 'bundle_build_started': {
+        const entry =
+          typeof evt.bundleDetails?.customTransformOptions?.dom === 'string' &&
+          evt.bundleDetails.customTransformOptions.dom.includes(path.sep)
+            ? evt.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
+            : this.#normalizePath(evt.bundleDetails.entryFile);
+        return event('bundling:started', {
+          id: evt.buildID,
+          platform: evt.bundleDetails.platform ?? null,
+          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+          entry,
+        });
+      }
+      case 'unstable_server_log':
+        return event('server_log', {
+          level: evt.level ?? null,
+          data: evt.data ?? null,
+        });
+      case 'client_log':
+        // Handled separately: see this.#onClientLog
+        return;
+      case 'hmr_client_error':
+      case 'cache_write_error':
+      case 'cache_read_error':
+        return event(evt.type, {
+          message: evt.error.message,
+        });
+    }
+  }
+
+  #normalizePath<T extends string | null>(dest: T | undefined): T | string {
+    return dest != null && path.isAbsolute(dest)
+      ? path.relative(this.serverRoot, dest)
+      : ((dest || null) as T);
   }
 }
 
@@ -279,7 +466,7 @@ export class MetroTerminalReporter extends TerminalReporter {
  * @returns error message or null if not a module resolution error
  */
 export function formatUsingNodeStandardLibraryError(
-  projectRoot: string,
+  serverRoot: string,
   error: SnippetError
 ): string | null {
   if (!error.message) {
@@ -289,7 +476,7 @@ export function formatUsingNodeStandardLibraryError(
   if (!targetModuleName || !originModulePath) {
     return null;
   }
-  const relativePath = path.relative(projectRoot, originModulePath);
+  const relativePath = path.relative(serverRoot, originModulePath);
 
   const DOCS_PAGE_URL =
     'https://docs.expo.dev/workflow/using-libraries/#using-third-party-libraries';
@@ -374,11 +561,51 @@ function isAppRegistryStartupMessage(body: any[]): boolean {
   );
 }
 
+/** Apply printf-style format substitutions (%s, %d, %i, %f, %o, %O) that browsers handle natively */
+function applyConsoleFormatting(data: unknown[]): unknown[] {
+  if (data.length <= 1 || typeof data[0] !== 'string' || !/%[sdifoO%]/.test(data[0])) {
+    return data;
+  }
+  return [utilFormat(...(data as [string, ...unknown[]]))];
+}
+
+/** @returns formatted platform name for a client log event, or null if no prefix should be shown */
+function getPlatformTagForClientLog(mode?: string): string | null {
+  switch (mode) {
+    case 'ios':
+      return 'iOS';
+    case 'android':
+      return 'Android';
+    case 'web':
+      return 'Web';
+    case 'dom':
+      return 'DOM';
+    default:
+      return null;
+  }
+}
+
 /** @returns platform specific tag for a `BundleDetails` object */
 function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): string {
   const platform = bundleDetails?.platform ?? null;
   if (platform) {
-    const formatted = { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform;
+    let formatted: string;
+    switch (platform) {
+      case 'ios':
+        formatted = 'iOS';
+        break;
+      case 'android':
+        formatted = 'Android';
+        break;
+      case 'web':
+        formatted = 'Web';
+        break;
+      case 'dom':
+        formatted = 'DOM';
+        break;
+      default:
+        formatted = platform;
+    }
     return `${chalk.bold(formatted)} `;
   }
 

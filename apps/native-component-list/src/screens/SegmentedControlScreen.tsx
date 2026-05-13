@@ -7,7 +7,7 @@ import { ScrollView, StyleSheet, Text, View, NativeSyntheticEvent } from 'react-
 
 // This example is a copy from https://github.com/react-native-community/segmented-control/blob/master/example
 
-const SegmentedControlScreen = () => {
+export default function SegmentedControlScreen() {
   const [values] = useState(['One', 'Two', 'Three']);
   const [value, setValue] = useState('Unselected');
   const [selectedIndex, setIndex] = useState<number | undefined>(undefined);
@@ -98,7 +98,7 @@ const SegmentedControlScreen = () => {
       </View>
     </ScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   text: {
@@ -117,5 +117,3 @@ const styles = StyleSheet.create({
     paddingTop: 80,
   },
 });
-
-export default SegmentedControlScreen;

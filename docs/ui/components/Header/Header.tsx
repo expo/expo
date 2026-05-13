@@ -28,7 +28,7 @@ export const Header = ({
   const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
-      <header className="relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b border-default bg-default p-0 px-4">
+      <header className="border-default bg-default relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b p-0 px-4">
         <div className="flex items-center gap-8">
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
@@ -36,25 +36,25 @@ export const Header = ({
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('px-2 text-secondary', 'max-sm-gutters:hidden')}
+            className={mergeClasses('text-secondary px-2', 'max-sm-gutters:hidden')}
             href="https://expo.dev/blog">
             Blog
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('px-2 text-secondary', 'max-sm-gutters:hidden')}
+            className={mergeClasses('text-secondary px-2', 'max-sm-gutters:hidden')}
             href="https://expo.dev/changelog">
             Changelog
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
-            className={mergeClasses('group px-2 text-secondary', 'max-lg-gutters:hidden')}
+            className={mergeClasses('group text-secondary px-2', 'max-lg-gutters:hidden')}
             leftSlot={
               <>
                 <Star01Icon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                <Star01DuotoneIcon className="icon-sm hidden text-icon-warning group-hover:flex group-focus-visible:flex" />
+                <Star01DuotoneIcon className="icon-sm text-icon-warning hidden group-hover:flex group-focus-visible:flex" />
               </>
             }
             href="https://github.com/expo/expo">
@@ -74,6 +74,7 @@ export const Header = ({
           <div className={mergeClasses('hidden', 'max-lg-gutters:flex')}>
             <Button
               theme="quaternary"
+              aria-label="Toggle navigation menu"
               className={mergeClasses(
                 'px-3',
                 'hocus:bg-element hocus:shadow-[none]',
@@ -90,7 +91,7 @@ export const Header = ({
       {isMobileMenuVisible && (
         <nav
           className={mergeClasses(
-            'relative z-10 mx-auto hidden h-[60px] items-center justify-between border-b border-default bg-default p-0 px-4',
+            'border-default bg-default relative z-10 mx-auto hidden h-[60px] items-center justify-between border-b p-0 px-4',
             'max-lg-gutters:flex'
           )}>
           <div className="flex items-center">
@@ -102,7 +103,7 @@ export const Header = ({
         </nav>
       )}
       {isMobileMenuVisible && (
-        <div className="h-[calc(100dvh-(60px*2))] overflow-y-auto overflow-x-hidden bg-subtle">
+        <div className="bg-subtle h-[calc(100dvh-(60px*2))] overflow-x-hidden overflow-y-auto">
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
           <SidebarFooter isMobileMenuVisible={isMobileMenuVisible} />

@@ -1,7 +1,11 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo-modules-core';
 
 import ExpoLocation from './ExpoLocation';
-import { LocationCallback, LocationErrorCallback, LocationHeadingCallback } from './Location.types';
+import type {
+  LocationCallback,
+  LocationErrorCallback,
+  LocationHeadingCallback,
+} from './Location.types';
 import { LocationEventEmitter } from './LocationEventEmitter';
 
 type EventObject = {
@@ -69,7 +73,7 @@ class Subscriber<
     ExpoLocation.removeWatchAsync(id);
 
     if (Object.keys(this.callbacks).length === 0 && this.eventSubscription) {
-      LocationEventEmitter.removeSubscription(this.eventSubscription);
+      this.eventSubscription.remove();
       this.eventSubscription = null;
     }
   }

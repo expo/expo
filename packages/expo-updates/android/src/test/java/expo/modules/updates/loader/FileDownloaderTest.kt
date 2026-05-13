@@ -133,7 +133,7 @@ class FileDownloaderTest {
     val actual = fileDownloader.createRequestForAsset(assetEntity, JSONObject("{}"), config)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
-    Assert.assertEquals("application/vnd.bsdiff,*/*", actual.header("Accept"))
+    Assert.assertEquals("*/*", actual.header("Accept"))
   }
 
   @Test
@@ -165,7 +165,7 @@ class FileDownloaderTest {
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
     Assert.assertEquals("null", actual.header("expo-null"))
-    Assert.assertEquals("application/vnd.bsdiff,*/*", actual.header("Accept"))
+    Assert.assertEquals("*/*", actual.header("Accept"))
   }
 
   @Test
@@ -302,6 +302,39 @@ class FileDownloaderTest {
 
     // cleanup
     unmockkObject(ManifestMetadata)
+  }
+
+  @Test
+  fun testGetExtraHeadersForRemoteAssetRequest_includesPatchNegotiationHeaders() {
+    val launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
+    val requestedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
+    val launchedUpdate = UpdateEntity(
+      UUID.fromString(launchedUpdateUUIDString),
+      Date(),
+      "1.0",
+      "test",
+      JSONObject("{}"),
+      Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      null
+    )
+    val requestedUpdate = UpdateEntity(
+      UUID.fromString(requestedUpdateUUIDString),
+      Date(),
+      "1.0",
+      "test",
+      JSONObject("{}"),
+      Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      null
+    )
+
+    val headers = FileDownloader.getExtraHeadersForRemoteAssetRequest(
+      launchedUpdate,
+      null,
+      requestedUpdate
+    )
+
+    Assert.assertEquals(launchedUpdateUUIDString, headers.get("Expo-Current-Update-ID"))
+    Assert.assertEquals(requestedUpdateUUIDString, headers.get("Expo-Requested-Update-ID"))
   }
 
   @Test

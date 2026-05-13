@@ -1,16 +1,16 @@
+import * as ExpoLinking from 'expo-linking';
+import { type RefObject, useEffect, useCallback, useRef } from 'react';
+import { Linking, Platform } from 'react-native';
+
+import { extractExpoPathFromURL } from './extractPathFromURL';
 import {
+  type LinkingOptions,
   getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type ParamListBase,
   useNavigationIndependentTree,
-} from '@react-navigation/native';
-import { LinkingOptions } from '@react-navigation/native';
-import * as ExpoLinking from 'expo-linking';
-import * as React from 'react';
-import { Linking, Platform } from 'react-native';
-
-import { extractExpoPathFromURL } from './extractPathFromURL';
+} from '../react-navigation/native';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 
@@ -19,7 +19,7 @@ type Options = LinkingOptions<ParamListBase>;
 const linkingHandlers: symbol[] = [];
 
 export function useLinking(
-  ref: React.RefObject<NavigationContainerRef<ParamListBase>>,
+  ref: RefObject<NavigationContainerRef<ParamListBase>>,
   {
     enabled = true,
     prefixes,
@@ -53,7 +53,7 @@ export function useLinking(
 ) {
   const independent = useNavigationIndependentTree();
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
       return undefined;
     }
@@ -62,19 +62,19 @@ export function useLinking(
       return undefined;
     }
 
-    if (enabled !== false && linkingHandlers.length) {
-      console.error(
-        [
-          'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
-          '- Only a single instance of the root component is rendered',
-          Platform.OS === 'android'
-            ? "- You have set 'android:launchMode=singleTask' in the '<activity />' section of the 'AndroidManifest.xml' file to avoid launching multiple instances"
-            : '',
-        ]
-          .join('\n')
-          .trim()
-      );
+    if (enabled !== false && linkingHandlers.length && process.env.EXPO_OS !== 'android') {
+      // TODO(@ubax): This check should be removed
+      if (linkingHandlers.length > 1) {
+        console.error(
+          [
+            'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
+            "- You don't have multiple NavigationContainers in the app each with 'linking' enabled",
+            '- Only a single instance of the root component is rendered',
+          ]
+            .join('\n')
+            .trim()
+        );
+      }
     }
 
     const handler = Symbol();
@@ -95,15 +95,15 @@ export function useLinking(
   // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
   // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
   // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-  const enabledRef = React.useRef(enabled);
-  const prefixesRef = React.useRef(prefixes);
-  const filterRef = React.useRef(filter);
-  const configRef = React.useRef(config);
-  const getInitialURLRef = React.useRef(getInitialURL);
-  const getStateFromPathRef = React.useRef(getStateFromPath);
-  const getActionFromStateRef = React.useRef(getActionFromState);
+  const enabledRef = useRef(enabled);
+  const prefixesRef = useRef(prefixes);
+  const filterRef = useRef(filter);
+  const configRef = useRef(config);
+  const getInitialURLRef = useRef(getInitialURL);
+  const getStateFromPathRef = useRef(getStateFromPath);
+  const getActionFromStateRef = useRef(getActionFromState);
 
-  React.useEffect(() => {
+  useEffect(() => {
     enabledRef.current = enabled;
     prefixesRef.current = prefixes;
     filterRef.current = filter;
@@ -113,7 +113,7 @@ export function useLinking(
     getActionFromStateRef.current = getActionFromState;
   });
 
-  const getStateFromURL = React.useCallback(
+  const getStateFromURL = useCallback(
     (url: string | null | undefined) => {
       if (!url || (filterRef.current && !filterRef.current(url))) {
         return undefined;
@@ -127,7 +127,7 @@ export function useLinking(
     []
   );
 
-  const getInitialState = React.useCallback(() => {
+  const getInitialState = useCallback(() => {
     let state: ResultState | undefined;
 
     if (enabledRef.current) {
@@ -165,7 +165,7 @@ export function useLinking(
     return thenable as PromiseLike<ResultState | undefined>;
   }, [getStateFromURL, onUnhandledLinking, prefixes]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const listener = (url: string) => {
       if (!enabled) {
         return;

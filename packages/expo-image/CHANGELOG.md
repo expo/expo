@@ -6,15 +6,134 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
+### 🐛 Bug fixes
+
+- [Android] Apply `ApplicationVersionSignature` to local resource URIs (`res:/` scheme) to prevent stale cached images after app updates. by [@linkeryoon](https://github.com/linkeryoon) ([#44355](https://github.com/expo/expo/pull/44355) by [@Yoon-Hae-Min](https://github.com/Yoon-Hae-Min))
+
+### 💡 Others
+
+- [android] Use react natives `OKHttpClient`. ([#44431](https://github.com/expo/expo/pull/44431) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.10 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-04-21
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `contentPosition` misalignment by using the unrounded cover/contain layout size for offset math. ([#44497](https://github.com/expo/expo/pull/44497) by [@alicenoknow](https://github.com/alicenoknow))
+
+## 55.0.8 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-03-05
+
+### 🐛 Bug fixes
+
+- Added `tintColor` option to `ImageLoadOptions`. This resolves [#42007](https://github.com/expo/expo/issues/42007). ([#42821](https://github.com/expo/expo/pull/42821)) by [@HubertBer](https://github.com/HubertBer). ([#42821](https://github.com/expo/expo/pull/42821) by [@HubertBer](https://github.com/HubertBer))
+
+### 💡 Others
+
+- [iOS] Use `internal import SDWebImage` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.5 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed compilation errors in Xcode 26.4 Beta 1 ([#43346](https://github.com/expo/expo/pull/43346) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.4 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- [Android] Uses shared cookie jar for image requests. ([#43257](https://github.com/expo/expo/pull/43257) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `useImage` crashing on SVGs when the max dimensions are not set. ([#42496](https://github.com/expo/expo/pull/42496) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- [iOS] Add `color` and `fontSize` style props for SF Symbols to set tint color and size. ([#42320](https://github.com/expo/expo/pull/42320) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Add support for SF Symbols `source="sf:star"`. ([#41907](https://github.com/expo/expo/pull/41907) by [@EvanBacon](https://github.com/EvanBacon))
 - [Android] Upgrades Glide to `5.0.5`. ([#39713](https://github.com/expo/expo/pull/39713) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Added support for HDR images ([#40242](https://github.com/expo/expo/pull/40242) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Adopted Swift 6 ([#40369](https://github.com/expo/expo/pull/40369) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Provide plugin to disable `libdav1d`. ([#40691](https://github.com/expo/expo/pull/40691) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] feat: add `configureCache` option ([#40647](https://github.com/expo/expo/pull/40647) by [@kosmydel](https://github.com/kosmydel))
+- [Web] Add `loading` prop for lazy loading images. ([#41442](https://github.com/expo/expo/pull/41442) by [@mozzius](https://github.com/mozzius))
+- [iOS] Added support for PSD images. ([#42077](https://github.com/expo/expo/pull/42077) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- [android] Fix loading delayed placeholder ([#40956](https://github.com/expo/expo/pull/40956) by [@kosmydel](https://github.com/kosmydel))
+- Fix tvOS SymbolEffectOptions availability check ([#42393](https://github.com/expo/expo/pull/42393) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+- Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+
+## 3.0.11 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.10 - 2025-10-20
+
+_This version does not introduce any user-facing changes._
+
+## 3.0.9 - 2025-10-07
 
 ### 🐛 Bug fixes
 
 - [Android] Fixed `You can't start or clear loads in RequestListener or Target callbacks`. ([#40212](https://github.com/expo/expo/pull/40212) by [@lukmccall](https://github.com/lukmccall))
-
-### 💡 Others
 
 ## 3.0.8 — 2025-09-11
 

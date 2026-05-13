@@ -1,7 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-#include "SharedObject.h"
 #include "JSIUtils.h"
+#include "SharedObject.h"
 
 namespace expo::SharedObject {
 

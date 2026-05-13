@@ -1,4 +1,3 @@
-import { GraphQLError } from '@0no-co/graphql.web';
 import {
   convertCertificatePEMToCertificate,
   convertKeyPairToPEM,
@@ -9,23 +8,24 @@ import {
   validateSelfSignedCertificate,
   signBufferRSASHA256AndVerify,
 } from '@expo/code-signing-certificates';
-import { ExpoConfig } from '@expo/config';
-import JsonFile, { JSONObject } from '@expo/json-file';
-import { CombinedError } from '@urql/core';
+import type { ExpoConfig } from '@expo/config';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import { promises as fs } from 'fs';
-import { pki as PKI } from 'node-forge';
+import type { pki as PKI } from 'node-forge';
 import path from 'path';
-import { Dictionary, parseDictionary } from 'structured-headers';
+import type { Dictionary } from 'structured-headers';
+import { parseDictionary } from 'structured-headers';
 
 import { env } from './env';
 import { CommandError } from './errors';
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
-import { AppQuery } from '../api/graphql/queries/AppQuery';
+import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
+import { AppQuery, type App } from '../api/graphql/queries/AppQuery';
 import { getExpoHomeDirectory } from '../api/user/UserSettings';
 import { tryGetUserAsync } from '../api/user/actions';
-import { Actor } from '../api/user/user';
-import { AppByIdQuery, Permission } from '../graphql/generated';
+import type { Actor } from '../api/user/user';
 import * as Log from '../log';
 import { learnMore } from '../utils/link';
 
@@ -352,7 +352,7 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     certificateChain: certificatePEMs,
     scopeKey,
   } = codeSigningInfo;
-  if (!privateKeyPEM || !certificatePEMs) {
+  if (!privateKeyPEM || !certificatePEMs?.length) {
     return null;
   }
 
@@ -375,13 +375,13 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
   return {
     keyId: 'expo-go',
     certificateChainForResponse: certificatePEMs,
-    certificateForPrivateKey: certificatePEMs[0],
+    certificateForPrivateKey: certificatePEMs[0]!,
     privateKey: privateKeyPEM,
     scopeKey,
   };
 }
 
-function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: AppByIdQuery['app']['byId']) {
+function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: App) {
   const owningAccountId = app.ownerAccount.id;
 
   const owningAccountIsActorPrimaryAccount =
@@ -391,7 +391,7 @@ function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: AppByIdQuer
   const userHasPublishPermissionForOwningAccount = !!actor.accounts
     .find((account) => account.id === owningAccountId)
     ?.users?.find((userPermission) => userPermission.actor.id === actor.id)
-    ?.permissions?.includes(Permission.Publish);
+    ?.permissions?.includes('PUBLISH');
   return owningAccountIsActorPrimaryAccount || userHasPublishPermissionForOwningAccount;
 }
 
@@ -404,11 +404,11 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
     return null;
   }
 
-  let app: AppByIdQuery['app']['byId'];
+  let app: App;
   try {
     app = await AppQuery.byIdAsync(easProjectId);
   } catch (e) {
-    if (e instanceof GraphQLError || e instanceof CombinedError) {
+    if (e instanceof UnexpectedServerError || e instanceof UnexpectedServerData) {
       return null;
     }
     throw e;

@@ -12,20 +12,22 @@ import type {
   ResolutionContext,
   CustomResolutionContext,
 } from '@expo/metro/metro-resolver';
-import { resolve as metroResolver } from '@expo/metro/metro-resolver';
+import { resolve as resolver } from '@expo/metro/metro-resolver';
 import type { SourceFileResolution } from '@expo/metro/metro-resolver/types';
-import chalk from 'chalk';
+import { resolveFrom } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
+import type {
+  AutolinkingModuleResolverInput,
+  AutolinkingPlatform,
+} from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
-  AutolinkingModuleResolverInput,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
-import { createFastResolver, FailedToResolvePathError } from './createExpoMetroResolver';
+import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
@@ -33,16 +35,10 @@ import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolv
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
 import { withMetroSupervisingTransformWorker } from './withMetroSupervisingTransformWorker';
 import { Log } from '../../../log';
-import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
-import { installExitHooks } from '../../../utils/exit';
-import { isInteractive } from '../../../utils/interactive';
-import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
-import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { isServerEnvironment } from '../middleware/metroOptions';
-import { PlatformBundlers } from '../platformBundlers';
-
-type Mutable<T> = { -readonly [K in keyof T]: T[K] };
+import type { PlatformBundlers } from '../platformBundlers';
+import { createTypescriptResolver } from './createTypescriptResolver';
 
 export type StrictResolver = (moduleName: string) => Resolution;
 export type StrictResolverFactory = (
@@ -53,6 +49,10 @@ export type StrictResolverFactory = (
 const ASSET_REGISTRY_SRC = `const assets=[];module.exports={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};`;
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
+
+function asWritable<T>(input: T): { -readonly [K in keyof T]: T[K] } {
+  return input;
+}
 
 function withWebPolyfills(
   config: ConfigT,
@@ -82,7 +82,10 @@ function withWebPolyfills(
       virtualModuleId,
       (() => {
         if (ctx.platform === 'web') {
-          return `global.$$require_external = typeof require !== "undefined" ? require : () => null;`;
+          // NOTE(@hassankhan): We need to wrap require in an arrow function rather than assigning
+          // it directly because `workerd` loses its `this` context when `require` is dereferenced
+          // and called later.
+          return `global.$$require_external = typeof require !== "undefined" ? (m) => require(m) : () => null;`;
         } else {
           // Wrap in try/catch to support Android.
           return 'try { global.$$require_external = typeof expo === "undefined" ? require : (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} } catch { global.$$require_external = (moduleId) => { throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);} }';
@@ -165,18 +168,14 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
 export function withExtendedResolver(
   config: ConfigT,
   {
-    tsconfig,
     autolinkingModuleResolverInput,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
     isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   }: {
-    tsconfig: TsConfigPaths | null;
     autolinkingModuleResolverInput?: AutolinkingModuleResolverInput;
     isTsconfigPathsEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
     isExporting?: boolean;
     isReactServerComponentsEnabled?: boolean;
     getMetroBundler: () => Bundler;
@@ -185,21 +184,6 @@ export function withExtendedResolver(
   if (isReactServerComponentsEnabled) {
     Log.warn(`React Server Components (beta) is enabled.`);
   }
-  if (isFastResolverEnabled) {
-    Log.log(chalk.dim`Fast resolver is enabled.`);
-  }
-
-  const defaultResolver = metroResolver;
-  const resolver = isFastResolverEnabled
-    ? createFastResolver({
-        preserveSymlinks: true,
-        blockList: !config.resolver?.blockList
-          ? []
-          : Array.isArray(config.resolver?.blockList)
-            ? config.resolver?.blockList
-            : [config.resolver?.blockList],
-      })
-    : defaultResolver;
 
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
@@ -208,6 +192,11 @@ export function withExtendedResolver(
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
+
+  const isExpoRouterInstalled = hasExpoRouterModule(
+    config.projectRoot,
+    autolinkingModuleResolverInput
+  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -219,12 +208,12 @@ export function withExtendedResolver(
     _universalAliases = [];
 
     // This package is currently always installed as it is included in the `expo` package.
-    if (resolveFrom.silent(config.projectRoot, '@expo/vector-icons')) {
+    if (resolveFrom(config.projectRoot, '@expo/vector-icons/package.json')) {
       debug('Enabling alias: react-native-vector-icons -> @expo/vector-icons');
       _universalAliases.push([/^react-native-vector-icons(\/.*)?/, '@expo/vector-icons$1']);
     }
     if (isReactServerComponentsEnabled) {
-      if (resolveFrom.silent(config.projectRoot, 'expo-router/rsc')) {
+      if (resolveFrom(config.projectRoot, 'expo-router/rsc')) {
         debug('Enabling bridge alias: expo-router -> expo-router/rsc');
         _universalAliases.push([/^expo-router$/, 'expo-router/rsc']);
         // Bridge the internal entry point which is a standalone import to ensure package.json resolution works as expected.
@@ -243,51 +232,6 @@ export function withExtendedResolver(
     // https://github.com/expo/router/issues/37
     web: ['browser', 'module', 'main'],
   };
-
-  let tsConfigResolve =
-    isTsconfigPathsEnabled && (tsconfig?.paths || tsconfig?.baseUrl != null)
-      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-          paths: tsconfig.paths ?? {},
-          baseUrl: tsconfig.baseUrl ?? config.projectRoot,
-          hasBaseUrl: !!tsconfig.baseUrl,
-        })
-      : null;
-
-  // TODO: Move this to be a transform key for invalidation.
-  if (!isExporting && isInteractive()) {
-    if (isTsconfigPathsEnabled) {
-      // TODO: We should track all the files that used imports and invalidate them
-      // currently the user will need to save all the files that use imports to
-      // use the new aliases.
-      const configWatcher = new FileNotifier(config.projectRoot, [
-        './tsconfig.json',
-        './jsconfig.json',
-      ]);
-      configWatcher.startObserving(() => {
-        debug('Reloading tsconfig.json');
-        loadTsConfigPathsAsync(config.projectRoot).then((tsConfigPaths) => {
-          if (tsConfigPaths?.paths && !!Object.keys(tsConfigPaths.paths).length) {
-            debug('Enabling tsconfig.json paths support');
-            tsConfigResolve = resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-              paths: tsConfigPaths.paths ?? {},
-              baseUrl: tsConfigPaths.baseUrl ?? config.projectRoot,
-              hasBaseUrl: !!tsConfigPaths.baseUrl,
-            });
-          } else {
-            debug('Disabling tsconfig.json paths support');
-            tsConfigResolve = null;
-          }
-        });
-      });
-
-      // TODO: This probably prevents the process from exiting.
-      installExitHooks(() => {
-        configWatcher.stopObserving();
-      });
-    } else {
-      debug('Skipping tsconfig.json paths support');
-    }
-  }
 
   let nodejsSourceExtensions: string[] | null = null;
 
@@ -326,6 +270,20 @@ export function withExtendedResolver(
     context: { platform: string; environment?: string }
   ) => number | string;
 
+  // We're manually resolving the `asyncRequireModulePath` since it's a module request
+  // However, in isolated installations it might not resolve from all paths, so we're resolving
+  // it from the project root manually
+  let _asyncRequireModuleResolvedPath: string | null | undefined;
+  const getAsyncRequireModule = () => {
+    if (_asyncRequireModuleResolvedPath === undefined) {
+      _asyncRequireModuleResolvedPath =
+        resolveFrom(config.projectRoot, config.transformer.asyncRequireModulePath) ?? null;
+    }
+    return _asyncRequireModuleResolvedPath
+      ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
+      : null;
+  };
+
   const getAssetRegistryModule = () => {
     const virtualModuleId = `\0polyfill:assets-registry`;
     getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
@@ -357,19 +315,19 @@ export function withExtendedResolver(
 
         if (context.customResolverOptions?.environment === 'react-server') {
           // Ensure these non-react-server modules are excluded when bundling for React Server Components in development.
-          return /^(source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
+          return /^(@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
             moduleName
           );
         }
 
         // TODO: Windows doesn't support externals somehow.
         if (process.platform === 'win32') {
-          return /^(source-map-support(\/.*)?)$/.test(moduleName);
+          return false;
         }
 
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
-        return /^(source-map-support(\/.*)?|react|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
+        return /^(react|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
           moduleName
         );
       },
@@ -440,22 +398,15 @@ export function withExtendedResolver(
       }
       return null;
     },
-    // tsconfig paths
-    function requestTsconfigPaths(
-      context: ResolutionContext,
-      moduleName: string,
-      platform: string | null
-    ) {
-      return (
-        tsConfigResolve?.(
-          {
-            originModulePath: context.originModulePath,
-            moduleName,
-          },
-          getOptionalResolver(context, platform)
-        ) ?? null
-      );
-    },
+
+    isTsconfigPathsEnabled
+      ? createTypescriptResolver({
+          getStrictResolver,
+          projectRoot: config.projectRoot,
+          getMetroBundler,
+          watch: !isExporting && !env.CI,
+        })
+      : undefined,
 
     // Node.js externals support
     function requestNodeExternals(
@@ -590,8 +541,8 @@ export function withExtendedResolver(
     function requestAlias(context: ResolutionContext, moduleName: string, platform: string | null) {
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
-      if (platform && platform in aliases && aliases[platform][moduleName]) {
-        const redirectedModuleName = aliases[platform][moduleName];
+      if (platform && platform in aliases && aliases[platform]![moduleName]) {
+        const redirectedModuleName = aliases[platform]![moduleName];
         return getStrictResolver(context, platform)(redirectedModuleName);
       }
 
@@ -611,12 +562,17 @@ export function withExtendedResolver(
       return null;
     },
 
-    // Polyfill for asset registry
-    function requestStableAssetRegistry(
+    // Polyfill for asset registry (assetRegistryPath) and async require module (asyncRequireModulePath)
+    function requestStableConfigModules(
       context: ResolutionContext,
       moduleName: string,
       platform: string | null
     ) {
+      if (moduleName === config.transformer.asyncRequireModulePath) {
+        return getAsyncRequireModule();
+      }
+
+      // TODO(@kitten): Compare against `config.transformer.assetRegistryPath`
       if (/^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)) {
         return getAssetRegistryModule();
       }
@@ -673,6 +629,40 @@ export function withExtendedResolver(
         }
       }
 
+      if (!env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK) {
+        // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
+        if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
+          const filePath = context.originModulePath;
+          if (!filePath.includes('node_modules')) {
+            if (
+              moduleName === '@react-navigation/native-stack' ||
+              moduleName === '@react-navigation/drawer'
+            ) {
+              throw new Error(
+                [
+                  'As of SDK 56, expo-router is no longer compatible with react-navigation.',
+                  '',
+                  `Instead of ${moduleName}, use Stack or Drawer from expo-router instead:`,
+                  '',
+                  "  import { Stack } from 'expo-router';",
+                  "  import { Drawer } from 'expo-router/drawer';",
+                  '',
+                  'For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/.',
+                  'You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.',
+                ].join('\n')
+              );
+            }
+            throw new Error(
+              'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
+            );
+          }
+          if (moduleName === '@react-navigation/core') {
+            // We already checked if expo-router resolves
+            return doResolve('expo-router/react-navigation');
+          }
+        }
+      }
+
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
           // Disallow importing confusing native modules on web
@@ -686,8 +676,9 @@ export function withExtendedResolver(
               moduleName.includes(matcher)
             )
           ) {
-            throw new FailedToResolvePathError(
-              `Importing native-only module "${moduleName}" on web from: ${path.relative(config.projectRoot, context.originModulePath)}`
+            throw new FailedToResolveNativeOnlyModuleError(
+              moduleName,
+              path.relative(config.projectRoot, context.originModulePath)
             );
           }
 
@@ -766,10 +757,10 @@ export function withExtendedResolver(
       moduleName: string,
       platform: string | null
     ): CustomResolutionContext => {
-      const context: Mutable<CustomResolutionContext> = {
+      const context = asWritable({
         ...immutableContext,
         preferNativePlatform: platform !== 'web',
-      };
+      });
 
       if (isServerEnvironment(context.customResolverOptions?.environment)) {
         // Adjust nodejs source extensions to sort mjs after js, including platform variants.
@@ -816,7 +807,7 @@ export function withExtendedResolver(
         // Non-server changes
 
         if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE && platform && platform in preferredMainFields) {
-          context.mainFields = preferredMainFields[platform];
+          context.mainFields = preferredMainFields[platform]!;
         }
       }
 
@@ -893,64 +884,47 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
+
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
-    isFastResolverEnabled,
     isExporting,
-
     isReactServerComponentsEnabled,
+
     getMetroBundler,
   }: {
     config: ConfigT;
     exp: ExpoConfig;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
-    isAutolinkingResolverEnabled?: boolean;
-    isFastResolverEnabled?: boolean;
-    isExporting?: boolean;
+    serverRoot?: string | undefined;
 
+    isAutolinkingResolverEnabled?: boolean;
+    isExporting?: boolean;
     isReactServerComponentsEnabled: boolean;
     isNamedRequiresEnabled: boolean;
+
     getMetroBundler: () => Bundler;
   }
 ) {
+  const watchFolders = (config.watchFolders as string[]) || [];
+  asWritable(config).watchFolders = watchFolders;
+
+  // NOTE(@kitten): If the on-demand filesystem is enabled, we can aggressively cut down the `watchFolders`
+  // to a minimum, since the files will be read lazily. This almost always speeds up exports
+  if (isExporting && !!config.resolver.unstable_onDemandFilesystem) {
+    watchFolders.length = 0;
+    watchFolders.push(projectRoot);
+  }
+
   // Change the default metro-runtime to a custom one that supports bundle splitting.
   // NOTE(@kitten): This is now always active and EXPO_USE_METRO_REQUIRE / isNamedRequiresEnabled is disregarded
-  const metroDefaults: Mutable<
-    typeof import('@expo/metro/metro-config/defaults/defaults')
-  > = require('@expo/metro/metro-config/defaults/defaults');
-  metroDefaults.moduleSystem = require.resolve('@expo/cli/build/metro-require/require');
-
-  if (!config.projectRoot) {
-    // @ts-expect-error: read-only types
-    config.projectRoot = projectRoot;
-  }
+  const metroDefaults: typeof import('@expo/metro/metro-config/defaults/defaults') = require('@expo/metro/metro-config/defaults/defaults');
+  const metroRequirePolyfill = require.resolve('@expo/cli/build/metro-require/require');
+  asWritable(metroDefaults).moduleSystem = metroRequirePolyfill;
+  watchFolders.push(path.dirname(metroRequirePolyfill));
 
   // Required for @expo/metro-runtime to format paths in the web LogBox.
   process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
-
-  // This is used for running Expo CLI in development against projects outside the monorepo.
-  if (!isDirectoryIn(__dirname, projectRoot)) {
-    // TODO(@kitten): Remove ts-export-errors here and replace with cast for type safety
-    if (!config.watchFolders) {
-      // @ts-expect-error: watchFolders is readonly
-      config.watchFolders = [];
-    }
-    // @ts-expect-error: watchFolders is readonly
-    config.watchFolders.push(path.join(require.resolve('metro-runtime/package.json'), '../..'));
-    // @ts-expect-error: watchFolders is readonly
-    config.watchFolders.push(
-      path.join(require.resolve('@expo/metro-config/package.json'), '../..'),
-      // For virtual modules
-      path.join(require.resolve('expo/package.json'), '..')
-    );
-  }
-
-  let tsconfig: null | TsConfigPaths = null;
-
-  if (isTsconfigPathsEnabled) {
-    tsconfig = await loadTsConfigPathsAsync(projectRoot);
-  }
 
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(
@@ -962,8 +936,7 @@ export async function withMetroMultiPlatformAsync(
     expoConfigPlatforms = [...new Set(expoConfigPlatforms.concat(config.resolver.platforms))];
   }
 
-  // @ts-expect-error: typed as `readonly`.
-  config.resolver.platforms = expoConfigPlatforms;
+  asWritable(config.resolver).platforms = expoConfigPlatforms;
 
   config = withWebPolyfills(config, { getMetroBundler });
 
@@ -977,15 +950,24 @@ export async function withMetroMultiPlatformAsync(
 
   return withExtendedResolver(config, {
     autolinkingModuleResolverInput,
-    tsconfig,
-    isExporting,
     isTsconfigPathsEnabled,
-    isFastResolverEnabled,
+    isExporting,
     isReactServerComponentsEnabled,
     getMetroBundler,
   });
 }
 
-function isDirectoryIn(targetPath: string, rootPath: string) {
-  return targetPath.startsWith(rootPath) && targetPath.length >= rootPath.length;
+function hasExpoRouterModule(
+  projectRoot: string,
+  autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined
+) {
+  if (autolinkingModuleResolverInput) {
+    // If we have autolinking enabled, we can skip resolution
+    const platform = Object.keys(autolinkingModuleResolverInput)[0] as AutolinkingPlatform;
+    return !!autolinkingModuleResolverInput[platform]?.resolvedModulePaths['expo-router'];
+  } else {
+    return !!resolveFrom(projectRoot, 'expo-router/package.json', {
+      skipNodePath: true,
+    });
+  }
 }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { type View } from 'react-native';
 import ExpoImage from './ExpoImage';
-import { ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
+import type { ImageCacheConfig, ImageLoadOptions, ImagePrefetchOptions, ImageProps, ImageRef, ImageSource } from './Image.types';
 export declare class Image extends React.PureComponent<ImageProps> {
     nativeViewRef: React.RefObject<ExpoImage | null>;
     containerViewRef: React.RefObject<View | null>;
@@ -65,6 +65,12 @@ export declare class Image extends React.PureComponent<ImageProps> {
      */
     static getCachePathAsync(cacheKey: string): Promise<string | null>;
     /**
+     * Configures the image cache. This allows you to manage the cache eviction policy.
+     * @param config - The cache configuration.
+     * @platform ios
+     */
+    static configureCache(config: ImageCacheConfig): void;
+    /**
      * Asynchronously generates a [Blurhash](https://blurha.sh) from an image.
      * @param source - The image source, either a URL (string) or an ImageRef
      * @param numberOfComponents - The number of components to encode the blurhash with.
@@ -123,6 +129,6 @@ export declare class Image extends React.PureComponent<ImageProps> {
      * @platform web
      */
     static loadAsync(source: ImageSource | string | number, options?: ImageLoadOptions): Promise<ImageRef>;
-    render(): React.JSX.Element;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 //# sourceMappingURL=Image.d.ts.map

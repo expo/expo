@@ -23,15 +23,23 @@ function displayFromFontSource(asset) {
     }
     return FontDisplay.AUTO;
 }
+function testStringFromFontSource(asset) {
+    if (typeof asset === 'object' && 'testString' in asset) {
+        return asset.testString ?? undefined;
+    }
+    return undefined;
+}
 export function getAssetForSource(source) {
     const uri = uriFromFontSource(source);
     const display = displayFromFontSource(source);
+    const testString = testStringFromFontSource(source);
     if (!uri || typeof uri !== 'string') {
         throwInvalidSourceError(uri);
     }
     return {
         uri,
         display,
+        testString,
     };
 }
 function throwInvalidSourceError(source) {

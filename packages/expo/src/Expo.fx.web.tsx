@@ -1,5 +1,6 @@
 import './winter';
 import './async-require';
+
 import 'expo/virtual/rsc';
 
 // When users dangerously import a file inside of react-native, it breaks the web alias.
@@ -9,9 +10,9 @@ import 'expo/virtual/rsc';
 if (__DEV__) {
   if (
     // Skip mocking if someone is shimming this value out.
-    !('__fbBatchedBridgeConfig' in global)
+    !('__fbBatchedBridgeConfig' in globalThis)
   ) {
-    Object.defineProperty(global, '__fbBatchedBridgeConfig', {
+    Object.defineProperty(globalThis, '__fbBatchedBridgeConfig', {
       get() {
         throw new Error(
           "Your web project is importing a module from 'react-native' instead of 'react-native-web'. Learn more: https://expo.fyi/fb-batched-bridge-config-web"

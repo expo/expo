@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 const Server = require('./server').Server;
 const Update = require('./update').Update;

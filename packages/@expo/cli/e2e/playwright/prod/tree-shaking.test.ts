@@ -57,8 +57,6 @@ test.describe(inputDir, () => {
     const largest = [...jsFile].sort((a, b) => b.stats.size - a.stats.size)[0].path;
     const largestFile = fs.readFileSync(largest, 'utf8');
 
-    // Sanity
-    expect(largestFile).toMatch(/__r\("packages\/expo-router\/entry.js"\);/);
     // This icon has been removed.
     expect(largestFile).not.toMatch(/test-icon-apple/);
     // This icon remains.

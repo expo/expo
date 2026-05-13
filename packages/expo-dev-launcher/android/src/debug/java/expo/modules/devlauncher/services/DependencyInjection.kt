@@ -1,10 +1,13 @@
 package expo.modules.devlauncher.services
 
+import android.app.Application
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import expo.modules.devlauncher.DevLauncherController
+import expo.modules.devmenu.DevMenuDefaultPreferences
+import expo.modules.devmenu.DevMenuPreferences
 
 /**
  * Simple dependency injection container for DevLauncher.
@@ -29,10 +32,16 @@ object DependencyInjection {
   var devLauncherController: DevLauncherController? = null
     private set
 
-  var packagerService: PackagerService = PackagerService(httpClientService)
+  var packagerService: PackagerService? = null
     private set
 
-  var appService: AppService = AppService()
+  var devMenuPreferences: DevMenuPreferences? = null
+    private set
+
+  var appService: AppService? = null
+    private set
+
+  var nsdPreferences: NsdPreferences? = null
     private set
 
   var errorRegistryService: ErrorRegistryService? = null
@@ -43,7 +52,10 @@ object DependencyInjection {
       return
     }
 
-    wasInitialized = true
+    val application = context.applicationContext as Application
+    devMenuPreferences = DevMenuDefaultPreferences(application)
+    nsdPreferences = NsdPreferences(application)
+    appService = AppService(application)
 
     this.devLauncherController = devLauncherController
 
@@ -59,12 +71,18 @@ object DependencyInjection {
     )
 
     errorRegistryService = ErrorRegistryService(context.applicationContext)
+
+    packagerService = PackagerService(application, httpClientService.httpClient)
+
+    wasInitialized = true
   }
 }
 
 @PublishedApi
 internal inline fun <reified T> injectService(): T {
   return when (T::class) {
+    DevMenuPreferences::class -> DependencyInjection.devMenuPreferences
+    NsdPreferences::class -> DependencyInjection.nsdPreferences
     SessionService::class -> DependencyInjection.sessionService
     ApolloClientService::class -> DependencyInjection.apolloClientService
     ImageLoaderService::class -> DependencyInjection.imageLoaderService

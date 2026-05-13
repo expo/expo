@@ -3,7 +3,7 @@ export type LabeledContentProps = {
     /**
      * The label to be displayed in the labeled content.
      */
-    label?: string;
+    label?: string | React.ReactNode;
     children: React.ReactNode;
 } & CommonViewModifierProps;
 /**
@@ -12,5 +12,5 @@ export type LabeledContentProps = {
  * @platform ios 16.0+
  * @platform tvos 16.0+
  */
-export declare function LabeledContent(props: LabeledContentProps): import("react").JSX.Element;
+export declare function LabeledContent(props: LabeledContentProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

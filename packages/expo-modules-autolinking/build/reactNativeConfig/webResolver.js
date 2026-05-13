@@ -1,11 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkDependencyWebAsync = checkDependencyWebAsync;
-const promises_1 = __importDefault(require("fs/promises"));
-const path_1 = __importDefault(require("path"));
+const utils_1 = require("../utils");
 async function checkDependencyWebAsync(resolution, reactNativeConfig, expoModuleConfig) {
     if (!reactNativeConfig || expoModuleConfig) {
         // Skip autolinking for this package.
@@ -14,7 +10,10 @@ async function checkDependencyWebAsync(resolution, reactNativeConfig, expoModule
     }
     const hasReactNativeConfig = !!reactNativeConfig && Object.keys(reactNativeConfig).length > 0;
     if (!hasReactNativeConfig) {
-        const packageJson = JSON.parse(await promises_1.default.readFile(path_1.default.join(resolution.path, 'package.json'), 'utf8'));
+        const packageJson = await (0, utils_1.loadPackageJson)((0, utils_1.fastJoin)(resolution.path, 'package.json'));
+        if (!packageJson) {
+            return null;
+        }
         const peerDependencies = packageJson.peerDependencies && typeof packageJson.peerDependencies === 'object'
             ? packageJson.peerDependencies
             : {};

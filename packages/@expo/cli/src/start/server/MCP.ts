@@ -2,22 +2,38 @@ import type {
   McpServerProxy,
   TunnelMcpServerProxy as TunnelMcpServerProxyType,
 } from '@expo/mcp-tunnel' with { 'resolution-mode': 'import' };
+import path from 'node:path';
 import resolveFrom from 'resolve-from';
 
 import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { Log } from '../../log';
 import { env } from '../../utils/env';
+import { installExitHooks } from '../../utils/exit';
 
 const importESM = require('@expo/cli/add-module') as <T>(moduleName: string) => Promise<T>;
 
 const debug = require('debug')('expo:start:server:mcp') as typeof console.log;
 
 /**
+ * The MCP server
+ */
+export type McpServer = Omit<McpServerProxy, 'close'> & {
+  /**
+   * Close the server
+   */
+  closeAsync: () => Promise<void>;
+};
+
+/**
  * Create the MCP server
  */
-export async function maybeCreateMCPServerAsync(
-  projectRoot: string
-): Promise<McpServerProxy | null> {
+export async function maybeCreateMCPServerAsync({
+  projectRoot,
+  devServerUrl,
+}: {
+  projectRoot: string;
+  devServerUrl: string;
+}): Promise<McpServer | null> {
   const mcpServer = env.EXPO_UNSTABLE_MCP_SERVER;
   if (!mcpServer) {
     return null;
@@ -27,6 +43,11 @@ export async function maybeCreateMCPServerAsync(
     Log.error(
       'Missing the `expo-mcp` package in the project. To enable the MCP integration, add the `expo-mcp` package to your project.'
     );
+    return null;
+  }
+  const mcpTunnelPackagePath = resolveFrom.silent(path.dirname(mcpPackagePath), '@expo/mcp-tunnel');
+  if (!mcpTunnelPackagePath) {
+    Log.error('Unable to resolve the `@expo/mcp-tunnel` package');
     return null;
   }
 
@@ -44,7 +65,7 @@ export async function maybeCreateMCPServerAsync(
     }>(mcpPackagePath);
     const { TunnelMcpServerProxy } = await importESM<{
       TunnelMcpServerProxy: typeof TunnelMcpServerProxyType;
-    }>('@expo/mcp-tunnel');
+    }>(mcpTunnelPackagePath);
 
     const logger = {
       ...Log,
@@ -55,11 +76,22 @@ export async function maybeCreateMCPServerAsync(
         Log.log(...message);
       },
     };
-    const server: McpServerProxy = new TunnelMcpServerProxy(mcpServerUrl, {
+    const serverProxy: McpServerProxy = new TunnelMcpServerProxy(mcpServerUrl, {
       logger,
       wsHeaders: createAuthHeaders(),
+      projectRoot,
+      devServerUrl,
     });
-    addMcpCapabilities(server, projectRoot);
+    addMcpCapabilities(serverProxy, projectRoot);
+
+    const removeExitHook = installExitHooks(async () => {
+      await serverProxy.close();
+    });
+    const server = serverProxy as unknown as McpServer;
+    server.closeAsync = async () => {
+      removeExitHook();
+      await serverProxy.close();
+    };
 
     return server;
   } catch (error: unknown) {

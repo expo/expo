@@ -4,18 +4,18 @@ import ExpoModulesCore
 
 internal final class ImageLoadTask: SharedObject {
   private let source: ImageSource
-  private let maxSize: CGSize?
+  private let options: ImageLoadOptions
   private var task: Task<UIImage, any Error>?
 
-  init(_ source: ImageSource, maxSize: CGSize? = nil) {
+  init(_ source: ImageSource, options: ImageLoadOptions) {
     self.source = source
-    self.maxSize = maxSize
+    self.options = options
     super.init()
   }
 
   func load() async throws -> UIImage {
-    let task = self.task ?? Task { [source, maxSize] in
-      return try await ImageLoader.shared.load(source, maxSize: maxSize)
+    let task = self.task ?? Task { [source, options] in
+      return try await ImageLoader.shared.load(source, options: options)
     }
     self.task = task
     return try await task.value

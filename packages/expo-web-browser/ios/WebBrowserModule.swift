@@ -43,6 +43,10 @@ final public class WebBrowserModule: Module {
     .runOnQueue(.main)
 
     AsyncFunction("dismissBrowser") { (promise: Promise) in
+      if (currentWebBrowserSession == nil) {
+        throw WebBrowserNotOpenException()
+      }
+      
       currentWebBrowserSession?.dismiss { type in
         self.currentWebBrowserSession = nil
         promise.resolve(["type": type])

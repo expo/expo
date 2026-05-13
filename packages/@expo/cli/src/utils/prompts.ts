@@ -1,5 +1,6 @@
 import assert from 'assert';
-import prompts, { Choice, Options, PromptObject } from 'prompts';
+import type { Choice, Options, PromptObject } from 'prompts';
+import prompts from 'prompts';
 
 import { AbortCommandError, CommandError } from './errors';
 import { isInteractive } from './interactive';
@@ -30,12 +31,12 @@ export default async function prompt(
   { nonInteractiveHelp, ...options }: PromptOptions = {}
 ) {
   questions = Array.isArray(questions) ? questions : [questions];
-  if (!isInteractive() && questions.length !== 0) {
+  if (!isInteractive() && questions.length) {
     let message = `Input is required, but 'npx expo' is in non-interactive mode.\n`;
     if (nonInteractiveHelp) {
       message += nonInteractiveHelp;
     } else {
-      const question = questions[0];
+      const question = questions[0]!;
       const questionMessage =
         typeof question.message === 'function'
           ? question.message(undefined, {}, question)

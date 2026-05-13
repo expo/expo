@@ -2,13 +2,13 @@ import { CodedError } from 'expo-modules-core';
 import { AppState } from 'react-native';
 import type { AppStateStatus, NativeEventSubscription } from 'react-native';
 
-import {
+import type {
   WebBrowserAuthSessionResult,
   WebBrowserOpenOptions,
   WebBrowserResult,
-  WebBrowserResultType,
   WebBrowserWindowFeatures,
 } from './WebBrowser.types';
+import { WebBrowserResultType } from './WebBrowser.types';
 
 const POPUP_WIDTH = 500;
 const POPUP_HEIGHT = 650;
@@ -283,9 +283,13 @@ function generateRandom(size: number): string {
 
 function bufferToString(buffer: Uint8Array): string {
   let state: string = '';
-  for (let i = 0; i < buffer.byteLength; i += 1) {
-    const index = buffer[i] % CHARSET.length;
-    state += CHARSET[index];
+  for (const byte of buffer) {
+    const index = byte % CHARSET.length;
+    const char = CHARSET[index];
+
+    if (char != null) {
+      state += char;
+    }
   }
   return state;
 }

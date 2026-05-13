@@ -1,4 +1,4 @@
-import React from 'react';
+import type React from 'react';
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */

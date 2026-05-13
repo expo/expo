@@ -2,14 +2,10 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "CppType.h"
 #include "FrontendConverter.h"
 #include "ExpectedType.h"
-
-#include <fbjni/fbjni.h>
-
-#include <memory>
-#include <unordered_map>
 
 namespace jni = facebook::jni;
 

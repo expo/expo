@@ -59,6 +59,8 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
     availableVideoTracks = []; // Not supported on web. Dummy to match the interface.
     isExternalPlaybackActive = false; // Not supported on web. Dummy to match the interface.
     keepScreenOnWhilePlaying = false; // Not supported on web. Dummy to match the interface
+    seekTolerance = {}; // Not supported on web. Dummy to match the interface.
+    scrubbingModeOptions = {}; // Not supported on web. Dummy to match the interface.
     set muted(value) {
         this._mountedVideos.forEach((video) => {
             video.muted = value;
@@ -154,9 +156,11 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             return -1;
         }
         const buffered = [...this._mountedVideos][0]?.buffered;
-        for (let i = 0; i < buffered.length; i++) {
-            if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
-                return buffered.end(i);
+        if (buffered != null) {
+            for (let i = 0; i < buffered.length; i++) {
+                if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
+                    return buffered.end(i);
+                }
             }
         }
         return 0;
@@ -216,8 +220,10 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         // If video playing audio has been removed, select a new video to be the audio player by disconnecting it from the mute node.
         if (videoPlayingAudio === video && this._audioNodes.size > 0 && audioContext) {
             const newMainAudioSource = [...this._audioNodes][0];
-            newMainAudioSource.disconnect();
-            newMainAudioSource.connect(audioContext.destination);
+            if (newMainAudioSource != null) {
+                newMainAudioSource.disconnect();
+                newMainAudioSource.connect(audioContext.destination);
+            }
         }
     }
     play() {
@@ -295,24 +301,28 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         }
     }
     _addListeners(video) {
-        video.onplay = () => {
+        video.onplay = (e) => {
             this._emitOnce(video, 'playingChange', {
                 isPlaying: true,
                 oldIsPlaying: this.playing,
             });
             this.playing = true;
             this._mountedVideos.forEach((mountedVideo) => {
-                mountedVideo.play();
+                if (e.target !== mountedVideo) {
+                    mountedVideo.play();
+                }
             });
         };
-        video.onpause = () => {
+        video.onpause = (e) => {
             this._emitOnce(video, 'playingChange', {
                 isPlaying: false,
                 oldIsPlaying: this.playing,
             });
             this.playing = false;
             this._mountedVideos.forEach((mountedVideo) => {
-                mountedVideo.pause();
+                if (e.target !== mountedVideo) {
+                    mountedVideo.pause();
+                }
             });
         };
         video.onvolumechange = () => {

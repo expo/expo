@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["AgeRangeModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.agerange.AgeRangeModule"]
+  }
+}

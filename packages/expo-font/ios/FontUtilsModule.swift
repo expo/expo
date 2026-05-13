@@ -15,12 +15,23 @@ public final class FontUtilsModule: Module {
         UIFont.systemFont(ofSize: options.size)
       }
 
+      var attributes: [NSAttributedString.Key: Any] = [
+        .font: font,
+        .foregroundColor: UIColor(options.color)
+      ]
+
+      if let lineHeight = options.lineHeight {
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.minimumLineHeight = lineHeight
+        paragraphStyle.maximumLineHeight = lineHeight
+        attributes[.paragraphStyle] = paragraphStyle
+        // Adding baseline offset to vertically center the text within the specified line height
+        attributes[.baselineOffset] = (lineHeight - font.lineHeight) / 2
+      }
+      
       let attributedString = NSAttributedString(
         string: glyphs,
-        attributes: [
-          .font: font,
-          .foregroundColor: UIColor(options.color)
-        ]
+        attributes: attributes
       )
 
       let renderer = UIGraphicsImageRenderer(size: attributedString.size())

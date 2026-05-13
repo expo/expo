@@ -5,7 +5,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.video.enums.DRMType
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class DRMOptions(
   @Field var type: DRMType = DRMType.WIDEVINE,
   @Field var licenseServer: String? = null,

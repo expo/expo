@@ -11,10 +11,11 @@ import type { RenderRscArgs } from 'expo-server/private';
 import path from 'node:path';
 
 import { renderRsc } from './rsc-renderer';
+import { createDebug } from '../utils/debug';
 
 declare const $$require_external: typeof require;
 
-const debug = require('debug')('expo:router:server:rsc-renderer');
+const debug = createDebug('expo:router:server:rsc-renderer');
 
 // Tracking the implementation in expo/cli's MetroBundlerDevServer
 const rscRenderContext = new Map<string, any>();
@@ -113,24 +114,28 @@ export async function renderRscWithImportsAsync(
         debug('resolveClientEntry', file, { isServer });
 
         if (isServer) {
-          if (!(file in actionManifest)) {
+          const actionManifestFile = actionManifest[file];
+
+          if (actionManifestFile == null) {
             throw new Error(
               `Could not find file in server action manifest: ${file}. ${JSON.stringify(actionManifest)}`
             );
           }
 
-          const [id, chunk] = actionManifest[file];
+          const [id, chunk] = actionManifestFile;
           return {
             id,
             chunks: chunk ? [chunk] : [],
           };
         }
 
-        if (!(file in ssrManifest)) {
+        const ssrManifestFile = ssrManifest[file];
+
+        if (ssrManifestFile == null) {
           throw new Error(`Could not find file in SSR manifest: ${file}`);
         }
 
-        const [id, chunk] = ssrManifest[file];
+        const [id, chunk] = ssrManifestFile;
         return {
           id,
           chunks: chunk ? [chunk] : [],

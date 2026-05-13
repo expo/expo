@@ -3,35 +3,41 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum ProgressVariant: String, Enumerable {
-  case circular
-  case linear
+public final class ProgressViewProps: UIBaseViewProps {
+  @Field var timerInterval: ClosedRangeDate?
+  @Field var countsDown: Bool?
+  @Field var value: Double?
 }
 
-final class ProgressProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
+public struct ProgressView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ProgressViewProps
 
-  @Field var variant: ProgressVariant = .circular
-  @Field var progress: Double?
-  @Field var color: Color?
-}
+  public init(props: ProgressViewProps) {
+    self.props = props
+  }
 
-struct ProgressView: ExpoSwiftUI.View {
-  @ObservedObject var props: ProgressProps
+  public var body: some View {
+    progressView
+  }
 
-  var body: some View {
-    SwiftUI.ProgressView(value: props.progress)
-      .tint(props.color)
-      .modifier(CommonViewModifiers(props: props))
-      .if(props.variant == .circular) {
-        $0.progressViewStyle(.circular)
+  @ViewBuilder
+  private var progressView: some View {
+    if let timerInterval = props.timerInterval,
+      let lower = timerInterval.lower,
+      let upper = timerInterval.upper,
+      lower <= upper,
+      #available(iOS 16.0, tvOS 16.0, *) {
+      SwiftUI.ProgressView(timerInterval: ClosedRange(uncheckedBounds: (lower: lower, upper: upper)), countsDown: props.countsDown ?? true) {
+        Children()
       }
-      .if(props.variant == .linear) {
-        $0.progressViewStyle(.linear)
+    } else if let value = props.value {
+      SwiftUI.ProgressView(value: value) {
+        Children()
       }
+    } else {
+      SwiftUI.ProgressView {
+        Children()
+      }
+    }
   }
 }

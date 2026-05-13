@@ -3,7 +3,7 @@ import * as path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { PluginError } from './errors';
-import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 import { fileExists } from './modules';
 // Default plugin entry file name.
 export const pluginFileName = 'app.plugin.js';

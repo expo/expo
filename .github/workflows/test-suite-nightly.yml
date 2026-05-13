@@ -23,36 +23,43 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           submodules: true
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+          bun-version: 1.x
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: 🍺 Install required tools
         run: |
           brew install watchman || true
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-tools: 'true'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform ios
+        run: pnpm expo-modules-autolinking react-native-config --platform ios
         working-directory: apps/bare-expo
       - name: 🌳 Display pod environment
         run: pod env
@@ -67,20 +74,16 @@ jobs:
           EXPO_DEBUG: 1
           NODE_ENV: production
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (iOS)
 
   ios-test:
@@ -88,21 +91,19 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           submodules: true
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+          bun-version: 1.x
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: bare-expo-ios-builds
           path: apps/bare-expo/ios/build/BareExpo.app
@@ -117,20 +118,26 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🍏 Run iOS tests
         run: ./scripts/start-ios-e2e-test.ts --test
         working-directory: apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bare-expo-artifacts-ios
           path: |
@@ -138,15 +145,11 @@ jobs:
             ~/Library/Logs/maestro/**/*
           overwrite: true
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
         with:
+          webhook: ${{ secrets.slack_webhook_ios }}
           channel: '#expo-ios'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (iOS)
 
   android-build:
@@ -156,34 +159,42 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
         with:
           submodules: true
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           gradle: 'true'
-          yarn-tools: 'true'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: ⚙️ Setup react-native nightly
         run: et setup-react-native-nightly
       - name: ⚛️ Display React Native config
-        run: yarn expo-modules-autolinking react-native-config --platform android
+        run: pnpm expo-modules-autolinking react-native-config --platform android
         working-directory: apps/bare-expo
       - name: 🤖 Gradle prebuild for Android project (workaround to fix build error)
         run: ./gradlew preBuild
@@ -192,21 +203,16 @@ jobs:
         run: ./scripts/start-android-e2e-test.ts --build
         working-directory: apps/bare-expo
       - name: 📸 Upload builds
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (Android)
 
   android-test:
@@ -214,18 +220,16 @@ jobs:
     runs-on: ubuntu-24.04
     strategy:
       matrix:
-        api-level: [34]
+        api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@v2
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
         with:
-          # Version `1.x` fails due to https://github.com/oven-sh/setup-bun/issues/37
-          # TODO(cedric): swap `latest` back once the issue is resolved
-          bun-version: latest
+          bun-version: 1.x
       - name: 🌠 Download builds
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: bare-expo-android-builds
           path: apps/bare-expo/android/app/build/outputs/apk
@@ -233,14 +237,20 @@ jobs:
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "${HOME}/.maestro/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🤖 Run Android tests
         uses: ./.github/actions/use-android-emulator
         with:
@@ -250,7 +260,7 @@ jobs:
           working-directory: ./apps/bare-expo
       - name: 📸 Store testing artifacts
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: bare-expo-artifacts-android
           path: |
@@ -258,14 +268,9 @@ jobs:
             ~/Library/Logs/maestro/**/*
           overwrite: true
       - name: 🔔 Notify on Slack
-        uses: 8398a7/action-slack@v3
+        uses: ./.github/actions/slack-notify
         if: failure() && (github.event_name == 'schedule' || github.event.ref == 'refs/heads/main')
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}
-          MATRIX_CONTEXT: ${{ toJson(matrix) }}
         with:
+          webhook: ${{ secrets.slack_webhook_android }}
           channel: '#expo-android'
-          status: ${{ job.status }}
-          fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly (Android)

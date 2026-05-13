@@ -1,6 +1,10 @@
-import { openDatabaseAsync, SQLiteDatabase } from '../SQLiteDatabase';
+import type { SQLiteDatabase } from '../SQLiteDatabase';
+import { openDatabaseAsync } from '../SQLiteDatabase';
 import { SQLiteStatement } from '../SQLiteStatement';
 
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 interface TestEntity {
@@ -72,8 +76,8 @@ describe(SQLiteStatement, () => {
     const result = await statement.executeAsync<TestEntity>([200]);
     const allRows = await result.getAllAsync();
     expect(allRows.length).toBe(2);
-    expect(allRows[0].intValue).toBe(456);
-    expect(allRows[1].intValue).toBe(789);
+    expect(allRows[0]?.intValue).toBe(456);
+    expect(allRows[1]?.intValue).toBe(789);
     await statement.finalizeAsync();
   });
 
@@ -87,8 +91,8 @@ describe(SQLiteStatement, () => {
       rows.push(row);
     }
     expect(rows.length).toBe(2);
-    expect(rows[0].intValue).toBe(789);
-    expect(rows[1].intValue).toBe(456);
+    expect(rows[0]?.intValue).toBe(789);
+    expect(rows[1]?.intValue).toBe(456);
     await statement.finalizeAsync();
   });
 
@@ -105,8 +109,8 @@ describe(SQLiteStatement, () => {
     const result = await statement.executeForRawResultAsync<TestEntity>([200]);
     const allRows = await result.getAllAsync();
     expect(allRows.length).toBe(2);
-    expect(allRows[0][2]).toBe(456);
-    expect(allRows[1][2]).toBe(789);
+    expect(allRows[0]?.[2]).toBe(456);
+    expect(allRows[1]?.[2]).toBe(789);
     await statement.finalizeAsync();
   });
 

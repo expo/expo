@@ -1,10 +1,15 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
+// swiftlint:disable file_length
 // swiftlint:disable force_cast
 // swiftlint:disable function_parameter_count
 // swiftlint:disable implicitly_unwrapped_optional
 // swiftlint:disable identifier_name
 // swiftlint:disable legacy_objc_type
+// swiftlint:disable closure_body_length
+// swiftlint:disable type_body_length
+// swiftlint:disable force_unwrapping
+// swiftlint:disable no_grouping_extension
 
 import Foundation
 import EASClient
@@ -60,14 +65,15 @@ public final class FileDownloader {
   private static let MultipartDirectivePartName = "directive"
   private static let MultipartExtensionsPartName = "extensions"
   private static let MultipartCertificateChainPartName = "certificate_chain"
-  private static let DiffContentType = "application/vnd.bsdiff"
-  private static let DiffAcceptHeaderValue = "application/vnd.bsdiff,*/*"
+  private static let DiffIMValue = "bsdiff"
   private static let PatchTempSuffix = ".patch"
   private static let PatchedTempSuffix = ".patched"
   private static let ExpoCurrentUpdateIdHeader = "Expo-Current-Update-ID"
   private static let ExpoRequestedUpdateIdHeader = "Expo-Requested-Update-ID"
+  private static let AIMHeader = "A-IM"
+  private static let IMHeader = "im"
+  private static let ExpoBaseUpdateIdResponseHeader = "expo-base-update-id"
 
-  // swiftlint:disable:next force_unwrapping
   private static let ParameterParserSemicolonDelimiter = ";".utf16.first!
 
   // these can be made non-forced lets when NSObject protocol is removed
@@ -140,7 +146,7 @@ public final class FileDownloader {
       extraHeaders: headers,
       progressBlock: progressBlock
     ) { data, response in
-      guard let data = data else {
+      guard let data else {
         let error = UpdatesError.fileDownloaderAssetDownloadEmptyResponse(url: url)
         self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(error)
@@ -148,7 +154,8 @@ public final class FileDownloader {
       }
 
       let httpResponse = response as? HTTPURLResponse
-      let isPatch = httpResponse.map(Self.isDiffResponse) ?? false
+      let patchMetadata = httpResponse.flatMap { FileDownloader.parsePatchResponseMetadata(from: $0) }
+      let isPatch = patchMetadata != nil
 
       if !skipPatchProcessing && isPatch && !canAttemptPatch {
         self.logger.warn(
@@ -177,10 +184,33 @@ public final class FileDownloader {
       if !skipPatchProcessing,
         canAttemptPatch,
         let response = httpResponse,
-        isPatch {
+        let patchMetadata {
         guard let launchedUpdate else {
           self.logger.warn(
             message: "Missing launched update when attempting to apply diff for asset \(asset.key ?? asset.filename); retrying with full download",
+            code: UpdatesErrorCode.assetsFailedToLoad,
+            updateId: requestedUpdate?.updateId.uuidString,
+            assetId: asset.key ?? asset.filename
+          )
+          self.downloadAsset(
+            asset: asset,
+            fromURL: url,
+            verifyingHash: expectedBase64URLEncodedSHA256Hash,
+            toPath: destinationPath,
+            extraHeaders: extraHeaders,
+            allowPatch: false,
+            launchedUpdate: launchedUpdate,
+            requestedUpdate: requestedUpdate,
+            skipPatchProcessing: true,
+            progressBlock: progressBlock,
+            successBlock: successBlock,
+            errorBlock: errorBlock
+          )
+          return
+        }
+        if !Self.validatePatchResponseMetadata(patchMetadata, launchedUpdate: launchedUpdate, requestedUpdate: requestedUpdate) {
+          self.logger.warn(
+            message: "Patch response missing required headers or had mismatched identifiers; retrying with full asset download",
             code: UpdatesErrorCode.assetsFailedToLoad,
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
@@ -410,6 +440,7 @@ public final class FileDownloader {
     request.setValue("1", forHTTPHeaderField: "Expo-API-Version")
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
+    request.setValue(config.runtimeVersion, forHTTPHeaderField: "Expo-Runtime-Version")
 
     for (key, value) in config.requestHeaders {
       request.setValue(value, forHTTPHeaderField: key)
@@ -455,16 +486,63 @@ public final class FileDownloader {
     return request
   }
 
-  private static func isDiffResponse(_ response: HTTPURLResponse) -> Bool {
-    guard let contentType = response.value(forHTTPHeaderField: "content-type")?.lowercased() else {
+  struct PatchResponseMetadata {
+    let hasIMBsdiff: Bool
+    let statusCode: Int
+    let expoBaseUpdateId: String?
+  }
+
+  private static func parsePatchResponseMetadata(from response: HTTPURLResponse) -> PatchResponseMetadata? {
+    let imHeaderRaw = response.value(forHTTPHeaderField: FileDownloader.IMHeader)
+    let hasIMBsdiff = imHeaderRaw?
+      .split(separator: ",")
+      .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+      .contains { $0.caseInsensitiveCompare(FileDownloader.DiffIMValue) == .orderedSame } ?? false
+    let statusCode = response.statusCode
+
+    if !hasIMBsdiff && statusCode != 226 {
+      return nil
+    }
+
+    return PatchResponseMetadata(
+      hasIMBsdiff: hasIMBsdiff,
+      statusCode: statusCode,
+      expoBaseUpdateId: response.value(forHTTPHeaderField: FileDownloader.ExpoBaseUpdateIdResponseHeader)
+    )
+  }
+
+  static func validatePatchResponseMetadata(
+    _ metadata: PatchResponseMetadata,
+    launchedUpdate: Update?,
+    requestedUpdate _: Update?
+  ) -> Bool {
+    let expectedBase = launchedUpdate?.updateId.uuidString.lowercased()
+    let expoBaseUpdateId = metadata.expoBaseUpdateId?.lowercased()
+
+    if !metadata.hasIMBsdiff && metadata.statusCode != 226 {
       return false
     }
-    return contentType.hasPrefix(FileDownloader.DiffContentType)
+
+    guard let actualBase = expoBaseUpdateId else {
+      return false
+    }
+
+    if let expectedBase, actualBase != expectedBase {
+      return false
+    }
+
+    return true
   }
 
   private func headersForPatch(_ headers: [String: Any], allowPatch: Bool) -> [String: Any] {
     var newHeaders = headers
-    newHeaders["Accept"] = allowPatch ? FileDownloader.DiffAcceptHeaderValue : "*/*"
+    newHeaders["Accept"] = "*/*"
+
+    if allowPatch {
+      newHeaders[FileDownloader.AIMHeader] = FileDownloader.DiffIMValue
+    } else {
+      newHeaders.removeValue(forKey: FileDownloader.AIMHeader)
+    }
     return newHeaders
   }
 
@@ -1215,3 +1293,8 @@ extension FileDownloader.DiffError: CustomStringConvertible {
 // swiftlint:enable implicitly_unwrapped_optional
 // swiftlint:enable identifier_name
 // swiftlint:enable legacy_objc_type
+// swiftlint:enable closure_body_length
+// swiftlint:enable type_body_length
+// swiftlint:enable force_unwrapping
+// swiftlint:enable no_grouping_extension
+// swiftlint:enable file_length

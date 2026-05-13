@@ -23,6 +23,7 @@ exports.cleanPath = cleanPath;
 exports.routePatternToRegex = routePatternToRegex;
 const escape_string_regexp_1 = __importDefault(require("escape-string-regexp"));
 const matchers_1 = require("../matchers");
+const url_1 = require("../utils/url");
 /**
  * In Expo Router, the params are available at all levels of the routing config
  * @param routes
@@ -45,28 +46,24 @@ function safelyDecodeURIComponent(str) {
     }
 }
 function getUrlWithReactNavigationConcessions(path, baseUrl = process.env.EXPO_BASE_URL) {
-    let parsed;
+    const pathWithoutGroups = (0, matchers_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
+    let pathname = '';
+    let hash = '';
     try {
-        parsed = new URL(path, 'https://phony.example');
+        const parsed = (0, url_1.parseUrlUsingCustomBase)(path);
+        pathname = parsed.pathname;
+        hash = parsed.hash;
     }
     catch {
         // Do nothing with invalid URLs.
-        return {
-            path,
-            cleanUrl: '',
-            nonstandardPathname: '',
-            url: new URL('https://phony.example'),
-        };
     }
-    const pathname = parsed.pathname;
     const withoutBaseUrl = stripBaseUrl(pathname, baseUrl);
-    const pathWithoutGroups = (0, matchers_1.stripGroupSegmentsFromPath)(stripBaseUrl(path, baseUrl));
-    // Make sure there is a trailing slash
     return {
-        // The slashes are at the end, not the beginning
         path,
+        // Make sure there is a trailing slash
+        // The slashes are at the end, not the beginning
         nonstandardPathname: withoutBaseUrl.replace(/^\/+/g, '').replace(/\/+$/g, '') + '/',
-        url: parsed,
+        hash,
         pathWithoutGroups,
     };
 }
@@ -134,7 +131,7 @@ function getParamValue(p, value) {
 }
 function formatRegexPattern(it) {
     // Allow spaces in file path names.
-    it = it.replace(' ', '%20');
+    it = it.replace(/ /g, '%20');
     if (it.startsWith(':')) {
         // TODO: Remove unused match group
         return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
@@ -172,6 +169,7 @@ function handleUrlParams(route, params) {
 }
 function spreadParamsAcrossAllStates(state, params) {
     while (state) {
+        // TODO(@kitten): Investigate why this is read-only or whether this function cal is used / is this dead code?
         const route = state.routes[0];
         route.params = Object.assign({}, route.params, params);
     }
@@ -284,6 +282,8 @@ function getRouteConfigSorter(previousSegments = []) {
          * If there is not difference in similarity, then each non-group segment is compared against each other
          */
         for (let i = 0; i < Math.max(a.parts.length, b.parts.length); i++) {
+            const aParts = a.parts[i];
+            const bParts = b.parts[i];
             // if b is longer, b get higher priority
             if (a.parts[i] == null) {
                 return 1;
@@ -292,12 +292,12 @@ function getRouteConfigSorter(previousSegments = []) {
             if (b.parts[i] == null) {
                 return -1;
             }
-            const aWildCard = a.parts[i].startsWith('*');
-            const bWildCard = b.parts[i].startsWith('*');
+            const aWildCard = aParts.startsWith('*');
+            const bWildCard = bParts.startsWith('*');
             // if both are wildcard we compare next component
             if (aWildCard && bWildCard) {
-                const aNotFound = a.parts[i].match(/^[*]not-found$/);
-                const bNotFound = b.parts[i].match(/^[*]not-found$/);
+                const aNotFound = aParts.match(/^[*]not-found$/);
+                const bNotFound = bParts.match(/^[*]not-found$/);
                 if (aNotFound && bNotFound) {
                     continue;
                 }
@@ -317,12 +317,12 @@ function getRouteConfigSorter(previousSegments = []) {
             if (bWildCard) {
                 return -1;
             }
-            const aSlug = a.parts[i].startsWith(':');
-            const bSlug = b.parts[i].startsWith(':');
+            const aSlug = aParts.startsWith(':');
+            const bSlug = bParts.startsWith(':');
             // if both are wildcard we compare next component
             if (aSlug && bSlug) {
-                const aNotFound = a.parts[i].match(/^[*]not-found$/);
-                const bNotFound = b.parts[i].match(/^[*]not-found$/);
+                const aNotFound = aParts.match(/^[*]not-found$/);
+                const bNotFound = bParts.match(/^[*]not-found$/);
                 if (aNotFound && bNotFound) {
                     continue;
                 }
@@ -368,7 +368,7 @@ function getRouteConfigSorter(previousSegments = []) {
     };
 }
 function parseQueryParams(path, route, parseConfig, hash) {
-    const searchParams = new URL(path, 'https://phony.example').searchParams;
+    const searchParams = (0, url_1.parseUrlUsingCustomBase)(path).searchParams;
     const params = Object.create(null);
     if (hash) {
         params['#'] = hash.slice(1);

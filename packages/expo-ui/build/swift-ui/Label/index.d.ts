@@ -11,7 +11,13 @@ export type LabelProps = {
      */
     systemImage?: SFSymbol;
     /**
+     * Custom icon view to be displayed in the label.
+     * When provided, this takes precedence over `systemImage`.
+     */
+    icon?: React.ReactNode;
+    /**
      * The color of the label icon.
+     * @deprecated Use `foregroundStyle` modifier instead.
      */
     color?: ColorValue;
 } & CommonViewModifierProps;
@@ -21,5 +27,5 @@ export type LabelProps = {
  * @param {LabelProps} props - The properties passed to the Label component.
  * @returns {JSX.Element} The rendered native Label component.
  */
-export declare function Label(props: LabelProps): import("react").JSX.Element;
+export declare function Label(props: LabelProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

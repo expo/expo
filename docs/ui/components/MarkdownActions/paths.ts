@@ -1,7 +1,6 @@
 const DYNAMIC_DATA_PATHS = [
   /^\/additional-resources\/?$/,
   /^\/archive(\/.*)?$/,
-  /^\/llms\/?$/,
   /^\/bare\/upgrade\/?$/,
 ];
 

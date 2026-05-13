@@ -4,7 +4,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.buildHermesBundleAsync = buildHermesBundleAsync;
-const metro_source_map_1 = require("@expo/metro/metro-source-map");
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
@@ -12,10 +11,12 @@ const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const process_1 = __importDefault(require("process"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const sourceMap_1 = require("./sourceMap");
 const debug = require('debug')('expo:metro:hermes');
 function importHermesCommandFromProject(projectRoot) {
     const platformExecutable = getHermesCommandPlatform();
     const reactNativeRoot = path_1.default.dirname((0, resolve_from_1.default)(projectRoot, 'react-native/package.json'));
+    const hermesCompilerRoot = path_1.default.dirname((0, resolve_from_1.default)(reactNativeRoot, 'hermes-compiler/package.json'));
     const hermescPaths = [
         // Override hermesc dir by environment variables
         process_1.default.env['REACT_NATIVE_OVERRIDE_HERMES_DIR']
@@ -23,6 +24,8 @@ function importHermesCommandFromProject(projectRoot) {
             : '',
         // Building hermes from source
         `${reactNativeRoot}/ReactAndroid/hermes-engine/build/hermes/bin/hermesc`,
+        // react-native 0.83+ moved hermesc to a separate package
+        `${hermesCompilerRoot}/hermesc/${platformExecutable}`,
         // Prebuilt hermesc in official react-native 0.69+
         `${reactNativeRoot}/sdks/hermesc/${platformExecutable}`,
     ];
@@ -110,6 +113,6 @@ async function createHermesSourcemapAsync(sourcemap, hermesMapFile) {
     const bundlerSourcemap = JSON.parse(sourcemap);
     const hermesSourcemapContent = await fs_1.default.promises.readFile(hermesMapFile, 'utf8');
     const hermesSourcemap = JSON.parse(hermesSourcemapContent);
-    return JSON.stringify((0, metro_source_map_1.composeSourceMaps)([bundlerSourcemap, hermesSourcemap]));
+    return JSON.stringify((0, sourceMap_1.composeSourceMaps)([bundlerSourcemap, hermesSourcemap]));
 }
 //# sourceMappingURL=exportHermes.js.map

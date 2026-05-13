@@ -1,35 +1,36 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
 
-set -eo pipefail
+import fs from 'node:fs';
+import { createRequire } from 'node:module';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-script_dir="$(dirname "$0")"
+import { commandRunner, getArgs, addWatchFlagIfNeeded } from '../utils/commandUtils.js';
 
-args=("$@")
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
 
-# If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
-extra_module_build_types=("plugin" "cli" "utils" "scripts")
-for i in "${extra_module_build_types[@]}"
-do
-  if [ "$1" == "$i" ]; then
-    args=()
-    args+=("--rootDir")
-    args+=("$i")
+const EXTRA_MODULE_BUILD_TARGETS = ['plugin', 'cli', 'utils', 'scripts'];
 
-    if [[ -f "$i/jest.config.js" ]]; then
-      args+=("--config")
-      args+=("$i/jest.config.js")
-    else
-      args+=("--config")
-      args+=("$(node --print "require.resolve('expo-module-scripts/jest-preset-$i.js')")")
-    fi
+let args = getArgs();
 
-    # Push the rest of the arguments minus the `plugin` arg
-    args+=("${@:2}")
-  fi
-done
+// If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
+if (EXTRA_MODULE_BUILD_TARGETS.includes(args[0])) {
+  const target = args[0];
+  const targetDir = path.join(process.cwd(), target);
+  const restArgs = args.slice(1);
+  args = ['--rootDir', target];
 
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
+  if (fs.existsSync(path.join(targetDir, 'jest.config.js'))) {
+    args.push('--config', `${target}/jest.config.js`);
+  } else {
+    const jestConfigPath = require.resolve(`expo-module-scripts/jest-preset-${target}.js`);
+    args.push('--config', jestConfigPath);
+  }
+  // Push the rest of the arguments minus the `plugin` arg
+  args.push(...restArgs);
+}
 
-"$script_dir/expo-module-jest" "${args[@]}"
+args = addWatchFlagIfNeeded(args);
+
+await commandRunner(path.join(dirname, 'expo-module-jest'), args);

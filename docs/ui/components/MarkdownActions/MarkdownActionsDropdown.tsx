@@ -1,13 +1,12 @@
 import { Button } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons/outline/ArrowUpRightIcon';
 import { ChevronDownIcon } from '@expo/styleguide-icons/outline/ChevronDownIcon';
 import { Copy04Icon } from '@expo/styleguide-icons/outline/Copy04Icon';
 import { useRouter } from 'next/compat/router';
 import { useCallback, useMemo } from 'react';
 
+import { ClaudeLogoIcon, OpenAILogoIcon } from '~/ui/components/CustomIcons/AIProviderIcons';
+import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
-import { githubRawUrl, getPageMdxFilePath } from '~/ui/components/Footer/utils';
-import { prepareMarkdownForCopyAsync } from '~/ui/components/MarkdownActions/processMarkdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
 const getPrompt = (url: string) =>
@@ -19,46 +18,43 @@ export function MarkdownActionsDropdown() {
   const pathname = router?.pathname;
   const asPath = router?.asPath;
 
-  const rawMarkdownUrl = useMemo(() => {
-    if (!pathname) {
+  const pagePath = asPath ?? pathname;
+  const markdownViewUrl = useMemo(() => {
+    if (!pagePath) {
       return null;
     }
 
-    const filePath = getPageMdxFilePath(pathname);
-    if (!filePath) {
-      return null;
+    const path = pagePath.split(/[#?]/)[0].replace(/\/$/, '');
+    if (!path || path === '/') {
+      return '/index.md';
     }
-
-    return githubRawUrl(pathname);
-  }, [pathname]);
+    if (path.endsWith('.md')) {
+      return path;
+    }
+    return path.endsWith('/index') ? `${path}.md` : `${path}/index.md`;
+  }, [pagePath]);
 
   const handleCopyMarkdown = useCallback(async () => {
-    if (!rawMarkdownUrl) {
+    if (!markdownViewUrl) {
       return;
     }
 
     try {
-      const response = await fetch(rawMarkdownUrl);
+      const response = await fetch(markdownViewUrl);
       if (!response.ok) {
         throw new Error(`Failed to fetch markdown: ${response.status}`);
       }
-
       const markdown = await response.text();
 
       if (!navigator.clipboard?.writeText) {
         throw new Error('Clipboard API unavailable');
       }
 
-      const preparedMarkdown = await prepareMarkdownForCopyAsync(markdown, {
-        path: asPath ?? pathname ?? '',
-      });
-      await navigator.clipboard.writeText(preparedMarkdown);
+      await navigator.clipboard.writeText(markdown);
     } catch (error) {
       console.error('Unable to copy markdown content', error);
     }
-  }, [rawMarkdownUrl, asPath, pathname]);
-
-  const pagePath = asPath ?? pathname;
+  }, [markdownViewUrl]);
 
   const pageUrl = useMemo(() => {
     if (!pagePath) {
@@ -88,7 +84,7 @@ export function MarkdownActionsDropdown() {
 
   const dropdownItems = [];
 
-  if (rawMarkdownUrl) {
+  if (markdownViewUrl) {
     dropdownItems.push(
       <Dropdown.Item
         key="copy-markdown"
@@ -99,12 +95,24 @@ export function MarkdownActionsDropdown() {
     );
   }
 
+  if (markdownViewUrl) {
+    dropdownItems.push(
+      <Dropdown.Item
+        key="view-markdown"
+        label="View Markdown"
+        Icon={MarkdownIcon}
+        href={markdownViewUrl}
+        openInNewTab
+      />
+    );
+  }
+
   if (chatGptUrl) {
     dropdownItems.push(
       <Dropdown.Item
         key="open-chatgpt"
         label="Open in ChatGPT"
-        Icon={ArrowUpRightIcon}
+        Icon={OpenAILogoIcon}
         href={chatGptUrl}
         openInNewTab
       />
@@ -116,7 +124,7 @@ export function MarkdownActionsDropdown() {
       <Dropdown.Item
         key="open-claude"
         label="Open in Claude"
-        Icon={ArrowUpRightIcon}
+        Icon={ClaudeLogoIcon}
         href={claudeUrl}
         openInNewTab
       />
@@ -130,19 +138,18 @@ export function MarkdownActionsDropdown() {
   const dropdownTrigger = (
     <Button
       theme="quaternary"
-      className="justify-center pl-2.5 pr-2"
+      className="justify-center pr-2 pl-2.5"
       aria-haspopup="menu"
-      aria-label="Copy Markdown and AI actions">
+      aria-label="Copy page actions">
       <div className="flex flex-row items-center gap-1.5">
+        <Copy04Icon className="icon-xs text-icon-secondary" />
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
-          Copy
+          Copy page
         </FOOTNOTE>
         <ChevronDownIcon className="icon-xs text-icon-secondary" />
       </div>
     </Button>
   );
 
-  return (
-    <Dropdown.Dropdown trigger={<div>{dropdownTrigger}</div>}>{dropdownItems}</Dropdown.Dropdown>
-  );
+  return <Dropdown.Dropdown trigger={dropdownTrigger}>{dropdownItems}</Dropdown.Dropdown>;
 }

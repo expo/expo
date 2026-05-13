@@ -23,7 +23,7 @@ internal fun mockkCustomTabsActivitiesHelper(
     every { it.defaultCustomTabsResolvingActivity } returns defaultActivity
 
     if (startIntentSlot != null) {
-      every { it.startCustomTabs(capture(startIntentSlot)) } just Runs
+      every { it.startCustomTabs(capture(startIntentSlot), any<OpenBrowserOptions>()) } just Runs
     }
   }
 }

@@ -2,12 +2,10 @@ package expo.modules.devlauncher.modules
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
-import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devlauncher.koin.optInject
-import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
+import expo.modules.devlauncher.DevLauncherController
 
-class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
-  private val controller: DevLauncherControllerInterface? by optInject()
+class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBaseJavaModule(reactContext) {
+  private val controller = DevLauncherController.nullableInstance
 
   override fun getName() = "EXDevLauncher"
 

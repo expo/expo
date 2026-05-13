@@ -1,6 +1,6 @@
-import { AuthSessionOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+import type { AuthSessionOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
 
-import { DiscoveryDocument } from './Discovery';
+import type { DiscoveryDocument } from './Discovery';
 
 // @needsAudit
 export enum CodeChallengeMethod {

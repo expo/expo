@@ -23,6 +23,15 @@ public struct Exceptions {
   }
 
   /**
+   The UI runtime is no longer available.
+   */
+  public final class UIRuntimeLost: Exception {
+    override public var reason: String {
+      "The UI runtime has been lost"
+    }
+  }
+
+  /**
    An exception to throw when the operation is not supported on the simulator.
    */
   public final class SimulatorNotSupported: Exception {

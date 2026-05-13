@@ -4,6 +4,7 @@ import { Animated, SectionList, StyleSheet, Text, View } from 'react-native';
 import { ImageTestListItem } from './ImageTestListItem';
 import imageTests from './tests';
 import { ImageTest } from './types';
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import Colors from '../../constants/Colors';
 
 export function ImageComparisonBody({
@@ -27,9 +28,11 @@ export function ImageComparisonBody({
 
   const renderSectionHeader = ({ section }: any) => {
     return (
-      <View style={styles.header}>
-        <Text style={styles.title}>{section.title}</Text>
-      </View>
+      <E2EViewShotContainer testID={`header-${section.title}`} style={{ backgroundColor: 'white' }}>
+        <View style={styles.header}>
+          <Text style={styles.title}>{section.title}</Text>
+        </View>
+      </E2EViewShotContainer>
     );
   };
 
@@ -40,6 +43,7 @@ export function ImageComparisonBody({
   return (
     <View style={styles.container}>
       <SectionList
+        testID="image-comparison-list"
         style={styles.content}
         sections={sections}
         renderItem={renderItem}

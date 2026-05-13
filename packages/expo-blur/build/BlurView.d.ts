@@ -1,5 +1,5 @@
 import React from 'react';
-import { BlurViewProps } from './BlurView.types';
+import type { BlurMethod, BlurViewProps } from './BlurView.types';
 type BlurViewState = {
     blurTargetId?: number | null;
 };
@@ -16,7 +16,8 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
     componentDidUpdate(prevProps: Readonly<BlurViewProps>): void;
     _maybeWarnAboutBlurMethod(): void;
     _updateBlurTargetId: () => void;
-    render(): React.JSX.Element;
+    _getBlurMethod(): BlurMethod;
+    render(): import("react/jsx-runtime").JSX.Element;
 }
 export {};
 //# sourceMappingURL=BlurView.d.ts.map

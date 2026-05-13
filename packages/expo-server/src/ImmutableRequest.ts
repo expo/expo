@@ -21,10 +21,13 @@ const getHeadersConstructor = (): typeof Headers => {
   }
 };
 
+/** @hidden */
+export type _ImmutableHeaders = Omit<Headers, 'append' | 'delete' | 'set'>;
+
 /**
  * An immutable version of the Fetch API's [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object which prevents mutations.
  */
-class ImmutableHeaders extends getHeadersConstructor() {
+export class ImmutableHeaders extends getHeadersConstructor() {
   // TODO(@hassankhan): Merge with `ReadonlyHeaders` from `expo-router`
   #throwImmutableError() {
     throw new Error('This operation is not allowed on immutable headers.');

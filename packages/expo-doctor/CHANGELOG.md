@@ -6,13 +6,175 @@
 
 ### 🎉 New features
 
-- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 1.19.6 — 2026-05-11
+
+### 🎉 New features
+
+- Skip `watchFolders` check for SDK 56 ([#45567](https://github.com/expo/expo/pull/45567) by [@kitten](https://github.com/kitten))
+- Warn when `blacklistRE` or invalid `blockList` regex are used ([#45567](https://github.com/expo/expo/pull/45567) by [@kitten](https://github.com/kitten))
+
+## 1.19.5 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.2 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.19.0 — 2026-05-05
+
+### 🎉 New features
+
+- add a warning when mixing `@expo/vector-icons` and `react-native-vector-icons` or packages from `@react-native-vector-icons` ([#37958](https://github.com/expo/expo/pull/37958) by [@vonovak](https://github.com/vonovak))
+- Add check for both expo-router and react-navigation installed in same project ([#45323](https://github.com/expo/expo/pull/45323) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Include `@react-navigation/native` and `@react-navigation/core` in duplicates check ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+
+## 1.18.21 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.20 - 2026-04-28
+
+### 💡 Others
+
+- Add explicit Node.js version requirement and make `@expo/env` fault tolerant ([#44985](https://github.com/expo/expo/pull/44985) by [@kitten](https://github.com/kitten))
+
+## 1.18.19 - 2026-04-21
+
+### 🎉 New features
+
+- Add check that warns about invalid `overrides`/`resolutions` for critical package versions ([#44770](https://github.com/expo/expo/pull/44770) by [@kitten](https://github.com/kitten))
+
+## 1.18.18 - 2026-04-09
+
+### 🎉 New features
+
+- Add version to the `--verbose` output ([#44592](https://github.com/expo/expo/pull/44592) by [@kitten](https://github.com/kitten))
+
+## 1.18.17 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.16 - 2026-04-06
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.15 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.14 - 2026-03-27
+
+### 💡 Others
+
+- Resolve project config by spawning `expo config` CLI instead of importing `@expo/config` directly ([#44044](https://github.com/expo/expo/pull/44044) by [@entiendonull](https://github.com/entiendonull))
+
+## 1.18.13 - 2026-03-18
+
+### 💡 Others
+
+- Include `web` platform in duplicate packages check ([#43724](https://github.com/expo/expo/pull/43724) by [@kitten](https://github.com/kitten))
+- Use independent native modules API call, instead of reusing `@expo/cli`'s implementation ([#44593](https://github.com/expo/expo/pull/44593) by [@kitten](https://github.com/kitten))
+
+## 1.18.12 - 2026-03-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.11 - 2026-03-05
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.10 - 2026-02-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.9 - 2026-02-26
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.5 — 2026-02-08
+
+### 💡 Others
+
+- Add Xcode 26.0.0 requirement for SDK 55 ([#42852](https://github.com/expo/expo/pull/42852) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 1.18.4 — 2026-02-03
+
+### 🐛 Bug fixes
+
+- Improve `.gitignore` and `.easignore` handling to correctly identify ignore status of files ([#42756](https://github.com/expo/expo/pull/42756) by [@kitten](https://github.com/kitten))
+
+## 1.18.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 1.18.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- Fix dependecy check failure when using EXPO_DEBUG=1 ([#39929](https://github.com/expo/expo/pull/39929) by [@betomoedano](https://github.com/betomoedano))
+- Circumvent `npx expo` Expo CLI invocation to avoid debug warnings from npm polluting standard output ([#40731](https://github.com/expo/expo/pull/40731) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `@expo/metro@54.2.0` and `metro@0.83.3` ([#41142](https://github.com/expo/expo/pull/41142) by [@kitten](https://github.com/kitten))
+
+## 1.17.12 - 2025-12-04
+
+### 💡 Others
+
+- Update to `glob@^13.0.0` ([#41079](https://github.com/expo/expo/pull/41079) by [@kitten](https://github.com/kitten))
+
+## 1.17.11 - 2025-10-20
+
+### 💡 Others
+
 - Bump to `@expo/metro@54.1.0` and `metro@0.83.2` ([#39826](https://github.com/expo/expo/pull/39826) by [@kitten](https://github.com/kitten))
+
+## 1.17.10 - 2025-10-09
+
+### 🎉 New features
+
+- Update autolinking messages to be clearer about isolated dependencies and add note on corrupted installations ([#40279](https://github.com/expo/expo/pull/40279) by [@kitten](https://github.com/kitten))
 
 ## 1.17.9 - 2025-10-01
 

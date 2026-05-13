@@ -1,4 +1,4 @@
-import { type ColorSchemeName, StyleProp, ViewStyle } from 'react-native';
+import { type StyleProp, type ViewStyle } from 'react-native';
 import { type CommonViewModifierProps } from '../types';
 export type HostProps = {
     /**
@@ -29,17 +29,23 @@ export type HostProps = {
     /**
      * The color scheme of the host view.
      */
-    colorScheme?: ColorSchemeName;
+    colorScheme?: 'light' | 'dark';
     /**
      * The layout direction for the SwiftUI content.
      * Defaults to the current locale direction from I18nManager.
      */
     layoutDirection?: 'leftToRight' | 'rightToLeft';
+    /**
+     * Controls which safe area regions the SwiftUI hosting view should ignore. Can only be set once on mount.
+     * - `'all'`- ignores all safe area insets.
+     * - `'keyboard'` - ignores only the keyboard safe area.
+     */
+    ignoreSafeArea?: 'all' | 'keyboard';
     children: React.ReactNode;
     style?: StyleProp<ViewStyle>;
 } & CommonViewModifierProps;
 /**
  * A hosting component for SwiftUI views.
  */
-export declare function Host(props: HostProps): import("react").JSX.Element;
+export declare function Host(props: HostProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -1,7 +1,8 @@
 import chalk from 'chalk';
 
 import { KeyPressHandler } from './KeyPressHandler';
-import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printUsage } from './commandsTable';
 import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
@@ -10,7 +11,7 @@ import { getAllSpinners, ora } from '../../utils/ora';
 import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
-import { DevServerManager } from '../server/DevServerManager';
+import type { DevServerManager } from '../server/DevServerManager';
 
 const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
 
@@ -36,12 +37,15 @@ const PLATFORM_SETTINGS: Record<
 
 export async function startInterfaceAsync(
   devServerManager: DevServerManager,
-  options: Pick<StartOptions, 'devClient' | 'platforms'>
+  options: Pick<StartOptions, 'devClient' | 'platforms' | 'mcpServer' | 'dependencyCheckRef'>
 ) {
+  // Spend one-tick waiting for the dependency check result
+  if (options.dependencyCheckRef) {
+    await Promise.race([options.dependencyCheckRef.promise, Promise.resolve(null)]);
+  }
+
   const actions = new DevServerManagerActions(devServerManager, options);
-
   const isWebSocketsEnabled = devServerManager.getDefaultDevServer()?.isTargetingNative();
-
   const usageOptions = {
     isWebSocketsEnabled,
     devClient: devServerManager.options.devClient,
@@ -73,6 +77,9 @@ export async function startInterfaceAsync(
         const spinner = ora({ text: 'Stopping server', color: 'white' }).start();
         try {
           await devServerManager.stopAsync();
+          if (options.mcpServer) {
+            await options.mcpServer.closeAsync();
+          }
           spinner.stopAndPersist({ text: 'Stopped server', symbol: `\u203A` });
           // @ts-ignore: Argument of type '"SIGINT"' is not assignable to parameter of type '"disconnect"'.
           process.emit('SIGINT');
@@ -113,7 +120,7 @@ export async function startInterfaceAsync(
       }
 
       const server = devServerManager.getDefaultDevServer();
-      const settings = PLATFORM_SETTINGS[platform];
+      const settings = PLATFORM_SETTINGS[platform]!;
 
       Log.log(`${BLT} Opening on ${settings.name}...`);
 
@@ -140,7 +147,8 @@ export async function startInterfaceAsync(
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
-          return actions.printDevServerInfo(usageOptions);
+          actions.printDevServerInfo(usageOptions);
+          return;
         }
         break;
       }
@@ -184,7 +192,8 @@ export async function startInterfaceAsync(
       }
       case 'c':
         Log.clear();
-        return actions.printDevServerInfo(usageOptions);
+        actions.printDevServerInfo(usageOptions);
+        return;
       case 'j':
         return actions.openJsInspectorAsync();
       case 'r':

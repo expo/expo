@@ -1,0 +1,43 @@
+import Contacts
+
+// swiftlint:disable legacy_objc_type
+struct DateMapper: ContactRecordMapper {
+  typealias TExistingRecord = ExistingDateRecord
+  typealias TNewRecord = NewDateRecord
+  typealias TPatchRecord = PatchDateRecord
+  typealias TDomainValue = NSDateComponents
+
+  func newRecordToCNLabeledValue(_ record: NewDateRecord) throws -> CNLabeledValue<NSDateComponents> {
+    return try CNLabeledValue(label: record.label, value: record.date.toDateComponent() as NSDateComponents)
+  }
+
+  func existingRecordToCNLabeledValue(_ record: ExistingDateRecord) throws -> CNLabeledValue<NSDateComponents> {
+    return try CNLabeledValue(label: record.label, value: record.date.toDateComponent() as NSDateComponents)
+  }
+
+  func cnLabeledValueToExistingRecord(_ labeledValue: CNLabeledValue<NSDateComponents>) -> ExistingDateRecord {
+    let dateComponents = labeledValue.value as NSDateComponents
+    return ExistingDateRecord(
+      id: labeledValue.identifier,
+      date: ContactDateNext(
+        year: dateComponents.year,
+        month: dateComponents.month,
+        day: dateComponents.day
+      ),
+      label: labeledValue.label ?? ""
+    )
+  }
+
+  func apply(patch: PatchDateRecord, to cnLabeledValue: CNLabeledValue<NSDateComponents>) throws -> CNLabeledValue<NSDateComponents> {
+    var toModify = cnLabeledValue
+    if case .value(let label) = patch.label {
+      toModify = toModify.settingLabel(label)
+    }
+    if case .value(let date) = patch.date {
+      let newValue = try date?.toDateComponent() ?? DateComponents()
+      toModify = toModify.settingValue(newValue as NSDateComponents)
+    }
+    return toModify
+  }
+}
+// swiftlint:enable legacy_objc_type

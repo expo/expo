@@ -3,6 +3,9 @@ import fs from 'fs/promises';
 
 import { localStorage } from '../WebStorage';
 
+jest.mock('expo/devtools', () => ({
+  getDevToolsPluginClientAsync: jest.fn(),
+}));
 jest.mock('../ExpoSQLite', () => require('../__mocks__/ExpoSQLite'));
 
 describe('Web Storage API compatibility', () => {

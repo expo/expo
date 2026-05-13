@@ -1,11 +1,5 @@
-import {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  UnavailabilityError,
-  uuid,
-  EventSubscription,
-} from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -583,16 +577,40 @@ export type Container = {
   type: ContainerType;
 };
 
-export { PermissionStatus, PermissionResponse, PermissionExpiration };
+// TODO(@kitten): Remove re-exports from EMC
+export { PermissionStatus, type PermissionResponse, type PermissionExpiration } from 'expo';
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.
+ * @deprecated This legacy `expo-contacts` API is deprecated. This feature will be removed in `expo-contacts/next`.
  * @returns A promise that fulfills with a `boolean`, indicating whether the Contacts API is available on the current device. It always resolves to `false` on web.
  */
 export async function isAvailableAsync(): Promise<boolean> {
   return !!ExpoContacts.getContactsAsync;
 }
 
+/**
+ * Checks if any contacts exist on the device without querying all contacts. This method requires contacts read permission.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.hasAny()` from `expo-contacts/next` instead.
+ * @return A promise that fulfills with a `boolean`, indicating whether there are any contacts on the device.
+ * @example
+ * ```js
+ * const hasContacts = await Contacts.hasContactsAsync();
+ * if (hasContacts) {
+ *   console.log('Contacts are available');
+ * }
+ * ```
+ */
+export async function hasContactsAsync(): Promise<boolean> {
+  if (!ExpoContacts.hasContactsAsync) {
+    throw new UnavailabilityError('Contacts', 'hasContactsAsync');
+  }
+  return await ExpoContacts.hasContactsAsync();
+}
+
+/**
+ * @deprecated This legacy `expo-contacts` API is deprecated. This feature will be removed in `expo-contacts/next`.
+ */
 // @docsMissing
 export async function shareContactAsync(
   contactId: string,
@@ -618,6 +636,7 @@ export async function shareContactAsync(
 
 /**
  * Return a list of contacts that fit a given criteria. You can get all of the contacts by passing no criteria.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.getAll()` from `expo-contacts/next` instead.
  * @param contactQuery Object used to query contacts.
  * @return A promise that fulfills with `ContactResponse` object returned from the query.
  * @example
@@ -639,6 +658,9 @@ export async function getContactsAsync(contactQuery: ContactQuery = {}): Promise
   return await ExpoContacts.getContactsAsync(contactQuery);
 }
 
+/**
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.getAll()` from `expo-contacts/next` with `limit` and `offset` options instead.
+ */
 export async function getPagedContactsAsync(
   contactQuery: ContactQuery = {}
 ): Promise<ContactResponse> {
@@ -656,6 +678,7 @@ export async function getPagedContactsAsync(
 
 /**
  * Used for gathering precise data about a contact. Returns a contact matching the given `id`.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.getDetails()` from `expo-contacts/next` instead.
  * @param id The ID of a system contact.
  * @param fields If specified, the fields defined will be returned. When skipped, all fields will be returned.
  * @return A promise that fulfills with `Contact` object with ID matching the input ID, or `undefined` if there is no match.
@@ -693,6 +716,7 @@ export async function getContactByIdAsync(
 
 /**
  * Creates a new contact and adds it to the system.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.create()` from `expo-contacts/next` instead.
  * > **Note**: For Android users, the Expo Go app does not have the required `WRITE_CONTACTS` permission to write to Contacts.
  * > You will need to create a [development build](/develop/development-builds/create-a-build/) and add permission in there manually to use this method.
  * @param contact A contact with the changes you wish to persist. The `id` parameter will not be used.
@@ -718,6 +742,7 @@ export async function addContactAsync(contact: Contact, containerId?: string): P
 
 /**
  * Mutate the information of an existing contact. Due to an iOS bug, `nonGregorianBirthday` field cannot be modified.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.update()` or `contact.patch()` from `expo-contacts/next` instead.
  * @param contact A contact object including the wanted changes. Contact `id` is required.
  * @return A promise that fulfills with ID of the updated system contact if mutation was successful.
  * @example
@@ -742,6 +767,7 @@ export async function updateContactAsync(
 // @needs-audit
 /**
  * Delete a contact from the system.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.delete()` from `expo-contacts/next` instead.
  * @param contactId ID of the contact you want to delete.
  * @example
  * ```js
@@ -758,6 +784,7 @@ export async function removeContactAsync(contactId: string): Promise<any> {
 
 /**
  * Query a set of contacts and write them to a local URI that can be used for sharing.
+ * @deprecated This legacy `expo-contacts` API is deprecated. This feature will be removed in `expo-contacts/next`.
  * @param contactQuery Used to query contact you want to write.
  * @return A promise that fulfills with shareable local URI, or `undefined` if there was no match.
  * @example
@@ -780,6 +807,7 @@ export async function writeContactToFileAsync(
 // @needs-audit
 /**
  * Present a native form for manipulating contacts.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `contact.editWithForm()` or `Contact.presentCreateForm()` from `expo-contacts/next` instead.
  * @param contactId The ID of a system contact.
  * @param contact A contact with the changes you want to persist.
  * @param formOptions Options for the native editor.
@@ -822,6 +850,7 @@ export async function presentFormAsync(
 
 /**
  * Add a group to a container.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `container.addGroup()` from `expo-contacts/next` instead.
  * @param groupId The group you want to target.
  * @param containerId The container you want to add membership to.
  * @example
@@ -846,6 +875,7 @@ export async function addExistingGroupToContainerAsync(
 
 /**
  * Create a group with a name, and add it to a container. If the container is `undefined`, the default container will be targeted.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Group.create()` from `expo-contacts/next` instead.
  * @param name Name of the new group.
  * @param containerId The container you to add membership to.
  * @return A promise that fulfills with ID of the new group.
@@ -870,6 +900,7 @@ export async function createGroupAsync(name?: string, containerId?: string): Pro
 
 /**
  * Change the name of an existing group.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.setName()` from `expo-contacts/next` instead.
  * @param groupName New name for an existing group.
  * @param groupId ID of the group you want to edit.
  * @example
@@ -889,6 +920,7 @@ export async function updateGroupNameAsync(groupName: string, groupId: string): 
 // @needs-audit
 /**
  * Delete a group from the device.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.delete()` from `expo-contacts/next` instead.
  * @param groupId ID of the group you want to remove.
  * @example
  * ```js
@@ -907,6 +939,7 @@ export async function removeGroupAsync(groupId: string): Promise<any> {
 // @needs-audit
 /**
  * Add a contact as a member to a group. A contact can be a member of multiple groups.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.addContact()` from `expo-contacts/next` instead.
  * @param contactId ID of the contact you want to edit.
  * @param groupId ID for the group you want to add membership to.
  * @example
@@ -932,6 +965,7 @@ export async function addExistingContactToGroupAsync(
 // @needs-audit
 /**
  * Remove a contact's membership from a given group. This will not delete the contact.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `group.removeContact()` from `expo-contacts/next` instead.
  * @param contactId ID of the contact you want to remove.
  * @param groupId ID for the group you want to remove membership of.
  * @example
@@ -957,6 +991,7 @@ export async function removeContactFromGroupAsync(
 // @needs-audit
 /**
  * Query and return a list of system groups.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Group.getAll()` from `expo-contacts/next` instead.
  * @param groupQuery Information regarding which groups you want to get.
  * @example
  * ```js
@@ -978,6 +1013,7 @@ export async function getGroupsAsync(groupQuery: GroupQuery): Promise<Group[]> {
  * Presents a native contact picker to select a single contact from the system. On Android, the `READ_CONTACTS` permission is required. You can
  * obtain this permission by calling the [`Contacts.requestPermissionsAsync()`](#contactsrequestpermissionsasync) method. On iOS, no permissions are
  * required to use this method.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.presentPicker()` from `expo-contacts/next` instead.
  * @return A promise that fulfills with a single `Contact` object if a contact is selected or `null` if no contact is selected (when selection is canceled).
  */
 export async function presentContactPickerAsync(): Promise<ExistingContact | null> {
@@ -989,6 +1025,7 @@ export async function presentContactPickerAsync(): Promise<ExistingContact | nul
 
 /**
  * Get the default container's ID.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Container.getDefault()` from `expo-contacts/next` instead.
  * @return A promise that fulfills with default container ID.
  * @example
  * ```js
@@ -1006,6 +1043,7 @@ export async function getDefaultContainerIdAsync(): Promise<string> {
 
 /**
  * Query a list of system containers.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Container.getAll()` from `expo-contacts/next` instead.
  * @param containerQuery Information used to gather containers.
  * @return A promise that fulfills with array of containers that fit the query.
  * @example
@@ -1026,6 +1064,7 @@ export async function getContainersAsync(containerQuery: ContainerQuery): Promis
 
 /**
  * Checks user's permissions for accessing contacts data.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `getPermissionsAsync()` from `expo-contacts/next` instead.
  * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
 export async function getPermissionsAsync(): Promise<ContactsPermissionResponse> {
@@ -1038,6 +1077,7 @@ export async function getPermissionsAsync(): Promise<ContactsPermissionResponse>
 
 /**
  * Asks the user to grant permissions for accessing contacts data.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `requestPermissionsAsync()` from `expo-contacts/next` instead.
  * @return A promise that resolves to a [ContactsPermissionResponse](#contactspermissionresponse) object.
  */
 export async function requestPermissionsAsync(): Promise<ContactsPermissionResponse> {
@@ -1051,6 +1091,7 @@ export async function requestPermissionsAsync(): Promise<ContactsPermissionRespo
 /**
  * Presents a modal which allows the user to select which contacts the app has access to.
  * Using this function is reasonable only when the app has "limited" permissions.
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `Contact.presentAccessPicker()` from `expo-contacts/next` instead.
  * @return A promise that resolves with an array of contact identifiers that were newly granted to the app.
  * Contacts which the app lost access to are not listed. On platforms other than iOS and below 18.0, the promise rejects immediately.
  * @platform ios 18.0+
@@ -1072,6 +1113,7 @@ export async function presentAccessPickerAsync(): Promise<string[]> {
  * contacts when the app comes to the foreground. This ensures users see the latest contacts when
  * returning from the native Contacts app.
  *
+ * @deprecated This legacy `expo-contacts` API is deprecated. Use `addContactsChangeListener()` from `expo-contacts/next` instead.
  * @param listener The function that will be executed when contacts change.
  * This function accepts no arguments.
  *

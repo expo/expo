@@ -60,6 +60,31 @@ class RecordSpec: ExpoSpec {
       expect((asDict["b"] as? JavaScriptValue)?.kind).to(equal(.undefined))
     }
 
+    it("works back and forth with Either") {
+      struct TestRecord: Record {
+        @Field var stringValue: Either<Bool, String>?
+        @Field var boolValue: Either<Bool, String>?
+        @Field var intValue: Either<Int, String>?
+        @Field var nilValue: Either<Int, String>?
+      }
+      let dict: [String: Any] = [
+        "stringValue": "custom",
+        "boolValue": true,
+        "intValue": 42,
+      ]
+      let record = try TestRecord(from: dict, appContext: appContext)
+      expect(record.stringValue?.get() as String?).to(equal("custom"))
+      expect(record.boolValue?.get() as Bool?).to(equal(true))
+      expect(record.intValue?.get() as Int?).to(equal(42))
+      expect(record.nilValue).to(beNil())
+
+      let asDict = record.toDictionary(appContext: appContext)
+      expect(asDict["stringValue"] as? String).to(equal("custom"))
+      expect(asDict["boolValue"] as? Bool).to(equal(true))
+      expect(asDict["intValue"] as? Int).to(equal(42))
+      expect(asDict["nilValue"] as? Int).to(beNil())
+    }
+
     it("works back and forth with a keyed field") {
       struct TestRecord: Record {
         @Field("key") var a: String?
@@ -90,6 +115,39 @@ class RecordSpec: ExpoSpec {
       expect { try TestRecord(from: dict, appContext: appContext) }.to(throwError { error in
         expect(error).to(beAKindOf(FieldInvalidTypeException.self))
       })
+    }
+
+    it("serializes concurrently on a shared record without crashing") {
+      struct StressRecord: Record {
+        @Field var a: String? = nil
+        @Field var b: String? = nil
+        @Field var c: String? = nil
+      }
+
+      let record = StressRecord(a: "a", b: "b", c: "c")
+      let workers = 16
+      let iterations = 100
+      let group = DispatchGroup()
+      let startGate = DispatchSemaphore(value: 0)
+
+      for _ in 0..<workers {
+        group.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+          startGate.wait()
+          for _ in 0..<iterations {
+            _ = record.toDictionary()
+          }
+          group.leave()
+        }
+      }
+      // Release every worker so they collide on the first reflection.
+      for _ in 0..<workers { startGate.signal() }
+      group.wait()
+
+      let finalDict = record.toDictionary()
+      expect(finalDict.keys.count).to(equal(3))
+      expect(finalDict["a"] as? String).to(equal("a"))
+      expect(finalDict["c"] as? String).to(equal("c"))
     }
   }
 }

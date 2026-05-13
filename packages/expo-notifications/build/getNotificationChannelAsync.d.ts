@@ -1,4 +1,4 @@
-import { NotificationChannel } from './NotificationChannelManager.types';
+import type { NotificationChannel } from './NotificationChannelManager.types';
 /**
  * Fetches information about a single notification channel.
  * @param channelId The channel's identifier.
@@ -7,5 +7,5 @@ import { NotificationChannel } from './NotificationChannelManager.types';
  * @platform android
  * @header channels
  */
-export default function getNotificationChannelAsync(channelId: string): Promise<NotificationChannel | null>;
+export declare function getNotificationChannelAsync(channelId: string): Promise<NotificationChannel | null>;
 //# sourceMappingURL=getNotificationChannelAsync.d.ts.map

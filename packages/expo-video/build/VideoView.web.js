@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { StyleSheet } from 'react-native';
 import { getSourceUri } from './VideoPlayer.web';
@@ -26,6 +27,7 @@ export const VideoView = forwardRef((props, ref) => {
     const hasToSetupAudioContext = useRef(false);
     const fullscreenChangeListeners = useRef(null);
     const isWaitingForFirstFrame = useRef(false);
+    const mountedPlayerRef = useRef(null);
     /**
      * Audio context is used to mute all but one video when multiple video views are playing from one player simultaneously.
      * Using audio context nodes allows muting videos without displaying the mute icon in the video player.
@@ -45,9 +47,6 @@ export const VideoView = forwardRef((props, ref) => {
     }, [props.useAudioNodePlayback]);
     useImperativeHandle(ref, () => ({
         enterFullscreen: async () => {
-            if (!props.allowsFullscreen || !videoRef.current) {
-                return;
-            }
             // Cast the video to any to avoid ts errors. Methods such as webkitRequestFullscreen,
             // webkitEnterFullScreen, msRequestFullscreen are not typed even though they exist.
             const video = videoRef.current;
@@ -123,7 +122,7 @@ export const VideoView = forwardRef((props, ref) => {
         const zeroGainNode = zeroGainNodeRef.current;
         const mediaNode = mediaNodeRef.current;
         if (audioContext && zeroGainNode && mediaNode) {
-            props.player.mountAudioNode(audioContext, zeroGainNode, mediaNode);
+            props.player?.mountAudioNode(audioContext, zeroGainNode, mediaNode);
         }
         else {
             console.warn("Couldn't mount audio node, this might affect the audio playback when using multiple video views with the same player.");
@@ -136,12 +135,15 @@ export const VideoView = forwardRef((props, ref) => {
         const audioContext = audioContextRef.current;
         const mediaNode = mediaNodeRef.current;
         if (audioContext && mediaNode && videoRef.current) {
-            props.player.unmountAudioNode(videoRef.current, audioContext, mediaNode);
+            props.player?.unmountAudioNode(videoRef.current, audioContext, mediaNode);
         }
     }
     function maybeSetupAudioContext() {
+        // Not all browsers support the UserActivation API, so check it exists before we access it.
+        // If the API doesn't exist then we'll continue as if the user has been active.
+        const userHasNotBeenActive = 'userActivation' in navigator && !navigator.userActivation.hasBeenActive;
         if (!hasToSetupAudioContext.current ||
-            !navigator.userActivation.hasBeenActive ||
+            userHasNotBeenActive ||
             !videoRef.current ||
             !props.useAudioNodePlayback) {
             return;
@@ -194,29 +196,36 @@ export const VideoView = forwardRef((props, ref) => {
         document.removeEventListener('MSFullscreenChange', fullscreenChangeListeners.current.msListener);
     }
     useEffect(() => {
+        videoRef.current && mountedPlayerRef.current?.unmountVideoView(videoRef.current);
         if (videoRef.current) {
             props.player?.mountVideoView(videoRef.current);
         }
         setupFullscreenListener();
         attachAudioNodes();
+        mountedPlayerRef.current = props.player ?? null;
+        if (props.player == null) {
+            videoRef.current?.removeAttribute('src');
+            videoRef.current?.load();
+        }
         return () => {
             if (videoRef.current) {
                 props.player?.unmountVideoView(videoRef.current);
             }
+            mountedPlayerRef.current = null;
             cleanupFullscreenListener();
             detachAudioNodes();
         };
     }, [props.player]);
-    return (<video controls={props.nativeControls ?? true} controlsList={props.allowsFullscreen ? undefined : 'nofullscreen'} crossOrigin={props.crossOrigin} style={{
+    return (_jsx("video", { controls: props.nativeControls ?? true, controlsList: props.fullscreenOptions?.enable ? undefined : 'nofullscreen', crossOrigin: props.crossOrigin, style: {
             ...mapStyles(props.style),
             objectFit: props.contentFit,
-        }} onPlay={() => {
+        }, onPlay: () => {
             maybeSetupAudioContext();
-        }} 
-    // The player can autoplay when muted, unmuting by a user should create the audio context
-    onVolumeChange={() => {
+        }, 
+        // The player can autoplay when muted, unmuting by a user should create the audio context
+        onVolumeChange: () => {
             maybeSetupAudioContext();
-        }} ref={(newRef) => {
+        }, ref: (newRef) => {
             // This is called with a null value before `player.unmountVideoView` is called,
             // we can't assign null to videoRef if we want to unmount it from the player.
             if (newRef && !newRef.isEqualNode(videoRef.current)) {
@@ -224,7 +233,7 @@ export const VideoView = forwardRef((props, ref) => {
                 hasToSetupAudioContext.current = props.useAudioNodePlayback ?? false;
                 maybeSetupAudioContext();
             }
-        }} disablePictureInPicture={!props.allowsPictureInPicture} playsInline={props.playsInline} src={getSourceUri(props.player?.src) ?? ''}/>);
+        }, disablePictureInPicture: !props.allowsPictureInPicture, playsInline: props.playsInline, src: getSourceUri(props.player?.src) ?? undefined }));
 });
 export default VideoView;
 //# sourceMappingURL=VideoView.web.js.map

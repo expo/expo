@@ -15,6 +15,11 @@ protocol AnyEither: AnyArgument {
    A dynamic either type for the current either type.
    */
   static func getDynamicType() -> any AnyDynamicType
+
+  /**
+   The underlying type-erased value.
+   */
+  var value: Any? { get }
 }
 
 /*
@@ -128,6 +133,29 @@ open class EitherOfFour<FirstType, SecondType, ThirdType, FourthType>: EitherOfT
    */
   public func get() -> FourthType? {
     return value as? FourthType
+  }
+}
+
+// MARK: - Equatable
+
+private func isEitherEqual<T: Equatable>(_ lhs: T, _ rhs: Any) -> Bool {
+  guard let rhs = rhs as? T else { return false }
+  return lhs == rhs
+}
+
+extension Either: Equatable {
+  public static func == (lhs: Either, rhs: Either) -> Bool {
+    switch (lhs.value, rhs.value) {
+    case (nil, nil):
+      return true
+    case (nil, _), (_, nil):
+      return false
+    case let (lhs?, rhs?):
+      if let lhs = lhs as? any Equatable {
+        return isEitherEqual(lhs, rhs)
+      }
+      return false
+    }
   }
 }
 

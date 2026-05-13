@@ -1,4 +1,4 @@
-import { type RecordingOptions } from './Audio.types';
+import type { RecordingOptions } from './Audio.types';
 
 /**
  * Audio output format options for iOS recording.
@@ -165,7 +165,7 @@ const LOW_QUALITY: RecordingOptions = {
  * };
  * ```
  */
-export const RecordingPresets: Record<string, RecordingOptions> = {
+export const RecordingPresets = {
   HIGH_QUALITY,
   LOW_QUALITY,
-};
+} as const;

@@ -16,7 +16,7 @@ suspend fun <T> ContentResolver.queryOne(
   sortOrder: String? = null
 ): T? = withContext(Dispatchers.IO) {
   val projection = arrayOf(column)
-  query(contentUri, projection, selection, selectionArgs, sortOrder)?.use { cursor ->
+  safeQuery(contentUri, projection, selection, selectionArgs, sortOrder)?.use { cursor ->
     ensureActive()
     val index = cursor.getColumnIndexOrThrow(column)
     return@withContext if (cursor.moveToFirst()) {
@@ -25,5 +25,4 @@ suspend fun <T> ContentResolver.queryOne(
       null
     }
   }
-  return@withContext null
 }

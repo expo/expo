@@ -69,7 +69,6 @@ if [[ "$EAS_BUILD_PROFILE" == "publish-client" ]]; then
 
   MESSAGE="Release triggered by: $EAS_BUILD_USERNAME\\nCommit author: $COMMIT_AUTHOR\\n$EAS_BUILD_MESSAGE_PART\\n$GITHUB_MESSAGE_PART"
 
-  source $ROOT_DIR/secrets/expotools.env
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
     notify_slack "Successful Expo Go Android APK build. Run \`et eas android-apk-upload\` to upload to GitHub" "$MESSAGE"
   elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then

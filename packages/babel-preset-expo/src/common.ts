@@ -4,17 +4,6 @@ import { addNamed as addNamedImport } from '@babel/helper-module-imports';
 import type { ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer';
 import path from 'node:path';
 
-export function hasModule(name: string): boolean {
-  try {
-    return !!require.resolve(name);
-  } catch (error: any) {
-    if (error.code === 'MODULE_NOT_FOUND' && error.message.includes(name)) {
-      return false;
-    }
-    throw error;
-  }
-}
-
 /** Determine which bundler is being used. */
 export function getBundler(caller?: any) {
   assertExpoBabelCaller(caller);
@@ -33,7 +22,7 @@ export function getBundler(caller?: any) {
   return 'metro';
 }
 
-export function getPlatform(caller?: any) {
+export function getPlatform(caller?: any): string | null {
   assertExpoBabelCaller(caller);
   if (!caller) return null;
   if (caller.platform) return caller.platform;
@@ -43,7 +32,12 @@ export function getPlatform(caller?: any) {
   }
 
   // unknown
-  return caller.platform;
+  return caller.platform ?? null;
+}
+
+export function getEngine(caller?: any): 'hermes' | 'default' | (string & {}) {
+  assertExpoBabelCaller(caller);
+  return caller?.engine ?? 'default';
 }
 
 export function getPossibleProjectRoot(caller?: any) {
@@ -73,7 +67,9 @@ export function getIsDev(caller?: any) {
 export function getIsFastRefreshEnabled(caller?: any) {
   assertExpoBabelCaller(caller);
   if (!caller) return false;
-  return !caller.isServer && !caller.isNodeModule && getIsDev(caller);
+  // NOTE(@kitten): `isHMREnabled` is always true in `@expo/metro-config`.
+  // However, we still use this option to ensure fast refresh is only enabled in supported runtimes (Metro + Expo)
+  return !!caller.isHMREnabled && !caller.isServer && !caller.isNodeModule && getIsDev(caller);
 }
 
 export function getIsProd(caller?: any) {
@@ -98,9 +94,24 @@ export function getReactCompiler(caller?: any) {
   return caller?.supportsReactCompiler ?? false;
 }
 
+export function getStaticESM(caller?: any): boolean | undefined {
+  assertExpoBabelCaller(caller);
+  return caller?.supportsStaticESM;
+}
+
 export function getIsServer(caller?: any) {
   assertExpoBabelCaller(caller);
   return caller?.isServer ?? false;
+}
+
+export function getIsDomComponent(caller?: any): boolean {
+  assertExpoBabelCaller(caller);
+  return caller?.isDomComponent ?? false;
+}
+
+export function getIsLoaderBundle(caller?: any) {
+  assertExpoBabelCaller(caller);
+  return caller?.isLoaderBundle ?? false;
 }
 
 export function getMetroSourceType(caller?: any) {

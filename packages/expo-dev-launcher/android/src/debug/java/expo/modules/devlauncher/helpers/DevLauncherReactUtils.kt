@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.facebook.react.ReactHost
-import com.facebook.react.ReactNativeHost
-import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JSBundleLoader
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.defaults.DefaultReactHostDelegate
@@ -18,10 +16,8 @@ import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.runtime.ReactHostDelegate
 import com.facebook.react.runtime.ReactHostImpl
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devlauncher.react.DevLauncherBridgeDevSupportManager
 import expo.modules.devlauncher.react.DevLauncherBridgelessDevSupportManager
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
-import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import okhttp3.HttpUrl
 
@@ -49,10 +45,6 @@ fun injectReactInterceptor(
 
 private fun injectDevSupportManager(reactHost: ReactHost) {
   DevLauncherDevSupportManagerSwapper().swapDevSupportManagerImpl(reactHost)
-
-  // Swapping dev support manager overrides dev menu setup.
-  // We need to reinitialize it.
-  DevMenuManager.initializeWithReactHost(reactHost)
 }
 
 fun injectDebugServerHost(
@@ -101,9 +93,9 @@ private fun injectDebugServerHost(
 }
 
 @OptIn(UnstableReactNativeAPI::class)
-fun injectLocalBundleLoader(
+fun injectBundleLoader(
   reactHost: ReactHost,
-  bundlePath: String
+  jsBundleLoader: JSBundleLoader
 ): Boolean {
   return try {
     check(reactHost is ReactHostImpl)
@@ -115,8 +107,6 @@ fun injectLocalBundleLoader(
     mAllowPackagerServerAccessField.isAccessible = true
     mAllowPackagerServerAccessField[reactHost] = false
 
-    val newJsBundleLoader = JSBundleLoader.createFileLoader(bundlePath)
-
     // [1] Replace the ReactHostDelegate.jsBundlerLoader with our new loader
     val mReactHostDelegateField = reactHostClass.getDeclaredField("reactHostDelegate")
     mReactHostDelegateField.isAccessible = true
@@ -125,23 +115,30 @@ fun injectLocalBundleLoader(
       reactHostDelegate.javaClass.setPrivateDeclaredFieldValue(
         "_jsBundleLoader",
         reactHostDelegate,
-        newJsBundleLoader
+        jsBundleLoader
       )
     } else if (reactHostDelegate is DefaultReactHostDelegate) {
       DefaultReactHostDelegate::class.java.setPrivateDeclaredFieldValue(
         "jsBundleLoader",
         reactHostDelegate,
-        newJsBundleLoader
+        jsBundleLoader
       )
     } else {
-      throw IllegalStateException("[injectLocalBundleLoader] Unsupported reactHostDelegate: ${reactHostDelegate.javaClass}")
+      throw IllegalStateException("[injectBundleLoader] Unsupported reactHostDelegate: ${reactHostDelegate.javaClass}")
     }
 
     true
   } catch (e: Exception) {
-    Log.e("DevLauncher", "Unable to load local bundle file", e)
+    Log.e("DevLauncher", "Unable to inject bundle loader", e)
     false
   }
+}
+
+fun injectLocalBundleLoader(
+  reactHost: ReactHost,
+  bundlePath: String
+): Boolean {
+  return injectBundleLoader(reactHost, JSBundleLoader.createFileLoader(bundlePath))
 }
 
 fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager, controller: DevLauncherControllerInterface?) {
@@ -164,15 +161,6 @@ fun injectDevServerHelper(context: Context, devSupportManager: DevSupportManager
   )
   oldDevServerHelper.closePackagerConnection()
   oldDevServerHelper.closeInspectorConnection()
-}
-
-fun findDevMenuPackage(): ReactPackage? {
-  return try {
-    val clazz = Class.forName("expo.modules.devmenu.DevMenuPackage")
-    clazz.newInstance() as? ReactPackage
-  } catch (e: Exception) {
-    null
-  }
 }
 
 private fun parseUrl(url: Uri): Pair<String, String> {

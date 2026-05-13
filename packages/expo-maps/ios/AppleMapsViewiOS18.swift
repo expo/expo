@@ -22,7 +22,6 @@ extension MKMapPoint {
       x: a.x + clamped * dx,
       y: a.y + clamped * dy
     )
-
     return distance(to: proj)
   }
 }
@@ -56,6 +55,35 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     state.lookAroundPresented = true
   }
 
+  func setSelection(config: SelectionConfig) {
+    let updateSelection = {
+      if let mapItem = config.mapItem {
+        self.state.selection = MapSelection(mapItem)
+        if config.moveCamera, let coordinate = config.coordinate {
+          if let zoom = config.zoom {
+            self.state.mapCameraPosition = convertToMapCameraPosition(coordinate: coordinate, zoom: zoom)
+          } else {
+            // Keep current zoom/distance, just center on coordinate
+            self.state.mapCameraPosition = .camera(
+              MapCamera(
+                centerCoordinate: coordinate,
+                distance: self.state.lastKnownDistance ?? 10000,
+                heading: self.state.lastKnownHeading,
+                pitch: self.state.lastKnownPitch
+              )
+            )
+          }
+        }
+      } else {
+        self.state.selection = nil
+      }
+    }
+
+    withAnimation {
+      updateSelection()
+    }
+  }
+
   var body: some View {
     let properties = props.properties
     let uiSettings = props.uiSettings
@@ -65,17 +93,30 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       // swiftlint:disable:next closure_body_length
       Map(position: $state.mapCameraPosition, selection: $state.selection) {
         ForEach(props.markers) { marker in
-          Marker(
-            marker.title,
-            systemImage: marker.systemImage,
-            coordinate: marker.clLocationCoordinate2D
-          )
-          .tint(marker.tintColor)
-          .tag(MapSelection(marker.mapItem))
+          if marker.hasMonogram {
+            Marker(
+              marker.title,
+              monogram: Text(marker.monogram),
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+            .tag(MapSelection(marker.mapItem))
+          } else {
+            Marker(
+              marker.title,
+              systemImage: marker.systemImage,
+              coordinate: marker.clLocationCoordinate2D
+            )
+            .tint(marker.tintColor)
+            .tag(MapSelection(marker.mapItem))
+          }
         }
 
         ForEach(props.polylines) { polyline in
-          MapPolyline(coordinates: polyline.clLocationCoordinates2D)
+          MapPolyline(
+            coordinates: polyline.clLocationCoordinates2D,
+            contourStyle: polyline.contourStyle.toContourStyle()
+          )
             .stroke(polyline.color, lineWidth: polyline.width)
             .tag(MapSelection<MKMapItem>(polyline.mapItem))
         }
@@ -107,20 +148,19 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                 .padding(5)
             }
           }
+          .tag(MapSelection(annotation.mapItem))
         }
 
         if props.properties.isMyLocationEnabled {
           UserAnnotation()
         }
       }
-      // We use simultaneousGesture to work around the iOS 26 onTapGesture known issue
+      // https://developer.apple.com/forums/thread/795909?answerId=855111022#855111022
+      // onTapGesture with Map is broken on iOS 26 so we use this workaround
       // https://developer.apple.com/documentation/ios-ipados-release-notes/ios-ipados-26-release-notes#Maps
-      // TODO: Replace with onTapGesture once apple fixes the issue
-      .simultaneousGesture(
-        DragGesture(minimumDistance: 0)
-          // swiftlint:disable:next closure_body_length
-          .onEnded { value in
-            if let coordinate = reader.convert(value.location, from: .local) {
+      .simultaneousGesture(SpatialTapGesture()
+          .onEnded { event in
+            if let coordinate = reader.convert(event.location, from: .local) {
               // check if we hit a polygon and send an event
               if let hit = props.polygons.first(where: { polygon in
                 isTapInsidePolygon(tapCoordinate: coordinate, polygonCoordinates: polygon.clLocationCoordinates2D)
@@ -168,7 +208,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
                   "id": hit.id,
                   "color": hit.color,
                   "width": hit.width,
-                  "contourStyle": hit.contourStyle,
+                  "contourStyle": hit.contourStyle.rawValue,
                   "coordinates": coords
                 ])
               }
@@ -202,8 +242,13 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       .onChange(of: state.selection, perform: handleSelectionChange)
       .onMapCameraChange(frequency: .onEnd) { context in
+        state.lastKnownDistance = context.camera.distance
+        state.lastKnownHeading = context.camera.heading
+        state.lastKnownPitch = context.camera.pitch
+
         let cameraPosition = context.region.center
         let longitudeDelta = context.region.span.longitudeDelta
+        let latitudeDelta = context.region.span.latitudeDelta
         let zoomLevel = log2(360 / longitudeDelta)
 
         props.onCameraMove([
@@ -211,6 +256,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
             "latitude": cameraPosition.latitude,
             "longitude": cameraPosition.longitude
           ],
+          "longitudeDelta": longitudeDelta,
+          "latitudeDelta": latitudeDelta,
           "zoom": zoomLevel,
           "tilt": context.camera.pitch,
           "bearing": context.camera.heading
@@ -230,7 +277,13 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         }
       )
       .onAppear {
-        state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+        if !state.hasInitializedCamera {
+          state.mapCameraPosition = convertToMapCamera(position: props.cameraPosition)
+          state.hasInitializedCamera = true
+        }
+      }
+      .let(props.colorScheme.toColorScheme()) { view, colorScheme in
+        view.environment(\.colorScheme, colorScheme)
       }
     }
   }
@@ -246,9 +299,23 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
         "title": marker.title,
         "tintColor": marker.tintColor,
         "systemImage": marker.systemImage,
+        "monogram": marker.monogram,
         "coordinates": [
           "latitude": marker.coordinates.latitude,
           "longitude": marker.coordinates.longitude
+        ]
+      ])
+      return
+    }
+
+    if let annotation = props.annotations.first(where: { $0.mapItem == item }) {
+      props.onAnnotationClick([
+        "id": annotation.id,
+        "title": annotation.title,
+        "text": annotation.text,
+        "coordinates": [
+          "latitude": annotation.coordinates.latitude,
+          "longitude": annotation.coordinates.longitude
         ]
       ])
       return
@@ -260,14 +327,15 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     let threshold = props.properties.polylineTapThreshold
 
     return props.polylines.first { line in
-      let pts = line.clLocationCoordinates2D.map(MKMapPoint.init)
+      let coords = line.hitTestCoordinates
+      guard var prev = coords.first.map(MKMapPoint.init) else { return false }
 
-      var minDist = CLLocationDistance.greatestFiniteMagnitude
-      for (a, b) in zip(pts, pts.dropFirst()) {
-        minDist = min(minDist, tapPoint.distance(toSegmentFrom: a, to: b))
-        if minDist < threshold {
+      for coord in coords.dropFirst() {
+        let curr = MKMapPoint(coord)
+        if tapPoint.distance(toSegmentFrom: prev, to: curr) < threshold {
           return true
         }
+        prev = curr
       }
       return false
     }
@@ -299,16 +367,8 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   func isTapInsideCircle(
     tapCoordinate: CLLocationCoordinate2D, circleCenter: CLLocationCoordinate2D, radius: Double
   ) -> Bool {
-    // Convert coordinates to CLLocation for distance calculation
-    let tapLocation = CLLocation(
-      latitude: tapCoordinate.latitude, longitude: tapCoordinate.longitude)
-    let circleCenterLocation = CLLocation(
-      latitude: circleCenter.latitude, longitude: circleCenter.longitude)
-
-    // Calculate distance between tap and circle center (in meters)
-    let distance = tapLocation.distance(from: circleCenterLocation)
-
-    // Return true if distance is less than or equal to the radius
-    return distance <= radius
+    let tapPoint = MKMapPoint(tapCoordinate)
+    let centerPoint = MKMapPoint(circleCenter)
+    return tapPoint.distance(to: centerPoint) <= radius
   }
 }

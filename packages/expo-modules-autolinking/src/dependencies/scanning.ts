@@ -5,7 +5,9 @@ import {
   type DependencyResolution,
   DependencyResolutionSource,
 } from './types';
-import { defaultShouldIncludeDependency, loadPackageJson, maybeRealpath, fastJoin } from './utils';
+import { taskAll } from '../concurrency';
+import { defaultShouldIncludeDependency } from './utils';
+import { loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 
 async function resolveDependency(
   basePath: string,
@@ -21,7 +23,7 @@ async function resolveDependency(
   if (packageJson) {
     return {
       source: DependencyResolutionSource.SEARCH_PATH,
-      name: packageJson.name,
+      name: packageJson.name || '',
       version: packageJson.version || '',
       path: realPath || originPath,
       originPath,
@@ -41,6 +43,21 @@ async function resolveDependency(
   } else {
     return null;
   }
+}
+
+/** Create a mock resolution for a local search path dependency at the given path */
+export async function mockDependencyAtPath(originPath: string): Promise<DependencyResolution> {
+  const realPath = await maybeRealpath(originPath);
+  const packageJson = await loadPackageJson(fastJoin(realPath || originPath, 'package.json'));
+  return {
+    source: DependencyResolutionSource.SEARCH_PATH,
+    name: packageJson?.name || 'local-module', // NOTE: Mock name
+    version: packageJson?.version ?? '',
+    path: realPath ?? originPath,
+    originPath,
+    duplicates: null,
+    depth: 0,
+  };
 }
 
 interface ResolutionOptions {
@@ -67,49 +84,42 @@ export async function scanDependenciesInSearchPath(
     if (resolution) resolvedDependencies.push(resolution);
   } else {
     const dirents = await fs.promises.readdir(rootPath!, { withFileTypes: true });
-    await Promise.all(
-      dirents.map(async (entry) => {
-        if (entry.isSymbolicLink()) {
+    await taskAll(dirents, async (entry) => {
+      if (entry.isSymbolicLink()) {
+        const resolution = await resolveDependency(rootPath, entry.name, shouldIncludeDependency);
+        if (resolution) resolvedDependencies.push(resolution);
+      } else if (entry.isDirectory()) {
+        if (entry.name === 'node_modules') {
+          // Ignore nested node_modules folder
+        }
+        if (entry.name[0] === '.') {
+          // Ignore hidden folders
+        } else if (entry.name[0] === '@') {
+          // NOTE: We don't expect @-scope folders to be symlinks
+          const entryPath = fastJoin(rootPath, entry.name);
+          const childEntries = await fs.promises.readdir(entryPath, { withFileTypes: true });
+          await Promise.all(
+            childEntries.map(async (child) => {
+              const dependencyName = `${entry.name}/${child.name}`;
+              if (child.isDirectory() || child.isSymbolicLink()) {
+                const resolution = await resolveDependency(
+                  rootPath,
+                  dependencyName,
+                  shouldIncludeDependency
+                );
+                if (resolution) resolvedDependencies.push(resolution);
+              }
+            })
+          );
+        } else {
           const resolution = await resolveDependency(rootPath, entry.name, shouldIncludeDependency);
           if (resolution) resolvedDependencies.push(resolution);
-        } else if (entry.isDirectory()) {
-          if (entry.name === 'node_modules') {
-            // Ignore nested node_modules folder
-          }
-          if (entry.name[0] === '.') {
-            // Ignore hidden folders
-          } else if (entry.name[0] === '@') {
-            // NOTE: We don't expect @-scope folders to be symlinks
-            const entryPath = fastJoin(rootPath, entry.name);
-            const childEntries = await fs.promises.readdir(entryPath, { withFileTypes: true });
-            await Promise.all(
-              childEntries.map(async (child) => {
-                const dependencyName = `${entry.name}/${child.name}`;
-                if (child.isDirectory() || child.isSymbolicLink()) {
-                  const resolution = await resolveDependency(
-                    rootPath,
-                    dependencyName,
-                    shouldIncludeDependency
-                  );
-                  if (resolution) resolvedDependencies.push(resolution);
-                }
-              })
-            );
-          } else {
-            const resolution = await resolveDependency(
-              rootPath,
-              entry.name,
-              shouldIncludeDependency
-            );
-            if (resolution) resolvedDependencies.push(resolution);
-          }
         }
-      })
-    );
+      }
+    });
   }
 
-  for (let idx = 0; idx < resolvedDependencies.length; idx++) {
-    const resolution = resolvedDependencies[idx];
+  for (const resolution of resolvedDependencies) {
     const prevEntry = searchResults[resolution.name];
     if (prevEntry != null && resolution.path !== prevEntry.path) {
       (prevEntry.duplicates ?? (prevEntry.duplicates = [])).push({

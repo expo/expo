@@ -20,7 +20,7 @@ export function Textarea({ characterLimit, className, onChange, ...rest }: Props
           }
         }}
         className={mergeClasses(
-          'my-2.5 block h-12 w-full rounded-sm border border-default bg-default p-4 leading-5 text-default shadow-xs placeholder:text-icon-tertiary',
+          'border-default bg-default text-default placeholder:text-icon-tertiary my-2.5 block h-12 w-full rounded-sm border p-4 leading-5 shadow-xs',
           className
         )}
         {...rest}
@@ -29,7 +29,7 @@ export function Textarea({ characterLimit, className, onChange, ...rest }: Props
         <CAPTION
           theme={characterCount > characterLimit ? 'danger' : 'secondary'}
           tag="code"
-          className="absolute bottom-1.5 right-3 z-10">
+          className="absolute right-3 bottom-1.5 z-10">
           {characterLimit - characterCount}
         </CAPTION>
       )}

@@ -1,9 +1,27 @@
+import * as Device from 'expo-device';
 import { Directory, File, Paths } from 'expo-file-system';
 import { Image } from 'expo-image';
-import { Asset, MediaType, requestPermissionsAsync } from 'expo-media-library/next';
+import {
+  Asset,
+  AssetField,
+  MediaType,
+  AssetInfo,
+  Query,
+  requestPermissionsAsync,
+  MediaSubtype,
+} from 'expo-media-library/next';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
-import { View, Pressable, Text, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Alert,
+  Platform,
+  ScrollView,
+} from 'react-native';
 
 enum TestState {
   START = 'start',
@@ -15,17 +33,11 @@ enum TestState {
 const AssetScreen = () => {
   const screenName = 'asset_screen';
   const [asset, setAsset] = useState<Asset | null>(null);
-  const [assetInfo, setAssetInfo] = useState<{
-    uri: string;
-    height: number;
-    width: number;
-    filename: string;
-    mediaType: MediaType;
-    creationTime: number | null;
-    modificationTime: number | null;
-    duration: number | null;
-  } | null>(null);
-
+  const [assetInfo, setAssetInfo] = useState<AssetInfo | null>(null);
+  const [mediaSubtypes, setMediaSubtypes] = useState<MediaSubtype[] | null>(null);
+  const [orientation, setOrientation] = useState<number | null | undefined>(undefined);
+  const [isNetworkAsset, setIsNetworkAsset] = useState<boolean | undefined>(undefined);
+  const [pairedVideoUri, setPairedVideoUri] = useState<string | null | undefined>(undefined);
   const [testState, setTestState] = useState<TestState>(TestState.START);
 
   const isVideo = assetInfo?.mediaType === MediaType.VIDEO;
@@ -36,6 +48,13 @@ const AssetScreen = () => {
   };
 
   const player = useVideoPlayer(getVideoPlayerSource(), (player) => {
+    if (player) {
+      player.loop = true;
+      player.play();
+    }
+  });
+
+  const pairedVideoPlayer = useVideoPlayer(pairedVideoUri ?? null, (player) => {
     if (player) {
       player.loop = true;
       player.play();
@@ -53,25 +72,55 @@ const AssetScreen = () => {
     requestPermissions();
   }, []);
 
+  const loadAssetState = async (selectedAsset: Asset) => {
+    const info = await selectedAsset.getInfo();
+    if (Platform.OS === 'ios') {
+      const [orient, networkAsset, pairedVideo, subtypes] = await Promise.all([
+        selectedAsset.getOrientation(),
+        selectedAsset.getIsInCloud(),
+        selectedAsset.getLivePhotoVideoUri(),
+        selectedAsset.getMediaSubtypes(),
+      ]);
+      setMediaSubtypes(subtypes);
+      setOrientation(orient);
+      setIsNetworkAsset(networkAsset);
+      setPairedVideoUri(pairedVideo);
+    }
+    setAsset(selectedAsset);
+    setAssetInfo(info);
+    setTestState(TestState.FINISHED);
+  };
+
   const handleAddAsset = async (type: 'image' | 'video') => {
     setTestState(TestState.LOADING);
     try {
       const file = await downloadFile(type);
       const newAsset = await Asset.create(file.uri);
-      setAsset(newAsset);
-      setAssetInfo({
-        uri: await newAsset.getUri(),
-        height: await newAsset.getHeight(),
-        width: await newAsset.getWidth(),
-        filename: await newAsset.getFilename(),
-        mediaType: await newAsset.getMediaType(),
-        creationTime: await newAsset.getCreationTime(),
-        modificationTime: await newAsset.getModificationTime(),
-        duration: await newAsset.getDuration(),
-      });
-      setTestState(TestState.FINISHED);
+      await loadAssetState(newAsset);
     } catch (e) {
       console.error('Error adding asset:', e);
+      setTestState(TestState.ERROR);
+    }
+  };
+
+  const handleCheckLibraryForLivePhoto = async () => {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    setTestState(TestState.LOADING);
+    try {
+      const assets = await new Query().eq(AssetField.MEDIA_TYPE, MediaType.IMAGE).exe();
+      for (const asset of assets) {
+        const subtypes = await asset.getMediaSubtypes();
+        if (subtypes.includes(MediaSubtype.LIVE_PHOTO)) {
+          await loadAssetState(asset);
+          return;
+        }
+      }
+      Alert.alert('No Live Photos', 'Create a Live Photo with the Camera app and try again.');
+      setTestState(TestState.START);
+    } catch (e) {
+      console.error('Error checking library for LivePhoto:', e);
       setTestState(TestState.ERROR);
     }
   };
@@ -90,6 +139,19 @@ const AssetScreen = () => {
     }
   };
 
+  const toggleFavorite = async () => {
+    if (asset) {
+      try {
+        await asset.setFavorite(!assetInfo?.isFavorite);
+        const updatedInfo = await asset.getInfo();
+        setAssetInfo(updatedInfo);
+      } catch (e) {
+        console.error('Error toggling favorite status:', e);
+        Alert.alert('Error', 'Unable to change favorite status of the asset.');
+      }
+    }
+  };
+
   const downloadFile = async (type: 'image' | 'video'): Promise<File> => {
     try {
       const dir = new Directory(Paths.cache, screenName);
@@ -104,8 +166,7 @@ const AssetScreen = () => {
         }
         case 'video': {
           const videoFile = new File(dir, `${screenName}.mp4`);
-          const videoUrl =
-            'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4';
+          const videoUrl = 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4';
           await File.downloadFileAsync(videoUrl, videoFile, { idempotent: true });
           return videoFile;
         }
@@ -120,35 +181,61 @@ const AssetScreen = () => {
     if (!assetInfo || !asset) return null;
     return (
       <View style={styles.infoContainer}>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Asset ID:</Text> {asset.id}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>URI:</Text> {assetInfo.uri}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Filename:</Text> {assetInfo.filename}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Media Type:</Text> {assetInfo.mediaType}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Dimensions:</Text> {assetInfo.width} x {assetInfo.height}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Creation Time:</Text>
-          {assetInfo.creationTime ? new Date(assetInfo.creationTime).toLocaleString() : 'N/A'}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Modification Time:</Text>
-          {assetInfo.modificationTime
-            ? new Date(assetInfo.modificationTime).toLocaleString()
-            : 'N/A'}
-        </Text>
-        <Text style={styles.infoText}>
-          <Text style={styles.bold}>Duration:</Text>
-          {assetInfo.duration !== null ? `${assetInfo.duration} ms` : 'N/A'}
-        </Text>
+        <ScrollView
+          style={styles.infoScrollView}
+          contentContainerStyle={styles.infoScrollContent}
+          showsVerticalScrollIndicator>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Asset ID:</Text> {asset.id}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>URI:</Text> {assetInfo.uri}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Filename:</Text> {assetInfo.filename}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Media Type:</Text> {assetInfo.mediaType}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Dimensions:</Text> {assetInfo.width} x {assetInfo.height}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Creation Time:</Text>
+            {assetInfo.creationTime ? new Date(assetInfo.creationTime).toLocaleString() : 'N/A'}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Modification Time:</Text>
+            {assetInfo.modificationTime
+              ? new Date(assetInfo.modificationTime).toLocaleString()
+              : 'N/A'}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Duration:</Text>
+            {assetInfo.duration !== null ? `${assetInfo.duration} ms` : 'N/A'}
+          </Text>
+          <Text style={styles.infoText}>
+            <Text style={styles.bold}>Media Subtypes:</Text> {mediaSubtypes?.join(', ') || 'N/A'}
+          </Text>
+          {Platform.OS === 'ios' && (
+            <Text style={styles.infoText}>
+              <Text style={styles.bold}>Orientation:</Text>{' '}
+              {orientation !== undefined ? (orientation ?? 'N/A') : 'N/A'}
+            </Text>
+          )}
+          {Platform.OS === 'ios' && (
+            <Text style={styles.infoText}>
+              <Text style={styles.bold}>Is Network Asset:</Text>{' '}
+              {isNetworkAsset !== undefined ? String(isNetworkAsset) : 'N/A'}
+            </Text>
+          )}
+          {Platform.OS === 'ios' && (
+            <Text style={styles.infoText}>
+              <Text style={styles.bold}>Paired Video URI:</Text>{' '}
+              {pairedVideoUri !== undefined ? (pairedVideoUri ?? 'N/A') : 'N/A'}
+            </Text>
+          )}
+        </ScrollView>
       </View>
     );
   };
@@ -157,12 +244,17 @@ const AssetScreen = () => {
     <View style={styles.container}>
       {testState === TestState.START && (
         <View style={styles.buttonGroup}>
-          <Pressable style={styles.addButton} onPress={() => handleAddAsset('image')}>
-            <Text style={styles.addButtonText}>Add Image</Text>
+          <Pressable style={styles.primaryButton} onPress={() => handleAddAsset('image')}>
+            <Text style={styles.primaryButtonText}>Add Image</Text>
           </Pressable>
-          <Pressable style={styles.addButton} onPress={() => handleAddAsset('video')}>
-            <Text style={styles.addButtonText}>Add Video</Text>
+          <Pressable style={styles.primaryButton} onPress={() => handleAddAsset('video')}>
+            <Text style={styles.primaryButtonText}>Add Video</Text>
           </Pressable>
+          {Platform.OS === 'ios' && Device.isDevice && (
+            <Pressable style={styles.primaryButton} onPress={handleCheckLibraryForLivePhoto}>
+              <Text style={styles.primaryButtonText}>Check Library for LivePhoto</Text>
+            </Pressable>
+          )}
         </View>
       )}
 
@@ -171,6 +263,11 @@ const AssetScreen = () => {
         <>
           {isVideo ? (
             <VideoView player={player} style={styles.video} />
+          ) : pairedVideoUri ? (
+            <View style={styles.livePhotoContainer}>
+              <Image source={{ uri: asset?.id }} style={styles.livePhotoImage} />
+              <VideoView player={pairedVideoPlayer} style={styles.livePhotoVideo} />
+            </View>
           ) : (
             <Image source={{ uri: asset?.id }} style={styles.image} />
           )}
@@ -178,6 +275,13 @@ const AssetScreen = () => {
             <Pressable style={styles.deleteButton} onPress={handleDeleteAsset}>
               <Text style={styles.deleteButtonText}>Delete Asset</Text>
             </Pressable>
+            {Platform.OS === 'ios' && (
+              <Pressable style={styles.primaryButton} onPress={toggleFavorite}>
+                <Text style={styles.primaryButtonText}>
+                  {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
+                </Text>
+              </Pressable>
+            )}
           </View>
           {renderAssetInfo()}
         </>
@@ -203,7 +307,9 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginVertical: 20,
-    width: '60%',
+    gap: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
   },
   statusText: {
     fontSize: 18,
@@ -211,10 +317,10 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     marginTop: 20,
-    padding: 15,
     backgroundColor: '#ffffff',
     borderRadius: 8,
     width: '100%',
+    maxHeight: 260,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -223,6 +329,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  infoScrollView: {
+    width: '100%',
+  },
+  infoScrollContent: {
+    padding: 15,
   },
   infoText: {
     fontSize: 14,
@@ -233,17 +345,34 @@ const styles = StyleSheet.create({
     width: 300,
     height: 200,
   },
+  livePhotoContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  livePhotoImage: {
+    width: 160,
+    height: 160,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  livePhotoVideo: {
+    width: 160,
+    height: 160,
+  },
   bold: {
     fontWeight: '600',
   },
   buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    width: '90%',
+    flexDirection: 'column',
+    gap: 12,
+    width: '100%',
+    alignItems: 'center',
     position: 'absolute',
     top: 40,
   },
-  addButton: {
+  primaryButton: {
     backgroundColor: '#007AFF',
     paddingVertical: 12,
     paddingHorizontal: 25,
@@ -259,7 +388,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  addButtonText: {
+  primaryButtonText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: 'bold',

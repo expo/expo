@@ -1,4 +1,5 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import bplistCreator from 'bplist-creator';
 import fs from 'fs';
 import os from 'os';
@@ -330,11 +331,13 @@ async function getRuntimesAsync(
     // Join the end components [13, 4] -> '13.4'
     const osVersion = osVersionComponents.join('.');
     const sims = info.devices[runtime];
-    for (const device of sims) {
-      device.runtime = runtime;
-      device.osVersion = osVersion;
-      device.windowName = `${device.name} (${osVersion})`;
-      device.osType = osType as OSType;
+    if (sims) {
+      for (const device of sims) {
+        device.runtime = runtime;
+        device.osVersion = osVersion;
+        device.windowName = `${device.name} (${osVersion})`;
+        device.osType = osType as OSType;
+      }
     }
   }
   return info;

@@ -1,14 +1,15 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import DevToolsPluginManager from './DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
-import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import type { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';
@@ -149,7 +150,8 @@ export class DevServerManager {
   /** Switch between Expo Go and Expo Dev Clients. */
   async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
     const nextMode = isUsingDevClient ? '--dev-client' : '--go';
-    Log.log(printItem(chalk`Switching to {bold ${nextMode}}`));
+    Log.log(printItem(`Switching to ${chalk`{bold ${nextMode}}`}`, { dim: true }));
+    Log.log();
 
     const nextScheme = await resolveSchemeAsync(this.projectRoot, {
       devClient: isUsingDevClient,
@@ -160,6 +162,7 @@ export class DevServerManager {
     this.options.devClient = isUsingDevClient;
     for (const devServer of this.devServers) {
       devServer.isDevClient = isUsingDevClient;
+      // TODO(@kitten): Clean up mode switching better
       const urlCreator = devServer.getUrlCreator();
       urlCreator.defaults ??= {};
       urlCreator.defaults.scheme = nextScheme;

@@ -17,7 +17,7 @@ const Background: React.FunctionComponent<{ index: number }> = ({ index }) => (
       opacity: 0.5,
       width: undefined,
       height: undefined,
-      ...StyleSheet.absoluteFillObject,
+      ...StyleSheet.absoluteFill,
     }}
   />
 );

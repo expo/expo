@@ -12,7 +12,7 @@ import path from 'path';
 
 import { EXPO_GO_DIR, EXPO_GO_DEV_SERVER_PORT } from '../Constants';
 import { getExpoRepositoryRootDir } from '../Directories';
-import { getExpoGoSDKVersionAsync } from '../ProjectVersions';
+import { getSDKVersionAsync } from '../ProjectVersions';
 
 interface Manifest {
   id: string;
@@ -199,7 +199,7 @@ export default {
     }
   },
 
-  async TEMPORARY_SDK_VERSION(): Promise<string> {
-    return await getExpoGoSDKVersionAsync();
+  async TEMPORARY_SDK_VERSION(platform): Promise<string> {
+    return await getSDKVersionAsync(platform);
   },
 };

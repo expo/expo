@@ -14,7 +14,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll learn Expo Router's fundamentals to create stack navigation and a bottom tab bar with two tabs.
 
-<VideoBoxLink videoId="8336fcFV_T4" title="Watch: Adding navigation in your universal Expo app" />
+<VideoBoxLink
+  videoId="8336fcFV_T4"
+  title="Watch: Adding navigation in your universal Expo app"
+  description="Set up file-based routing with Expo Router, create stack navigation between screens, and build a bottom tab bar."
+/>
 
 ## Expo Router basics
 
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Inside **\_layout.tsx**:
+Inside **app/\_layout.tsx**:
 
 1. Add a `<Stack.Screen />` component and an `options` prop to update the title of the `/about` route.
 2. Update the `/index` route's title to `Home` by adding `options` prop.

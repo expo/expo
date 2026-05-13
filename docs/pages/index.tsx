@@ -1,5 +1,5 @@
 import DocumentationPage from '~/components/DocumentationPage';
-import { ExpoAppAwardsBanner } from '~/ui/components/ExpoAppAwardsBanner';
+import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
   QuickStart,
@@ -20,7 +20,7 @@ function Home() {
       <div className="h-0">
         <DevicesImageMasks />
       </div>
-      <ExpoAppAwardsBanner />
+      <AppJSBanner />
       <QuickStart />
       <CommandLineTools />
       <DiscoverMore />

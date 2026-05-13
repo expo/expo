@@ -19,8 +19,6 @@ import androidx.core.os.bundleOf
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.runtime.ReactHostImpl
 import com.facebook.react.runtime.ReactSurfaceImpl
@@ -32,9 +30,14 @@ import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.manifests.core.Manifest
 import expo.modules.notifications.service.NotificationsService.Companion.getNotificationResponseFromOpenIntent
 import expo.modules.notifications.service.delegates.ExpoHandlingDelegate
-import host.exp.exponent.*
+import host.exp.exponent.Constants
+import host.exp.exponent.ExpoUpdatesAppLoader
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
+import host.exp.exponent.ExponentManifest
+import host.exp.exponent.LauncherActivity
+import host.exp.exponent.RNObject
+import host.exp.exponent.ReactNativeStaticHelpers
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
@@ -48,8 +51,6 @@ import host.exp.exponent.experience.KernelReactNativeHost
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
-import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEventCallback
-import host.exp.exponent.kernel.ExponentKernelModuleProvider.queueEvent
 import host.exp.exponent.kernel.ExponentUrls.toHttp
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
 import host.exp.exponent.network.ExponentNetwork
@@ -57,6 +58,8 @@ import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.notifications.ExponentNotificationManager
 import host.exp.exponent.notifications.NotificationActionCenter
 import host.exp.exponent.notifications.ScopedNotificationsUtils
+import host.exp.exponent.services.ExponentHistoryService
+import host.exp.exponent.services.HistoryItem
 import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.AsyncCondition
@@ -72,7 +75,6 @@ import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.lang.ref.WeakReference
-import java.util.*
 import javax.inject.Inject
 
 // TOOD: need to figure out when we should reload the kernel js. Do we do it every time you visit
@@ -108,6 +110,9 @@ class Kernel : KernelInterface() {
 
   @Inject
   lateinit var exponentNetwork: ExponentNetwork
+
+  @Inject
+  lateinit var exponentHistoryService: ExponentHistoryService
 
   var activityContext: Activity? = null
     set(value) {
@@ -324,7 +329,11 @@ class Kernel : KernelInterface() {
 
   val surface: ReactSurface
     get() {
-      val surface = ReactSurfaceImpl.createWithView(context, KernelConstants.HOME_MODULE_NAME, kernelLaunchOptions)
+      val surface = ReactSurfaceImpl.createWithView(
+        context,
+        KernelConstants.HOME_MODULE_NAME,
+        kernelLaunchOptions
+      )
       surface.attach(reactHost as ReactHostImpl)
       surface.start()
       return surface
@@ -693,25 +702,11 @@ class Kernel : KernelInterface() {
     if (existingTask == null) {
       sendManifestToExperienceActivity(manifestUrl, manifest, bundleUrl)
     }
-    val params = Arguments.createMap().apply {
-      putString("manifestUrl", manifestUrl)
-      putString("manifestString", manifest.toString())
-    }
-    queueEvent(
-      "ExponentKernel.addHistoryItem",
-      params,
-      object : KernelEventCallback {
-        override fun onEventSuccess(result: ReadableMap) {
-          EXL.d(TAG, "Successfully called ExponentKernel.addHistoryItem in kernel JS.")
-        }
-
-        override fun onEventFailure(errorMessage: String?) {
-          EXL.e(
-            TAG,
-            "Error calling ExponentKernel.addHistoryItem in kernel JS: $errorMessage"
-          )
-        }
-      }
+    exponentHistoryService.addHistoryItem(
+      HistoryItem(
+        manifestUrl = manifestUrl,
+        manifest = manifest
+      )
     )
     killOrphanedLauncherActivities()
   }

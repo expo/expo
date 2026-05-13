@@ -35,7 +35,7 @@ public final class DeviceMotionModule: Module {
       }
       permissionsManager.getPermissionUsingRequesterClass(
         EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }
@@ -46,7 +46,7 @@ public final class DeviceMotionModule: Module {
       }
       permissionsManager.askForPermission(
         usingRequesterClass: EXMotionPermissionRequester.self,
-        resolve: promise.resolver,
+        resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
     }

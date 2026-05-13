@@ -9,8 +9,8 @@ exports.getDefaultConfig = getDefaultConfig;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
-const json_file_1 = __importDefault(require("@expo/json-file"));
 const metro_cache_1 = require("@expo/metro/metro-cache");
+const exclusionList_1 = __importDefault(require("@expo/metro/metro-config/defaults/exclusionList"));
 const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
@@ -26,9 +26,9 @@ const sideEffects_1 = require("./serializer/sideEffects");
 const withExpoSerializers_1 = require("./serializer/withExpoSerializers");
 const postcss_1 = require("./transform-worker/postcss");
 const filePath_1 = require("./utils/filePath");
+const getPkgVersion_1 = require("./utils/getPkgVersion");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -43,7 +43,9 @@ function patchMetroGraphToSupportUncachedModules() {
             this.dependencies.forEach((dependency) => {
                 // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
                 // `skipCache` is set when a CSS module is found by PostCSS.
-                if (dependency.output.find((file) => file.data.css?.skipCache) &&
+                if (
+                // TODO(@kitten): MixedOutput needs to be upcast, but `data` isn't defined in `JSFile`?
+                dependency.output.find((file) => file.data.css?.skipCache) &&
                     !paths.includes(dependency.path)) {
                     // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
                     // the Graph._processModule method.
@@ -84,6 +86,9 @@ function memoize(fn) {
         cache.set(key, result);
         return result;
     });
+}
+function asMetroConfigInput(config) {
+    return config;
 }
 function createStableModuleIdFactory(root) {
     const getModulePath = (modulePath, scope) => {
@@ -128,11 +133,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
     }
-    const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
-    if (isExotic && !hasWarnedAboutExotic) {
-        hasWarnedAboutExotic = true;
-        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
-    }
     const reactNativePath = path_1.default.dirname(resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json');
     if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
         hasWarnedAboutReactNative = true;
@@ -142,12 +142,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     const sourceExts = (0, paths_1.getBareExtensions)([], sourceExtsConfig);
     // Add support for cjs (without platform extensions).
     sourceExts.push('cjs');
-    const reanimatedVersion = getPkgVersion(projectRoot, 'react-native-reanimated');
-    const workletsVersion = getPkgVersion(projectRoot, 'react-native-worklets');
-    const babelRuntimeVersion = getPkgVersion(projectRoot, '@babel/runtime');
+    const reanimatedVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, 'react-native-reanimated');
+    const workletsVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, 'react-native-worklets');
+    const babelRuntimeVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, '@babel/runtime');
     let sassVersion = null;
     if (isCSSEnabled) {
-        sassVersion = getPkgVersion(projectRoot, 'sass');
+        sassVersion = (0, getPkgVersion_1.getPkgVersion)(projectRoot, 'sass');
         // Enable SCSS by default so we can provide a better error message
         // when sass isn't installed.
         sourceExts.push('scss', 'sass', 'css');
@@ -183,18 +183,20 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log(`- Babel Runtime: ${babelRuntimeVersion}`);
         console.log();
     }
-    const { 
-    // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
-    // This prints a giant React logo which is less accessible to users on smaller terminals.
-    reporter, ...metroDefaultValues } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+    const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
     const cacheStore = new file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
     const routerPackageRoot = resolve_from_1.default.silent(projectRoot, 'expo-router');
-    // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
-    // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-    const metroConfig = mergeConfig(metroDefaultValues, {
+    const expoMetroConfig = asMetroConfigInput({
+        reporter: {
+            // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
+            // This prints a giant React logo which is less accessible to users on smaller terminals.
+            update() {
+                /*noop*/
+            },
+        },
         watchFolders,
         resolver: {
             unstable_conditionsByPlatform: {
@@ -217,8 +219,12 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.
-                /\.expo[\\/]types/,
-            ].concat(metroDefaultValues.resolver.blockList ?? []),
+                // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+                (0, exclusionList_1.default)(['.expo/types', '.expo/web/cache']),
+                // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+                // pattern is reapplied to normal paths during the Node crawling phase
+                /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+            ],
         },
         cacheStores: [cacheStore],
         watcher: {
@@ -285,9 +291,9 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         transformerPath: require.resolve('./transform-worker/transform-worker'),
         // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
         transformer: {
+            unstable_workerThreads: true,
             // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
             unstable_renameRequire: false,
-            // @ts-expect-error: not on type.
             _expoRouterPath: routerPackageRoot ? path_1.default.relative(serverRoot, routerPackageRoot) : undefined,
             postcssHash: (0, postcss_1.getPostcssConfigHash)(projectRoot),
             browserslistHash: pkg?.browserslist
@@ -303,11 +309,16 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             unstable_allowRequireContext: true,
             allowOptionalDependencies: true,
             babelTransformerPath: require.resolve('./babel-transformer'),
-            // TODO: The absolute path invalidates caching across devices. To account for this, we remove the `asyncRequireModulePath` from the cache key but that means any changes to the file will not invalidate the cache.
-            asyncRequireModulePath: require.resolve('./async-require'),
+            // Only apply expo internal asyncRequireModulePath when `expo` is installed
+            // This must be a module request, rather than an absolute path to keep the cache clean
+            asyncRequireModulePath: getExpoOptional(projectRoot, 'internal/async-require-module')
+                ? 'expo/internal/async-require-module'
+                : metroDefaultValues.transformer.asyncRequireModulePath,
             assetRegistryPath: '@react-native/assets-registry/registry',
             // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
             enableBabelRuntime: babelRuntimeVersion ?? undefined,
+            // Allows additional babelrc lookups (mostly unused). The default of `undefined` enables the project's custom Babel config without enabling babelrc/configFile discovery
+            enableBabelRCLookup: undefined,
             // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {
@@ -317,6 +328,13 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             }),
         },
     });
+    // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
+    // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
+    const metroConfig = mergeConfig(
+    // NOTE(@kitten): We neither want ConfigT/MetroConfig here, which is mostly marked as readonly,
+    // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
+    // the default config and Expo's config
+    metroDefaultValues, expoMetroConfig);
     return (0, withExpoSerializers_1.withExpoSerializers)(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 /** Use to access the Expo Metro transformer path */
@@ -324,44 +342,25 @@ exports.unstable_transformerPath = require.resolve('./transform-worker/transform
 exports.internal_supervisingTransformerPath = require.resolve('./transform-worker/supervising-transform-worker');
 // re-export for legacy cases.
 exports.EXPO_DEBUG = env_1.env.EXPO_DEBUG;
-function getPkgVersion(projectRoot, pkgName) {
-    const targetPkg = resolve_from_1.default.silent(projectRoot, pkgName);
-    if (!targetPkg)
-        return null;
-    const targetPkgJson = findUpPackageJson(targetPkg);
-    if (!targetPkgJson)
-        return null;
-    const pkg = json_file_1.default.read(targetPkgJson);
-    debug(`${pkgName} package.json:`, targetPkgJson);
-    const pkgVersion = pkg.version;
-    if (typeof pkgVersion === 'string') {
-        return pkgVersion;
-    }
-    return null;
-}
-function findUpPackageJson(cwd) {
-    if (['.', path_1.default.sep].includes(cwd))
-        return null;
-    const found = resolve_from_1.default.silent(cwd, './package.json');
-    if (found) {
-        return found;
-    }
-    return findUpPackageJson(path_1.default.dirname(cwd));
+function getExpoOptional(projectRoot, subModule = 'package.json') {
+    return resolve_from_1.default.silent(projectRoot, `expo/${subModule}`);
 }
 function getExpoMetroRuntimeOptional(projectRoot) {
     const EXPO_METRO_RUNTIME = '@expo/metro-runtime';
-    let metroRuntime = resolve_from_1.default.silent(projectRoot, EXPO_METRO_RUNTIME);
-    if (!metroRuntime) {
-        // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
-        // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
-        // try to also resolve it via `expo-router`, where it's a required peer
-        const baseExpoRouter = resolve_from_1.default.silent(projectRoot, 'expo-router/package.json');
-        // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
-        // optional peer dependency
-        metroRuntime = baseExpoRouter
-            ? resolve_from_1.default.silent(baseExpoRouter, EXPO_METRO_RUNTIME)
-            : resolve_from_1.default.silent(require.resolve('expo/package.json'), EXPO_METRO_RUNTIME);
+    const metroRuntime = resolve_from_1.default.silent(projectRoot, EXPO_METRO_RUNTIME);
+    if (metroRuntime) {
+        return metroRuntime;
     }
-    return metroRuntime;
+    // NOTE(@kitten): While `@expo/metro-runtime` is a peer, auto-installing this peer is valid and expected
+    // When it's auto-installed it may not be hoisted or not accessible from the project root, so we need to
+    // try to also resolve it via `expo-router`, where it's a required peer
+    const baseExpoRouter = resolve_from_1.default.silent(projectRoot, 'expo-router/package.json');
+    if (baseExpoRouter) {
+        return resolve_from_1.default.silent(baseExpoRouter, EXPO_METRO_RUNTIME);
+    }
+    // When expo-router isn't installed, however, we instead try to resolve it from `expo`, where it's an
+    // optional peer dependency
+    const baseExpo = getExpoOptional(projectRoot);
+    return baseExpo ? resolve_from_1.default.silent(baseExpo, EXPO_METRO_RUNTIME) : undefined;
 }
 //# sourceMappingURL=ExpoMetroConfig.js.map

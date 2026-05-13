@@ -1,4 +1,4 @@
-import { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
+import type { NotificationChannelGroup } from './NotificationChannelGroupManager.types';
 /**
  * Fetches information about a single notification channel group.
  * @param groupId The channel group's identifier.
@@ -8,5 +8,5 @@ import { NotificationChannelGroup } from './NotificationChannelGroupManager.type
  * @platform android
  * @header channels
  */
-export default function getNotificationChannelGroupAsync(groupId: string): Promise<NotificationChannelGroup | null>;
+export declare function getNotificationChannelGroupAsync(groupId: string): Promise<NotificationChannelGroup | null>;
 //# sourceMappingURL=getNotificationChannelGroupAsync.d.ts.map

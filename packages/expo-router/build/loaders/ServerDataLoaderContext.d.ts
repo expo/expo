@@ -5,5 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  *
  */
-export declare const ServerDataLoaderContext: import("react").Context<Record<string, any> | null>;
+export type ServerDataLoaderData = Record<string, any> | null;
+export declare const ServerDataLoaderContext: import("react").Context<ServerDataLoaderData>;
 //# sourceMappingURL=ServerDataLoaderContext.d.ts.map

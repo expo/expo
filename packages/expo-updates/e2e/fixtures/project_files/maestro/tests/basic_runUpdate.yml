@@ -19,6 +19,12 @@ onFlowStart:
 - evalScript:
     script: ${output.api.delay(3000)}
     label: Delay for 3 seconds
+- copyTextFrom:
+    label: Copy text from download progress
+    id: state.downloadProgress
+- assertTrue:
+    condition: ${maestro.copiedText == "1"}
+    label: Assert download progress is 1 after background download completes during startup
 - stopApp
 - launchApp
 - copyTextFrom:

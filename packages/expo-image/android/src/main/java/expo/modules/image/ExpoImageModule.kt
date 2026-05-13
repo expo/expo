@@ -1,5 +1,3 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.image
 
 import android.graphics.Bitmap
@@ -33,7 +31,6 @@ import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.image.thumbhash.ThumbhashEncoder
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.functions.Queues

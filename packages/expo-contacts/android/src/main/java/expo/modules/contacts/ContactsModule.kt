@@ -22,6 +22,7 @@ import expo.modules.contacts.models.PhoneNumberModel
 import expo.modules.contacts.models.PostalAddressModel
 import expo.modules.contacts.models.RelationshipModel
 import expo.modules.contacts.models.UrlAddressModel
+import expo.modules.core.utilities.ifNull
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -31,6 +32,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.launch
 import java.util.UUID
+import expo.modules.kotlin.types.OptimizedRecord
 
 const val onContactsChangeEventName = "onContactsChange"
 
@@ -99,6 +101,7 @@ private val DEFAULT_PROJECTION = listOf(
   ContactsContract.Data.STARRED
 )
 
+@OptimizedRecord
 class ContactQuery : Record {
   @Field
   val pageSize = 0
@@ -195,6 +198,26 @@ class ContactsModule : Module() {
           }
 
           promise.resolve(contactData.toBundle(options.fields))
+        }
+    }
+
+    AsyncFunction("hasContactsAsync") { promise: Promise ->
+      ensureReadPermission()
+
+      appContext
+        .backgroundCoroutineScope
+        .launch {
+          resolver.query(
+            ContactsContract.Contacts.CONTENT_URI,
+            arrayOf(ContactsContract.Contacts._ID),
+            null,
+            null,
+            null
+          ).ifNull { throw ContactsCheckFailedException() }
+            .use { cursor ->
+              val hasAnyContacts = cursor.moveToFirst()
+              promise.resolve(hasAnyContacts)
+            }
         }
     }
 
@@ -368,7 +391,13 @@ class ContactsModule : Module() {
       val image = data["image"]
       if (image is Map<*, *> && image.containsKey("uri")) {
         val uri = image["uri"] as String?
-        if (uri != null && !uri.startsWith("file://")) {
+        // The list of supported schemas for ContentResolver
+        // https://developer.android.com/privacy-and-security/risks/content-resolver
+        if (uri != null &&
+          !uri.startsWith("file://") &&
+          !uri.startsWith("content://") &&
+          !uri.startsWith("android.resource://")
+        ) {
           throw RemoteImageUriException(uri)
         }
         contact.photoUri = uri

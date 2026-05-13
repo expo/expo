@@ -1,4 +1,6 @@
 const DEFAULT_SCRIPT_NAME = 'file:///__main.js';
+const REGEXP_REPLACE_SLASHES = /\\/g;
+const WIN32_PATH_REGEXP = /^[a-zA-Z]:[/\\]/;
 // - ./runtime/importMetaRegistry.ts (this file) -> importMetaRegistry.url
 // - ./runtime/index.ts -> globalThis.__ExpoImportMetaRegistry
 // - <source>
@@ -16,12 +18,24 @@ function getFileName(offset = 0) {
         Error.stackTraceLimit = originalStackTraceLimit;
     }
 }
+/**
+ * Convert any platform-specific path to a POSIX path.
+ */
+function toPosixPath(filePath) {
+    return filePath.replace(REGEXP_REPLACE_SLASHES, '/');
+}
 export const importMetaRegistry = {
     get url() {
         let scriptName = getFileName(CALL_DEPTH);
-        if (scriptName?.[0] === '/')
-            scriptName = `file://${scriptName}`;
-        return scriptName || DEFAULT_SCRIPT_NAME;
+        if (scriptName) {
+            if (scriptName[0] === '/') {
+                scriptName = `file://${scriptName}`;
+            }
+            else if (WIN32_PATH_REGEXP.test(scriptName)) {
+                scriptName = `file:///${scriptName}`;
+            }
+        }
+        return toPosixPath(scriptName || DEFAULT_SCRIPT_NAME);
     },
 };
 //# sourceMappingURL=importMetaRegistry.js.map

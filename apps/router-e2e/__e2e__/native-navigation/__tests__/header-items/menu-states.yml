@@ -1,0 +1,30 @@
+appId: com.expo.routere2e
+name: Header Items menu states
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://header-items?rightMenu1=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Stack Header Items E2E Test Screen"
+- tapOn: "Menu"
+- assertVisible: "Archive emails"
+- tapOn: "Archive emails"
+- assertVisible: "Archived emails"
+- tapOn: "OK"
+- tapOn: "Menu"
+- assertVisible: "Unarchive emails"
+- assertVisible:
+    id: "checkmark"
+- tapOn: "View Mode"
+- assertVisible: "Icons"
+- assertVisible: "List"
+- tapOn: "List"
+- assertVisible: "Changed to list view"
+- tapOn: "OK"
+- tapOn: "Menu"
+- assertVisible: "View Mode"
+- assertVisible:
+    id: "checkmark"
+    index: 1
+- tapOn: "Icons"
+- assertVisible: "Changed to icons view"
+- tapOn: "OK"

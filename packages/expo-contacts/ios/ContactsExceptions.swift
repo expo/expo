@@ -132,3 +132,9 @@ internal final class ContactSerializationException: GenericException<String> {
     "Failed to serialize contact data: \(param)"
   }
 }
+
+internal final class ContactsCheckFailedException: Exception {
+  override var reason: String {
+    "Couldn't check if there are any contacts"
+  }
+}

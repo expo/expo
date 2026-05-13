@@ -7,7 +7,7 @@
  *
  * https://github.com/dai-shi/waku/blob/3d1cc7d714b67b142c847e879c30f0724fc457a7/packages/waku/src/router/create-pages.ts#L1
  */
-import type { RouteProps } from 'expo-router/build/rsc/router/common';
+import type { RouteProps } from 'expo-router/internal/rsc';
 import type { FunctionComponent, ReactNode } from 'react';
 import type { BuildConfig } from '../server';
 /**

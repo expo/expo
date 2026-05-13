@@ -29,6 +29,14 @@ export const VideoScreens = [
     },
   },
   {
+    name: 'Changing VideoPlayer output view',
+    route: 'video/player_prop',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoChangePlayerOutputScreen'));
+    },
+  },
+  {
     name: 'DRM',
     route: 'video/drm',
     options: {},
@@ -115,6 +123,14 @@ export const VideoScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./VideoThumbnailsScreen'));
+    },
+  },
+  {
+    name: 'Video scrubbing options',
+    route: 'video/scrubbing',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoScrubbingScreen'));
     },
   },
 ];

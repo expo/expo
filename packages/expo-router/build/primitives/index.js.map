@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/primitives/index.tsx"],"names":[],"mappings":";;;;;;;;;;;;;;;;;AAAA,2CAA6C;AAApC,oGAAA,MAAM,OAAA;AAAE,mGAAA,KAAK,OAAA;AACtB,0CAAwB;AACxB,6CAA2B","sourcesContent":["export { Screen, Group } from './navigation';\nexport * from './types';\nexport * from './elements';\n"]}

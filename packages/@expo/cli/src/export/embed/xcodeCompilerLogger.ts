@@ -137,7 +137,7 @@ function getLineNumberForStringInFile(originModulePath: string, targetModuleName
   let lineNumber = 0;
   let column = -1;
   for (let line = 0; line < lines.length; line++) {
-    const columnLocation = lines[line].lastIndexOf(targetModuleName);
+    const columnLocation = lines[line]!.lastIndexOf(targetModuleName);
     if (columnLocation >= 0) {
       lineNumber = line;
       column = columnLocation;

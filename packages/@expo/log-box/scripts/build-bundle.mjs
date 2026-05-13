@@ -1,11 +1,13 @@
 #!/usr/bin/env node
 
 // Build the ExpoLogBox.bundle DOM Component.
-// Use `yarn build` to run this script.
+// Use `pnpm build` to run this script.
 
 import spawn from '@expo/spawn-async';
 import { globSync } from 'glob';
+import { existsSync } from 'node:fs';
 import { rm, rename } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { join, dirname } from 'path';
 import { argv } from 'process';
 import { fileURLToPath } from 'url';
@@ -13,18 +15,32 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// NODE_BINARY is set for Xcode builds via the `with-node.sh` script.
+const nodePath = process.env.NODE_BINARY || 'node';
 const outputLogBoxBundle = 'ExpoLogBox.bundle';
 const defaultDomComponentsBundle = 'www.bundle';
-const outputDir = 'dist';
+const outputDir = join(__dirname, '../dist');
 const appBundlePath = join(outputDir, 'app.bundle');
 const indexHtmlPath = join(outputDir, defaultDomComponentsBundle, 'index.html');
 
+const forceArgvIdx = argv.findIndex((item) => item === '-f' || item === '--force');
+if (
+  forceArgvIdx === -1 &&
+  existsSync(join(outputDir, outputLogBoxBundle))
+) {
+  process.exit(0);
+} else if (forceArgvIdx !== -1) {
+  argv.splice(forceArgvIdx, 1);
+}
+
 await rm(outputDir, { recursive: true, force: true });
 
+const expoCliJs = createRequire(__dirname).resolve('expo/bin/cli');
+
 const result = await spawn(
-  'yarn',
+  nodePath,
   [
-    'expo',
+    expoCliJs,
     'export:embed',
     '--platform',
     'android',
@@ -34,7 +50,10 @@ const result = await spawn(
     join(__dirname, '../app/index.ts'),
     ...argv.slice(2),
   ],
-  { stdio: 'inherit' }
+  {
+    stdio: 'inherit',
+    cwd: join(__dirname, '..'),
+  }
 );
 
 if (result.error) {

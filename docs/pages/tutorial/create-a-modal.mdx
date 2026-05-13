@@ -13,7 +13,11 @@ React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal
 
 In this chapter, we'll create a modal that shows an emoji picker list.
 
-<VideoBoxLink videoId="HRAMzrBwVeo" title="Watch: Creating a modal in your universal Expo app" />
+<VideoBoxLink
+  videoId="HRAMzrBwVeo"
+  title="Watch: Creating a modal in your universal Expo app"
+  description="Build a modal component using React Native's Modal API to display an emoji picker and handle user interactions."
+/>
 
 ---
 
@@ -342,17 +346,17 @@ type Props = PropsWithChildren<{
 export default function EmojiPicker({ isVisible, children, onClose }: Props) {
   return (
     <View>
-    <Modal animationType="slide" transparent={true} visible={isVisible}>
-      <View style={styles.modalContent}>
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>Choose a sticker</Text>
-          <Pressable onPress={onClose}>
-            <MaterialIcons name="close" color="#fff" size={22} />
-          </Pressable>
+      <Modal animationType="slide" transparent={true} visible={isVisible}>
+        <View style={styles.modalContent}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Choose a sticker</Text>
+            <Pressable onPress={onClose}>
+              <MaterialIcons name="close" color="#fff" size={22} />
+            </Pressable>
+          </View>
+          {children}
         </View>
-        {children}
-      </View>
-    </Modal>
+      </Modal>
     </View>
   );
 }
@@ -748,16 +752,13 @@ import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-
 import Button from '@/components/Button';
 import ImageViewer from '@/components/ImageViewer';
 import IconButton from '@/components/IconButton';
 import CircleButton from '@/components/CircleButton';
 import EmojiPicker from '@/components/EmojiPicker';
 import EmojiList from '@/components/EmojiList';
-/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */
-import EmojiSticker from '@/components/EmojiSticker';
-/* @end */
+/* @tutinfo Import the <CODE>EmojiSticker</CODE> component. */import EmojiSticker from '@/components/EmojiSticker';/* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 

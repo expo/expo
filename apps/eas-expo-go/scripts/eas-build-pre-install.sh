@@ -22,13 +22,7 @@ elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
 fi
 
 if [ "$EAS_BUILD_PROFILE" = "release-client" ] || [ "$EAS_BUILD_PROFILE" = "publish-client" ]; then
-  if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
-    sudo apt-get -y update
-    sudo apt-get -y install git-crypt
-  elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
-    HOMEBREW_NO_AUTO_UPDATE=1 brew install git-crypt
-  fi
-  git-crypt unlock $GIT_CRYPT_KEY
+  cp "$DECRYPTED_KEYS" "$ROOT_DIR/secrets/keys.json"
 fi
 
 cat << EOF > $ROOT_DIR/.gitmodules
@@ -41,12 +35,18 @@ EOF
 
 git submodule update --init
 
+# The react-native submodule uses yarn internally.
+yarn --cwd $ROOT_DIR/react-native-lab/react-native install --frozen-lockfile
+
 if [ -n "${EAS_BUILD_NPM_CACHE_URL-}" ]; then
   sed -i -e "s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g" $ROOT_DIR/yarn.lock || true
 fi
 
 pushd $ROOT_DIR/tools
-yarn
+
+# Install just the `tools` workspace and its deps so `et` can run here. The
+# root `pnpm install` runs in a later EAS phase.
+pnpm install --filter expotools... --ignore-scripts --dir "$ROOT_DIR"
 
 if [ "$EAS_BUILD_PROFILE" = "release-client" ] && [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   et eas remove-background-permissions-from-info-plist

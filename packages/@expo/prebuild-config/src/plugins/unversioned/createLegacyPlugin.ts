@@ -1,13 +1,8 @@
-import {
-  ConfigPlugin,
-  createRunOncePlugin,
-  PluginParameters,
-  withPlugins,
-  withStaticPlugin,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin, PluginParameters } from '@expo/config-plugins';
+import { createRunOncePlugin, withPlugins, withStaticPlugin } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 
-const toCamelCase = (s: string) => s.replace(/-./g, (x) => x.toUpperCase()[1]);
+const toCamelCase = (s: string) => s.replace(/-./g, (x) => x.toUpperCase()?.[1] ?? '');
 
 function isModuleExcluded(config: Pick<ExpoConfig, '_internal'>, packageName: string): boolean {
   // Skip using the versioned plugin when autolinking is enabled

@@ -1,7 +1,7 @@
 import { SharedObject } from 'expo';
 
-import { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import type { VideoThumbnail } from './VideoThumbnail';
 
 /**
  * A class that represents an instance of the video player.
@@ -49,8 +49,7 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * at which playback will begin once the `play()` method is called.
    *
    * Setting `currentTime` to a new value seeks the player to the given time.
-   * Note that frame accurate seeking may incur additional decoding delay which can impact seeking performance.
-   * Consider using the [`seekBy`](#seekbyseconds) function if the time does not have to be set precisely.
+   * Check out the [`seekTolerance`](#seektolerance) property to configure the seeking precision.
    */
   currentTime: number;
 
@@ -233,13 +232,37 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   readonly isExternalPlaybackActive: boolean;
 
   /**
+   * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
+   *
+   * This property affects the precision of setting the [`currentTime`](#currenttime) property and the [`seekBy`](#seekbyseconds) method, and on Android, it also affects the accuracy of the scrubber from the default native controls.
+   *
+   * By default, the player seeks to the exact requested time.
+   *
+   * > If you are trying to optimize for scrubbing (many frequent seeks), also see [`ScrubbingModeOptions`](#scrubbingmodeoptions-1).
+   */
+  seekTolerance: SeekTolerance;
+
+  /**
+   * Determines whether the scrubbing mode is enabled and what scrubbing optimizations should be enabled.
+   *
+   * > See [`SeekTolerance`](#seektolerance) to set the seeking tolerance, which can also affect the scrubbing performance.
+   *
+   */
+  scrubbingModeOptions: ScrubbingModeOptions;
+
+  /**
    * Initializes a new video player instance with the given source.
    *
    * @param source The source of the video to be played.
    * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
+   * @param playerBuilderOptions Options to apply to the player builder before the native constructor is invoked.
    * @hidden
    */
-  constructor(source: VideoSource, useSynchronousReplace?: boolean);
+  constructor(
+    source: VideoSource,
+    useSynchronousReplace?: boolean,
+    playerBuilderOptions?: PlayerBuilderOptions
+  );
 
   /**
    * Resumes the player.
@@ -320,66 +343,64 @@ export type VideoThumbnailOptions = {
  */
 export type VideoPlayerStatus = 'idle' | 'loading' | 'readyToPlay' | 'error';
 
-export type VideoSource =
-  | string
-  | number
-  | null
-  | {
-      /**
-       * The URI of the video.
-       *
-       * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
-       *
-       * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
-       */
-      uri?: string;
+export type VideoSource = string | number | null | VideoSourceObject;
 
-      /**
-       * The asset ID of a local video asset, acquired with the `require` function.
-       * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
-       */
-      assetId?: number;
+export type VideoSourceObject = {
+  /**
+   * The URI of the video.
+   *
+   * On iOS, `PHAsset` URIs are supported, but can only be loaded using the [`replaceAsync`](#replaceasyncsource) method or the default [`VideoPlayer`](#videoplayer) constructor.
+   *
+   * This property is exclusive with the `assetId` property. When both are present, the `assetId` will be ignored.
+   */
+  uri?: string;
 
-      /**
-       * Specifies the DRM options which will be used by the player while loading the video.
-       */
-      drm?: DRMOptions;
+  /**
+   * The asset ID of a local video asset, acquired with the `require` function.
+   * This property is exclusive with the `uri` property. When both are present, the `assetId` will be ignored.
+   */
+  assetId?: number;
 
-      /**
-       * Specifies information which will be displayed in the now playing notification.
-       * When undefined the player will display information contained in the video metadata.
-       * @platform android
-       * @platform ios
-       */
-      metadata?: VideoMetadata;
+  /**
+   * Specifies the DRM options which will be used by the player while loading the video.
+   */
+  drm?: DRMOptions;
 
-      /**
-       * Specifies headers sent with the video request.
-       * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
-       * @platform android
-       * @platform ios
-       */
-      headers?: Record<string, string>;
+  /**
+   * Specifies information which will be displayed in the now playing notification.
+   * When undefined the player will display information contained in the video metadata.
+   * @platform android
+   * @platform ios
+   */
+  metadata?: VideoMetadata;
 
-      /**
-       * Specifies whether the player should use caching for the video.
-       * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
-       * @default false
-       * @platform android
-       * @platform ios
-       */
-      useCaching?: boolean;
+  /**
+   * Specifies headers sent with the video request.
+   * > For DRM license headers use the `headers` field of [`DRMOptions`](#drmoptions).
+   * @platform android
+   * @platform ios
+   */
+  headers?: Record<string, string>;
 
-      /**
-       * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
-       *
-       * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
-       * @default 'auto'
-       * @platform android
-       * @platform ios
-       */
-      contentType?: ContentType;
-    };
+  /**
+   * Specifies whether the player should use caching for the video.
+   * > Due to platform limitations, the cache cannot be used with HLS video sources on iOS. Caching DRM-protected videos is not supported on Android and iOS.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  useCaching?: boolean;
+
+  /**
+   * Specifies the content type of the video source. When set to `'auto'`, the player will try to automatically determine the content type.
+   *
+   * You should use this property when playing HLS, SmoothStreaming or DASH videos from an uri, which does not contain a standardized extension for the corresponding media type.
+   * @default 'auto'
+   * @platform android
+   * @platform ios
+   */
+  contentType?: ContentType;
+};
 
 /**
  * Contains information about any errors that the player encountered during the playback
@@ -553,7 +574,7 @@ export type SubtitleTrack = {
    *
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the subtitle track. For example, `en`, `pl`, `de`.
@@ -564,6 +585,27 @@ export type SubtitleTrack = {
    * Label of the subtitle track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the subtitle track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default subtitle track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -576,6 +618,11 @@ export type VideoTrack = {
    * > This field is platform-specific and may return different depending on the operating system.
    */
   id: string;
+
+  /**
+   * The URL of the `VideoTrack` for HLS video sources. `null` for other source types.
+   */
+  url: string | null;
 
   /**
    * Size of the video track.
@@ -596,13 +643,31 @@ export type VideoTrack = {
 
   /**
    * Specifies the bitrate in bits per second. This is the peak bitrate if known, or else the average bitrate if known, or else null.
+   *
+   * @deprecated Use `peakBitrate` or `averageBitrate` instead.
    */
   bitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   *
+   */
+  averageBitrate: number | null;
+
+  /**
+   * Specifies the average bitrate in bits per second or null if the value is unknown.
+   */
+  peakBitrate: number | null;
 
   /**
    * Specifies the frame rate of the video track in frames per second.
    */
   frameRate: number | null;
+
+  /**
+   * Specifies the video range of the video track.
+   */
+  videoRange: VideoRange;
 };
 
 /**
@@ -624,7 +689,7 @@ export type AudioTrack = {
    * A string used by expo-video to identify the audio track.
    * @platform android
    */
-  id: string;
+  id?: string;
 
   /**
    * Language of the audio track. For example, 'en', 'pl', 'de'.
@@ -635,4 +700,135 @@ export type AudioTrack = {
    * Label of the audio track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the audio track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default audio track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
+
+/**
+ * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
+ * Larger tolerance will usually result in faster seeking.
+ * This property affects the precision of setting the [`currentTime`](#currenttime) property and the [`seekBy`](#seekbyseconds) method, and on Android, it also affects the accuracy of the scrubber from the default native controls.
+ *
+ * > If you are trying to optimize for scrubbing (many frequent seeks), also see [`ScrubbingModeOptions`](#scrubbingmodeoptions-1).
+ *
+ * @platform android
+ * @platform ios
+ */
+export type SeekTolerance = {
+  /**
+   * The maximum time that the actual position seeked to may precede the requested seek position, in seconds. Must be non-negative.
+   * @default 0
+   */
+  toleranceBefore?: number;
+
+  /**
+   * The maximum time that the actual position seeked to may exceed the requested seek position, in seconds. Must be non-negative.
+   * @default 0
+   */
+  toleranceAfter?: number;
+};
+
+/**
+ * Defines scrubbing mode options used by a [`VideoPlayer`](#videoplayer).
+ */
+export type ScrubbingModeOptions = {
+  /**
+   * Whether the codec operating rate should be increased in scrubbing mode.
+   *
+   * You should only enable this when the player is receiving a large number of seeks in a short period of time. For less frequent seeks, fine-tuning the [`SeekTolerance`](#seektolerance-1) may be sufficient.
+   *
+   * On Android, the player may consume more resources in this mode, so it should only be used for short periods of time in response to user interaction (for example, dragging on a progress bar UI element).
+   *
+   * On Android, when `scrubbingModeEnabled` is `true`, the playback is suppressed. You should set this property back to `false` when the user interaction ends to allow the playback to resume.
+   * For best results, on iOS you should pause the playback when scrubbing.
+   *
+   * > For best scrubbing performance, consider also increasing the seeking tolerance using the [`SeekTolerance`](#seektolerance-1) property.
+   *
+   * > Other scrubbing mode options will have no effect when this is `false`.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  scrubbingModeEnabled?: boolean;
+
+  /**
+   * Whether the codec operating rate should be increased in scrubbing mode.
+   *
+   * @platform android
+   * @default true
+   */
+  increaseCodecOperatingRate?: boolean;
+
+  /**
+   * Sets whether ExoPlayer's dynamic scheduling should be enabled in scrubbing mode.
+   * This can result in available output buffers being handled more quickly when seeking.
+   *
+   * @platform android
+   * @default true
+   */
+  enableDynamicScheduling?: boolean;
+  /**
+   * Sets whether to use `MediaCodec.BUFFER_FLAG_DECODE_ONLY` in scrubbing mode.
+   * When playback is using MediaCodec on API 34+, this flag can speed up seeking by signalling that the decoded output of buffers between the previous keyframe and the target frame is not needed by the player.
+   *
+   * @platform android
+   * @default true
+   */
+  useDecodeOnlyFlag?: boolean;
+
+  /**
+   * Sets whether to avoid flushing the decoder (where possible) in scrubbing mode.
+   * When `true`, avoids flushing the decoder when a new seek starts decoding from a key-frame in compatible content.
+   *
+   * @platform android
+   * @default true
+   */
+  allowSkippingMediaCodecFlush?: boolean;
+};
+
+/**
+ * Options to apply to the player builder before the native constructor is invoked
+ * @platform android
+ */
+export type PlayerBuilderOptions = {
+  /**
+   * Seek backward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekBackwardIncrement?: number;
+
+  /**
+   * Seek forward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekForwardIncrement?: number;
+};
+
+/**
+ * Specifies the dynamic range of the video content.
+ * - `sdr`: Standard Dynamic Range video.
+ * - `hlg`: Hybrid Log-Gamma - HDR backward-compatible with SDR displays
+ * - `pq`: Perceptual Quantizer - Formats like HDR10 and Dolby Vision
+ */
+export type VideoRange = 'sdr' | 'hlg' | 'pq';

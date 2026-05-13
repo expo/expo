@@ -1,9 +1,9 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
-import EXNotifications
+import ExpoNotifications
 
-public final class ExpoGoNotificationsPresentationModule: PresentationModule {
+final class ExpoGoNotificationsPresentationModule: PresentationModule {
   private let scopeKey: String
   // swiftlint:disable:next unavailable_function
   required init(appContext: AppContext) {
@@ -16,7 +16,7 @@ public final class ExpoGoNotificationsPresentationModule: PresentationModule {
     super.init(appContext: appContext)
   }
 
-  public override func serializeNotifications(_ notifications: [UNNotification]) -> [[String: Any]] {
+  public override func serializeNotifications(_ notifications: [UNNotification]) -> [NotificationRecord] {
     return notifications
       .filter { notification in
         EXScopedNotificationsUtils.shouldNotification(notification, beHandledByExperience: self.scopeKey)

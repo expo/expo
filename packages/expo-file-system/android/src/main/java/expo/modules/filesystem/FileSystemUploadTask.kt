@@ -1,0 +1,269 @@
+package expo.modules.filesystem
+
+import com.facebook.react.modules.network.OkHttpClientProvider
+import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
+import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.types.OptimizedRecord
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import okio.Buffer
+import okio.BufferedSink
+import okio.ForwardingSink
+import okio.Sink
+import okio.buffer
+import okio.source
+import java.io.IOException
+import java.net.URLConnection
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
+enum class UploadType(val value: Int) : Enumerable {
+  BINARY_CONTENT(0),
+  MULTIPART(1)
+}
+
+/**
+ * Record type for upload options.
+ */
+@OptimizedRecord
+class UploadTaskOptions : Record {
+  @Field var headers: Map<String, String>? = null
+
+  @Field var httpMethod: String = "POST"
+
+  @Field var uploadType: UploadType = UploadType.BINARY_CONTENT
+
+  @Field var fieldName: String? = null
+
+  @Field var mimeType: String? = null
+
+  @Field var parameters: Map<String, String>? = null
+}
+
+/**
+ * Record type for upload result.
+ */
+@OptimizedRecord
+class UploadTaskResult : Record {
+  @Field var body: String = ""
+
+  @Field var status: Int = 0
+
+  @Field var headers: Map<String, String> = emptyMap()
+}
+
+/**
+ * A SharedObject that handles file uploads with progress tracking.
+ */
+class FileSystemUploadTask : SharedObject() {
+  companion object {
+    private val client = OkHttpClientProvider.createClientBuilder()
+      .connectTimeout(60, TimeUnit.SECONDS)
+      .readTimeout(60, TimeUnit.SECONDS)
+      .writeTimeout(60, TimeUnit.SECONDS)
+      .build()
+  }
+
+  private var call: Call? = null
+
+  @Volatile private var cancelled = false
+  private var lastProgressTime: Long = 0
+  private val progressThrottleInterval = 100.milliseconds
+
+  suspend fun start(url: String, file: FileSystemFile, options: UploadTaskOptions): UploadTaskResult {
+    cancelled = false
+    val request = buildUploadRequest(url, file, options)
+    return executeUploadRequest(request)
+  }
+
+  private fun buildUploadRequest(url: String, file: FileSystemFile, options: UploadTaskOptions): Request {
+    val unifiedFile = file.file
+
+    if (!unifiedFile.exists()) {
+      throw UnableToUploadException("File does not exist")
+    }
+
+    val requestBody = when (options.uploadType) {
+      UploadType.MULTIPART -> CountingRequestBody(
+        createMultipartRequestBody(unifiedFile, options)
+      ) { bytesWritten, totalBytes ->
+        emitProgress(bytesWritten, totalBytes)
+      }
+      UploadType.BINARY_CONTENT -> createBinaryBody(unifiedFile)
+    }
+
+    val requestBuilder = Request.Builder().url(url)
+
+    options.headers?.forEach { (key, value) ->
+      requestBuilder.addHeader(key, value)
+    }
+
+    return requestBuilder.method(options.httpMethod, requestBody).build()
+  }
+
+  private suspend fun executeUploadRequest(request: Request): UploadTaskResult {
+    return suspendCancellableCoroutine { continuation ->
+      val settled = AtomicBoolean(false)
+
+      fun safeResume(value: UploadTaskResult) {
+        if (settled.compareAndSet(false, true)) {
+          continuation.resume(value)
+        }
+      }
+
+      fun safeResumeWithException(e: Exception) {
+        if (settled.compareAndSet(false, true)) {
+          continuation.resumeWithException(e)
+        }
+      }
+
+      call = client.newCall(request)
+
+      call?.enqueue(object : Callback {
+        override fun onFailure(call: Call, e: IOException) {
+          if (cancelled) {
+            safeResumeWithException(UploadCancelledException())
+          } else {
+            safeResumeWithException(UnableToUploadException(e.message ?: "Upload failed"))
+          }
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+          try {
+            val body = response.body?.string() ?: ""
+            val headers = response.headers.toMultimap().mapValues { it.value.firstOrNull() ?: "" }
+
+            val result = UploadTaskResult()
+            result.body = body
+            result.status = response.code
+            result.headers = headers
+
+            safeResume(result)
+          } catch (e: Exception) {
+            safeResumeWithException(UnableToUploadException(e.message ?: "Failed to read response"))
+          }
+        }
+      })
+
+      continuation.invokeOnCancellation {
+        cancel()
+      }
+    }
+  }
+
+  fun cancel() {
+    cancelled = true
+    call?.cancel()
+  }
+
+  override fun sharedObjectDidRelease() {
+    cancel()
+  }
+
+  private fun createBinaryBody(file: UnifiedFileInterface): RequestBody {
+    val baseBody = file.asRequestBody(null)
+    return CountingRequestBody(baseBody) { bytesWritten, totalBytes ->
+      emitProgress(bytesWritten, totalBytes)
+    }
+  }
+
+  private fun emitProgress(bytesWritten: Long, totalBytes: Long) {
+    val currentTime = System.currentTimeMillis()
+    val shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval.inWholeMilliseconds || bytesWritten == totalBytes
+
+    if (shouldEmit) {
+      lastProgressTime = currentTime
+      emit(
+        "progress",
+        mapOf(
+          "bytesSent" to bytesWritten,
+          "totalBytes" to totalBytes
+        )
+      )
+    }
+  }
+}
+
+fun createMultipartRequestBody(
+  file: UnifiedFileInterface,
+  options: UploadTaskOptions
+): RequestBody {
+  val bodyBuilder = MultipartBody.Builder().setType(MultipartBody.FORM)
+
+  options.parameters?.forEach { (key, value) ->
+    bodyBuilder.addFormDataPart(key, value)
+  }
+
+  val fileName = file.fileName ?: "upload"
+  val mimeType = options.mimeType ?: file.type ?: URLConnection.guessContentTypeFromName(fileName)
+    ?: "application/octet-stream"
+
+  // Add file part to the multipart body. Progress is tracked on the whole request body
+  // so that totals include boundaries and form fields as well.
+  val fieldName = options.fieldName ?: fileName
+  val fileBody = file.asRequestBody(mimeType)
+  bodyBuilder.addFormDataPart(fieldName, fileName, fileBody)
+
+  return bodyBuilder.build()
+}
+
+/**
+ * A RequestBody wrapper that tracks upload progress.
+ */
+private class CountingRequestBody(
+  private val requestBody: RequestBody,
+  private val progressListener: (Long, Long) -> Unit
+) : RequestBody() {
+  override fun contentType() = requestBody.contentType()
+
+  override fun contentLength() = requestBody.contentLength()
+
+  override fun writeTo(sink: BufferedSink) {
+    val countingSink = CountingSink(sink, this, progressListener)
+    val bufferedSink = countingSink.buffer()
+    requestBody.writeTo(bufferedSink)
+    bufferedSink.flush()
+  }
+}
+
+/**
+ * A Sink wrapper that counts bytes written.
+ */
+private class CountingSink(
+  sink: Sink,
+  private val requestBody: RequestBody,
+  private val progressListener: (Long, Long) -> Unit
+) : ForwardingSink(sink) {
+  private var bytesWritten = 0L
+
+  override fun write(source: Buffer, byteCount: Long) {
+    super.write(source, byteCount)
+    bytesWritten += byteCount
+    progressListener(bytesWritten, requestBody.contentLength())
+  }
+}
+
+private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
+  return object : RequestBody() {
+    override fun contentType() = contentType?.toMediaTypeOrNull()
+    override fun contentLength() = length()
+    override fun writeTo(sink: BufferedSink) {
+      inputStream().use { input ->
+        val source = input.source()
+        sink.writeAll(source)
+      }
+    }
+  }
+}

@@ -9,7 +9,7 @@ type ViewConfig = {
 };
 
 export interface ExpoProcessEnv {
-  NODE_ENV: string;
+  NODE_ENV: 'development' | 'production' | 'test';
   /** Used in `@expo/metro-runtime`. */
   EXPO_DEV_SERVER_ORIGIN?: string;
 
@@ -100,6 +100,12 @@ declare namespace ExpoGlobal {
    * Reloads the app.
    */
   export function reloadAppAsync(reason: string): Promise<void>;
+
+  /**
+   * Installs Expo Modules inside the Reanimated UI worklet runtime.
+   * @platform android
+   */
+  export function installOnUIRuntime(): void;
 }
 
 /* eslint-disable no-var */

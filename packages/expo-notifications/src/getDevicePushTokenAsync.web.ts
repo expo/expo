@@ -2,9 +2,9 @@ import Constants from 'expo-constants';
 import { CodedError, Platform } from 'expo-modules-core';
 import { DeviceEventEmitter } from 'react-native';
 
-import { DevicePushToken } from './Tokens.types';
+import type { DevicePushToken } from './Tokens.types';
 
-export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
+export async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   const data = await _subscribeDeviceToPushNotificationsAsync();
   DeviceEventEmitter.emit('onDevicePushToken', { devicePushToken: data });
   return { type: Platform.OS, data };
@@ -99,10 +99,7 @@ async function _subscribeDeviceToPushNotificationsAsync(): Promise<DevicePushTok
   // We wrap it with `fromExpoWebClient` to make sure other message
   // will not override content such as `notificationIcon`.
   // https://stackoverflow.com/a/35729334/2603230
-  const notificationIcon = (Constants.expoConfig?.notification ?? {}).icon;
-  await registration.active.postMessage(
-    JSON.stringify({ fromExpoWebClient: { notificationIcon } })
-  );
+  await registration.active.postMessage(JSON.stringify({ fromExpoWebClient: {} }));
 
   return subscriptionObject;
 }

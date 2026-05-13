@@ -46,6 +46,7 @@ function isModuleEmptyFor(ast) {
 }
 function isEmptyModule(value) {
     return value.output.every((outputItem) => {
+        // TODO: Module type should be properly upcast
         return isModuleEmptyFor(accessAst(outputItem));
     });
 }
@@ -110,9 +111,7 @@ function populateModuleWithImportUsage(value) {
         const reconcile = outputItem.data.reconcile;
         (0, assert_1.default)(ast, 'ast must be defined.');
         (0, assert_1.default)(reconcile, 'reconcile settings are required in the module graph for post transform.');
-        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(
-        // @ts-expect-error
-        ast, reconcile.collectDependenciesOptions).dependencies;
+        const deps = (0, metro_transform_worker_1.collectDependenciesForShaking)(ast, reconcile.collectDependenciesOptions).dependencies;
         // @ts-expect-error: Mutating the value in place.
         value.dependencies =
             //
@@ -137,6 +136,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
     const starExportsForModules = new Map();
     for (const value of graph.dependencies.values()) {
         // TODO: Move this to the transformer and combine with collect dependencies.
+        // TODO: Module type should be properly upcast
         getExportsForModule(value);
     }
     const beforeList = [...graph.dependencies.keys()];
@@ -252,6 +252,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
                     if (path.node.source) {
                         // Get module for import ID:
                         const nextModule = getDepForImportId(path.node.source.value);
+                        // TODO: Module type should be properly upcast
                         const exportResults = getExportsForModule(nextModule, checkedModules);
                         // console.log('exportResults', exportResults);
                         if (exportResults.isStatic && !exportResults.hasUnresolvableStarExport) {
@@ -420,6 +421,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         return { path: importInstance.absolutePath, removed: false };
     }
     function removeUnusedExports(value, depth = 0) {
+        // TODO: Output type should be properly upcast
         if (!accessAst(value.output[0]) || !value.inverseDependencies.size) {
             return [];
         }
@@ -561,6 +563,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         }
         if (needsImportReindex) {
             // TODO: Do this better with a tracked removal of the import rather than a full reparse.
+            // TODO: Module type should be properly upcast
             populateModuleWithImportUsage(value);
         }
         if (shouldRecurseUnusedExports) {
@@ -663,11 +666,13 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         }
         const dirtyImports = value.output
             .map((outputItem) => {
+            // TODO: Module type should be properly upcast
             return removeUnusedImportsFromModule(value, accessAst(outputItem));
         })
             .flat();
         if (dirtyImports.length) {
             // TODO: Do this better with a tracked removal of the import rather than a full reparse.
+            // TODO: Module type should be properly upcast
             populateModuleWithImportUsage(value);
         }
         return dirtyImports;
@@ -710,6 +715,7 @@ async function treeShakeSerializer(entryPoint, preModules, graph, options) {
         }
         if (isDebugEnabled) {
             // Print if any dependencies weren't checked (this shouldn't happen)
+            // TODO: Output should be upcast
             const unchecked = [...graph.dependencies.entries()]
                 .filter(([key, value]) => !checked.has(key) && accessAst(value.output[0]))
                 .map(([key]) => key);

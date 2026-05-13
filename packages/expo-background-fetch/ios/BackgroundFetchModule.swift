@@ -1,14 +1,10 @@
 import ExpoModulesCore
 
 public class BackgroundFetchModule: Module {
-  private var taskManager: EXTaskManagerInterface?
+  private lazy var taskManager: EXTaskManagerInterface? = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
 
   public func definition() -> ModuleDefinition {
     Name("ExpoBackgroundFetch")
-
-    OnCreate {
-      taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
-    }
 
     AsyncFunction("getStatusAsync") {
       return getStatus().rawValue

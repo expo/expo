@@ -3,27 +3,35 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class LabelViewProps: ExpoSwiftUI.ViewProps, CommonViewModifierProps {
-  @Field var fixedSize: Bool?
-  @Field var frame: FrameOptions?
-  @Field var padding: PaddingOptions?
-  @Field var testID: String?
-  @Field var modifiers: ModifierArray?
-
+public final class LabelViewProps: UIBaseViewProps {
   @Field var title: String?
   @Field var systemImage: String?
-  @Field var color: Color?
 }
 
-struct LabelView: ExpoSwiftUI.View {
-  @ObservedObject var props: LabelViewProps
+public struct LabelView: ExpoSwiftUI.View {
+  @ObservedObject public var props: LabelViewProps
 
-  var body: some View {
-    Label(
-      title: { Text(props.title ?? "") },
-      icon: { Image(systemName: props.systemImage ?? "").foregroundStyle(props.color ?? Color.accentColor) }
-    )
-    .modifier(CommonViewModifiers(props: props))
-    .applyFixedSize(props.fixedSize ?? true)
+  public init(props: LabelViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
+    if let title = props.title {
+      if let customIcon {
+        Label {
+          Text(title)
+        } icon: {
+          customIcon
+        }
+      } else if let systemImage = props.systemImage {
+        Label(title, systemImage: systemImage)
+      } else {
+        Label(title, systemImage: "").labelStyle(.titleOnly)
+      }
+    }
+  }
+
+  private var customIcon: SlotView? {
+    props.children?.slot("icon")
   }
 }

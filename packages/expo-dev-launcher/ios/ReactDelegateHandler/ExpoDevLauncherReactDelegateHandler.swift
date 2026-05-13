@@ -2,6 +2,32 @@
 
 import ExpoModulesCore
 import EXUpdatesInterface
+import React
+
+private class DevLauncherWrapperView: UIView {
+  weak var devLauncherViewController: UIViewController?
+
+  func setupDevLauncherView(_ viewController: UIViewController) {
+#if os(macOS)
+    viewController.view.autoresizingMask = [.width, .height]
+#else
+    viewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+#endif
+    viewController.view.frame = bounds
+  }
+
+#if !os(macOS)
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    devLauncherViewController?.view.frame = bounds
+  }
+
+  override func safeAreaInsetsDidChange() {
+    super.safeAreaInsetsDidChange()
+    devLauncherViewController?.view.layoutIfNeeded()
+  }
+#endif
+}
 
 @objc
 public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDevLauncherControllerDelegate {
@@ -24,12 +50,14 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
 
     self.reactDelegate = reactDelegate
     self.launchOptions = launchOptions
-    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
-    if let sharedController = UpdatesControllerRegistry.sharedInstance.controller {
+
+    if let sharedController = UpdatesControllerRegistry.sharedInstance.controller as? UpdatesDevLauncherInterface {
       // for some reason the swift compiler and bridge are having issues here
       EXDevLauncherController.sharedInstance().updatesInterface = sharedController
       sharedController.updatesExternalInterfaceDelegate = EXDevLauncherController.sharedInstance()
     }
+
+    EXDevLauncherController.sharedInstance().start(self, launchOptions: launchOptions)
 
     self.rootViewModuleName = moduleName
     self.rootViewInitialProperties = initialProperties
@@ -38,16 +66,10 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
     rootViewController = viewController
 
     // We need to create a wrapper View because React Native Factory will reassign rootViewController later
-    let wrapperView = UIView()
+    let wrapperView = DevLauncherWrapperView()
+    wrapperView.devLauncherViewController = viewController
     wrapperView.addSubview(viewController.view)
-    viewController.view.translatesAutoresizingMaskIntoConstraints = false
-    NSLayoutConstraint.activate([
-      viewController.view.topAnchor.constraint(equalTo: wrapperView.topAnchor),
-      viewController.view.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor),
-      viewController.view.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor),
-      viewController.view.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor)
-    ])
-
+    wrapperView.setupDevLauncherView(viewController)
     return wrapperView
   }
 
@@ -78,18 +100,82 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, EXDe
       self.reactNativeFactory?.rootViewFactory.bridge = nil
     }
 
+    #if RCT_DEV_MENU
+    // Set core dev menu configuration to disable shortcuts and shake gesture
+    self.reactNativeFactory?.devMenuConfiguration = RCTDevMenuConfiguration(
+      devMenuEnabled: true,
+      shakeGestureEnabled: false,
+      keyboardShortcutsEnabled: false
+    )
+    #endif
+
     let rootView = reactDelegate.reactNativeFactory.recreateRootView(
       withBundleURL: developmentClientController.sourceUrl(),
       moduleName: self.rootViewModuleName,
       initialProps: self.rootViewInitialProperties,
       launchOptions: developmentClientController.getLaunchOptions()
     )
-    developmentClientController.appBridge = RCTBridge.current()
 
-    guard let rootViewController = rootViewController ?? self.reactDelegate?.createRootViewController() else {
+    let targetVC: UIViewController
+#if !os(macOS)
+    let windowRootVC = rootViewController?.view?.window?.rootViewController
+
+    if let windowRootVC, let rootViewController {
+      // Greenfield: add DevLauncherViewController as a child of the window's root VC
+      // so react-native-screens finds a VC in the containment hierarchy with correct
+      // layout margins.
+      //
+      // Note: this inserts DevLauncherViewController between ScreenOrientationViewController
+      // (the window root VC) and RNSNavigationController, which blocks react-native-screens'
+      // single-level VC traversal for orientation and other window traits.
+      // ScreenOrientationViewController.vcWithRNScreenOrientation() works around this by
+      // searching one level deeper through child VCs.
+      rootViewController.view = rootView
+      if rootViewController.parent != windowRootVC {
+        windowRootVC.addChild(rootViewController)
+      }
+      rootViewController.view.frame = windowRootVC.view.bounds
+      rootViewController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+      windowRootVC.view.addSubview(rootViewController.view)
+      rootViewController.didMove(toParent: windowRootVC)
+      return
+    } else if let rootViewController {
+      // Brownfield: the wrapper is embedded in a custom hierarchy, fall back to
+      // DevLauncherViewController to avoid replacing the host app's root view.
+      targetVC = rootViewController
+    } else if let fallbackVC = self.reactDelegate?.createRootViewController() {
+      targetVC = fallbackVC
+    } else {
       fatalError("Invalid rootViewController returned from ExpoReactDelegate")
     }
-    rootViewController.view = rootView
+#else
+    // macOS: NSWindow has no rootViewController, fall back to DevLauncherViewController.
+    if let rootViewController {
+      targetVC = rootViewController
+    } else if let fallbackVC = self.reactDelegate?.createRootViewController() {
+      targetVC = fallbackVC
+    } else {
+      fatalError("Invalid rootViewController returned from ExpoReactDelegate")
+    }
+#endif
+#if os(macOS)
+    let newViewController = UIViewController()
+    newViewController.view = rootView
+
+    targetVC.view.subviews.forEach { $0.removeFromSuperview() }
+    targetVC.addChild(newViewController)
+    targetVC.view.addSubview(newViewController.view)
+
+    newViewController.view.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      newViewController.view.topAnchor.constraint(equalTo: targetVC.view.topAnchor),
+      newViewController.view.leadingAnchor.constraint(equalTo: targetVC.view.leadingAnchor),
+      newViewController.view.trailingAnchor.constraint(equalTo: targetVC.view.trailingAnchor),
+      newViewController.view.bottomAnchor.constraint(equalTo: targetVC.view.bottomAnchor)
+    ])
+#else
+    targetVC.view = rootView
+#endif
     // it is purposeful that we don't clean up saved properties here, because we may initialize
     // several React instances over a single app lifetime and we want them all to have the same
     // initial properties

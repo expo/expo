@@ -61,6 +61,7 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
   }
 
   try {
+    console.log(`Running tests for targets:\n- ${targetsToTest.join('\n- ')}\n`);
     await runTests(targetsToTest);
   } catch (error) {
     console.error('iOS unit tests failed:');

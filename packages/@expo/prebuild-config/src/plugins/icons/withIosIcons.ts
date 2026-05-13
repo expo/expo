@@ -1,16 +1,18 @@
+import type { ConfigPlugin } from '@expo/config-plugins';
 import {
-  ConfigPlugin,
   IOSConfig,
   WarningAggregator,
   withDangerousMod,
   withXcodeProject,
 } from '@expo/config-plugins';
-import { ExpoConfig, IOSIcons } from '@expo/config-types';
+import { findNativeTargetByName } from '@expo/config-plugins/build/ios/Target';
+import type { ExpoConfig, IOSIcons } from '@expo/config-types';
 import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';
 
-import { ContentsJson, ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
+import type { ContentsJson, ContentsJsonImage } from './AssetContents';
+import { writeContentsJsonAsync } from './AssetContents';
 
 const { getProjectName } = IOSConfig.XcodeUtils;
 
@@ -32,7 +34,7 @@ export const withIosIcons: ConfigPlugin = (config) => {
 
     if (icon && typeof icon === 'string' && path.extname(icon) === '.icon' && projectName) {
       const iconName = path.basename(icon, '.icon');
-      setIconName(config.modResults, iconName);
+      setIconName(config.modResults, projectName, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
     }
     return config;
@@ -89,14 +91,6 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
 
 export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const icon = getIcons(config);
-
-  if (
-    !icon ||
-    (typeof icon === 'string' && !icon) ||
-    (typeof icon === 'object' && !icon?.light && !icon?.dark && !icon?.tinted)
-  ) {
-    WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-  }
 
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
@@ -258,10 +252,14 @@ async function addLiquidGlassIcon(
 /**
  * Adds the .icons name to the project
  */
-function setIconName(project: any, iconName: string): void {
-  const configurations = project.pbxXCBuildConfigurationSection();
+function setIconName(project: any, projectName: string, iconName: string): void {
+  const [, target] = findNativeTargetByName(project, projectName);
+  const configurations = IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+    project,
+    target.buildConfigurationList
+  );
 
-  for (const config of Object.values(configurations)) {
+  for (const [, config] of configurations) {
     if ((config as any)?.buildSettings) {
       (config as any).buildSettings.ASSETCATALOG_COMPILER_APPICON_NAME = iconName;
     }

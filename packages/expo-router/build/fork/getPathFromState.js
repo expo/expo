@@ -41,9 +41,7 @@ const expo = __importStar(require("./getPathFromState-forks"));
 const navigationParams_1 = require("../navigationParams");
 // END FORK
 const getActiveRoute = (state) => {
-    const route = typeof state.index === 'number'
-        ? state.routes[state.index]
-        : state.routes[state.routes.length - 1];
+    const route = state.index != null ? state.routes[state.index] : state.routes[state.routes.length - 1];
     if (route.state) {
         return getActiveRoute(route.state);
     }
@@ -186,7 +184,8 @@ function getPathDataFromState(state, options) {
                         : Object.keys(screens)[0]
                     : undefined;
                 if (screen && screens && currentOptions[route.name].screens?.[screen]) {
-                    route = { ...screens[screen], name: screen, key: screen };
+                    const nestedParams = route.params?.params;
+                    route = { ...screens[screen], name: screen, key: screen, params: nestedParams };
                     currentOptions = screens;
                 }
                 else {
@@ -196,8 +195,7 @@ function getPathDataFromState(state, options) {
                 // END FORK
             }
             else {
-                index =
-                    typeof route.state.index === 'number' ? route.state.index : route.state.routes.length - 1;
+                index = route.state.index != null ? route.state.index : route.state.routes.length - 1;
                 const nextRoute = route.state.routes[index];
                 const nestedConfig = currentOptions[route.name].screens;
                 // if there is config for next route name, we go deeper
@@ -256,7 +254,7 @@ function getPathDataFromState(state, options) {
         }
         // END FORK
         if (!focusedParams) {
-            focusedParams = focusedRoute.params;
+            focusedParams = focusedRoute.params ? { ...focusedRoute.params } : undefined;
         }
         if (route.state) {
             path += '/';

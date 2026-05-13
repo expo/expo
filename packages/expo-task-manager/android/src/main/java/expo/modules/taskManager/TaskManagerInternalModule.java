@@ -49,7 +49,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   @Override
   public void onCreate(ModuleRegistry moduleRegistry) {
     mUIManager = moduleRegistry.getModule(UIManager.class);
-    mConstants = moduleRegistry.getModule(ConstantsInterface.class);
+    mConstants = moduleRegistry.getAppContext().service(ConstantsInterface.class);
     mTaskService = moduleRegistry.getSingletonModule("TaskService", TaskServiceInterface.class);
 
     // Register in TaskService.

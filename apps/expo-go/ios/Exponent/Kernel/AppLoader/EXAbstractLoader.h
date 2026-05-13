@@ -73,11 +73,6 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 - (void)requestFromCache;
 
 /**
- *  Tell this AppLoader that everything has finished successfully and its manifest resource can be cached.
- */
-- (void)writeManifestToCache;
-
-/**
  *  Reset status to `kEXAppLoaderStatusHasManifest` and fetch the bundle at the existing
  *  manifest. This is called when RN devtools reload an AppManager/RCTBridge directly
  *  via reload, live reload, etc.
@@ -91,11 +86,6 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
  *  where that's possible is if we're running an app in dev mode.
  */
 - (BOOL)supportsBundleReload;
-
-/**
- * Fetch manifest without any side effects or interaction with the timer.
- */
-- (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)cacheBehavior success:(void (^)(EXManifestsManifest *))success failure:(void (^)(NSError *))failure;
 
 @end
 

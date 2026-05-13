@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import path from 'path';
 
-import {
+import type {
   DevToolsPluginExecutorArguments,
   DevToolsPluginInfo,
   DevToolsPluginOutput,
@@ -83,7 +83,7 @@ export class DevToolsPluginCliExtensionExecutor {
       const tool = path.join(this.plugin.packageRoot, this.plugin.cliExtensions!.entryPoint);
       const child = this.spawnFunc(
         'node',
-        [tool, command, `'${JSON.stringify(args)}'`, `'${metroServerOrigin}'`],
+        [tool, command, `${JSON.stringify(args)}`, `${metroServerOrigin}`],
         {
           cwd: this.projectRoot,
           env: { ...process.env },

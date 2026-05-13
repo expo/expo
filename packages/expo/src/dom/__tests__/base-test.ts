@@ -27,8 +27,14 @@ describe('getBaseURL', () => {
           isEnabled: true,
           isEmbeddedLaunch: false,
           localAssets: {
+            '8d4e297c3b3e49a614248143d53e40ca':
+              'file:///android_res/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_closeicon.png',
+            '4403c6117ec30c859bc95d70ce4a71d3':
+              'file:///android_res/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_searchicon.png',
             '5d41402abc4b2a76b9719d911017c592':
               'file:///path/to/.expo-internal/5d41402abc4b2a76b9719d911017c592.png',
+            '1d1ea1496f9057eb392d5bbf3732a61b7':
+              'file:///android_res/drawable/node_modules_exporouter_assets_error.png',
           },
         },
       },
@@ -45,8 +51,15 @@ describe('getBaseURL', () => {
           isEnabled: true,
           isEmbeddedLaunch: true,
           localAssets: {
+            '8d4e297c3b3e49a614248143d53e40ca':
+              'file:///android_res/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_closeicon.png',
+            '4403c6117ec30c859bc95d70ce4a71d3':
+              'file:///android_res/drawable-mdpi/node_modules_reactnavigation_elements_lib_module_assets_searchicon.png',
+
             '5d41402abc4b2a76b9719d911017c592':
               'file:///path/to/.expo-internal/5d41402abc4b2a76b9719d911017c592.png',
+            '1d1ea1496f9057eb392d5bbf3732a61b7':
+              'file:///android_res/drawable/node_modules_exporouter_assets_error.png',
           },
         },
       },

@@ -2,15 +2,14 @@ import * as WebBrowser from 'expo-web-browser';
 import invariant from 'invariant';
 import { Platform } from 'react-native';
 
-import {
+import type {
   AuthRequestConfig,
   AuthRequestPromptOptions,
-  CodeChallengeMethod,
-  ResponseType,
   Prompt,
   AuthDiscoveryDocument,
 } from './AuthRequest.types';
-import { AuthSessionResult } from './AuthSession.types';
+import { CodeChallengeMethod, ResponseType } from './AuthRequest.types';
+import type { AuthSessionResult } from './AuthSession.types';
 import { AuthError } from './Errors';
 import * as PKCE from './PKCE';
 import * as QueryParams from './QueryParams';
@@ -244,7 +243,11 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     // copy over extra params
     for (const extra in request.extraParams) {
       if (extra in request.extraParams) {
-        params[extra] = request.extraParams[extra];
+        const param = request.extraParams[extra];
+
+        if (param != null) {
+          params[extra] = param;
+        }
       }
     }
 

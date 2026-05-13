@@ -4,8 +4,8 @@
 #import <React/RCTLog.h>
 #import <React/RCTBridge.h>
 
-
 @class EXManifestsManifest;
+@class EXAppContext;
 
 @interface EXVersionManagerObjC : NSObject
 
@@ -39,5 +39,10 @@
 - (id<RCTTurboModule>)getModuleInstanceFromClass:(Class)moduleClass;
 
 - (Class)getModuleClassFromName:(const char *)name;
+
+/**
+ * Creates a new app context configured for Expo Go.
+ */
+- (nonnull EXAppContext *)createExpoGoAppContext;
 
 @end

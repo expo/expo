@@ -2,15 +2,11 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JSIObjectWrapper.h"
-#include "WeakRuntimeHolder.h"
 #include "JavaScriptTypedArray.h"
+#include "JavaScriptArrayBuffer.h"
 #include "JNIDeallocator.h"
-
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-
-#include <memory>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -21,6 +17,8 @@ class JavaScriptRuntime;
 class JavaScriptObject;
 
 class JavaScriptTypedArray;
+
+class JavaScriptArrayBuffer;
 
 class JavaScriptFunction;
 
@@ -43,11 +41,6 @@ public:
 
   JavaScriptValue(
     std::weak_ptr<JavaScriptRuntime> runtime,
-    std::shared_ptr<jsi::Value> jsValue
-  );
-
-  JavaScriptValue(
-    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Value> jsValue
   );
 
@@ -92,7 +85,7 @@ public:
 private:
   friend HybridBase;
 
-  WeakRuntimeHolder runtimeHolder;
+  std::weak_ptr<JavaScriptRuntime> runtimeHolder;
   std::shared_ptr<jsi::Value> jsValue;
 
   jni::local_ref<jstring> jniKind();

@@ -40,12 +40,12 @@ export async function getSchemaAsync(sdkVersion, isUnversioned = false) {
   });
 }
 
-VERSIONS.filter(version => version.includes('.')).forEach(async version => {
-  await getSchemaAsync(version);
-});
-
+const versionedVersions = VERSIONS.filter(version => version.includes('.'));
 const nextVersion = inc(BETA_VERSION ?? LATEST_VERSION, 'major');
 
-await getSchemaAsync(nextVersion, true);
+await Promise.all([
+  ...versionedVersions.map(version => getSchemaAsync(version)),
+  getSchemaAsync(nextVersion, true),
+]);
 
 console.log(` \x1b[1m\x1b[32m✓\x1b[0m Successfully fetched versions schemas`);

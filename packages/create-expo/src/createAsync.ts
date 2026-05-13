@@ -3,20 +3,21 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import type { ExamplesMetadata } from './Examples';
 import {
   downloadAndExtractExampleAsync,
   ensureExampleExists,
-  ExamplesMetadata,
   fetchMetadataAsync,
   promptExamplesAsync,
 } from './Examples';
 import * as Template from './Template';
+import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
+import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
   installDependenciesAsync,
-  PackageManagerName,
   resolvePackageManager,
   formatSelfCommand,
 } from './resolvePackageManager';
@@ -36,6 +37,7 @@ export type Options = {
   template?: string | true;
   example?: string | true;
   yes: boolean;
+  agentsMd: boolean;
 };
 
 const debug = require('debug')('expo:init:create') as typeof console.log;
@@ -138,6 +140,10 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   await setupDependenciesAsync(projectRoot, props);
 
+  if (props.agentsMd) {
+    generateAgentFiles(projectRoot);
+  }
+
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should
   // at some point check if git is installed and actually bail out if not, because
@@ -177,17 +183,20 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
   if (metadata && metadata.aliases[resolvedExample]) {
     const alias = metadata.aliases[resolvedExample];
-    const destination = typeof alias === 'string' ? alias : alias.destination;
-    console.log(
-      chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
-    );
+    const destination = typeof alias === 'string' ? alias : alias?.destination;
+
+    if (destination != null) {
+      console.log(
+        chalk`{gray The {cyan ${resolvedExample}} example has been renamed to {cyan ${destination}}.}`
+      );
+
+      resolvedExample = destination;
+    }
 
     // Optional message to show when an example is aliased, in case additional context is required
     if (typeof alias === 'object' && alias.message) {
       console.log(chalk`{gray ${alias.message}}`);
     }
-
-    resolvedExample = destination;
   } else if (metadata && metadata.deprecated[resolvedExample]) {
     throw new Error(getDeprecatedExampleErrorMessage(resolvedExample, metadata));
   }
@@ -219,6 +228,10 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
   });
 
   await setupDependenciesAsync(projectRoot, props);
+
+  if (props.agentsMd) {
+    generateAgentFiles(projectRoot);
+  }
 
   // for now, we will just init a git repo if they have git installed and the
   // project is not inside an existing git tree, and do it silently. we should
@@ -298,7 +311,7 @@ export function logNodeInstallWarning(
 }
 
 function getDeprecatedExampleErrorMessage(example: string, metadata: ExamplesMetadata) {
-  const { message, outdatedExampleHref } = metadata.deprecated[example];
+  const { message, outdatedExampleHref } = metadata.deprecated[example] ?? {};
   let output = `${example} is no longer available.`;
 
   if (message) {

@@ -13,7 +13,7 @@ if [ -d "./node_modules" ]; then
     echo " ✅ Node modules installed"
 else
     echo " ⚠️  Cannot find node modules for this project, installing..."
-    yarn
+    pnpm install
 fi
 
 if [ -d "ios/Pods" ]; then

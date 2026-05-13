@@ -1,7 +1,8 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { existsSync } from 'fs';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 
@@ -25,7 +26,7 @@ export function extractMissingDependencyError(errorOutput: string): [string, str
   const results = errorOutput.match(
     /Unable to find a specification for ['"`]([\w-_\d\s]+)['"`] depended upon by ['"`]([\w-_\d\s]+)['"`]/
   );
-  if (results) {
+  if (results != null && results[1] != null && results[2] != null) {
     return [results[1], results[2]];
   }
   return null;
@@ -363,21 +364,6 @@ export class CocoaPodsPackageManager {
 
   async uninstallAsync() {
     throw new Error('Unimplemented');
-  }
-
-  // Private
-  private async podRepoUpdateAsync(): Promise<void> {
-    try {
-      await this._runAsync(['repo', 'update']);
-    } catch (error: any) {
-      error.message = error.message || (error.stderr ?? error.stdout);
-
-      throw new CocoaPodsError(
-        'The command `pod install --repo-update` failed',
-        'COMMAND_FAILED',
-        error
-      );
-    }
   }
 
   // Exposed for testing

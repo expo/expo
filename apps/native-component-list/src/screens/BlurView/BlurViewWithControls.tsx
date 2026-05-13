@@ -40,7 +40,7 @@ export default memo((props: { tint: BlurTint; blurMethod: ExperimentalBlurMethod
           style={styles.blurView}
           tint={props.tint}
           intensity={manualIntensityIsActive ? manualIntensity : animatedIntensity}
-          experimentalBlurMethod={props.blurMethod}>
+          blurMethod={props.blurMethod}>
           <Text style={styles.nonBlurredText}>{props.tint}</Text>
           <Slider
             title="Manual intensity:"
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   blurView: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     alignItems: 'center',
     paddingTop: 20,
   },

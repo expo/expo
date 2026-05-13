@@ -30,6 +30,7 @@ import host.exp.exponent.kernel.ExpoViewKernel
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.kernel.KernelConfig
 import host.exp.exponent.storage.ExponentSharedPreferences
+import host.exp.exponent.utils.HermesBundleUtils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,6 +38,7 @@ import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.File
+import java.net.URI
 import javax.inject.Inject
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
@@ -263,7 +265,16 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
 
             // ReactAndroid will load the bundle on its own in development mode
             if (!manifest.isDevelopmentMode()) {
-              callback.onBundleCompleted(launcher.launchAssetFile!!)
+              val launchAssetFile = launcher.launchAssetFile!!
+              val isEasUpdate = runCatching { URI(manifestUrl).host }.getOrNull() == "u.expo.dev"
+              if (!isEasUpdate && HermesBundleUtils.isHermesBundle(File(launchAssetFile))) {
+                val errorJson = JSONObject().apply {
+                  put("errorCode", "EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED")
+                  put("message", "Hermes bytecode bundle is not supported by Expo Go")
+                }
+                throw ManifestException(null, manifestUrl, errorJson)
+              }
+              callback.onBundleCompleted(launchAssetFile)
             }
           } catch (e: Exception) {
             callback.onError(e)

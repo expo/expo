@@ -1,10 +1,13 @@
 import { type RequestHandlerParams } from './abstract';
 import { ExecutionContext } from './environment/workerd';
 export { ExpoError } from './abstract';
-export type RequestHandler<Env = unknown> = (req: Request, env: Env, ctx: ExecutionContext) => Promise<Response>;
+export interface RequestHandler<Env = unknown> {
+    (req: Request, env: Env, ctx: ExecutionContext): Promise<Response>;
+    preload(): Promise<void>;
+}
 /**
  * Returns a request handler for EAS Hosting deployments.
  */
 export declare function createRequestHandler<Env = unknown>(params: {
     build?: string;
-}, setup?: Partial<RequestHandlerParams>): RequestHandler<Env>;
+}, setup?: RequestHandlerParams): RequestHandler<Env>;

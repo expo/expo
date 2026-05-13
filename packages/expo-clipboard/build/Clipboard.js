@@ -1,13 +1,14 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
-import ExpoClipboard from './ExpoClipboard';
-const onClipboardEventName = 'onClipboardChanged';
+import ExpoClipboard, { clipboardEventName } from './ExpoClipboard';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
  *
+ * Note: On iOS 16+, if the user denies paste permission, this method will return an empty string.
+ * Due to iOS platform limitations, there is no way to distinguish between an empty clipboard and denied permission.
+ *
  * @param options Options for the clipboard content to be retrieved.
- * @returns A promise that resolves to the content of the clipboard.
+ * @returns A promise that resolves to the content of the clipboard, or an empty string if clipboard is empty or permission was denied.
  */
 export async function getStringAsync(options = {}) {
     if (!ExpoClipboard.getStringAsync) {
@@ -30,23 +31,6 @@ export async function setStringAsync(text, options = {}) {
     return ExpoClipboard.setStringAsync(text, options);
 }
 /**
- * Sets the content of the user's clipboard.
- * @deprecated Use [`setStringAsync()`](#setstringasynctext-options) instead.
- *
- * @returns On web, this returns a boolean value indicating whether or not the string was saved to
- * the user's clipboard. On iOS and Android, nothing is returned.
- */
-export function setString(text) {
-    if (Platform.OS === 'web') {
-        // on web, we need to return legacy method,
-        // because of different return type
-        return ExpoClipboard.setString(text);
-    }
-    else {
-        setStringAsync(text);
-    }
-}
-/**
  * Returns whether the clipboard has text content. Returns true for both plain text and rich text (e.g. HTML).
  *
  * On web, this requires the user to grant your app permission to _"see text and images copied to the clipboard"_.
@@ -62,7 +46,10 @@ export function hasStringAsync() {
 /**
  * Gets the URL from the user's clipboard.
  *
- * @returns A promise that fulfills to the URL in the clipboard.
+ * Note: On iOS 16+, if the user denies paste permission, this method will return null.
+ * Due to iOS platform limitations, there is no way to distinguish between no URL in clipboard and denied permission.
+ *
+ * @returns A promise that fulfills to the URL in the clipboard, or null if no URL is present or permission was denied.
  * @platform ios
  */
 export async function getUrlAsync() {
@@ -104,10 +91,13 @@ export async function hasUrlAsync() {
  * format. Calling this method on web will prompt the user to grant your app
  * permission to "see text and images copied to the clipboard."
  *
+ * Note: On iOS 16+, if the user denies paste permission, this method will return null.
+ * Due to iOS platform limitations, there is no way to distinguish between no image in clipboard and denied permission.
+ *
  * @param options A `GetImageOptions` object to specify the desired format of the image.
  * @returns If there was an image in the clipboard, the promise resolves to
  * a [`ClipboardImage`](#clipboardimage) object containing the base64 string and metadata of the image.
- * Otherwise, it resolves to `null`.
+ * Otherwise, it resolves to `null` (this includes cases where permission was denied).
  *
  * @example
  * ```tsx
@@ -176,31 +166,11 @@ export async function hasImageAsync() {
  * ```
  */
 export function addClipboardListener(listener) {
-    // TODO: Get rid of this wrapper once we remove deprecated `content` property (not before SDK47)
-    const listenerWrapper = (event) => {
-        const wrappedEvent = {
-            ...event,
-            get content() {
-                console.warn("The 'content' property of the clipboard event is deprecated. Use 'getStringAsync()' instead to get clipboard content");
-                return '';
-            },
-        };
-        listener(wrappedEvent);
-    };
-    return ExpoClipboard.addListener(onClipboardEventName, listenerWrapper);
+    return ExpoClipboard.addListener(clipboardEventName, listener);
 }
 /**
  * Removes the listener added by addClipboardListener. This method is a no-op on Web.
- *
- * @param subscription The subscription to remove (created by addClipboardListener).
- *
- * @example
- * ```typescript
- * const subscription = addClipboardListener(() => {
- *   alert('Copy pasta!');
- * });
- * removeClipboardListener(subscription);
- * ```
+ * @deprecated use subscription.remove() instead.
  */
 export function removeClipboardListener(subscription) {
     subscription.remove();
@@ -214,5 +184,5 @@ export function removeClipboardListener(subscription) {
  */
 export const isPasteButtonAvailable = Platform.OS === 'ios' ? ExpoClipboard.isPasteButtonAvailable : false;
 export * from './Clipboard.types';
-export { ClipboardPasteButton };
+export { ClipboardPasteButton } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.js.map

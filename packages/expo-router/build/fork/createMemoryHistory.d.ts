@@ -1,4 +1,4 @@
-import type { NavigationState } from '@react-navigation/core';
+import type { NavigationState } from '../react-navigation/core';
 type HistoryRecord = {
     id: string;
     state: NavigationState;
@@ -6,7 +6,7 @@ type HistoryRecord = {
 };
 export declare function createMemoryHistory(): {
     readonly index: number;
-    get(index: number): HistoryRecord;
+    get(index: number): HistoryRecord | undefined;
     backIndex({ path }: {
         path: string;
     }): number;

@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig, AssetData } from '@expo/metro/metro';
-import { sourceMapString } from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapString';
 import type {
   MixedOutput,
   Module,
@@ -19,19 +18,51 @@ import assert from 'assert';
 import path from 'path';
 
 import { stringToUUID } from './debugId';
-import { buildHermesBundleAsync } from './exportHermes';
 import { getExportPathForDependencyWithOptions } from './exportPath';
-import {
-  ExpoSerializerOptions,
-  baseJSBundleWithDependencies,
-  getBaseUrlOption,
-  getPlatformOption,
-} from './fork/baseJSBundle';
+import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
-import { SerialAsset } from './serializerAssets';
-import { SerializerConfigOptions } from './withExpoSerializers';
+import type { SerialAsset } from './serializerAssets';
+import { appendDebugIdToSourceMap, sourceMapString } from './sourceMap';
+import type { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
+
+// Lazy-loaded to avoid pulling in metro-source-map at startup
+let _buildHermesBundleAsync: typeof import('./exportHermes').buildHermesBundleAsync;
+function getBuildHermesBundleAsync() {
+  if (!_buildHermesBundleAsync) {
+    _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
+  }
+  return _buildHermesBundleAsync;
+}
+
+let _baseJSBundleWithDependencies: typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies;
+function getBaseJSBundleWithDependencies() {
+  if (!_baseJSBundleWithDependencies) {
+    _baseJSBundleWithDependencies = require('./fork/baseJSBundle').baseJSBundleWithDependencies;
+  }
+  return _baseJSBundleWithDependencies;
+}
+
+let _getBaseUrlOption: typeof import('./fork/baseJSBundle').getBaseUrlOption;
+function getBaseUrlOption(
+  ...args: Parameters<typeof import('./fork/baseJSBundle').getBaseUrlOption>
+) {
+  if (!_getBaseUrlOption) {
+    _getBaseUrlOption = require('./fork/baseJSBundle').getBaseUrlOption;
+  }
+  return _getBaseUrlOption(...args);
+}
+
+let _getPlatformOption: typeof import('./fork/baseJSBundle').getPlatformOption;
+function getPlatformOption(
+  ...args: Parameters<typeof import('./fork/baseJSBundle').getPlatformOption>
+) {
+  if (!_getPlatformOption) {
+    _getPlatformOption = require('./fork/baseJSBundle').getPlatformOption;
+  }
+  return _getPlatformOption(...args);
+}
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
 type SerializerParameters = Parameters<Serializer>;
@@ -45,18 +76,6 @@ export type SerializeChunkOptions = {
   includeSourceMaps: boolean;
   splitChunks: boolean;
 } & SerializerConfigOptions;
-
-// Convert file paths to regex matchers.
-function pathToRegex(path: string) {
-  // Escape regex special characters, except for '*'
-  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
-
-  // Replace '*' with '.*' to act as a wildcard in regex
-  regexSafePath = regexSafePath.replace(/\*/g, '.*');
-
-  // Create a RegExp object with the modified string
-  return new RegExp('^' + regexSafePath + '$');
-}
 
 export async function graphToSerialAssetsAsync(
   config: MetroConfig,
@@ -76,100 +95,33 @@ export async function graphToSerialAssetsAsync(
   // Create chunks for splitting.
   const chunks = new Set<Chunk>();
 
-  [
-    {
-      test: pathToRegex(entryFile),
-    },
-  ].map((chunkSettings) =>
-    gatherChunks(preModules, chunks, chunkSettings, preModules, graph, options, false, true)
+  gatherChunks(
+    preModules,
+    chunks,
+    { test: pathToRegex(entryFile) },
+    preModules,
+    graph,
+    options,
+    false,
+    true
   );
 
-  const entryChunk = [...chunks.values()].find(
-    (chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile)
-  );
+  const entryChunk = findEntryChunk(chunks, entryFile);
 
   if (entryChunk) {
-    for (const chunk of chunks.values()) {
-      if (!chunk.isEntry && chunk.isAsync) {
-        for (const dep of chunk.deps.values()) {
-          if (entryChunk.deps.has(dep)) {
-            // Remove the dependency from the async chunk since it will be loaded in the main chunk.
-            chunk.deps.delete(dep);
-          }
-        }
-      }
-    }
+    removeEntryDepsFromAsyncChunks(entryChunk, chunks);
 
-    const toCompare = [...chunks.values()];
-
-    const commonDependencies = [];
-
-    while (toCompare.length) {
-      const chunk = toCompare.shift()!;
-      for (const chunk2 of toCompare) {
-        if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
-          const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
-
-          for (const dep of commonDeps) {
-            chunk.deps.delete(dep);
-            chunk2.deps.delete(dep);
-          }
-
-          commonDependencies.push(...commonDeps);
-        }
-      }
-    }
-
-    let commonChunk: Chunk | undefined;
-    // If common dependencies were found, extract them to the shared chunk.
-    if (commonDependencies.length) {
-      const commonDependenciesUnique = [...new Set(commonDependencies)];
-      commonChunk = new Chunk(
-        '/__common.js',
-        commonDependenciesUnique,
-        graph,
-        options,
-        false,
-        true
-      );
+    const commonChunk = extractCommonChunk(chunks, graph, options);
+    if (commonChunk) {
       entryChunk.requiredChunks.add(commonChunk);
       chunks.add(commonChunk);
     }
 
-    // TODO: Optimize this pass more.
-    // Remove all dependencies from async chunks that are already in the common chunk.
-    for (const chunk of [...chunks.values()]) {
-      if (!chunk.isEntry && chunk !== commonChunk) {
-        for (const dep of chunk.deps) {
-          if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
-            chunk.deps.delete(dep);
-          }
-        }
-      }
-    }
+    deduplicateAgainstKnownChunks(chunks, entryChunk, commonChunk);
+    removeEmptyChunks(chunks);
 
-    // Remove empty chunks
-    for (const chunk of [...chunks.values()]) {
-      if (!chunk.isEntry && chunk.deps.size === 0) {
-        chunks.delete(chunk);
-      }
-    }
-
-    // Create runtime chunk
     if (commonChunk) {
-      const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
-
-      // All premodules (including metro-runtime) should load first
-      for (const preModule of entryChunk.preModules) {
-        runtimeChunk.preModules.add(preModule);
-      }
-      entryChunk.preModules = new Set();
-
-      for (const chunk of chunks) {
-        // Runtime chunk has to load before any other a.k.a all chunks require it.
-        chunk.requiredChunks.add(runtimeChunk);
-      }
-      chunks.add(runtimeChunk);
+      createRuntimeChunk(entryChunk, chunks, graph, options);
     }
   }
 
@@ -267,7 +219,9 @@ export class Chunk {
 
   private serializeToCodeWithTemplates(
     serializerConfig: Partial<SerializerConfigT>,
-    options: Partial<Parameters<typeof baseJSBundleWithDependencies>[3]> & {
+    options: Partial<
+      Parameters<typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies>[3]
+    > & {
       preModules?: Set<Module>;
     } = {}
   ) {
@@ -278,7 +232,7 @@ export class Chunk {
     const preModules = [...(options.preModules ?? this.preModules).values()];
     const dependencies = [...this.deps];
 
-    const jsSplitBundle = baseJSBundleWithDependencies(entryFile, preModules, dependencies, {
+    const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
       ...this.options,
       runBeforeMainModule:
         serializerConfig?.getModulesRunBeforeMainModule?.(
@@ -451,77 +405,23 @@ export class Chunk {
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths: [...this.deps].map((module) => module.path),
         paths: jsCode.paths,
-        expoDomComponentReferences: [
-          ...new Set(
-            [...this.deps]
-              .map((module) => {
-                return module.output.map((output) => {
-                  if (
-                    'expoDomComponentReference' in output.data &&
-                    typeof output.data.expoDomComponentReference === 'string'
-                  ) {
-                    return output.data.expoDomComponentReference;
-                  }
-                  return undefined;
-                });
-              })
-              .flat()
-          ),
-        ].filter((value) => typeof value === 'string') as string[],
-        reactClientReferences: [
-          ...new Set(
-            [...this.deps]
-              .map((module) => {
-                return module.output.map((output) => {
-                  if (
-                    'reactClientReference' in output.data &&
-                    typeof output.data.reactClientReference === 'string'
-                  ) {
-                    return output.data.reactClientReference;
-                  }
-                  return undefined;
-                });
-              })
-              .flat()
-          ),
-        ].filter((value) => typeof value === 'string') as string[],
-        reactServerReferences: [
-          ...new Set(
-            [...this.deps]
-              .map((module) => {
-                return module.output.map((output) => {
-                  if (
-                    'reactServerReference' in output.data &&
-                    typeof output.data.reactServerReference === 'string'
-                  ) {
-                    return output.data.reactServerReference;
-                  }
-                  return undefined;
-                });
-              })
-              .flat()
-          ),
-        ].filter((value) => typeof value === 'string') as string[],
+        expoDomComponentReferences: collectOutputReferences(this.deps, 'expoDomComponentReference'),
+        reactClientReferences: collectOutputReferences(this.deps, 'reactClientReference'),
+        reactServerReferences: collectOutputReferences(this.deps, 'reactServerReference'),
+        loaderReferences: collectOutputReferences(this.deps, 'loaderReference'),
       },
       source: jsCode.code,
     };
 
     const assets: SerialAsset[] = [jsAsset];
 
-    const mutateSourceMapWithDebugId = (sourceMap: string) => {
-      // TODO: Upstream this so we don't have to parse the source map back and forth.
-      if (!debugId) {
-        return sourceMap;
-      }
-      // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
-      // we don't need to disambiguate between multiple source maps.
-      const sourceMapObject = JSON.parse(sourceMap);
-      sourceMapObject.debugId = debugId;
-      // NOTE: Sentry does this, but bun does not.
-      // sourceMapObject.debug_id = debugId;
-      return JSON.stringify(sourceMapObject);
-    };
-
+    // debugId is passed into `sourceMapString` so the bundler-map path
+    // emits it inline rather than a JSON.parse + JSON.stringify
+    // roundtrip; the Hermes branch below has to splice into a finished
+    // JSON string because `buildHermesBundleAsync` is opaque.
+    // NOTE: skipped for inline source maps since they don't need
+    // disambiguation. We only emit `debugId` (Sentry also reads
+    // `debug_id`, but bun doesn't).
     if (
       // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
       includeSourceMaps &&
@@ -550,13 +450,13 @@ export class Chunk {
         return module;
       });
 
-      // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-      const sourceMap = mutateSourceMapWithDebugId(
-        sourceMapString(modules, {
-          excludeSource: false,
-          ...this.options,
-        })
-      );
+      // TODO: We may not need to set `debugId` on the bundler sourcemap when
+      // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
+      const sourceMap = sourceMapString(modules, {
+        excludeSource: false,
+        ...this.options,
+        debugId,
+      });
 
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
@@ -580,7 +480,7 @@ export class Chunk {
       );
 
       // TODO: Generate hbc for each chunk
-      const hermesBundleOutput = await buildHermesBundleAsync({
+      const hermesBundleOutput = await getBuildHermesBundleAsync()({
         projectRoot: this.options.projectRoot,
         filename: this.name,
         code: adjustedSource,
@@ -612,7 +512,9 @@ export class Chunk {
         }
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
+        assets[1].source = debugId
+          ? appendDebugIdToSourceMap(hermesBundleOutput.sourcemap, debugId)
+          : hermesBundleOutput.sourcemap;
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
@@ -636,6 +538,55 @@ export class Chunk {
   }
 }
 
+export function getSortedModules(
+  modules: Module<MixedOutput>[],
+  {
+    createModuleId,
+  }: {
+    createModuleId: (path: string) => number;
+  }
+): readonly Module<any>[] {
+  // Assign IDs to modules in a consistent order
+  for (const module of modules) {
+    createModuleId(module.path);
+  }
+  // Sort by IDs
+  return modules.sort(
+    (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
+  );
+}
+
+// Convert file paths to regex matchers.
+function pathToRegex(path: string) {
+  // Escape regex special characters, except for '*'
+  let regexSafePath = path.replace(/[-[\]{}()+?.,\\^$|#\s]/g, '\\$&');
+
+  // Replace '*' with '.*' to act as a wildcard in regex
+  regexSafePath = regexSafePath.replace(/\*/g, '.*');
+
+  // Create a RegExp object with the modified string
+  return new RegExp('^' + regexSafePath + '$');
+}
+
+function collectOutputReferences(modules: Iterable<Module>, key: string): string[] {
+  return [
+    ...new Set(
+      [...modules]
+        .map((module) => {
+          return module.output.map((output) => {
+            // TODO: This is a mess. This needs to be properly typed
+            const data = output.data as any;
+            if (key in data && typeof data[key] === 'string') {
+              return data[key];
+            }
+            return undefined;
+          });
+        })
+        .flat()
+    ),
+  ].filter((value): value is string => typeof value === 'string');
+}
+
 function getEntryModulesForChunkSettings(graph: ReadOnlyGraph, settings: ChunkSettings) {
   return [...graph.dependencies.entries()]
     .filter(([path]) => settings.test.test(path))
@@ -655,7 +606,7 @@ function gatherChunks(
   settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>,
+  options: SerializerOptions,
   isAsync: boolean = false,
   isEntry: boolean = false
 ): Set<Chunk> {
@@ -733,6 +684,104 @@ function gatherChunks(
   return chunks;
 }
 
+function findEntryChunk(chunks: Set<Chunk>, entryFile: string): Chunk | undefined {
+  return [...chunks.values()].find((chunk) => !chunk.isAsync && chunk.hasAbsolutePath(entryFile));
+}
+
+function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): void {
+  for (const chunk of chunks.values()) {
+    if (!chunk.isEntry && chunk.isAsync) {
+      for (const dep of chunk.deps.values()) {
+        if (entryChunk.deps.has(dep)) {
+          // Remove the dependency from the async chunk since it will be loaded in the main chunk.
+          chunk.deps.delete(dep);
+        }
+      }
+    }
+  }
+}
+
+function extractCommonChunk(
+  chunks: Set<Chunk>,
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+): Chunk | undefined {
+  const toCompare = [...chunks.values()];
+
+  const commonDependencies = [];
+
+  while (toCompare.length) {
+    const chunk = toCompare.shift()!;
+    for (const chunk2 of toCompare) {
+      if (chunk !== chunk2 && chunk.isAsync && chunk2.isAsync) {
+        const commonDeps = [...chunk.deps].filter((dep) => chunk2.deps.has(dep));
+
+        for (const dep of commonDeps) {
+          chunk.deps.delete(dep);
+          chunk2.deps.delete(dep);
+        }
+
+        commonDependencies.push(...commonDeps);
+      }
+    }
+  }
+
+  // If common dependencies were found, extract them to the shared chunk.
+  if (commonDependencies.length) {
+    const commonDependenciesUnique = [...new Set(commonDependencies)];
+    return new Chunk('/__common.js', commonDependenciesUnique, graph, options, false, true);
+  }
+
+  return undefined;
+}
+
+function deduplicateAgainstKnownChunks(
+  chunks: Set<Chunk>,
+  entryChunk: Chunk,
+  commonChunk: Chunk | undefined
+): void {
+  // TODO: Optimize this pass more.
+  // Remove all dependencies from async chunks that are already in the common chunk.
+  for (const chunk of [...chunks.values()]) {
+    if (!chunk.isEntry && chunk !== commonChunk) {
+      for (const dep of chunk.deps) {
+        if (entryChunk.deps.has(dep) || commonChunk?.deps.has(dep)) {
+          chunk.deps.delete(dep);
+        }
+      }
+    }
+  }
+}
+
+function removeEmptyChunks(chunks: Set<Chunk>): void {
+  for (const chunk of [...chunks.values()]) {
+    if (!chunk.isEntry && chunk.deps.size === 0) {
+      chunks.delete(chunk);
+    }
+  }
+}
+
+function createRuntimeChunk(
+  entryChunk: Chunk,
+  chunks: Set<Chunk>,
+  graph: ReadOnlyGraph,
+  options: SerializerOptions
+): void {
+  const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
+
+  // All premodules (including metro-runtime) should load first
+  for (const preModule of entryChunk.preModules) {
+    runtimeChunk.preModules.add(preModule);
+  }
+  entryChunk.preModules = new Set();
+
+  for (const chunk of chunks) {
+    // Runtime chunk has to load before any other a.k.a all chunks require it.
+    chunk.requiredChunks.add(runtimeChunk);
+  }
+  chunks.add(runtimeChunk);
+}
+
 async function serializeChunksAsync(
   chunks: Set<Chunk>,
   serializerConfig: Partial<SerializerConfigT>,
@@ -750,22 +799,4 @@ async function serializeChunksAsync(
   );
 
   return jsAssets;
-}
-
-export function getSortedModules(
-  modules: Module<MixedOutput>[],
-  {
-    createModuleId,
-  }: {
-    createModuleId: (path: string) => number;
-  }
-): readonly Module<any>[] {
-  // Assign IDs to modules in a consistent order
-  for (const module of modules) {
-    createModuleId(module.path);
-  }
-  // Sort by IDs
-  return modules.sort(
-    (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
-  );
 }

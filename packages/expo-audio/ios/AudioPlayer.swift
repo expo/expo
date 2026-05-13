@@ -6,14 +6,17 @@ private enum AudioConstants {
   static let audioSample = "audioSampleUpdate"
 }
 
-public class AudioPlayer: SharedRef<AVPlayer> {
+public class AudioPlayer: SharedRef<AVPlayer>, Playable {
   let id = UUID().uuidString
-  var isLooping = false
   var shouldCorrectPitch = true
   var pitchCorrectionQuality: AVAudioTimePitchAlgorithm = .timeDomain
   var isActiveForLockScreen = false
   var metadata: Metadata?
-  var currentRate: Float = 0.0
+  var currentRate: Float = 1.0 {
+    didSet {
+      currentRate = max(0, currentRate)
+    }
+  }
   let interval: Double
   var wasPlaying = false
   var isPaused: Bool {
@@ -21,6 +24,24 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
   var samplingEnabled = false
   var keepAudioSessionActive = false
+
+  var isLooping = false {
+    didSet {
+      guard isLooping != oldValue else {
+        return
+      }
+      if isLooping {
+        ref.actionAtItemEnd = .advance
+        enqueueNextLoopItem()
+      } else {
+        removeQueuedLoopItems()
+        ref.actionAtItemEnd = .pause
+      }
+      updateStatus(with: [:])
+    }
+  }
+
+  private var source: AudioSource?
 
   // MARK: Observers
   private var timeToken: Any?
@@ -34,15 +55,29 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   var onPlaybackComplete: (() -> Void)?
 
   var duration: Double {
-    ref.currentItem?.duration.seconds ?? 0.0
+    let seconds = ref.currentItem?.duration.seconds ?? 0.0
+    return seconds.isNaN ? 0.0 : seconds
   }
 
   var currentTime: Double {
-    ref.currentItem?.currentTime().seconds ?? 0.0
+    let seconds = ref.currentItem?.currentTime().seconds ?? 0.0
+    return seconds.isNaN ? 0.0 : seconds
   }
 
-  init(_ ref: AVPlayer, interval: Double) {
+  var isLive: Bool {
+    ref.currentItem?.duration.isIndefinite ?? false
+  }
+
+  var currentOffsetFromLive: Double? {
+    guard let currentDate = ref.currentItem?.currentDate() else {
+      return nil
+    }
+    return Date().timeIntervalSince1970 - currentDate.timeIntervalSince1970
+  }
+
+  init(_ ref: AVPlayer, interval: Double, source: AudioSource? = nil) {
     self.interval = interval
+    self.source = source
     super.init(ref)
 
     setupPublisher()
@@ -57,10 +92,18 @@ public class AudioPlayer: SharedRef<AVPlayer> {
   }
 
   var isBuffering: Bool {
-    playerIsBuffering()
+    ref.isBuffering(isPlaying: isPlaying)
+  }
+
+  private var effectiveRate: Float {
+    currentRate > 0 ? currentRate : 1.0
   }
 
   func play(at rate: Float) {
+    ref.actionAtItemEnd = isLooping ? .advance : .pause
+    if isLooping {
+      enqueueNextLoopItem()
+    }
     addPlaybackEndNotification()
     registerTimeObserver()
     ref.playImmediately(atRate: rate)
@@ -87,7 +130,7 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
   }
 
-  func currentStatus() -> [String: Any] {
+  func currentStatus() -> [String: Any?] {
     let currentDuration = ref.status == .readyToPlay ? duration : 0.0
     let rate = isPlaying ? ref.rate : currentRate
     return [
@@ -104,12 +147,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       "isLoaded": isLoaded,
       "playbackRate": rate,
       "shouldCorrectPitch": shouldCorrectPitch,
-      "isBuffering": isBuffering
+      "isBuffering": isBuffering,
+      "isLive": isLive,
+      "currentOffsetFromLive": currentOffsetFromLive,
+      "error": nil
     ]
   }
 
   func setActiveForLockScreen(_ active: Bool = true, metadata: Metadata? = nil, options: LockScreenOptions?) {
     self.metadata = metadata
+    self.isActiveForLockScreen = active
     if active {
       MediaController.shared.setActivePlayer(self, options: options)
     } else {
@@ -138,10 +185,16 @@ public class AudioPlayer: SharedRef<AVPlayer> {
       CMTime(seconds: $0 / 1000.0, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
     } ?? CMTime.positiveInfinity
 
-    await ref.currentItem?.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter	)
-    updateStatus(with: [
-      "currentTime": currentTime
-    ])
+    await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+      ref.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { [weak self] _ in
+        if let self {
+          self.updateStatus(with: [
+            "currentTime": self.currentTime
+          ])
+        }
+        continuation.resume()
+      }
+    }
   }
 
   private func setupPublisher() {
@@ -154,10 +207,18 @@ public class AudioPlayer: SharedRef<AVPlayer> {
           self.updateStatus(with: [
             "isLoaded": true
           ])
+          if self.isLooping {
+            self.enqueueNextLoopItem()
+          }
           if shouldInstallAudioTap || samplingEnabled {
             installTap()
             shouldInstallAudioTap = false
           }
+        }
+        if status == .failed {
+          self.updateStatus(with: [
+            "error": self.ref.currentItem?.error?.localizedDescription ?? "Unknown error"
+          ])
         }
       }
       .store(in: &cancellables)
@@ -167,46 +228,128 @@ public class AudioPlayer: SharedRef<AVPlayer> {
         guard let self else {
           return
         }
+        if self.isLooping {
+          self.enqueueNextLoopItem()
+          self.addPlaybackEndNotification()
+        }
         if self.samplingEnabled && self.isLoaded {
+          self.uninstallTap()
           self.installTap()
         }
       }
       .store(in: &cancellables)
   }
 
-  func replaceCurrentSource(source: AudioSource) {
+  func replaceWithPreloadedItem(_ item: AVPlayerItem?) {
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
+    removeQueuedLoopItems()
     ref.pause()
 
-    // Remove the audio tap if it is active
     if samplingEnabled {
       uninstallTap()
     }
-    ref.replaceCurrentItem(with: AudioUtils.createAVPlayerItem(from: source))
+    replacePlayerItem(with: item)
 
     if wasSamplingEnabled {
       shouldInstallAudioTap = true
     }
 
     if wasPlaying {
-      ref.play()
+      play(at: effectiveRate)
     }
   }
 
-  private func playerIsBuffering() -> Bool {
-    if isPlaying {
-      return false
+  func replaceCurrentSource(source: AudioSource) {
+    self.source = source
+    let wasPlaying = ref.timeControlStatus == .playing
+    let wasSamplingEnabled = samplingEnabled
+    removeQueuedLoopItems()
+    ref.pause()
+
+    if samplingEnabled {
+      uninstallTap()
+    }
+    let item = AudioUtils.createAVPlayerItem(from: source)
+    replacePlayerItem(with: item)
+
+    if wasSamplingEnabled {
+      shouldInstallAudioTap = true
     }
 
-    if ref.timeControlStatus == .waitingToPlayAtSpecifiedRate {
-      return true
+    if wasPlaying {
+      onReady { [weak self] in
+        guard let self else { return }
+        self.play(at: self.effectiveRate)
+      }
+    }
+  }
+
+  func handleMediaServicesReset() {
+    guard let source else {
+      updateStatus(with: ["mediaServicesDidReset": true])
+      return
     }
 
-    if let currentItem = ref.currentItem {
-      return !currentItem.isPlaybackLikelyToKeepUp && currentItem.isPlaybackBufferEmpty
+    // Store these before we reset
+    let shouldResume = wasPlaying
+    let savedTime = currentTime
+    let savedRate = currentRate > 0 ? currentRate : 1.0
+    let wasSamplingEnabled = samplingEnabled
+
+    replacePlayer(with: source, restoreSampling: wasSamplingEnabled)
+
+    onReady { [weak self] in
+      guard let self else { return }
+      self.restorePlaybackState(time: savedTime, shouldResume: shouldResume, rate: savedRate)
+      self.wasPlaying = false
+      self.updateStatus(with: ["mediaServicesDidReset": true])
     }
-    return true
+  }
+
+  private func replacePlayer(with source: AudioSource, restoreSampling: Bool) {
+    teardownPlayer()
+
+    ref = AudioUtils.createAVPlayer(from: source)
+    setupPublisher()
+
+    if restoreSampling {
+      shouldInstallAudioTap = true
+    }
+  }
+
+  private func teardownPlayer() {
+    removeQueuedLoopItems()
+    if samplingEnabled {
+      uninstallTap()
+    }
+    if let timeToken {
+      ref.removeTimeObserver(timeToken)
+      self.timeToken = nil
+    }
+    if let endObserver {
+      NotificationCenter.default.removeObserver(endObserver)
+      self.endObserver = nil
+    }
+    cancellables.removeAll()
+    ref.pause()
+  }
+
+  private func onReady(_ completion: @escaping () -> Void) {
+    ref.publisher(for: \.currentItem?.status)
+      .compactMap { $0 }
+      .filter { $0 == .readyToPlay }
+      .first()
+      .sink { _ in completion() }
+      .store(in: &cancellables)
+  }
+
+  private func restorePlaybackState(time: Double, shouldResume: Bool, rate: Float) {
+    let cmTime = CMTime(seconds: time, preferredTimescale: CMTimeScale(NSEC_PER_SEC))
+    ref.seek(to: cmTime) { [weak self] _ in
+      guard let self, shouldResume else { return }
+      self.play(at: rate)
+    }
   }
 
   private func installTap() {
@@ -261,6 +404,41 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     audioProcessor?.sampleBufferCallback = nil
   }
 
+  private func replacePlayerItem(with item: AVPlayerItem?) {
+    if let queuePlayer = ref as? AVQueuePlayer {
+      queuePlayer.removeAllItems()
+      if let item {
+        queuePlayer.insert(item, after: nil)
+      }
+    } else {
+      ref.replaceCurrentItem(with: item)
+    }
+  }
+
+  private func enqueueNextLoopItem() {
+    guard let queuePlayer = ref as? AVQueuePlayer,
+      let currentItem = queuePlayer.currentItem else {
+      return
+    }
+
+    guard queuePlayer.items().count <= 1 else {
+      return
+    }
+    let nextItem = AVPlayerItem(asset: currentItem.asset)
+    nextItem.audioTimePitchAlgorithm = currentItem.audioTimePitchAlgorithm
+    queuePlayer.insert(nextItem, after: currentItem)
+  }
+
+  private func removeQueuedLoopItems() {
+    guard let queuePlayer = ref as? AVQueuePlayer else {
+      return
+    }
+
+    for item in queuePlayer.items() where item != queuePlayer.currentItem {
+      queuePlayer.remove(item)
+    }
+  }
+
   private func addPlaybackEndNotification() {
     if let endObserver {
       NotificationCenter.default.removeObserver(endObserver)
@@ -268,20 +446,24 @@ public class AudioPlayer: SharedRef<AVPlayer> {
 
     endObserver = NotificationCenter.default.addObserver(
       forName: .AVPlayerItemDidPlayToEndTime,
-      object: ref.currentItem,
+      object: nil,
       queue: nil
-    ) { [weak self] _ in
-      guard let self else {
+    ) { [weak self] notification in
+      guard let self,
+        let finishedItem = notification.object as? AVPlayerItem else {
         return
       }
 
-      if self.isLooping {
-        self.ref.seek(to: CMTime.zero)
-        self.ref.play()
-      } else {
+      guard let queuePlayer = self.ref as? AVQueuePlayer,
+        finishedItem == queuePlayer.currentItem || queuePlayer.items().contains(finishedItem) else {
+        return
+      }
+
+      if !self.isLooping {
+        let currentTime = finishedItem.duration.seconds
         self.updateStatus(with: [
           "playing": false,
-          "currentTime": self.duration,
+          "currentTime": currentTime.isNaN ? 0.0 : currentTime,
           "didJustFinish": true
         ])
         self.onPlaybackComplete?()
@@ -308,30 +490,30 @@ public class AudioPlayer: SharedRef<AVPlayer> {
     }
   }
 
-  public override func sharedObjectWillRelease() {
-    owningRegistry?.remove(self)
-    cancellables.removeAll()
+  var volume: Float {
+    get { ref.volume }
+    set { ref.volume = newValue }
+  }
 
-    if samplingEnabled {
-      samplingEnabled = false
-      uninstallTap()
-    }
+  func pause() {
+    ref.pause()
+  }
+
+  func resumePlayback() {
+    ref.play()
+  }
+
+  public override func sharedObjectWillRelease() {
+    ref.currentItem?.cancelPendingSeeks()
+    owningRegistry?.remove(self)
 
     if isActiveForLockScreen {
       MediaController.shared.setActivePlayer(nil)
     }
 
+    teardownPlayer()
+
     audioProcessor?.invalidate()
     audioProcessor = nil
-
-    if let timeToken {
-      ref.removeTimeObserver(timeToken)
-    }
-
-    if let endObserver {
-      NotificationCenter.default.removeObserver(endObserver)
-    }
-
-    ref.pause()
   }
 }

@@ -3,7 +3,7 @@ title: Modifiers
 description: SwiftUI view modifiers for customizing component appearance and behavior.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -77,6 +77,13 @@ function ModifiersExample() {
 }
 ```
 
+> **info** You can also create custom modifiers that work with any Expo UI component. See the [Extending with SwiftUI](/guides/expo-ui-swift-ui/extending/) guide for details.
+
 ## API
+
+{/* prettier-ignore */}
+```tsx
+import { background, cornerRadius, padding, shadow, foregroundColor, onTapGesture } from '@expo/ui/swift-ui/modifiers';
+```
 
 <APISection packageName="expo-ui/swift-ui/modifiers" />

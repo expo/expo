@@ -6,14 +6,14 @@ import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
 import { u as node } from 'unist-builder';
 import { visit } from 'unist-util-visit';
 
-import { HeadingManager } from '~/common/headingManager';
+import { createHeadingManager } from '~/common/headingManager';
 import { HeadingsContext } from '~/common/withHeadingManager';
 
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
 
 function prepareHeadingManager() {
-  return new HeadingManager(new GithubSlugger(), { headings: [] });
+  return createHeadingManager(new GithubSlugger(), { headings: [] });
 }
 
 jest.mock('next/router', () => mockRouter);

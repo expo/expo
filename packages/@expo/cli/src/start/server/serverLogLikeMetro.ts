@@ -7,11 +7,10 @@
 import { INTERNAL_CALLSITES_REGEX } from '@expo/metro-config';
 import chalk from 'chalk';
 import path from 'path';
-// @ts-expect-error
-import { mapSourcePosition } from 'source-map-support';
 import * as stackTraceParser from 'stacktrace-parser';
 
-import { parseErrorStack, StackFrame } from './metro/log-box/LogBoxSymbolication';
+import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
+import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
 import { LogBoxLog } from './metro/log-box/LogBoxLog';
@@ -19,16 +18,29 @@ import { getStackAsFormattedLog } from './metro/metroErrorInterface';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
+const CONSOLE_METHODS = [
+  'trace',
+  'info',
+  'error',
+  'warn',
+  'log',
+  'group',
+  'groupCollapsed',
+  'groupEnd',
+  'debug',
+] as const;
+
+type ConsoleMethod = (typeof CONSOLE_METHODS)[number];
+
 const groupStack: any = [];
 let collapsedGuardTimer: ReturnType<typeof setTimeout> | undefined;
 
 export function logLikeMetro(
   originalLogFunction: (...args: any[]) => void,
-  level: string,
-  platform: 'BRIDGE' | 'NOBRIDGE' | 'λ' | null,
+  level: ConsoleMethod,
+  platform: string | null,
   ...data: any[]
 ) {
-  // @ts-expect-error
   const logFunction = console[level] && level !== 'trace' ? level : 'log';
   const color =
     level === 'error'
@@ -150,9 +162,12 @@ export function parseErrorStringToObject(errorString: string) {
   }
 }
 
+type ConsoleLogAugmented = typeof console.log & {
+  __polyfilled?: typeof console.log;
+};
+
 function augmentLogsInternal(projectRoot: string) {
-  const augmentLog = (name: string, fn: typeof console.log) => {
-    // @ts-expect-error: TypeScript doesn't know about polyfilled functions.
+  const augmentLog = (name: ConsoleMethod, fn: ConsoleLogAugmented) => {
     if (fn.__polyfilled) {
       return fn;
     }
@@ -177,40 +192,13 @@ function augmentLogsInternal(projectRoot: string) {
             const customStack = args[1];
 
             try {
+              // `error.stack` is already symbolicated by Node's source map support
+              // (registered by `@expo/require-utils` when the SSR bundle is compiled), so the
+              // parsed frames already point at original sources. We just reformat them.
               const parsedStack = parseErrorStack(customStack);
-              const symbolicatedStack = parsedStack.map((line: any) => {
-                const mapped = mapSourcePosition({
-                  source: line.file,
-                  line: line.lineNumber,
-                  column: line.column,
-                }) as {
-                  // '/Users/evanbacon/Documents/GitHub/lab/sdk51-beta/node_modules/react-native-web/dist/exports/View/index.js',
-                  source: string;
-                  line: number;
-                  column: number;
-                  // 'hrefAttrs'
-                  name: string | null;
-                };
-
-                const fallbackName = mapped.name ?? '<unknown>';
-                return {
-                  file: mapped.source,
-                  lineNumber: mapped.line,
-                  column: mapped.column,
-                  // Attempt to preserve the react component name if possible.
-                  methodName: line.methodName
-                    ? line.methodName === '<unknown>'
-                      ? fallbackName
-                      : line.methodName
-                    : fallbackName,
-                  arguments: line.arguments ?? [],
-                };
-              });
-
-              // Replace args[1] with the formatted stack.
-              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, symbolicatedStack, true);
+              args[1] = '\n' + formatParsedStackLikeMetro(projectRoot, parsedStack, true);
             } catch {
-              // If symbolication fails, log the original stack.
+              // If parsing fails, log the original stack.
               args.push('\n' + formatStackLikeMetro(projectRoot, customStack));
             }
           } else {
@@ -227,12 +215,9 @@ function augmentLogsInternal(projectRoot: string) {
     return logWithStack;
   };
 
-  ['trace', 'info', 'error', 'warn', 'log', 'group', 'groupCollapsed', 'groupEnd', 'debug'].forEach(
-    (name) => {
-      // @ts-expect-error
-      console[name] = augmentLog(name, console[name]);
-    }
-  );
+  for (const name of CONSOLE_METHODS) {
+    console[name] = augmentLog(name, console[name]);
+  }
 }
 
 export function formatStackLikeMetro(projectRoot: string, stack: string) {

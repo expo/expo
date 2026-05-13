@@ -16,7 +16,7 @@ export const PageApiVersionContext = createContext({
 } as PageApiVersionContextType);
 
 export type PageApiVersionContextType = {
-  version: keyof typeof navigation.reference;
+  version: keyof typeof navigation.reference | 'latest';
   hasVersion: boolean;
   setVersion: (newVersion: string) => void;
 };

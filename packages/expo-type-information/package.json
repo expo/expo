@@ -1,0 +1,47 @@
+{
+  "name": "expo-type-information",
+  "version": "0.0.1",
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-modules"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "echo \"Tests can only be run on MacOS with sourceKitten installed. Run tests locally instead using local-test script.\"",
+    "local-test": "NODE_OPTIONS=\"--experimental-vm-modules\" expo-module test",
+    "expo-module": "expo-module"
+  },
+  "bin": {
+    "expo-type-information": "./bin/cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-type-information"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "commander": "^12.1.0",
+    "prettier": "^3.0.3",
+    "yaml": "^2.3.2",
+    "typescript": "~6.0.3"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*",
+    "jest": "^29.3.1",
+    "ts-jest": "^29.1.2"
+  }
+}

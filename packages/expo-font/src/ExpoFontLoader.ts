@@ -1,6 +1,6 @@
 import { requireNativeModule } from 'expo-modules-core';
 
-import { UnloadFontOptions } from './Font.types';
+import type { ServerFontResourceDescriptor, UnloadFontOptions } from './Font.types';
 
 export type ExpoFontLoaderModule = {
   getLoadedFonts: () => string[];
@@ -10,6 +10,7 @@ export type ExpoFontLoaderModule = {
   unloadAsync?: (fontFamilyName: string, options?: UnloadFontOptions) => Promise<void>;
   isLoaded?: (fontFamilyName: string, options?: UnloadFontOptions) => boolean;
   getServerResources?: () => string[];
+  getServerResourceDescriptors?: () => ServerFontResourceDescriptor[];
   resetServerContext?: () => void;
 };
 

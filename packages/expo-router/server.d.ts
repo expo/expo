@@ -1,18 +1,12 @@
-export type { MiddlewareFunction } from 'expo-server';
+export type {
+  ImmutableRequest,
+  GenerateMetadataFunction,
+  LoaderFunction,
+  Metadata,
+  MiddlewareFunction,
+} from 'expo-server';
 
-/**
- * @deprecated Use Fetch API `Request` instead.
- *
- * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Request)
- */
-export type ExpoRequest = Request;
-
-/**
- * @deprecated Use Fetch API `Response` instead.
- *
- * [MDN Reference](https://developer.mozilla.org/docs/Web/API/Response)
- */
-export type ExpoResponse = Response;
+export { createStaticLoader, createServerLoader } from 'expo-server';
 
 export type RequestHandler = (
   request: Request,

@@ -2,11 +2,33 @@
 
 import SwiftUI
 import ExpoModulesCore
+import EXUpdatesInterface
+
+internal class EnabledUpdatesStateChangeSubscription: UpdatesStateChangeSubscription {
+  private let subscriptionId: String
+
+  required init(_ subscriptionId: String) {
+    self.subscriptionId = subscriptionId
+  }
+
+  func remove() {
+    if let updatesController = AppController.sharedInstance as? EnabledAppController {
+      updatesController.unsubscribeFromUpdatesStateChanges(subscriptionId)
+    }
+  }
+
+  func getContext() -> Any? {
+    if let updatesController = AppController.sharedInstance as? EnabledAppController {
+      return updatesController.getNativeInterfaceContext()
+    }
+    return nil
+  }
+}
 
 /**
  * Updates controller for applications that have updates enabled and properly-configured.
  */
-public class EnabledAppController: InternalAppControllerInterface, StartupProcedureDelegate {
+public class EnabledAppController: InternalAppControllerInterface, UpdatesInterface, StartupProcedureDelegate {
   public weak var delegate: AppControllerDelegate?
   public var reloadScreenManager: Reloadable? = ReloadScreenManager()
 
@@ -17,7 +39,7 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
   private let updatesDirectoryInternal: URL
   private let controllerQueue = DispatchQueue(label: "expo.controller.ControllerQueue")
   public let isActiveController = true
-  private var isStarted = false
+  public private(set) var isStarted = false
   private var startupStartTime: DispatchTime?
   private var startupEndTime: DispatchTime?
 
@@ -156,6 +178,54 @@ public class EnabledAppController: InternalAppControllerInterface, StartupProced
 
     stateMachine.queueExecution(stateMachineProcedure: procedure)
   }
+
+  // MARK: - UpdatesInterface
+
+  internal var stateChangeListeners: [String: any UpdatesStateChangeListener] = [:]
+
+  public func subscribeToUpdatesStateChanges(_ listener: any UpdatesStateChangeListener) -> UpdatesStateChangeSubscription {
+    let subscriptionId = UUID().uuidString
+    let subscription = EnabledUpdatesStateChangeSubscription(subscriptionId)
+
+    stateChangeListeners[subscriptionId] = listener
+    return subscription
+  }
+
+  internal func unsubscribeFromUpdatesStateChanges(_ subscriptionId: String) {
+    if stateChangeListeners[subscriptionId] != nil {
+      stateChangeListeners.removeValue(forKey: subscriptionId)
+    }
+  }
+
+  internal func getNativeInterfaceContext() -> UpdatesNativeInterfaceStateContext {
+    return stateMachine.context.nativeInterfaceContext
+  }
+
+  public var runtimeVersion: String? {
+    return config.runtimeVersion
+  }
+
+  public var updateURL: URL? {
+    return config.updateUrl
+  }
+
+  public var requestHeaders: [String : String]? {
+    return config.requestHeaders
+  }
+
+  public var launchedUpdateId: UUID? {
+    return startupProcedure.launchedUpdate()?.updateId
+  }
+
+  public var embeddedUpdateId: UUID? {
+    return getEmbeddedUpdate()?.updateId
+  }
+
+  public var launchAssetPath: String? {
+    return startupProcedure.launchAssetUrl()?.relativePath
+  }
+
+  public var isEnabled: Bool = true
 
   // MARK: - Internal
 

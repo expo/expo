@@ -1,0 +1,199 @@
+import { screen } from '@testing-library/react-native';
+import { View } from 'react-native';
+import { Tabs } from 'react-native-screens';
+
+import { renderRouter } from '../../testing-library';
+import { NativeTabs } from '../NativeTabs';
+import type { NativeTabsTriggerIconProps } from '../common/elements';
+import type { NativeTabOptions } from '../types';
+import { appendIconOptions } from '../utils/optionsIconConverter';
+
+jest.mock('react-native-screens', () => {
+  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const actualModule = jest.requireActual(
+    'react-native-screens'
+  ) as typeof import('react-native-screens');
+  return {
+    ...actualModule,
+    Tabs: {
+      ...actualModule.Tabs,
+      Host: jest.fn(({ children }) => <View testID="TabsHost">{children}</View>),
+      Screen: jest.fn(({ children }) => <View testID="TabsScreen">{children}</View>),
+    },
+  };
+});
+
+const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+
+describe('Icons', () => {
+  it('passes iconResourceName when using Icon drawable on Android', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon drawable="stairs" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
+      throw new Error('Icon type is not drawableResource');
+    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
+  });
+
+  it('uses last Icon drawable value when multiple are provided', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon drawable="first" />
+            <NativeTabs.Trigger.Icon drawable="second" />
+            <NativeTabs.Trigger.Icon drawable="last" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
+      throw new Error('Icon type is not drawableResource');
+    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('last');
+  });
+
+  it('does not pass icon when Icon is not used', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toBeUndefined();
+  });
+
+  // Currently not needed. Screens does not forbid this, as Icon does not work on Android yet.
+  //   it('throws an error when mixing Icon.Drawable and Icon', () => {
+  //     expect(() =>
+  //       renderRouter({
+  //         _layout: () => (
+  //           <NativeTabs>
+  //             <NativeTabs.Trigger name="index">
+  //               <Icon src={require('../../../../assets/file.png')} />
+  //               <Icon.Drawable name="stairs" />
+  //             </NativeTabs.Trigger>
+  //           </NativeTabs>
+  //         ),
+  //         index: () => <View testID="index" />,
+  //       })
+  //     ).toThrow('You can only use one type of icon (Icon or Icon.Drawable) for a single tab');
+  //   });
+
+  it('does not set selectedIcon when using sf with string on Android', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon sf="star" drawable="stairs" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
+      throw new Error('Icon type is not drawableResource');
+    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
+  });
+
+  it('does not set selectedIcon when using sf with object on Android', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              sf={{ default: 'star', selected: 'star.fill' }}
+              drawable="stairs"
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
+      throw new Error('Icon type is not drawableResource');
+    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
+  });
+});
+
+describe(appendIconOptions, () => {
+  const ICON_FAMILY = {
+    getImageSource: (name: 'a' | 'b' | 'c') => Promise.resolve({ uri: name }),
+  };
+  it.each([
+    [{}, {}],
+    [{ sf: '0.circle' }, { icon: undefined, selectedIcon: undefined }],
+    [
+      { src: { uri: 'xxx', scale: 2 } },
+      { icon: { src: { uri: 'xxx', scale: 2 } }, selectedIcon: undefined },
+    ],
+    [
+      { src: { default: 'xxx', selected: 'yyy' } },
+      { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
+    ],
+    [
+      {
+        sf: '0.circle',
+        src: { uri: 'xxx' },
+      },
+      { icon: { src: { uri: 'xxx' } }, selectedIcon: undefined },
+    ],
+    [
+      { src: { selected: 'yyy', default: 'xxx' } },
+      { icon: { src: 'xxx' }, selectedIcon: { src: 'yyy' } },
+    ],
+  ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
+    'should append icon props %p to options correctly',
+    (props, expected) => {
+      const options: NativeTabOptions = {};
+      appendIconOptions(options, props);
+      expect(options).toEqual(expected);
+    }
+  );
+  it('when vector icon is used, promise is set', () => {
+    const options: NativeTabOptions = {};
+    const props: NativeTabsTriggerIconProps = {
+      src: {
+        default: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
+        selected: { uri: 'yyy' },
+      },
+    };
+    appendIconOptions(options, props);
+    expect(options).toEqual({
+      icon: { src: expect.any(Promise) },
+      selectedIcon: {
+        src: { uri: 'yyy' },
+      },
+    });
+  });
+});

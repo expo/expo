@@ -1,0 +1,23 @@
+appId: com.expo.routere2e
+name: Header Items button press
+---
+- stopApp: com.expo.routere2e
+- openLink: router-e2e://header-items?leftButton1=1&leftButton2=1&leftCustomItem=1&rightButton=1&searchButton=1
+- runFlow: ../close-warning.yml
+- assertVisible: "Stack Header Items E2E Test Screen"
+- tapOn: "Left"
+- assertVisible: "First left button pressed"
+- tapOn: "OK"
+- tapOn: "Button 2"
+- assertVisible: "Second left button pressed"
+- tapOn: "OK"
+- tapOn:
+    id: "custom-header-element"
+- assertVisible: "Custom header element pressed!"
+- tapOn: "OK"
+- tapOn: "Right"
+- assertVisible: "Right button pressed"
+- tapOn: "OK"
+- tapOn: "Search"
+- assertVisible: "Search button pressed"
+- tapOn: "OK"

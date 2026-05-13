@@ -37,7 +37,9 @@ export function sortWithOrder(obj: string[], order: string[]): string[] {
     const index = obj.indexOf(key);
     if (index > -1) {
       const [item] = obj.splice(index, 1);
-      sorted.push(item);
+      if (item != null) {
+        sorted.push(item);
+      }
     }
   }
 

@@ -10,9 +10,11 @@ import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 internal const val UNLIMITED_SELECTION: Int = 0
 
+@OptimizedRecord
 internal class ImagePickerOptions : Record, Serializable {
   @Field
   var allowsEditing: Boolean = false
@@ -85,14 +87,6 @@ internal enum class MediaTypes(val value: String) : Enumerable {
   VIDEOS("Videos"),
   ALL("All");
 
-  fun toMimeType(): String {
-    return when (this) {
-      IMAGES -> ImageAllMimeType
-      VIDEOS -> VideoAllMimeType
-      ALL -> AllMimeType
-    }
-  }
-
   fun toFileExtension(): String {
     return when (this) {
       VIDEOS -> ".mp4"
@@ -111,10 +105,6 @@ internal enum class MediaTypes(val value: String) : Enumerable {
   }
 
   companion object {
-    private const val ImageAllMimeType = "image/*"
-    private const val VideoAllMimeType = "video/*"
-    private const val AllMimeType = "*/*"
-
     fun fromJSMediaTypesArray(mediaTypes: Array<JSMediaTypes>): MediaTypes {
       return if (!mediaTypes.contains(JSMediaTypes.VIDEOS)) {
         IMAGES

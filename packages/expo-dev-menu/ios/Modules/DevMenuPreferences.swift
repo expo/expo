@@ -6,6 +6,7 @@ let touchGestureEnabledKey = "EXDevMenuTouchGestureEnabled"
 let keyCommandsEnabledKey = "EXDevMenuKeyCommandsEnabled"
 let showsAtLaunchKey = "EXDevMenuShowsAtLaunch"
 let isOnboardingFinishedKey = "EXDevMenuIsOnboardingFinished"
+let showFloatingActionButtonKey = "EXDevMenuShowFloatingActionButton"
 
 public class DevMenuPreferences: Module {
   public func definition() -> ModuleDefinition {
@@ -25,31 +26,44 @@ public class DevMenuPreferences: Module {
    and applying some preferences to static classes like interceptors.
    */
   static func setup() {
+    let fabDefault = Bundle.main.object(forInfoDictionaryKey: showFloatingActionButtonKey) as? Bool
+    let showsAtLaunchDefault = Bundle.main.object(forInfoDictionaryKey: showsAtLaunchKey) as? Bool
+    let isOnboardingFinishedDefault = Bundle.main.object(forInfoDictionaryKey: isOnboardingFinishedKey) as? Bool
+
     #if os(tvOS)
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: false,
       touchGestureEnabledKey: false,
       keyCommandsEnabledKey: true,
-      showsAtLaunchKey: false,
-      isOnboardingFinishedKey: true
+      showsAtLaunchKey: showsAtLaunchDefault ?? false,
+      isOnboardingFinishedKey: isOnboardingFinishedDefault ?? true,
+      showFloatingActionButtonKey: fabDefault ?? false
     ])
     #else
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: true,
       touchGestureEnabledKey: true,
       keyCommandsEnabledKey: true,
-      showsAtLaunchKey: false,
-      isOnboardingFinishedKey: false
+      showsAtLaunchKey: showsAtLaunchDefault ?? true,
+      isOnboardingFinishedKey: isOnboardingFinishedDefault ?? false,
+      showFloatingActionButtonKey: fabDefault ?? true
     ])
     #endif
+
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(toggleMenu),
+      name: Notification.Name("RCTShowDevMenuNotification"),
+      object: nil
+    )
 
     /*
      We don't want to uninstall `DevMenuMotionInterceptor`, because otherwise, the app on shake gesture will bring up the dev-menu from the RN.
      So we added `isEnabled` to disable it, but not uninstall.
      */
-    DevMenuMotionInterceptor.isInstalled = true
-    DevMenuMotionInterceptor.isEnabled = DevMenuPreferences.motionGestureEnabled
+#if !os(macOS)
     DevMenuTouchInterceptor.isInstalled = DevMenuPreferences.touchGestureEnabled
+#endif
     DevMenuKeyCommandsInterceptor.isInstalled = DevMenuPreferences.keyCommandsEnabled
   }
 
@@ -62,7 +76,6 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: motionGestureEnabledKey)
-      DevMenuMotionInterceptor.isEnabled = newValue
     }
   }
 
@@ -75,7 +88,9 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: touchGestureEnabledKey)
+#if !os(macOS)
       DevMenuTouchInterceptor.isInstalled = newValue
+#endif
     }
   }
 
@@ -88,7 +103,9 @@ public class DevMenuPreferences: Module {
     }
     set {
       setBool(newValue, forKey: keyCommandsEnabledKey)
+#if !os(macOS)
       DevMenuKeyCommandsInterceptor.isInstalled = newValue
+#endif
     }
   }
 
@@ -119,6 +136,16 @@ public class DevMenuPreferences: Module {
     }
   }
 
+  public static var showFloatingActionButton: Bool {
+    get {
+      return boolForKey(showFloatingActionButtonKey)
+    }
+    set {
+      setBool(newValue, forKey: showFloatingActionButtonKey)
+      DevMenuManager.shared.updateFABVisibility()
+    }
+  }
+
   /**
    Serializes settings into a dictionary so they can be passed through the bridge.
    */
@@ -128,7 +155,8 @@ public class DevMenuPreferences: Module {
       "touchGestureEnabled": DevMenuPreferences.touchGestureEnabled,
       "keyCommandsEnabled": DevMenuPreferences.keyCommandsEnabled,
       "showsAtLaunch": DevMenuPreferences.showsAtLaunch,
-      "isOnboardingFinished": DevMenuPreferences.isOnboardingFinished
+      "isOnboardingFinished": DevMenuPreferences.isOnboardingFinished,
+      "showFloatingActionButton": DevMenuPreferences.showFloatingActionButton
     ]
   }
 
@@ -145,6 +173,19 @@ public class DevMenuPreferences: Module {
     if let showsAtLaunch = settings["showsAtLaunch"] as? Bool {
       DevMenuPreferences.showsAtLaunch = showsAtLaunch
     }
+    if let showFloatingActionButton = settings["showFloatingActionButton"] as? Bool {
+      DevMenuPreferences.showFloatingActionButton = showFloatingActionButton
+    }
+  }
+
+  @objc static func toggleMenu() {
+    if DevMenuPreferences.motionGestureEnabled {
+      DevMenuManager.shared.toggleMenu()
+    }
+  }
+
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
 }
 

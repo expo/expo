@@ -31,12 +31,13 @@ internal enum ExpoLayoutDirection: String, Enumerable {
   }
 }
 
-internal final class HostViewProps: ExpoSwiftUI.ViewProps {
+internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
+  @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
   var onLayoutContent = EventDispatcher()
 }
 
@@ -63,6 +64,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       return HostLayout {
         Children()
       }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
       .modifier(GeometryChangeModifier(props: props))
@@ -71,6 +73,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     return ZStack(alignment: alignment) {
       Children()
     }
+    .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
     .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
     .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
     .modifier(GeometryChangeModifier(props: props))
@@ -160,15 +163,14 @@ private struct ViewportSizeMeasurementLayout: Layout {
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps
-  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func dispatchOnLayoutContent(_ size: CGSize) {
-    if (props.matchContentsHorizontal || props.matchContentsVertical) {
+    if props.matchContentsHorizontal || props.matchContentsVertical {
       let styleWidth = props.matchContentsHorizontal ? NSNumber(value: Float(size.width)) : nil
       let styleHeight = props.matchContentsVertical ? NSNumber(value: Float(size.height)) : nil
-      shadowNodeProxy.setStyleSize?(styleWidth, styleHeight)
+      props.shadowNodeProxy.setStyleSize?(styleWidth, styleHeight)
     }
-    
+
     props.onLayoutContent([
       "width": size.width,
       "height": size.height

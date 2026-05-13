@@ -10,3 +10,6 @@ internal class SharingFailedException(message: String, e: Exception) :
 
 internal class SharingInvalidArgsException(message: String?, e: Exception) :
   CodedException(message, e.cause)
+
+internal class FailedToResolveSharedDataException(message: String?, cause: Throwable? = null) :
+  CodedException(message ?: "Unexpected error while resolving shared data", cause)

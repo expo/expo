@@ -1,3 +1,15 @@
 #!/usr/bin/env bash
+set -e -o pipefail
 
-git-crypt lock
+# Paths to the secrets files
+SECRETS_DIR="$(dirname "$0")/../secrets"
+KEYS_FILE="$SECRETS_DIR/keys.json"
+EXPOTOOLS_ENV_FILE="$SECRETS_DIR/expotools.env"
+
+echo "Removing secrets from secrets directory..."
+
+rm "$KEYS_FILE"
+
+rm "$EXPOTOOLS_ENV_FILE"
+
+echo "Successfully removed secrets from secrets directory."

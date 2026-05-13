@@ -112,7 +112,7 @@ function findSignableTargets(project) {
 function findFirstNativeTarget(project) {
   const targets = getNativeTargets(project);
   const applicationTargets = targets.filter(([, target]) => isTargetOfType(target, TargetType.APPLICATION));
-  if (applicationTargets.length === 0) {
+  if (applicationTargets[0] == null) {
     throw new Error(`Could not find any application target in project.pbxproj`);
   }
   return applicationTargets[0];

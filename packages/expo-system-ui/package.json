@@ -1,6 +1,6 @@
 {
   "name": "expo-system-ui",
-  "version": "6.0.7",
+  "version": "56.0.4",
   "description": "Interact with system UI elements",
   "main": "build/SystemUI.js",
   "types": "build/SystemUI.d.ts",
@@ -9,7 +9,6 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -32,14 +31,16 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/system-ui",
   "dependencies": {
-    "@react-native/normalize-colors": "0.82.1",
+    "@react-native/normalize-colors": "0.85.3",
     "debug": "^4.3.2"
   },
   "jest": {
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^5.0.7"
+    "@types/node": "^22.14.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

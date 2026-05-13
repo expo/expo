@@ -31,17 +31,18 @@ export interface LaunchProps {
 async function getMainActivityAsync(projectRoot: string): Promise<string> {
   const filePath = await AndroidConfig.Paths.getAndroidManifestAsync(projectRoot);
   const androidManifest = await AndroidConfig.Manifest.readAndroidManifestAsync(filePath);
-
-  // Assert MainActivity defined.
-  const activity = await AndroidConfig.Manifest.getRunnableActivity(androidManifest);
-  if (!activity) {
+  const runnableActivity = AndroidConfig.Manifest.getRunnableActivity(androidManifest);
+  if (runnableActivity) {
+    return runnableActivity.$['android:name'];
+  }
+  const mainActivity = AndroidConfig.Manifest.getMainActivity(androidManifest);
+  if (!mainActivity) {
     throw new CommandError(
       'ANDROID_MALFORMED',
       `${filePath} is missing a runnable activity element.`
     );
   }
-  // Often this is ".MainActivity"
-  return activity.$['android:name'];
+  return mainActivity.$['android:name'];
 }
 
 export async function resolveLaunchPropsAsync(

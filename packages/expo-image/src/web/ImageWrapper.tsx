@@ -1,12 +1,13 @@
-import React, { useEffect, Ref, useId } from 'react';
+import type { Ref } from 'react';
+import React, { useEffect, useId } from 'react';
 
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
-import { ImageWrapperProps } from './ImageWrapper.types';
+import type { ImageWrapperProps } from './ImageWrapper.types';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { useHeaders, useImageHashes } from './hooks';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
-import { SrcSetSource } from './useSourceSelection';
-import { ImageNativeProps, ImageSource } from '../Image.types';
+import type { SrcSetSource } from './useSourceSelection';
+import type { ImageNativeProps, ImageSource } from '../Image.types';
 
 function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
@@ -30,6 +31,7 @@ const ImageWrapper = React.forwardRef(
       contentPosition,
       hashPlaceholderContentPosition,
       priority,
+      loading,
       style,
       hashPlaceholderStyle,
       tintColor,
@@ -83,6 +85,7 @@ const ImageWrapper = React.forwardRef(
           // @ts-ignore
           // eslint-disable-next-line react/no-unknown-property
           fetchPriority={getFetchPriorityFromImagePriority(priority || 'normal')}
+          loading={loading || undefined}
           draggable={draggable}
           {...getImageWrapperEventHandler(events, sourceWithHeaders)}
           {...getImgPropsFromSource(source)}

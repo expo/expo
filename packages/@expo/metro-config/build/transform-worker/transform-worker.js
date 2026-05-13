@@ -224,7 +224,7 @@ async function transformCss(config, projectRoot, filename, data, options) {
             {
                 type: 'js/module',
                 data: {
-                    ...jsModuleResults.output[0]?.data,
+                    ...jsModuleResults.output[0].data,
                     // Append additional css metadata for static extraction.
                     css: {
                         code: cssCode,

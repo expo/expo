@@ -8,9 +8,92 @@
 
 ### 🐛 Bug fixes
 
-- fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
+### 💡 Others
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- Add structured server resource descriptors for streaming SSR ([#44927](https://github.com/expo/expo/pull/44927) by [@hassankhan](https://github.com/hassankhan))
+
+### 🐛 Bug fixes
+
+- Align `ServerFontResourceDescriptor.crossOrigin` type with React ([#45115](https://github.com/expo/expo/pull/45115) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
+
+- Export `ServerFontResourceDescriptor` type for external usage ([#45116](https://github.com/expo/expo/pull/45116) by [@hassankhan](https://github.com/hassankhan))
+
+## 55.0.7 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Add support for setting custom testStrings for FontObserver on the web. ([#42442](https://github.com/expo/expo/pull/42442) by [@aleqsio](https://github.com/aleqsio))
+- add support for line-height ([#41094](https://github.com/expo/expo/pull/41094) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- [ios] Defer native font querying to prevent startup hang on iOS. ([#42033](https://github.com/expo/expo/pull/42033) by [@mozzius](https://github.com/mozzius))
+- unify `useFonts` return value in RSC ([#40481](https://github.com/expo/expo/pull/40481) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- update ExpoFontUtils mock, to align with new API ([#40964](https://github.com/expo/expo/pull/40964) by [@Ubax](https://github.com/Ubax))
+
+## 14.0.10 - 2025-12-05
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.9 - 2025-10-09
+
+### 🐛 Bug fixes
+
+- fix android image scaling in `renderToImageAsync` ([#40113](https://github.com/expo/expo/pull/40113) by [@vonovak](https://github.com/vonovak))
 
 ## 14.0.8 — 2025-09-11
 

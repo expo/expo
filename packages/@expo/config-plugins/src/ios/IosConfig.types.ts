@@ -1,6 +1,7 @@
-import { JSONValue } from '@expo/json-file';
+import type { JSONValue } from '@expo/json-file';
 
 export type URLScheme = {
+  CFBundleTypeRole?: 'Editor' | 'Viewer' | 'Shell' | 'QLGenerator' | 'None';
   CFBundleURLName?: string;
   CFBundleURLSchemes: string[];
 };

@@ -11,11 +11,11 @@ import { AppJSIcon } from './AppJSIcon';
 export function AppJSBanner() {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isAppJSBannerVisible, setIsAppJSBannerVisible] = useLocalStorage<boolean>({
-    name: '2025-appjs-banner',
+    name: '2026-appjs-banner',
     defaultValue: true,
   });
 
-  const appJSConfEndDate = new Date('2025-05-28');
+  const appJSConfEndDate = new Date('2026-05-29');
   const showAppJSConfShoutout = isBefore(new Date(), appJSConfEndDate);
 
   useEffect(function didMount() {
@@ -35,13 +35,13 @@ export function AppJSBanner() {
         'max-md-gutters:flex-wrap'
       )}>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+        <div className="max-sm-gutters:hidden relative z-10 p-2">
           <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#494CFC]" />
-          <AppJSIcon className="icon-lg relative z-10 text-palette-white" />
+          <AppJSIcon className="icon-lg text-palette-white relative z-10" />
         </div>
         <div className="relative grid grid-cols-1">
           <p className="text-base font-medium text-[#494CFC] dark:text-[#a0b9ff]">
-            App.js Conf 2025
+            App.js Conf 2026
           </p>
           <p className="text-sm text-[#494CFC] dark:text-[#a0b9ff]">
             Join us at the biggest React Native & Expo-focused conference.
@@ -55,7 +55,7 @@ export function AppJSBanner() {
           openInNewTab
           rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
           className={mergeClasses(
-            'gap-1.5 border-[#494CFC] bg-[#494CFC] text-palette-white shadow-none',
+            'text-palette-white gap-1.5 border-[#494CFC] bg-[#494CFC] shadow-none',
             'dark:hocus:border-[#23257b] dark:hocus:bg-[#23257b]',
             'hocus:border-[#7189ff] hocus:bg-[#7189ff]'
           )}>
@@ -64,10 +64,11 @@ export function AppJSBanner() {
         <Button
           size="xs"
           theme="tertiary"
+          aria-label="Dismiss banner"
           onClick={() => {
             setIsAppJSBannerVisible(false);
           }}
-          className="bg-transparent text-palette-white shadow-none hocus:bg-[#ccd8ff] dark:hocus:bg-[#23257b]"
+          className="text-palette-white hocus:bg-[#ccd8ff] dark:hocus:bg-[#23257b] bg-transparent shadow-none"
           leftSlot={<XIcon className="text-[#494CFC]" />}
         />
       </div>

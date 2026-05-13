@@ -2,9 +2,9 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useNavigation = useNavigation;
-const native_1 = require("@react-navigation/native");
 const utils_1 = require("./global-state/utils");
 const href_1 = require("./link/href");
+const native_1 = require("./react-navigation/native");
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)
  * to imperatively access layout-specific functionality like `navigation.openDrawer()` in a

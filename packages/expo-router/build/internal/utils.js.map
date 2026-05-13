@@ -1,0 +1,1 @@
+{"version":3,"file":"utils.js","sourceRoot":"","sources":["../../src/internal/utils.ts"],"names":[],"mappings":";;;AAAA,oCAAoD;AAA3C,2GAAA,oBAAoB,OAAA;AAC7B,4EAA2E;AAAlE,8HAAA,qBAAqB,OAAA","sourcesContent":["export { shouldLinkExternally } from '../utils/url';\nexport { disableZoomTransition } from '../link/zoom/ZoomTransitionEnabler';\n"]}

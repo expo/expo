@@ -12,8 +12,8 @@ export type TargetCapabilityFlags = Page['capabilities'];
  */
 export type CdpMessage<
   Method extends string = string,
-  Request extends object = object,
-  Response extends object = object,
+  Request = { [key: string]: any },
+  Response = { [key: string]: any },
 > = {
   id: number;
   method: Method;

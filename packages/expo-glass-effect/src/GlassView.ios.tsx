@@ -4,8 +4,12 @@
 
 import { requireNativeViewManager } from 'expo-modules-core';
 
-import { GlassViewProps } from './GlassView.types';
+import type { GlassViewProps } from './GlassView.types';
 
 const NativeGlassView = requireNativeViewManager<GlassViewProps>('ExpoGlassEffect', 'GlassView');
 
-export default NativeGlassView;
+const GlassView = (props: GlassViewProps) => {
+  return <NativeGlassView {...props} />;
+};
+
+export default GlassView;

@@ -21,13 +21,6 @@ function _path() {
   };
   return data;
 }
-function _slash() {
-  const data = _interopRequireDefault(require("slash"));
-  _slash = function () {
-    return data;
-  };
-  return data;
-}
 function _Target() {
   const data = require("./Target");
   _Target = function () {
@@ -107,8 +100,8 @@ function ensureApplicationTargetEntitlementsFileConfigured(projectRoot) {
     }
     hasChangesToWrite = true;
     // Use posix formatted path, even on Windows
-    const entitlementsRelativePath = (0, _slash().default)(_path().default.join(projectName, `${productName}.entitlements`));
-    const entitlementsPath = _path().default.normalize(_path().default.join(projectRoot, 'ios', entitlementsRelativePath));
+    const entitlementsRelativePath = _path().default.join(projectName, `${productName}.entitlements`).replace(/\\/g, '/');
+    const entitlementsPath = _path().default.resolve(projectRoot, 'ios', entitlementsRelativePath);
     _fs().default.mkdirSync(_path().default.dirname(entitlementsPath), {
       recursive: true
     });

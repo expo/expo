@@ -1,7 +1,5 @@
 import { ctx } from 'expo-router/_ctx';
-import type { RouteNode } from 'expo-router/build/Route';
-import { getContextKey } from 'expo-router/build/matchers';
-import { sortRoutes } from 'expo-router/build/sortRoutes';
+import { getContextKey, sortRoutes, type RouteNode } from 'expo-router/internal/routing';
 
 import { createExpoPages } from './create-expo-pages';
 import { getRoutes } from '../../getRoutesSSR';
@@ -64,7 +62,9 @@ export default createExpoPages(async ({ createPage, createLayout }, { getRouteOp
 
           const first = Array.isArray(defined) ? defined[0] : defined;
 
-          grouped.push(first);
+          if (first != null) {
+            grouped.push(first);
+          }
         }
         return grouped;
       });
