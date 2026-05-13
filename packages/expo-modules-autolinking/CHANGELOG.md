@@ -20,7 +20,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`.
 
 ## 56.0.4 — 2026-05-11
 
