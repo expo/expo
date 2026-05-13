@@ -58,8 +58,9 @@ function find(
           const name = entry.name;
 
           // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
+          // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
           const isDirectory = entry.isDirectory();
-          if (isDirectory && (name === '.git' || name === '.hg')) {
+          if (isDirectory && (name === '.git' || name === '.hg' || name === '.cxx')) {
             continue;
           }
 
