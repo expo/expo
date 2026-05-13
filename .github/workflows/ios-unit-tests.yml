@@ -41,7 +41,7 @@ jobs:
     timeout-minutes: 75
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
       - name: 🔨 Switch to Xcode 26.2
@@ -49,7 +49,7 @@ jobs:
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
@@ -61,11 +61,11 @@ jobs:
           xcrun simctl shutdown all
           sudo xcodebuild -runFirstLaunch
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 10
       - name: 🔨 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: 'pnpm'
@@ -92,7 +92,7 @@ jobs:
         run: pnpm expotools native-unit-tests --platform ios
       - name: 📤 Upload xcresult
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ios-unit-tests-results
           path: /tmp/ios-unit-tests-results

@@ -170,28 +170,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
 
-      Function("startSession") {
-        val sessionId = sessionManager.createSessionId()
-        val timestamp = TimeUtils.getCurrentTimestampInISOFormat()
-        val sessionMetadata = metadata
-
-        scope.launch {
-          sessionManager.startSessionWithIdAt(
-            sessionId = sessionId,
-            timestamp = timestamp,
-            metadata = sessionMetadata
-          )
-        }
-
-        return@Function sessionId
-      }
-
-      Function("stopSession") { sessionId: String ->
-        scope.launch {
-          sessionManager.stopSession(sessionId = sessionId)
-        }
-      }
-
       AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
         sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
       }

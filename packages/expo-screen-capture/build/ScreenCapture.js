@@ -1,4 +1,5 @@
-import { UnavailabilityError, PermissionStatus, createPermissionHook, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect } from 'react';
 import ExpoScreenCapture from './ExpoScreenCapture';
 const activeTags = new Set();
@@ -195,5 +196,6 @@ const defaultPermissionsResponse = {
     status: PermissionStatus.GRANTED,
 };
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus } from 'expo';
+export {} from 'expo-modules-core';
 //# sourceMappingURL=ScreenCapture.js.map

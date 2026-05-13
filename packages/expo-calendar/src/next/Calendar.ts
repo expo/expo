@@ -1,4 +1,5 @@
-import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform, processColor } from 'react-native';
 
 import type {

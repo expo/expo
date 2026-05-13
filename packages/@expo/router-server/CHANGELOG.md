@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
+
 ## 56.0.6 — 2026-05-12
 
 _This version does not introduce any user-facing changes._

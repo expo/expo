@@ -1,6 +1,10 @@
 import AppMetrics from 'expo-app-metrics';
 import { optionalRouter } from './router';
 import {} from './storage';
+// TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
+// web bundle doesn't pull in `expo-app-metrics`' native bridge calls. The web
+// version should be an explicit no-op (return a noop cleanup) rather than
+// relying on the web stubs in `expo-app-metrics/module.web.ts`.
 let initialized = false;
 export const isInitialized = () => initialized;
 export function initRouterIntegration() {
@@ -30,9 +34,6 @@ export function initListeners(storage, navigationEvents) {
         const timestamp = new Date().toISOString();
         const isInitial = !storage.renderedScreensIds.has(e.screenId);
         storage.renderedScreensIds.add(e.screenId);
-        if (process.env.EXPO_OS !== 'android') {
-            return;
-        }
         const mainSessionId = (await AppMetrics.getMainSession())?.id;
         if (!mainSessionId) {
             return;

@@ -20,10 +20,6 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
   }
   simulateCrashReport() {}
   triggerCrash() {}
-  startSession(metadata?: string) {
-    return '';
-  }
-  stopSession(sessionId: string) {}
   async getMainSession() {
     return null;
   }

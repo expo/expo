@@ -68,7 +68,7 @@
     "expo": "workspace:*",
     "expo-router": "workspace:*",
     "jest-runner-tsd": "^6.0.0",
-    "react-server-dom-webpack": "~19.0.1",
+    "react-server-dom-webpack": "~19.0.6",
     "tsd": "^0.33.0",
     "tsd-lite": "^0.9.0"
   },

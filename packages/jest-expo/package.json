@@ -52,6 +52,7 @@
   },
   "peerDependencies": {
     "react-native": "*",
+    "@react-native/jest-preset": "^0.85.0",
     "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
@@ -61,6 +62,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.2.0",
-    "react-server-dom-webpack": "~19.0.4"
+    "@react-native/jest-preset": "0.85.3",
+    "react-server-dom-webpack": "~19.0.6"
   }
 }

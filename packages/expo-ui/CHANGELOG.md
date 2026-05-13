@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+- Make `ChartView` public. ([#45674](https://github.com/expo/expo/pull/45674) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
@@ -349,7 +350,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] - Add range and custom label support in `DatePicker` ([#41546](https://github.com/expo/expo/pull/41546) by [@nishan](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `matchContents` support to `Host`. ([#41553](https://github.com/expo/expo/pull/41553) by [@kudo](https://github.com/kudo))
 - [iOS] Add `timerInterval` to `Progress` component. ([#41598](https://github.com/expo/expo/pull/41598) by [@jakex7](https://github.com/jakex7))
-- [iOS] Make some views public.
+- [iOS] Make some views public. ([#41641](https://github.com/expo/expo/pull/41641) by [@jakex7](https://github.com/jakex7))
 - [iOS] - Add `Menu` component ([#41664](https://github.com/expo/expo/pull/41664) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Remove presentation props from `BottomSheet` and add equivalent modifiers ([#42029](https://github.com/expo/expo/pull/42029) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Nested `Text` support ([#41707](https://github.com/expo/expo/pull/41707) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))

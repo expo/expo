@@ -62,12 +62,14 @@ let storage: RouterIntegrationStorage;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(console, 'log').mockImplementation(() => {});
+  jest.spyOn(console, 'warn').mockImplementation(() => {});
   mockUseRoute.mockReturnValue({ key: 'screen-a' });
   mockUseNavigation.mockReturnValue({ isFocused: () => true });
   storage = createRouterIntegrationStorage();
 });
 
-describe('useObserveForRouter (android)', () => {
+describe('useObserveForRouter', () => {
   it('records TTI from dispatchTime on the first call when focused', async () => {
     storage.screenTimes['screen-a'] = { dispatchTime: 1000 };
     jest.spyOn(performance, 'now').mockReturnValue(1300);
@@ -129,5 +131,63 @@ describe('useObserveForRouter (android)', () => {
     });
     expect(mockAddCustomMetric).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('warns and skips when called on an unmounted screen', async () => {
+    const warnSpy = jest.spyOn(console, 'warn');
+    const { result, unmount } = renderHook(() => useObserveForRouter(), {
+      wrapper: wrapper(storage),
+    });
+    const fn = result.current!;
+    unmount();
+    await act(async () => {
+      await fn();
+    });
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] Calling markInteractive on unmounted screen'
+    );
+    expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
+  });
+
+  it('warns when there is no screenId on the route', async () => {
+    mockUseRoute.mockReturnValue({ key: undefined });
+    const warnSpy = jest.spyOn(console, 'warn');
+    const { result } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+    await act(async () => {
+      await result.current!();
+    });
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] No metadata available for the current screen. Make sure to call useObserve inside a screen component.'
+    );
+    expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
+  });
+
+  it('warns when the screen ID changes between renders', () => {
+    const warnSpy = jest.spyOn(console, 'warn');
+    mockUseRoute.mockReturnValue({ key: 'screen-a' });
+    const { rerender } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+
+    mockUseRoute.mockReturnValue({ key: 'screen-b' });
+    rerender(undefined);
+
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] Screen ID changed between renders. This is most likely an expo-router bug.'
+    );
+  });
+
+  it('throws when isInitialized() flips mid-lifetime', () => {
+    const init = require('../init') as typeof import('../init');
+    const isInitMock = init.isInitialized as jest.Mock;
+    isInitMock.mockReturnValue(false);
+    // Suppress React's own console.error for the unhandled render error so the
+    // test output stays focused on the assertion.
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    const { rerender } = renderHook(() => useObserveForRouter(), { wrapper: wrapper(storage) });
+
+    isInitMock.mockReturnValue(true);
+    expect(() => rerender(undefined)).toThrow(
+      "[expo-observe] Router integration was toggled during a screen's lifecycle. Call `ExpoObserve.configure({ disableRouterIntegration })` once at startup before any screen mounts."
+    );
   });
 });

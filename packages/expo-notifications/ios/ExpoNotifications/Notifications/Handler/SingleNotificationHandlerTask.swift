@@ -42,7 +42,9 @@ public class SingleNotificationHandlerTask {
 
   public func processNotificationWithOptions(_ options: UNNotificationPresentationOptions) -> Bool {
     if let completionHandler = completionHandler {
-      completionHandler(options)
+      DispatchQueue.main.async {
+        completionHandler(options)
+      }
       finish()
       return true
     }

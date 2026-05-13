@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+
 ## 56.0.4 — 2026-05-11
 
 _This version does not introduce any user-facing changes._
