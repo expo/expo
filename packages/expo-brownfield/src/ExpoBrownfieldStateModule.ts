@@ -68,8 +68,9 @@ export function addSharedStateListener<T = any>(
   const state = getSharedObject(key);
   const subscription = state.addListener(
     'change',
-    (event: Record<string, T | undefined> | undefined) => {
-      callback(event?.['value'] as T | undefined);
+    (event: Record<string, T | null | undefined> | undefined) => {
+      const value = event?.['value'];
+      callback(value === null ? undefined : value);
     }
   );
 
