@@ -1,7 +1,7 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
 import NotificationCategoriesModule from './NotificationCategoriesModule';
-import { NotificationCategory } from './Notifications.types';
+import type { NotificationCategory } from './Notifications.types';
 
 /**
  * Fetches information about all known notification categories.
@@ -11,7 +11,7 @@ import { NotificationCategory } from './Notifications.types';
  * @platform ios
  * @header categories
  */
-export default async function getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
+export async function getNotificationCategoriesAsync(): Promise<NotificationCategory[]> {
   if (!NotificationCategoriesModule.getNotificationCategoriesAsync) {
     throw new UnavailabilityError('Notifications', 'getNotificationCategoriesAsync');
   }

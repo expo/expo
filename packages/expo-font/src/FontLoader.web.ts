@@ -2,7 +2,8 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontResource, FontSource, FontDisplay } from './Font.types';
+import type { FontResource, FontSource } from './Font.types';
+import { FontDisplay } from './Font.types';
 
 function uriFromFontSource(asset: FontSource): string | number | null {
   if (typeof asset === 'string') {
@@ -26,10 +27,18 @@ function displayFromFontSource(asset: FontSource): FontDisplay {
   return FontDisplay.AUTO;
 }
 
+function testStringFromFontSource(asset: FontSource): string | undefined {
+  if (typeof asset === 'object' && 'testString' in asset) {
+    return asset.testString ?? undefined;
+  }
+
+  return undefined;
+}
+
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   const uri = uriFromFontSource(source);
   const display = displayFromFontSource(source);
-
+  const testString = testStringFromFontSource(source);
   if (!uri || typeof uri !== 'string') {
     throwInvalidSourceError(uri);
   }
@@ -37,6 +46,7 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
   return {
     uri,
     display,
+    testString,
   };
 }
 

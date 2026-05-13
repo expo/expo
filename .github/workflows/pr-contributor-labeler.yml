@@ -1,0 +1,139 @@
+name: PR Contributor Labeler
+
+on:
+  # pull_request_target is required so fork PRs get a write token to add labels.
+  # Safe because the only checkout is a sparse, base-branch read of
+  # .github/partner-allowlist.json — no fork code is fetched or executed.
+  pull_request_target:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          sparse-checkout: |
+            .github/partner-allowlist.json
+          sparse-checkout-cone-mode: false
+      - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        env:
+          AFFILIATIONS: |
+            facebook=meta
+            software-mansion=software-mansion
+            infinitered=infinite-red
+            callstack=callstack
+            margelo=margelo
+            AppAndFlow=app-and-flow
+            strvcom=strv
+            theodo=theodo
+            Theodo-UK=theodo
+            nearform=nearform
+            echobind=echobind
+            Pagepro=pagepro
+            g2i=g2i
+            GeekyAnts=geekyants
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            const username = pr.user.login;
+
+            if (pr.user.type === 'Bot') {
+              core.info(`Skipping bot author: ${username}`);
+              return;
+            }
+
+            async function isMember(org, user) {
+              try {
+                await github.rest.orgs.checkMembershipForUser({ org, username: user });
+                return true;
+              } catch (err) {
+                if (err.status === 404 || err.status === 302) return false;
+                core.warning(`Membership check failed for ${user}@${org}: ${err.message}`);
+                return false;
+              }
+            }
+
+            async function applyLabel(name, color, description) {
+              try {
+                await github.rest.issues.createLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  name, color, description,
+                });
+              } catch (err) {
+                if (err.status !== 422) throw err;
+              }
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: [name],
+              });
+            }
+
+            async function labelInternal(reason) {
+              core.info(`${username} is internal (${reason})`);
+              await applyLabel('contributor: internal', 'b6f3a4',
+                'PR author is a member, owner, or collaborator of the expo org');
+            }
+
+            // Prefer author_association from the webhook payload — GitHub
+            // itself attests to the relationship, no token dependency.
+            const INTERNAL = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
+            if (INTERNAL.has(pr.author_association)) {
+              await labelInternal(pr.author_association);
+              return;
+            }
+
+            // Fall back to the org-membership API. The webhook reports
+            // author_association NONE for users whose expo org membership is
+            // private, so author_association alone misses ~70% of the team.
+            // expo-bot is itself an expo org member, so with read:org the
+            // membership check sees private members too.
+            if (await isMember('expo', username)) {
+              await labelInternal('private member, via API');
+              return;
+            }
+
+            await applyLabel('contributor: external', 'ededed',
+              'PR author is not a member of the expo GitHub org');
+
+            const affiliations = process.env.AFFILIATIONS
+              .split('\n')
+              .map(l => l.trim())
+              .filter(l => l && !l.startsWith('#'))
+              .map(l => l.split('='));
+
+            const suffixes = new Set();
+
+            // Source 1: public org membership
+            for (const [org, suffix] of affiliations) {
+              if (suffixes.has(suffix)) continue;
+              if (await isMember(org, username)) suffixes.add(suffix);
+            }
+
+            // Source 2: manual allowlist for employees with private org membership
+            try {
+              const fs = require('fs');
+              const allowlist = JSON.parse(fs.readFileSync('.github/partner-allowlist.json', 'utf8'));
+              const lc = username.toLowerCase();
+              for (const [suffix, users] of Object.entries(allowlist)) {
+                if (suffix.startsWith('_') || suffixes.has(suffix)) continue;
+                if (Array.isArray(users) && users.some(u => u.toLowerCase() === lc)) {
+                  suffixes.add(suffix);
+                }
+              }
+            } catch (err) {
+              core.warning(`Could not read partner-allowlist.json: ${err.message}`);
+            }
+
+            for (const suffix of suffixes) {
+              await applyLabel(`partner: ${suffix}`, 'c5def5',
+                `PR author is affiliated with a known partner org (${suffix})`);
+            }

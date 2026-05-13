@@ -4,7 +4,6 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import AndroidMacrosGenerator from './AndroidMacrosGenerator';
-import IosMacrosGenerator from './IosMacrosGenerator';
 import macros from './macros';
 import { Directories } from '../expotools';
 
@@ -65,7 +64,10 @@ async function generateMacrosAsync(platform, configuration) {
 
 function getMacrosGeneratorForPlatform(platform) {
   if (platform === 'ios') {
-    return new IosMacrosGenerator();
+    throw new Error(
+      `iOS dynamic macros generation via expotools is deprecated. Use the shell script instead:\n` +
+        `  apps/expo-go/ios/Build-Phases/generate-dynamic-macros.sh`
+    );
   }
   if (platform === 'android') {
     return new AndroidMacrosGenerator();

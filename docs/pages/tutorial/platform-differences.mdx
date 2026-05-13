@@ -19,6 +19,7 @@ In this chapter, we'll learn how to handle capturing screenshots for web browser
 <VideoBoxLink
   videoId="mEKQvF4irBM"
   title="Watch: Handling platform differences in your universal Expo app"
+  description="Handle platform differences between Android, iOS, and web by implementing platform-specific screenshot capture with dom-to-image."
 />
 
 ---
@@ -74,8 +75,7 @@ export default function Index() {
   const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
-  const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
-
+  const [permissionResponse, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const imageRef = useRef<View>(null);
 
   useEffect(() => {

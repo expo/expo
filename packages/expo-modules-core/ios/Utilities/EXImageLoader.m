@@ -16,6 +16,14 @@
   return self;
 }
 
+- (nonnull instancetype)initWithRCTImageLoader:(nonnull RCTImageLoader *)loader
+{
+  if (self = [super init]) {
+    _rctImageLoader = loader;
+  }
+  return self;
+}
+
 - (void)loadImageForURL:(NSURL *)imageURL
       completionHandler:(EXImageLoaderCompletionBlock)completionHandler
 {

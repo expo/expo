@@ -1,8 +1,6 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
-import JsonFile from '@expo/json-file';
-import type { Reporter } from '@expo/metro/metro';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
 import type {
   MixedOutput,
@@ -11,7 +9,8 @@ import type {
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
 import { stableHash } from '@expo/metro/metro-cache';
-import type { ConfigT as MetroConfig, InputConfigT } from '@expo/metro/metro-config';
+import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -23,22 +22,15 @@ import { FileStore } from './file-store';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
-import { JSModule } from './serializer/getCssDeps';
+import type { JSModule } from './serializer/getCssDeps';
 import { isVirtualModule } from './serializer/sideEffects';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
+import { getPkgVersion } from './utils/getPkgVersion';
 import { setOnReadonly } from './utils/setOnReadonly';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
-
-export interface LoadOptions {
-  config?: string;
-  maxWorkers?: number;
-  port?: number;
-  reporter?: Reporter;
-  resetCache?: boolean;
-}
 
 export interface DefaultConfigOptions {
   /** @deprecated */
@@ -64,7 +56,6 @@ export interface DefaultConfigOptions {
   }) => Module[])[];
 }
 
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 
 // Patch Metro's graph to support always parsing certain modules. This enables
@@ -90,7 +81,8 @@ function patchMetroGraphToSupportUncachedModules() {
         // Find any dependencies that have been marked as `skipCache` and ensure they are invalidated.
         // `skipCache` is set when a CSS module is found by PostCSS.
         if (
-          dependency.output.find((file) => file.data.css?.skipCache) &&
+          // TODO(@kitten): MixedOutput needs to be upcast, but `data` isn't defined in `JSFile`?
+          dependency.output.find((file) => (file as any).data.css?.skipCache) &&
           !paths.includes(dependency.path)
         ) {
           // Ensure we invalidate the `unstable_transformResultKey` (input hash) so the module isn't removed in
@@ -139,6 +131,10 @@ function memoize<T extends (...args: any[]) => any>(fn: T): T {
     cache.set(key, result);
     return result;
   }) as T;
+}
+
+function asMetroConfigInput<T extends InputConfigT>(config: T): T {
+  return config;
 }
 
 export function createStableModuleIdFactory(
@@ -190,7 +186,7 @@ export function createStableModuleIdFactory(
 export function getDefaultConfig(
   projectRoot: string,
   { mode, isCSSEnabled = true, unstable_beforeAssetSerializationPlugins }: DefaultConfigOptions = {}
-): InputConfigT {
+) {
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig,
@@ -198,17 +194,6 @@ export function getDefaultConfig(
 
   if (isCSSEnabled) {
     patchMetroGraphToSupportUncachedModules();
-  }
-
-  const isExotic = mode === 'exotic' || env.EXPO_USE_EXOTIC;
-
-  if (isExotic && !hasWarnedAboutExotic) {
-    hasWarnedAboutExotic = true;
-    console.log(
-      chalk.gray(
-        `\u203A Feature ${chalk.bold`EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`
-      )
-    );
   }
 
   const reactNativePath = path.dirname(
@@ -273,12 +258,7 @@ export function getDefaultConfig(
     console.log();
   }
 
-  const {
-    // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
-    // This prints a giant React logo which is less accessible to users on smaller terminals.
-    reporter,
-    ...metroDefaultValues
-  } = getDefaultMetroConfig.getDefaultValues(projectRoot);
+  const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
 
   const cacheStore = new FileStore<any>({
     root: path.join(os.tmpdir(), 'metro-cache'),
@@ -287,9 +267,15 @@ export function getDefaultConfig(
   const serverRoot = getMetroServerRoot(projectRoot);
 
   const routerPackageRoot = resolveFrom.silent(projectRoot, 'expo-router');
-  // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
-  // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-  const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
+
+  const expoMetroConfig = asMetroConfigInput({
+    reporter: {
+      // Remove the default reporter which metro always resolves to be the react-native-community/cli reporter.
+      // This prints a giant React logo which is less accessible to users on smaller terminals.
+      update() {
+        /*noop*/
+      },
+    },
     watchFolders,
     resolver: {
       unstable_conditionsByPlatform: {
@@ -313,8 +299,12 @@ export function getDefaultConfig(
       blockList: [
         // .expo/types contains generated declaration files which are not and should not be processed by Metro.
         // This prevents unwanted fast refresh on the declaration files changes.
-        /\.expo[\\/]types/,
-      ].concat(metroDefaultValues.resolver.blockList ?? []),
+        // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+        exclusionList(['.expo/types', '.expo/web/cache']),
+        // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+        // pattern is reapplied to normal paths during the Node crawling phase
+        /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+      ],
     },
     cacheStores: [cacheStore],
     watcher: {
@@ -383,11 +373,12 @@ export function getDefaultConfig(
       customizeFrame: getDefaultCustomizeFrame(),
     },
     transformerPath: require.resolve('./transform-worker/transform-worker'),
+
     // NOTE: All of these values are used in the cache key. They should not contain any absolute paths.
     transformer: {
+      unstable_workerThreads: true,
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
       unstable_renameRequire: false,
-      // @ts-expect-error: not on type.
       _expoRouterPath: routerPackageRoot ? path.relative(serverRoot, routerPackageRoot) : undefined,
       postcssHash: getPostcssConfigHash(projectRoot),
       browserslistHash: pkg?.browserslist
@@ -411,6 +402,8 @@ export function getDefaultConfig(
       assetRegistryPath: '@react-native/assets-registry/registry',
       // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
       enableBabelRuntime: babelRuntimeVersion ?? undefined,
+      // Allows additional babelrc lookups (mostly unused). The default of `undefined` enables the project's custom Babel config without enabling babelrc/configFile discovery
+      enableBabelRCLookup: undefined,
       // hermesParser: true,
       getTransformOptions: async () => ({
         transform: {
@@ -421,46 +414,29 @@ export function getDefaultConfig(
     },
   });
 
+  // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
+  // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
+  const metroConfig = mergeConfig(
+    // NOTE(@kitten): We neither want ConfigT/MetroConfig here, which is mostly marked as readonly,
+    // nor InputConfigT which is inexact and partial. Instead, we want an exact type combination of
+    // the default config and Expo's config
+    metroDefaultValues as MetroConfig & typeof expoMetroConfig,
+    expoMetroConfig
+  );
+
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }
 
 /** Use to access the Expo Metro transformer path */
 export const unstable_transformerPath = require.resolve('./transform-worker/transform-worker');
-export const internal_supervisingTransformerPath = require.resolve(
-  './transform-worker/supervising-transform-worker'
-);
+export const internal_supervisingTransformerPath =
+  require.resolve('./transform-worker/supervising-transform-worker');
 
 // re-export for use in config files.
 export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
-
-function getPkgVersion(projectRoot: string, pkgName: string): string | null {
-  const targetPkg = resolveFrom.silent(projectRoot, pkgName);
-  if (!targetPkg) return null;
-  const targetPkgJson = findUpPackageJson(targetPkg);
-  if (!targetPkgJson) return null;
-  const pkg = JsonFile.read(targetPkgJson);
-
-  debug(`${pkgName} package.json:`, targetPkgJson);
-  const pkgVersion = pkg.version;
-  if (typeof pkgVersion === 'string') {
-    return pkgVersion;
-  }
-
-  return null;
-}
-
-function findUpPackageJson(cwd: string): string | null {
-  if (['.', path.sep].includes(cwd)) return null;
-
-  const found = resolveFrom.silent(cwd, './package.json');
-  if (found) {
-    return found;
-  }
-  return findUpPackageJson(path.dirname(cwd));
-}
 
 function getExpoOptional(projectRoot: string, subModule = 'package.json'): string | undefined {
   return resolveFrom.silent(projectRoot, `expo/${subModule}`);

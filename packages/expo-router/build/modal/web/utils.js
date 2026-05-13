@@ -4,29 +4,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.isModalPresentation = isModalPresentation;
 exports.isTransparentModalPresentation = isTransparentModalPresentation;
 exports.useIsDesktop = useIsDesktop;
 exports.convertStackStateToNonModalState = convertStackStateToNonModalState;
 exports.findLastNonModalIndex = findLastNonModalIndex;
 const react_1 = __importDefault(require("react"));
-/**
- * Helper to determine if a given screen should be treated as a modal-type presentation
- *
- * @param options - The navigation options.
- * @returns Whether the screen should be treated as a modal-type presentation.
- *
- * @internal
- */
-function isModalPresentation(options) {
-    const presentation = options?.presentation;
-    return (presentation === 'modal' ||
-        presentation === 'formSheet' ||
-        presentation === 'fullScreenModal' ||
-        presentation === 'containedModal' ||
-        presentation === 'transparentModal' ||
-        presentation === 'containedTransparentModal');
-}
+const stackPresentation_1 = require("../../utils/stackPresentation");
 /**
  * Helper to determine if a given screen should be treated as a transparent modal-type presentation
  *
@@ -86,7 +69,7 @@ function convertStackStateToNonModalState(state, descriptors, isWeb) {
     }
     // Remove every modal-type route from the stack on web.
     const routes = state.routes.filter((route) => {
-        return !isModalPresentation(descriptors[route.key].options);
+        return !(0, stackPresentation_1.isModalPresentation)(descriptors[route.key].options);
     });
     // Recalculate the active index so it still points at the same non-modal route, or –
     // if that route was filtered out – at the last remaining route.
@@ -108,7 +91,7 @@ function convertStackStateToNonModalState(state, descriptors, isWeb) {
 function findLastNonModalIndex(state, descriptors) {
     // Iterate backwards through the stack to find the last non-modal route.
     for (let i = state.routes.length - 1; i >= 0; i--) {
-        if (!isModalPresentation(descriptors[state.routes[i].key].options)) {
+        if (!(0, stackPresentation_1.isModalPresentation)(descriptors[state.routes[i].key].options)) {
             return i;
         }
     }

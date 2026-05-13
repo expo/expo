@@ -1,10 +1,6 @@
-import {
-  AndroidConfig,
-  ConfigPlugin,
-  withAndroidColors,
-  withAndroidStyles,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { AndroidConfig, withAndroidColors, withAndroidStyles } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 
 const { assignColorValue } = AndroidConfig.Colors;
 const { assignStylesValue, getAppThemeGroup } = AndroidConfig.Styles;

@@ -1,7 +1,8 @@
 import { renderHook, act, waitFor } from '@testing-library/react-native';
 
 import { createPermissionHook } from '../PermissionsHook';
-import { PermissionResponse, PermissionStatus } from '../PermissionsInterface';
+import type { PermissionResponse } from '../PermissionsInterface';
+import { PermissionStatus } from '../PermissionsInterface';
 
 // The indexes of the array returned by the hooks
 const RESULT_STATUS = 0;

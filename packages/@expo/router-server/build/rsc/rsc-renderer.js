@@ -135,6 +135,9 @@ async function renderRsc(args, opts) {
         }
         const args = Array.isArray(decodedBody) ? decodedBody : [];
         const chunkInfo = serverConfig[actionId];
+        if (!chunkInfo) {
+            throw new Error(`Could not find server action "${actionId}" in the server config.`);
+        }
         // Load module into memory.
         await Promise.all(chunkInfo.chunks.map((chunk) => globalThis.__webpack_chunk_load__(chunk)));
         // Import module.

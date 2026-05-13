@@ -35,13 +35,14 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RouterModalScreen = exports.RouterModal = void 0;
-const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const ModalStackRouteDrawer_1 = require("./ModalStackRouteDrawer");
 const TransparentModalStackRouteDrawer_1 = require("./TransparentModalStackRouteDrawer");
 const utils_1 = require("./utils");
 const withLayoutContext_1 = require("../../layouts/withLayoutContext");
+const native_1 = require("../../react-navigation/native");
+const native_stack_1 = require("../../react-navigation/native-stack");
 function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
     const { state, navigation, descriptors, NavigationContent, describe } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
         children,
@@ -65,9 +66,7 @@ function ModalStackNavigator({ initialRouteName, children, screenOptions, }) {
             }
         });
     }), [navigation, state.index, state.key]);
-    return (<NavigationContent>
-      <ModalStackView state={state} navigation={navigation} descriptors={descriptors} describe={describe}/>
-    </NavigationContent>);
+    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(ModalStackView, { state: state, navigation: navigation, descriptors: descriptors, describe: describe }) }));
 }
 const ModalStackView = ({ state, navigation, descriptors, describe }) => {
     const isWeb = process.env.EXPO_OS === 'web';
@@ -88,18 +87,15 @@ const ModalStackView = ({ state, navigation, descriptors, describe }) => {
         const idx = (0, utils_1.findLastNonModalIndex)(state, descriptors);
         return state.routes.slice(idx + 1);
     }, [isWeb, state, descriptors]);
-    return (<div style={{ flex: 1, display: 'flex' }}>
-      <native_stack_1.NativeStackView state={newStackState} navigation={navigation} descriptors={descriptors} describe={describe}/>
-      {isWeb &&
-            overlayRoutes.map((route) => {
-                const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
-                const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
-                const ModalComponent = isTransparentModal
-                    ? TransparentModalStackRouteDrawer_1.TransparentModalStackRouteDrawer
-                    : ModalStackRouteDrawer_1.ModalStackRouteDrawer;
-                return (<ModalComponent key={route.key} routeKey={route.key} options={descriptors[route.key].options} renderScreen={descriptors[route.key].render} onDismiss={dismiss} dismissible={isRemovePrevented ? false : undefined} themeColors={colors}/>);
-            })}
-    </div>);
+    return ((0, jsx_runtime_1.jsxs)("div", { style: { flex: 1, display: 'flex' }, children: [(0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { state: newStackState, navigation: navigation, descriptors: descriptors, describe: describe }), isWeb &&
+                overlayRoutes.map((route) => {
+                    const isTransparentModal = (0, utils_1.isTransparentModalPresentation)(descriptors[route.key].options);
+                    const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
+                    const ModalComponent = isTransparentModal
+                        ? TransparentModalStackRouteDrawer_1.TransparentModalStackRouteDrawer
+                        : ModalStackRouteDrawer_1.ModalStackRouteDrawer;
+                    return ((0, jsx_runtime_1.jsx)(ModalComponent, { routeKey: route.key, options: descriptors[route.key].options, renderScreen: descriptors[route.key].render, onDismiss: dismiss, dismissible: isRemovePrevented ? false : undefined, themeColors: colors }, route.key));
+                })] }));
 };
 const createModalStack = (0, native_1.createNavigatorFactory)(ModalStackNavigator);
 const RouterModal = (0, withLayoutContext_1.withLayoutContext)(createModalStack().Navigator);

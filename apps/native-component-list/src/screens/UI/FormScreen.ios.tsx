@@ -6,13 +6,13 @@ import {
   Form,
   Section,
   Slider,
-  Switch,
+  Toggle,
   Text,
   DisclosureGroup,
   ContentUnavailableView,
   LabeledContent,
 } from '@expo/ui/swift-ui';
-import { pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
+import { buttonStyle, font, pickerStyle, tag } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 
 export default function FormScreen() {
@@ -20,7 +20,7 @@ export default function FormScreen() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const options = ['$', '$$', '$$$', '$$$$'];
   const [sliderValue, setSliderValue] = useState<number>(0.5);
-  const [switchValue, setSwitchValue] = useState<boolean>(true);
+  const [toggleValue, setToggleValue] = useState<boolean>(true);
 
   const profileImageSizes = ['Large', 'Medium', 'Small'];
   const [disclosureGroupExpanded, setDisclosureGroupExpanded] = useState<boolean>(false);
@@ -30,14 +30,16 @@ export default function FormScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="My form Section">
-          <Text size={17} testID="test-id-from-expo-ui!">
+          <Text modifiers={[font({ size: 17 })]} testID="test-id-from-expo-ui!">
             Some text!
           </Text>
-          <Button onPress={() => alert('Clicked!')}>I'm a button</Button>
+          <Button onPress={() => alert('Clicked!')} label="I'm a button" />
           <LabeledContent label="Labeled Content">
-            <Button variant="borderless" onPress={() => alert('Clicked!')}>
-              Labeled Content Button
-            </Button>
+            <Button
+              label="Labeled Content Button"
+              modifiers={[buttonStyle('borderless')]}
+              onPress={() => alert('Clicked!')}
+            />
           </LabeledContent>
           <LabeledContent label="Name">
             <Text>Beto</Text>
@@ -62,15 +64,15 @@ export default function FormScreen() {
             }>
             <Text>Value</Text>
           </LabeledContent>
-          <LabeledContent label="Labeled Slider ">
+          <LabeledContent label="Labeled Slider">
             <Slider value={sliderValue} onValueChange={setSliderValue} />
           </LabeledContent>
-          <Switch value={switchValue} label="This is a switch" onValueChange={setSwitchValue} />
+          <Toggle isOn={toggleValue} label="This is a toggle" onIsOnChange={setToggleValue} />
           <ColorPicker
             label="Select a color"
             selection={color}
             supportsOpacity
-            onValueChanged={setColor}
+            onSelectionChange={setColor}
           />
           <Picker
             label="Menu picker"
@@ -105,11 +107,11 @@ export default function FormScreen() {
           <Button
             onPress={() => {
               alert('Fake cache cleared');
-            }}>
-            Clear Image Cache
-          </Button>
+            }}
+            label="Clear Image Cache"
+          />
           <DisclosureGroup
-            onStateChange={setDisclosureGroupExpanded}
+            onIsExpandedChange={setDisclosureGroupExpanded}
             isExpanded={disclosureGroupExpanded}
             label="Show User Profile Details">
             <Text>Name: John Doe</Text>

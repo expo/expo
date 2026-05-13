@@ -1,6 +1,6 @@
 {
   "name": "expo-image-loader",
-  "version": "6.0.0",
+  "version": "56.0.3",
   "description": "Image loader",
   "main": "index.js",
   "keywords": [
@@ -20,7 +20,9 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo-image-loader",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+    "expo": "workspace:*"
+  },
   "peerDependencies": {
     "expo": "*"
   }

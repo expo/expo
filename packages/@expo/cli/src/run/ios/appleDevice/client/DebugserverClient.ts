@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import Debug from 'debug';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 import * as path from 'path';
 
 import { ServiceClient } from './ServiceClient';
@@ -54,9 +54,9 @@ export class DebugserverClient extends ServiceClient<GDBProtocolClient> {
       this.protocolClient.socket.write('+');
       const parts = resp.split(';');
       for (const part of parts) {
-        if (part.includes('description')) {
+        if (part.includes('description') && part.includes(':')) {
           // description:{hex encoded message like: "Terminated with signal 9"}
-          resolve(Buffer.from(part.split(':')[1], 'hex').toString('ascii'));
+          resolve(Buffer.from(part.split(':')[1]!, 'hex').toString('ascii'));
         }
       }
     });

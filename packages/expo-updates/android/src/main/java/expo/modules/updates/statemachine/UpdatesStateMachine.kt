@@ -1,9 +1,12 @@
 package expo.modules.updates.statemachine
 
+import expo.modules.manifests.core.toMap
+import expo.modules.updates.EnabledUpdatesController
 import expo.modules.updates.events.IUpdatesEventManager
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.procedures.StateMachineProcedure
 import expo.modules.updates.procedures.StateMachineSerialExecutorQueue
+import expo.modules.updatesinterface.UpdatesControllerRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.Date
@@ -65,13 +68,42 @@ class UpdatesStateMachine(
     sendContextToJS()
   }
 
+  private fun toMap(event: UpdatesStateEvent): Map<String, Any> {
+    return when (event) {
+      is UpdatesStateEvent.DownloadCompleteWithUpdate -> mapOf("type" to "downloadCompleteWithUpdate", "manifest" to event.manifest.toMap())
+      is UpdatesStateEvent.CheckCompleteWithUpdate -> mapOf("type" to "checkCompleteWithUpdate", "manifest" to event.manifest.toMap())
+      is UpdatesStateEvent.CheckCompleteWithRollback -> mapOf("type" to "checkCompleteWithRollback")
+      is UpdatesStateEvent.CheckError -> mapOf("type" to "checkError", "errorMessage" to event.error.message)
+      is UpdatesStateEvent.DownloadError -> mapOf("type" to "downloadError", "errorMessage" to event.error.message)
+      is UpdatesStateEvent.DownloadProgress -> mapOf("type" to "downloadProgress", "progress" to event.progress)
+      is UpdatesStateEvent.Check -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.CheckCompleteUnavailable -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.Download -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadComplete -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.DownloadCompleteWithRollback -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.Restart -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.StartStartup -> mapOf("type" to event.type.type)
+      is UpdatesStateEvent.EndStartup -> mapOf("type" to event.type.type)
+    }
+  }
+
   /**
    * Transition the state machine forward to a new state.
    */
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
       context = reduceContext(context, event)
-      logger.info("Updates state change: ${event.type}, context = ${context.json}")
+      if (event !is UpdatesStateEvent.DownloadProgress) {
+        logger.info("Updates state change: ${event.type}, context = ${context.json}")
+      }
+      UpdatesControllerRegistry.controller?.get()?.let {
+        if (it is EnabledUpdatesController) {
+          // Notify the controller state change listener
+          it.stateChangeListenerMap.keys.forEach { key ->
+            it.stateChangeListenerMap[key]?.updatesStateDidChange(toMap(event))
+          }
+        }
+      }
       sendContextToJS()
     }
   }
@@ -173,7 +205,9 @@ class UpdatesStateMachine(
         )
         is UpdatesStateEvent.Download -> context.copyAndIncrementSequenceNumber(
           downloadProgress = 0.0,
-          isDownloading = true
+          isDownloading = true,
+          downloadStartTime = Date(),
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadProgress -> context.copyAndIncrementSequenceNumber(
           downloadProgress = event.progress
@@ -182,12 +216,16 @@ class UpdatesStateMachine(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true,
-          downloadProgress = 1.0
+          downloadProgress = 1.0,
+          downloadStartTime = null,
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true
+          isUpdatePending = true,
+          downloadStartTime = null,
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
@@ -196,11 +234,14 @@ class UpdatesStateMachine(
           downloadedManifest = event.manifest,
           rollback = null,
           isUpdatePending = true,
-          isUpdateAvailable = true
+          isUpdateAvailable = true,
+          downloadFinishTime = Date()
         )
         is UpdatesStateEvent.DownloadError -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
-          downloadError = event.error
+          downloadError = event.error,
+          downloadStartTime = null,
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.Restart -> context.copyAndIncrementSequenceNumber(
           isRestarting = true

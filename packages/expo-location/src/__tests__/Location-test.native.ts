@@ -139,7 +139,7 @@ describe('navigator.geolocation polyfill', () => {
 });
 
 function emitNativeLocationUpdate(location: any) {
-  Location.EventEmitter.emit('Expo.locationChanged', {
+  ExpoLocation.emit('Expo.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,
   });

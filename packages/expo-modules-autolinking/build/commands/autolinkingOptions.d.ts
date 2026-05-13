@@ -1,5 +1,5 @@
-import commander from 'commander';
-import { SupportedPlatform } from '../types';
+import type commander from 'commander';
+import type { SupportedPlatform } from '../types';
 export interface AutolinkingOptions {
     /** Only scan direct "dependencies" of a project for React Native modules, rather than including transitive dependencies.
      * @remarks
@@ -21,7 +21,16 @@ export interface AutolinkingOptions {
      * @defaultValue `[]`
      */
     exclude: string[];
-    /** A list of package names to opt out of prebuilt Expo modules (Android-only)
+    /** A list of additional package names to verify to be deduplicated.
+     * @remarks
+     * This is useful to verify that additional packages are deduplicated, and adhere to autolinking
+     * semantics, even if they aren't native modules. This can for example be used to check utility
+     * libraries that shouldn't be duplicated because of singleton or internal state.
+     * @defaultValue `[]`
+     */
+    include: string[];
+    /** A list of package name patterns to opt out of prebuilt modules.
+     * Supports regex patterns (e.g., ".*" for all packages, "expo-audio" for exact match).
      * @defaultValue `[]`
      */
     buildFromSource?: string[];

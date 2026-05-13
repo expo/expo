@@ -32,11 +32,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Items: ${quantity}`}
-              defaultValue={quantity}
+              value={quantity}
               min={0}
               max={50}
               step={1}
-              onValueChanged={setQuantity}
+              onValueChange={setQuantity}
               modifiers={modifiers}
             />
           </Host>
@@ -45,11 +45,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Temperature: ${temperature}°C`}
-              defaultValue={temperature}
+              value={temperature}
               min={-10}
               max={50}
               step={5}
-              onValueChanged={setTemperature}
+              onValueChange={setTemperature}
               modifiers={modifiers}
             />
           </Host>
@@ -58,11 +58,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Volume: ${volume}%`}
-              defaultValue={volume}
+              value={volume}
               min={0}
               max={100}
               step={10}
-              onValueChanged={setVolume}
+              onValueChange={setVolume}
               modifiers={modifiers}
             />
           </Host>
@@ -74,11 +74,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Speed: ${speed}/10`}
-              defaultValue={speed}
+              value={speed}
               min={1}
               max={10}
               step={1}
-              onValueChanged={setSpeed}
+              onValueChange={setSpeed}
               modifiers={modifiers}
             />
           </Host>
@@ -87,11 +87,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Rating: ${rating} stars`}
-              defaultValue={rating}
+              value={rating}
               min={1}
               max={5}
               step={1}
-              onValueChanged={setRating}
+              onValueChange={setRating}
               modifiers={modifiers}
             />
           </Host>
@@ -100,11 +100,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Cart Items: ${items} items`}
-              defaultValue={items}
+              value={items}
               min={0}
               max={20}
               step={2}
-              onValueChanged={setItems}
+              onValueChange={setItems}
               modifiers={modifiers}
             />
           </Host>
@@ -116,11 +116,11 @@ export default function StepperScreen() {
           <Host matchContents>
             <Stepper
               label={`Stepper: ${quantity}`}
-              defaultValue={quantity}
+              value={quantity}
               min={0}
               max={50}
               step={1}
-              onValueChanged={setQuantity}
+              onValueChange={setQuantity}
               modifiers={modifiers}
             />
           </Host>

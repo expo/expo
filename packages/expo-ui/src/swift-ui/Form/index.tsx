@@ -4,15 +4,10 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
 export interface FormProps extends CommonViewModifierProps {
-  children: React.ReactNode;
-
   /**
-   * Makes the form scrollable.
-   * @default true
-   * @platform ios 16.0+
-   * @platform tvos 16.0+
+   * The content of the form.
    */
-  scrollEnabled?: boolean;
+  children: React.ReactNode;
 }
 
 const FormNativeView: React.ComponentType<FormProps> = requireNativeView('ExpoUI', 'FormView');

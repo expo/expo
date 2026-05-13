@@ -1,0 +1,78 @@
+name: 'Setup ccache'
+description: 'Install and configure ccache'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 🍺 Install ccache
+      if: runner.os == 'macOS'
+      shell: bash
+      run: brew install ccache
+
+    - name: 🔧 Configure ccache for iOS
+      if: runner.os == 'macOS'
+      shell: bash
+      run: |
+        # In order to use ccache with Xcode, unlike on Android, we can't just change env variables - we need to change PATH.
+        MKDIR_PATH=$HOME/.ccache_bin
+        mkdir -p $MKDIR_PATH
+        ln -sf $(which ccache) $MKDIR_PATH/clang
+        ln -sf $(which ccache) $MKDIR_PATH/clang++
+        ln -sf $(which ccache) $MKDIR_PATH/cc
+        ln -sf $(which ccache) $MKDIR_PATH/c++
+        echo "$MKDIR_PATH" >> $GITHUB_PATH
+        echo "CC=$MKDIR_PATH/clang" >> $GITHUB_ENV
+        echo "CXX=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+        echo "LD=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+        echo "LDPLUSPLUS=$MKDIR_PATH/clang++" >> $GITHUB_ENV
+
+        # It must be the same as in .github/actions/expo-caches/action.yml
+        echo "CCACHE_DIR=${{ runner.temp }}/.ccache" >> $GITHUB_ENV
+
+        # By default ccache includes mtime of a compiler in hashes, for each CI run mtime varies.
+        echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+
+        # Sloppiness options disable some of the ccache checks to increase hit rate.
+        # We exclude ctime and mtime so the cache is hit based on file content.
+        # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
+        # system_headers: avoids hashing thousands of Apple SDK headers.
+        # modules, clang_index_store, ivfsoverlay: without these, hit rate on iOS would be 0%.
+        echo "CCACHE_SLOPPINESS=include_file_mtime,include_file_ctime,time_macros,modules,clang_index_store,system_headers,ivfsoverlay" >> $GITHUB_ENV
+
+        # Speeds up the process on cache misses by skipping the preprocessing step.
+        echo "CCACHE_DEPEND=true" >> $GITHUB_ENV
+
+        # Speeds up copying files on cache hits; natively supported by macOS APFS.
+        echo "CCACHE_FILECLONE=true" >> $GITHUB_ENV
+
+    - name: 📦 Install ccache
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ccache
+
+    - name: 🔧 Configure ccache for Android
+      if: runner.os == 'Linux'
+      shell: bash
+      run: |
+        # It must be the same as in .github/actions/expo-caches/action.yml
+        echo "CCACHE_DIR=${{ runner.temp }}/.ccache" >> $GITHUB_ENV
+
+        # By default ccache includes mtime of a compiler in hashes, for each CI run mtime varies.
+        echo "CCACHE_COMPILERCHECK=content" >> $GITHUB_ENV
+
+        # Calculate hash based on a relative path - this prevents cache misses when an absolute path changes.
+        echo "CCACHE_BASEDIR=${{ github.workspace }}" >> $GITHUB_ENV
+
+        # Default is 5GB, this cache takes only ~300MB.
+        echo "CCACHE_MAXSIZE=1G" >> $GITHUB_ENV
+
+        # Sloppiness options disable some of the ccache checks to increase hit rate.
+        # In our case we exclude ctime and mtime so cache is hit based on file content.
+        # time_macros might help if in included modules there are macros like __TIME__ which would trigger a cache miss.
+        echo "CCACHE_SLOPPINESS=include_file_ctime,include_file_mtime,time_macros" >> $GITHUB_ENV
+
+        # Replaces compiler with ccache.
+        echo "CMAKE_C_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV
+        echo "CMAKE_CXX_COMPILER_LAUNCHER=$(which ccache)" >> $GITHUB_ENV

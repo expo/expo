@@ -20,7 +20,7 @@ import NotificationScheduler from './NotificationScheduler';
  * ```
  * @header schedule
  */
-export default async function cancelScheduledNotificationAsync(identifier) {
+export async function cancelScheduledNotificationAsync(identifier) {
     if (!NotificationScheduler.cancelScheduledNotificationAsync) {
         throw new UnavailabilityError('Notifications', 'cancelScheduledNotificationAsync');
     }

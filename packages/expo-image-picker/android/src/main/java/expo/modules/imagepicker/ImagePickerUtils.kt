@@ -40,14 +40,14 @@ internal fun getType(contentResolver: ContentResolver, uri: Uri): String? {
         null,
         null,
         null
-      ).use { cursor ->
-        if (cursor?.moveToFirst() == true) {
+      )?.use { cursor ->
+        if (cursor.moveToFirst()) {
           val columnIndex = cursor.getColumnIndex(DocumentsContract.Document.COLUMN_MIME_TYPE)
           if (columnIndex != -1 && !cursor.isNull(columnIndex)) {
-            cursor.getString(columnIndex)
+            return@use cursor.getString(columnIndex)
           }
         }
-        null
+        return@use null
       }
   }
 
@@ -62,11 +62,18 @@ private fun getTypeFromFileUrl(url: String): String? {
 }
 
 /**
+ * Convert this [File] to [Uri] that might be accessed by 3rd party Activities but don't mask the exception
+ */
+internal fun File.getContentUri(context: Context): Uri {
+  return FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", this)
+}
+
+/**
  * Convert this [File] to [Uri] that might be accessed by 3rd party Activities, eg. by camera application
  */
 internal fun File.toContentUri(context: Context): Uri {
   return try {
-    FileProvider.getUriForFile(context, context.packageName + ".ImagePickerFileProvider", this)
+    this.getContentUri(context)
   } catch (e: Exception) {
     Uri.fromFile(this)
   }

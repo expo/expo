@@ -21,7 +21,7 @@ internal func toNSError(_ error: Error) -> NSError {
     return NSError(domain: "dev.expo.modules", code: 0, userInfo: [
       "name": error.name,
       "code": error.code,
-      "message": error.debugDescription,
+      "message": error.debugDescription
     ])
   }
   return error as NSError
@@ -98,6 +98,17 @@ internal class NonisolatedUnsafeVar<VarType>: @unchecked Sendable {
 internal func performSynchronouslyOnMainActor<Result: Sendable>(_ closure: @MainActor () throws -> Result) rethrows -> Result {
   if Thread.isMainThread {
     return try MainActor.assumeIsolated(closure)
+  }
+  return try DispatchQueue.main.sync(execute: closure)
+}
+
+/**
+ Like `performSynchronouslyOnMainActor` but without the `Sendable` constraint on the result,
+ for cases where the returned value cannot satisfy `Sendable`.
+ */
+internal func performSynchronouslyOnMainThread<Result>(_ closure: () throws -> Result) rethrows -> Result {
+  if Thread.isMainThread {
+    return try closure()
   }
   return try DispatchQueue.main.sync(execute: closure)
 }

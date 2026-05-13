@@ -1,0 +1,114 @@
+---
+title: Shape
+description: A Jetpack Compose Shape component for drawing geometric shapes.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Shape matches the official Jetpack Compose [Shapes](https://developer.android.com/develop/ui/compose/graphics/draw/shapes) API and provides a set of sub-components for drawing geometric shapes such as stars, circles, rectangles, pills, and polygons.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic shapes
+
+Render common shapes using the `Shape` sub-components.
+
+```tsx BasicShapesExample.tsx
+import { Host, Shape, Row } from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function BasicShapesExample() {
+  return (
+    <Host matchContents>
+      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+        <Shape.Star color="#FFD700" modifiers={[size(80, 80)]} />
+        <Shape.Circle radius={40} color="#4285F4" modifiers={[size(80, 80)]} />
+        <Shape.Rectangle color="#34A853" modifiers={[size(80, 80)]} />
+        <Shape.Pill color="#EA4335" modifiers={[size(100, 50)]} />
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Shapes with rounded corners
+
+Use `cornerRounding` and `smoothing` to customize the appearance of shapes.
+
+```tsx RoundedShapesExample.tsx
+import { Host, Shape, Row } from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function RoundedShapesExample() {
+  return (
+    <Host matchContents>
+      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+        <Shape.Rectangle
+          cornerRounding={16}
+          smoothing={0.5}
+          color="#9C27B0"
+          modifiers={[size(100, 80)]}
+        />
+        <Shape.RoundedCorner
+          cornerRadii={{ topStart: 20, topEnd: 20, bottomStart: 0, bottomEnd: 0 }}
+          color="#FF5722"
+          modifiers={[size(100, 80)]}
+        />
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Polygon and star variants
+
+Use `verticesCount` and `innerRadius` to control the shape geometry.
+
+```tsx PolygonShapesExample.tsx
+import { Host, Shape, Row } from '@expo/ui/jetpack-compose';
+import { size } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function PolygonShapesExample() {
+  return (
+    <Host matchContents>
+      <Row horizontalArrangement={{ spacedBy: 16 }} verticalAlignment="center">
+        <Shape.Polygon
+          verticesCount={6}
+          cornerRounding={4}
+          color="#00BCD4"
+          modifiers={[size(80, 80)]}
+        />
+        <Shape.Star
+          verticesCount={8}
+          innerRadius={0.4}
+          cornerRounding={2}
+          color="#FF9800"
+          modifiers={[size(80, 80)]}
+        />
+        <Shape.PillStar
+          verticesCount={6}
+          innerRadius={0.5}
+          color="#E91E63"
+          modifiers={[size(80, 80)]}
+        />
+      </Row>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Shape } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/shape" apiName="Shape" />

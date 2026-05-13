@@ -2,7 +2,7 @@ import { renderToImageAsync, loadAsync } from 'expo-font';
 import { androidSymbolToString } from './android';
 import { getFont } from './utils';
 /**
- * Renders a Material Symbol to an image source.
+ * Renders a Material Symbol to an image source. Useful for APIs that require an `ImageSourcePropType` instead of a component, such as tab bar icons.
  *
  * @platform android
  */

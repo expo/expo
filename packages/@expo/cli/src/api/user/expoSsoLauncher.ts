@@ -1,56 +1,88 @@
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
+import crypto from 'crypto';
 import http from 'http';
-import { Socket } from 'node:net';
-import querystring from 'querystring';
+import type { Socket } from 'node:net';
 
 import * as Log from '../../log';
+import { CommandError } from '../../utils/errors';
+import { fetchAsync, getResponseDataOrThrow } from '../rest/client';
 
-const successBody = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Expo SSO Login</title>
-  <meta charset="utf-8">
-  <style type="text/css">
-    html {
-      margin: 0;
-      padding: 0
-    }
+const CLIENT_ID = 'expo-cli';
 
-    body {
-      background-color: #fff;
-      font-family: Tahoma,Verdana;
-      font-size: 16px;
-      color: #000;
-      max-width: 100%;
-      box-sizing: border-box;
-      padding: .5rem;
-      margin: 1em;
-      overflow-wrap: break-word
-    }
-  </style>
-</head>
-<body>
-  SSO login complete. You may now close this tab and return to the command prompt.
-</body>
-</html>`;
+function generateCodeVerifier(): string {
+  return crypto.randomBytes(32).toString('base64url');
+}
+
+function generateCodeChallenge(codeVerifier: string): string {
+  return crypto.createHash('sha256').update(codeVerifier).digest('base64url');
+}
+
+function generateState(): string {
+  return crypto.randomBytes(32).toString('base64url');
+}
+
+async function exchangeCodeForSessionSecretAsync({
+  code,
+  codeVerifier,
+  redirectUri,
+}: {
+  code: string;
+  codeVerifier: string;
+  redirectUri: string;
+}): Promise<string> {
+  const response = await fetchAsync('auth/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+      code_verifier: codeVerifier,
+      client_id: CLIENT_ID,
+    }),
+  });
+  const { session_secret: sessionSecret } = getResponseDataOrThrow<{ session_secret?: string }>(
+    await response.json()
+  );
+  if (!sessionSecret) {
+    throw new CommandError('BROWSER_AUTH', 'Failed to obtain session secret from token exchange.');
+  }
+  return sessionSecret;
+}
 
 export async function getSessionUsingBrowserAuthFlowAsync({
   expoWebsiteUrl,
+  sso = false,
 }: {
   expoWebsiteUrl: string;
+  sso?: boolean;
 }): Promise<string> {
   const scheme = 'http';
   const hostname = 'localhost';
-  const path = '/auth/callback';
+  const callbackPath = '/auth/callback';
 
-  const buildExpoSsoLoginUrl = (port: number): string => {
-    const data = {
-      app_redirect_uri: `${scheme}://${hostname}:${port}${path}`,
-    };
-    const params = querystring.stringify(data);
-    return `${expoWebsiteUrl}/sso-login?${params}`;
+  const codeVerifier = generateCodeVerifier();
+  const codeChallenge = generateCodeChallenge(codeVerifier);
+  const state = generateState();
+
+  const buildRedirectUri = (port: number): string =>
+    `${scheme}://${hostname}:${port}${callbackPath}`;
+
+  const buildExpoLoginUrl = (port: number, sso: boolean): string => {
+    // Note: we avoid URLSearchParams here because better-opn calls encodeURI()
+    // on the URL before passing it to AppleScript, which would double-encode
+    // the percent-encoded values from URLSearchParams.toString().
+    const params = [
+      `client_id=${CLIENT_ID}`,
+      `redirect_uri=${buildRedirectUri(port)}`,
+      `response_type=code`,
+      `code_challenge=${codeChallenge}`,
+      `code_challenge_method=S256`,
+      `state=${state}`,
+      `confirm_account=true`,
+    ].join('&');
+    return `${expoWebsiteUrl}${sso ? '/sso-login' : '/login'}?${params}`;
   };
 
   // Start server and begin auth flow
@@ -60,29 +92,49 @@ export async function getSessionUsingBrowserAuthFlowAsync({
 
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
-          try {
-            if (!(request.method === 'GET' && request.url?.includes(path))) {
-              throw new Error('Unexpected SSO login response.');
-            }
-            const url = new URL(request.url, `http:${request.headers.host}`);
-            const sessionSecret = url.searchParams.get('session_secret');
-
-            if (!sessionSecret) {
-              throw new Error('Request missing session_secret search parameter.');
-            }
-            resolve(sessionSecret);
-            response.writeHead(200, { 'Content-Type': 'text/html' });
-            response.write(successBody);
+          const redirectAndCleanup = (result: 'success' | 'error'): void => {
+            const redirectUrl = `${expoWebsiteUrl}/oauth/expo-cli?result=${result}`;
+            response.writeHead(302, { Location: redirectUrl });
             response.end();
-          } catch (error) {
-            reject(error);
-          } finally {
             server.close();
-            // Ensure that the server shuts down
             for (const connection of connections) {
               connection.destroy();
             }
-          }
+          };
+
+          const handleRequestAsync = async (): Promise<void> => {
+            if (!(request.method === 'GET' && request.url?.includes(callbackPath))) {
+              throw new CommandError('BROWSER_AUTH', 'Unexpected login response.');
+            }
+            const url = new URL(request.url, `http:${request.headers.host}`);
+            const code = url.searchParams.get('code');
+            const returnedState = url.searchParams.get('state');
+
+            if (!code) {
+              throw new CommandError('BROWSER_AUTH', 'Request missing code search parameter.');
+            }
+            if (returnedState !== state) {
+              throw new CommandError('BROWSER_AUTH', 'State mismatch. Possible CSRF attack.');
+            }
+
+            const address = server.address();
+            assert(address !== null && typeof address === 'object');
+            const redirectUri = buildRedirectUri(address.port);
+
+            const sessionSecret = await exchangeCodeForSessionSecretAsync({
+              code,
+              codeVerifier,
+              redirectUri,
+            });
+
+            resolve(sessionSecret);
+            redirectAndCleanup('success');
+          };
+
+          handleRequestAsync().catch((error) => {
+            redirectAndCleanup('error');
+            reject(error);
+          });
         }
       );
 
@@ -95,7 +147,10 @@ export async function getSessionUsingBrowserAuthFlowAsync({
           'Server address and port should be set after listening has begun'
         );
         const port = address.port;
-        const authorizeUrl = buildExpoSsoLoginUrl(port);
+        const authorizeUrl = buildExpoLoginUrl(port, sso);
+        Log.log(
+          `If your browser doesn't automatically open, visit this link to log in: ${authorizeUrl}`
+        );
         openBrowserAsync(authorizeUrl);
       });
 

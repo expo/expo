@@ -19,24 +19,23 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 🚨 Lint test-suite files
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
         working-directory: apps/test-suite
       - name: 🧪 Run unit tests
-        run: yarn test
+        run: pnpm test
         working-directory: apps/test-suite

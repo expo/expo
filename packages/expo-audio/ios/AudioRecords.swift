@@ -5,6 +5,7 @@ struct AudioMode: Record {
   @Field var interruptionMode: InterruptionMode = .mixWithOthers
   @Field var allowsRecording: Bool = false
   @Field var shouldPlayInBackground: Bool = false
+  @Field var shouldRouteThroughEarpiece: Bool = false
   @Field var allowsBackgroundRecording: Bool = false
 }
 
@@ -12,6 +13,12 @@ enum InterruptionMode: String, Enumerable {
   case mixWithOthers
   case doNotMix
   case duckOthers
+}
+
+enum LoopMode: String, Enumerable {
+  case none
+  case single
+  case all
 }
 
 enum PitchCorrectionQuality: String, Enumerable {
@@ -56,6 +63,7 @@ struct Metadata: Record {
 struct LockScreenOptions: Record {
   @Field var showSeekForward: Bool = false
   @Field var showSeekBackward: Bool = false
+  @Field var isLiveStream: Bool? = false
 }
 
 enum BitRateStrategy: String, Enumerable {
@@ -81,4 +89,15 @@ enum BitRateStrategy: String, Enumerable {
 struct RecordOptions: Record {
   @Field var atTime: Double?
   @Field var forDuration: Double?
+}
+
+enum AudioStreamEncoding: String, Enumerable {
+  case float32
+  case int16
+}
+
+struct AudioStreamOptions: Record {
+  @Field var sampleRate: Double = 48000
+  @Field var channels: Int = 1
+  @Field var encoding: AudioStreamEncoding = .float32
 }

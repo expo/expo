@@ -1,7 +1,7 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import BadgeModule from './BadgeModule';
-import { WebSetBadgeCountOptions } from './BadgeModule.types';
+import type { WebSetBadgeCountOptions } from './BadgeModule.types';
 
 export interface SetBadgeCountOptions {
   /**
@@ -20,7 +20,7 @@ export interface SetBadgeCountOptions {
  * @return It returns a Promise resolving to a boolean representing whether the setting of the badge succeeded.
  * @header badge
  */
-export default async function setBadgeCountAsync(
+export async function setBadgeCountAsync(
   badgeCount: number,
   options?: SetBadgeCountOptions
 ): Promise<boolean> {

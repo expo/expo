@@ -1,7 +1,7 @@
 import Constants from 'expo-constants';
 import { CodedError, Platform } from 'expo-modules-core';
 import { DeviceEventEmitter } from 'react-native';
-export default async function getDevicePushTokenAsync() {
+export async function getDevicePushTokenAsync() {
     const data = await _subscribeDeviceToPushNotificationsAsync();
     DeviceEventEmitter.emit('onDevicePushToken', { devicePushToken: data });
     return { type: Platform.OS, data };
@@ -66,8 +66,7 @@ async function _subscribeDeviceToPushNotificationsAsync() {
     // We wrap it with `fromExpoWebClient` to make sure other message
     // will not override content such as `notificationIcon`.
     // https://stackoverflow.com/a/35729334/2603230
-    const notificationIcon = (Constants.expoConfig?.notification ?? {}).icon;
-    await registration.active.postMessage(JSON.stringify({ fromExpoWebClient: { notificationIcon } }));
+    await registration.active.postMessage(JSON.stringify({ fromExpoWebClient: {} }));
     return subscriptionObject;
 }
 // https://github.com/web-push-libs/web-push#using-vapid-key-for-applicationserverkey

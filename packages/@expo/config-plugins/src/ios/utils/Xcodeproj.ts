@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import assert from 'assert';
 import path from 'path';
 import slugify from 'slugify';
-import xcode, {
+import type {
   PBXFile,
   PBXGroup,
   PBXNativeTarget,
@@ -19,6 +19,7 @@ import xcode, {
   XCConfigurationList,
   XcodeProject,
 } from 'xcode';
+import xcode from 'xcode';
 import pbxFile from 'xcode/lib/pbxFile';
 
 import { trimQuotes } from './string';
@@ -438,7 +439,7 @@ export function resolveXcodeBuildSetting(
 ): string {
   const parsedValue = value?.replace(/\$\(([^()]*|\([^)]*\))\)/g, (match) => {
     // Remove the `$(` and `)`, then split modifier(s) from the variable name.
-    const [variable, ...transformations] = match.slice(2, -1).split(':');
+    const [variable = '', ...transformations] = match.slice(2, -1).split(':');
     // Resolve the variable recursively.
     let lookedUp = lookup(variable);
     if (lookedUp) {

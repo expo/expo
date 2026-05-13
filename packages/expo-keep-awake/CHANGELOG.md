@@ -10,6 +10,64 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.8 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-05-01
+
+### 🐛 Bug fixes
+
+- fix(keep-awake): catch activation promise rejection on Android ([#45006](https://github.com/expo/expo/pull/45006) by [@cortinico](https://github.com/cortinico))
+
+## 55.0.6 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
+- Removed references to legacy native modules API. ([#41657](https://github.com/expo/expo/pull/41657) by [@tsapeta](https://github.com/tsapeta))
+
 ## 15.0.8 - 2025-12-05
 
 _This version does not introduce any user-facing changes._

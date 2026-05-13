@@ -3,7 +3,10 @@ import type { ExpoConfig } from '@expo/config-types';
 import type { PropertiesItem } from './Properties';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withGradleProperties } from '../plugins/android-plugins';
-import { BuildPropertiesConfig, ConfigToPropertyRuleType } from '../utils/BuildProperties.types';
+import type {
+  BuildPropertiesConfig,
+  ConfigToPropertyRuleType,
+} from '../utils/BuildProperties.types';
 
 /**
  * Creates a `withGradleProperties` config-plugin based on given config to property mapping rules.
@@ -52,24 +55,12 @@ export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoCo
     {
       propName: 'hermesEnabled',
       propValueGetter: (config) =>
-        ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
+        (
+          ((config.android as any)?.jsEngine ?? (config as any).jsEngine ?? 'hermes') === 'hermes'
+        ).toString(),
     },
   ],
   'withJsEngineGradleProps'
-);
-
-/**
- * A config-plugin to update `android/gradle.properties` from the `newArchEnabled` in expo config
- */
-export const withNewArchEnabledGradleProps = createBuildGradlePropsConfigPlugin<ExpoConfig>(
-  [
-    {
-      propName: 'newArchEnabled',
-      propValueGetter: (config) =>
-        (config.android?.newArchEnabled ?? config.newArchEnabled)?.toString(),
-    },
-  ],
-  'withNewArchEnabledGradleProps'
 );
 
 export function updateAndroidBuildPropertiesFromConfig<

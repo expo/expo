@@ -7,6 +7,7 @@ import { hasDynamicData, shouldShowMarkdownActions } from '~/ui/components/Markd
 import { H1, P } from '~/ui/components/Text';
 
 import { AskPageAIConfigTrigger, AskPageAITrigger } from '../AskPageAI';
+import { PageCliVersion } from './PageCliVersion';
 import { PagePackageVersion } from './PagePackageVersion';
 import { PagePlatformTags } from './PagePlatformTags';
 import { PageTitleButtons } from './PageTitleButtons';
@@ -15,6 +16,7 @@ type Props = {
   title?: string;
   description?: string;
   packageName?: string;
+  cliVersion?: string;
   sourceCodeUrl?: string;
   iconUrl?: string;
   platforms?: string[];
@@ -28,6 +30,7 @@ export function PageHeader({
   title,
   description,
   packageName,
+  cliVersion,
   iconUrl,
   sourceCodeUrl,
   platforms,
@@ -63,7 +66,7 @@ export function PageHeader({
     return (
       <>
         <div className="mt-2 flex flex-col">
-          <H1 className="!my-0">
+          <H1 className="my-0!">
             {iconUrl && (
               <img
                 src={iconUrl}
@@ -79,6 +82,7 @@ export function PageHeader({
               {description}
             </P>
           )}
+          {cliVersion && <PageCliVersion cliVersion={cliVersion} className="mt-3" />}
           {platforms && <PagePlatformTags platforms={platforms} className="mt-4" />}
         </div>
         <div
@@ -91,12 +95,7 @@ export function PageHeader({
               'flex flex-wrap items-center gap-2',
               'max-md-gutters:w-full max-md-gutters:items-center max-md-gutters:justify-between max-md-gutters:border-b max-md-gutters:border-default max-md-gutters:py-3'
             )}>
-            <div className="flex flex-wrap items-center">
-              {renderAskAIButton()}
-              {hasAskAIButton && (sourceCodeUrl || packageName) && (
-                <div className="max-sm:hidden bg-secondary mx-1 h-5 w-px" />
-              )}
-            </div>
+            <div className="flex flex-wrap items-center">{renderAskAIButton()}</div>
             <div className="flex items-center gap-1.5">
               <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
             </div>
@@ -125,7 +124,7 @@ export function PageHeader({
           'mt-2 flex items-start justify-between gap-4',
           'max-xl-gutters:flex-col max-xl-gutters:items-start'
         )}>
-        <H1 className="!my-0">
+        <H1 className="my-0!">
           {iconUrl && (
             <img
               src={iconUrl}
@@ -136,7 +135,7 @@ export function PageHeader({
           {packageName && packageName.startsWith('expo-') && 'Expo '}
           {title}
         </H1>
-        <span className="-mt-0.5 flex items-center gap-1 max-xl-gutters:hidden">
+        <span className="max-xl-gutters:hidden -mt-0.5 flex items-center gap-1">
           <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
           {(showMarkdownActions || hasAskAIButton) && (
             <span className="flex items-center gap-1">
@@ -156,7 +155,10 @@ export function PageHeader({
           {description}
         </P>
       )}
-      <span className="mb-1 mt-3 hidden items-center gap-1 max-xl-gutters:flex">
+      {cliVersion && (
+        <PageCliVersion cliVersion={cliVersion} className="max-xl-gutters:mt-2 mt-3" />
+      )}
+      <span className="max-xl-gutters:flex mt-3 mb-1 hidden items-center gap-1">
         <PageTitleButtons packageName={packageName} sourceCodeUrl={sourceCodeUrl} />
         {(showMarkdownActions || hasAskAIButton) && (
           <span className="ml-1 flex items-center gap-1">

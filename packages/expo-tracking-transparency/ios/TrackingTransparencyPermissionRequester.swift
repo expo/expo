@@ -2,6 +2,7 @@
 
 import AppTrackingTransparency
 import ExpoModulesCore
+internal import React
 
 public class TrackingTransparencyPermissionRequester: NSObject, EXPermissionsRequester {
   static public func permissionType() -> String {
@@ -21,7 +22,7 @@ public class TrackingTransparencyPermissionRequester: NSObject, EXPermissionsReq
 
     let trackingUsageDescription = Bundle.main.object(forInfoDictionaryKey: "NSUserTrackingUsageDescription")
     if trackingUsageDescription == nil {
-      EXFatal(EXErrorWithMessage("""
+      RCTFatal(RCTErrorWithMessage("""
       This app is missing 'NSUserTrackingUsageDescription' so tracking transparency will fail. \
       Ensure that this key exists in app's Info.plist.
       """))

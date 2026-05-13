@@ -31,8 +31,8 @@ export async function openPageAndEagerlyLoadJS(
 
   // Ensure the sockets are registered
   const [hotSocket] = await Promise.all([
-    raceOrFail(hotSocketPromise, 500, 'HMR on client took too long to connect.'),
-    raceOrFail(messageSocketPromise, 500, 'Message socket on client took too long to connect.'),
+    raceOrFail(hotSocketPromise, 1_000, 'HMR on client took too long to connect.'),
+    raceOrFail(messageSocketPromise, 1_000, 'Message socket on client took too long to connect.'),
   ]);
 
   return {

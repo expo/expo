@@ -1,11 +1,14 @@
-import { UnavailabilityError, UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
+import type { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo-modules-core';
 
-import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
+import type { CryptoDigestOptions, Digest } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoEncoding } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 
 declare const global: any;
 
 export * from './Crypto.types';
+export * from './aes';
 
 class CryptoError extends TypeError {
   code = 'ERR_CRYPTO';

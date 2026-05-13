@@ -1,11 +1,15 @@
 'use client';
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
-import React, { useMemo, MouseEvent } from 'react';
-import { Text, GestureResponderEvent, Platform } from 'react-native';
+import type { MouseEvent } from 'react';
+import React, { useMemo, use } from 'react';
+import type { GestureResponderEvent } from 'react-native';
+import { Text, Platform } from 'react-native';
 
+import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { resolveHref } from './href';
-import { useInteropClassName, useHrefAttrs, LinkProps } from './useLinkHooks';
+import type { LinkProps } from './useLinkHooks';
+import { useInteropClassName, useHrefAttrs } from './useLinkHooks';
 import useLinkToPathProps from './useLinkToPathProps';
 import { Prefetch } from '../Prefetch';
 import { Slot } from '../ui/Slot';
@@ -44,6 +48,8 @@ export function BaseExpoRouterLink({
   if (replace) event = 'REPLACE';
   if (dismissTo) event = 'POP_TO';
 
+  const previewContext = use(InternalLinkPreviewContext);
+
   const props = useLinkToPathProps({
     href: resolvedHref,
     event,
@@ -53,6 +59,9 @@ export function BaseExpoRouterLink({
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {
+    if (previewContext?.blockPressRef.current) {
+      return;
+    }
     if ('onPress' in rest) {
       rest.onPress?.(e);
     }

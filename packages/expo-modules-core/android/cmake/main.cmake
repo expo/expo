@@ -1,22 +1,22 @@
 file(
   GLOB
-  common_sources 
+  common_sources
   "${COMMON_DIR}/*.cpp"
   "${COMMON_DIR}/fabric/*.cpp"
 )
 
 set(main_dir ${ANDROID_SRC_DIR}/main/cpp)
 file(
-  GLOB 
-  sources_android 
+  GLOB
+  sources_android
   "${main_dir}/*.cpp"
   "${main_dir}/types/*.cpp"
   "${main_dir}/javaclasses/*.cpp"
   "${main_dir}/decorators/*.cpp"
+  "${main_dir}/installers/*.cpp"
   "${main_dir}/worklets/*.cpp"
+  "${main_dir}/fabric/*.cpp"
 )
-
-file(GLOB fabric_andorid_sources "${ANDROID_SRC_DIR}/fabric/*.cpp")
 
 add_library(
   expo-modules-core
@@ -33,11 +33,17 @@ target_include_directories(
   PRIVATE
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react
   ${REACT_NATIVE_INTERFACE_INCLUDE_DIRECTORIES}/react/fabric
-  # header only imports from turbomodule, e.g. CallInvokerHolder.h
-  "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+  # header only imports from jni, e.g. react/turbomodule/CallInvokerHolder.h
+  "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
   "${ANDROID_SRC_DIR}/fabric"
   "${COMMON_DIR}"
   "${COMMON_DIR}/fabric"
+)
+
+target_compile_options(
+  expo-modules-core
+  PRIVATE
+  ${WORKLETS_INTEGRATION_COMPILE_OPTIONS}
 )
 
 if (REACT_NATIVE_WORKLETS_DIR)
@@ -49,7 +55,7 @@ if (REACT_NATIVE_WORKLETS_DIR)
     "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
     "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
   )
-endif()
+endif ()
 
 target_link_libraries(
   expo-modules-core
@@ -62,24 +68,33 @@ target_link_libraries(
 )
 
 if (REACT_NATIVE_WORKLETS_DIR)
-  add_library(worklets SHARED IMPORTED)
+  find_package(react-native-worklets CONFIG QUIET)
+  if (react-native-worklets_FOUND)
+    target_link_libraries(
+      expo-modules-core
+      PRIVATE
+      react-native-worklets::worklets
+    )
+  else ()
+    add_library(worklets SHARED IMPORTED)
 
-  if(${CMAKE_BUILD_TYPE} MATCHES "Debug")
-    set(BUILD_TYPE "debug")
-  else()
-    set(BUILD_TYPE "release")
-  endif()
+    if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
+      set(BUILD_TYPE "debug")
+    else ()
+      set(BUILD_TYPE "release")
+    endif ()
 
-  set_target_properties(
-    worklets
-    PROPERTIES
-    IMPORTED_LOCATION
-    "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
-  )
+    set_target_properties(
+      worklets
+      PROPERTIES
+      IMPORTED_LOCATION
+      "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
+    )
 
-  target_link_libraries(
-    expo-modules-core
-    PRIVATE
-    worklets
-  )
-endif()
+    target_link_libraries(
+      expo-modules-core
+      PRIVATE
+      worklets
+    )
+  endif ()
+endif ()

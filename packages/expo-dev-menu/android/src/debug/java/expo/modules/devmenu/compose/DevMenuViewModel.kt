@@ -14,7 +14,8 @@ import java.lang.ref.WeakReference
 class DevMenuViewModel(
   val reactHostHolder: WeakReference<ReactHost>,
   val menuPreferences: DevMenuPreferences,
-  val goHomeAction: (() -> Unit)? = null
+  val goHomeAction: (() -> Unit)? = null,
+  val reloadAction: (() -> Unit)? = null
 ) : ViewModel() {
   private val reactHost
     get() = reactHostHolder.get()
@@ -129,14 +130,16 @@ class DevMenuViewModel(
   class Factory(
     private val reactHostHolder: WeakReference<ReactHost>,
     private val menuPreferences: DevMenuPreferences,
-    private val goHomeAction: (() -> Unit)?
+    private val goHomeAction: (() -> Unit)?,
+    private val reloadAction: (() -> Unit)?
   ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
       return DevMenuViewModel(
         reactHostHolder,
         menuPreferences,
-        goHomeAction
+        goHomeAction,
+        reloadAction
       ) as T
     }
   }

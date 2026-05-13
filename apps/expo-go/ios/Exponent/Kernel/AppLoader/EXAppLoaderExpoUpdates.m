@@ -2,16 +2,12 @@
 
 #import "EXAppFetcher.h"
 #import "EXAppLoaderExpoUpdates.h"
-#import "EXClientReleaseType.h"
 #import "EXEnvironment.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXFileDownloader.h"
 #import "EXKernel.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
-#import "EXSession.h"
 #import "EXUpdatesDatabaseManager.h"
-#import "EXVersions.h"
 
 #import "Expo_Go-Swift.h"
 
@@ -250,6 +246,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self _setOptimisticManifest:processedManifest];
   }
   _isUpToDate = isUpToDate;
+  _appLauncher = launcher;
   if (launcher.launchedUpdate.manifest.isUsingDeveloperTool) {
     // in dev mode, we need to set an optimistic manifest but nothing else
     return;
@@ -259,7 +256,17 @@ NS_ASSUME_NONNULL_BEGIN
     return;
   }
   _bundle = [NSData dataWithContentsOfURL:launcher.launchAssetUrl];
-  _appLauncher = launcher;
+  BOOL isEasUpdate = [_httpManifestUrl.host isEqualToString:@"u.expo.dev"];
+  if (!isEasUpdate && [EXAppLoaderExpoUpdates isHermesBundle:_bundle]) {
+    EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
+    _error = [manifestResource formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
+      @"errorCode": @"EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED",
+    }]];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }
@@ -295,6 +302,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoaderTaskDidFinishAllLoading:(EXUpdatesAppLoaderTask *)appLoaderTask {}
 
 #pragma mark - internal
+
++ (BOOL)isHermesBundle:(NSData *)bundle
+{
+  // https://github.com/facebook/hermes/blob/ae8554141cd3d3f64eb98d70c97112fcc6143d34/include/hermes/BCGen/HBC/BytecodeFileFormat.h#L26-L27
+  static const uint8_t kHermesMagic[] = { 0xc6, 0x1f, 0xbc, 0x03, 0xc1, 0x03, 0x19, 0x1f };
+  if (bundle.length < sizeof(kHermesMagic)) {
+    return NO;
+  }
+  return memcmp(bundle.bytes, kHermesMagic, sizeof(kHermesMagic)) == 0;
+}
 
 + (NSURL *)_httpUrlFromManifestUrl:(NSURL *)url
 {
@@ -475,6 +492,18 @@ NS_ASSUME_NONNULL_BEGIN
       [self.delegate appLoader:self didLoadBundleWithProgress:progress];
     }
   } success:^(NSData *bundle) {
+    if ([EXAppLoaderExpoUpdates isHermesBundle:bundle]) {
+      EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:self.httpManifestUrl originalUrl:self.manifestUrl];
+      NSError *hermesError = [manifestResource formatError:[NSError errorWithDomain:EXRuntimeErrorDomain code:0 userInfo:@{
+        @"errorCode": @"EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED",
+      }]];
+      self.error = hermesError;
+      self.isLoadingDevelopmentJavaScriptResource = NO;
+      if (self.delegate) {
+        [self.delegate appLoader:self didFailWithError:hermesError];
+      }
+      return;
+    }
     self.isUpToDate = YES;
     self.bundle = bundle;
     self.isLoadingDevelopmentJavaScriptResource = NO;

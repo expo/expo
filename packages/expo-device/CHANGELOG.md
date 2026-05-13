@@ -10,6 +10,102 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.16 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-13
+
+### 🛠 Breaking changes
+
+- [iOS] Change the names of "iPad Air (11-inch) (6th generation)", "iPad Air (13-inch) (6th generation)" and "iPhone SE" to "iPad Air 11-inch (M2)", "iPad Air 13-inch (M2)" and "iPhone SE (1st generation)". ([#43644](https://github.com/expo/expo/pull/43644) by [@prusnak](https://github.com/prusnak))
+
+### 🎉 New features
+
+- [iOS] Update Apple devices ([#43644](https://github.com/expo/expo/pull/43644) by [@prusnak](https://github.com/prusnak))
+
+## 55.0.14 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - [Android] Removed unused `androidx.legacy:legacy-support` dependency. ([#39762](https://github.com/expo/expo/pull/39762) by [@lukmccall](https://github.com/lukmccall))
 
 ## 8.0.10 - 2025-12-05

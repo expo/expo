@@ -1,9 +1,9 @@
-import { InitialState } from '@react-navigation/native';
 import escape from 'escape-string-regexp';
-import * as queryString from 'query-string';
+import type * as queryString from 'query-string';
 
 import type { InitialRouteConfig, Options, ParsedRoute, RouteConfig } from './getStateFromPath';
 import { matchGroupName, stripGroupSegmentsFromPath } from '../matchers';
+import type { InitialState } from '../react-navigation/native';
 import { parseUrlUsingCustomBase } from '../utils/url';
 
 export type ExpoOptions = {
@@ -160,7 +160,7 @@ export function getParamValue(p: string, value: string) {
 
 function formatRegexPattern(it: string): string {
   // Allow spaces in file path names.
-  it = it.replace(' ', '%20');
+  it = it.replace(/ /g, '%20');
 
   if (it.startsWith(':')) {
     // TODO: Remove unused match group
@@ -206,8 +206,9 @@ export function handleUrlParams(route: ParsedRoute, params?: queryString.ParsedQ
 
 export function spreadParamsAcrossAllStates(state: InitialState, params?: Record<string, any>) {
   while (state) {
-    const route = state.routes[0];
-    (route as any).params = Object.assign({}, route.params, params);
+    // TODO(@kitten): Investigate why this is read-only or whether this function cal is used / is this dead code?
+    const route: any = state.routes[0]!;
+    route.params = Object.assign({}, route.params, params);
   }
 }
 
@@ -348,6 +349,8 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
      * If there is not difference in similarity, then each non-group segment is compared against each other
      */
     for (let i = 0; i < Math.max(a.parts.length, b.parts.length); i++) {
+      const aParts = a.parts[i]!;
+      const bParts = b.parts[i]!;
       // if b is longer, b get higher priority
       if (a.parts[i] == null) {
         return 1;
@@ -357,12 +360,12 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
         return -1;
       }
 
-      const aWildCard = a.parts[i].startsWith('*');
-      const bWildCard = b.parts[i].startsWith('*');
+      const aWildCard = aParts.startsWith('*');
+      const bWildCard = bParts.startsWith('*');
       // if both are wildcard we compare next component
       if (aWildCard && bWildCard) {
-        const aNotFound = a.parts[i].match(/^[*]not-found$/);
-        const bNotFound = b.parts[i].match(/^[*]not-found$/);
+        const aNotFound = aParts.match(/^[*]not-found$/);
+        const bNotFound = bParts.match(/^[*]not-found$/);
 
         if (aNotFound && bNotFound) {
           continue;
@@ -382,12 +385,12 @@ export function getRouteConfigSorter(previousSegments: string[] = []) {
         return -1;
       }
 
-      const aSlug = a.parts[i].startsWith(':');
-      const bSlug = b.parts[i].startsWith(':');
+      const aSlug = aParts.startsWith(':');
+      const bSlug = bParts.startsWith(':');
       // if both are wildcard we compare next component
       if (aSlug && bSlug) {
-        const aNotFound = a.parts[i].match(/^[*]not-found$/);
-        const bNotFound = b.parts[i].match(/^[*]not-found$/);
+        const aNotFound = aParts.match(/^[*]not-found$/);
+        const bNotFound = bParts.match(/^[*]not-found$/);
 
         if (aNotFound && bNotFound) {
           continue;
@@ -456,7 +459,7 @@ export function parseQueryParams(
       }
     } else {
       const values = parseConfig?.hasOwnProperty(name)
-        ? searchParams.getAll(name).map((value) => parseConfig[name](value))
+        ? searchParams.getAll(name).map((value) => parseConfig[name]!(value))
         : searchParams.getAll(name);
 
       // searchParams.getAll returns an array.

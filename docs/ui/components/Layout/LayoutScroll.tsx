@@ -18,7 +18,7 @@ export const LayoutScroll = forwardRef<HTMLDivElement, LayoutScrollProps>(
   ({ smoothScroll = true, disableOverscroll = true, children, ...rest }, ref) => (
     <div
       className={mergeClasses(
-        'flex flex-1 overflow-y-auto overflow-x-hidden',
+        'flex flex-1 overflow-x-hidden overflow-y-auto',
         smoothScroll && 'scroll-smooth',
         disableOverscroll && 'overscroll-contain'
       )}

@@ -6,25 +6,29 @@ internal struct DatePickerView: ExpoSwiftUI.View {
   @State private var date = Date()
 
   var body: some View {
-    #if os(tvOS)
+#if os(tvOS)
     Text("DatePicker is not supported on tvOS")
-    #else
+#else
     createDatePicker()
+      .onChange(of: date) { newDate in
+        if props.selection == newDate { return }
+        props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
+      }
+      .onChange(of: props.selection) { newValue in
+        date = newValue ?? Date()
+      }
       .onAppear {
         date = props.selection ?? Date()
       }
-      .onChange(of: date) { newDate in
-        props.onDateChange(["date": newDate.timeIntervalSince1970 * 1000])
-      }
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
-    #endif
+#endif
   }
 
   private var hasChildren: Bool {
     props.children?.isEmpty == false
   }
 
-  #if !os(tvOS)
+#if !os(tvOS)
   @ViewBuilder
   private func createDatePicker() -> some View {
     let components = props.displayedComponents.toSwiftUIComponents()
@@ -50,7 +54,7 @@ internal struct DatePickerView: ExpoSwiftUI.View {
           Children()
         }
       }
-    } 
+    }
     // Use title string
     else {
       let title = props.title ?? ""
@@ -65,7 +69,7 @@ internal struct DatePickerView: ExpoSwiftUI.View {
       }
     }
   }
-  #endif
+#endif
 }
 
 internal struct DateRange: Record {

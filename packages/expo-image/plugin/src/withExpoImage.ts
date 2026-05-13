@@ -2,8 +2,12 @@ import { ConfigPlugin, createRunOncePlugin, withPodfileProperties } from 'expo/c
 
 const pkg = require('../../package.json');
 
-type Props = {
-  /** Disable linking the included libdav1d decoder. Useful when another dependency already provides it. */
+export type Props = {
+  /**
+   * Disable linking the included libdav1d decoder. Useful when another dependency already provides it.
+   * @default false
+   * @platform ios
+   */
   disableLibdav1d?: boolean;
 };
 

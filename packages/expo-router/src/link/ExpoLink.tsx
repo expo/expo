@@ -1,13 +1,12 @@
 'use client';
 
-import Constants from 'expo-constants';
 import React, { Children, isValidElement } from 'react';
 
 import { BaseExpoRouterLink } from './BaseExpoRouterLink';
 import { LinkWithPreview } from './LinkWithPreview';
 import { LinkMenu, LinkPreview } from './elements';
 import { useIsPreview } from './preview/PreviewRouteContext';
-import { LinkProps } from './useLinkHooks';
+import type { LinkProps } from './useLinkHooks';
 import { useZoomHref } from './zoom/useZoomHref';
 import { shouldLinkExternally } from '../utils/url';
 import { ZoomTransitionSourceContextProvider } from './zoom/zoom-transition-context-providers';
@@ -24,10 +23,7 @@ function ExpoLinkImpl(props: LinkProps) {
   const isPreview = useIsPreview();
   const href = useZoomHref(props);
   const shouldUseLinkWithPreview =
-    process.env.EXPO_OS === 'ios' &&
-    isLinkWithPreview(props) &&
-    !isPreview &&
-    Constants?.expoConfig?.newArchEnabled !== false;
+    process.env.EXPO_OS === 'ios' && isLinkWithPreview(props) && !isPreview;
   if (shouldUseLinkWithPreview) {
     return <LinkWithPreview {...props} href={href} hrefForPreviewNavigation={props.href} />;
   }

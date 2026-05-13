@@ -35,7 +35,22 @@ interface TypedArray {
    */
   fun toDirectBuffer(): ByteBuffer
 
+  /**
+   * Reads bytes from this typed array into [buffer].
+   *
+   * @param buffer output buffer
+   * @param position start position, relative to the beginning of the array
+   * @param size number of bytes to read
+   */
   fun read(buffer: ByteArray, position: Int, size: Int)
+
+  /**
+   * Writes content of [buffer] into the typed array.
+   *
+   * @param buffer source buffer
+   * @param position start position, relative to the beginning of the array
+   * @param size number of bytes to write
+   */
   fun write(buffer: ByteArray, position: Int, size: Int)
 
   fun readByte(position: Int): Byte

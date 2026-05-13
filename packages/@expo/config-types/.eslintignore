@@ -1,1 +1,3 @@
 build
+src/ExpoConfig.ts
+src/__tests/__fixtures/*

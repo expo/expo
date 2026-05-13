@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import arg from 'arg';
+import type arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import { Command } from '../../../bin/cli';
+import type { Command } from '../../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
 export const expoExportEmbed: Command = async (argv) => {
@@ -21,6 +21,12 @@ export const expoExportEmbed: Command = async (argv) => {
     '--asset-catalog-dest': String,
     '--unstable-transform-profile': String,
     '--config': String,
+
+    // By default we also export a standalone server, which is mostly done
+    // during the `export:embed` native build to ensure that the server is
+    // valid, or to deploy it later (TBD). This can be skipped using this
+    // flag explicitly
+    '--skip-server': Boolean,
 
     // Hack: This is added because react-native-xcode.sh script always includes this value.
     // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -51,7 +57,7 @@ export const expoExportEmbed: Command = async (argv) => {
       chalk`npx expo export:embed {dim <dir>}`,
       [
         chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
-        `--entry-file <path>                    Path to the root JS file, either absolute or relative to JS root`,
+        `--entry-file <path>                    Path to the root JS file, either absolute or relative to current working directory`,
         `--platform <string>                    Either "ios" or "android" (default: "ios")`,
         `--transformer <string>                 Specify a custom transformer to be used`,
         `--dev [boolean]                        If false, warnings are disabled and the bundle is minified (default: true)`,

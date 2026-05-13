@@ -59,6 +59,8 @@ struct DevMenuToggleButton: View {
 
       Text(title)
         .foregroundColor(disabled ? .secondary : .primary)
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
 
       Spacer()
 
@@ -72,8 +74,4 @@ struct DevMenuToggleButton: View {
     .background(Color.expoSecondarySystemBackground)
     .opacity(disabled ? 0.6 : 1.0)
   }
-}
-
-#Preview {
-  DevMenuActionButton(title: "Action", icon: "person.fast") {}
 }

@@ -1,12 +1,11 @@
-import {
+import type {
   ActionCrop,
   ActionExtent,
   ActionFlip,
   ActionResize,
   ActionRotate,
-  FlipType,
-  SaveFormat,
 } from '../ImageManipulator.types';
+import { FlipType, SaveFormat } from '../ImageManipulator.types';
 import { validateUri, validateActions, validateSaveOptions } from '../validators';
 
 describe(validateUri, () => {

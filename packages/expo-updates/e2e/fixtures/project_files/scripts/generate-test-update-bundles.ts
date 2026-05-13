@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
@@ -100,7 +100,7 @@ async function createUpdateBundleAsync(projectRoot: string, platform?: string) {
     args.push('--platform', 'ios');
     args.push('--platform', 'android');
   }
-  await spawnAsync('npx', args, {
+  await spawnAsync('pnpm', args, {
     cwd: projectRoot,
     stdio: 'inherit',
   });

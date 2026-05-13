@@ -2,6 +2,6 @@ We welcome contributions for bug fixes and are more conservative about changing 
 
 ### Tests
 
-Include a test plan with your pull request and add new tests if needed. Run `yarn test` to run the test suite and help keep this package stable.
+Include a test plan with your pull request and add new tests if needed. Run `pnpm test` to run the test suite and help keep this package stable.
 
-Also run `yarn lint` to run this linter configuration on itself. This keeps the code consistently formatted and tests the linter, too.
+Also run `pnpm lint` to run this linter configuration on itself. This keeps the code consistently formatted and tests the linter, too.

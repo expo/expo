@@ -28,7 +28,12 @@ type ManifestData = {
   $: {
     [key: string]: string | undefined;
     'android:host'?: string;
+    'android:port'?: string;
+    'android:mimeType'?: string;
+    'android:pathPattern'?: string;
     'android:pathPrefix'?: string;
+    'android:pathSuffix'?: string;
+    'android:pathAdvancedPattern'?: string;
     'android:scheme'?: string;
   };
 };
@@ -317,7 +322,7 @@ export function addMetaDataItemToMainApplication(
     existingMetaDataItem = mainApplication['meta-data'].filter(
       (e: any) => e.$['android:name'] === itemName
     );
-    if (existingMetaDataItem.length) {
+    if (existingMetaDataItem[0] != null) {
       existingMetaDataItem[0].$[`android:${itemType}` as keyof ManifestMetaDataAttributes] =
         itemValue;
     } else {
@@ -386,7 +391,7 @@ export function addUsesLibraryItemToMainApplication(
     existingMetaDataItem = mainApplication['uses-library'].filter(
       (e) => e.$['android:name'] === item.name
     );
-    if (existingMetaDataItem.length) {
+    if (existingMetaDataItem[0] != null) {
       existingMetaDataItem[0].$ = newItem.$;
     } else {
       mainApplication['uses-library'].push(newItem);

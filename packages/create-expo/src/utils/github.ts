@@ -1,5 +1,4 @@
 import type { Endpoints } from '@octokit/types';
-import { Readable } from 'stream';
 
 import { fetch } from './fetch';
 import { extractNpmTarballAsync, type ExtractProps } from './npm';
@@ -17,7 +16,7 @@ type GitHubRepoInfo = {
 
 // See: https://github.com/expo/expo/blob/a5a6eecb082b2c7a7fc9956141738231c7df473f/packages/%40expo/cli/src/prebuild/resolveTemplate.ts#L60-L84
 async function getGitHubRepoAsync(url: URL): Promise<GitHubRepoInfo> {
-  const [, owner, name, t, branch, ...file] = url.pathname.split('/');
+  const [, owner = '', name = '', t, branch, ...file] = url.pathname.split('/');
   const filePath = file.join('/');
 
   // Support repos whose entire purpose is to be an example, e.g.
@@ -60,8 +59,9 @@ async function isValidGitHubRepoAsync(repo: GitHubRepoInfo): Promise<boolean> {
 async function extractRemoteGitHubTarballAsync(
   url: string,
   repo: GitHubRepoInfo,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   const response = await fetch(url);
 
   if (!response.ok) throw new Error(`Unexpected response: ${response.statusText} (${url})`);
@@ -72,7 +72,7 @@ async function extractRemoteGitHubTarballAsync(
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filder auto-ignores dotfiles, unless explicitly included
+  // The filter auto-ignores dotfiles, unless explicitly included
   const filter = createGlobFilter(
     !directory.length
       ? ['*/**', '*/ios/.xcode.env']
@@ -83,17 +83,18 @@ async function extractRemoteGitHubTarballAsync(
     }
   );
 
-  await extractNpmTarballAsync(
-    // @ts-expect-error see https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-    Readable.fromWeb(response.body),
-    { ...props, filter, strip }
-  );
+  return await extractNpmTarballAsync(response.body, output, {
+    ...props,
+    filter,
+    strip,
+  });
 }
 
 export async function downloadAndExtractGitHubRepositoryAsync(
   repoUrl: URL,
+  output: string,
   props: ExtractProps
-): Promise<void> {
+): Promise<string> {
   debug('Looking for GitHub repository');
 
   const info = await getGitHubRepoAsync(repoUrl);
@@ -110,5 +111,5 @@ export async function downloadAndExtractGitHubRepositoryAsync(
   debug('Resolved GitHub repository', info);
   debug('Downloading GitHub repository from:', url);
 
-  await extractRemoteGitHubTarballAsync(url, info, props);
+  return await extractRemoteGitHubTarballAsync(url, info, output, props);
 }

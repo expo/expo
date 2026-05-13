@@ -50,7 +50,7 @@ public final class ExpoUpdatesUpdate: Update {
       let fileExtension: String = assetDict.requiredValue(forKey: "fileExtension")
       let metadata: [String: Any]? = assetDict.optionalValue(forKey: "metadata")
       let mainBundleFilename: String? = assetDict.optionalValue(forKey: "mainBundleFilename")
-      let expectedHash: String = assetDict.requiredValue(forKey: "hash")
+      let expectedHash: String? = assetDict.optionalValue(forKey: "hash")
       let url = URL(string: urlString).require("asset url should be a valid URL")
 
       let asset = UpdateAsset(key: key, type: fileExtension)

@@ -1,2 +1,4 @@
-declare const _default: import("@expo/config-plugins").ConfigPlugin;
+import { type ConfigPlugin } from '@expo/config-plugins';
+export declare const withNotificationError: ConfigPlugin;
+declare const _default: ConfigPlugin;
 export default _default;

@@ -3,6 +3,7 @@ title: Migrate from Classic Updates
 description: A guide to help migrate from Classic Updates to EAS Update.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { A } from '~/ui/components/Text';
@@ -11,14 +12,17 @@ import { A } from '~/ui/components/Text';
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="Minimum versions for EAS Update">
+    EAS Update requires the following versions or greater:
 
-EAS Update requires the following versions or greater:
+    - Expo SDK 45.0.0 and later
+    - Expo CLI 5.3.0 and later
+    - EAS CLI 0.50.0 and later
+    - `expo-updates` 0.13.0 and later
 
-- Expo SDK >= 45.0.0
-- Expo CLI >= 5.3.0
-- EAS CLI >= 0.50.0
-- expo-updates >= 0.13.0
+  </Requirement>
+</Prerequisites>
 
 ## Install EAS CLI
 

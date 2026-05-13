@@ -4,23 +4,12 @@
     "outDir": "./build",
     "rootDir": "./src",
     "module": "commonjs",
-    "moduleResolution": "node10",
+    "moduleResolution": "bundler",
+    "verbatimModuleSyntax": false,
     "noEmit": false,
     "resolveJsonModule": true,
-    "types": [
-      "jest",
-      "jest-require",
-      "node"
-    ]
+    "types": ["jest", "node"]
   },
-  "include": [
-    "./src",
-    "./types/expect.d.ts",
-    "../@expo/cli/ts-declarations",
-    "../expo/src/ts-declarations"
-  ],
-  "exclude": [
-    "**/__tests__/",
-    "**/__rsc_tests__/"
-  ]
+  "include": ["./src"],
+  "exclude": ["**/__tests__/", "**/__rsc_tests__/"]
 }

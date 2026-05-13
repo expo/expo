@@ -34,7 +34,13 @@ describe('Export DOM Components', () => {
   let projectRoot: string;
 
   beforeAll(async () => {
-    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom');
+    projectRoot = await setupTestProjectWithOptionsAsync('dom-export', 'with-dom', {
+      // TODO(@hassankhan, @krystofwoldrich, @kitten): remove all linked after publishing
+      linkExpoPackages: [
+        // Without this, the hermes-parser install a version that is incompatible with flow Readonly / ReadonlyArray
+        'babel-preset-expo',
+      ],
+    });
   });
 
   it('runs `npx expo export`', async () => {
@@ -56,12 +62,12 @@ describe('Export DOM Components', () => {
     const nativeBundlePath = globSync('**/*.{hbc,js}', {
       cwd: path.join(outputDir, '_expo/static/js/ios'),
       absolute: true,
-    })[0];
+    })[0]!;
     const domEntry = await fs.readFile(
       globSync('www.bundle/**/*.html', {
         cwd: outputDir,
         absolute: true,
-      })[0],
+      })[0]!,
       'utf8'
     );
     const md5HtmlBundle = crypto.createHash('md5').update(domEntry).digest('hex');
@@ -73,7 +79,7 @@ describe('Export DOM Components', () => {
       globSync('www.bundle/**/*.js', {
         cwd: outputDir,
         absolute: true,
-      })[0],
+      })[0]!,
       'utf8'
     );
     const md5DomJsBundle = crypto.createHash('md5').update(domJsBundleContent).digest('hex');
@@ -108,7 +114,7 @@ describe('Export DOM Components', () => {
       bundler: 'metro',
       fileMetadata: {
         ios: {
-          assets: [
+          assets: expect.arrayContaining([
             {
               ext: 'css',
               path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.css$/),
@@ -117,42 +123,20 @@ describe('Export DOM Components', () => {
               ext: 'html',
               path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.html$/),
             },
-
             {
               ext: 'js',
               path: expect.stringMatching(/^www\.bundle\/(?<md5>[0-9a-fA-F]{32})\.js$/),
             },
-
             {
               ext: 'png',
-              path: expect.pathMatching('assets/369745d4a4a6fa62fa0ed495f89aa964'),
-            },
-            {
-              ext: 'png',
-              path: expect.pathMatching('assets/4f355ba1efca4b9c0e7a6271af047f61'),
-            },
-            {
-              ext: 'png',
-              path: expect.pathMatching('assets/5b50965d3dfbc518fe50ce36c314a6ec'),
-            },
-            {
-              ext: 'png',
-              path: expect.pathMatching('assets/817aca47ff3cea63020753d336e628a4'),
-            },
-            {
-              ext: 'png',
-              path: expect.pathMatching('assets/e62addcde857ebdb7342e6b9f1095e97'),
-            },
-            {
-              ext: 'png',
-              path: expect.pathMatching('assets/fb960eb5e4eb49ec8786c7f6c4a57ce2'),
+              path: expect.pathMatching(/assets\/(?<md5>[0-9a-fA-F]{32})/),
             },
             {
               ext: 'ttf',
-              path: expect.pathMatching('assets/3858f62230ac3c915f300c664312c63f'),
+              path: expect.pathMatching(/assets\/(?<md5>[0-9a-fA-F]{32})/),
             },
-          ],
-          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/AppEntry-.*\.hbc$/),
+          ]),
+          bundle: expect.pathMatching(/_expo\/static\/js\/ios\/index-.*\.hbc$/),
         },
       },
       version: 0,
@@ -160,19 +144,6 @@ describe('Export DOM Components', () => {
 
     const assetmap = await JsonFile.readAsync(path.resolve(outputDir, 'assetmap.json'));
     expect(assetmap).toEqual({
-      '369745d4a4a6fa62fa0ed495f89aa964': {
-        __packager_asset: true,
-        fileHashes: ['369745d4a4a6fa62fa0ed495f89aa964'],
-        fileSystemLocation: expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets$/),
-        files: [expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets\/close\.png$/)],
-        hash: '369745d4a4a6fa62fa0ed495f89aa964',
-        height: 28,
-        httpServerLocation: './assets/node_modules/@expo/metro-runtime/assets',
-        name: 'close.369745d4a4a6fa62fa0ed495f89aa964',
-        scales: [1],
-        type: 'png',
-        width: 28,
-      },
       '3858f62230ac3c915f300c664312c63f': {
         __packager_asset: true,
         fileHashes: ['3858f62230ac3c915f300c664312c63f'],
@@ -183,58 +154,6 @@ describe('Export DOM Components', () => {
         name: 'font.3858f62230ac3c915f300c664312c63f',
         scales: [1],
         type: 'ttf',
-      },
-      '4f355ba1efca4b9c0e7a6271af047f61': {
-        __packager_asset: true,
-        fileHashes: ['4f355ba1efca4b9c0e7a6271af047f61'],
-        fileSystemLocation: expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets$/),
-        files: [expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets\/alert-triangle\.png$/)],
-        hash: '4f355ba1efca4b9c0e7a6271af047f61',
-        height: 42,
-        httpServerLocation: './assets/node_modules/@expo/metro-runtime/assets',
-        name: 'alert-triangle.4f355ba1efca4b9c0e7a6271af047f61',
-        scales: [1],
-        type: 'png',
-        width: 48,
-      },
-      '5b50965d3dfbc518fe50ce36c314a6ec': {
-        __packager_asset: true,
-        fileHashes: ['5b50965d3dfbc518fe50ce36c314a6ec'],
-        fileSystemLocation: expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets$/),
-        files: [expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets\/chevron-left\.png$/)],
-        hash: '5b50965d3dfbc518fe50ce36c314a6ec',
-        height: 28,
-        httpServerLocation: './assets/node_modules/@expo/metro-runtime/assets',
-        name: 'chevron-left.5b50965d3dfbc518fe50ce36c314a6ec',
-        scales: [1],
-        type: 'png',
-        width: 16,
-      },
-      '817aca47ff3cea63020753d336e628a4': {
-        __packager_asset: true,
-        fileHashes: ['817aca47ff3cea63020753d336e628a4'],
-        fileSystemLocation: expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets$/),
-        files: [expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets\/loader\.png$/)],
-        hash: '817aca47ff3cea63020753d336e628a4',
-        height: 44,
-        httpServerLocation: './assets/node_modules/@expo/metro-runtime/assets',
-        name: 'loader.817aca47ff3cea63020753d336e628a4',
-        scales: [1],
-        type: 'png',
-        width: 44,
-      },
-      e62addcde857ebdb7342e6b9f1095e97: {
-        __packager_asset: true,
-        fileHashes: ['e62addcde857ebdb7342e6b9f1095e97'],
-        fileSystemLocation: expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets$/),
-        files: [expect.pathMatching(/\/.*\/@expo\/metro-runtime\/assets\/chevron-right\.png$/)],
-        hash: 'e62addcde857ebdb7342e6b9f1095e97',
-        height: 28,
-        httpServerLocation: './assets/node_modules/@expo/metro-runtime/assets',
-        name: 'chevron-right.e62addcde857ebdb7342e6b9f1095e97',
-        scales: [1],
-        type: 'png',
-        width: 16,
       },
       fb960eb5e4eb49ec8786c7f6c4a57ce2: {
         __packager_asset: true,
@@ -259,17 +178,13 @@ describe('Export DOM Components', () => {
     );
     expect(outputFilesWithoutMap).toEqual(
       expect.arrayContaining([
-        expect.stringMatching(/_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
+        expect.stringMatching(/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc$/),
         expect.stringMatching(
-          /_expo\/static\/js\/ios\/AppEntry-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/
+          /_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map$/
         ),
         'assetmap.json',
-        'assets/369745d4a4a6fa62fa0ed495f89aa964',
-        'assets/3858f62230ac3c915f300c664312c63f',
-        'assets/4f355ba1efca4b9c0e7a6271af047f61',
-        'assets/5b50965d3dfbc518fe50ce36c314a6ec',
-        'assets/817aca47ff3cea63020753d336e628a4',
-        'assets/e62addcde857ebdb7342e6b9f1095e97',
+
+        // icon png
         'assets/fb960eb5e4eb49ec8786c7f6c4a57ce2',
 
         'metadata.json',

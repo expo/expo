@@ -1,3 +1,4 @@
+import { jsx as _jsx } from "react/jsx-runtime";
 import { PureComponent, createRef } from 'react';
 import NativeVideoModule from './NativeVideoModule';
 import NativeVideoView, { NativeTextureVideoView } from './NativeVideoView';
@@ -27,6 +28,27 @@ export class VideoView extends PureComponent {
     }
     /**
      * Exits fullscreen mode.
+     *
+     * > **Note:** On Android the JS runtime is paused when the `VideoView` is in fullscreen mode. Because of this `exitFullscreen` will only work when called from a native listener - see the example below.
+     *
+     * @example
+     * ```tsx
+     *   const ref = useRef<VideoView>()
+     *   const player = useVideoPlayer(source)
+     *
+     *   // This will work on all platforms
+     *   useEventListener(player, 'playToEnd', () => {
+     *     ref.current?.exitFullscreen();
+     *   });
+     *
+     *   // This will not work on Android
+     *   const enterAndExit = useCallback(() => {
+     *     setTimeout(() => {
+     *       ref.current?.exitFullscreen()
+     *     }, 5000)
+     *     ref.current?.enterFullscreen()
+     *   },[])
+     * ```
      */
     async exitFullscreen() {
         return await this.nativeRef.current?.exitFullscreen();
@@ -56,13 +78,10 @@ export class VideoView extends PureComponent {
     render() {
         const { player, ...props } = this.props;
         const playerId = player ? getPlayerId(player) : null;
-        if (props.allowsFullscreen !== undefined) {
-            console.warn('The `allowsFullscreen` prop is deprecated and will be removed in a future release. Use `fullscreenOptions` prop instead.');
-        }
         if (NativeTextureVideoView && this.props.surfaceType === 'textureView') {
-            return <NativeTextureVideoView {...props} player={playerId} ref={this.nativeRef}/>;
+            return _jsx(NativeTextureVideoView, { ...props, player: playerId, ref: this.nativeRef });
         }
-        return <NativeVideoView {...props} player={playerId} ref={this.nativeRef}/>;
+        return _jsx(NativeVideoView, { ...props, player: playerId, ref: this.nativeRef });
     }
 }
 // Temporary solution to pass the shared object ID instead of the player object.

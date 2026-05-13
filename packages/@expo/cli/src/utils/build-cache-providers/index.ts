@@ -1,4 +1,9 @@
-import { ExpoConfig, BuildCacheProviderPlugin, BuildCacheProvider, RunOptions } from '@expo/config';
+import type {
+  ExpoConfig,
+  BuildCacheProviderPlugin,
+  BuildCacheProvider,
+  RunOptions,
+} from '@expo/config';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -164,7 +169,7 @@ async function calculateFingerprintHashAsync({
 
   const Fingerprint = importFingerprintForDev(projectRoot);
   if (!Fingerprint) {
-    debug('@expo/fingerprint is not installed in the project, unable to calculate fingerprint');
+    Log.warn('@expo/fingerprint is not installed in the project, skipping build cache.');
     return null;
   }
   const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot);

@@ -1,4 +1,4 @@
-import { NotificationChannel, NotificationChannelInput } from './NotificationChannelManager.types';
+import type { NotificationChannel, NotificationChannelInput } from './NotificationChannelManager.types';
 /**
  * Assigns the channel configuration to a channel of a specified name (creating it if need be).
  * This method lets you assign given notification channel to a notification channel group.
@@ -20,5 +20,5 @@ import { NotificationChannel, NotificationChannelInput } from './NotificationCha
  * @platform android
  * @header channels
  */
-export default function setNotificationChannelAsync(channelId: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>;
+export declare function setNotificationChannelAsync(channelId: string, channel: NotificationChannelInput): Promise<NotificationChannel | null>;
 //# sourceMappingURL=setNotificationChannelAsync.d.ts.map

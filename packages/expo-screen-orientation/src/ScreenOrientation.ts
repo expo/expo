@@ -4,28 +4,27 @@ import { Dimensions } from 'react-native';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
 import {
   Orientation,
-  OrientationChangeEvent,
-  OrientationChangeListener,
+  type OrientationChangeEvent,
+  type OrientationChangeListener,
   OrientationLock,
-  PlatformOrientationInfo,
+  type PlatformOrientationInfo,
   WebOrientationLock,
-  WebOrientation,
-  SizeClassIOS,
-  ScreenOrientationInfo,
 } from './ScreenOrientation.types';
 
 export {
   Orientation,
   OrientationLock,
-  PlatformOrientationInfo,
-  OrientationChangeListener,
-  OrientationChangeEvent,
+  type PlatformOrientationInfo,
+  type OrientationChangeListener,
+  type OrientationChangeEvent,
   WebOrientationLock,
   WebOrientation,
   SizeClassIOS,
-  ScreenOrientationInfo,
-  EventSubscription as Subscription,
-};
+  type ScreenOrientationInfo,
+} from './ScreenOrientation.types';
+
+// TODO(@kitten): Remove re-export from EMC
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 
 let _orientationChangeSubscribers: EventSubscription[] = [];
 
@@ -231,13 +230,14 @@ export function addOrientationChangeListener(
 // @needsAudit
 /**
  * Removes all listeners subscribed to orientation change updates.
+ * @deprecated this function will be removed in future versions. Keep track of your own subscriptions.
  */
 export function removeOrientationChangeListeners(): void {
   // Remove listener by subscription instead of eventType to avoid clobbering Dimension module's subscription of didUpdateDimensions
   let i = _orientationChangeSubscribers.length;
   while (i--) {
     const subscriber = _orientationChangeSubscribers[i];
-    subscriber.remove();
+    subscriber?.remove();
 
     // remove after a successful unsubscribe
     _orientationChangeSubscribers.pop();
@@ -250,6 +250,7 @@ export function removeOrientationChangeListeners(): void {
  * updates.
  * @param subscription A subscription object that manages the updates passed to a listener function
  * on an orientation change.
+ * @deprecated this function will be removed in a future version. Use `subscription.remove()` instead.
  */
 export function removeOrientationChangeListener(subscription: EventSubscription): void {
   if (!subscription || !subscription.remove) {

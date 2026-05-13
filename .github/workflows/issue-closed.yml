@@ -10,16 +10,28 @@ jobs:
     if: contains(github.event.issue.labels.*.name, 'Issue accepted')
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-tools: 'true'
       - name: 🔎 Close Linear issue
-        run: expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
+        # accepted issues should have a corresponding Linear issue (from issue-triage.yml)
+        # if not, we don't want to fail the workflow
+        continue-on-error: true
+        run: pnpm expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}

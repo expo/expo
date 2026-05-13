@@ -17,14 +17,14 @@ react {
     hermesCommand = new File(["node", "--print", "require.resolve('hermes-compiler/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/hermesc/%OS-BIN%/hermesc"
     codegenDir = file(providers.exec {
       workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('@react-native/codegen/package.json')")
+      commandLine("node", "--print", "require.resolve('@react-native/codegen/package.json', { paths: [require.resolve('react-native/package.json')] })")
     }.standardOutput.asText.get().trim()).getParentFile().getAbsoluteFile()
 
 
     // Use Expo CLI to bundle the JS code
     cliFile = file(providers.exec {
       workingDir(rootDir)
-      commandLine("node", "--print", "require.resolve('@expo/cli')")
+      commandLine("node", "--print", "require.resolve('expo/bin/cli')")
     }.standardOutput.asText.get().trim())
 
     bundleCommand = "export:embed"

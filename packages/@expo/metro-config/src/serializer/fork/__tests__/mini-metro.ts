@@ -9,8 +9,9 @@ import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import metroConfigDefaults from '@expo/metro/metro-config/defaults';
 import * as path from 'path';
 
-import { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
+import type { JsTransformOptions } from '../../../transform-worker/metro-transform-worker';
 import * as expoMetroTransformWorker from '../../../transform-worker/transform-worker';
+import { wrapTransformResultMaps } from '../../packedMap';
 
 export const projectRoot = '/app';
 
@@ -52,12 +53,25 @@ export async function microBundle({
       'react-server-dom-webpack/server',
       'react-server-dom-webpack/client',
       'expo-router/rsc/internal',
+      'react/compiler-runtime',
     ]) {
       if (id === mid && !fullFs[mid]) {
         fullFs[mid] = `
                 module.exports = () => 'MOCK'
             `;
         return mid;
+      }
+    }
+
+    // Handle node_modules subpath imports like 'react/compiler-runtime'
+    if (!id.startsWith('.') && !id.startsWith('/')) {
+      const nodeModulePath = 'node_modules/' + id + '.js';
+      if (fullFs[nodeModulePath] != null) {
+        return nodeModulePath;
+      }
+      const nodeModuleIndexPath = 'node_modules/' + id + '/index.js';
+      if (fullFs[nodeModuleIndexPath] != null) {
+        return nodeModuleIndexPath;
       }
     }
 
@@ -87,6 +101,7 @@ export async function microBundle({
     treeshake?: boolean;
     optimize?: boolean;
     inlineRequires?: boolean;
+    reactCompiler?: boolean;
   };
   preModulesFs?: Record<string, string>;
 }): Promise<
@@ -101,6 +116,9 @@ export async function microBundle({
     'expo-router/rsc/internal': ``,
     'react-server-dom-webpack/server': ``,
     'react-server-dom-webpack/client': ``,
+    'react/compiler-runtime': `
+    module.exports.c = function c(size) { return new Array(size); };
+`,
 
     'expo-mock/async-require': `
     module.exports = () => 'MOCK'
@@ -134,6 +152,7 @@ export async function microBundle({
       engine: options.hermes ? 'hermes' : undefined,
       environment: options.isReactServer ? 'react-server' : options.isServer ? 'node' : undefined,
       optimize: options.optimize ?? options.treeshake,
+      reactCompiler: options.reactCompiler,
     },
     // NOTE: This is non-standard but it provides a cleaner output
     experimentalImportSupport: true,
@@ -298,25 +317,29 @@ export async function parseModule(
   const absoluteFilePath = path.join(projectRoot, relativeFilePath);
   const codeBuffer = Buffer.from(code);
 
-  const { output, dependencies } = await expoMetroTransformWorker.transform(
-    // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
-    {
-      ...METRO_CONFIG_DEFAULTS.transformer,
-      asyncRequireModulePath: 'expo-mock/async-require',
-      unstable_allowRequireContext: true,
-      allowOptionalDependencies: true,
-      assetPlugins: [],
-      babelTransformerPath: '@expo/metro-config/build/babel-transformer',
-      ...transformConfig,
-    },
-    projectRoot,
-    absoluteFilePath,
-    codeBuffer,
-    {
-      inlineRequires: false,
-      ...transformOptions,
-      inlinePlatform: true,
-    }
+  // Mirror the production `Bundler.transformFile` wrapper so test
+  // fixtures see the same `data.map` shape readers do.
+  const { output, dependencies } = wrapTransformResultMaps(
+    await expoMetroTransformWorker.transform(
+      // TODO: Maybe just pull from expo/metro-config to ensure correctness over time.
+      {
+        ...METRO_CONFIG_DEFAULTS.transformer,
+        asyncRequireModulePath: 'expo-mock/async-require',
+        unstable_allowRequireContext: true,
+        allowOptionalDependencies: true,
+        assetPlugins: [],
+        babelTransformerPath: '@expo/metro-config/build/babel-transformer',
+        ...transformConfig,
+      },
+      projectRoot,
+      absoluteFilePath,
+      codeBuffer,
+      {
+        inlineRequires: false,
+        ...transformOptions,
+        inlinePlatform: true,
+      }
+    )
   );
 
   return {

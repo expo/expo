@@ -21,6 +21,10 @@ function withDefaults({ watchPlugins, ...config }) {
       // Plain CSS (and other style files) can be stubbed with an empty object.
       '^.+\\.(css|less|sass|scss)$': '<rootDir>/__mocks__/styleMock.js',
     },
+    transform: {
+      ...(config.transform || {}),
+      '^.+\\.(png|jpg|jpeg|gif|svg)$': '<rootDir>/__mocks__/imageTransformer.js',
+    },
   };
 }
 

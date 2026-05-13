@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "include": ["/*"],
+  "exclude": [
+    "/_next/*",
+    "/static/*",
+    "/data/*",
+    "/*.md",
+    "/*.txt",
+    "/*.xml",
+    "/*.ico",
+    "/*.png",
+    "/*.svg",
+    "/*.json",
+    "/*.webmanifest"
+  ]
+}

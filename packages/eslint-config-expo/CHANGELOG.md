@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `eslint-plugin-react-hooks@^7.0.0` ([#43820](https://github.com/expo/expo/pull/43820) by [@hassankhan](https://github.com/hassankhan))
+
+## 56.0.3 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🐛 Bug fixes
+
+- Disable `no-useless-return` for TypeScript files ([#45031](https://github.com/expo/expo/pull/45031) by [@kitten](https://github.com/kitten))
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))
 
 ## 10.0.0 — 2025-08-13

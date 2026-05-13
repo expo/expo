@@ -14,6 +14,11 @@
 
 appId: dev.expo.Payments
 ---
+- extendedWaitUntil:
+    visible:
+      id: ${testID}
+    timeout: 10000
+
 - runScript:
     file: ./compare-images-http.js
     env:
@@ -29,4 +34,4 @@ appId: dev.expo.Payments
 
 - assertTrue:
     condition: ${output.comparisonResult.success}
-    label: Viewshot comparison check. Is the image comparison server running (./image-comparison/server.ts)? See its terminal logs for details.)
+    label: Viewshot comparison check. Is the image comparison server running (./image-comparison/src/server.ts)? See its terminal logs for details.)

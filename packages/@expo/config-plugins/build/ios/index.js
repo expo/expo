@@ -3,24 +3,10 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
-Object.defineProperty(exports, "ExpoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().ExpoPlist;
-  }
-});
-exports.Google = void 0;
-Object.defineProperty(exports, "InfoPlist", {
-  enumerable: true,
-  get: function () {
-    return _IosConfig().InfoPlist;
-  }
-});
-exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = void 0;
-function Bitcode() {
+exports.XcodeUtils = exports.XcodeProjectFile = exports.Version = exports.UsesNonExemptEncryption = exports.Updates = exports.Target = exports.Scheme = exports.RequiresFullScreen = exports.ProvisioningProfile = exports.PrivacyInfo = exports.Permissions = exports.Paths = exports.Orientation = exports.Name = exports.Maps = exports.Locales = exports.Google = exports.Entitlements = exports.DeviceFamily = exports.DevelopmentTeam = exports.DeploymentTarget = exports.BundleIdentifier = exports.BuildScheme = exports.BuildProperties = exports.Bitcode = void 0;
+function _Bitcode() {
   const data = _interopRequireWildcard(require("./Bitcode"));
-  Bitcode = function () {
+  _Bitcode = function () {
     return data;
   };
   return data;
@@ -28,12 +14,12 @@ function Bitcode() {
 Object.defineProperty(exports, "Bitcode", {
   enumerable: true,
   get: function () {
-    return Bitcode();
+    return _Bitcode();
   }
 });
-function BuildProperties() {
+function _BuildProperties() {
   const data = _interopRequireWildcard(require("./BuildProperties"));
-  BuildProperties = function () {
+  _BuildProperties = function () {
     return data;
   };
   return data;
@@ -41,12 +27,12 @@ function BuildProperties() {
 Object.defineProperty(exports, "BuildProperties", {
   enumerable: true,
   get: function () {
-    return BuildProperties();
+    return _BuildProperties();
   }
 });
-function BuildScheme() {
+function _BuildScheme() {
   const data = _interopRequireWildcard(require("./BuildScheme"));
-  BuildScheme = function () {
+  _BuildScheme = function () {
     return data;
   };
   return data;
@@ -54,12 +40,12 @@ function BuildScheme() {
 Object.defineProperty(exports, "BuildScheme", {
   enumerable: true,
   get: function () {
-    return BuildScheme();
+    return _BuildScheme();
   }
 });
-function BundleIdentifier() {
+function _BundleIdentifier() {
   const data = _interopRequireWildcard(require("./BundleIdentifier"));
-  BundleIdentifier = function () {
+  _BundleIdentifier = function () {
     return data;
   };
   return data;
@@ -67,12 +53,25 @@ function BundleIdentifier() {
 Object.defineProperty(exports, "BundleIdentifier", {
   enumerable: true,
   get: function () {
-    return BundleIdentifier();
+    return _BundleIdentifier();
   }
 });
-function DevelopmentTeam() {
+function _DeploymentTarget() {
+  const data = _interopRequireWildcard(require("./DeploymentTarget"));
+  _DeploymentTarget = function () {
+    return data;
+  };
+  return data;
+}
+Object.defineProperty(exports, "DeploymentTarget", {
+  enumerable: true,
+  get: function () {
+    return _DeploymentTarget();
+  }
+});
+function _DevelopmentTeam() {
   const data = _interopRequireWildcard(require("./DevelopmentTeam"));
-  DevelopmentTeam = function () {
+  _DevelopmentTeam = function () {
     return data;
   };
   return data;
@@ -80,12 +79,12 @@ function DevelopmentTeam() {
 Object.defineProperty(exports, "DevelopmentTeam", {
   enumerable: true,
   get: function () {
-    return DevelopmentTeam();
+    return _DevelopmentTeam();
   }
 });
-function DeviceFamily() {
+function _DeviceFamily() {
   const data = _interopRequireWildcard(require("./DeviceFamily"));
-  DeviceFamily = function () {
+  _DeviceFamily = function () {
     return data;
   };
   return data;
@@ -93,12 +92,12 @@ function DeviceFamily() {
 Object.defineProperty(exports, "DeviceFamily", {
   enumerable: true,
   get: function () {
-    return DeviceFamily();
+    return _DeviceFamily();
   }
 });
-function Entitlements() {
+function _Entitlements() {
   const data = _interopRequireWildcard(require("./Entitlements"));
-  Entitlements = function () {
+  _Entitlements = function () {
     return data;
   };
   return data;
@@ -106,12 +105,12 @@ function Entitlements() {
 Object.defineProperty(exports, "Entitlements", {
   enumerable: true,
   get: function () {
-    return Entitlements();
+    return _Entitlements();
   }
 });
-function Google() {
+function _Google() {
   const data = _interopRequireWildcard(require("./Google"));
-  Google = function () {
+  _Google = function () {
     return data;
   };
   return data;
@@ -119,19 +118,12 @@ function Google() {
 Object.defineProperty(exports, "Google", {
   enumerable: true,
   get: function () {
-    return Google();
+    return _Google();
   }
 });
-function _IosConfig() {
-  const data = require("./IosConfig.types");
-  _IosConfig = function () {
-    return data;
-  };
-  return data;
-}
-function Locales() {
+function _Locales() {
   const data = _interopRequireWildcard(require("./Locales"));
-  Locales = function () {
+  _Locales = function () {
     return data;
   };
   return data;
@@ -139,12 +131,12 @@ function Locales() {
 Object.defineProperty(exports, "Locales", {
   enumerable: true,
   get: function () {
-    return Locales();
+    return _Locales();
   }
 });
-function Maps() {
+function _Maps() {
   const data = _interopRequireWildcard(require("./Maps"));
-  Maps = function () {
+  _Maps = function () {
     return data;
   };
   return data;
@@ -152,12 +144,12 @@ function Maps() {
 Object.defineProperty(exports, "Maps", {
   enumerable: true,
   get: function () {
-    return Maps();
+    return _Maps();
   }
 });
-function Name() {
+function _Name() {
   const data = _interopRequireWildcard(require("./Name"));
-  Name = function () {
+  _Name = function () {
     return data;
   };
   return data;
@@ -165,12 +157,12 @@ function Name() {
 Object.defineProperty(exports, "Name", {
   enumerable: true,
   get: function () {
-    return Name();
+    return _Name();
   }
 });
-function Orientation() {
+function _Orientation() {
   const data = _interopRequireWildcard(require("./Orientation"));
-  Orientation = function () {
+  _Orientation = function () {
     return data;
   };
   return data;
@@ -178,12 +170,12 @@ function Orientation() {
 Object.defineProperty(exports, "Orientation", {
   enumerable: true,
   get: function () {
-    return Orientation();
+    return _Orientation();
   }
 });
-function Paths() {
+function _Paths() {
   const data = _interopRequireWildcard(require("./Paths"));
-  Paths = function () {
+  _Paths = function () {
     return data;
   };
   return data;
@@ -191,12 +183,12 @@ function Paths() {
 Object.defineProperty(exports, "Paths", {
   enumerable: true,
   get: function () {
-    return Paths();
+    return _Paths();
   }
 });
-function Permissions() {
+function _Permissions() {
   const data = _interopRequireWildcard(require("./Permissions"));
-  Permissions = function () {
+  _Permissions = function () {
     return data;
   };
   return data;
@@ -204,12 +196,12 @@ function Permissions() {
 Object.defineProperty(exports, "Permissions", {
   enumerable: true,
   get: function () {
-    return Permissions();
+    return _Permissions();
   }
 });
-function PrivacyInfo() {
+function _PrivacyInfo() {
   const data = _interopRequireWildcard(require("./PrivacyInfo"));
-  PrivacyInfo = function () {
+  _PrivacyInfo = function () {
     return data;
   };
   return data;
@@ -217,12 +209,12 @@ function PrivacyInfo() {
 Object.defineProperty(exports, "PrivacyInfo", {
   enumerable: true,
   get: function () {
-    return PrivacyInfo();
+    return _PrivacyInfo();
   }
 });
-function ProvisioningProfile() {
+function _ProvisioningProfile() {
   const data = _interopRequireWildcard(require("./ProvisioningProfile"));
-  ProvisioningProfile = function () {
+  _ProvisioningProfile = function () {
     return data;
   };
   return data;
@@ -230,12 +222,12 @@ function ProvisioningProfile() {
 Object.defineProperty(exports, "ProvisioningProfile", {
   enumerable: true,
   get: function () {
-    return ProvisioningProfile();
+    return _ProvisioningProfile();
   }
 });
-function RequiresFullScreen() {
+function _RequiresFullScreen() {
   const data = _interopRequireWildcard(require("./RequiresFullScreen"));
-  RequiresFullScreen = function () {
+  _RequiresFullScreen = function () {
     return data;
   };
   return data;
@@ -243,12 +235,12 @@ function RequiresFullScreen() {
 Object.defineProperty(exports, "RequiresFullScreen", {
   enumerable: true,
   get: function () {
-    return RequiresFullScreen();
+    return _RequiresFullScreen();
   }
 });
-function Scheme() {
+function _Scheme() {
   const data = _interopRequireWildcard(require("./Scheme"));
-  Scheme = function () {
+  _Scheme = function () {
     return data;
   };
   return data;
@@ -256,12 +248,12 @@ function Scheme() {
 Object.defineProperty(exports, "Scheme", {
   enumerable: true,
   get: function () {
-    return Scheme();
+    return _Scheme();
   }
 });
-function Target() {
+function _Target() {
   const data = _interopRequireWildcard(require("./Target"));
-  Target = function () {
+  _Target = function () {
     return data;
   };
   return data;
@@ -269,12 +261,12 @@ function Target() {
 Object.defineProperty(exports, "Target", {
   enumerable: true,
   get: function () {
-    return Target();
+    return _Target();
   }
 });
-function Updates() {
+function _Updates() {
   const data = _interopRequireWildcard(require("./Updates"));
-  Updates = function () {
+  _Updates = function () {
     return data;
   };
   return data;
@@ -282,12 +274,12 @@ function Updates() {
 Object.defineProperty(exports, "Updates", {
   enumerable: true,
   get: function () {
-    return Updates();
+    return _Updates();
   }
 });
-function UsesNonExemptEncryption() {
+function _UsesNonExemptEncryption() {
   const data = _interopRequireWildcard(require("./UsesNonExemptEncryption"));
-  UsesNonExemptEncryption = function () {
+  _UsesNonExemptEncryption = function () {
     return data;
   };
   return data;
@@ -295,12 +287,12 @@ function UsesNonExemptEncryption() {
 Object.defineProperty(exports, "UsesNonExemptEncryption", {
   enumerable: true,
   get: function () {
-    return UsesNonExemptEncryption();
+    return _UsesNonExemptEncryption();
   }
 });
-function Version() {
+function _Version() {
   const data = _interopRequireWildcard(require("./Version"));
-  Version = function () {
+  _Version = function () {
     return data;
   };
   return data;
@@ -308,12 +300,12 @@ function Version() {
 Object.defineProperty(exports, "Version", {
   enumerable: true,
   get: function () {
-    return Version();
+    return _Version();
   }
 });
-function XcodeProjectFile() {
+function _XcodeProjectFile() {
   const data = _interopRequireWildcard(require("./XcodeProjectFile"));
-  XcodeProjectFile = function () {
+  _XcodeProjectFile = function () {
     return data;
   };
   return data;
@@ -321,12 +313,12 @@ function XcodeProjectFile() {
 Object.defineProperty(exports, "XcodeProjectFile", {
   enumerable: true,
   get: function () {
-    return XcodeProjectFile();
+    return _XcodeProjectFile();
   }
 });
-function XcodeUtils() {
+function _XcodeUtils() {
   const data = _interopRequireWildcard(require("./utils/Xcodeproj"));
-  XcodeUtils = function () {
+  _XcodeUtils = function () {
     return data;
   };
   return data;
@@ -334,9 +326,8 @@ function XcodeUtils() {
 Object.defineProperty(exports, "XcodeUtils", {
   enumerable: true,
   get: function () {
-    return XcodeUtils();
+    return _XcodeUtils();
   }
 });
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 //# sourceMappingURL=index.js.map

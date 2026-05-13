@@ -1,6 +1,7 @@
 import { CommandError } from '../../../../utils/errors';
 import { AppleDeviceManager } from '../AppleDeviceManager';
-import { Device, getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
+import type { Device } from '../simctl';
+import { getInfoPlistValueAsync, openAppIdAsync, openUrlAsync } from '../simctl';
 
 jest.mock('../simctl', () => ({
   openAppIdAsync: jest.fn(),
@@ -68,6 +69,17 @@ describe('launchApplicationIdAsync', () => {
       throw new Error('...');
     });
     await expect(device.launchApplicationIdAsync).rejects.toThrow(/\.\.\./);
+  });
+});
+
+describe('ensureExpoGoAsync', () => {
+  it(`throws when device is an Apple Watch`, async () => {
+    const device = new AppleDeviceManager(
+      asDevice({ name: 'Apple Watch Series 7 - 41mm', udid: '123', osType: 'watchOS' })
+    );
+    await expect(device.ensureExpoGoAsync('51.0.0')).rejects.toThrow(
+      /Expo Go is not supported on Apple Watch/
+    );
   });
 });
 

@@ -4,8 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Head = void 0;
-const native_1 = require("@react-navigation/native");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importDefault(require("react"));
+const useIsFocused_1 = require("../useIsFocused");
 const ExpoHeadModule_1 = require("./ExpoHeadModule");
 const url_1 = require("./url");
 const hooks_1 = require("../hooks");
@@ -157,21 +158,21 @@ function isTruthy(value) {
     return [true, 'true'].includes(value);
 }
 function HeadNative(props) {
-    const isFocused = (0, native_1.useIsFocused)();
+    const isFocused = (0, useIsFocused_1.useIsFocused)();
     if (!isFocused) {
-        return <UnfocusedHead />;
+        return (0, jsx_runtime_1.jsx)(UnfocusedHead, {});
     }
-    return <FocusedHead {...props}/>;
+    return (0, jsx_runtime_1.jsx)(FocusedHead, { ...props });
 }
 function UnfocusedHead(props) {
     const { children } = useMetaChildren(props.children);
-    return <>{children}</>;
+    return (0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: children });
 }
 function FocusedHead(props) {
     const { metaChildren, children } = useMetaChildren(props.children);
     const activity = useActivityFromMetaChildren(metaChildren);
     useRegisterCurrentActivity(activity);
-    return <>{children}</>;
+    return (0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: children });
 }
 // segments => activity
 const activities = new Map();

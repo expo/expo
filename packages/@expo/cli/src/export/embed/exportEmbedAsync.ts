@@ -5,36 +5,41 @@
  * LICENSE file in the root directory of this source tree.
  */
 import { getConfig } from '@expo/config';
+import { convertEntryPointToRelative } from '@expo/config/paths';
 import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
+import type { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
 import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
-import { setNodeEnv } from '../../utils/nodeEnv';
+import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
-import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
+import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
-import { resolveRealEntryFilePath } from '../../utils/filePath';
 
 const debug = require('debug')('expo:export:embed');
 
@@ -68,7 +73,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
   }
 
   setNodeEnv(options.dev ? 'development' : 'production');
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   // This is an optimized codepath that can occur during `npx expo run` and does not occur during builds from Xcode or Android Studio.
   // Here we reconcile a bundle pass that was run before the native build process. This order can fail faster and is show better errors since the logs won't be obscured by Xcode and Android Studio.
@@ -197,7 +202,7 @@ export async function exportEmbedBundleAndAssetsAsync(
       {
         // TODO: Re-enable when we get bytecode chunk splitting working again.
         splitChunks: false, //devServer.isReactServerComponentsEnabled,
-        mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+        mainModuleName: convertEntryPointToRelative(projectRoot, options.entryFile),
         platform: options.platform,
         minify: options.minify,
         mode: options.dev ? 'development' : 'production',
@@ -215,10 +220,12 @@ export async function exportEmbedBundleAndAssetsAsync(
       }
     );
 
+    // We optimistically build the server-side API routes code here, to ensure they're
+    // valid or to enable parallel deployment in the future (TBD). This is disabled using
+    // the explicit `--skip-server` flag.
     const apiRoutesEnabled =
       devServer.isReactServerComponentsEnabled || exp.web?.output === 'server';
-
-    if (apiRoutesEnabled) {
+    if (!options.skipServer && apiRoutesEnabled) {
       await exportStandaloneServerAsync(projectRoot, devServer, {
         exp,
         pkg,
@@ -227,14 +234,17 @@ export async function exportEmbedBundleAndAssetsAsync(
       });
     }
 
-    // TODO: Remove duplicates...
-    const expoDomComponentReferences = bundles.artifacts
-      .map((artifact) =>
-        Array.isArray(artifact.metadata.expoDomComponentReferences)
-          ? artifact.metadata.expoDomComponentReferences
-          : []
-      )
-      .flat();
+    const expoDomComponentReferences = [
+      ...new Set(
+        bundles.artifacts
+          .map((artifact) =>
+            Array.isArray(artifact.metadata.expoDomComponentReferences)
+              ? artifact.metadata.expoDomComponentReferences
+              : []
+          )
+          .flat()
+      ),
+    ];
     if (expoDomComponentReferences.length > 0) {
       await Promise.all(
         // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
@@ -273,9 +283,9 @@ export async function exportEmbedBundleAndAssetsAsync(
     return {
       files,
       bundle: {
-        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0].source,
+        code: bundles.artifacts.filter((a: any) => a.type === 'js')[0]?.source!,
         // Can be optional when source maps aren't enabled.
-        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString(),
+        map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString()!,
       },
       assets: bundles.assets,
     };
@@ -322,15 +332,13 @@ export async function createMetroServerAndBundleRequestAsync(
     {
       // TODO: This is always enabled in the native script and there's no way to disable it.
       resetCache: options.resetCache,
-
       maxWorkers: options.maxWorkers,
-      config: options.config,
     },
     {
       exp,
       isExporting: true,
       getMetroBundler() {
-        return server.getBundler().getBundler();
+        return metro.getBundler().getBundler();
       },
     }
   );
@@ -344,7 +352,8 @@ export async function createMetroServerAndBundleRequestAsync(
 
   const directBundleOptions = getMetroDirectBundleOptionsForExpoConfig(projectRoot, exp, {
     splitChunks: false,
-    mainModuleName: resolveRealEntryFilePath(projectRoot, options.entryFile),
+    // TODO(@kitten): This currently has to match a filename exactly
+    mainModuleName: convertEntryPointToRelative(projectRoot, options.entryFile, null),
     platform: options.platform,
     minify: options.minify,
     mode: options.dev ? 'development' : 'production',
@@ -370,11 +379,19 @@ export async function createMetroServerAndBundleRequestAsync(
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
-  const server = new Server(config, {
-    watch: false,
-  });
+  const { metro } = await replaceMetroFileMap(() => ({
+    metro: new Server(config, {
+      watch: false,
+    }),
+  }));
 
-  return { server, bundleRequest };
+  // The dev server applies the same patch from `instantiateMetro.ts`;
+  // this is the export-embed / `expo-updates` path, where `data.map`
+  // would otherwise reach Metro's readers in the unwrapped wire shape.
+  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
+
+  return { server: metro, bundleRequest };
 }
 
 export async function exportEmbedAssetsAsync(
@@ -391,6 +408,8 @@ export async function exportEmbedAssetsAsync(
     });
 
     const dependencies = await server._bundler.getDependencies(
+      // NOTE(@kitten): This isn't an `entryFile`, but instead a `mainModuleName`, that's been renamed
+      // in `getMetroDirectBundleOptions`, where we've passed the already converted name
       [entryFile],
       transformOptions,
       resolverOptions,

@@ -41,10 +41,10 @@ function sha1(bytes: number[] | string) {
     M[i] = new Array(16);
     for (let j = 0; j < 16; j++) {
       M[i][j] =
-        (bytes[i * 64 + j * 4] << 24) |
-        (bytes[i * 64 + j * 4 + 1] << 16) |
-        (bytes[i * 64 + j * 4 + 2] << 8) |
-        bytes[i * 64 + j * 4 + 3];
+        (bytes[i * 64 + j * 4]! << 24) |
+        (bytes[i * 64 + j * 4 + 1]! << 16) |
+        (bytes[i * 64 + j * 4 + 2]! << 8) |
+        bytes[i * 64 + j * 4 + 3]!;
     }
   }
 
@@ -68,42 +68,42 @@ function sha1(bytes: number[] | string) {
 
     for (let t = 0; t < 80; t++) {
       const s = Math.floor(t / 20);
-      const T = (ROTL(a, 5) + f(s, b, c, d) + e + K[s] + W[t]) >>> 0;
+      const T = (ROTL(a!, 5) + f(s, b!, c!, d!) + e! + K[s]! + W[t]) >>> 0;
       e = d;
       d = c;
-      c = ROTL(b, 30) >>> 0;
+      c = ROTL(b!, 30) >>> 0;
       b = a;
       a = T;
     }
 
-    H[0] = (H[0] + a) >>> 0;
-    H[1] = (H[1] + b) >>> 0;
-    H[2] = (H[2] + c) >>> 0;
-    H[3] = (H[3] + d) >>> 0;
-    H[4] = (H[4] + e) >>> 0;
+    H[0] = (H[0]! + a!) >>> 0;
+    H[1] = (H[1]! + b!) >>> 0;
+    H[2] = (H[2]! + c!) >>> 0;
+    H[3] = (H[3]! + d!) >>> 0;
+    H[4] = (H[4]! + e!) >>> 0;
   }
 
   return [
-    (H[0] >> 24) & 0xff,
-    (H[0] >> 16) & 0xff,
-    (H[0] >> 8) & 0xff,
-    H[0] & 0xff,
-    (H[1] >> 24) & 0xff,
-    (H[1] >> 16) & 0xff,
-    (H[1] >> 8) & 0xff,
-    H[1] & 0xff,
-    (H[2] >> 24) & 0xff,
-    (H[2] >> 16) & 0xff,
-    (H[2] >> 8) & 0xff,
-    H[2] & 0xff,
-    (H[3] >> 24) & 0xff,
-    (H[3] >> 16) & 0xff,
-    (H[3] >> 8) & 0xff,
-    H[3] & 0xff,
-    (H[4] >> 24) & 0xff,
-    (H[4] >> 16) & 0xff,
-    (H[4] >> 8) & 0xff,
-    H[4] & 0xff,
+    (H[0]! >> 24) & 0xff,
+    (H[0]! >> 16) & 0xff,
+    (H[0]! >> 8) & 0xff,
+    H[0]! & 0xff,
+    (H[1]! >> 24) & 0xff,
+    (H[1]! >> 16) & 0xff,
+    (H[1]! >> 8) & 0xff,
+    H[1]! & 0xff,
+    (H[2]! >> 24) & 0xff,
+    (H[2]! >> 16) & 0xff,
+    (H[2]! >> 8) & 0xff,
+    H[2]! & 0xff,
+    (H[3]! >> 24) & 0xff,
+    (H[3]! >> 16) & 0xff,
+    (H[3]! >> 8) & 0xff,
+    H[3]! & 0xff,
+    (H[4]! >> 24) & 0xff,
+    (H[4]! >> 16) & 0xff,
+    (H[4]! >> 8) & 0xff,
+    H[4]! & 0xff,
   ];
 }
 

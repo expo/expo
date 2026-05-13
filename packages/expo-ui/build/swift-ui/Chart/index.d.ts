@@ -1,5 +1,5 @@
 import type { ColorValue, StyleProp, ViewStyle } from 'react-native';
-import { CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 /**
  * The type of chart to display.
  * - `line` charts show continuous lines with optional dash array, width, point symbols, and color.
@@ -20,9 +20,9 @@ export type PointStyle = 'circle' | 'square' | 'diamond';
  */
 export type ChartDataPoint = {
     /**
-     * X-axis value (label).
+     * X-axis value (can be a label string or numeric value).
      */
-    x: string;
+    x: string | number;
     /**
      * Y-axis value (numeric).
      */
@@ -193,7 +193,7 @@ export type ChartProps = {
  * @platform ios 16.0+
  * @platform tvos 16.0+
  */
-export declare function Chart({ style, data, modifiers, ...props }: ChartProps & {
+export declare function Chart({ style, data, modifiers, referenceLines, ...props }: ChartProps & {
     style?: StyleProp<ViewStyle>;
-}): import("react").JSX.Element;
+}): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

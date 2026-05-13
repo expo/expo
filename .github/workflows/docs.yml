@@ -24,70 +24,89 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 30000
+      - name: 🏗️ Setup pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-docs: 'true'
-          yarn-tools: 'true'
-          yarn-workspace: 'true'
-      - name: 🧶 Install workspace deps on cache miss
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --immutable
-      - name: 🧶 Install tools deps on cache miss
-        if: steps.expo-caches.outputs.yarn-tools-hit != 'true'
+          pnpm-docs: 'true'
+          docs-api-data: 'true'
+      - name: 📦 Install workspace deps
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 📦 Install tools deps
         working-directory: tools
-        run: yarn install --immutable
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📝 Regenerate `unversioned` data for Docs
+        if: steps.expo-caches.outputs.docs-api-data-hit != 'true'
         run: expotools generate-docs-api-data
-      - name: 🧶 Yarn install
+      - name: 📦 Install docs deps
         working-directory: docs
-        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
-        run: yarn install --immutable
+        if: steps.expo-caches.outputs.pnpm-docs-hit != 'true'
+        run: pnpm install --frozen-lockfile
       - name: 🧪 Run Docs tests
         working-directory: docs
-        run: yarn test
+        run: pnpm test
+      - name: 🧪 Test Cloudflare worker and routes
+        working-directory: docs
+        run: pnpm test:worker
       - name: 🚨 Lint Docs website code
         working-directory: docs
         env:
           NODE_ENV: production
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
+      - name: 📦 Read Vale version
+        id: vale-version
+        working-directory: docs
+        run: echo "version=$(node -p "require('./.vale-version.json').version")" >> "$GITHUB_OUTPUT"
       - name: 💬 Lint Docs website content
-        uses: errata-ai/vale-action@reviewdog
+        uses: vale-cli/vale-action@d89dee975228ae261d22c15adcd03578634d429c # v2.1.1
         with:
-          version: 3.12.0
+          version: ${{ steps.vale-version.outputs.version }}
           reporter: github-pr-check
-          files: 'docs/pages'
-          vale_flags: '--config=./docs/.vale.ini'
+          files: '["docs/pages", "docs/scenes", "docs/README.md"]'
+          vale_flags: --config=./docs/.vale.ini --glob=!{docs/pages/versions/latest,docs/pages/versions/latest/**,docs/pages/internal,docs/pages/internal/**}
           fail_on_error: true
+          # Override vale-action's older bundled reviewdog to avoid large-diff limits.
+          reviewdog_url: https://github.com/reviewdog/reviewdog/releases/download/v0.21.0/reviewdog_0.21.0_Linux_x86_64.tar.gz
       - name: 🏗️ Build Docs website for deploy
         working-directory: docs
-        run: yarn export
+        run: pnpm export
         timeout-minutes: 20
         env:
           # NOTE(@krystofwoldrich): Missing token won't fail the build
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       - name: 🔗 Lint pages links
         working-directory: docs
-        run: yarn lint-links --quiet
+        run: pnpm lint-links --quiet
       - name: 🚀 Deploy Docs website
+        if: github.ref == 'refs/heads/main'
+        id: deploy
+        uses: cloudflare/wrangler-action@9acf94ace14e7dc412b076f2c5c20b8ce93c79cd # v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy --branch=main
+          workingDirectory: docs
+      - name: 🧹 Prune old production deployments
+        if: github.ref == 'refs/heads/main'
         working-directory: docs
-        if: ${{ github.event.ref == 'refs/heads/main' }}
-        run: ./deploy.sh
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: 'us-east-2'
-          AWS_BUCKET: 'docs.expo.dev'
+          CLOUDFLARE_PAGES_API_TOKEN: ${{ secrets.CLOUDFLARE_PAGES_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: node scripts/prune-cloudflare-deployments.mjs --project=expo-docs --branch=main --keep=2
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
         if: failure() && github.event.ref == 'refs/heads/main'

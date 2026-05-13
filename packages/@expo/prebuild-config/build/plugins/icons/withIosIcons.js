@@ -107,9 +107,6 @@ function getIcons(config) {
 }
 async function setIconsAsync(config, projectRoot) {
   const icon = getIcons(config);
-  if (!icon || typeof icon === 'string' && !icon || typeof icon === 'object' && !icon?.light && !icon?.dark && !icon?.tinted) {
-    _configPlugins().WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-  }
 
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);

@@ -1,5 +1,5 @@
-import { AuthSessionOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
-import { DiscoveryDocument } from './Discovery';
+import type { AuthSessionOpenOptions, WebBrowserWindowFeatures } from 'expo-web-browser';
+import type { DiscoveryDocument } from './Discovery';
 export declare enum CodeChallengeMethod {
     /**
      * The default and recommended method for transforming the code verifier.

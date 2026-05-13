@@ -217,4 +217,36 @@ object LauncherIcons {
         .then(modifier)
     )
   }
+
+  @Composable
+  fun PackageSearch(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.package_search),
+      contentDescription = "Branch",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
+
+  @Composable
+  fun Link(
+    size: Dp,
+    tint: Color,
+    modifier: Modifier = Modifier
+  ) {
+    Icon(
+      painter = painterResource(R.drawable.link),
+      contentDescription = "Branch",
+      tint = tint,
+      modifier = Modifier
+        .size(size)
+        .then(modifier)
+    )
+  }
 }

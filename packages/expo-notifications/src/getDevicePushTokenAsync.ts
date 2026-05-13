@@ -1,7 +1,7 @@
 import { UnavailabilityError, Platform } from 'expo-modules-core';
 
 import PushTokenManager from './PushTokenManager';
-import { DevicePushToken } from './Tokens.types';
+import type { DevicePushToken } from './Tokens.types';
 import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
 
 let nativeTokenPromise: Promise<string> | null = null;
@@ -11,7 +11,7 @@ let nativeTokenPromise: Promise<string> | null = null;
  * that can be used with another push notification service.
  * @header fetch
  */
-export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
+export async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   if (!PushTokenManager.getDevicePushTokenAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getDevicePushTokenAsync');
   }

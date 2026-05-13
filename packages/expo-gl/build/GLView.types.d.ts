@@ -1,5 +1,5 @@
-import { Component, ComponentClass } from 'react';
-import { ViewProps } from 'react-native';
+import type { Component, ComponentClass } from 'react';
+import type { ViewProps } from 'react-native';
 export type SurfaceCreateEvent = {
     nativeEvent: {
         exglCtxId: number;
@@ -80,12 +80,12 @@ export type GLViewProps = {
      * @platform ios
      * @default 4
      */
-    msaaSamples: number;
+    msaaSamples?: number;
     /**
      * Enables support for interacting with a `gl` object from code running on the Reanimated worklet thread.
      * @default false
      */
-    enableExperimentalWorkletSupport: boolean;
+    enableExperimentalWorkletSupport?: boolean;
     /**
      * @hidden
      * A ref callback for the native GLView

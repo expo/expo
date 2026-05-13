@@ -4,6 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+/** @hidden */
+export type _ImmutableHeaders = Omit<Headers, 'append' | 'delete' | 'set'>;
 declare const ImmutableHeaders_base: {
     new (init?: HeadersInit): Headers;
     prototype: Headers;
@@ -11,7 +13,7 @@ declare const ImmutableHeaders_base: {
 /**
  * An immutable version of the Fetch API's [`Headers`](https://developer.mozilla.org/en-US/docs/Web/API/Headers) object which prevents mutations.
  */
-declare class ImmutableHeaders extends ImmutableHeaders_base {
+export declare class ImmutableHeaders extends ImmutableHeaders_base {
     #private;
     set(): void;
     append(): void;

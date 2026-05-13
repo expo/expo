@@ -38,10 +38,6 @@ fun DevMenuScreen(
   }
 
   Column {
-    BundlerInfo(bundlerIp = appInfo.hostUrl)
-
-    Spacer(NewAppTheme.spacing.`2`)
-
     Row(
       horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`),
       verticalAlignment = Alignment.CenterVertically
@@ -83,6 +79,10 @@ fun DevMenuScreen(
         Tip("Debugging not working? Try manually reloading first.")
       }
     }
+
+    BundlerInfo(bundlerIp = appInfo.hostUrl)
+
+    Spacer(NewAppTheme.spacing.`5`)
 
     SystemSection(
       appInfo.appVersion,

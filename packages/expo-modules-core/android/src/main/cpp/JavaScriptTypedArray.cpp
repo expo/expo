@@ -6,23 +6,16 @@
 namespace expo {
 
 JavaScriptTypedArray::JavaScriptTypedArray(
-  WeakRuntimeHolder runtime,
-  std::shared_ptr<jsi::Object> jsObject
-) : jni::HybridClass<JavaScriptTypedArray, JavaScriptObject>(std::move(runtime),
-                                                             std::move(jsObject)) {
-  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-  typedArrayWrapper = std::make_shared<expo::TypedArray>(jsRuntime, *get());
-  rawPointer = static_cast<char *>(typedArrayWrapper->getRawPointer(jsRuntime));
-}
-
-JavaScriptTypedArray::JavaScriptTypedArray(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Object> jsObject
 ) : jni::HybridClass<JavaScriptTypedArray, JavaScriptObject>(std::move(runtime),
                                                              std::move(jsObject)) {
-  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-  typedArrayWrapper = std::make_shared<expo::TypedArray>(jsRuntime, *get());
-  rawPointer = static_cast<char *>(typedArrayWrapper->getRawPointer(jsRuntime));
+  auto jsRuntime = runtimeHolder.lock();
+  assert((jsRuntime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = jsRuntime->get();
+
+  typedArrayWrapper = std::make_shared<expo::TypedArray>(rawRuntime, *JavaScriptObject::get());
+  rawPointer = static_cast<char *>(typedArrayWrapper->getRawPointer(rawRuntime));
 }
 
 void JavaScriptTypedArray::registerNatives() {
@@ -49,17 +42,22 @@ void JavaScriptTypedArray::registerNatives() {
 }
 
 int JavaScriptTypedArray::getRawKind() {
-  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
-  return (int) typedArrayWrapper->getKind(jsRuntime);
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
+
+  return (int) typedArrayWrapper->getKind(rawRuntime);
 }
 
 jni::local_ref<jni::JByteBuffer> JavaScriptTypedArray::toDirectBuffer() {
-  jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  auto &rawRuntime = runtime->get();
 
-  auto byteLength = typedArrayWrapper->byteLength(jsRuntime);
+  auto byteLength = typedArrayWrapper->byteLength(rawRuntime);
 
   auto byteBuffer = jni::JByteBuffer::wrapBytes(
-    static_cast<uint8_t *>(typedArrayWrapper->getRawPointer(jsRuntime)),
+    static_cast<uint8_t *>(typedArrayWrapper->getRawPointer(rawRuntime)),
     byteLength
   );
 

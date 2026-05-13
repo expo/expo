@@ -131,7 +131,7 @@ function getParamValue(p, value) {
 }
 function formatRegexPattern(it) {
     // Allow spaces in file path names.
-    it = it.replace(' ', '%20');
+    it = it.replace(/ /g, '%20');
     if (it.startsWith(':')) {
         // TODO: Remove unused match group
         return `(([^/]+\\/)${it.endsWith('?') ? '?' : ''})`;
@@ -169,6 +169,7 @@ function handleUrlParams(route, params) {
 }
 function spreadParamsAcrossAllStates(state, params) {
     while (state) {
+        // TODO(@kitten): Investigate why this is read-only or whether this function cal is used / is this dead code?
         const route = state.routes[0];
         route.params = Object.assign({}, route.params, params);
     }
@@ -281,6 +282,8 @@ function getRouteConfigSorter(previousSegments = []) {
          * If there is not difference in similarity, then each non-group segment is compared against each other
          */
         for (let i = 0; i < Math.max(a.parts.length, b.parts.length); i++) {
+            const aParts = a.parts[i];
+            const bParts = b.parts[i];
             // if b is longer, b get higher priority
             if (a.parts[i] == null) {
                 return 1;
@@ -289,12 +292,12 @@ function getRouteConfigSorter(previousSegments = []) {
             if (b.parts[i] == null) {
                 return -1;
             }
-            const aWildCard = a.parts[i].startsWith('*');
-            const bWildCard = b.parts[i].startsWith('*');
+            const aWildCard = aParts.startsWith('*');
+            const bWildCard = bParts.startsWith('*');
             // if both are wildcard we compare next component
             if (aWildCard && bWildCard) {
-                const aNotFound = a.parts[i].match(/^[*]not-found$/);
-                const bNotFound = b.parts[i].match(/^[*]not-found$/);
+                const aNotFound = aParts.match(/^[*]not-found$/);
+                const bNotFound = bParts.match(/^[*]not-found$/);
                 if (aNotFound && bNotFound) {
                     continue;
                 }
@@ -314,12 +317,12 @@ function getRouteConfigSorter(previousSegments = []) {
             if (bWildCard) {
                 return -1;
             }
-            const aSlug = a.parts[i].startsWith(':');
-            const bSlug = b.parts[i].startsWith(':');
+            const aSlug = aParts.startsWith(':');
+            const bSlug = bParts.startsWith(':');
             // if both are wildcard we compare next component
             if (aSlug && bSlug) {
-                const aNotFound = a.parts[i].match(/^[*]not-found$/);
-                const bNotFound = b.parts[i].match(/^[*]not-found$/);
+                const aNotFound = aParts.match(/^[*]not-found$/);
+                const bNotFound = bParts.match(/^[*]not-found$/);
                 if (aNotFound && bNotFound) {
                     continue;
                 }

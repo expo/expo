@@ -1,4 +1,3 @@
-// @hidden
 import { MediaTypeOptions } from './ImagePicker.types';
 export function parseMediaTypes(mediaTypes) {
     const mediaTypeOptionsToMediaType = {

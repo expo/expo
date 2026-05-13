@@ -1,8 +1,6 @@
 import { Stack } from 'expo-router';
-import { enableZoomTransition } from 'expo-router/internal/utils';
 
 const isAllowed = false;
-enableZoomTransition();
 
 export default function Layout() {
   return (
@@ -17,6 +15,9 @@ export default function Layout() {
         name="fullScreenModal"
         options={{ presentation: 'fullScreenModal', headerShown: true }}
       />
+      <Stack.Screen name="zoom-dest" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="zoom-dest-contain" options={{ presentation: 'fullScreenModal' }} />
+      <Stack.Screen name="zoom-dest-list" options={{ presentation: 'fullScreenModal' }} />
     </Stack>
   );
 }

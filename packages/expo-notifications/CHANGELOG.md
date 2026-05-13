@@ -4,22 +4,201 @@
 
 ### 🛠 Breaking changes
 
-- expose `BackgroundNotificationTaskResult` ([#41291](https://github.com/expo/expo/pull/41291) by [@vonovak](https://github.com/vonovak))
-- throw instead of logging when attempting to use push notifications on Android with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [ios] Dispatch foreground notification completion handler on the main thread to prevent SIGTRAP / `BSPreconditionFailure` on iOS 16. ([#45096](https://github.com/expo/expo/pull/45096) by [@qutrek](https://github.com/qutrek))
+
+### 💡 Others
+
+- Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+- [iOS] Added explicit `import React` for xcframework compatibility. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.22 - 2026-05-01
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.21 - 2026-04-28
+
+### 💡 Others
+
+- Skip redundant device push token registration when token and metadata are unchanged since last successful registration. ([#44836](https://github.com/expo/expo/pull/44836) by [@stephanepham](https://github.com/stephanepham))
+
+## 55.0.20 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.19 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.18 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.17 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-03-17
+
+### 🐛 Bug fixes
+
+- [ios] Guard against crash in `BackgroundEventTransformer` when notification body is a primitive type. ([#45198](https://github.com/expo/expo/pull/45198) by [@DORI2001](https://github.com/DORI2001))
+- [web] fix `getDevicePushTokenAsync` export ([#44413](https://github.com/expo/expo/pull/44413) by [@vonovak](https://github.com/vonovak))
+- [ios] fix unhandled promise rejection in `getRegistrationInfoAsync`, relax keychain accessibility to allow access after device unlocked. ([#43829](https://github.com/expo/expo/pull/43829) by [@jmalmo](https://github.com/jmalmo))
+
+## 55.0.11 - 2026-03-05
+
+### 🐛 Bug fixes
+
+- [ios] Fixed `requestPermissionsAsync` returning raw permission result without several documented fields ([#43555](https://github.com/expo/expo/pull/43555) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.10 — 2026-02-25
+
+### 🐛 Bug fixes
+
+- [ios] Fixed `requestPermissionsAsync` not forwarding new options to the OS when notifications were already granted ([#43378](https://github.com/expo/expo/pull/43378) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.9 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+### 🎉 New features
+
+- improve custom sound validation ([#43189](https://github.com/expo/expo/pull/43189) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- [Android] fix background task not consistently executing ([#43245](https://github.com/expo/expo/pull/43245) by [@vonovak](https://github.com/vonovak))
+- [Android] fix `deleteNotificationChannelGroupAsync` export ([#43244](https://github.com/expo/expo/pull/43244) by [@vonovak](https://github.com/vonovak))
+- add FCM intent origin validation ([#43206](https://github.com/expo/expo/pull/43206) by [@vonovak](https://github.com/vonovak))
+- Fixed crash in `NotificationForwarderActivity` on Android 11/12 when Parcelable extras fail to deserialize by using byte array serialization as fallback. ([#43203](https://github.com/expo/expo/pull/43203) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- [Android] migrate several Java files to Kotlin ([#43249](https://github.com/expo/expo/pull/43249) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.7 — 2026-02-16
+
+### 💡 Others
+
+- Remove unused `assert` dependency ([#42970](https://github.com/expo/expo/pull/42970) by [@kitten](https://github.com/kitten))
+
+## 55.0.6 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- expose `BackgroundNotificationTaskResult` ([#41291](https://github.com/expo/expo/pull/41291) by [@vonovak](https://github.com/vonovak))
+- [ios], [internal] rename `EXNotifications` pod to `ExpoNotifications` ([#42009](https://github.com/expo/expo/pull/42009) by [@vonovak](https://github.com/vonovak))
+- [android] throw instead of logging a warning when attempting to use push notifications with Expo Go ([#39459](https://github.com/expo/expo/pull/39459) by [@vonovak](https://github.com/vonovak))
+
+### 🎉 New features
+
+- [android] Support subscribing to Firebase broadcast topics by ([#17674](https://github.com/expo/expo/pull/17674) [@mmomtchev](https://github.com/mmomtchev))
 - improve runtime validation for NotificationTriggerInput ([#41538](https://github.com/expo/expo/pull/41538) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
-- fix completion handler never called for background notifications ([#41300](https://github.com/expo/expo/pull/41300) by [@vonovak](https://github.com/vonovak))
+- [android] avoid crash emitting a new token event when module is destroyed ([#41754](https://github.com/expo/expo/pull/41754) by [@vonovak](https://github.com/vonovak))
+- [ios] fix completion handler never called for background notifications ([#41300](https://github.com/expo/expo/pull/41300) by [@vonovak](https://github.com/vonovak))
+- Adjustments after removal of notification section of Expo config. ([#41972](https://github.com/expo/expo/pull/41972) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
-- remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
-- Remove tests related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
+- [android] migrate off of legacy expo-modules-core apis ([#41731](https://github.com/expo/expo/pull/41731) by [@vonovak](https://github.com/vonovak))
+- [ios] migrate permission requester to swift ([#42010](https://github.com/expo/expo/pull/42010) by [@vonovak](https://github.com/vonovak))
+- [android] remove token listener on module destroy ([#41275](https://github.com/expo/expo/pull/41275) by [@vonovak](https://github.com/vonovak))
+- Remove tests-related files from the published package content. ([#39551](https://github.com/expo/expo/pull/39551) by [@Simek](https://github.com/Simek))
 - [ios] migrate notification serializer to swift ([#38633](https://github.com/expo/expo/pull/38633) by [@vonovak](https://github.com/vonovak))
+- [android] bump firebase notifications dependency ([#42016](https://github.com/expo/expo/pull/42016) by [@vonovak](https://github.com/vonovak))
+- [android] mark `NotificationImportance.UNSPECIFIED` as not suitable for use ([#41709](https://github.com/expo/expo/pull/41709) by [@vonovak](https://github.com/vonovak))
 
 ## 0.32.14 - 2025-12-05
 

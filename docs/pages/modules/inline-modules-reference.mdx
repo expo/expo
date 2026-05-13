@@ -1,0 +1,73 @@
+---
+title: Inline modules reference
+description: A reference of Expo inline modules.
+---
+
+import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
+
+> **warning** Inline modules are [experimental](/more/release-statuses/#experimental). The API is subject to breaking changes.
+
+Inline modules let you write native module code (Kotlin and Swift) directly in your Expo project directory,
+without creating a separate Expo module package. Expo discovers these files automatically and includes them in the build.
+
+## Configuration
+
+<PaddedAPIBox header="expo.experiments.inlineModules">
+When defined, enables inline modules functionality in Expo CLI and Expo Modules Autolinking.
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "inlineModules": {}
+    }
+  }
+}
+```
+
+</PaddedAPIBox>
+
+<PaddedAPIBox header="expo.experiments.inlineModules.watchedDirectories">
+Configures in which directories the inline modules can be created.
+ 
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "inlineModules": {
+        "watchedDirectories": ["app", "src"]
+      }
+    }
+  }
+}
+```
+
+Files inside nested directories will also be used.
+For example, if `watchedDirectories = ["app"]` is defined in the app config,
+and a module file such as **app/nested/directory/SomeModule.kt** exists in a nested path, then `SomeModule` can be used in your app.
+
+A directory in `watchedDirectories`:
+
+- Needs to be inside a TypeScript/JavaScript project. This means it needs to have an ancestor in the directory tree that has **package.json**. For example, `"watchedDirectories": ["app", "src/some/directory", pathToOtherProject]` should work and `"watchedDirectories": ["/", pathToFolderNotInNodeProject]` won't.
+- Cannot be the whole project directory, for example,`"./"`, nor an ancestor of it (for example `../`).
+- Cannot be a subdirectory of the other directory in `watchedDirectories`. For example, `watchedDirectories` cannot be `["app", "app/nested/directory"]`, you can just set `watchedDirectories` to `["app"]`.
+- Cannot contain special characters like `" ", "(", ")", "$"`. This means you cannot have `"app/(tabs)"` in the `watchedDirectories`, but you can have `"app"` and it should still use native files from `"app/(tabs)"` directory.
+
+</PaddedAPIBox>
+
+> **Warning** You need to run `npx expo prebuild` after changing the [app config](/workflow/configuration/), for it to take effect.
+
+## Naming convention
+
+The inline module file name has to match the native module name (which needs to be unique in your whole app).
+If you have a **SimpleModule.kt**, then the inline module inside it has that file name. For example:
+
+```kotlin
+// SimpleModule.kt
+// ...
+class SimpleModule: Module() { // Note that the class name has to match the filename.
+    public func definition() -> ModuleDefinition {
+        // Name("SimpleModule") // Note that `Name` also has to match the filename. So you can just omit it.
+    }
+}
+```

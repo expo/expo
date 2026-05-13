@@ -2,6 +2,7 @@
 
 import Foundation
 import React
+import ExpoModulesCore
 
 class EXDevMenuDevSettings: NSObject {
   static func getDevSettings() -> [String: Bool] {
@@ -18,11 +19,10 @@ class EXDevMenuDevSettings: NSObject {
 
     let manager = DevMenuManager.shared
 
-    if let bridge = manager.currentBridge,
-      let bridgeSettings = bridge.module(forName: "DevSettings") as? RCTDevSettings {
+    if let bridgeSettings: RCTDevSettings = manager.currentAppContext?.nativeModule(named: "DevSettings") {
       #if !os(macOS)
-        let perfMonitor = bridge.module(forName: "PerfMonitor")
-        let isPerfMonitorAvailable = perfMonitor != nil
+        let perfMonitorModule: NSObject? = manager.currentAppContext?.nativeModule(named: "PerfMonitor")
+        let isPerfMonitorAvailable: Bool = perfMonitorModule != nil
       #else
         let isPerfMonitorAvailable = false
       #endif
@@ -31,7 +31,7 @@ class EXDevMenuDevSettings: NSObject {
       devSettings["isHotLoadingEnabled"] = bridgeSettings.isHotLoadingEnabled
       devSettings["isPerfMonitorShown"] = bridgeSettings.isPerfMonitorShown
       devSettings["isHotLoadingAvailable"] = bridgeSettings.isHotLoadingAvailable
-      devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable
+      devSettings["isPerfMonitorAvailable"] = isPerfMonitorAvailable && manager.currentManifest?.isDevelopmentMode() == true
       devSettings["isJSInspectorAvailable"] = bridgeSettings.isDeviceDebuggingAvailable
 
       let isElementInspectorAvailable = manager.currentManifest?.isDevelopmentMode()

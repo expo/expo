@@ -10,6 +10,96 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.14 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-05
+
+### 🐛 Bug fixes
+
+- Access `crypto` on `globalThis` rather than just `window.crypto` ([#43405](https://github.com/expo/expo/pull/43405) by [@bradleyayers](https://github.com/bradleyayers))
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+### 🐛 Bug fixes
+
+- Fixed incorrect option name for tag inclusion in `AESSealedData.ciphertext(options)`. ([#42535](https://github.com/expo/expo/pull/42535) by [@barthap](https://github.com/barthap))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
+- Added support for AES-GCM encryption. ([#41249](https://github.com/expo/expo/pull/41249) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- [Android] Fix memory corruption when offset typed array was provided to `digest()` or `getRandomValues()`. ([#42186](https://github.com/expo/expo/pull/42186) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
 - bump base64-js from 1.2.3 to 1.5.1 ([#41211](https://github.com/expo/expo/pull/41211) by [@hassankhan](https://github.com/hassankhan))
 - remove `ExpoCrypto.getRandomBase64String()` fallback in `getRandomBytes()` ([#41517](https://github.com/expo/expo/pull/41517) by [@hassankhan](https://github.com/hassankhan))
 

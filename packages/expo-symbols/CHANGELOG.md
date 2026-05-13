@@ -6,14 +6,82 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.5 — 2026-05-07
+
+### 🐛 Bug fixes
+
+- Fix `useFonts` from `@expo-google-fonts/material-symbols` using an undeclared dependency on `expo-font` and `react` ([#45471](https://github.com/expo/expo/pull/45471) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.8 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 - 2026-03-05
+
+### 💡 Others
+
+- Add explicit type re-export and return type annotations ([#43562](https://github.com/expo/expo/pull/43562) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🎉 New features
+
 - [Android] Add support for MaterialSymbol symbols on Android and Web. ([#39516](https://github.com/expo/expo/pull/39516) by [@aleqsio](https://github.com/aleqsio))
 - [Android] add unstable_getMaterialSymbolSourceAsync ([#41064](https://github.com/expo/expo/pull/41064) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
 - [Android] Add lineHeight to ensure symbols occupy correct square space. ([#41091](https://github.com/expo/expo/pull/41091) by [@aleqsio](https://github.com/aleqsio))
-
-### 💡 Others
 
 ## 1.0.8 - 2025-12-05
 

@@ -1,10 +1,5 @@
-import Constants from 'expo-constants';
 import React, { createContext, isValidElement, use, type ReactNode } from 'react';
-import {
-  SplitViewHost,
-  SplitViewScreen,
-  type SplitViewHostProps,
-} from 'react-native-screens/experimental';
+import { Split, type SplitHostProps } from 'react-native-screens/experimental';
 
 import { SplitViewColumn, SplitViewInspector } from './elements';
 import { IsWithinLayoutContext } from '../layouts/IsWithinLayoutContext';
@@ -13,9 +8,9 @@ import { Slot } from '../views/Navigator';
 const IsWithinSplitViewContext = createContext(false);
 
 /**
- * For full list of supported props, see [`SplitViewHostProps`](https://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split-view/SplitViewHost.types.ts#L124)
+ * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
  */
-export interface SplitViewProps extends Omit<SplitViewHostProps, 'children'> {
+export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
   children?: ReactNode;
 }
 
@@ -27,12 +22,6 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
   // TODO: Add better way of detecting if SplitView is rendered inside Native navigator.
   if (use(IsWithinLayoutContext)) {
     throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
-  }
-
-  if (!Constants.expoConfig?.extra?.router?.unstable_splitView) {
-    throw new Error(
-      'SplitView is not enabled. Make sure to enable it in your expo-router configuration with "unstable_splitView": true. After enabling, make sure to prebuild your app.'
-    );
   }
 
   if (process.env.EXPO_OS !== 'ios') {
@@ -75,13 +64,13 @@ function SplitViewNavigator({ children, ...splitViewHostProps }: SplitViewProps)
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
-    <SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
+    <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
       {columnChildren}
-      <SplitViewScreen.Column>
+      <Split.Column>
         <WrappedSlot />
-      </SplitViewScreen.Column>
+      </Split.Column>
       {inspectorChildren}
-    </SplitViewHost>
+    </Split.Host>
   );
 }
 

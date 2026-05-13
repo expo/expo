@@ -18,7 +18,11 @@ class LinkZoomTransitionsSourceRepository {
   private var sources: [String: LinkSourceInfo] = [:]
   private let lock = NSLock()
 
-  init() {}
+  private weak var logger: ExpoModulesCore.Logger?
+
+  init(logger: ExpoModulesCore.Logger?) {
+    self.logger = logger
+  }
 
   func registerSource(
     identifier: String,
@@ -27,8 +31,8 @@ class LinkZoomTransitionsSourceRepository {
     lock.lock()
     defer { lock.unlock() }
     if sources[identifier] != nil {
-      print(
-        "[expo-router] LinkPreviewZoomTransitionSource with identifier \(identifier) is already registered. Overwriting the existing source."
+      logger?.warn(
+        "[expo-router] Link.AppleZoom with identifier \(identifier) is already registered. This means that you used two sources for the same target, which is not supported and may lead to unexpected behavior."
       )
     }
     if !identifier.isEmpty {
@@ -186,9 +190,9 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
     _ childComponentView: UIView,
     index: Int
   ) {
-    if child != nil {
-      print(
-        "[expo-router] LinkZoomTransitionSource can only have one child view."
+    guard child == nil else {
+      logger?.warn(
+        "[expo-router] Link.AppleZoom can only have a single native child. If you passed a single child, consider adding collapsible={false} to your component"
       )
       return
     }
@@ -203,12 +207,13 @@ class LinkZoomTransitionSource: LinkZoomExpoView, LinkPreviewIndirectTriggerProt
   }
 
   override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child == self.child {
-      self.child = nil
-      sourceRepository?.unregisterSource(
-        identifier: identifier
-      )
+    guard child == self.child else {
+      return
     }
+    self.child = nil
+    sourceRepository?.unregisterSource(
+      identifier: identifier
+    )
     super.unmountChildComponentView(child, index: index)
   }
 }
@@ -219,8 +224,8 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   var identifier: String = "" {
     didSet {
       if oldValue != identifier && !oldValue.isEmpty {
-        print(
-          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set."
+        logger?.warn(
+          "[expo-router] LinkZoomTransitionAlignmentRectDetector does not support changing the identifier after it has been set. This is most likely an internal bug in expo-router."
         )
         return
       }
@@ -237,9 +242,9 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
     _ childComponentView: UIView,
     index: Int
   ) {
-    if child != nil {
-      print(
-        "[expo-router] LinkZoomTransitionAlignmentRectDetector can only have one child view."
+    guard child == nil else {
+      logger?.warn(
+        "[expo-router] Link.AppleZoomTarget can only have a single native child. If you passed a single child, consider adding collapsible={false} to your component"
       )
       return
     }
@@ -254,20 +259,31 @@ class LinkZoomTransitionAlignmentRectDetector: LinkZoomExpoView {
   }
 
   override func unmountChildComponentView(_ child: UIView, index: Int) {
-    if child == self.child {
-      self.child = nil
-      alignmentViewRepository?.removeIfSame(
-        identifier: identifier,
-        alignmentView: child
-      )
+    guard child == self.child else {
+      return
     }
+    self.child = nil
+    alignmentViewRepository?.removeIfSame(
+      identifier: identifier,
+      alignmentView: child
+    )
     super.unmountChildComponentView(child, index: index)
   }
 }
 
 class LinkZoomTransitionEnabler: LinkZoomExpoView {
   var zoomTransitionSourceIdentifier: String = ""
-  var isPreventingInteractiveDismissal: Bool = false
+  var dismissalBoundsRect: DismissalBoundsRect? {
+    didSet {
+      // When dismissalBoundsRect changes, re-setup the zoom transition
+      // to include/exclude interactiveDismissShouldBegin callback
+      if superview != nil {
+        DispatchQueue.main.async {
+          self.setupZoomTransition()
+        }
+      }
+    }
+  }
 
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
@@ -281,7 +297,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
 
   private func setupZoomTransition() {
     if self.zoomTransitionSourceIdentifier.isEmpty {
-      print("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler")
+      logger?.warn("[expo-router] No zoomTransitionSourceIdentifier passed to LinkZoomTransitionEnabler. This is most likely a bug in expo-router.")
       return
     }
     if let controller = self.findViewController() {
@@ -312,8 +328,18 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
           }
           return rect
         }
-        options.interactiveDismissShouldBegin = { _ in
-          !self.isPreventingInteractiveDismissal
+        // Only set up interactiveDismissShouldBegin when dismissalBoundsRect is set
+        // If dismissalBoundsRect is nil, don't set the callback - iOS uses default behavior
+        if let rect = self.dismissalBoundsRect {
+          options.interactiveDismissShouldBegin = { context in
+            let location = context.location
+            // Check each optional bound independently
+            if let minX = rect.minX, location.x < minX { return false }
+            if let maxX = rect.maxX, location.x > maxX { return false }
+            if let minY = rect.minY, location.y < minY { return false }
+            if let maxY = rect.maxY, location.y > maxY { return false }
+            return true
+          }
         }
         controller.preferredTransition = .zoom(options: options) { _ in
           let sourceInfo = self.sourceRepository?.getSource(
@@ -323,8 +349,8 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             view = linkPreviewView.directChild
           }
           guard let view else {
-            print(
-              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition"
+            self.logger?.warn(
+              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition. This is most likely a bug in expo-router."
             )
             return nil
           }
@@ -333,7 +359,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
         return
       }
     } else {
-      print("[expo-router] No navigation controller found to enable zoom transition")
+      logger?.warn("[expo-router] No navigation controller found to enable zoom transition. This is most likely a bug in expo-router.")
     }
   }
 
@@ -384,7 +410,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
   }
 }
 
-class LinkZoomExpoView: ExpoView {
+class LinkZoomExpoView: RouterViewWithLogger {
   var module: LinkPreviewNativeModule? {
     return appContext?.moduleRegistry.get(moduleWithName: LinkPreviewNativeModule.moduleName)
       as? LinkPreviewNativeModule
@@ -392,7 +418,7 @@ class LinkZoomExpoView: ExpoView {
 
   var sourceRepository: LinkZoomTransitionsSourceRepository? {
     guard let module else {
-      print("[expo-router] LinkPreviewNativeModule not loaded")
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded. Make sure expo-router is properly configured.")
       return nil
     }
     return module.zoomSourceRepository
@@ -400,7 +426,7 @@ class LinkZoomExpoView: ExpoView {
 
   var alignmentViewRepository: LinkZoomTransitionsAlignmentViewRepository? {
     guard let module else {
-      print("[expo-router] LinkPreviewNativeModule not loaded")
+      logger?.warn("[expo-router] LinkPreviewNativeModule not loaded.  Make sure expo-router is properly configured.")
       return nil
     }
     return module.zoomAlignmentViewRepository

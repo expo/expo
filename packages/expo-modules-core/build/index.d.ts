@@ -1,3 +1,4 @@
+import './ts-declarations/global';
 import './sweet/setUpJsLogger.fx';
 import './polyfill';
 export type * from './ts-declarations/global';
@@ -21,4 +22,5 @@ export { CodedError } from './errors/CodedError';
 export { UnavailabilityError } from './errors/UnavailabilityError';
 export { LegacyEventEmitter } from './LegacyEventEmitter';
 export { default as NativeModulesProxy } from './NativeModulesProxy';
+export { installOnUIRuntime } from './worklets';
 //# sourceMappingURL=index.d.ts.map

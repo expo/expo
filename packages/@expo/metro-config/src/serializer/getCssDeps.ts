@@ -4,8 +4,8 @@ import type { Module, ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundle
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
 import path from 'path';
 
-import { CSSMetadata } from './jsOutput';
-import { SerialAsset } from './serializerAssets';
+import type { CSSMetadata } from './jsOutput';
+import type { SerialAsset } from './serializerAssets';
 import { pathToHtmlSafeName } from '../transform-worker/css';
 import { toPosixPath } from '../utils/filePath';
 import { hashString } from '../utils/hash';
@@ -150,6 +150,7 @@ function getCssMetadata(module: Module<any>): CSSMetadata | null {
   return null;
 }
 
+// TODO(@hassankhan): Move this function into its own file
 export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
   // TODO(@kitten): As of metro@0.83.2 but maybe before, this does not look correct. Encoding has changed, see: https://github.com/facebook/metro/commit/cb02cdb
   // Decode if the path is encoded from the Metro dev server, then normalize paths for Windows support.
@@ -157,6 +158,8 @@ export function fileNameFromContents({ filepath, src }: { filepath: string; src:
   return getFileName(decoded) + '-' + hashString(src);
 }
 
+// TODO(@hassankhan): Move this function into its own file
+// TODO(@hassankhan): Investigate why we don't always pass the filename with extension here
 export function getFileName(module: string) {
-  return path.basename(module).replace(/\.[^.]+$/, '');
+  return path.basename(module).replace(/\.\w+$/, '');
 }

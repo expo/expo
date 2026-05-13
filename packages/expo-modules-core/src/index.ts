@@ -1,3 +1,4 @@
+import './ts-declarations/global';
 import './sweet/setUpJsLogger.fx';
 import './polyfill';
 
@@ -33,3 +34,5 @@ export { UnavailabilityError } from './errors/UnavailabilityError';
 // Deprecated
 export { LegacyEventEmitter } from './LegacyEventEmitter';
 export { default as NativeModulesProxy } from './NativeModulesProxy';
+
+export { installOnUIRuntime } from './worklets';

@@ -1,5 +1,5 @@
-import { type NativeDatabase } from './NativeDatabase';
-import { NativeSession, type Changeset } from './NativeSession';
+import type { NativeDatabase } from './NativeDatabase';
+import type { NativeSession, Changeset } from './NativeSession';
 export { type Changeset };
 /**
  * A class that represents an instance of the SQLite session extension.

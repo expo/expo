@@ -1,5 +1,4 @@
-import { Color, Link, usePathname, type Href } from 'expo-router';
-import { Toolbar } from 'expo-router/unstable-toolbar';
+import { Color, Link, usePathname, Stack, type Href } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import React, { use, useRef, useState } from 'react';
 import {
@@ -46,35 +45,37 @@ const HomeIndex = () => {
           href={{ pathname: '/test', params: { __internal_expo_router_no_animation: 1 } }}
           text="/test with animation disabled"
         />
+        <CaseLink href="/apple-files" text="Apple Files" />
         <CaseLink href="/test" text="test" />
         <CaseLink href="/timer" text="Timer with preload" prefetch />
         {Array.from({ length: 20 }).map((_, i) => (
           <CaseLink key={i} href={`/${i}`} text={`Go to ${i}`} />
         ))}
       </ScrollView>
-      <Toolbar>
-        <Toolbar.Spacer />
-        <Toolbar.Button sf="magnifyingglass" tintColor={Color.ios.placeholderText} />
-        <Toolbar.View style={{ width: width - 250 }}>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Spacer />
+        <Stack.Toolbar.Button icon="magnifyingglass" tintColor={Color.ios.placeholderText} />
+        <Stack.Toolbar.View>
           <TextInput
+            style={{ width: width - 250, height: 32 }}
             ref={textInputRef}
             onFocus={() => setIsSearchFocused(true)}
             onBlur={() => setIsSearchFocused(false)}
             placeholderTextColor={Color.ios.placeholderText}
             placeholder="Search"
           />
-        </Toolbar.View>
-        <Toolbar.Button sf="mic" tintColor={Color.ios.placeholderText} />
+        </Stack.Toolbar.View>
+        <Stack.Toolbar.Button icon="mic" tintColor={Color.ios.placeholderText} />
         {shouldUseCustomXButton ? (
-          <Toolbar.View sharesBackground={false} style={{ width: 32, height: 32 }}>
+          <Stack.Toolbar.View hidesSharedBackground>
             <Pressable
               onPress={() => {
                 textInputRef.current?.clear();
                 textInputRef.current?.blur();
               }}
               style={{
-                width: '100%',
-                height: '100%',
+                width: 32,
+                height: 32,
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
@@ -89,14 +90,14 @@ const HomeIndex = () => {
                 name="plus"
               />
             </Pressable>
-          </Toolbar.View>
+          </Stack.Toolbar.View>
         ) : (
           <>
-            <Toolbar.Button hidden={isSearchFocused} sharesBackground={false} sf="plus" />
-            <Toolbar.Button
+            <Stack.Toolbar.Button hidden={isSearchFocused} hidesSharedBackground icon="plus" />
+            <Stack.Toolbar.Button
               hidden={!isSearchFocused}
-              sharesBackground={false}
-              sf="xmark"
+              hidesSharedBackground
+              icon="xmark"
               onPress={() => {
                 textInputRef.current?.clear();
                 textInputRef.current?.blur();
@@ -104,8 +105,8 @@ const HomeIndex = () => {
             />
           </>
         )}
-        <Toolbar.Spacer />
-      </Toolbar>
+        <Stack.Toolbar.Spacer />
+      </Stack.Toolbar>
     </>
   );
 };

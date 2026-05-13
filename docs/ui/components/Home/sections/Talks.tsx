@@ -67,8 +67,8 @@ export function TalkGridCell({
       openInNewTab
       href={link ?? `https://www.youtube.com/watch?v=${videoId}`}
       className={mergeClasses(
-        'relative flex h-full min-h-[266px] flex-col justify-between overflow-hidden rounded-lg border border-default bg-default shadow-xs transition',
-        '[&_h2]:!my-0 [&_h3]:!mt-0',
+        'border-default bg-default relative flex h-full min-h-[266px] flex-col justify-between overflow-hidden rounded-lg border shadow-xs transition',
+        '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className
       )}
@@ -82,22 +82,22 @@ export function TalkGridCell({
                 : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
             })`,
           }}
-          className="h-[138px] border-b border-b-default bg-cover bg-center max-sm-gutters:h-[168px]"
+          className="border-b-default max-sm-gutters:h-[168px] h-[138px] border-b bg-cover bg-center"
         />
-        <div className="flex min-h-[30px] items-start justify-between gap-1 bg-default px-4 py-3">
+        <div className="bg-default flex min-h-[30px] items-start justify-between gap-1 px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
-          <ArrowUpRightIcon className="icon-sm mt-1 shrink-0 text-icon-secondary" />
+          <ArrowUpRightIcon className="icon-sm text-icon-secondary mt-1 shrink-0" />
         </div>
       </div>
-      <div className="flex flex-col gap-0.5 bg-default px-4 pb-2">
+      <div className="bg-default flex flex-col gap-0.5 px-4 pb-2">
         {description && (
           <CALLOUT theme="secondary" className="flex items-center gap-2">
-            <Users02Icon className="icon-xs shrink-0 text-icon-tertiary" />
+            <Users02Icon className="icon-xs text-icon-tertiary shrink-0" />
             {description}
           </CALLOUT>
         )}
         <CALLOUT theme="secondary" className="flex items-center gap-2">
-          <AtSignIcon className="icon-xs shrink-0 text-icon-tertiary" />
+          <AtSignIcon className="icon-xs text-icon-tertiary shrink-0" />
           {event}
         </CALLOUT>
       </div>

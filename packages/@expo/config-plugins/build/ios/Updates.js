@@ -133,7 +133,7 @@ async function setUpdatesConfigAsync(projectRoot, config, expoPlist, expoUpdates
     delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
   const bsPatchSupport = (0, _Updates().getUpdatesBsdiffPatchSupportEnabled)(config);
-  if (!bsPatchSupport) {
+  if (bsPatchSupport) {
     newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = bsPatchSupport;
   } else {
     delete newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT];

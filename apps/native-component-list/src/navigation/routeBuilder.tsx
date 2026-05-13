@@ -12,7 +12,7 @@ export function ErroredScreen({ message }: { message: string }) {
 export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (error) {
+  } catch (error: any) {
     return () => <ErroredScreen message={error.message} />;
   }
 }

@@ -1,5 +1,5 @@
-import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice } from './Speech.types';
-export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice };
+import type { SpeechOptions, Voice } from './Speech.types';
+export { type SpeechOptions, type SpeechEventCallback, VoiceQuality, type Voice, type WebVoice, } from './Speech.types';
 /**
  * Speak out loud the text given options. Calling this when another text is being spoken adds
  * an utterance to queue.
@@ -24,11 +24,13 @@ export declare function isSpeakingAsync(): Promise<boolean>;
 export declare function stop(): Promise<void>;
 /**
  * Pauses current speech. This method is not available on Android.
+ * @platform ios, web
  */
 export declare function pause(): Promise<void>;
 /**
  * Resumes speaking previously paused speech or does nothing if there's none. This method is not
  * available on Android.
+ * @platform ios, web
  */
 export declare function resume(): Promise<void>;
 /**

@@ -1,5 +1,5 @@
 import { type PropsWithChildren } from 'react';
-interface LinkAppleZoomProps extends PropsWithChildren {
+export interface LinkAppleZoomProps extends PropsWithChildren {
     /**
      * Defines the rectangle used for the zoom transition's alignment. This rectangle is specified in the zoomed screen's coordinate space.
      *
@@ -18,6 +18,5 @@ interface LinkAppleZoomProps extends PropsWithChildren {
  *
  * @platform ios 18+
  */
-export declare function LinkAppleZoom(props: LinkAppleZoomProps): import("react").JSX.Element;
-export {};
+export declare function LinkAppleZoom(props: LinkAppleZoomProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=link-apple-zoom.d.ts.map

@@ -35,11 +35,11 @@ export const APISectionDeprecationNote = ({ comment, className, sticky = false }
         className={mergeClasses(
           'border-palette-yellow5',
           '[table_&]:last-of-type:mb-2.5',
-          sticky && 'mb-0 rounded-b-none rounded-t-lg px-4 shadow-none max-md-gutters:px-4',
+          sticky && 'max-md-gutters:px-4 mb-0 rounded-t-lg rounded-b-none px-4 shadow-none',
           className
         )}>
         {content.length > 0 ? (
-          <ReactMarkdown components={mdComponents}>{`**Deprecated** ${content}`}</ReactMarkdown>
+          <ReactMarkdown components={mdComponents}>{`**Deprecated:** ${content}`}</ReactMarkdown>
         ) : (
           <BOLD>Deprecated</BOLD>
         )}

@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn --silent ts-node --transpile-only
+#!/usr/bin/env pnpm --silent ts-node --transpile-only
 
 import fs from 'fs/promises';
 import path from 'path';

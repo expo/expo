@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import UIKit
 
 public class RouterToolbarModule: Module {
   public func definition() -> ModuleDefinition {
@@ -22,8 +23,17 @@ public class RouterToolbarModule: Module {
       Prop("systemImageName") { (view: RouterToolbarItemView, systemImageName: String?) in
         view.systemImageName = systemImageName
       }
+      Prop("xcassetName") { (view: RouterToolbarItemView, xcassetName: String?) in
+        view.xcassetName = xcassetName
+      }
+      Prop("image") { (view: RouterToolbarItemView, image: SharedRef<UIImage>?) in
+        view.customImage = image
+      }
       Prop("tintColor") { (view: RouterToolbarItemView, tintColor: UIColor?) in
         view.customTintColor = tintColor
+      }
+      Prop("imageRenderingMode") { (view: RouterToolbarItemView, mode: ImageRenderingMode?) in
+        view.imageRenderingMode = mode
       }
       Prop("hidesSharedBackground") { (view: RouterToolbarItemView, hidesSharedBackground: Bool) in
         view.hidesSharedBackground = hidesSharedBackground
@@ -57,6 +67,18 @@ public class RouterToolbarModule: Module {
         (view: RouterToolbarItemView, config: BadgeConfigurationRecord?) in
         view.badgeConfiguration = config?.toBadgeConfiguration()
       }
+      Prop("titleStyle") { (view: RouterToolbarItemView, style: TitleStyleRecord?) in
+        view.titleStyle = style?.toTitleStyle()
+      }
+      Prop("accessibilityLabel") { (view: RouterToolbarItemView, accessibilityLabel: String?) in
+        view.accessibilityLabel = accessibilityLabel
+      }
+      Prop("accessibilityHint") { (view: RouterToolbarItemView, accessibilityHint: String?) in
+        view.accessibilityHint = accessibilityHint
+      }
+      Prop("disabled") { (view: RouterToolbarItemView, disabled: Bool?) in
+        view.disabled = disabled ?? false
+      }
 
       Events("onSelected")
     }
@@ -81,6 +103,11 @@ enum BarItemStyle: String, Enumerable {
   }
 }
 
+enum ImageRenderingMode: String, Enumerable {
+  case template
+  case original
+}
+
 struct BadgeConfigurationRecord: Record {
   @Field var value: String?
   @Field var backgroundColor: UIColor?
@@ -97,6 +124,22 @@ struct BadgeConfigurationRecord: Record {
       fontFamily: fontFamily,
       fontSize: fontSize,
       fontWeight: fontWeight
+    )
+  }
+}
+
+struct TitleStyleRecord: Record {
+  @Field var fontFamily: String?
+  @Field var fontSize: Double?
+  @Field var fontWeight: String?
+  @Field var color: UIColor?
+
+  func toTitleStyle() -> TitleStyle {
+    return TitleStyle(
+      fontFamily: fontFamily,
+      fontSize: fontSize,
+      fontWeight: fontWeight,
+      color: color
     )
   }
 }

@@ -1,4 +1,4 @@
-import {
+import type {
   NotificationChannelGroup,
   NotificationChannelGroupInput,
 } from './NotificationChannelGroupManager.types';
@@ -12,7 +12,7 @@ import {
  * @platform android
  * @header channels
  */
-export default async function setNotificationChannelGroupAsync(
+export async function setNotificationChannelGroupAsync(
   groupId: string,
   group: NotificationChannelGroupInput
 ): Promise<NotificationChannelGroup | null> {

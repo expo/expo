@@ -1,10 +1,7 @@
-@file:OptIn(EitherType::class)
-
 package expo.modules.kotlin.jni.types
 
 import com.facebook.react.bridge.DynamicFromObject
 import com.google.common.truth.Truth
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.jni.SharedString
 import expo.modules.kotlin.jni.extensions.addSingleQuotes
@@ -15,7 +12,6 @@ import expo.modules.kotlin.types.convert
 import org.junit.Test
 import java.net.URL
 
-@EitherType
 class EitherTypeConversionTest {
   @Test
   fun either_should_be_convertible() = conversionTest(
@@ -72,6 +68,17 @@ class EitherTypeConversionTest {
     Truth.assertThat(convertedString.`is`(Int::class)).isFalse()
     Truth.assertThat(convertedString.`is`(String::class)).isTrue()
     Truth.assertThat(convertedString.second()).isEqualTo("second")
+  }
+
+  @Test
+  fun should_convert_numeric_0_and_1_as_double_not_boolean_in_either() {
+    val converted0 = convert<Either<Boolean, Double>>(DynamicFromObject(0.0))
+    Truth.assertThat(converted0.`is`(Double::class)).isTrue()
+    Truth.assertThat(converted0.`is`(Boolean::class)).isFalse()
+
+    val converted1 = convert<Either<Boolean, Double>>(DynamicFromObject(1.0))
+    Truth.assertThat(converted1.`is`(Double::class)).isTrue()
+    Truth.assertThat(converted1.`is`(Boolean::class)).isFalse()
   }
 
   @Test

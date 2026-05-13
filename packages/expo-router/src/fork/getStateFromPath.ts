@@ -1,11 +1,12 @@
-import { PathConfigMap, validatePathConfig } from '@react-navigation/native';
-import type { InitialState, NavigationState, PartialState } from '@react-navigation/routers';
 import escape from 'escape-string-regexp';
 
 import { findFocusedRoute } from './findFocusedRoute';
 import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
 import * as expo from './getStateFromPath-forks';
 import { INTERNAL_SLOT_NAME } from '../constants';
+import type { PathConfigMap } from '../react-navigation/native';
+import { validatePathConfig } from '../react-navigation/native';
+import type { InitialState, NavigationState, PartialState } from '../react-navigation/routers';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
@@ -306,7 +307,7 @@ function checkForDuplicatedConfigs(configs: RouteConfig[]) {
   // Check for duplicate patterns in the config
   configs.reduce<Record<string, RouteConfig>>((acc, config) => {
     if (acc[config.pattern]) {
-      const a = acc[config.pattern].routeNames;
+      const a = acc[config.pattern]!.routeNames;
       const b = config.routeNames;
 
       // It's not a problem if the path string omitted from a inner most screen
@@ -381,8 +382,7 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
           const decodedParamSegment = expo.safelyDecodeURIComponent(
             // const decodedParamSegment = decodeURIComponent(
             // The param segments appear every second item starting from 2 in the regex match result
-            match![(acc.pos + 1) * 2]
-              // Remove trailing slash
+            match[(acc.pos + 1) * 2]! // Remove trailing slash
               .replace(/\/$/, '')
           );
           // END FORK
@@ -427,7 +427,8 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
             const offset = numInitialSegments ? numInitialSegments - 1 : 0;
             // START FORK
             // const value = matchedParams[p]?.[index + offset];
-            const value = expo.getParamValue(p, matchedParams[p]?.[index + offset]);
+            // TODO(@kitten): Assess which is intended, non-optional or getParamValue accepting undefined
+            const value = expo.getParamValue(p, matchedParams[p]?.[index + offset]!);
             // END FORK
 
             if (value) {
@@ -449,7 +450,7 @@ const matchAgainstConfigs = (remaining: string, configs: RouteConfig[]) => {
         return { name };
       });
 
-      remainingPath = remainingPath.replace(match[1], '');
+      remainingPath = remainingPath.replace(match[1]!, '');
 
       break;
     }
@@ -604,7 +605,7 @@ const findInitialRoute = (
     if (parentScreens.length === config.parentScreens.length) {
       let sameParents = true;
       for (let i = 0; i < parentScreens.length; i++) {
-        if (parentScreens[i].localeCompare(config.parentScreens[i]) !== 0) {
+        if (parentScreens[i]!.localeCompare(config.parentScreens[i]!) !== 0) {
           sameParents = false;
           break;
         }
@@ -676,14 +677,14 @@ const createNestedStateObject = (
 
       const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
 
-      nestedState.routes[nestedStateIndex].state = createStateObject(
+      nestedState.routes[nestedStateIndex]!.state = createStateObject(
         initialRoute,
         route,
         routes.length === 0
       );
 
       if (routes.length > 0) {
-        nestedState = nestedState.routes[nestedStateIndex].state as InitialState;
+        nestedState = nestedState.routes[nestedStateIndex]!.state as InitialState;
       }
 
       parentScreens.push(route.name);

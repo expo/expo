@@ -8,6 +8,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class CameraType(val value: String) : Enumerable {
   FRONT("front"),
@@ -50,12 +51,14 @@ enum class VideoQuality(val value: String) : Enumerable {
 enum class FlashMode(val value: String) : Enumerable {
   AUTO("auto"),
   ON("on"),
-  OFF("off");
+  OFF("off"),
+  SCREEN("screen");
 
   fun mapToLens() = when (this) {
     AUTO -> ImageCapture.FLASH_MODE_AUTO
     OFF -> ImageCapture.FLASH_MODE_OFF
     ON -> ImageCapture.FLASH_MODE_ON
+    SCREEN -> ImageCapture.FLASH_MODE_SCREEN
   }
 }
 
@@ -69,6 +72,16 @@ enum class FocusMode(val value: String) : Enumerable {
   OFF("off")
 }
 
+enum class VideoStabilizationMode(val value: String) : Enumerable {
+  OFF("off"),
+  STANDARD("standard"),
+  CINEMATIC("cinematic"),
+  AUTO("auto");
+
+  fun isEnabled() = this != OFF
+}
+
+@OptimizedRecord
 data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>
 ) : Record

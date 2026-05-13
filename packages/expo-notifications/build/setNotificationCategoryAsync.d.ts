@@ -1,4 +1,4 @@
-import { NotificationCategory, NotificationAction, NotificationCategoryOptions } from './Notifications.types';
+import type { NotificationCategory, NotificationAction, NotificationCategoryOptions } from './Notifications.types';
 /**
  * Sets the new notification category.
  * @param identifier A string to associate as the ID of this category. You will pass this string in as the `categoryIdentifier`
@@ -11,5 +11,5 @@ import { NotificationCategory, NotificationAction, NotificationCategoryOptions }
  * @platform ios
  * @header categories
  */
-export default function setNotificationCategoryAsync(identifier: string, actions: NotificationAction[], options?: NotificationCategoryOptions): Promise<NotificationCategory>;
+export declare function setNotificationCategoryAsync(identifier: string, actions: NotificationAction[], options?: NotificationCategoryOptions): Promise<NotificationCategory>;
 //# sourceMappingURL=setNotificationCategoryAsync.d.ts.map

@@ -6,13 +6,5 @@ type RowProps = PropsWithChildren<{
 }>;
 
 export const Row = ({ children, subtle }: RowProps) => (
-  <tr
-    className={mergeClasses(
-      'even:bg-subtle',
-      'even:[&_summary]:bg-element',
-      'even:[&_blockquote]:bg-default',
-      subtle && 'opacity-50'
-    )}>
-    {children}
-  </tr>
+  <tr className={mergeClasses('even:bg-subtle', subtle && 'opacity-50')}>{children}</tr>
 );

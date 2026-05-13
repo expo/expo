@@ -18,3 +18,7 @@ declare module NodeJS {
 // Module declarations for non-typed libraries or types not exposed;
 declare module 'react-diff-view';
 declare module 'react-player/lib/players/FilePlayer';
+declare module 'turndown-plugin-gfm' {
+  import type TurndownService from 'turndown';
+  export function gfm(service: TurndownService): void;
+}

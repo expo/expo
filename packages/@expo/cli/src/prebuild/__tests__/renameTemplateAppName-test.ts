@@ -23,7 +23,7 @@ describe('getTemplateFilesToRenameAsync', () => {
       return await ActualGlob.glob(source, { ...options, fs: ActualFs });
     });
 
-    const files = await getTemplateFilesToRenameAsync({ cwd, renameConfig: [] });
+    const files = await getTemplateFilesToRenameAsync(cwd, { renameConfig: [] });
     expect(files).toHaveLength(0);
     expect(spyGlob).toHaveBeenCalledTimes(1);
   });
@@ -44,7 +44,7 @@ describe('renameTemplateAppNameAsync', () => {
       const spyReadFile = jest.spyOn(fs.promises, 'readFile');
       const spyWriteFile = jest.spyOn(fs.promises, 'writeFile');
 
-      await renameTemplateAppNameAsync({ cwd, files: [], name: 'ByeWorld' });
+      await renameTemplateAppNameAsync(cwd, { files: [], expName: 'ByeWorld' });
 
       // We expect readFile to not have been called, as passing an empty
       // renameConfig should cause an empty set of patterns to be passed to
@@ -74,7 +74,7 @@ describe('renameTemplateAppNameAsync', () => {
           expect(data).toMatch('{ "expo": { "name": "ByeWorld" } }');
         });
 
-      await renameTemplateAppNameAsync({ cwd, files: ['app.json'], name: 'ByeWorld' });
+      await renameTemplateAppNameAsync(cwd, { files: ['app.json'], expName: 'ByeWorld' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(1);
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
@@ -98,7 +98,7 @@ describe('renameTemplateAppNameAsync', () => {
           expect(data).toMatch('ByeWorld');
         });
 
-      await renameTemplateAppNameAsync({ cwd, files: ['app.json'], name: 'ByeWorld' });
+      await renameTemplateAppNameAsync(cwd, { files: ['app.json'], expName: 'ByeWorld' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(1);
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
@@ -116,7 +116,7 @@ describe('renameTemplateAppNameAsync', () => {
           expect(data).toMatch('byeworld');
         });
 
-      await renameTemplateAppNameAsync({ cwd, files: ['app.json'], name: 'ByeWorld' });
+      await renameTemplateAppNameAsync(cwd, { files: ['app.json'], expName: 'ByeWorld' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(1);
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
@@ -134,7 +134,7 @@ describe('renameTemplateAppNameAsync', () => {
           expect(data).toMatch('ByeWorld');
         });
 
-      await renameTemplateAppNameAsync({ cwd, files: ['app.json'], name: 'ByeWorld' });
+      await renameTemplateAppNameAsync(cwd, { files: ['app.json'], expName: 'ByeWorld' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(1);
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
@@ -149,7 +149,7 @@ describe('renameTemplateAppNameAsync', () => {
       // wasn't called in the first place.
       const spyWriteFile = jest.spyOn(fs.promises, 'writeFile');
 
-      await renameTemplateAppNameAsync({ cwd, files: ['app.json'], name: 'HelloWorld' });
+      await renameTemplateAppNameAsync(cwd, { files: ['app.json'], expName: 'HelloWorld' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(1);
       expect(spyWriteFile).toHaveBeenCalledTimes(0);
@@ -167,7 +167,7 @@ describe('renameTemplateAppNameAsync', () => {
           expect(data).toMatch('ByeWorld');
         });
 
-      await renameTemplateAppNameAsync({ cwd, files: ['app.json'], name: 'Bye!World' });
+      await renameTemplateAppNameAsync(cwd, { files: ['app.json'], expName: 'Bye!World' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(1);
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
@@ -208,7 +208,7 @@ describe('renameTemplateAppNameAsync', () => {
         });
 
       const files = ['app.json', 'app.plist', 'app.xml'];
-      await renameTemplateAppNameAsync({ cwd, files, name: 'Bye<World' });
+      await renameTemplateAppNameAsync(cwd, { files, expName: 'Bye<World' });
 
       expect(spyReadFile).toHaveBeenCalledTimes(3);
       expect(spyWriteFile).toHaveBeenCalledTimes(3);

@@ -3,13 +3,16 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal final class CircleViewProps: UIBaseViewProps {
-}
+public final class CircleViewProps: UIBaseViewProps {}
 
-internal struct CircleView: ExpoSwiftUI.View {
-  @ObservedObject var props: CircleViewProps
+public struct CircleView: ExpoSwiftUI.View {
+  @ObservedObject public var props: CircleViewProps
 
-  var body: some View {
+  public init(props: CircleViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     Circle()
   }
 }

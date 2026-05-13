@@ -103,7 +103,10 @@ public class Utils {
       for (int i = 0; i < json.length(); i++) {
         Object value = json.get(i);
 
-        if (value instanceof JSONArray) {
+        // Handle JSONObject.NULL - convert to actual Java null
+        if (value == JSONObject.NULL) {
+          value = null;
+        } else if (value instanceof JSONArray) {
           value = jsonToList((JSONArray) value);
         } else if (value instanceof JSONObject) {
           value = jsonToMap((JSONObject) value);
@@ -117,6 +120,12 @@ public class Utils {
   }
 
   public static Object jsonObjectToObject(Object json) {
+    // Handle JSONObject.NULL - convert to actual Java null
+    // JSONObject.NULL is returned when a JSON key has a null value
+    // and it's an instance of a special singleton class (JSONObject$1)
+    if (json == null || json == JSONObject.NULL) {
+      return null;
+    }
     if (json instanceof JSONObject) {
       return jsonToMap((JSONObject) json);
     }

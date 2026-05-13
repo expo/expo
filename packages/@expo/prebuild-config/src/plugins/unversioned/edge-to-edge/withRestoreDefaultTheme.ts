@@ -1,6 +1,7 @@
-import { ConfigPlugin, withAndroidStyles } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withAndroidStyles } from '@expo/config-plugins';
 
-import { ResourceXMLConfig } from './withEdgeToEdge';
+import type { ResourceXMLConfig } from './withEdgeToEdge';
 
 export const withRestoreDefaultTheme: ConfigPlugin = (config) => {
   // Default theme for SDK 53 and onwards projects
@@ -18,7 +19,7 @@ export function restoreDefaultTheme(config: ResourceXMLConfig): ResourceXMLConfi
     return config;
   }
 
-  if (style[mainThemeIndex].$?.parent.includes('EdgeToEdge')) {
+  if (style[mainThemeIndex]?.$?.parent.includes('EdgeToEdge')) {
     config.modResults.resources.style = [
       {
         $: {

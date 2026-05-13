@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
@@ -88,8 +89,24 @@ class LocationTaskService : Service() {
       builder.setContentIntent(contentIntent)
     }
 
+    val iconsResId = try {
+      val packageManager = mParentContext.packageManager
+      val ai = packageManager.getApplicationInfo(
+        mParentContext.packageName,
+        android.content.pm.PackageManager.GET_META_DATA
+      )
+      if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
+        ai.metaData.getInt(META_DATA_FOREGROUND_SERVICE_ICON_KEY)
+      } else {
+        getDefaultNotificationIcon()
+      }
+    } catch (e: Exception) {
+      android.util.Log.e("expo-location", "Could not fetch default notification icon.", e)
+      getDefaultNotificationIcon()
+    }
+
     return builder.setCategory(Notification.CATEGORY_SERVICE)
-      .setSmallIcon(applicationInfo.icon)
+      .setSmallIcon(iconsResId)
       .build()
   }
 
@@ -106,6 +123,17 @@ class LocationTaskService : Service() {
     }
   }
 
+  /**
+   * Returns the best available notification icon resource ID.
+   * Prefers the `notification_icon` drawable (configured via configured via expo notifications config plugin ) over `applicationInfo.icon`. The launcher icon is
+   * full-color and renders as a solid white square in notifications, since Android
+   * requires small notification icons to be monochrome.
+   */
+  private fun getDefaultNotificationIcon(): Int {
+    return mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+      .takeIf { it != 0 } ?: applicationInfo.icon
+  }
+
   private fun colorStringToInteger(color: String?): Int? {
     return try {
       Color.parseColor(color)
@@ -116,5 +144,7 @@ class LocationTaskService : Service() {
 
   companion object {
     private var sServiceId = 481756
+    const val META_DATA_FOREGROUND_SERVICE_ICON_KEY: String =
+      "expo.modules.location.foreground_service_icon"
   }
 }

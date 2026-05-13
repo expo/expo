@@ -12,6 +12,7 @@ import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
 import expo.modules.video.records.VideoSource
+import expo.modules.video.managers.VideoManager
 import okhttp3.OkHttpClient
 
 @OptIn(UnstableApi::class)

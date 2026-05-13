@@ -2,10 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
-
-#include <memory>
-#include <unordered_map>
+#include "ExpoHeader.pch"
 
 namespace jni = facebook::jni;
 

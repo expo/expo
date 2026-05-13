@@ -1,7 +1,7 @@
 /* eslint-env browser */
 import { type EventSubscription, Platform } from 'expo-modules-core';
 
-import { Calendar, CalendarIdentifier, Locale } from './Localization.types';
+import type { Calendar, CalendarIdentifier, Locale } from './Localization.types';
 
 const FALLBACK_LOCALE = 'en-US';
 
@@ -75,6 +75,9 @@ export function addCalendarListener(
   };
 }
 
+/**
+ * @deprecated use subscription.remove() instead
+ * */
 export function removeSubscription(subscription: EventSubscription) {
   subscription.remove();
 }

@@ -11,18 +11,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Process
-import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.contains
-import com.facebook.infer.annotation.Assertions
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
 import com.facebook.react.devsupport.DevInternalSettings
+import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import com.facebook.react.interfaces.fabric.ReactSurface
@@ -36,6 +35,7 @@ import expo.modules.manifests.core.Manifest
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
+import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity.ExperienceContentLoaded
 import host.exp.exponent.experience.splashscreen.LoadingView
 import host.exp.exponent.factories.ReactHostFactory
@@ -60,6 +60,7 @@ import org.json.JSONObject
 import versioned.host.exp.exponent.ExpoNetworkInterceptor
 import versioned.host.exp.exponent.ExponentDevBundleDownloadListener
 import versioned.host.exp.exponent.ExponentPackage
+import java.io.File
 import java.util.LinkedList
 import java.util.Queue
 import javax.inject.Inject
@@ -240,23 +241,6 @@ abstract class ReactNativeActivity :
   }
   // endregion
 
-  override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
-    devSupportManager?.let { devSupportManager ->
-      if (!isCrashed && devSupportManager.devSupportEnabled) {
-        val didDoubleTapR = currentFocus?.let {
-          Assertions.assertNotNull(doubleTapReloadRecognizer)
-            .didDoubleTapR(keyCode, it)
-        }
-        if (didDoubleTapR == true) {
-          devSupportManager.reloadExpoApp()
-          return true
-        }
-      }
-    }
-
-    return super.onKeyUp(keyCode, event)
-  }
-
   override fun onBackPressed() {
     if (!isCrashed) {
       reactHost?.onBackPressed()
@@ -378,7 +362,23 @@ abstract class ReactNativeActivity :
       instanceManagerBuilderProperties
     )
 
-    val devBundleDownloadListener = ExponentDevBundleDownloadListener(progressListener)
+    var devSupportManager: DevSupportManager? = null
+    val capturedManifestUrl = manifestUrl
+    val devBundleDownloadListener = ExponentDevBundleDownloadListener(
+      progressListener,
+      downloadedBundleFileProvider = {
+        (devSupportManager as? DevSupportManagerBase)?.downloadedJSBundleFile?.let(::File)
+      },
+      onHermesDetected = {
+        if (capturedManifestUrl != null) {
+          val errorJson = JSONObject().apply {
+            put("errorCode", "EXPERIENCE_HERMES_BUNDLE_NOT_SUPPORTED")
+            put("message", "Hermes bytecode bundle is not supported by Expo Go")
+          }
+          KernelProvider.instance.handleError(ManifestException(null, capturedManifestUrl, errorJson))
+        }
+      }
+    )
 
     if (delegate.isDebugModeEnabled) {
       val debuggerHost = manifest!!.getDebuggerHost()
@@ -396,6 +396,7 @@ abstract class ReactNativeActivity :
       useDevSupport = nativeHost.useDeveloperSupport,
       devBundleDownloadListener = devBundleDownloadListener
     )
+    devSupportManager = reactHost.devSupportManager
 
     val bundle = Bundle()
     val exponentProps = JSONObject()

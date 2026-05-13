@@ -10,6 +10,112 @@
 
 ### 💡 Others
 
+## 56.0.2 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- Switch from `react-native/jest-preset` to `@react-native/jest-preset` ([#45699](https://github.com/expo/expo/pull/45699) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
+
+## 56.0.0 — 2026-05-05
+
+### 🐛 Bug fixes
+
+- Add missing `expo-modules-core` dependency. ([#44874](https://github.com/expo/expo/pull/44874) by [@zoontek](https://github.com/zoontek))
+- Add `@react-native/babel-preset` to ignored transform patterns, since it's part of the transformer pipeline ([#44152](https://github.com/expo/expo/pull/44152) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Drop expo dependencies from `jest-expo` to prevent cycles ([#45048](https://github.com/expo/expo/pull/45048) by [@kitten](https://github.com/kitten))
+- Fixed `expo/fetch` testing. ([#44987](https://github.com/expo/expo/pull/44987) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.84.x. ([#43018](https://github.com/expo/expo/pull/43018) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.17 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.16 - 2026-04-13
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-19
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 🐛 Bug fixes
+
+- Fix `expo-file-system` mock to target `expo-file-system/legacy` instead of replacing the entire module, and preserve prototype chains for native module class mocks. ([#43005](https://github.com/expo/expo/pull/43005) by [@aleqsio](https://github.com/aleqsio))
+
+## 55.0.6 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-01-27
+
+### 💡 Others
+
+- Bump `react-server-dom-webpack` ([#42570](https://github.com/expo/expo/pull/42570) by [@vonovak](https://github.com/vonovak))
+
+## 55.0.4 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Improve local mock lookup. ([#39743](https://github.com/expo/expo/pull/39743) by [@aleqsio](https://github.com/aleqsio))
 - Remove `experiments.reactCanary` support in favor of built-in React +19.1 support. ([#40386](https://github.com/expo/expo/pull/40386) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed check-packages error on Windows. ([#41194](https://github.com/expo/expo/pull/41194) by [@kudo](https://github.com/kudo))

@@ -37,7 +37,8 @@ function setProvisioningProfileForPbxproj(projectRoot, {
   targetName,
   profileName,
   appleTeamId,
-  buildConfiguration = 'Release'
+  buildConfiguration = 'Release',
+  codeSignIdentity = 'iPhone Distribution'
 }) {
   const project = (0, _Xcodeproj().getPbxproj)(projectRoot);
   const nativeTargetEntry = targetName ? (0, _Target().findNativeTargetByName)(project, targetName) : (0, _Target().findFirstNativeTarget)(project);
@@ -46,7 +47,7 @@ function setProvisioningProfileForPbxproj(projectRoot, {
   (0, _Xcodeproj().getBuildConfigurationsForListId)(project, nativeTarget.buildConfigurationList).filter(([, item]) => (0, _string().trimQuotes)(item.name) === buildConfiguration).forEach(([, item]) => {
     item.buildSettings.PROVISIONING_PROFILE_SPECIFIER = `"${profileName}"`;
     item.buildSettings.DEVELOPMENT_TEAM = quotedAppleTeamId;
-    item.buildSettings.CODE_SIGN_IDENTITY = '"iPhone Distribution"';
+    item.buildSettings.CODE_SIGN_IDENTITY = `"${codeSignIdentity}"`;
     item.buildSettings.CODE_SIGN_STYLE = 'Manual';
   });
   Object.entries((0, _Xcodeproj().getProjectSection)(project)).filter(_Xcodeproj().isNotComment).forEach(([, item]) => {

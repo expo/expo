@@ -1,12 +1,19 @@
-// @ts-expect-error
-import freeportAsync from 'freeport-async';
-
+import { freePortAsync, testPortAsync } from '../freeport';
 import { getRunningProcess } from '../getRunningProcess';
-import { choosePortAsync, ensurePortAvailabilityAsync } from '../port';
+import {
+  choosePortAsync,
+  ensurePortAvailabilityAsync,
+  getFreePortAsync,
+  resolvePortAsync,
+} from '../port';
 import { confirmAsync } from '../prompts';
 
+jest.mock('../freeport', () => ({
+  testPortAsync: jest.fn(async (_port) => true),
+  freePortAsync: jest.fn(async (port) => port),
+}));
+
 jest.mock('../../log');
-jest.mock('freeport-async', () => jest.fn(async (port) => port));
 jest.mock('../prompts');
 jest.mock('../getRunningProcess', () => ({
   getRunningProcess: jest.fn(() => null),
@@ -14,7 +21,7 @@ jest.mock('../getRunningProcess', () => ({
 
 describe(ensurePortAvailabilityAsync, () => {
   it(`returns true if the port is available`, async () => {
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8081);
+    jest.mocked(testPortAsync).mockResolvedValueOnce(true);
     expect(await ensurePortAvailabilityAsync('/', { port: 8081 })).toBe(true);
   });
   it(`returns false if the port is unavailable due to running the same process`, async () => {
@@ -23,7 +30,7 @@ describe(ensurePortAvailabilityAsync, () => {
       directory: '/me',
       command: 'npx expo',
     });
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
+    jest.mocked(testPortAsync).mockResolvedValueOnce(false);
     expect(await ensurePortAvailabilityAsync('/me', { port: 8081 })).toBe(false);
   });
   it(`asserts if the port is busy because it's running a different process`, async () => {
@@ -32,26 +39,26 @@ describe(ensurePortAvailabilityAsync, () => {
       directory: '/other',
       command: 'npx expo',
     });
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
+    jest.mocked(testPortAsync).mockResolvedValueOnce(false);
     await expect(ensurePortAvailabilityAsync('/me', { port: 8081 })).rejects.toThrow();
   });
 });
 
 describe(choosePortAsync, () => {
   it(`returns any port when given port is 0`, async () => {
-    jest.mocked(freeportAsync).mockResolvedValueOnce(1000);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(1024);
     const port = await choosePortAsync('/', { defaultPort: 0 });
-    expect(port).toBe(1000);
+    expect(port).toBe(1024);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
   it(`returns same port when given port is available`, async () => {
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8081);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8081);
     const port = await choosePortAsync('/', { defaultPort: 8081 });
     expect(port).toBe(8081);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
   it(`chooses a new port if the default port is taken and isn't running the same process`, async () => {
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
     jest.mocked(getRunningProcess).mockReturnValueOnce({
       pid: 1,
       directory: '/other/project',
@@ -63,7 +70,7 @@ describe(choosePortAsync, () => {
     expect(confirmAsync).toHaveBeenCalledWith({ initial: true, message: 'Use port 8082 instead?' });
   });
   it(`returns null if the new suggested port is rejected`, async () => {
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
     jest.mocked(getRunningProcess).mockReturnValueOnce({
       pid: 1,
       directory: '/other/project',
@@ -75,7 +82,7 @@ describe(choosePortAsync, () => {
     expect(confirmAsync).toHaveBeenCalledWith({ initial: true, message: 'Use port 8082 instead?' });
   });
   it(`returns null if the taken port is running the same process`, async () => {
-    jest.mocked(freeportAsync).mockResolvedValueOnce(8082);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
     jest.mocked(getRunningProcess).mockReturnValueOnce({
       pid: 1,
       directory: '/me',
@@ -84,6 +91,23 @@ describe(choosePortAsync, () => {
     jest.mocked(confirmAsync).mockResolvedValueOnce(false);
     const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
     expect(port).toBe(null);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe(resolvePortAsync, () => {
+  it(`finds the first available port from the fallback when port is 0`, async () => {
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8081);
+    const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
+    expect(port).toBe(8081);
+    expect(freePortAsync).toHaveBeenCalledWith(8081, [null, 'localhost']);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`finds the next available port from the fallback when port is 0 and fallback is busy`, async () => {
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
+    expect(port).toBe(8082);
+    expect(freePortAsync).toHaveBeenCalledWith(8081, [null, 'localhost']);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
 });

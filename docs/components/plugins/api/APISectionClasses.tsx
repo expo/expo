@@ -117,7 +117,7 @@ const renderClass = (
       <APISectionDeprecationNote comment={comment} sticky />
       <APIBoxHeader name={name} comment={comment} />
       {(extendedTypes?.length || implementedTypes?.length) && (
-        <CALLOUT className={mergeClasses('mb-3 !font-normal', STYLES_SECONDARY, VERTICAL_SPACING)}>
+        <CALLOUT className={mergeClasses('mb-3 font-normal!', STYLES_SECONDARY, VERTICAL_SPACING)}>
           <span className="font-medium">Type: </span>
           {type ? <CODE>{resolveTypeName(type, sdkVersion)}</CODE> : <span>Class</span>}
           {extendedTypes?.length && (
@@ -149,10 +149,10 @@ const renderClass = (
           returnComment && (
             <div className="flex flex-col items-start">
               <div className="flex flex-row items-center gap-2">
-                <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+                <CornerDownRightIcon className="icon-sm text-icon-tertiary relative -mt-0.5 inline-block" />
                 <span className={STYLES_SECONDARY}>Returns</span>
               </div>
-              <div className="mb-1 mt-1.5 flex flex-col pl-6">
+              <div className="mt-1.5 mb-1 flex flex-col pl-6">
                 <APICommentTextBlock
                   comment={{ summary: returnComment.content }}
                   includeSpacing={false}

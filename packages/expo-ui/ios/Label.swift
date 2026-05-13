@@ -3,24 +3,19 @@
 import ExpoModulesCore
 import SwiftUI
 
-final class LabelViewProps: UIBaseViewProps {
+public final class LabelViewProps: UIBaseViewProps {
   @Field var title: String?
   @Field var systemImage: String?
 }
 
-internal final class LabelIconProps: ExpoSwiftUI.ViewProps {}
-internal struct LabelIcon: ExpoSwiftUI.View {
-  @ObservedObject var props: LabelIconProps
+public struct LabelView: ExpoSwiftUI.View {
+  @ObservedObject public var props: LabelViewProps
 
-  var body: some View {
-    Children()
+  public init(props: LabelViewProps) {
+    self.props = props
   }
-}
 
-struct LabelView: ExpoSwiftUI.View {
-  @ObservedObject var props: LabelViewProps
-
-  var body: some View {
+  public var body: some View {
     if let title = props.title {
       if let customIcon {
         Label {
@@ -36,9 +31,7 @@ struct LabelView: ExpoSwiftUI.View {
     }
   }
 
-  private var customIcon: LabelIcon? {
-    props.children?
-      .compactMap({ $0.childView as? LabelIcon })
-      .first
+  private var customIcon: SlotView? {
+    props.children?.slot("icon")
   }
 }

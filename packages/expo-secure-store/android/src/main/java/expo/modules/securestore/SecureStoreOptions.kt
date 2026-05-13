@@ -3,7 +3,9 @@ package expo.modules.securestore
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.io.Serializable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class SecureStoreOptions(
   // Prompt can't be an empty string
   @Field var authenticationPrompt: String = " ",

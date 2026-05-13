@@ -1,34 +1,36 @@
 'use client';
-import {
-  createNavigatorFactory,
-  EventArg,
-  ParamListBase,
-  StackActionHelpers,
-  StackActions,
-  StackNavigationState,
-  StackRouter,
-  StackRouterOptions,
-  useNavigationBuilder,
-  usePreventRemoveContext,
-  useTheme,
-} from '@react-navigation/native';
-import {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-  NativeStackView,
-} from '@react-navigation/native-stack';
 import React, { useCallback, useEffect } from 'react';
 
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
-import { ModalStackNavigatorProps, ModalStackViewProps } from './types';
+import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
 import {
   convertStackStateToNonModalState,
   findLastNonModalIndex,
   isTransparentModalPresentation,
 } from './utils';
-import { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
+import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
+import type {
+  EventArg,
+  ParamListBase,
+  StackActionHelpers,
+  StackNavigationState,
+  StackRouterOptions,
+} from '../../react-navigation/native';
+import {
+  createNavigatorFactory,
+  StackActions,
+  StackRouter,
+  useNavigationBuilder,
+  usePreventRemoveContext,
+  useTheme,
+} from '../../react-navigation/native';
+import type {
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+} from '../../react-navigation/native-stack';
+import { NativeStackView } from '../../react-navigation/native-stack';
 
 function ModalStackNavigator({
   initialRouteName,
@@ -118,7 +120,9 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
       />
       {isWeb &&
         overlayRoutes.map((route) => {
-          const isTransparentModal = isTransparentModalPresentation(descriptors[route.key].options);
+          const isTransparentModal = isTransparentModalPresentation(
+            descriptors[route.key]!.options
+          );
 
           const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
 
@@ -130,8 +134,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
             <ModalComponent
               key={route.key}
               routeKey={route.key}
-              options={descriptors[route.key].options as ExtendedStackNavigationOptions}
-              renderScreen={descriptors[route.key].render}
+              options={descriptors[route.key]!.options as ExtendedStackNavigationOptions}
+              renderScreen={descriptors[route.key]!.render}
               onDismiss={dismiss}
               dismissible={isRemovePrevented ? false : undefined}
               themeColors={colors}

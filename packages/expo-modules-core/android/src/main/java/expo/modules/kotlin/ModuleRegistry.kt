@@ -76,6 +76,10 @@ class ModuleRegistry(
     return holder.definition.viewManagerDefinitions.values.find { it.viewType == viewClass }
   }
 
+  fun getViewDefinition(holder: ModuleHolder<*>, viewName: String): ViewManagerDefinition? {
+    return holder.definition.viewManagerDefinitions.values.find { it.name == viewName }
+  }
+
   /**
    * Post onCreate event to all modules. It has its own method to ensure that it’s called first.
    */

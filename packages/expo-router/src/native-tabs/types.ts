@@ -1,4 +1,3 @@
-import type { DefaultRouterOptions } from '@react-navigation/native';
 import type { PropsWithChildren } from 'react';
 import type {
   ColorValue,
@@ -7,10 +6,35 @@ import type {
   TextStyle,
   ViewStyle,
 } from 'react-native';
-import type { BottomTabsScreenProps } from 'react-native-screens';
+import type { TabsHostProps, TabsScreenProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-export type NativeScreenProps = Partial<Omit<BottomTabsScreenProps, 'tabKey' | 'isFocused'>>;
+import type {
+  DefaultRouterOptions,
+  EventMapBase,
+  NavigationState,
+  ParamListBase,
+  RouteProp,
+  ScreenListeners,
+  TabNavigationState,
+} from '../react-navigation/native';
+
+/**
+ * Event map for `NativeTabs` navigation events.
+ * Only `tabPress` is currently supported.
+ */
+export type NativeTabNavigationEventMap = {
+  tabPress: { data: { __internalTabsType: 'native' }; canPreventDefault: false };
+};
+
+export type NativeScreenProps = Partial<Omit<TabsScreenProps, 'screenKey'>>;
+
+/**
+ * Props passed to the underlying tab host implementation in `react-native-screens`.
+ */
+export type NativeTabsHostNativeProps = Partial<
+  Omit<TabsHostProps, 'navStateRequest' | 'onTabSelected' | 'children'>
+>;
 
 export interface NativeTabOptions extends DefaultRouterOptions {
   icon?: SymbolOrImageSource;
@@ -39,7 +63,8 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   };
   indicatorColor?: ColorValue;
   hidden?: boolean;
-  specialEffects?: BottomTabsScreenProps['specialEffects'];
+  disabled?: boolean;
+  specialEffects?: TabsScreenProps['specialEffects'];
   nativeProps?: NativeScreenProps;
   disableAutomaticContentInsets?: boolean;
   contentStyle?: Pick<
@@ -77,6 +102,11 @@ export type SymbolOrImageSource =
        */
       sf?: SFSymbol;
       /**
+       * The name of the iOS asset catalog image to use as an icon.
+       * @platform iOS
+       */
+      xcasset?: string;
+      /**
        * The name of the drawable resource to use as an icon.
        * @platform android
        */
@@ -87,6 +117,12 @@ export type SymbolOrImageSource =
        * The image source to use as an icon.
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
+      /**
+       * Controls how the icon is rendered on iOS.
+       * @platform ios
+       * @default 'template'
+       */
+      renderingMode?: 'template' | 'original';
     };
 
 export type NativeTabsLabelStyle = Pick<
@@ -259,26 +295,92 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform web
    */
   badgeTextColor?: ColorValue;
+  /**
+   * When `true`, the tab bar lifts above the keyboard (input method editor, or IME) instead of being overlaid by it. By default, the keyboard overlays the tab bar.
+   *
+   * Requires `windowSoftInputMode="adjustResize"`. Has no effect on Android API levels earlier than 30 (Android 11).
+   *
+   * @default false
+   * @platform android
+   */
+  tabBarRespectsIMEInsets?: boolean;
   // #endregion android props
+  /**
+   * Listeners for navigation events on all tabs.
+   *
+   * Supported events:
+   * - `tabPress` - called when a tab is pressed
+   * - `focus` - called when the screen comes into focus
+   * - `blur` - called when the screen loses focus
+   *
+   * @example
+   * ```tsx
+   * <NativeTabs
+   *   screenListeners={{
+   *     tabPress: (e) => {
+   *       console.log('Any tab pressed');
+   *     },
+   *   }}
+   * >
+   *   ...
+   * </NativeTabs>
+   * ```
+   */
+  screenListeners?:
+    | ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>
+    | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+      }) => ScreenListeners<TabNavigationState<ParamListBase>, NativeTabNavigationEventMap>);
+  /**
+   * Props passed to the underlying native tab host implementation in `react-native-screens`.
+   * Use this to configure props that are not directly exposed by Expo Router.
+   *
+   * > **Note**: This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform ios
+   */
+  unstable_nativeProps?: NativeTabsHostNativeProps;
 }
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
 }
-export interface NativeTabsViewProps
-  extends Omit<
-    InternalNativeTabsProps,
-    | 'labelStyle'
-    | 'iconColor'
-    | 'backgroundColor'
-    | 'badgeBackgroundColor'
-    | 'blurEffect'
-    | 'indicatorColor'
-    | 'badgeTextColor'
-  > {
+export interface OnTabChangeEventPayload {
+  /**
+   * The route key of the tab the native side has just selected.
+   */
+  selectedKey: string;
+  /**
+   * The provenance value reported by the native side for this selection.
+   *
+   * The navigator echoes this back via `navStateRequest.baseProvenance` on
+   * subsequent JS-driven updates so the native side can distinguish stale
+   * updates from fresh ones. See `TabsHostNavStateRequest` in
+   * `react-native-screens` for the full contract.
+   */
+  provenance: number;
+  // TODO(@ubax): consider renaming this field
+  isNativeAction: boolean;
+}
+
+export interface NativeTabsViewProps extends Omit<
+  InternalNativeTabsProps,
+  | 'labelStyle'
+  | 'iconColor'
+  | 'backgroundColor'
+  | 'badgeBackgroundColor'
+  | 'blurEffect'
+  | 'indicatorColor'
+  | 'badgeTextColor'
+> {
   focusedIndex: number;
+  /**
+   * Provenance counter associated with the currently rendered `focusedIndex`.
+   */
+  provenance: number;
   tabs: NativeTabsViewTabItem[];
-  onTabChange: (tabKey: string) => void;
+  onTabChange: (event: OnTabChangeEventPayload) => void;
 }
 
 export interface NativeTabsViewTabItem {
@@ -331,6 +433,8 @@ export interface NativeTabTriggerProps {
    * If true, the tab will be hidden from the tab bar.
    *
    * > **Note**: Marking a tab as `hidden` means it cannot be navigated to in any way.
+   *
+   * > **Note**: Dynamically hiding tabs will remount the navigator and the state will be reset.
    */
   hidden?: boolean;
   /**
@@ -359,6 +463,23 @@ export interface NativeTabTriggerProps {
    * @platform iOS
    */
   disableScrollToTop?: boolean;
+  /**
+   * If `true`, the tab is shown but cannot be selected by tapping it in the
+   * tab bar.
+   *
+   * > **Note:** This only suppresses the native tap interaction. JavaScript
+   * > navigation such as  `router.push()` or `<Link />` still navigates to
+   * > the tab. Use this for tabs that should appear visible but be temporarily inert,
+   * > and gate navigation in your own code if you need to fully prevent access.
+   *
+   * Unlike `hidden`, the tab remains visible in the tab bar.
+   *
+   * @default false
+   *
+   * @platform android
+   * @platform ios
+   */
+  disabled?: boolean;
   /**
    * The children of the trigger.
    *
@@ -400,6 +521,39 @@ export interface NativeTabTriggerProps {
    * Note: Only certain style properties are supported.
    */
   contentStyle?: NativeTabOptions['contentStyle'];
+  /**
+   * When set to `true`, the tab bar will not become transparent when scrolled to the edge.
+   *
+   * When set on a trigger, it takes precedence over the value set on `NativeTabs`.
+   *
+   * @platform iOS
+   */
+  disableTransparentOnScrollEdge?: boolean;
+  /**
+   * Listeners for navigation events on this tab.
+   *
+   * Supported events:
+   * - `tabPress` - called when this tab is pressed
+   * - `focus` - called when this screen comes into focus
+   * - `blur` - called when this screen loses focus
+   *
+   * @example
+   * ```tsx
+   * <NativeTabs.Trigger
+   *   name="home"
+   *   listeners={{
+   *     tabPress: (e) => {
+   *       console.log('Home tab pressed');
+   *     },
+   *   }}
+   * />
+   * ```
+   */
+  listeners?:
+    | ScreenListeners<NavigationState, EventMapBase>
+    | ((prop: {
+        route: RouteProp<ParamListBase, string>;
+      }) => ScreenListeners<NavigationState, EventMapBase>);
 }
 
 const SUPPORTED_TAB_BAR_ITEM_ROLES = [

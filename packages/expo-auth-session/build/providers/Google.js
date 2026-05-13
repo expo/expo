@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { AuthRequest } from '../AuthRequest';
-import { Prompt, ResponseType, } from '../AuthRequest.types';
+import { Prompt, ResponseType } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { makeRedirectUri } from '../AuthSession';
 import { generateHexStringAsync } from '../PKCE';
@@ -150,10 +150,10 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     const extraParams = useMemo(() => {
         const output = config.extraParams ? { ...config.extraParams } : {};
         if (config.language) {
-            output.hl = output.language;
+            output.hl = config.language;
         }
         if (config.loginHint) {
-            output.login_hint = output.loginHint;
+            output.login_hint = config.loginHint;
         }
         if (config.selectAccount) {
             output.prompt = Prompt.SelectAccount;
@@ -187,7 +187,7 @@ export function useAuthRequest(config = {}, redirectUriOptions = {}) {
                 clientSecret: config.clientSecret,
                 redirectUri,
                 scopes: config.scopes,
-                code: result.params.code,
+                code: result.params.code ?? '',
                 extraParams: {
                     code_verifier: request?.codeVerifier || '',
                 },

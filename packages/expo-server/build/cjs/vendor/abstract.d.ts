@@ -32,10 +32,11 @@ export interface RequestHandlerParams {
     beforeAPIResponse?: BeforeResponseCallback;
 }
 export interface RequestHandlerInput {
-    getHtml(request: Request, route: Route): Promise<string | Response | null>;
+    getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
     getRoutesManifest(): Promise<Manifest | null>;
     getApiRoute(route: Route): Promise<any>;
     getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
+    getLoaderData(request: Request, route: Route): Promise<Response>;
 }
-export declare function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, beforeErrorResponse, beforeResponse, beforeHTMLResponse, beforeAPIResponse, }: RequestHandlerParams & RequestHandlerInput): (request: Request) => Promise<Response>;
+export declare function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMiddleware, getLoaderData, beforeErrorResponse, beforeResponse, beforeHTMLResponse, beforeAPIResponse, }: RequestHandlerParams & RequestHandlerInput): (request: Request) => Promise<Response>;
 export {};

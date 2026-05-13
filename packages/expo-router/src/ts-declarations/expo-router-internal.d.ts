@@ -1,3 +1,6 @@
+import 'expo/types';
+import 'expo-module-scripts/types/react-server-dom-webpack.d.ts';
+
 declare module 'expo-router/_ctx-shared' {
   export const EXPO_ROUTER_CTX_IGNORE: RegExp;
 }

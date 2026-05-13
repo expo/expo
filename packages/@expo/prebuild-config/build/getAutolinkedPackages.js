@@ -6,9 +6,9 @@ Object.defineProperty(exports, "__esModule", {
 exports.getAutolinkedPackagesAsync = getAutolinkedPackagesAsync;
 exports.resolvePackagesList = resolvePackagesList;
 exports.shouldSkipAutoPlugin = shouldSkipAutoPlugin;
-function _unstableAutolinkingExports() {
-  const data = require("expo/internal/unstable-autolinking-exports");
-  _unstableAutolinkingExports = function () {
+function _exports() {
+  const data = require("expo-modules-autolinking/exports");
+  _exports = function () {
     return data;
   };
   return data;
@@ -21,11 +21,11 @@ function _unstableAutolinkingExports() {
  * @returns list of packages ex: `['expo-camera', 'react-native-screens']`
  */
 async function getAutolinkedPackagesAsync(projectRoot, platforms = ['ios', 'android']) {
-  const linker = (0, _unstableAutolinkingExports().makeCachedDependenciesLinker)({
+  const linker = (0, _exports().makeCachedDependenciesLinker)({
     projectRoot
   });
   const dependenciesPerPlatform = await Promise.all(platforms.map(platform => {
-    return (0, _unstableAutolinkingExports().scanExpoModuleResolutionsForPlatform)(linker, platform);
+    return (0, _exports().scanExpoModuleResolutionsForPlatform)(linker, platform);
   }));
   return resolvePackagesList(dependenciesPerPlatform);
 }

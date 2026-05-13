@@ -32,12 +32,9 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SplitView = void 0;
-const expo_constants_1 = __importDefault(require("expo-constants"));
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importStar(require("react"));
 const experimental_1 = require("react-native-screens/experimental");
 const elements_1 = require("./elements");
@@ -52,16 +49,11 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
     if ((0, react_1.use)(IsWithinLayoutContext_1.IsWithinLayoutContext)) {
         throw new Error('SplitView cannot be used inside another navigator, except for Slot.');
     }
-    if (!expo_constants_1.default.expoConfig?.extra?.router?.unstable_splitView) {
-        throw new Error('SplitView is not enabled. Make sure to enable it in your expo-router configuration with "unstable_splitView": true. After enabling, make sure to prebuild your app.');
-    }
     if (process.env.EXPO_OS !== 'ios') {
         console.warn('SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.');
-        return <Navigator_1.Slot />;
+        return (0, jsx_runtime_1.jsx)(Navigator_1.Slot, {});
     }
-    const WrappedSlot = () => (<IsWithinLayoutContext_1.IsWithinLayoutContext value>
-      <Navigator_1.Slot />
-    </IsWithinLayoutContext_1.IsWithinLayoutContext>);
+    const WrappedSlot = () => ((0, jsx_runtime_1.jsx)(IsWithinLayoutContext_1.IsWithinLayoutContext, { value: true, children: (0, jsx_runtime_1.jsx)(Navigator_1.Slot, {}) }));
     const allChildrenArray = react_1.default.Children.toArray(children);
     const columnChildren = allChildrenArray.filter((child) => (0, react_1.isValidElement)(child) && child.type === elements_1.SplitViewColumn);
     const inspectorChildren = allChildrenArray.filter((child) => (0, react_1.isValidElement)(child) && child.type === elements_1.SplitViewInspector);
@@ -75,16 +67,10 @@ function SplitViewNavigator({ children, ...splitViewHostProps }) {
     }
     if (numberOfSidebars + numberOfInspectors === 0) {
         console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
-        return <Navigator_1.Slot />;
+        return (0, jsx_runtime_1.jsx)(Navigator_1.Slot, {});
     }
     // The key is needed, because number of columns cannot be changed dynamically
-    return (<experimental_1.SplitViewHost key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
-      {columnChildren}
-      <experimental_1.SplitViewScreen.Column>
-        <WrappedSlot />
-      </experimental_1.SplitViewScreen.Column>
-      {inspectorChildren}
-    </experimental_1.SplitViewHost>);
+    return ((0, jsx_runtime_1.jsxs)(experimental_1.Split.Host, { ...splitViewHostProps, children: [columnChildren, (0, jsx_runtime_1.jsx)(experimental_1.Split.Column, { children: (0, jsx_runtime_1.jsx)(WrappedSlot, {}) }), inspectorChildren] }, numberOfSidebars + numberOfInspectors));
 }
 exports.SplitView = Object.assign(SplitViewNavigator, {
     Column: elements_1.SplitViewColumn,

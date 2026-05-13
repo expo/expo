@@ -1,4 +1,4 @@
-import { NotificationPermissionsRequest } from './NotificationPermissions.types';
+import type { NotificationPermissionsRequest } from './NotificationPermissions.types';
 /**
  * Calling this function checks current permissions settings related to notifications.
  * It lets you verify whether the app is currently allowed to display alerts, play sounds, etc.

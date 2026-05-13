@@ -7,14 +7,14 @@ import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.sharedobjects.SharedObject
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.toJSValueExperimental
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
   operator fun invoke(value: Any?) = checkIfValid {
-    val result = JSTypeConverter.convertToJSValue(value, useExperimentalConverter = true)
+    val result = JSTypeConverterProvider.convertToJSValue(value, useExperimentalConverter = true)
     if (result == null) {
       invokeNative()
       return
@@ -75,7 +75,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
     invokeNative(result.toJSValueExperimental())
   }
 
-  operator fun invoke(code: String, errorMessage: String) = checkIfValid {
+  operator fun invoke(code: String?, errorMessage: String) = checkIfValid {
     invokeNative(code, errorMessage)
   }
 
@@ -92,7 +92,7 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
   private external fun invokeNative(result: SharedObject)
   private external fun invokeNative(result: JavaScriptArrayBuffer)
   private external fun invokeNative(result: NativeArrayBuffer)
-  private external fun invokeNative(code: String, errorMessage: String)
+  private external fun invokeNative(code: String?, errorMessage: String)
 
   private external fun invokeIntArray(result: IntArray)
   private external fun invokeLongArray(result: LongArray)
@@ -115,10 +115,10 @@ class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHyb
 
   @Throws(Throwable::class)
   protected fun finalize() {
-    deallocate()
+    mHybridData.resetNative()
   }
 
-  override fun deallocate() {
-    mHybridData.resetNative()
+  override fun getHybridDataForJNIDeallocator(): HybridData {
+    return mHybridData
   }
 }

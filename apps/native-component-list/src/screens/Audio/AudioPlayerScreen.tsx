@@ -24,20 +24,26 @@ export default function AudioScreen(props: any) {
       <HeadingText>HTTP player</HeadingText>
       <AudioPlayer
         source={{
-          uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
+          uri: 'https://expo-test-media.com/audio/por_una_cabeza.mp3',
           headers: {
             'Test-Header': 'Some-header',
             Auth: 'Bearer some-token',
           },
         }}
+        crossOrigin="anonymous"
         style={styles.player}
       />
       <HeadingText>Local asset player</HeadingText>
       <AudioPlayer source={require('../../../assets/sounds/polonez.mp3')} style={styles.player} />
+      <HeadingText>HLS Live Stream</HeadingText>
+      <AudioPlayer
+        source="https://dai.google.com/linear/hls/event/Sid4xiTQTkCT1SLu6rjUSQ/master.m3u8"
+        style={styles.player}
+      />
       <HeadingText>Remote asset with downloadFirst</HeadingText>
       <AudioPlayer
         source={{
-          uri: 'https://p.scdn.co/mp3-preview/f7a8ab9c5768009b65a30e9162555e8f21046f46?cid=162b7dc01f3a4a2ca32ed3cec83d1e02',
+          uri: 'https://expo-test-media.com/audio/por_una_cabeza.mp3',
         }}
         downloadFirst
         style={styles.player}

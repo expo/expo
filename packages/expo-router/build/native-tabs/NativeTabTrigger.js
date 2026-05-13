@@ -3,17 +3,15 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeTabTrigger = void 0;
 exports.convertTabPropsToOptions = convertTabPropsToOptions;
-exports.appendIconOptions = appendIconOptions;
 exports.isNativeTabTrigger = isNativeTabTrigger;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+const native_1 = require("../react-navigation/native");
 const elements_1 = require("./common/elements");
+const optionsIconConverter_1 = require("./utils/optionsIconConverter");
 const PreviewRouteContext_1 = require("../link/preview/PreviewRouteContext");
 const useFocusEffect_1 = require("../useFocusEffect");
 const children_1 = require("../utils/children");
-const icon_1 = require("./utils/icon");
-const materialIconConverter_1 = require("./utils/materialIconConverter");
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
  *
@@ -21,8 +19,7 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  * When used in the tab screen, the `name` prop takes no effect.
  *
  * @example
- * ```tsx
- * // In _layout file
+ * ```tsx app/_layout.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function Layout() {
@@ -36,8 +33,7 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  * ```
  *
  * @example
- * ```tsx
- * // In a tab screen
+ * ```tsx app/home.tsx
  * import { NativeTabs } from 'expo-router/unstable-native-tabs';
  *
  * export default function HomeScreen() {
@@ -51,8 +47,6 @@ const materialIconConverter_1 = require("./utils/materialIconConverter");
  *   );
  * }
  * ```
- *
- * > **Note:** You can use the alias `NativeTabs.Trigger` for this component.
  */
 function NativeTabTriggerImpl(props) {
     const route = (0, native_1.useRoute)();
@@ -78,10 +72,12 @@ exports.NativeTabTrigger = Object.assign(NativeTabTriggerImpl, {
     Badge: elements_1.NativeTabsTriggerBadge,
     VectorIcon: elements_1.NativeTabsTriggerVectorIcon,
 });
-function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, }, isDynamic = false) {
+function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, disableScrollToTop, unstable_nativeProps, disableAutomaticContentInsets, contentStyle, disableTransparentOnScrollEdge, disabled, }, isDynamic = false) {
     const initialOptions = isDynamic
         ? {
             ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
+            ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+            ...(disabled !== undefined ? { disabled } : {}),
         }
         : {
             hidden: !!hidden,
@@ -95,6 +91,8 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             role,
             nativeProps: unstable_nativeProps,
             disableAutomaticContentInsets,
+            ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+            ...(disabled !== undefined ? { disabled } : {}),
         };
     const allowedChildren = (0, children_1.filterAllowedChildrenElements)(children, [
         elements_1.NativeTabsTriggerBadge,
@@ -109,7 +107,7 @@ function convertTabPropsToOptions({ hidden, children, role, disablePopToTop, dis
             appendLabelOptions(acc, child.props);
         }
         else if ((0, children_1.isChildOfType)(child, elements_1.NativeTabsTriggerIcon)) {
-            appendIconOptions(acc, child.props);
+            (0, optionsIconConverter_1.appendIconOptions)(acc, child.props);
         }
         return acc;
     }, { ...initialOptions });
@@ -137,86 +135,13 @@ function appendLabelOptions(options, props) {
         }
     }
 }
-function appendIconOptions(options, props) {
-    if ('sf' in props && props.sf && process.env.EXPO_OS === 'ios') {
-        if (typeof props.sf === 'string') {
-            options.icon = props.sf
-                ? {
-                    sf: props.sf,
-                }
-                : undefined;
-            options.selectedIcon = undefined;
-        }
-        else if (props.sf) {
-            options.icon = props.sf.default
-                ? {
-                    sf: props.sf.default,
-                }
-                : undefined;
-            options.selectedIcon = props.sf.selected
-                ? {
-                    sf: props.sf.selected,
-                }
-                : undefined;
-        }
-    }
-    else if ('drawable' in props && props.drawable && process.env.EXPO_OS === 'android') {
-        if ('md' in props) {
-            console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
-        }
-        options.icon = { drawable: props.drawable };
-        options.selectedIcon = undefined;
-    }
-    else if ('md' in props && props.md && process.env.EXPO_OS === 'android') {
-        if (process.env.NODE_ENV !== 'production') {
-            if ('drawable' in props) {
-                console.warn('Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.');
-            }
-        }
-        options.icon = (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md);
-    }
-    else if ('src' in props && props.src) {
-        const icon = convertIconSrcToIconOption(props);
-        options.icon = icon?.icon;
-        options.selectedIcon = icon?.selectedIcon;
-    }
-    if (props.selectedColor) {
-        options.selectedIconColor = props.selectedColor;
-    }
-}
-function convertIconSrcToIconOption(icon) {
-    if (icon && icon.src) {
-        const { defaultIcon, selected } = typeof icon.src === 'object' && 'selected' in icon.src
-            ? { defaultIcon: icon.src.default, selected: icon.src.selected }
-            : { defaultIcon: icon.src };
-        const options = {};
-        options.icon = convertSrcOrComponentToSrc(defaultIcon);
-        options.selectedIcon = convertSrcOrComponentToSrc(selected);
-        return options;
-    }
-    return undefined;
-}
-function convertSrcOrComponentToSrc(src) {
-    if (src) {
-        if ((0, react_1.isValidElement)(src)) {
-            return (0, icon_1.convertComponentSrcToImageSource)(src);
-        }
-        else {
-            return { src };
-        }
-    }
-    return undefined;
-}
 function isNativeTabTrigger(child, contextKey) {
-    if ((0, react_1.isValidElement)(child) && child && child.type === exports.NativeTabTrigger) {
-        if (typeof child.props === 'object' &&
-            child.props &&
-            'name' in child.props &&
-            !child.props.name) {
+    if ((0, children_1.isChildOfType)(child, exports.NativeTabTrigger)) {
+        if ('name' in child.props && !child.props.name) {
             throw new Error(`<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must have a \`name\` prop when used as a child of a Layout Route.`);
         }
         if (process.env.NODE_ENV !== 'production') {
-            if (['component', 'getComponent'].some((key) => child.props && typeof child.props === 'object' && key in child.props)) {
+            if (['component', 'getComponent'].some((key) => key in child.props)) {
                 throw new Error(`<Trigger /> component in \`default export\` at \`app${contextKey}/_layout\` must not have a \`component\` or \`getComponent\` prop when used as a child of a Layout Route`);
             }
         }

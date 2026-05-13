@@ -4,6 +4,7 @@ description: Add a Postgres Database and user authentication to your React Nativ
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -13,18 +14,20 @@ Supabase automatically [generates a REST API](https://supabase.com/docs/guides/a
 
 Supabase provides a TypeScript client library called [`supabase-js`](https://supabase.com/docs/reference/javascript/introduction?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to interact with the REST API. Alternatively, Supabase also exposes a [GraphQL API](https://supabase.com/docs/guides/database/extensions/pg_graphql?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) allowing you to use your favorite GraphQL client (for example, [Apollo Client](https://supabase.github.io/pg_graphql/usage_with_apollo/)) should you wish to.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="A Supabase project">
+    Head over to [database.new](https://database.new?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to create a new Supabase project.
+  </Requirement>
+  <Requirement title="Project URL and Publishable key">
+    Get the **Project URL** from the API settings and **Publishable key** from the API Keys:
 
-Head over to [database.new](https://database.new?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) to create a new Supabase project.
+    1. Go to the [API Settings](https://supabase.com/dashboard/project/_/settings/api) page in the Dashboard.
+    2. Find your Project `URL` and `service_role` keys on this page.
+    3. Then go to the [API Keys](https://supabase.com/dashboard/project/_/settings/api-keys).
+    4. Find your Project **Publishable key** on this page under the API Keys tab.
 
-### Get the API Keys
-
-Get the **Project URL** from the API settings and **Publishable key** from the API Keys:
-
-1. Go to the [API Settings](https://supabase.com/dashboard/project/_/settings/api) page in the Dashboard.
-2. Find your Project `URL` and `service_role` keys on this page.
-3. Then go to the [API Keys](https://supabase.com/dashboard/project/_/settings/api-keys)
-4. Find your Project **Publishable key** on this page under the API Keys tab.
+  </Requirement>
+</Prerequisites>
 
 ## Using the Supabase TypeScript SDK
 

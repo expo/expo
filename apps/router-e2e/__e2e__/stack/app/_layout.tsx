@@ -1,6 +1,6 @@
-import { Stack } from 'expo-router';
+import { Icon, Label, Stack } from 'expo-router';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 import { IsProtectedContext } from '../utils/contexts';
 
@@ -12,30 +12,50 @@ export default function Layout() {
         screenOptions={({ route: { params } }) => ({
           title: (params as { id?: string } | undefined)?.id,
         })}>
-        <Stack.Header>
-          <Stack.Header.BackButton src={require('../../../assets/explore_orange.png')}>
-            &lt;Go back&lt;
-          </Stack.Header.BackButton>
-        </Stack.Header>
         <Stack.Screen name="index">
           <Stack.Header
             style={{ backgroundColor: 'transparent' }}
-            largeStyle={{ backgroundColor: 'transparent', shadowColor: 'transparent' }}>
-            <Stack.Header.Title
-              style={{ fontSize: 12, color: 'blue' }}
-              largeStyle={{ color: '#F00' }}
-              large>
-              Custom Header Title
-            </Stack.Header.Title>
-            <Stack.Header.Left asChild>
-              <View style={{ padding: 10 }}>
-                <Text style={{ color: 'purple' }}>Custom Left</Text>
-              </View>
-            </Stack.Header.Left>
-            <Stack.Header.Right asChild>
-              <Text style={{ color: 'orange', marginRight: 10 }}>Custom Right</Text>
-            </Stack.Header.Right>
-          </Stack.Header>
+            largeStyle={{ backgroundColor: 'transparent', shadowColor: 'transparent' }}
+          />
+          <Stack.Screen.Title
+            style={{ fontSize: 12, color: 'blue' }}
+            largeStyle={{ color: '#F00' }}
+            large>
+            Custom Header Title
+          </Stack.Screen.Title>
+          <Stack.Toolbar placement="left">
+            <Stack.Toolbar.Button
+              style={{ color: 'green' }}
+              icon="arrow.left.circle"
+              onPress={() => alert('Left button pressed!')}
+            />
+            <Stack.Toolbar.Button style={{ color: 'green' }} onPress={() => alert('2 pressed!')}>
+              <Label>2</Label>
+              <Icon sf="star.fill" />
+            </Stack.Toolbar.Button>
+          </Stack.Toolbar>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Menu>
+              <Stack.Toolbar.Label>Menu</Stack.Toolbar.Label>
+              <Stack.Toolbar.Icon sf="ellipsis.circle" />
+              <Stack.Toolbar.MenuAction onPress={() => Alert.alert('Action 1 pressed!')}>
+                Action 1
+              </Stack.Toolbar.MenuAction>
+              <Stack.Toolbar.MenuAction
+                isOn
+                icon="star.fill"
+                onPress={() => Alert.alert('Action 2 pressed!')}>
+                Action 2
+              </Stack.Toolbar.MenuAction>
+            </Stack.Toolbar.Menu>
+            <Stack.Toolbar.Button
+              style={{ color: 'green', backgroundColor: 'transparent' }}
+              separateBackground
+              icon="arrow.right.circle"
+              onPress={() => alert('Left button pressed!')}>
+              Right
+            </Stack.Toolbar.Button>
+          </Stack.Toolbar>
         </Stack.Screen>
         <Stack.Screen name="modal" options={{ presentation: 'pageSheet' }}>
           <Stack.Header asChild>
@@ -53,7 +73,11 @@ export default function Layout() {
         <Stack.Protected guard={!isProtected}>
           <Stack.Screen name="protected" />
         </Stack.Protected>
-        <Stack.Screen name="[id]" />
+        <Stack.Screen name="[id]">
+          <Stack.Screen.BackButton src={require('../../../assets/explore_orange.png')}>
+            &lt;Go back&lt;
+          </Stack.Screen.BackButton>
+        </Stack.Screen>
       </Stack>
     </IsProtectedContext>
   );

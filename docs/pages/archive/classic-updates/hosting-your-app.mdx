@@ -3,7 +3,7 @@ title: Hosting Updates on Your Servers
 ---
 
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 
 > This doc was archived in August 2022 and will not receive any further updates. Use EAS Update instead. [Learn more](/eas-update/introduction)
 
@@ -50,12 +50,16 @@ On some hosting services such as [AWS](https://aws.amazon.com/) and [Firebase](h
 
 Here's an example of **firebase.json** configuration, with a [deploy target](https://firebase.google.com/docs/cli/targets) named "native".
 
-```diff
-{
-  "hosting": [
-    {
-      "target": "native",
-      "public": "dist",
+<DiffBlock
+  raw={`diff --git a/firebase.json b/firebase.json
+index 0000000..1111111 100644
+--- a/firebase.json
++++ b/firebase.json
+@@ -1,7 +1,18 @@
+   "hosting": [
+     {
+       "target": "native",
+       "public": "dist",
 +      "headers": [
 +        {
 +          "source": "**/*.js",
@@ -65,12 +69,12 @@ Here's an example of **firebase.json** configuration, with a [deploy target](htt
 +              "value": "application/javascript"
 +            }
 +          ]
-        }
-      ]
-    }
-  ]
-}
-```
++        }
++      ]
+     }
+   ]
+ }`}
+/>
 
 <Terminal
   cmd={[

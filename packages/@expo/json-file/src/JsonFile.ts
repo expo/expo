@@ -1,4 +1,3 @@
-import { codeFrameColumns } from '@babel/code-frame';
 import JSON5 from 'json5';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -215,6 +214,9 @@ function parseJsonString<TJSONObject extends JSONObject>(
     if (defaultValue === undefined) {
       const location = locationFromSyntaxError(e, json);
       if (location) {
+        const {
+          codeFrameColumns,
+        }: typeof import('@babel/code-frame') = require('@babel/code-frame');
         const codeFrame = codeFrameColumns(json, { start: location });
         e.codeFrame = codeFrame;
         e.message += `\n${codeFrame}`;
@@ -388,7 +390,7 @@ async function deleteKeysAsync<TJSONObject extends JSONObject>(
 
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
-    if (object.hasOwnProperty(key)) {
+    if (key != null && object.hasOwnProperty(key)) {
       delete object[key];
       didDelete = true;
     }
@@ -410,7 +412,7 @@ function deleteKeys<TJSONObject extends JSONObject>(
 
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
-    if (object.hasOwnProperty(key)) {
+    if (key != null && object.hasOwnProperty(key)) {
       delete object[key];
       didDelete = true;
     }
@@ -476,10 +478,13 @@ function locationFromSyntaxError(error: any, sourceString: string) {
   }
   // JSON SyntaxError only includes the index in the message.
   const match = /at position (\d+)/.exec(error.message);
-  if (match) {
+  if (match && match[1] != null) {
     const index = parseInt(match[1], 10);
     const lines = sourceString.slice(0, index + 1).split('\n');
-    return { line: lines.length, column: lines[lines.length - 1].length };
+    const lastLine = lines[lines.length - 1];
+    if (lastLine != null) {
+      return { line: lines.length, column: lastLine.length };
+    }
   }
 
   return null;

@@ -1,11 +1,12 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 import { vol } from 'memfs';
 import path from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { format } from '../../utils/XML';
 import * as XML from '../../utils/XML';
-import { AndroidManifest, getMainApplication } from '../Manifest';
+import type { AndroidManifest } from '../Manifest';
+import { getMainApplication } from '../Manifest';
 import { readResourcesXMLAsync } from '../Resources';
 import * as Updates from '../Updates';
 
@@ -50,7 +51,7 @@ describe('Android Updates config', () => {
         fallbackToCacheTimeout: 2000,
         checkAutomatically: 'ON_ERROR_RECOVERY',
         useEmbeddedUpdate: false,
-        enableBsdiffPatchSupport: false,
+        enableBsdiffPatchSupport: true,
         codeSigningCertificate: 'hello',
         codeSigningMetadata: {
           alg: 'rsa-v1_5-sha256',
@@ -137,7 +138,7 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT'
     );
     expect(bsdiffPatchSupport).toHaveLength(1);
-    expect(bsdiffPatchSupport[0].$['android:value']).toMatch('false');
+    expect(bsdiffPatchSupport[0].$['android:value']).toMatch('true');
 
     const runtimeVersion = mainApplication['meta-data']?.filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'

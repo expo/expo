@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import { PushTokenManagerModule } from './PushTokenManager.types';
+import type { PushTokenManagerModule } from './PushTokenManager.types';
 
 let warningHasBeenShown = false;
 

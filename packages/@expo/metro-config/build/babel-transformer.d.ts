@@ -16,4 +16,8 @@ export type ExpoBabelCaller = TransformOptions['caller'] & {
     platform?: string | null;
     routerRoot?: string;
     projectRoot: string;
+    /** When true, indicates this bundle should contain only the loader export */
+    isLoaderBundle?: boolean;
+    /** When true, indicates this file is part of a DOM component bundle */
+    isDomComponent?: boolean;
 };

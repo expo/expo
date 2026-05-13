@@ -4,6 +4,7 @@ import path from 'node:path';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { findProjectFiles, getRouterE2ERoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
+import { sanitizeRSCPayloadString } from '../../utils/rsc';
 import { pageCollectErrors } from '../page';
 
 // TODO: We'll split this test up in the future when server/single do different things.
@@ -33,6 +34,7 @@ for (const outputMode of outputModes) {
       console.time('expo export');
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
+          NODE_ENV: 'production',
           E2E_ROUTER_JS_ENGINE: 'hermes',
           E2E_RSC_ENABLED: '1',
           E2E_ROUTER_SRC: '01-rsc',
@@ -153,15 +155,15 @@ for (const outputMode of outputModes) {
       await page.goto(new URL('/colors/blue', expoServe.url).href);
       await staticComponentRequest;
       const response = await serverResponsePromise;
-      const rscPayload = new TextDecoder().decode(await response.body()).trim();
+      const rscPayload = await response.text();
 
-      expect(rscPayload)
+      expect(sanitizeRSCPayloadString(rscPayload))
         .toBe(`1:I["node_modules/react-native-safe-area-context/lib/module/index.js",[],"SafeAreaView",1]
 2:I["packages/expo-router/build/rsc/router/host.js",[],"Children",1]
 3:I["node_modules/react-native-web/dist/exports/View/index.js",[],"",1]
 4:I["packages/expo-router/build/rsc/router/client.js",[],"Link",1]
 5:I["node_modules/react-native-web/dist/exports/Text/index.js",[],"",1]
-0:{"layout":["$","$L1",null,{"style":{"flex":1},"testID":"layout-child-wrapper","children":[["$","$L2",null,{}],["$","$L3",null,{"testID":"layout-global-style","style":[{"width":100,"height":100},{"$$css":true,"_":"custom-global-style"}]}],["$","$L3",null,{"testID":"layout-module-style","style":[{"width":100,"height":100},{"$$css":true,"_":"zvzhJW_container"}]}],["$","$L3",null,{"style":{"flexDirection":"row","padding":12,"justifyContent":"space-around"},"children":[["$","$L4",null,{"href":"/","style":{},"children":"One"}],["$","$L4",null,{"href":"/second","style":{},"children":"Two"}]]}]]}],"colors/blue/page":["$","$L5",null,{"testID":"color","children":["blue","-","static"]}],"/SHOULD_SKIP":[["layout",[]],["colors/layout",[]],["colors/blue/layout",[]],["colors/blue/page",[]]],"/LOCATION":["/colors/blue",""]}`);
+0:{"layout":["$","$L1",null,{"style":{"flex":1},"testID":"layout-child-wrapper","children":[["$","$L2",null,{}],["$","$L3",null,{"testID":"layout-global-style","style":[{"width":100,"height":100},{"$$css":true,"_":"custom-global-style"}]}],["$","$L3",null,{"testID":"layout-module-style","style":[{"width":100,"height":100},{"$$css":true,"_":"zvzhJW_container"}]}],["$","$L3",null,{"style":{"flexDirection":"row","padding":12,"justifyContent":"space-around"},"children":[["$","$L4",null,{"href":"/","style":{},"children":"One"}],["$","$L4",null,{"href":"/second","style":{},"children":"Two"}]]}]]}],"colors/blue/page":["$","$L5",null,{"testID":"color","children":["blue","-","static"]}],"/SHOULD_SKIP":[["layout",[]],["colors/layout",[]],["colors/blue/layout",[]],["colors/blue/page",[]]],"/LOCATION":["/colors/blue",""]}\n`);
 
       await expect(page.locator('[data-testid="color"]')).toHaveText('blue-static');
     });

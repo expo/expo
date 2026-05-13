@@ -11,6 +11,11 @@ import { Package } from '../Packages';
 const { green } = chalk;
 
 /**
+ * Native-only packages that shouldn't go through these checks.
+ */
+const NATIVE_ONLY_PACKAGES = ['expo-modules-jsi'];
+
+/**
  * Known packages that fail to test on Windows.
  * TODO: Fix breaking tests on Windows and remove packages from this list.
  */
@@ -27,6 +32,7 @@ const IGNORED_TEST_PACKAGES_ON_WINDOWS = [
   '@expo/router-server',
   'babel-preset-expo',
   'create-expo',
+  'expo-brownfield',
   'expo-doctor',
   'expo-modules-autolinking',
   'install-expo-modules',
@@ -39,6 +45,10 @@ export default async function checkPackageAsync(
   pkg: Package,
   options: ActionOptions
 ): Promise<boolean> {
+  if (NATIVE_ONLY_PACKAGES.includes(pkg.packageName)) {
+    logger.warn(`🚫 Skipping checks for ${green.bold(pkg.packageName)} (native-only package)`);
+    return true;
+  }
   try {
     switch (options.checkPackageType) {
       case 'package':

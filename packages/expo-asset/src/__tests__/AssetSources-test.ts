@@ -36,8 +36,9 @@ describe('selectAssetSource', () => {
   });
 
   if (Platform.OS !== 'web') {
-    it(`returns a manifest2 URI based on the bundle's URL in development`, () => {
+    it(`returns a manifest2 URI with http:// when experienceUrl uses http:// scheme`, () => {
       _mockConstants({
+        experienceUrl: 'http://127.0.0.1:8081/app',
         __unsafeNoWarnManifest2: {
           extra: {
             expoGo: {
@@ -55,6 +56,30 @@ describe('selectAssetSource', () => {
 
       expect(source.uri).toBe(
         `http://127.0.0.1:8081/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
+    it(`returns a manifest2 URI with https:// when experienceUrl uses exps:// scheme`, () => {
+      _mockConstants({
+        experienceUrl: 'exps://example.com/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: {
+                tool: 'expo-cli',
+              },
+              debuggerHost: 'example.com:8081',
+            },
+          },
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+      const source = AssetSources.selectAssetSource(mockFontMetadata);
+
+      expect(source.uri).toBe(
+        `https://example.com:8081/assets/test.ttf?platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });
@@ -123,8 +148,9 @@ describe('selectAssetSource', () => {
   });
 
   if (Platform.OS !== 'web') {
-    it(`returns a development URI using the asset file hash with non-standard path`, () => {
+    it(`returns a development URI with http:// using non-standard path`, () => {
       _mockConstants({
+        experienceUrl: 'http://127.0.0.1:8081/app',
         __unsafeNoWarnManifest2: {
           extra: {
             expoGo: {
@@ -142,6 +168,30 @@ describe('selectAssetSource', () => {
       const source = AssetSources.selectAssetSource(mockFontMonorepoMetadata);
       expect(source.uri).toBe(
         `http://127.0.0.1:8081/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
+
+    it(`returns a development URI with https:// using non-standard path when experienceUrl uses exps://`, () => {
+      _mockConstants({
+        experienceUrl: 'exps://example.com/app',
+        __unsafeNoWarnManifest2: {
+          extra: {
+            expoGo: {
+              developer: {
+                tool: 'expo-cli',
+              },
+              debuggerHost: 'example.com:8081',
+            },
+          },
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+
+      const source = AssetSources.selectAssetSource(mockFontMonorepoMetadata);
+      expect(source.uri).toBe(
+        `https://example.com:8081/assets/?unstable_path=.%2Ftest.ttf&platform=${Platform.OS}&hash=cafecafecafecafecafecafecafecafe`
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });

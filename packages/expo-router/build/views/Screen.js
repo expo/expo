@@ -3,8 +3,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Screen = Screen;
 exports.isScreen = isScreen;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
+const native_1 = require("../react-navigation/native");
 const useNavigation_1 = require("../useNavigation");
 const useSafeLayoutEffect_1 = require("./useSafeLayoutEffect");
 const stack_1 = require("../utils/stack");

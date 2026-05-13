@@ -2,12 +2,14 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
-import { Actor, getUserAsync, loginAsync, ssoLoginAsync } from './user';
+import type { Actor } from './user';
+import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
-import promptAsync, { confirmAsync, Question, selectAsync } from '../../utils/prompts';
+import type { Question } from '../../utils/prompts';
+import promptAsync, { selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
 
 /** Show login prompt while prompting for missing credentials. */
@@ -21,19 +23,21 @@ export async function showLoginPromptAsync({
   password?: string;
   otp?: string;
   sso?: boolean | undefined;
+  browser?: boolean | undefined;
 } = {}): Promise<void> {
   if (env.EXPO_OFFLINE) {
     throw new CommandError('OFFLINE', 'Cannot authenticate in offline-mode');
   }
   const hasCredentials = options.username && options.password;
   const sso = options.sso;
+  const browser = options.browser;
 
   if (printNewLine) {
     Log.log();
   }
 
-  if (sso) {
-    await ssoLoginAsync();
+  if (sso || browser) {
+    await browserLoginAsync({ sso: !!sso });
     return;
   }
 

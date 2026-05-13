@@ -170,7 +170,7 @@ export async function resolvePortsAsync(
       // Default web port
       fallbackPort: 19006,
     });
-    if (!webpackPort) {
+    if (webpackPort == null) {
       throw new AbortCommandError();
     }
     multiBundlerSettings.webpackPort = webpackPort;
@@ -182,7 +182,7 @@ export async function resolvePortsAsync(
       defaultPort: options.port,
       fallbackPort,
     });
-    if (!metroPort) {
+    if (metroPort == null) {
       throw new AbortCommandError();
     }
     multiBundlerSettings.metroPort = metroPort;

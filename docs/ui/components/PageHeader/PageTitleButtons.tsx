@@ -24,7 +24,7 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
       {showEditButton && (
         <Button
           theme="quaternary"
-          className="justify-center pl-2.5 pr-2"
+          className="justify-center pr-2 pl-2.5"
           openInNewTab
           href={githubUrl(router.pathname)}
           aria-label="Edit content of this page on GitHub">
@@ -48,9 +48,6 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
                 href={sourceCodeUrl}
                 tooltip="View source code on GitHub"
               />
-              {(packageName || sourceCodeUrl?.startsWith('https://github.com/expo/expo')) && (
-                <div className="max-sm:hidden bg-secondary h-5 w-px" />
-              )}
             </>
           )}
           {packageName && (
@@ -61,9 +58,6 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
                 href={`https://www.npmjs.com/package/${packageName}`}
                 tooltip="View library in npm registry"
               />
-              {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
-                <div className="max-sm:hidden bg-secondary h-5 w-px" />
-              )}
             </>
           )}
           {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (

@@ -9,6 +9,6 @@ async function generateModulesProviderAsync(modules, params) {
     if (!('generateModulesProviderAsync' in platformLinking)) {
         throw new Error(`Generating modules provider is not available for platform "${params.platform}"`);
     }
-    await platformLinking.generateModulesProviderAsync(modules, params.targetPath, params.entitlementPath);
+    await platformLinking.generateModulesProviderAsync(modules, params.targetPath, params.entitlementPath, params);
 }
 //# sourceMappingURL=generatePackageList.js.map

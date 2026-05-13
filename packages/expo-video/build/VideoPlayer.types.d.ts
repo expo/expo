@@ -1,6 +1,6 @@
 import { SharedObject } from 'expo';
-import { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import type { VideoThumbnail } from './VideoThumbnail';
 /**
  * A class that represents an instance of the video player.
  */
@@ -223,9 +223,10 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
      *
      * @param source The source of the video to be played.
      * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
+     * @param playerBuilderOptions Options to apply to the player builder before the native constructor is invoked.
      * @hidden
      */
-    constructor(source: VideoSource, useSynchronousReplace?: boolean);
+    constructor(source: VideoSource, useSynchronousReplace?: boolean, playerBuilderOptions?: PlayerBuilderOptions);
     /**
      * Resumes the player.
      */
@@ -507,6 +508,24 @@ export type SubtitleTrack = {
      * Label of the subtitle track in the language of the device.
      */
     label: string;
+    /**
+     * Name of the subtitle track as specified in the media source.
+     * @platform android
+     * @platform ios
+     */
+    name?: string;
+    /**
+     * Indicates whether this is the default subtitle track.
+     * @platform android
+     * @platform ios
+     */
+    isDefault?: boolean;
+    /**
+     * Indicates whether this track should be auto-selected based on user preferences.
+     * @platform android
+     * @platform ios
+     */
+    autoSelect?: boolean;
 };
 /**
  * Specifies a VideoTrack loaded from a [`VideoSource`](#videosource).
@@ -518,6 +537,10 @@ export type VideoTrack = {
      * > This field is platform-specific and may return different depending on the operating system.
      */
     id: string;
+    /**
+     * The URL of the `VideoTrack` for HLS video sources. `null` for other source types.
+     */
+    url: string | null;
     /**
      * Size of the video track.
      */
@@ -551,6 +574,10 @@ export type VideoTrack = {
      * Specifies the frame rate of the video track in frames per second.
      */
     frameRate: number | null;
+    /**
+     * Specifies the video range of the video track.
+     */
+    videoRange: VideoRange;
 };
 /**
  * Specifies the size of a video track.
@@ -579,6 +606,24 @@ export type AudioTrack = {
      * Label of the audio track in the language of the device.
      */
     label: string;
+    /**
+     * Name of the audio track as specified in the media source.
+     * @platform android
+     * @platform ios
+     */
+    name?: string;
+    /**
+     * Indicates whether this is the default audio track.
+     * @platform android
+     * @platform ios
+     */
+    isDefault?: boolean;
+    /**
+     * Indicates whether this track should be auto-selected based on user preferences.
+     * @platform android
+     * @platform ios
+     */
+    autoSelect?: boolean;
 };
 /**
  * Determines the time that the actual position seeked to may precede or exceed the requested seek position.
@@ -656,4 +701,29 @@ export type ScrubbingModeOptions = {
      */
     allowSkippingMediaCodecFlush?: boolean;
 };
+/**
+ * Options to apply to the player builder before the native constructor is invoked
+ * @platform android
+ */
+export type PlayerBuilderOptions = {
+    /**
+     * Seek backward increment in seconds.
+     * Values will be clamped between 0.001 and 999 seconds.
+     * @platform android
+     */
+    seekBackwardIncrement?: number;
+    /**
+     * Seek forward increment in seconds.
+     * Values will be clamped between 0.001 and 999 seconds.
+     * @platform android
+     */
+    seekForwardIncrement?: number;
+};
+/**
+ * Specifies the dynamic range of the video content.
+ * - `sdr`: Standard Dynamic Range video.
+ * - `hlg`: Hybrid Log-Gamma - HDR backward-compatible with SDR displays
+ * - `pq`: Perceptual Quantizer - Formats like HDR10 and Dolby Vision
+ */
+export type VideoRange = 'sdr' | 'hlg' | 'pq';
 //# sourceMappingURL=VideoPlayer.types.d.ts.map

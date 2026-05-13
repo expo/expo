@@ -19,25 +19,27 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
   return (
     <LinkBase
       href={href}
+      // Used by scripts/generate-markdown-pages-utils.js to extract card link title/description
+      data-md="card-link"
       className={mergeClasses(
-        'group mb-3 flex flex-row justify-between rounded-md border border-solid border-default px-4 py-3 transition',
+        'group border-default mb-3 flex flex-row justify-between rounded-md border border-solid px-4 py-3 transition',
         'hocus:bg-subtle hocus:shadow-xs'
       )}
       data-testid={testID}
       openInNewTab={isExternal}>
       <div className="flex flex-row gap-4">
         {Icon && (
-          <div className="flex h-9 min-w-[36px] items-center justify-center self-center rounded-md bg-element transition group-hover:bg-hover">
+          <div className="bg-element group-hover:bg-hover flex h-9 min-w-[36px] items-center justify-center self-center rounded-md transition">
             <Icon className="icon-lg text-icon-default" />
           </div>
         )}
-        {imageUrl && <img className="!h-9 !w-9 self-center" src={imageUrl} alt="Icon" />}
+        {imageUrl && <img className="size-9! self-center" src={imageUrl} alt="Icon" />}
         <div className="flex flex-col self-center">
           <DEMI>{title}</DEMI>
           {description && <CALLOUT theme="secondary">{description}</CALLOUT>}
         </div>
       </div>
-      <ArrowIcon className="ml-3 min-w-[20px] content-end self-center text-icon-secondary" />
+      <ArrowIcon className="text-icon-secondary ml-3 min-w-[20px] content-end self-center" />
     </LinkBase>
   );
 }

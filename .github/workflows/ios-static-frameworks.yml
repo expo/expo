@@ -17,32 +17,38 @@ jobs:
     runs-on: macos-15
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 26.0
-        run: sudo xcode-select --switch /Applications/Xcode_26.0.app
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 💎 Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
           ruby-version: 3.2.2
       - name: 💎 Install Ruby gems
         run: gem install cocoapods xcpretty
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
       - name: 🍏 Build iOS Project
         working-directory: ./apps/bare-expo
         run: |
-          jq '.["ios.useFrameworks"] = "static"' ios/Podfile.properties.json > temp.json && mv temp.json ios/Podfile.properties.json
+          set -o pipefail
+          jq '.["ios.useFrameworks"] = "static" | .["ios.buildReactNativeFromSource"] = "true"' ios/Podfile.properties.json > temp.json && mv temp.json ios/Podfile.properties.json
           pod install --project-directory=ios
           xcodebuild -workspace ios/BareExpo.xcworkspace -scheme BareExpo -configuration Release -sdk iphonesimulator -derivedDataPath "ios/build" | xcpretty
       - name: 🔔 Notify on Slack

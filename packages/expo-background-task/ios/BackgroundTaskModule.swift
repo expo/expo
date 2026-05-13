@@ -5,7 +5,7 @@ private let onTasksExpired = "onTasksExpired"
 public let onTasksExpiredNotification = Notification.Name(onTasksExpired)
 
 public class BackgroundTaskModule: Module {
-  private var taskManager: EXTaskManagerInterface?
+  private lazy var taskManager: EXTaskManagerInterface? = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
 
   public func definition() -> ModuleDefinition {
     Name("ExpoBackgroundTask")
@@ -23,10 +23,6 @@ public class BackgroundTaskModule: Module {
     OnStopObserving(onTasksExpired) {
       // swiftlint:disable:next notification_center_detachment
       NotificationCenter.default.removeObserver(self)
-    }
-
-    OnCreate {
-      taskManager = appContext?.legacyModule(implementing: EXTaskManagerInterface.self)
     }
 
     AsyncFunction("triggerTaskWorkerForTestingAsync") {

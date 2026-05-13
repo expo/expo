@@ -6,15 +6,29 @@ public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoUI")
 
-    View(RNHostView.self) {
-      Prop("matchContents") { (view, matchContents: Bool) in
-        view.matchContents = matchContents
-      }
-    }
+    View(RNHostView.self)
 
     OnDestroy {
       Task { @MainActor in
         NamespaceRegistry.shared.removeAll()
+      }
+    }
+
+    // MARK: - Observable State
+
+    makeWorkletCallbackClass()
+
+    Class(ObservableState.self) {
+      Constructor { (initial: [String: Any]) -> ObservableState in
+        return ObservableState(value: initial["value"])
+      }
+
+      Function("getValue") { (state: ObservableState) -> Any in
+        return state.value ?? NSNull()
+      }
+
+      Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
+        state.value = wrapper["value"]
       }
     }
 
@@ -24,11 +38,14 @@ public final class ExpoUIModule: Module {
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
+    // MARK: - Expo UI Views with AsyncFunctions
 
-    View(SecureFieldView.self) {
+    ExpoUIView(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: SecureFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: SecureFieldView) in
         view.blur()
@@ -37,9 +54,12 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(TextFieldView.self) {
+    ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: TextFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: TextFieldView) in
         view.blur()
@@ -48,10 +68,10 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
       AsyncFunction("setSelection") { (view: TextFieldView, start: Int, end: Int) in
-       view.setSelection(start: start, end: end)
+        view.setSelection(start: start, end: end)
       }
     }
-    View(ShareLinkView.self) {
+    ExpoUIView(ShareLinkView.self) {
       AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
         guard let url, let validURL = URL(string: url) else {
           view.rejectContinuation()
@@ -63,21 +83,11 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Views don't support common view modifiers
 
-    View(ContextMenuActivationElement.self)
-    View(ContextMenuPreview.self)
-    View(ContextMenuContent.self)
+    View(SlotView.self)
     View(NamespaceView.self)
-    View(PopoverViewContent.self)
-    View(PopoverViewPopContent.self)
-    View(SectionContent.self)
-    View(SectionHeader.self)
-    View(SectionFooter.self)
     View(GridRowView.self)
-    View(LabeledContentLabel.self)
-    View(LabeledContentContent.self)
-    View(LabelIcon.self)
-
     View(HostView.self)
+    View(TextView.self)
 
     // MARK: - Expo UI Views
 
@@ -88,31 +98,39 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DatePickerView.self)
     ExpoUIView(DisclosureGroupView.self)
     ExpoUIView(ExpoUI.ContentUnavailableView.self)
+    ExpoUIView(ConfirmationDialogView.self)
     ExpoUIView(ExpoUI.ContextMenu.self)
+
+    ExpoUIView(ControlGroupView.self)
+
+    ExpoUIView(MenuView.self)
+
     ExpoUIView(FormView.self)
     ExpoUIView(GaugeView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
+    ExpoUIView(LazyHStackView.self)
+    ExpoUIView(LazyVStackView.self)
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
-    
-    // Picker
+    ExpoUIView(ListForEachView.self)
+
     ExpoUIView(PickerView.self)
-    View(PickerContentView.self)
-    View(PickerLabelView.self)
-    
+
     ExpoUIView(ExpoUI.ProgressView.self)
     ExpoUIView(SectionView.self)
+
     ExpoUIView(SliderView.self)
+
     ExpoUIView(SpacerView.self)
     ExpoUIView(StepperView.self)
-    ExpoUIView(SwitchView.self)
-    ExpoUIView(TextView.self)
+    ExpoUIView(ToggleView.self)
     ExpoUIView(VStackView.self)
     ExpoUIView(ZStackView.self)
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
+    ExpoUIView(ScrollViewComponent.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)
@@ -122,6 +140,15 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
+    ExpoUIView(OverlayView.self)
+    ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
+    ExpoUIView(AccessoryWidgetBackgroundView.self)
+    ExpoUIView(LinkView.self)
+    ExpoUIView(TabView.self)
+    ExpoUIView(Tab.self)
+
+    // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView(SyncToggleView.self)
   }
 }
