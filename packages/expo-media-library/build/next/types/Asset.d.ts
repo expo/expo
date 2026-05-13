@@ -118,6 +118,8 @@ export declare class Asset {
      * Gets detailed information about the asset.
      * @returns A promise resolving to an {@link AssetInfo}
      * @throws An exception if the asset could not be found.
+     *
+     * > **Note:** On Android, the `isFavorite` field reflects the MediaStore `IS_FAVORITE` column, which some third-party gallery apps may not use for their own favorites.
      */
     getInfo(): Promise<AssetInfo>;
     /**
@@ -163,8 +165,8 @@ export declare class Asset {
     /**
      * Gets whether the asset is marked as a favorite.
      * On iOS, this checks if the asset is part of the system "Favorites" smart album.
+     * On Android, this reads the `IS_FAVORITE` column from MediaStore (requires Android 10+; always returns `false` on older versions).
      * @returns A promise resolving to `true` if the asset is a favorite, or `false` otherwise.
-     * @platform ios
      *
      * @example
      * ```ts
@@ -174,10 +176,13 @@ export declare class Asset {
      */
     getFavorite(): Promise<boolean>;
     /**
-     * Marks or unmarks the asset as a favorite. On iOS, this adds or removes the asset from the system "Favorites" smart album.
+     * Marks or unmarks the asset as a favorite.
+     * On iOS, this adds or removes the asset from the system "Favorites" smart album.
+     * On Android, this updates the `IS_FAVORITE` column in MediaStore (requires Android 10+; no-op on older versions).
      * @param isFavorite Whether the asset should be marked as favorite.
      * @returns A promise that resolves once the operation has completed.
-     * @platform ios
+     *
+     * > **Note:** On Android, some third-party gallery apps maintain their own favorites list and may not reflect changes made through this method.
      *
      * @example
      * ```ts

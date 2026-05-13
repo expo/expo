@@ -8,20 +8,6 @@ export class Query extends ExpoMediaLibraryNext.Query {
 }
 export class Asset extends ExpoMediaLibraryNext.Asset {
     // @hidden
-    getFavorite() {
-        if (Platform.OS !== 'ios') {
-            throw new UnavailabilityError('MediaLibrary', 'getFavorite is only available on iOS');
-        }
-        return super.getFavorite();
-    }
-    // @hidden
-    setFavorite(isFavorite) {
-        if (Platform.OS !== 'ios') {
-            throw new UnavailabilityError('MediaLibrary', 'setFavorite is only available on iOS');
-        }
-        return super.setFavorite(isFavorite);
-    }
-    // @hidden
     getMediaSubtypes() {
         if (Platform.OS !== 'ios') {
             throw new UnavailabilityError('MediaLibrary', 'getMediaSubtypes is only available on iOS');
