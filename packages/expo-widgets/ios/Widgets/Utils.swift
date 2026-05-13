@@ -28,7 +28,7 @@ func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
   return ["type": "RedBoxView", "props": props]
 }
 
-func evaluateLayout(
+public func evaluateLayout(
   layout: String,
   props: [String: Any],
   environment: [String: Any]
@@ -77,7 +77,7 @@ func getLiveActivityUrl(forName name: String) -> URL? {
   return URL(string: urlString)
 }
 
-func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
+public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
   var env: [String: Any] = [
     "showsContainerBackground": environment.showsWidgetContainerBackground,
     "widgetFamily": environment.widgetFamily.description,
