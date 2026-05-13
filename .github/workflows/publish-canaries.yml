@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   publish-canaries:
+    if: github.repository == 'expo/expo'
     runs-on: macos-15
     timeout-minutes: 120
     env:
