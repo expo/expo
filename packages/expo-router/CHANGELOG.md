@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Emit `pageFocused` navigation event after the focused screen has committed, so consumers like expo-observe report accurate TTR for heavy screens. ([@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 56.1.4 — 2026-05-13
