@@ -260,9 +260,9 @@ struct ${widget.name}EntryView: View {
     var env: [String: Any] = getWidgetEnvironment(environment: environment)
     env["timestamp"] = Int(entry.date.timeIntervalSince1970 * 1000)
     env["configuration"] = [
-${Object.keys(widget.configuration?.parameters ?? {})
-        .map((name) => {
-        return `      "${name}": entry.configuration.${name}.rawValue`;
+${Object.entries(widget.configuration?.parameters ?? {})
+        .map(([name, param]) => {
+        return `      "${name}": entry.configuration.${name}${param.type === 'enum' ? '.rawValue' : ''}`;
     })
         .join(',\n')}
     ]
