@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Avoid remounting Jetpack Compose views during same-frame React Native reparenting. ([#45711](https://github.com/expo/expo/pull/45711) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-13
