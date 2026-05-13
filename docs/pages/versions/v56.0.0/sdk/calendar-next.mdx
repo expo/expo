@@ -64,6 +64,20 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
       description: 'A string to set the [`NSRemindersUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your reminders"',
     },
+    {
+      name: 'writeOnlyCalendarPermission',
+      platform: 'ios',
+      description:
+        'A string to set the [`NSCalendarsWriteOnlyAccessUsageDescription`](#ios) permission message, shown when requesting write-only calendar access (iOS 17+). Only used when `writeOnlyAccess` is `true`.',
+      default: '"Allow $(PRODUCT_NAME) to add events to your calendars"',
+    },
+    {
+      name: 'writeOnlyAccess',
+      platform: 'ios',
+      description:
+        'When `true`, requests write-only calendar access (iOS 17+). Sets `NSCalendarsWriteOnlyAccessUsageDescription` and omits `NSCalendarsFullAccessUsageDescription`.',
+      default: 'false',
+    },
   ]}
 />
 
