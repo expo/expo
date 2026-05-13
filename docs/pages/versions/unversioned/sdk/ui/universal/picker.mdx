@@ -1,0 +1,90 @@
+---
+title: Picker
+description: A single-selection input with menu and wheel appearances.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A single-selection input. Declare options as `<Picker.Item label value />` children; the parent `Picker` reads them and renders a platform-appropriate dropdown or rotor.
+
+The universal `Picker` is independent of [`@expo/ui/community/picker`](../drop-in-replacements/picker), which remains a compat shim for `@react-native-picker/picker`. Prefer this universal `Picker` for new code unless you specifically need the RN-Picker API surface.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Menu appearance (default)
+
+```tsx PickerMenuExample.tsx
+import { useState } from 'react';
+import { Host, Row, Picker, Spacer, Text } from '@expo/ui';
+
+const FLAVOURS = [
+  { label: 'Vanilla', value: 'vanilla' },
+  { label: 'Chocolate', value: 'chocolate' },
+  { label: 'Strawberry', value: 'strawberry' },
+];
+
+export default function PickerMenuExample() {
+  const [value, setValue] = useState('vanilla');
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Row alignment="center" spacing={12} style={{ padding: 16 }}>
+        <Text>Flavour:</Text>
+        <Spacer flexible />
+        <Picker selectedValue={value} onValueChange={setValue}>
+          {FLAVOURS.map(f => (
+            <Picker.Item key={f.value} label={f.label} value={f.value} />
+          ))}
+        </Picker>
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Wheel appearance
+
+`appearance="wheel"` renders an inline scrollable rotor on iOS. On Android and web, this falls back to the platform's default dropdown (Material 3 doesn't ship a wheel-style picker).
+
+```tsx PickerWheelExample.tsx
+import { useState } from 'react';
+import { Host, Column, Picker } from '@expo/ui';
+
+const FLAVOURS = [
+  { label: 'Vanilla', value: 'vanilla' },
+  { label: 'Chocolate', value: 'chocolate' },
+  { label: 'Strawberry', value: 'strawberry' },
+];
+
+export default function PickerWheelExample() {
+  const [value, setValue] = useState('chocolate');
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column spacing={8} style={{ padding: 16 }}>
+        <Picker selectedValue={value} onValueChange={setValue} appearance="wheel">
+          {FLAVOURS.map(f => (
+            <Picker.Item key={f.value} label={f.label} value={f.value} />
+          ))}
+        </Picker>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Picker } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/picker" apiName="Picker" />

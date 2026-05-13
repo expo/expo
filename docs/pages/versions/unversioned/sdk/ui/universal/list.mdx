@@ -1,0 +1,146 @@
+---
+title: List
+description: A virtualized vertical container of rows, paired with a tappable ListItem primitive.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. `List` provides the platform-native chrome (separators, inset styling, pull-to-refresh); `ListItem` is a tappable row with `leading` / `trailing` / `supportingText` slots.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic list
+
+```tsx ListExample.tsx
+import { useState } from 'react';
+import { Host, List, ListItem, Text } from '@expo/ui';
+
+const ITEMS = [
+  { id: 1, name: 'Avocado toast' },
+  { id: 2, name: 'Bagel with cream cheese' },
+  { id: 3, name: 'Cappuccino' },
+];
+
+export default function ListExample() {
+  const [selected, setSelected] = useState<string | null>(null);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        {ITEMS.map(item => (
+          <ListItem key={item.id} onPress={() => setSelected(item.name)}>
+            {item.name}
+          </ListItem>
+        ))}
+      </List>
+      {selected != null && <Text>Selected: {selected}</Text>}
+    </Host>
+  );
+}
+```
+
+### Rows with slots
+
+`ListItem` accepts `leading`, `trailing`, and `supportingText` shorthand props for the common case. Pass a `ReactNode` for any of them when richer content is needed.
+
+```tsx ListItemSlotsExample.tsx
+import { Host, Icon, List, ListItem } from '@expo/ui';
+
+const CHEVRON = Icon.select({
+  ios: 'chevron.right',
+  android: require('@expo/material-symbols/chevron_right.xml'),
+});
+
+export default function ListItemSlotsExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <ListItem
+          onPress={() => {}}
+          trailing={<Icon name={CHEVRON} size={14} color="gray" />}
+          supportingText="Secondary line below the headline">
+          Profile
+        </ListItem>
+        <ListItem onPress={() => {}} trailing={<Icon name={CHEVRON} size={14} color="gray" />}>
+          Settings
+        </ListItem>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Compound slot children
+
+For full control over slot content, use the compound API: `<ListItem.Leading>`, `<ListItem.Trailing>`, and `<ListItem.Supporting>`. Anything not wrapped in a slot becomes the headline.
+
+```tsx ListItemCompoundExample.tsx
+import { Host, Icon, List, ListItem, Row, Text } from '@expo/ui';
+
+export default function ListItemCompoundExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <List>
+        <ListItem onPress={() => {}}>
+          <ListItem.Leading>
+            <Icon name="star.fill" size={20} color="#FFD60A" />
+          </ListItem.Leading>
+          <Row spacing={0}>
+            <Text textStyle={{ color: 'gray' }}>{`#42: `}</Text>
+            <Text>Composite headline</Text>
+          </Row>
+          <ListItem.Supporting>Richer slot content</ListItem.Supporting>
+        </ListItem>
+      </List>
+    </Host>
+  );
+}
+```
+
+### Pull-to-refresh
+
+Pass an `async` `onRefresh` handler. The platform-native refresh indicator stays visible until the returned promise settles (resolves or rejects).
+
+```tsx ListRefreshExample.tsx
+import { useState } from 'react';
+import { Host, List, ListItem } from '@expo/ui';
+
+export default function ListRefreshExample() {
+  const [items, setItems] = useState([1, 2, 3]);
+
+  const handleRefresh = async () => {
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setItems(prev => [Math.max(...prev) + 1, ...prev]);
+  };
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <List onRefresh={handleRefresh}>
+        {items.map(id => (
+          <ListItem key={id}>{`Item #${id}`}</ListItem>
+        ))}
+      </List>
+    </Host>
+  );
+}
+```
+
+> Pull-to-refresh is not implemented on web in this release. The handler is accepted for API parity but the indicator only appears on Android and iOS.
+
+## API
+
+```tsx
+import { List, ListItem } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/list" apiName="List" />
+
+<APISection packageName="expo-ui/universal/listitem" apiName="ListItem" />
