@@ -27,6 +27,7 @@ import java.util.Queue
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
+private const val PERMISSION_GRANTED_PREFERENCE_SUFFIX = ".granted"
 
 open class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null
@@ -39,13 +40,32 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private val mPendingPermissionCalls: Queue<Pair<Array<String>, PermissionsResponseListener>> = LinkedList()
   private var mCurrentPermissionListener: PermissionsResponseListener? = null
 
-  private lateinit var mAskedPermissionsCache: SharedPreferences
+  private val mAskedPermissionsCache: SharedPreferences by lazy {
+    context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
+  }
 
   private fun didAsk(permission: String): Boolean = mAskedPermissionsCache.getBoolean(permission, false)
+
+  private fun wasGranted(permission: String): Boolean = mAskedPermissionsCache.getBoolean(
+    "$permission$PERMISSION_GRANTED_PREFERENCE_SUFFIX",
+    false
+  )
 
   private fun addToAskedPermissionsCache(permissions: Array<out String>) {
     mAskedPermissionsCache.edit(commit = true) {
       permissions.forEach { putBoolean(it, true) }
+    }
+  }
+
+  private fun updateAskedPermissionsCache(permissions: Array<out String>, grantResults: IntArray) {
+    mAskedPermissionsCache.edit(commit = true) {
+      grantResults.zip(permissions).forEach { (result, permission) ->
+        putBoolean(permission, true)
+        putBoolean(
+          "$permission$PERMISSION_GRANTED_PREFERENCE_SUFFIX",
+          result == PackageManager.PERMISSION_GRANTED
+        )
+      }
     }
   }
 
@@ -56,7 +76,6 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
       ?: throw IllegalStateException("Couldn't find implementation for ActivityProvider.")
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
-    mAskedPermissionsCache = context.applicationContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE)
   }
 
   override fun getPermissionsWithPromise(
@@ -136,6 +155,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
           PackageManager.PERMISSION_DENIED
         }
 
+        updateAskedPermissionsCache(arrayOf(Manifest.permission.WRITE_SETTINGS), intArrayOf(status))
         it[Manifest.permission.WRITE_SETTINGS] = getPermissionResponseFromNativeResponse(Manifest.permission.WRITE_SETTINGS, status)
         responseListener.onResult(it)
       }
@@ -219,7 +239,15 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     } == true
   }
 
-  private fun parseNativeResult(permissionsString: Array<out String>, grantResults: IntArray): Map<String, PermissionsResponse> {
+  private fun parseNativeResult(
+    permissionsString: Array<out String>,
+    grantResults: IntArray,
+    updateCache: Boolean = false
+  ): Map<String, PermissionsResponse> {
+    if (updateCache) {
+      updateAskedPermissionsCache(permissionsString, grantResults)
+    }
+
     return HashMap<String, PermissionsResponse>().apply {
       grantResults.zip(permissionsString).forEach { (result, permission) ->
         this[permission] = getPermissionResponseFromNativeResponse(permission, result)
@@ -230,6 +258,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
   private fun getPermissionResponseFromNativeResponse(permission: String, result: Int): PermissionsResponse {
     val status = when {
       result == PackageManager.PERMISSION_GRANTED -> PermissionsStatus.GRANTED
+      wasGranted(permission) -> PermissionsStatus.UNDETERMINED
       didAsk(permission) -> PermissionsStatus.DENIED
       else -> PermissionsStatus.UNDETERMINED
     }
@@ -267,7 +296,13 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
         }
       }
     } else {
-      listener.onResult(parseNativeResult(permissions, IntArray(permissions.size) { PackageManager.PERMISSION_DENIED }))
+      listener.onResult(
+        parseNativeResult(
+          permissions,
+          IntArray(permissions.size) { PackageManager.PERMISSION_DENIED },
+          updateCache = true
+        )
+      )
     }
   }
 
@@ -276,16 +311,28 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
       if (requestCode == PERMISSIONS_REQUEST) {
         synchronized(this@PermissionsService) {
           val currentListener = requireNotNull(mCurrentPermissionListener)
-          currentListener.onResult(parseNativeResult(receivePermissions, grantResults))
+          currentListener.onResult(parseNativeResult(receivePermissions, grantResults, updateCache = true))
           mCurrentPermissionListener = null
 
           mPendingPermissionCalls.poll()?.let { pendingCall ->
             val activity = mActivityProvider?.currentActivity as? PermissionAwareActivity
             if (activity == null) {
               // clear all pending calls, because we don't have access to the activity instance
-              pendingCall.second.onResult(parseNativeResult(pendingCall.first, IntArray(pendingCall.first.size) { PackageManager.PERMISSION_DENIED }))
+              pendingCall.second.onResult(
+                parseNativeResult(
+                  pendingCall.first,
+                  IntArray(pendingCall.first.size) { PackageManager.PERMISSION_DENIED },
+                  updateCache = true
+                )
+              )
               mPendingPermissionCalls.forEach {
-                it.second.onResult(parseNativeResult(it.first, IntArray(it.first.size) { PackageManager.PERMISSION_DENIED }))
+                it.second.onResult(
+                  parseNativeResult(
+                    it.first,
+                    IntArray(it.first.size) { PackageManager.PERMISSION_DENIED },
+                    updateCache = true
+                  )
+                )
               }
               mPendingPermissionCalls.clear()
               return@let
