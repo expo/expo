@@ -23,7 +23,8 @@ struct JsMetric: Record {
       timestamp: timestamp,
       routeName: routeName,
       updateId: updateId,
-      params: params
+      params: params,
+      sessionId: sessionId
     )
   }
 }
