@@ -87,13 +87,14 @@ struct ErrorView: View {
         Button(action: onGoHome) {
           Text("Go home")
             .font(.headline)
-            .foregroundColor(.black)
+            .foregroundColor(.primary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.expoSystemGray5)
             .cornerRadius(8)
         }
 
+        #if !os(tvOS)
         Button(action: {
           #if !os(macOS)
           UIPasteboard.general.string = errorText
@@ -108,12 +109,13 @@ struct ErrorView: View {
         }) {
           Text(copied ? "Copied!" : "Copy")
             .font(.headline)
-            .foregroundColor(.black)
+            .foregroundColor(.primary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.expoSystemGray5)
             .cornerRadius(8)
         }
+        #endif
       }
     }
     .padding(.horizontal, 20)

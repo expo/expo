@@ -1,5 +1,6 @@
 import chalk from 'chalk';
-import oraReal, { Ora } from 'ora';
+import type { Ora } from 'ora';
+import oraReal from 'ora';
 
 import { env } from './env';
 import { isInteractive } from './interactive';

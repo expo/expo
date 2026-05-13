@@ -3,25 +3,8 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal enum AxisSetType: String, Enumerable {
-  case both
-  case horizontal
-  case vertical
-  
-  func toAxis() -> SwiftUI.Axis.Set {
-    switch self {
-    case .horizontal:
-        .horizontal
-    case .vertical:
-        .vertical
-    case .both:
-        [.horizontal, .vertical]
-    }
-  }
-}
-
 internal struct ContainerRelativeFrameModifier: ViewModifier, Record {
-  @Field var axes: AxisSetType = .both
+  @Field var axes: AxisOptions = .both
   @Field var count: Int = 0
   @Field var span: Int = 1
   @Field var spacing: CGFloat = 0

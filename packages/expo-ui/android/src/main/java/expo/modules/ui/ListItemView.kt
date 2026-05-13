@@ -3,14 +3,16 @@ package expo.modules.ui
 import android.graphics.Color
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class ListItemColors(
   @Field val containerColor: Color? = null,
   @Field val contentColor: Color? = null,
@@ -20,6 +22,7 @@ data class ListItemColors(
   @Field val overlineContentColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class ListItemProps(
   val tonalElevation: Float? = null,
   val shadowElevation: Float? = null,

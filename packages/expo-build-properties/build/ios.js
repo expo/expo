@@ -45,6 +45,7 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? false).toString(),
     },
 ], 'withIosBuildProperties');
+/** @deprecated use built-in `ios.deploymentTarget` property instead. */
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;
     if (!deploymentTarget) {

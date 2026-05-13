@@ -1,4 +1,4 @@
-import { XMLObject } from '../utils/XML';
+import { type XMLObject } from '../utils/XML';
 export type ResourceGroupXML = {
     $: {
         name: string;

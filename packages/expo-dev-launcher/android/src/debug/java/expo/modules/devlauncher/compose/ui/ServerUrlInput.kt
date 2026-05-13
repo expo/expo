@@ -19,8 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +69,13 @@ fun ServerUrlInput(
       singleLine = true,
       modifier = Modifier
         .fillMaxWidth()
+        .onPreviewKeyEvent { event ->
+          val isEnterRelease = event.key == Key.Enter && event.type == KeyEventType.KeyUp
+          if (isEnterRelease) {
+            connectToURL()
+          }
+          isEnterRelease
+        }
         .border(
           width = 1.dp,
           shape = RoundedCornerShape(NewAppTheme.borderRadius.xl),
@@ -74,10 +87,11 @@ fun ServerUrlInput(
       keyboardOptions = KeyboardOptions(
         capitalization = KeyboardCapitalization.None,
         autoCorrectEnabled = false,
-        keyboardType = KeyboardType.Uri
+        keyboardType = KeyboardType.Uri,
+        imeAction = ImeAction.Go
       ),
       keyboardActions = KeyboardActions(
-        onDone = { connectToURL() }
+        onGo = { connectToURL() }
       ),
       cursorBrush = SolidColor(NewAppTheme.colors.text.default.copy(alpha = 0.9f))
     ) {
@@ -101,6 +115,7 @@ fun ServerUrlInput(
       textStyle = NewAppTheme.font.md.merge(
         fontWeight = FontWeight.SemiBold
       ),
+      enabled = url.isNotEmpty(),
       onClick = { connectToURL() }
     )
   }

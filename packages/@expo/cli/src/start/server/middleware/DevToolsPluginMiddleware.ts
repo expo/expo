@@ -2,8 +2,9 @@ import assert from 'assert';
 import send from 'send';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
-import { ServerRequest, ServerResponse } from './server.types';
-import DevToolsPluginManager, { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import type { ServerRequest, ServerResponse } from './server.types';
+import type DevToolsPluginManager from '../DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
 
 export { DevToolsPluginEndpoint };
 

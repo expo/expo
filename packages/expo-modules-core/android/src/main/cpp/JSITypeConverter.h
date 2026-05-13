@@ -2,12 +2,8 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JSIObjectWrapper.h"
-
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-
-#include <type_traits>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

@@ -1,9 +1,9 @@
-import { useEvent } from 'expo';
-import { PermissionResponse, useReleasingSharedObject } from 'expo-modules-core';
+import { useEvent, type PermissionResponse } from 'expo';
+import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useMemo } from 'react';
 import { Platform } from 'react-native';
 
-import {
+import type {
   AudioMode,
   AudioPlayerOptions,
   AudioPlaylistOptions,
@@ -22,7 +22,7 @@ import {
   RECORDING_STATUS_UPDATE,
 } from './AudioEventKeys';
 import AudioModule from './AudioModule';
-import { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
+import type { AudioPlayer, AudioPlaylist, AudioRecorder, AudioSample } from './AudioModule.types';
 import { createRecordingOptions } from './utils/options';
 import { resolveSource, resolveSources, resolveSourceWithDownload } from './utils/resolveSource';
 
@@ -657,5 +657,7 @@ export async function clearAllPreloadedSources(): Promise<void> {
 export async function getPreloadedSources(): Promise<string[]> {
   return AudioModule.getPreloadedSources();
 }
+
+export { useAudioStream } from './AudioStream';
 
 export { AudioModule };

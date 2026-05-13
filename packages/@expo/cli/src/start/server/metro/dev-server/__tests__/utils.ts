@@ -2,7 +2,8 @@ import { createServer } from 'node:http';
 import type { AddressInfo } from 'node:net';
 import { parse } from 'node:url';
 import { promisify } from 'node:util';
-import { ClientOptions, WebSocket } from 'ws';
+import type { ClientOptions } from 'ws';
+import { WebSocket } from 'ws';
 
 import { createMetroMiddleware } from '../createMetroMiddleware';
 

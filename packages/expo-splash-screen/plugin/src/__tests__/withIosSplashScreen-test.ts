@@ -93,7 +93,7 @@ describe(withIosSplashScreen, () => {
     const infoPlist = await readPlistAsync('/app/ios/HelloWorld/Info.plist');
     expect(infoPlist.UILaunchStoryboardName).toBe('SplashScreen');
 
-    const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
+    const after = getDirFromFS(vol.toJSON(), path.posix.join(projectRoot, 'ios'));
 
     // Image is not defined
     expect(
@@ -130,7 +130,7 @@ describe(withIosSplashScreen, () => {
     const infoPlist = await readPlistAsync('/app/ios/HelloWorld/Info.plist');
     expect(infoPlist.UILaunchStoryboardName).toBe('SplashScreen');
 
-    const after = getDirFromFS(vol.toJSON(), path.join(projectRoot, 'ios'));
+    const after = getDirFromFS(vol.toJSON(), path.posix.join(projectRoot, 'ios'));
 
     // Image is defined
     expect(after['HelloWorld/Images.xcassets/SplashScreenLogo.imageset/image.png']).toBeDefined();

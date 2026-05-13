@@ -65,6 +65,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(CircleView.self, CircleViewProps.self)
     case "ImageView":
       render(ImageView.self, ImageViewProps.self)
+    case "AccessoryWidgetBackgroundView":
+      render(AccessoryWidgetBackgroundView.self, AccessoryWidgetBackgroundProps.self)
     case "DividerView":
       render(DividerView.self, DividerProps.self)
     case "EllipseView":
@@ -102,11 +104,21 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(FragmentView.self, FragmentProps.self, updateProps: updateChildren)
     case "LinkView":
       render(LinkView.self, LinkViewProps.self, updateProps: updateChildren)
+#if DEBUG
+    case "RedBoxView":
+      render(RedBoxView.self, RedBoxViewProps.self) { redBoxProps in
+        redBoxProps.source = name
+        redBoxProps.kind = kind
+      }
     default:
       ZStack {
         Color.red.opacity(0.5)
         Text("Unable to get the view for: \(node["type"] as? String ?? "undefined")")
       }
+#else
+    default:
+      EmptyView()
+#endif
     }
   }
 

@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PlatformPressable = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
 const native_1 = require("../native");
@@ -91,7 +92,7 @@ function PlatformPressableInternal({ ref, disabled, onPress, onPressIn, onPressO
         animateTo(1, 200);
         onPressOut?.(e);
     };
-    return (<AnimatedPressable ref={ref} accessible role={react_native_1.Platform.OS === 'web' && rest.href != null ? 'link' : 'button'} onPress={disabled ? undefined : handlePress} onPressIn={disabled ? undefined : handlePressIn} onPressOut={disabled ? undefined : handlePressOut} android_ripple={ANDROID_SUPPORTS_RIPPLE && !disabled
+    return ((0, jsx_runtime_1.jsxs)(AnimatedPressable, { ref: ref, accessible: true, role: react_native_1.Platform.OS === 'web' && rest.href != null ? 'link' : 'button', onPress: disabled ? undefined : handlePress, onPressIn: disabled ? undefined : handlePressIn, onPressOut: disabled ? undefined : handlePressOut, android_ripple: ANDROID_SUPPORTS_RIPPLE && !disabled
             ? {
                 color: pressColor !== undefined
                     ? pressColor
@@ -100,7 +101,7 @@ function PlatformPressableInternal({ ref, disabled, onPress, onPressIn, onPressO
                         : 'rgba(0, 0, 0, .32)',
                 ...android_ripple,
             }
-            : undefined} style={[
+            : undefined, style: [
             {
                 cursor: (react_native_1.Platform.OS === 'web' || react_native_1.Platform.OS === 'ios') && !disabled
                     ? // Pointer cursor on web
@@ -110,10 +111,7 @@ function PlatformPressableInternal({ ref, disabled, onPress, onPressIn, onPressO
                 opacity: !ANDROID_SUPPORTS_RIPPLE && !disabled ? opacity : 1,
             },
             style,
-        ]} {...rest}>
-      {!disabled ? <HoverEffect {...hoverEffect}/> : null}
-      {children}
-    </AnimatedPressable>);
+        ], ...rest, children: [!disabled ? (0, jsx_runtime_1.jsx)(HoverEffect, { ...hoverEffect }) : null, children] }));
 }
 exports.PlatformPressable = PlatformPressableInternal;
 const css = String.raw;
@@ -144,16 +142,11 @@ const HoverEffect = ({ color, hoverOpacity = 0.08, activeOpacity = 0.16 }) => {
     if (react_native_1.Platform.OS !== 'web' || color == null) {
         return null;
     }
-    return (<>
-      <style href={CLASS_NAME} precedence="elements">
-        {CSS_TEXT}
-      </style>
-      <div className={CLASS_NAME} style={{
-            // @ts-expect-error: CSS variables are not typed
-            '--overlay-color': color,
-            '--overlay-hover-opacity': hoverOpacity,
-            '--overlay-active-opacity': activeOpacity,
-        }}/>
-    </>);
+    return ((0, jsx_runtime_1.jsxs)(jsx_runtime_1.Fragment, { children: [(0, jsx_runtime_1.jsx)("style", { href: CLASS_NAME, precedence: "elements", children: CSS_TEXT }), (0, jsx_runtime_1.jsx)("div", { className: CLASS_NAME, style: {
+                    // @ts-expect-error: CSS variables are not typed
+                    '--overlay-color': color,
+                    '--overlay-hover-opacity': hoverOpacity,
+                    '--overlay-active-opacity': activeOpacity,
+                } })] }));
 };
 //# sourceMappingURL=PlatformPressable.js.map

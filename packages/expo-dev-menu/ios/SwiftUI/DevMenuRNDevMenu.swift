@@ -16,7 +16,3 @@ struct DevMenuRNDevMenu: View {
     .cornerRadius(18)
   }
 }
-
-#Preview {
-  DevMenuRNDevMenu {}
-}

@@ -9,6 +9,7 @@ import React from 'react';
 import { Platform } from 'react-native';
 import { TestStackNavigator } from 'test-suite/TestStackNavigator';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AppMetrics } from 'expo-observe';
 
 type NavigationRouteConfigMap = React.ComponentType;
 
@@ -148,7 +149,14 @@ export default function MainNavigator() {
     };
     restoreState()
       .catch(console.error)
-      .finally(() => setIsReady(true));
+      .finally(() => {
+        setIsReady(true);
+        AppMetrics.markInteractive({
+          params: {
+            theme: themeName,
+          },
+        });
+      });
   }, [isReady]);
 
   if (!isReady) {

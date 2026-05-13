@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: 🚚 Rename .gitignore
         run: mv ./templates/expo-template-default/gitignore ./templates/expo-template-default/.gitignore
       - name: 🚀 Push changes to the template repository
-        uses: cpina/github-action-push-to-another-repository@main
+        uses: cpina/github-action-push-to-another-repository@55306faa4ed53b815ae49e564af8cfb359d32ae2 # main
         env:
           API_TOKEN_GITHUB: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         with:

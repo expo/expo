@@ -1,1 +1,1 @@
-{"version":3,"file":"FontHooks.d.ts","sourceRoot":"","sources":["../src/FontHooks.ts"],"names":[],"mappings":"AAGA,OAAO,EAAc,WAAW,EAAE,MAAM,cAAc,CAAC;AA+CvD;;;;;;;;;;;;;;;;;;;;GAoBG;AACH,eAAO,MAAM,QAAQ,EAAE,WAC2C,CAAC"}
+{"version":3,"file":"FontHooks.d.ts","sourceRoot":"","sources":["../src/FontHooks.ts"],"names":[],"mappings":"AAGA,OAAO,KAAK,EAAc,WAAW,EAAE,MAAM,cAAc,CAAC;AA+C5D;;;;;;;;;;;;;;;;;;;;GAoBG;AACH,eAAO,MAAM,QAAQ,EAAE,WAC2C,CAAC"}

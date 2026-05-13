@@ -134,14 +134,16 @@ module Expo
 
     # Integrates the core macro plugins into the targets.
     def self.integrate_core_macro_plugins(targets)
+      macro_flags = nil
       targets.each do |target|
-        macros_pod_target = target.pod_targets.find { |pod_target| pod_target.name == 'ExpoModulesMacros' }
-        if macros_pod_target.nil?
-          Pod::UI.warn("[Expo] Skipping integration of core macro plugins for target '#{target.name}' because ExpoModuleOptimizedMacros pod target not found")
-          return
+        unless macro_flags
+          core_pod_target = target.pod_targets.find { |pod_target| pod_target.name == 'ExpoModulesCore' }
+          core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
+            File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
+          macros_plugin_dir = File.join(core_src_root, 'node_modules', '@expo', 'expo-modules-macros-plugin', 'apple')
+          macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_plugin_dir}/ExpoModulesMacros-tool#ExpoModulesMacros\""
         end
-        macros_src_root = macros_pod_target.pod_target_srcroot
-        macro_flags = "-Xfrontend -load-plugin-executable -Xfrontend \"#{macros_src_root}/ExpoModulesMacros-tool#ExpoModulesMacros\""
+
         target.pod_targets.each do |pod_target|
           has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
           next unless has_core_dependency

@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react';
-import { ColorValue, ViewProps } from 'react-native';
+import type { PropsWithChildren } from 'react';
+import type { ColorValue, ViewProps } from 'react-native';
 
 export type NativeLinearGradientProps = ViewProps &
   PropsWithChildren<{

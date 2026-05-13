@@ -23,9 +23,7 @@ type ConfigItem = {
 
 const getActiveRoute = (state: State): { name: string; params?: object } => {
   const route =
-    typeof state.index === 'number'
-      ? state.routes[state.index]
-      : state.routes[state.routes.length - 1];
+    state.index != null ? state.routes[state.index]! : state.routes[state.routes.length - 1]!;
 
   if (route.state) {
     return getActiveRoute(route.state);
@@ -119,7 +117,7 @@ export function getPathFromState<ParamList extends object>(
     let hasNext = true;
 
     while (route.name in currentOptions && hasNext) {
-      parts = currentOptions[route.name].parts;
+      parts = currentOptions[route.name]!.parts;
 
       nestedRouteNames.push(route.name);
 
@@ -172,17 +170,17 @@ export function getPathFromState<ParamList extends object>(
       }
 
       // If there is no `screens` property or no nested state, we return pattern
-      if (!currentOptions[route.name].screens || route.state === undefined) {
+      if (!currentOptions[route.name]!.screens || route.state === undefined) {
         hasNext = false;
       } else {
         index =
           typeof route.state.index === 'number' ? route.state.index : route.state.routes.length - 1;
 
         const nextRoute = route.state.routes[index];
-        const nestedConfig = currentOptions[route.name].screens;
+        const nestedConfig = currentOptions[route.name]!.screens;
 
         // if there is config for next route name, we go deeper
-        if (nestedConfig && nextRoute.name in nestedConfig) {
+        if (nestedConfig && nextRoute!.name in nestedConfig) {
           route = nextRoute as Route<string> & { state?: State };
           currentOptions = nestedConfig;
         } else {

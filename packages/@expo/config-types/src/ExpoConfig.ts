@@ -43,7 +43,7 @@ export interface ExpoConfig {
    */
   version?: string;
   /**
-   * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`.
+   * Platforms that your project explicitly supports. If not specified, it defaults to `["ios", "android"]`. If `react-dom` is installed, `web` is also included by default.
    */
   platforms?: ('android' | 'ios' | 'web')[];
   /**
@@ -212,6 +212,10 @@ export interface ExpoConfig {
    */
   experiments?: {
     /**
+     * Enables Expo's On-Demand Filesystem allowing Metro bundling outside of the watchFolders and with package manager global virtual stores.
+     */
+    onDemandFilesystem?: boolean;
+    /**
      * Apply Expo Autolinking's search results to Metro's module resolution. This forces your project's dependencies on `react`, `react-dom`, and `react-native`, and the autolinked versions of any Expo and React Native modules to be resolved when bundling your app. This prevents version misalignment and is useful for monorepos and to prevent conflicts.
      */
     autolinkingModuleResolution?: boolean;
@@ -234,10 +238,6 @@ export interface ExpoConfig {
      * If true, indicates that this project does not support tablets or handsets, and only supports Apple TV and Android TV
      */
     supportsTVOnly?: boolean;
-    /**
-     * Enable React-based CSS support for native platforms. Only supports a subset of CSS properties, class names selectors, and has no cascading.
-     */
-    functionalCSS?: boolean;
     /**
      * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
      */
@@ -313,6 +313,10 @@ export interface IOS {
    * Build number for your iOS standalone app. Corresponds to `CFBundleVersion` and must match Apple's [specified format](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion). (Note: Transporter will pull the value for `Version Number` from `expo.version` and NOT from `expo.ios.buildNumber`.)
    */
   buildNumber?: string;
+  /**
+   * Sets the iOS deployment target (minimum iOS version). The value should be in the format `MAJOR.MINOR` (e.g., `"18.6"`) or just a major version (e.g., `"26"`). This sets the minimum iOS version your app will support.
+   */
+  deploymentTarget?: string;
   /**
    * The background color for your iOS app, behind any of your React views. Overrides the top-level `backgroundColor` key if it is present. Requires `expo-system-ui` be installed in your project to work on iOS.
    */

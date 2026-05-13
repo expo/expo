@@ -135,10 +135,36 @@ exports[`APISection expo-apple-authentication 1`] = `
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
-your screen. The App Store Guidelines require you to use this component to start the
-authentication process instead of a custom button. Limited customization of the button is
-available via the provided properties.
+        This component displays Apple's proprietary "Sign In with Apple" / "Continue with Apple" button
+using the native 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          <code
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            data-text="true"
+          >
+            ASAuthorizationAppleIDButton
+          </code>
+        </a>
+        .
+Apple's 
+        <a
+          class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
+          href="https://developer.apple.com/design/human-interface-guidelines/sign-in-with-apple"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          Human Interface Guidelines
+        </a>
+        
+allow custom buttons as long as they follow Apple's branding rules (approved title, official
+logo asset, approved colors, proportions, and minimum size). Using this component is the easiest
+way to meet those requirements, since the system button is automatically Apple-approved,
+localized, and accessible.
       </p>
       
 
@@ -236,7 +262,7 @@ button.
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        Make sure to attach height and width via the style props as without these styles, the button will
+        Make sure to attach height and width via the style props, since without them the button will
 not appear on the screen.
       </p>
       <blockquote
@@ -346,7 +372,7 @@ for more details.
       </p>
     </div>
     <div
-      class="[&>*]:last:mb-0!"
+      class="border-palette-gray4 mb-5 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none [&>*:last-child]:mb-0!"
     >
       <div
         class="border-palette-gray4 border-t first:border-t-0"
@@ -1009,7 +1035,7 @@ properties.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1252,7 +1278,7 @@ properties.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1695,7 +1721,7 @@ value depending on the state of the credential.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -1948,7 +1974,7 @@ refresh operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -2072,7 +2098,12 @@ server-side, or using
           class="cursor-pointer decoration-0 hocus:opacity-80 text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal [&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link"
           href="./securestore"
         >
-          SecureStore
+          <code
+            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            data-text="true"
+          >
+            expo-secure-store
+          </code>
         </a>
         , so that the data persists across app installs.
 You can use 
@@ -2247,7 +2278,7 @@ sign-in operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -2574,7 +2605,7 @@ sign-out operation.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -3130,7 +3161,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -3631,7 +3662,7 @@ may be
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4253,7 +4284,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4585,7 +4616,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -4937,7 +4968,7 @@ for more details.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -7279,7 +7310,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -7889,7 +7920,7 @@ available on this device.
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -8483,7 +8514,7 @@ After calling this function, the listener will no longer receive any events from
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"
@@ -8621,7 +8652,7 @@ After calling this function, the listener will no longer receive any events from
         class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden rounded-md border shadow-xs mx-4 mt-0.5"
       >
         <table
-          class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+          class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
         >
           <thead
             class="border-b-default bg-subtle border-b"
@@ -8892,7 +8923,7 @@ After calling this function, the listener will no longer receive any events from
       class="table-wrapper border-default mb-4 overflow-x-auto overflow-y-hidden shadow-xs mt-0.5 rounded-none border-0 border-t"
     >
       <table
-        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-inherit [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
+        class="text-default w-full rounded-none border-0 text-sm [&_p]:text-sm [&_li]:text-sm [&_span]:text-sm [&_code_span]:text-xs [&_strong]:text-sm [&_blockquote_div]:text-sm [&_blockquote_code]:px-1 [&_blockquote_code]:py-0"
       >
         <thead
           class="border-b-default bg-subtle border-b"

@@ -15,7 +15,10 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class ToggleButtonColors(
   @Field val containerColor: Color? = null,
   @Field val contentColor: Color? = null,
@@ -25,6 +28,7 @@ data class ToggleButtonColors(
   @Field val disabledContentColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class ToggleButtonProps(
   val checked: Boolean = false,
   val enabled: Boolean = true,
@@ -32,6 +36,7 @@ data class ToggleButtonProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptimizedRecord
 data class ToggleButtonValueChangeEvent(
   @Field val checked: Boolean = false
 ) : Record

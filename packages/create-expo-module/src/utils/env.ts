@@ -22,3 +22,21 @@ export const env = {
     return boolish('EXPO_LOCAL', false);
   },
 };
+
+/**
+ * Determines if we're in an interactive environment.
+ * Non-interactive when: CI=1/true, Expo's non-interactive flag is set, or stdin is non-TTY.
+ */
+export function isInteractive(): boolean {
+  const ci = process.env.CI;
+  if (ci === '1' || ci?.toLowerCase() === 'true') {
+    return false;
+  }
+  if (process.env.EXPO_NONINTERACTIVE) {
+    return false;
+  }
+  if (!process.stdin.isTTY) {
+    return false;
+  }
+  return true;
+}

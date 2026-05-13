@@ -1,0 +1,316 @@
+---
+title: Migrate to expo-contacts/next
+sidebar_title: expo-contacts/next
+description: Migrate from the legacy expo-contacts API to the new class-based expo-contacts/next API.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+The `expo-contacts/next` API is now stable. The legacy `expo-contacts` module is deprecated. Migrate to `expo-contacts/next` to benefit from the new API and future fixes.
+
+The new API replaces the function-based API with a `Contact` class. Contacts are represented as class instances that hold only the ID of the native contact. Key changes:
+
+- Contact properties (name, company, birthday, and more) are async getters and setters instead of plain object properties.
+- Sub-records (phones, emails, addresses, ...) are managed via dedicated `add*`/`get*`/`update*`/`delete*` methods instead of re-writing the entire array.
+- Two update methods are now available: `patch` for partial updates and `update` for full replacement.
+
+## Installation
+
+Install the SDK-compatible package that includes `expo-contacts/next`:
+
+<Terminal cmd={['$ npx expo install expo-contacts']} />
+
+## Importing the new API
+
+Import from `expo-contacts/next`:
+
+```ts
+import { Contact } from 'expo-contacts/next';
+```
+
+## Contacts
+
+### Create a contact
+
+```ts
+// Before
+const id = await Contacts.addContactAsync({ firstName: 'John', lastName: 'Doe' });
+
+// After
+const contact = await Contact.create({ givenName: 'John', familyName: 'Doe' });
+```
+
+`Contact.create` returns a `Contact` instance, not just an ID.
+
+### Get all contacts
+
+```ts
+// Before
+const { data } = await Contacts.getContactsAsync({
+  fields: [Contacts.Fields.Name, Contacts.Fields.PhoneNumbers],
+  pageSize: 20,
+  pageOffset: 10,
+  sort: Contacts.SortTypes.FirstName,
+});
+
+// After, instance objects
+const contacts = await Contact.getAll({
+  limit: 20,
+  offset: 10,
+  sortOrder: ContactsSortOrder.GivenName,
+});
+
+// After, typed field projection
+const contacts = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES], {
+  limit: 20,
+  offset: 10,
+});
+```
+
+`getAllDetails` returns a strongly typed projection narrowed to the requested fields.
+
+### Get a contact by ID
+
+Results from `getAllDetails` include the contact ID. If you want to call methods on a contact returned from `getAllDetails`, wrap it in a `Contact` instance using the constructor:
+
+```ts
+const results = await Contact.getAllDetails([ContactField.FULL_NAME, ContactField.PHONES]);
+const contact = new Contact(results[0].id);
+await contact.addPhone({ label: 'work', number: '+12345678912' });
+```
+
+### Count contacts
+
+```ts
+// Before
+const hasAny = await Contacts.hasContactsAsync();
+
+// After
+const hasAny = await Contact.hasAny();
+
+// After, no direct equivalent before
+const count = await Contact.getCount();
+```
+
+### Update a contact
+
+```ts
+// Before, re-write the whole contact
+await Contacts.updateContactAsync({ ...contact, firstName: 'Andrew' });
+
+// After, partial update (only changes provided fields)
+await contact.patch({ givenName: 'Andrew' });
+
+// After, full replacement - all fields not provided will be cleared
+await contact.update({
+  givenName: 'John',
+  familyName: 'Doe',
+  phones: [{ label: 'mobile', number: '+12123456789' }],
+});
+```
+
+### Delete a contact
+
+```ts
+// Before
+await Contacts.removeContactAsync(id);
+
+// After
+await contact.delete();
+```
+
+## Scalar fields
+
+All scalar contact properties are now async getters and setters. Use `get*` to read and `set*` to write. You can also retrieve multiple fields at once using `contact.getDetails()`.
+
+| Field                    | Getter                  | Setter                  |
+| ------------------------ | ----------------------- | ----------------------- |
+| Given name               | `getGivenName`          | `setGivenName`          |
+| Family name              | `getFamilyName`         | `setFamilyName`         |
+| Middle name              | `getMiddleName`         | `setMiddleName`         |
+| Full name                | `getFullName`           | —                       |
+| Nickname (iOS only)      | `getNickname`           | `setNickname`           |
+| Prefix                   | `getPrefix`             | `setPrefix`             |
+| Suffix                   | `getSuffix`             | `setSuffix`             |
+| Phonetic given name      | `getPhoneticGivenName`  | `setPhoneticGivenName`  |
+| Phonetic family name     | `getPhoneticFamilyName` | `setPhoneticFamilyName` |
+| Company                  | `getCompany`            | `setCompany`            |
+| Job title                | `getJobTitle`           | `setJobTitle`           |
+| Department               | `getDepartment`         | `setDepartment`         |
+| Birthday (iOS only)      | `getBirthday`           | `setBirthday`           |
+| Note                     | `getNote`               | `setNote`               |
+| Image                    | `getImage`              | `setImage`              |
+| Thumbnail                | `getThumbnail`          | —                       |
+| Favourite (Android only) | `getIsFavourite`        | `setIsFavourite`        |
+
+### Name
+
+```ts
+// Before, contact fetched via getContactByIdAsync
+const contact = await Contacts.getContactByIdAsync(id);
+console.log(contact.firstName, contact.lastName);
+
+// After, individual async getters
+const givenName = await contact.getGivenName();
+const familyName = await contact.getFamilyName();
+
+// After, full name object via getDetails()
+const details = await contact.getDetails([ContactField.FULL_NAME]);
+
+await contact.setGivenName('John');
+await contact.setFamilyName('Doe');
+await contact.setMiddleName('Michael');
+```
+
+## Sub-records
+
+Sub-records are no longer managed by re-writing the entire array with `updateContactAsync`. Each type has dedicated `add*`, `get*`, `update*`, and `delete*` methods:
+
+| Sub-record                 | Methods                                                                               |
+| -------------------------- | ------------------------------------------------------------------------------------- |
+| Phone numbers              | `addPhone`, `getPhones`, `updatePhone`, `deletePhone`                                 |
+| Emails                     | `addEmail`, `getEmails`, `updateEmail`, `deleteEmail`                                 |
+| Addresses                  | `addAddress`, `getAddresses`, `updateAddress`, `deleteAddress`                        |
+| URLs                       | `addUrlAddress`, `getUrlAddresses`, `updateUrlAddress`, `deleteUrlAddress`            |
+| Social profiles            | `addSocialProfile`, `getSocialProfiles`, `updateSocialProfile`, `deleteSocialProfile` |
+| IM addresses               | `addImAddress`, `getImAddresses`, `updateImAddress`, `deleteImAddress`                |
+| Dates                      | `addDate`, `getDates`, `updateDate`, `deleteDate`                                     |
+| Extra names (Android only) | `addExtraName`, `getExtraNames`, `updateExtraName`, `deleteExtraName`                 |
+
+The following examples use phone numbers.
+
+```ts
+// Before, re-write the whole array
+await Contacts.updateContactAsync({
+  ...contact,
+  phoneNumbers: [...existing, { label: 'work', number: '+12345678912' }],
+});
+
+// After, add
+await contact.addPhone({ label: 'work', number: '+12345678912' });
+
+// After, get
+const phones = await contact.getPhones();
+
+// After, update
+await contact.updatePhone(existingPhone);
+
+// After, delete
+await contact.deletePhone(existingPhone);
+```
+
+## Native UI
+
+```ts
+// Before
+const contact = await Contacts.presentContactPickerAsync();
+await Contacts.presentFormAsync(null, contactData, { isNew: true });
+await Contacts.presentFormAsync(contactId);
+
+// After
+const contact = await Contact.presentPicker();
+if (contact) {
+  // user selected a contact
+}
+const created = await Contact.presentCreateForm(contactData);
+await contact.editWithForm();
+```
+
+### Access picker (iOS 18+ only)
+
+```ts
+// Before
+const contactIds = await Contacts.presentAccessPickerAsync();
+
+// After
+const selectedContacts = await Contact.presentAccessPicker();
+```
+
+## Groups (iOS only)
+
+```ts
+// Before
+const groups = await Contacts.getGroupsAsync({});
+await Contacts.createGroupAsync('Family');
+await Contacts.addExistingContactToGroupAsync(contactId, groupId);
+await Contacts.removeContactFromGroupAsync(contactId, groupId);
+
+// After
+const groups = await Group.getAll();
+const group = await Group.create('Family');
+await group.addContact(contact);
+await group.removeContact(contact);
+const contacts = await group.getContacts();
+const name = await group.getName();
+await group.setName('Close Friends');
+await group.delete();
+```
+
+## Containers (iOS only)
+
+```ts
+// Before
+const containers = await Contacts.getContainersAsync({});
+const defaultId = await Contacts.getDefaultContainerIdAsync();
+
+// After
+const containers = await Container.getAll();
+const defaultContainer = await Container.getDefault(); // may be null
+const name = await container.getName();
+const type = await container.getType();
+const groups = await container.getGroups();
+const contacts = await container.getContacts();
+```
+
+## Permissions
+
+```ts
+// Before
+const { status } = await Contacts.requestPermissionsAsync();
+const { status } = await Contacts.getPermissionsAsync();
+
+// After
+const { status } = await requestPermissionsAsync();
+const { status } = await getPermissionsAsync();
+```
+
+## Listening for changes
+
+```ts
+// Before
+const subscription = Contacts.addContactsChangeListener(() => {
+  // contacts changed
+});
+subscription.remove();
+
+// After
+const subscription = addContactsChangeListener(() => {
+  // contacts changed
+});
+subscription.remove();
+
+// Remove all listeners at once
+removeAllContactsChangeListeners();
+```
+
+## Breaking semantic changes
+
+- Field names follow the platform convention. For example, `firstName`/`lastName` become `givenName`/`familyName`.
+- Field selection uses the typed `ContactField` enum. The result type of `getAllDetails` is narrowed to the requested fields.
+- The `Async` suffix is dropped. The entire library is asynchronous.
+- Contact properties are now async getters and setters instead of plain properties on the contact object. Use `contact.getDetails()` to retrieve multiple fields at once.
+- Sub-records (phones, emails, addresses, ...) are managed via dedicated `add*`/`get*`/`update*`/`delete*` methods instead of re-writing the entire array with `updateContactAsync`.
+- Two update methods replace `updateContactAsync`: `patch` applies partial changes, `update` replaces the entire contact.
+- `shareContactAsync` and `writeContactToFileAsync` are removed with no replacement. You can safely delete any calls to these functions.
+
+## Reference
+
+<BoxLink
+  title="Contacts (next)"
+  description="See the full API reference for expo-contacts/next."
+  href="/versions/latest/sdk/contacts-next/"
+  Icon={BookOpen02Icon}
+/>

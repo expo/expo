@@ -1,4 +1,4 @@
-import { ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
     /**
      * Name is required when used inside a Layout component.

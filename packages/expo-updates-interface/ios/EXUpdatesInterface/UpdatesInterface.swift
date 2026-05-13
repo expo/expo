@@ -32,6 +32,7 @@ public protocol UpdatesInterface {
   /*
    * These properties are only set when updates is enabled
    */
+  @objc var requestHeaders: [String: String]? { get }
   @objc var launchedUpdateId: UUID? { get }
   @objc var embeddedUpdateId: UUID? { get }
   @objc var launchAssetPath: String? { get }

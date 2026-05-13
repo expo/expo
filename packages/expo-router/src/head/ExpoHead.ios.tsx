@@ -1,7 +1,9 @@
-import React, { JSX } from 'react';
+import type { JSX } from 'react';
+import React from 'react';
 
 import { useIsFocused } from '../useIsFocused';
-import { ExpoHead, UserActivity } from './ExpoHeadModule';
+import type { UserActivity } from './ExpoHeadModule';
+import { ExpoHead } from './ExpoHeadModule';
 import { getStaticUrlFromExpoRouter } from './url';
 import { useLocalSearchParams, useUnstableGlobalHref, usePathname, useSegments } from '../hooks';
 
@@ -12,7 +14,7 @@ function urlToId(url: string) {
 function getLastSegment(path: string) {
   // Remove the extension
   const lastSegment = path.split('/').pop() ?? '';
-  return lastSegment.replace(/\.[^/.]+$/, '').split('?')[0];
+  return lastSegment.replace(/\.[^/.]+$/, '').split('?')[0]!;
 }
 
 // TODO: Use Head Provider to collect all props so only one Head is rendered for a given route.

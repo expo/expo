@@ -1,7 +1,7 @@
 import { load as loadEnv } from '@expo/env';
 import chalk from 'chalk';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
 import { resolveChecksInScope } from './utils/checkResolver';
 import { env } from './utils/env';
 import { isNetworkError } from './utils/errors';
@@ -123,6 +123,15 @@ export async function runChecksAsync(
   );
 }
 
+function maybeLoadEnv(projectRoot: string) {
+  try {
+    loadEnv(projectRoot);
+  } catch {
+    // NOTE(@kitten): It's unclear why we load env files here in expo-doctor, and it's likely optional, even with us loading the project config
+    // If this fails, e.g. because the Node.js version is too out of date, ignore the error
+  }
+}
+
 /**
  * Run the expo-doctor checks on the project.
  * @param projectRoot The root of the project to check.
@@ -131,7 +140,7 @@ export async function runChecksAsync(
 export async function actionAsync(projectRoot: string, showVerboseTestResults: boolean) {
   try {
     setNodeEnv('development');
-    loadEnv(projectRoot);
+    maybeLoadEnv(projectRoot);
 
     const projectConfig = await getProjectConfigAsync(projectRoot);
 

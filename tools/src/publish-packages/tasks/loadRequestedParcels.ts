@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import * as Changelogs from '../../Changelogs';
 import Git from '../../Git';
-import { getListOfPackagesAsync, Package } from '../../Packages';
+import { DependencyKind, getListOfPackagesAsync, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { PackagesGraph, PackagesGraphNode } from '../../packages-graph';
@@ -122,8 +122,9 @@ export async function createParcelsForDependenciesOf(parcels: Set<Parcel>): Prom
   const allDependencies = new Set<Parcel>();
 
   for (const parcel of parcels) {
-    // Add all dependencies of the current package.
-    const dependencies = await createParcelsForGraphNodes(parcel.graphNode.getAllDependencies());
+    const dependencies = await createParcelsForGraphNodes(
+      parcel.graphNode.getAllDependencies([DependencyKind.Normal, DependencyKind.Optional])
+    );
 
     for (const dependencyParcel of dependencies) {
       parcel.dependencies.add(dependencyParcel);

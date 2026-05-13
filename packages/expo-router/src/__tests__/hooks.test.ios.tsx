@@ -19,7 +19,8 @@ import { LoaderCache, LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../loaders/utils';
 import { renderRouter } from '../testing-library';
-import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
+import type { MemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext } from '../testing-library/context-stubs';
 
 jest.mock('../loaders/utils', () => ({
   fetchLoader: jest.fn(),
@@ -825,7 +826,7 @@ describe(useLoaderData, () => {
     expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
 
     await act(async () => {
-      await fetchLoaderMock.mock.results[0].value;
+      await fetchLoaderMock.mock.results[0]!.value;
     });
 
     expect(cache.getData('/users/123')).toEqual({ fromFetch: true });

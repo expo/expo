@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 internal struct DynamicTypedArrayType: AnyDynamicType {
   let innerType: AnyTypedArray.Type
 
@@ -18,10 +20,10 @@ internal struct DynamicTypedArrayType: AnyDynamicType {
    Converts JS typed array to its native representation.
    */
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    guard let jsTypedArray = jsValue.getTypedArray() else {
+    guard jsValue.isTypedArray() else {
       throw NotTypedArrayException(innerType)
     }
-    return TypedArray.create(from: jsTypedArray)
+    return TypedArray.create(from: jsValue.getTypedArray())
   }
 
   /**
@@ -37,6 +39,13 @@ internal struct DynamicTypedArrayType: AnyDynamicType {
       throw ArrayTypeMismatchException((received: type(of: typedArray), expected: innerType))
     }
     return typedArray
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let typedArray = value as? TypedArray {
+      return typedArray.jsTypedArray.asValue()
+    }
+    throw Conversions.ConversionToJSFailedException((kind: .object, nativeType: ValueType.self))
   }
 
   var description: String {

@@ -39,7 +39,3 @@ struct NotSignedInView: View {
     .frame(maxWidth: .infinity, maxHeight: .infinity)
   }
 }
-
-#Preview {
-  NotSignedInView()
-}

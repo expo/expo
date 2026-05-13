@@ -65,7 +65,7 @@ public func StaticAsyncFunction<R, A0: AnyArgument, each A: AnyArgument>(
  */
 public func StaticAsyncFunction<R>(
   _ name: String,
-  @_implicitSelfCapture _ closure: @escaping () async throws -> R
+  @_inheritActorContext @_implicitSelfCapture _ closure: sending @escaping @Sendable () async throws -> sending R
 ) -> StaticConcurrentFunctionDefinition<(), Void, R> {
   return StaticConcurrentFunctionDefinition(
     name,
@@ -80,7 +80,7 @@ public func StaticAsyncFunction<R>(
  */
 public func StaticAsyncFunction<R, A0: AnyArgument, each A: AnyArgument>(
   _ name: String,
-  @_implicitSelfCapture _ closure: @escaping (A0, repeat each A) async throws -> R
+  @_inheritActorContext @_implicitSelfCapture _ closure: sending @escaping @Sendable (A0, repeat each A) async throws -> sending R
 ) -> StaticConcurrentFunctionDefinition<(A0, repeat each A), A0, R> {
   return StaticConcurrentFunctionDefinition(
     name,

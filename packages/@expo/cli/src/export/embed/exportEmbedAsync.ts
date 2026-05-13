@@ -10,17 +10,21 @@ import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import getMetroAssets from '@expo/metro-config/build/transform-worker/getAssets';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
 
-import { deserializeEagerKey, getExportEmbedOptionsKey, Options } from './resolveOptions';
+import type { Options } from './resolveOptions';
+import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 import { Log } from '../../log';
 import { DevServerManager } from '../../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
+import { replaceMetroFileMap } from '../../start/server/metro/createFileMap-fork';
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { DOM_COMPONENTS_BUNDLE_DIR } from '../../start/server/middleware/DomComponentsMiddleware';
 import { getMetroDirectBundleOptionsForExpoConfig } from '../../start/server/middleware/metroOptions';
@@ -32,7 +36,8 @@ import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
 import { copyPublicFolderAsync } from '../publicFolder';
-import { BundleAssetWithFileHashes, ExportAssetMap, persistMetroFilesAsync } from '../saveAssets';
+import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
+import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 
@@ -333,7 +338,7 @@ export async function createMetroServerAndBundleRequestAsync(
       exp,
       isExporting: true,
       getMetroBundler() {
-        return server.getBundler().getBundler();
+        return metro.getBundler().getBundler();
       },
     }
   );
@@ -374,11 +379,19 @@ export async function createMetroServerAndBundleRequestAsync(
       (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
   };
 
-  const server = new Server(config, {
-    watch: false,
-  });
+  const { metro } = await replaceMetroFileMap(() => ({
+    metro: new Server(config, {
+      watch: false,
+    }),
+  }));
 
-  return { server, bundleRequest };
+  // The dev server applies the same patch from `instantiateMetro.ts`;
+  // this is the export-embed / `expo-updates` path, where `data.map`
+  // would otherwise reach Metro's readers in the unwrapped wire shape.
+  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
+
+  return { server: metro, bundleRequest };
 }
 
 export async function exportEmbedAssetsAsync(

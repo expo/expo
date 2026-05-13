@@ -1,6 +1,6 @@
 import process from 'node:process';
 
-import { FetchLike } from './client.types';
+import type { FetchLike } from './client.types';
 import { Headers } from '../../utils/fetch';
 
 export function wrapFetchWithUserAgent(fetch: FetchLike): FetchLike {

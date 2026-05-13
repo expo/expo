@@ -35,5 +35,5 @@ export declare function hide(): void;
  * ["Usage"](#usage) section for an example.
  */
 export declare function hideAsync(): Promise<void>;
-export { SplashScreenOptions };
+export type { SplashScreenOptions } from './SplashScreen.types';
 //# sourceMappingURL=index.d.ts.map

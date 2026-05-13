@@ -1,4 +1,4 @@
-import { XMLToStringOptions } from 'xmlbuilder';
+import type { XMLToStringOptions } from 'xmlbuilder';
 import { build } from './build';
 import { parse } from './parse';
 export type PlistValue = string | number | boolean | Date | Buffer | PlistObject | PlistArray;

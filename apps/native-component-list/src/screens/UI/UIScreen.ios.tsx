@@ -27,6 +27,22 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community DateTimePicker replacement',
     route: 'ui/community-datetimepicker',
     options: {},
@@ -40,6 +56,30 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+  {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
+    name: 'TabView component',
+    route: 'ui/tabview',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TabViewScreen'));
     },
   },
   {
@@ -235,6 +275,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ScrollView shared position',
+    route: 'ui/scrollview-shared-position',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ScrollViewSharedPositionScreen'));
+    },
+  },
+  {
     name: 'Shapes',
     route: 'ui/shapes',
     options: {},
@@ -264,6 +312,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./LinkScreen'));
+    },
+  },
+  {
+    name: 'Mask component',
+    route: 'ui/mask',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./MaskScreen'));
     },
   },
   {

@@ -1,7 +1,4 @@
 import AVFoundation
-#if canImport(ZXingObjC)
-import ZXingObjC
-#endif
 import VisionKit
 import Vision
 
@@ -21,12 +18,9 @@ class BarcodeScannerUtils {
       "aztec": AVMetadataObject.ObjectType.aztec,
       "interleaved2of5": AVMetadataObject.ObjectType.interleaved2of5,
       "itf14": AVMetadataObject.ObjectType.itf14,
-      "datamatrix": AVMetadataObject.ObjectType.dataMatrix
+      "datamatrix": AVMetadataObject.ObjectType.dataMatrix,
+      "codabar": AVMetadataObject.ObjectType.codabar
     ]
-
-    if #available(iOS 15.4, *) {
-      validTypes["codabar"] = AVMetadataObject.ObjectType.codabar
-    }
 
     return [BARCODE_TYPES_KEY: Array(validTypes.values)]
   }
@@ -103,31 +97,4 @@ class BarcodeScannerUtils {
     ]
   }
 
-  #if canImport(ZXingObjC)
-  static func zxResultToDictionary(_ barcodeScannerResult: ZXResult) -> [String: Any] {
-    var result = [String: Any]()
-    result["type"] = BarcodeScannerUtils.zxingFormatToBarcodeType(barcodeScannerResult.barcodeFormat)?.rawValue ?? "unknown"
-
-    let data = barcodeScannerResult.text.filter { $0 != "\0" }
-    result["data"] = data
-
-    return result
-  }
-
-  static func zxingFormatToBarcodeType(_ format: ZXBarcodeFormat) -> BarcodeType? {
-    switch format {
-    case kBarcodeFormatPDF417:
-      return .pdf417
-    case kBarcodeFormatCode39:
-      return .code39
-    case kBarcodeFormatCodabar:
-      if #available(iOS 15.4, *) {
-        return .codabar
-      }
-      return nil
-    default:
-      return nil
-    }
-  }
-  #endif
 }

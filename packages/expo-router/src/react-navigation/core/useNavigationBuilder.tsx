@@ -370,18 +370,18 @@ export function useNavigationBuilder<
 
   const routeNames = routeConfigs.map((config) => config.props.name);
   const routeKeyList = routeNames.reduce<Record<string, React.Key | undefined>>((acc, curr) => {
-    acc[curr] = screens[curr].keys.map((key) => key ?? '').join(':');
+    acc[curr] = screens[curr]!.keys.map((key) => key ?? '').join(':');
     return acc;
   }, {});
   const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
-    const { initialParams } = screens[curr].props;
+    const { initialParams } = screens[curr]!.props;
     acc[curr] = initialParams;
     return acc;
   }, {});
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
-        [curr]: screens[curr].props.getId,
+        [curr]: screens[curr]!.props.getId,
       }),
     {}
   );
@@ -464,7 +464,7 @@ export function useNavigationBuilder<
 
     const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
       (acc, curr) => {
-        const { initialParams } = screens[curr].props;
+        const { initialParams } = screens[curr]!.props;
         const initialParamsFromParams =
           route?.params?.state == null &&
           route?.params?.initial !== false &&
@@ -778,7 +778,7 @@ export function useNavigationBuilder<
       return;
     }
 
-    const navigation = descriptors[route.key].navigation;
+    const navigation = descriptors[route.key]!.navigation;
 
     const listeners = ([] as (((e: any) => void) | undefined)[])
       .concat(
@@ -786,7 +786,7 @@ export function useNavigationBuilder<
         ...[
           screenListeners,
           ...routeNames.map((name) => {
-            const { listeners } = screens[name].props;
+            const { listeners } = screens[name]!.props;
             return listeners;
           }),
         ].map((listeners) => {
@@ -934,7 +934,7 @@ export function useNavigationBuilder<
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
-            <FocusedRouteKeyContext.Provider value={state.routes[state.index].key}>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
               <PreventRemoveProvider>{element}</PreventRemoveProvider>
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>

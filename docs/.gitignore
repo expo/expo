@@ -21,15 +21,6 @@ next-env.d.ts
 .worker-test
 .wrangler
 
-# yarn berry
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/sdks
-!.yarn/versions
-
 # generated file(s) for llms
 public/llms.txt
 public/llms-full.txt

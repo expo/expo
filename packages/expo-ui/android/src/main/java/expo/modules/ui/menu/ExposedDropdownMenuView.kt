@@ -11,7 +11,9 @@ import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.UIComposableScope
 import expo.modules.ui.composeOrNull
 import expo.modules.ui.exposedDropdownMenuBoxScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class ExposedDropdownMenuProps(
   val expanded: Boolean = false,
   val containerColor: Color? = null,

@@ -1,10 +1,9 @@
 package expo.modules.ui
 
-import android.annotation.SuppressLint
-import android.content.Context
 import android.graphics.Color
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextField
@@ -12,39 +11,62 @@ import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.focus.FocusManager
+import androidx.compose.runtime.remember
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import expo.modules.kotlin.AppContext
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.AsyncFunctionHandle
+import expo.modules.kotlin.views.AsyncFunctionHandle2
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.ui.state.ObservableState
+import expo.modules.ui.state.WorkletCallback
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 // region Records
 
 enum class TextFieldVariant(val value: String) : Enumerable {
   FILLED("filled"),
-  OUTLINED("outlined"),
+  OUTLINED("outlined")
 }
 
+@OptimizedRecord
 data class TextFieldKeyboardOptionsRecord(
   @Field val capitalization: String? = null,
   @Field val autoCorrectEnabled: Boolean? = null,
   @Field val keyboardType: String? = null,
-  @Field val imeAction: String? = null,
+  @Field val imeAction: String? = null
 ) : Record
 
+@OptimizedRecord
+data class TextFieldTextStyleRecord(
+  @Field val textAlign: TextAlignType? = null,
+  @Field val color: Color? = null,
+  @Field val fontSize: Float? = null,
+  @Field val fontFamily: String? = null,
+  @Field val fontWeight: TextFontWeight? = null,
+  @Field val lineHeight: Float? = null,
+  @Field val letterSpacing: Float? = null
+) : Record
+
+@OptimizedRecord
 data class TextFieldColorsRecord(
   // Text
   @Field val focusedTextColor: Color? = null,
@@ -98,7 +120,28 @@ data class TextFieldColorsRecord(
   @Field val focusedSuffixColor: Color? = null,
   @Field val unfocusedSuffixColor: Color? = null,
   @Field val disabledSuffixColor: Color? = null,
-  @Field val errorSuffixColor: Color? = null,
+  @Field val errorSuffixColor: Color? = null
+) : Record
+
+@OptimizedRecord
+data class TextFieldSelectionColorsRecord(
+  @Field val handleColor: Color? = null,
+  @Field val backgroundColor: Color? = null
+) : Record
+
+data class KeyboardActionEvent(
+  @Field val action: String,
+  @Field val value: String
+) : Record
+
+data class TextFieldSelectionPayload(
+  @Field val start: Int,
+  @Field val end: Int
+) : Record
+
+data class TextFieldValuePayload(
+  @Field val text: String,
+  @Field val selection: TextFieldSelectionPayload
 ) : Record
 
 // endregion Records
@@ -151,7 +194,7 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
     focusedSuffixColor = focusedSuffixColor.composeOrNull ?: defaults.focusedSuffixColor,
     unfocusedSuffixColor = unfocusedSuffixColor.composeOrNull ?: defaults.unfocusedSuffixColor,
     disabledSuffixColor = disabledSuffixColor.composeOrNull ?: defaults.disabledSuffixColor,
-    errorSuffixColor = errorSuffixColor.composeOrNull ?: defaults.errorSuffixColor,
+    errorSuffixColor = errorSuffixColor.composeOrNull ?: defaults.errorSuffixColor
   )
 }
 
@@ -159,20 +202,27 @@ fun TextFieldColorsRecord.toColors(isOutlined: Boolean): TextFieldColors {
 
 // region Props
 
+@OptimizedComposeProps
 data class TextFieldProps(
-  val defaultValue: MutableState<String> = mutableStateOf(""),
-  val autoFocus: MutableState<Boolean> = mutableStateOf(false),
-  val variant: MutableState<TextFieldVariant> = mutableStateOf(TextFieldVariant.FILLED),
-  val enabled: MutableState<Boolean> = mutableStateOf(true),
-  val readOnly: MutableState<Boolean> = mutableStateOf(false),
-  val isError: MutableState<Boolean> = mutableStateOf(false),
-  val singleLine: MutableState<Boolean> = mutableStateOf(false),
-  val maxLines: MutableState<Int?> = mutableStateOf(null),
-  val minLines: MutableState<Int?> = mutableStateOf(null),
-  val keyboardOptions: MutableState<TextFieldKeyboardOptionsRecord?> = mutableStateOf(null),
-  val shape: MutableState<ShapeRecord?> = mutableStateOf(null),
-  val colors: MutableState<TextFieldColorsRecord?> = mutableStateOf(null),
-  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList()),
+  val value: ObservableState = ObservableState(""),
+  val selection: ObservableState = ObservableState(mapOf("start" to 0, "end" to 0)),
+  val maxLength: Int? = null,
+  val autoFocus: Boolean = false,
+  val variant: TextFieldVariant = TextFieldVariant.FILLED,
+  val enabled: Boolean = true,
+  val readOnly: Boolean = false,
+  val isError: Boolean = false,
+  val singleLine: Boolean = false,
+  val maxLines: Int? = null,
+  val minLines: Int? = null,
+  val textStyle: TextFieldTextStyleRecord? = null,
+  val visualTransformation: String? = null,
+  val keyboardOptions: TextFieldKeyboardOptionsRecord? = null,
+  val shape: ShapeRecord? = null,
+  val colors: TextFieldColorsRecord? = null,
+  val textSelectionColors: TextFieldSelectionColorsRecord? = null,
+  val onValueChangeSync: WorkletCallback? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 // endregion Props
@@ -214,112 +264,232 @@ private fun String?.toImeAction(): ImeAction = when (this) {
 
 // endregion Mappers
 
+// region Value helpers
+
+private fun ObservableState.extractSelection(textLength: Int): TextRange {
+  val selMap = value as? Map<*, *>
+  val start = (selMap?.get("start") as? Number)?.toInt()?.coerceIn(0, textLength) ?: 0
+  val end = (selMap?.get("end") as? Number)?.toInt()?.coerceIn(0, textLength) ?: 0
+  return TextRange(start, end)
+}
+
+// endregion Value helpers
+
 // region View
 
-@SuppressLint("ViewConstructor")
-class TextFieldView(context: Context, appContext: AppContext) :
-  ExpoComposeView<TextFieldProps>(context, appContext) {
-  override val props = TextFieldProps()
-  private val onValueChange by EventDispatcher()
-  private val onFocusChanged by EventDispatcher()
-  private val onKeyboardAction by EventDispatcher()
+@Composable
+fun FunctionalComposableScope.TextFieldContent(
+  props: TextFieldProps,
+  setText: AsyncFunctionHandle<String>,
+  setSelection: AsyncFunctionHandle2<Int, Int>,
+  clear: AsyncFunctionHandle<Unit>,
+  focus: AsyncFunctionHandle<Unit>,
+  blur: AsyncFunctionHandle<Unit>,
+  onValueChanged: (TextFieldValuePayload) -> Unit,
+  onFocusChange: (GenericEventPayload1<Boolean>) -> Unit,
+  onKeyboardActionTriggered: (KeyboardActionEvent) -> Unit,
+  onSelectionChanged: (TextFieldSelectionPayload) -> Unit
+) {
+  val focusManager = LocalFocusManager.current
+  val focusRequester = remember { FocusRequester() }
+  val state = props.value
 
-  private val textState = mutableStateOf<String?>(null)
-  private val focusRequester by lazy { FocusRequester() }
-  private var focusManager: FocusManager? = null
+  setText.handle { text ->
+    state.value = text
+    // setText moves the cursor to the end; use setSelection afterwards to override.
+    props.selection.value = mapOf("start" to text.length, "end" to text.length)
+  }
+  focus.handle {
+    focusRequester.requestFocus()
+  }
+  blur.handle {
+    focusManager.clearFocus()
+  }
+  setSelection.handle { start, end ->
+    val text = state.value as? String ?: ""
+    val clampedStart = start.coerceIn(0, text.length)
+    val clampedEnd = end.coerceIn(0, text.length)
+    props.selection.value = mapOf("start" to clampedStart, "end" to clampedEnd)
+  }
+  clear.handle {
+    state.value = ""
+    props.selection.value = mapOf("start" to 0, "end" to 0)
+  }
 
-  var text: String?
-    get() = textState.value
-    set(value) {
-      textState.value = value
+  // Slots
+  val label: (@Composable () -> Unit)? = findChildSlotView(view, "label")?.let { slot -> { slot.renderSlot() } }
+  val placeholder: (@Composable () -> Unit)? = findChildSlotView(view, "placeholder")?.let { slot -> { slot.renderSlot() } }
+  val leadingIcon: (@Composable () -> Unit)? = findChildSlotView(view, "leadingIcon")?.let { slot -> { slot.renderSlot() } }
+  val trailingIcon: (@Composable () -> Unit)? = findChildSlotView(view, "trailingIcon")?.let { slot -> { slot.renderSlot() } }
+  val prefix: (@Composable () -> Unit)? = findChildSlotView(view, "prefix")?.let { slot -> { slot.renderSlot() } }
+  val suffix: (@Composable () -> Unit)? = findChildSlotView(view, "suffix")?.let { slot -> { slot.renderSlot() } }
+  val supportingText: (@Composable () -> Unit)? = findChildSlotView(view, "supportingText")?.let { slot -> { slot.renderSlot() } }
+
+  // Keyboard
+  val kbOpts = props.keyboardOptions
+  val keyboardOptions = KeyboardOptions.Default.copy(
+    keyboardType = kbOpts?.keyboardType.toKeyboardType(),
+    autoCorrectEnabled = kbOpts?.autoCorrectEnabled ?: true,
+    capitalization = kbOpts?.capitalization.toCapitalization(),
+    imeAction = kbOpts?.imeAction.toImeAction()
+  )
+  val currentText = { state.value as? String ?: "" }
+  val keyboardActions = KeyboardActions(
+    onDone = {
+      defaultKeyboardAction(ImeAction.Done)
+      onKeyboardActionTriggered(KeyboardActionEvent("done", currentText()))
+    },
+    onGo = {
+      defaultKeyboardAction(ImeAction.Go)
+      onKeyboardActionTriggered(KeyboardActionEvent("go", currentText()))
+    },
+    onNext = {
+      defaultKeyboardAction(ImeAction.Next)
+      onKeyboardActionTriggered(KeyboardActionEvent("next", currentText()))
+    },
+    onPrevious = {
+      defaultKeyboardAction(ImeAction.Previous)
+      onKeyboardActionTriggered(KeyboardActionEvent("previous", currentText()))
+    },
+    onSearch = {
+      defaultKeyboardAction(ImeAction.Search)
+      onKeyboardActionTriggered(KeyboardActionEvent("search", currentText()))
+    },
+    onSend = {
+      defaultKeyboardAction(ImeAction.Send)
+      onKeyboardActionTriggered(KeyboardActionEvent("send", currentText()))
+    }
+  )
+
+  // Lines
+  val singleLine = props.singleLine
+  val maxLines = props.maxLines ?: if (singleLine) 1 else Int.MAX_VALUE
+  val minLines = props.minLines ?: 1
+
+  // Modifier
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+    .focusRequester(focusRequester)
+    .onFocusChanged { focusState ->
+      onFocusChange(GenericEventPayload1(focusState.isFocused))
     }
 
-  fun focus() = focusRequester.requestFocus()
-  fun blur() = focusManager?.clearFocus()
+  if (props.autoFocus) {
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
+  }
 
-  @Composable
-  override fun ComposableScope.Content() {
-    focusManager = LocalFocusManager.current
-    val value = textState.value ?: props.defaultValue.value
-    val onValueChange: (String) -> Unit = {
-      textState.value = it
-      onValueChange(mapOf("value" to it))
-    }
-
-    // Slots
-    val label: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "label")?.let { slot -> { slot.renderSlot() } }
-    val placeholder: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "placeholder")?.let { slot -> { slot.renderSlot() } }
-    val leadingIcon: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "leadingIcon")?.let { slot -> { slot.renderSlot() } }
-    val trailingIcon: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "trailingIcon")?.let { slot -> { slot.renderSlot() } }
-    val prefix: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "prefix")?.let { slot -> { slot.renderSlot() } }
-    val suffix: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "suffix")?.let { slot -> { slot.renderSlot() } }
-    val supportingText: (@Composable () -> Unit)? = findChildSlotView(this@TextFieldView, "supportingText")?.let { slot -> { slot.renderSlot() } }
-
-    // Keyboard
-    val kbOpts = props.keyboardOptions.value
-    val keyboardOptions = KeyboardOptions.Default.copy(
-      keyboardType = kbOpts?.keyboardType.toKeyboardType(),
-      autoCorrectEnabled = kbOpts?.autoCorrectEnabled ?: true,
-      capitalization = kbOpts?.capitalization.toCapitalization(),
-      imeAction = kbOpts?.imeAction.toImeAction()
-    )
-    val currentText = { textState.value ?: "" }
-    val keyboardActions = KeyboardActions(
-      onDone = { defaultKeyboardAction(ImeAction.Done); onKeyboardAction(mapOf("action" to "done", "value" to currentText())) },
-      onGo = { defaultKeyboardAction(ImeAction.Go); onKeyboardAction(mapOf("action" to "go", "value" to currentText())) },
-      onNext = { defaultKeyboardAction(ImeAction.Next); onKeyboardAction(mapOf("action" to "next", "value" to currentText())) },
-      onPrevious = { defaultKeyboardAction(ImeAction.Previous); onKeyboardAction(mapOf("action" to "previous", "value" to currentText())) },
-      onSearch = { defaultKeyboardAction(ImeAction.Search); onKeyboardAction(mapOf("action" to "search", "value" to currentText())) },
-      onSend = { defaultKeyboardAction(ImeAction.Send); onKeyboardAction(mapOf("action" to "send", "value" to currentText())) },
-    )
-
-    // Lines
-    val singleLine = props.singleLine.value
-    val maxLines = props.maxLines.value ?: if (singleLine) 1 else Int.MAX_VALUE
-    val minLines = props.minLines.value ?: 1
-
-    // Modifier
-    val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
-      .focusRequester(focusRequester)
-      .onFocusChanged { focusState ->
-        onFocusChanged(mapOf("value" to focusState.isFocused))
-      }
-
-    if (props.autoFocus.value) {
-      LaunchedEffect(Unit) { focusRequester.requestFocus() }
-    }
-
-    val isOutlined = props.variant.value == TextFieldVariant.OUTLINED
-    val shape = shapeFromShapeRecord(props.shape.value)
-      ?: if (isOutlined) OutlinedTextFieldDefaults.shape else TextFieldDefaults.shape
-    val colors = props.colors.value?.toColors(isOutlined)
-      ?: if (isOutlined) OutlinedTextFieldDefaults.colors() else TextFieldDefaults.colors()
-
-    if (isOutlined) {
-      OutlinedTextField(
-        value = value, onValueChange = onValueChange, modifier = modifier,
-        enabled = props.enabled.value, readOnly = props.readOnly.value,
-        label = label, placeholder = placeholder,
-        leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-        prefix = prefix, suffix = suffix, supportingText = supportingText,
-        isError = props.isError.value,
-        keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
-        singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-        shape = shape, colors = colors,
-      )
+  val isOutlined = props.variant == TextFieldVariant.OUTLINED
+  val shape = shapeFromShapeRecord(props.shape)
+    ?: if (isOutlined) OutlinedTextFieldDefaults.shape else TextFieldDefaults.shape
+  val baseColors = props.colors?.toColors(isOutlined)
+    ?: if (isOutlined) OutlinedTextFieldDefaults.colors() else TextFieldDefaults.colors()
+  val colors = props.textSelectionColors?.let { record ->
+    val handle = record.handleColor.composeOrNull
+    val background = record.backgroundColor.composeOrNull
+    if (handle == null && background == null) {
+      baseColors
     } else {
-      TextField(
-        value = value, onValueChange = onValueChange, modifier = modifier,
-        enabled = props.enabled.value, readOnly = props.readOnly.value,
-        label = label, placeholder = placeholder,
-        leadingIcon = leadingIcon, trailingIcon = trailingIcon,
-        prefix = prefix, suffix = suffix, supportingText = supportingText,
-        isError = props.isError.value,
-        keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
-        singleLine = singleLine, maxLines = maxLines, minLines = minLines,
-        shape = shape, colors = colors,
+      baseColors.copy(
+        textSelectionColors = TextSelectionColors(
+          handleColor = handle ?: baseColors.textSelectionColors.handleColor,
+          backgroundColor = background ?: handle?.copy(alpha = 0.4f)
+            ?: baseColors.textSelectionColors.backgroundColor
+        )
       )
     }
+  } ?: baseColors
+
+  val text = state.value as? String ?: ""
+  val selection = props.selection.extractSelection(text.length)
+
+  val localValue = remember { mutableStateOf(TextFieldValue(text, selection)) }
+  if (localValue.value.text != text || localValue.value.selection != selection) {
+    localValue.value = TextFieldValue(text, selection)
+  }
+
+  val value = localValue.value
+
+  val onValueChange: (TextFieldValue) -> Unit = { incoming ->
+    val new = props.maxLength?.let { max ->
+      if (incoming.text.length > max) {
+        val truncated = incoming.text.substring(0, max)
+        incoming.copy(
+          text = truncated,
+          selection = TextRange(
+            incoming.selection.start.coerceAtMost(max),
+            incoming.selection.end.coerceAtMost(max)
+          )
+        )
+      } else {
+        null
+      }
+    } ?: incoming
+    val prev = localValue.value
+    localValue.value = new
+    if (new.selection != prev.selection) {
+      val cur = props.selection.value as? Map<*, *>
+      val curStart = (cur?.get("start") as? Number)?.toInt()
+      val curEnd = (cur?.get("end") as? Number)?.toInt()
+      if (curStart != new.selection.start || curEnd != new.selection.end) {
+        props.selection.value = mapOf(
+          "start" to new.selection.start,
+          "end" to new.selection.end
+        )
+      }
+      onSelectionChanged(TextFieldSelectionPayload(new.selection.start, new.selection.end))
+    }
+    if (new.text != prev.text) {
+      state.value = new.text
+      val payload = TextFieldValuePayload(
+        text = new.text,
+        selection = TextFieldSelectionPayload(new.selection.start, new.selection.end)
+      )
+      onValueChanged(payload)
+      props.onValueChangeSync?.invoke(new.text)
+    }
+  }
+
+  val context = appContext.reactContext
+  val textStyle = props.textStyle?.let { textStyleProps ->
+    TextStyle(
+      color = colorToComposeColorOrNull(textStyleProps.color) ?: androidx.compose.ui.graphics.Color.Unspecified,
+      fontSize = textStyleProps.fontSize?.sp ?: TextUnit.Unspecified,
+      fontWeight = textStyleProps.fontWeight?.toComposeFontWeight(),
+      fontFamily = context?.let { resolveFontFamily(textStyleProps.fontFamily, it) },
+      letterSpacing = textStyleProps.letterSpacing?.sp ?: TextUnit.Unspecified,
+      lineHeight = textStyleProps.lineHeight?.sp ?: TextUnit.Unspecified,
+      textAlign = textStyleProps.textAlign?.toComposeTextAlign() ?: TextAlign.Unspecified
+    )
+  } ?: TextStyle.Default
+
+  val visualTransformation = when (props.visualTransformation) {
+    "password" -> PasswordVisualTransformation()
+    else -> VisualTransformation.None
+  }
+
+  if (isOutlined) {
+    OutlinedTextField(
+      value = value, onValueChange = onValueChange, modifier = modifier,
+      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
+      label = label, placeholder = placeholder,
+      leadingIcon = leadingIcon, trailingIcon = trailingIcon,
+      prefix = prefix, suffix = suffix, supportingText = supportingText,
+      isError = props.isError, visualTransformation = visualTransformation,
+      keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
+      singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+      shape = shape, colors = colors
+    )
+  } else {
+    TextField(
+      value = value, onValueChange = onValueChange, modifier = modifier,
+      enabled = props.enabled, readOnly = props.readOnly, textStyle = textStyle,
+      label = label, placeholder = placeholder,
+      leadingIcon = leadingIcon, trailingIcon = trailingIcon,
+      prefix = prefix, suffix = suffix, supportingText = supportingText,
+      isError = props.isError, visualTransformation = visualTransformation,
+      keyboardOptions = keyboardOptions, keyboardActions = keyboardActions,
+      singleLine = singleLine, maxLines = maxLines, minLines = minLines,
+      shape = shape, colors = colors
+    )
   }
 }
 

@@ -6,12 +6,13 @@
  */
 
 import JsonFile from '@expo/json-file';
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { spawn, execSync } from 'child_process';
 import fs from 'fs';
 import assert from 'node:assert';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import { EOL } from 'os';
 import path from 'path';
 

@@ -1,4 +1,4 @@
-import { SchedulableNotificationTriggerInput } from './Notifications.types';
+import type { SchedulableNotificationTriggerInput } from './Notifications.types';
 /**
  * Allows you to check what will be the next trigger date for given notification trigger input.
  * @param trigger The schedulable notification trigger you would like to check next trigger date for (of type [`SchedulableNotificationTriggerInput`](#schedulablenotificationtriggerinput)).

@@ -1,17 +1,18 @@
+import type { ConfigPlugin } from '@expo/config-plugins';
 import {
-  ConfigPlugin,
   IOSConfig,
   WarningAggregator,
   withDangerousMod,
   withXcodeProject,
 } from '@expo/config-plugins';
 import { findNativeTargetByName } from '@expo/config-plugins/build/ios/Target';
-import { ExpoConfig, IOSIcons } from '@expo/config-types';
+import type { ExpoConfig, IOSIcons } from '@expo/config-types';
 import { createSquareAsync, generateImageAsync } from '@expo/image-utils';
 import fs from 'fs';
 import path from 'path';
 
-import { ContentsJson, ContentsJsonImage, writeContentsJsonAsync } from './AssetContents';
+import type { ContentsJson, ContentsJsonImage } from './AssetContents';
+import { writeContentsJsonAsync } from './AssetContents';
 
 const { getProjectName } = IOSConfig.XcodeUtils;
 
@@ -90,14 +91,6 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
 
 export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const icon = getIcons(config);
-
-  if (
-    !icon ||
-    (typeof icon === 'string' && !icon) ||
-    (typeof icon === 'object' && !icon?.light && !icon?.dark && !icon?.tinted)
-  ) {
-    WarningAggregator.addWarningIOS('icon', 'No icon is defined in the Expo config.');
-  }
 
   // Something like projectRoot/ios/MyApp/
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);

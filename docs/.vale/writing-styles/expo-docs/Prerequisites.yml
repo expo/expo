@@ -1,0 +1,7 @@
+extends: existence
+message: "Use the <Prerequisites> component instead of a markdown 'Prerequisites' heading with a bulleted checklist."
+link: 'https://github.com/expo/expo/blob/main/docs/README.md#use-prerequisites-for-setup-checklists'
+level: warning
+scope: raw
+raw:
+  - '\n#{2,4}\s+Prerequisites\s*\n+(?:[^\n]*\n){0,5}-\s'

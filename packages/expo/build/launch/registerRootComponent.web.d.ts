@@ -1,5 +1,5 @@
 import '../Expo.fx';
-import { type ComponentType } from 'react';
+import type { ComponentType } from 'react';
 type InitialProps = {
     exp?: {
         notification?: any;

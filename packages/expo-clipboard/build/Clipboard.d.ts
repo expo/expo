@@ -1,7 +1,6 @@
 import { type EventSubscription } from 'expo-modules-core';
 import type { ClipboardImage, ClipboardEvent, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
-import { ClipboardPasteButton } from './ClipboardPasteButton';
-export { EventSubscription as Subscription };
+export type { EventSubscription as Subscription } from 'expo-modules-core';
 /**
  * Gets the content of the user's clipboard. Calling this method on web will prompt
  * the user to grant your app permission to "see text and images copied to the clipboard."
@@ -137,6 +136,5 @@ export declare function removeClipboardListener(subscription: EventSubscription)
  */
 export declare const isPasteButtonAvailable: boolean;
 export * from './Clipboard.types';
-export { ClipboardPasteButtonProps } from './ClipboardPasteButton';
-export { ClipboardPasteButton };
+export { ClipboardPasteButton, type ClipboardPasteButtonProps } from './ClipboardPasteButton';
 //# sourceMappingURL=Clipboard.d.ts.map

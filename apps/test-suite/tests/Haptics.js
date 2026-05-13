@@ -3,13 +3,13 @@ import * as Haptics from 'expo-haptics';
 export const name = 'Haptics';
 
 export async function test(t) {
-  t.describe('Haptics', async () => {
+  t.describe('Haptics', () => {
     t.it('selectionAsync()', async () => {
       const result = await Haptics.selectionAsync();
       t.expect(result).toBeUndefined();
     });
 
-    t.describe('notificationAsync()', async () => {
+    t.describe('notificationAsync()', () => {
       t.it('success', async () => {
         const result = await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         t.expect(result).toBeUndefined();
@@ -26,7 +26,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('impactAsync()', async () => {
+    t.describe('impactAsync()', () => {
       t.it('light', async () => {
         const result = await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         t.expect(result).toBeUndefined();

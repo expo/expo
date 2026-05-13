@@ -302,12 +302,12 @@ export class LogStream extends EventEmitter implements NodeJS.WritableStream {
       return false;
     }
 
-    this.#len += data.length;
-
     // Fast path: For complete lines with no pending partial we can skip the work below
     if (this.#partialLine === 0 && data.charCodeAt(data.length - 1) === 10 /*'\n'*/) {
       return this._writeln(data);
     }
+
+    this.#len += data.length;
 
     let startIdx = 0;
     let endIdx = -1;

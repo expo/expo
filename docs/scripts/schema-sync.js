@@ -1,8 +1,8 @@
 /**
  * This script updates the necessary schema for the passed-in version.
  *
- * yarn run schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-config.md uses
- * yarn run schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
+ * pnpm schema-sync 38 -> updates the schema that versions/v38.0.0/sdk/app-config.md uses
+ * pnpm schema-sync unversioned -> updates the schema that versions/unversioned/sdk/app-config.md uses
  */
 
 import parser from '@apidevtools/json-schema-ref-parser';
@@ -14,7 +14,7 @@ const version = process.argv[2];
 async function run() {
   if (!version) {
     console.log('Please enter a version number\n');
-    console.log('E.g., "yarn run schema-sync 38" \nor, "yarn run schema-sync unversioned"');
+    console.log('E.g., "pnpm schema-sync 38" \nor, "pnpm schema-sync unversioned"');
     return;
   }
 

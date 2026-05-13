@@ -34,13 +34,17 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
   const isSelected = isRouteActive(info, router?.asPath, router?.pathname);
 
   useEffect(() => {
-    if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {
-      setTimeout(() => {
-        if (ref?.current) {
-          ref.current.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 50);
+    if (!isSelected || !ref?.current) {
+      return;
     }
+    const timeoutId = setTimeout(() => {
+      if (ref?.current && !isLinkInViewport(ref.current)) {
+        ref.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 50);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   if (info.hidden) {

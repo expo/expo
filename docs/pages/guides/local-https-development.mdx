@@ -4,16 +4,24 @@ sidebar_title: Local HTTPS development
 description: Learn how to set up local HTTPS for Expo web apps.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
 When developing Expo web apps locally, you may need to use HTTPS with your local development environment for testing secure browser APIs. This guide shows you how to set up local HTTPS for Expo web apps.
 
-## Prerequisites
-
-This guide requires the following tool installed on your machine:
-
-- `mkcert`: A tool for creating development certificates. For installation instructions, see the [`mkcert` GitHub repository](https://github.com/FiloSottile/mkcert#installation).
+<Prerequisites>
+  <Requirement
+    title={
+      <>
+        <CODE>mkcert</CODE> installed
+      </>
+    }>
+    `mkcert` is a tool for creating development certificates. For installation instructions, see the
+    [`mkcert` GitHub repository](https://github.com/FiloSottile/mkcert#installation).
+  </Requirement>
+</Prerequisites>
 
 ## Benefits
 

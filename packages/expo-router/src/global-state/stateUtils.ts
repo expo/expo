@@ -1,6 +1,6 @@
-import { ResultState } from '../fork/getStateFromPath';
+import type { ResultState } from '../fork/getStateFromPath';
 import { matchDynamicName } from '../matchers';
-import { type NavigationState, PartialRoute, type PartialState } from '../react-navigation/native';
+import type { PartialRoute, NavigationState, PartialState } from '../react-navigation/native';
 
 /**
  * React Navigation uses params to store information about the screens, rather then create new state for each level.
@@ -54,29 +54,30 @@ export function findDivergentState(
   let actionStateRoute: PartialRoute<any> | undefined;
   const navigationRoutes = [];
   while (actionState && navigationState) {
-    actionStateRoute = actionState.routes[actionState.routes.length - 1];
+    // TODO(@kitten): Review invalid indexed access into undefined
+    actionStateRoute = actionState.routes[actionState.routes.length - 1]!;
     const stateRoute = (() => {
       if (navigationState.type === 'tab' && lookThroughAllTabs) {
         return (
           navigationState.routes.find((route) => route.name === actionStateRoute?.name) ||
-          navigationState.routes[navigationState.index ?? 0]
+          navigationState.routes[navigationState.index ?? 0]!
         );
       }
-      return navigationState.routes[navigationState.index ?? 0];
+      return navigationState.routes[navigationState.index ?? 0]!;
     })();
 
     const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
 
-    const dynamicName = matchDynamicName(actionStateRoute.name);
+    const dynamicName = matchDynamicName(actionStateRoute!.name);
 
     const didActionAndCurrentStateDiverge =
       actionStateRoute.name !== stateRoute.name ||
       !childState ||
       !nextNavigationState ||
       (dynamicName &&
-        // @ts-expect-error: TODO(@kitten): This isn't properly typed, so the index access fails
-        actionStateRoute.params?.[dynamicName.name] !== stateRoute.params?.[dynamicName.name]);
+        actionStateRoute.params?.[dynamicName.name] !==
+          (stateRoute.params as Record<string, any> | undefined)?.[dynamicName.name]);
 
     if (didActionAndCurrentStateDiverge) {
       // If we are looking through all tabs, we need to add new tab id if this is the last route

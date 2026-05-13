@@ -105,10 +105,6 @@ export async function configurePackageManager(
 ) {
   const manager = createPackageManager(packageManager, { cwd: projectRoot, ...flags });
   switch (manager.name) {
-    case 'pnpm':
-      await manager.runAsync(['config', '--location', 'project', 'set', 'node-linker', 'hoisted']);
-      break;
-
     case 'yarn': {
       const yarnVersion = await manager.versionAsync();
       const majorVersion = parseInt(yarnVersion.split('.')[0] ?? '', 10);

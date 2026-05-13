@@ -6,17 +6,16 @@
 import { createConnectMiddleware } from '@expo/metro/metro';
 import type { RunServerOptions } from '@expo/metro/metro';
 import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
-import Server from '@expo/metro/metro/Server';
+import type Server from '@expo/metro/metro/Server';
 import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
 import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
 import type { AddressInfo } from 'net';
-import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
 
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
+import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
 import type { ConnectAppType } from '../middleware/server.types';
 
@@ -171,7 +170,7 @@ export const runServer = async (
       });
 
       httpServer.on('upgrade', (request, socket, head) => {
-        const { pathname } = parse(request.url!);
+        const { pathname } = new URL(request.url!, 'http://localhost');
         if (pathname != null && websocketEndpoints[pathname]) {
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
             websocketEndpoints[pathname]?.emit('connection', ws, request);

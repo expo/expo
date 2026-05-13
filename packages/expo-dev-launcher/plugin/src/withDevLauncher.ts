@@ -152,6 +152,22 @@ export default createRunOncePlugin<PluginConfigType>(
       });
     }
 
+    const iOSSkipOnboarding = props.ios?.skipOnboarding ?? props.skipOnboarding;
+    if (iOSSkipOnboarding !== undefined) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevMenuIsOnboardingFinished'] = iOSSkipOnboarding;
+        return config;
+      });
+    }
+
+    const iOSShowMenuAtLaunch = props.ios?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (iOSShowMenuAtLaunch !== undefined) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevMenuShowsAtLaunch'] = iOSShowMenuAtLaunch;
+        return config;
+      });
+    }
+
     const androidLaunchMode =
       props.android?.launchMode ??
       props.launchMode ??
@@ -200,6 +216,34 @@ export default createRunOncePlugin<PluginConfigType>(
           mainApplication,
           'EXDevClientEmbeddedBundle',
           String(true)
+        );
+        return config;
+      });
+    }
+
+    const androidSkipOnboarding = props.android?.skipOnboarding ?? props.skipOnboarding;
+    if (androidSkipOnboarding !== undefined) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevMenuIsOnboardingFinished',
+          String(androidSkipOnboarding)
+        );
+        return config;
+      });
+    }
+
+    const androidShowMenuAtLaunch = props.android?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (androidShowMenuAtLaunch !== undefined) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevMenuShowsAtLaunch',
+          String(androidShowMenuAtLaunch)
         );
         return config;
       });

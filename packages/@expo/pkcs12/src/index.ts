@@ -1,4 +1,5 @@
-import crypto, { BinaryToTextEncoding, Encoding } from 'crypto';
+import type { BinaryToTextEncoding, Encoding } from 'crypto';
+import crypto from 'crypto';
 import forge from 'node-forge';
 
 /**

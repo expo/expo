@@ -116,5 +116,38 @@ class RecordSpec: ExpoSpec {
         expect(error).to(beAKindOf(FieldInvalidTypeException.self))
       })
     }
+
+    it("serializes concurrently on a shared record without crashing") {
+      struct StressRecord: Record {
+        @Field var a: String? = nil
+        @Field var b: String? = nil
+        @Field var c: String? = nil
+      }
+
+      let record = StressRecord(a: "a", b: "b", c: "c")
+      let workers = 16
+      let iterations = 100
+      let group = DispatchGroup()
+      let startGate = DispatchSemaphore(value: 0)
+
+      for _ in 0..<workers {
+        group.enter()
+        DispatchQueue.global(qos: .userInitiated).async {
+          startGate.wait()
+          for _ in 0..<iterations {
+            _ = record.toDictionary()
+          }
+          group.leave()
+        }
+      }
+      // Release every worker so they collide on the first reflection.
+      for _ in 0..<workers { startGate.signal() }
+      group.wait()
+
+      let finalDict = record.toDictionary()
+      expect(finalDict.keys.count).to(equal(3))
+      expect(finalDict["a"] as? String).to(equal("a"))
+      expect(finalDict["c"] as? String).to(equal("c"))
+    }
   }
 }

@@ -3,12 +3,14 @@ import {
   Host,
   TextField,
   TextFieldRef,
+  TextFieldSelection,
   SecureField,
   Form,
   Section,
   Text,
   HStack,
   Picker,
+  useNativeState,
 } from '@expo/ui/swift-ui';
 import {
   autocorrectionDisabled,
@@ -27,9 +29,17 @@ import * as React from 'react';
 
 export default function TextFieldScreen() {
   const textRef = React.useRef<TextFieldRef>(null);
-  const [selection, setSelection] = React.useState<{ start: number; end: number } | null>(null);
 
-  // Submit label picker
+  const username = useNativeState('johndoe');
+  const imperativeText = useNativeState('Select me!');
+  const imperativeSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
+  const [imperativeSelDisplay, setImperativeSelDisplay] = React.useState<TextFieldSelection>({
+    start: 0,
+    end: 0,
+  });
+  const maskedPhone = useNativeState('');
+  const phoneSelection = useNativeState<TextFieldSelection>({ start: 0, end: 0 });
+
   const submitLabelOptions = [
     'continue',
     'done',
@@ -50,21 +60,21 @@ export default function TextFieldScreen() {
         {/* Profile Form */}
         <Section title="Profile">
           <TextField
-            defaultValue="johndoe"
+            text={username}
             placeholder="Username"
             modifiers={[autocorrectionDisabled()]}
-            onValueChange={(v) => console.log('username:', v)}
+            onTextChange={(v) => console.log('username:', v)}
           />
           <TextField
             placeholder="Email"
             modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
-            onValueChange={(v) => console.log('email:', v)}
+            onTextChange={(v) => console.log('email:', v)}
           />
           <TextField
             axis="vertical"
             placeholder="Tell us about yourself..."
             modifiers={[lineLimit(3, { reservesSpace: true })]}
-            onValueChange={(v) => console.log('bio:', v)}
+            onTextChange={(v) => console.log('bio:', v)}
           />
         </Section>
 
@@ -79,13 +89,44 @@ export default function TextFieldScreen() {
           <TextField
             placeholder="Phone number"
             modifiers={[keyboardType('phone-pad')]}
-            onValueChange={(v) => console.log('phone:', v)}
+            onTextChange={(v) => console.log('phone:', v)}
           />
           <TextField
             placeholder="Website"
             modifiers={[keyboardType('url'), autocorrectionDisabled()]}
           />
           <TextField placeholder="Amount" modifiers={[keyboardType('decimal-pad')]} />
+        </Section>
+
+        {/* Worklet-based phone masking — updates synchronously on the UI thread */}
+        <Section title="Worklet Phone Masking">
+          <TextField
+            text={maskedPhone}
+            selection={phoneSelection}
+            placeholder="(555) 123-4567"
+            modifiers={[keyboardType('phone-pad')]}
+            onTextChange={(v) => {
+              'worklet';
+              const digits = v.replace(/\D/g, '').slice(0, 10);
+              let formatted: string;
+              if (digits.length === 0) {
+                formatted = '';
+              } else if (digits.length <= 3) {
+                formatted = digits;
+              } else if (digits.length <= 6) {
+                formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+              } else {
+                formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+              }
+              if (formatted !== v) {
+                maskedPhone.value = formatted;
+                phoneSelection.value = { start: formatted.length, end: formatted.length };
+              }
+            }}
+          />
+          <Text modifiers={[foregroundStyle('secondary')]}>
+            Formatted on the UI thread, no flicker between the typed value and the masked value.
+          </Text>
         </Section>
 
         {/* Multiline Variants */}
@@ -132,13 +173,14 @@ export default function TextFieldScreen() {
         <Section title="Imperative API">
           <TextField
             ref={textRef}
-            defaultValue="Select me!"
+            text={imperativeText}
+            selection={imperativeSelection}
+            onSelectionChange={setImperativeSelDisplay}
             placeholder="Imperative field"
             modifiers={[autocorrectionDisabled()]}
-            onSelectionChange={setSelection}
           />
           <Text modifiers={[foregroundStyle('secondary')]}>
-            Selection: {selection ? `${selection.start}–${selection.end}` : 'none'}
+            {`Selection: ${imperativeSelDisplay.start}–${imperativeSelDisplay.end}`}
           </Text>
           <HStack spacing={12}>
             <Button
@@ -158,7 +200,10 @@ export default function TextFieldScreen() {
             />
             <Button
               modifiers={[buttonStyle('bordered')]}
-              onPress={() => textRef.current?.setSelection(0, 7)}
+              onPress={async () => {
+                await textRef.current?.focus();
+                textRef.current?.setSelection(0, 7);
+              }}
               label="Select"
             />
           </HStack>

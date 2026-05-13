@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import os from 'os';
 import { URLSearchParams } from 'url';
 
@@ -39,11 +39,13 @@ export async function updateDevelopmentSessionAsync({
   exp,
   runtime,
   url,
+  signal,
 }: {
   deviceIds: string[];
   exp: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
   runtime: 'native' | 'web';
   url: string;
+  signal?: AbortSignal;
 }) {
   const searchParams = new URLSearchParams();
   deviceIds.forEach((id) => {
@@ -51,6 +53,7 @@ export async function updateDevelopmentSessionAsync({
   });
 
   const results = await fetchAsync('development-sessions/notify-alive', {
+    signal,
     searchParams,
     method: 'POST',
     body: JSON.stringify({

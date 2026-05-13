@@ -1,5 +1,6 @@
 import { assertSdkRoot } from './AndroidSdk';
-import { adbArgs, Device, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
+import type { Device } from './adb';
+import { adbArgs, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 import * as Log from '../../../log';
 import { installExitHooks } from '../../../utils/exit';
 

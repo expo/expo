@@ -56,5 +56,5 @@ export type ButtonProps = {
  * />
  * ```
  */
-export declare function Button(props: ButtonProps): import("react").JSX.Element;
+export declare function Button(props: ButtonProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

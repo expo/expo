@@ -11,6 +11,7 @@ const fs_1 = __importDefault(require("fs"));
 const resolution_1 = require("./resolution");
 const rncliLocal_1 = require("./rncliLocal");
 const scanning_1 = require("./scanning");
+const types_1 = require("./types");
 const utils_1 = require("./utils");
 const findModules_1 = require("../autolinking/findModules");
 const autolinkingOptions_1 = require("../commands/autolinkingOptions");
@@ -90,7 +91,7 @@ async function scanDependencyResolutionsForPlatform(linker, platform, extraInclu
             else if (opts.includeNames.has(resolution.name)) {
                 return resolution;
             }
-            else if (resolution.source === 2 /* DependencyResolutionSource.RN_CLI_LOCAL */) {
+            else if (resolution.source === types_1.DependencyResolutionSource.RN_CLI_LOCAL) {
                 // If the dependency was resolved frpom the React Native project config, we'll only
                 // attempt to resolve it as a React Native module
                 const reactNativeModuleDesc = await (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, opts.excludeNames);

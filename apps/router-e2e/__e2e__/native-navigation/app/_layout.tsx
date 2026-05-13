@@ -1,4 +1,5 @@
-import { DefaultTheme, Stack, ThemeProvider, unstable_navigationEvents } from 'expo-router';
+import { Stack, unstable_navigationEvents } from 'expo-router';
+import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 
 const appStart = Date.now();
 
@@ -13,7 +14,6 @@ unstable_navigationEvents.enable();
     );
   });
 });
-unstable_navigationEvents.saveCurrentPathname();
 
 export default function Layout() {
   return (

@@ -34,8 +34,15 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             // ReactNativeDelegate
             'ReactNativeDelegate.swift',
         ];
-        // Create files from templates
-        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath));
+        // Per-target prefix is interpolated into `@objc(...)` annotations so the
+        // ObjC runtime sees a unique class name per inner-app framework.
+        // Swift type names themselves stay unprefixed: each brownfield framework
+        // has a unique Swift module name, which is enough namespace isolation, and
+        // typealias-based unprefixing breaks linking under library-evolution mode
+        // (clients reference symbols by the typealias path, but the framework
+        // exports symbols under the underlying class name → undefined symbol).
+        const templateVars = { prefix: pluginConfig.targetName };
+        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath, templateVars));
         // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
         (0, utils_1.applyPatchToFile)('ExpoAppDelegate.patch', node_path_1.default.join(groupPath, 'ExpoAppDelegate.swift'));
         // Create and properly add a new group for the framework

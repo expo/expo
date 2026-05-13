@@ -1,5 +1,5 @@
-import { CellularGeneration, PermissionResponse } from './Cellular.types';
-export { CellularGeneration };
+import type { PermissionResponse, CellularGeneration } from './Cellular.types';
+export { CellularGeneration } from './Cellular.types';
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)
  * enum value that represents the current cellular-generation type.
@@ -36,6 +36,7 @@ export declare function getCellularGenerationAsync(): Promise<CellularGeneration
  * ```ts
  * await Cellular.allowsVoipAsync(); // true or false
  * ```
+ * @deprecated Voip technology is not widely used and Google is removing it from the Android platform. This method will be removed in a future release.
  */
 export declare function allowsVoipAsync(): Promise<boolean | null>;
 /**

@@ -257,6 +257,16 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
   }
 
   /**
+   Returns the value at the given index without bounds-checking. Used by the iteration
+   helpers (`map`, `forEach`, `reduce`, `filter`, `enumerated`) which iterate
+   `0..<length` and never produce an out-of-range index. Skipping the redundant bounds
+   check avoids a weak-runtime load on every element on the hot path.
+   */
+  internal func getValueUnchecked(at index: Int, in runtime: JavaScriptRuntime) -> JavaScriptValue {
+    return JavaScriptValue(runtime, pointee.getValueAtIndex(runtime.pointee, index))
+  }
+
+  /**
    Sets the element at the specified index.
 
    - Parameters:
@@ -294,7 +304,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
    ```swift
    let array = try runtime.eval("[1, 2, 3]").getArray()
    let value = array[1]           // JavaScriptValue(2)
-   let outOfRange = array[10]     // JavaScriptValue.undefined()
+   let outOfRange = array[10]     // JavaScriptValue.undefined
    ```
 
    ## Setting Values
@@ -314,7 +324,7 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
    */
   public subscript(index: Int) -> JavaScriptValue {
     get {
-      return (try? self.getValue(at: index)) ?? .undefined()
+      return (try? self.getValue(at: index)) ?? .undefined
     }
     nonmutating set {
       guard let runtime else {
@@ -446,10 +456,17 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
      pattern, meaning it only throws if the transform closure throws.
    */
   public func map<T>(_ transform: (_ value: JavaScriptValue) throws -> T) rethrows -> [T] {
-    return try (0..<length).map { index in
-      let value = try self.getValue(at: index)
-      return try transform(value)
+    guard let runtime else {
+      FatalError.runtimeLost()
     }
+    let count = self.length
+    var result: [T] = []
+    result.reserveCapacity(count)
+    for index in 0..<count {
+      let value = getValueUnchecked(at: index, in: runtime)
+      result.append(try transform(value))
+    }
+    return result
   }
 
   /**
@@ -512,5 +529,78 @@ public struct JavaScriptArray: JavaScriptType, ~Copyable {
         return "Index \(index) is out of range for array with length \(length). Valid range is 0..<\(length)."
       }
     }
+  }
+}
+
+// MARK: - Iteration
+//
+// JavaScriptArray is ~Copyable and cannot conform to Sequence, because
+// Swift's Sequence protocol requires Copyable conformance (the iterator
+// would need to store a copy of the array). These methods provide
+// equivalent functionality without requiring protocol conformance.
+
+extension JavaScriptArray {
+  /**
+   Returns an array of `(offset, element)` pairs, similar to `Sequence.enumerated()`.
+
+   - Note: Eagerly evaluates all elements. For large arrays, prefer `forEach(_:)`.
+   */
+  public func enumerated() -> [(offset: Int, element: JavaScriptValue)] {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    var result: [(offset: Int, element: JavaScriptValue)] = []
+    result.reserveCapacity(count)
+    for index in 0..<count {
+      result.append((offset: index, element: getValueUnchecked(at: index, in: runtime)))
+    }
+    return result
+  }
+
+  /**
+   Calls the given closure on each element in the array.
+   */
+  public func forEach(_ body: (JavaScriptValue) throws -> Void) rethrows {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    for index in 0..<count {
+      try body(getValueUnchecked(at: index, in: runtime))
+    }
+  }
+
+  /**
+   Returns an array of elements satisfying the given predicate.
+   */
+  public func filter(_ isIncluded: (JavaScriptValue) throws -> Bool) rethrows -> [JavaScriptValue] {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    var result: [JavaScriptValue] = []
+    for index in 0..<count {
+      let value = getValueUnchecked(at: index, in: runtime)
+      if try isIncluded(value) {
+        result.append(value)
+      }
+    }
+    return result
+  }
+
+  /**
+   Returns the result of combining the elements using the given closure.
+   */
+  public func reduce<Result>(_ initialResult: Result, _ nextPartialResult: (Result, JavaScriptValue) throws -> Result) rethrows -> Result {
+    guard let runtime else {
+      FatalError.runtimeLost()
+    }
+    let count = self.length
+    var result = initialResult
+    for index in 0..<count {
+      result = try nextPartialResult(result, getValueUnchecked(at: index, in: runtime))
+    }
+    return result
   }
 }

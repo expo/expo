@@ -348,6 +348,7 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * Override the default iOS "Deployment Target" version in the following projects:
    *  - in CocoaPods projects,
    *  - `PBXNativeTarget` with "com.apple.product-type.application" `productType` in the app project.
+   * @deprecated use built-in `ios.deploymentTarget` property instead (SDK 56 and greater).
    */
   deploymentTarget?: string;
 

@@ -5,7 +5,7 @@
       "name": "ExpoSMS",
       "podName": "ExpoSMS",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

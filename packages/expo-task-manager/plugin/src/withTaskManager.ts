@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin, withInfoPlist } from 'expo/config-plugins';
+import { type ConfigPlugin, createRunOncePlugin, withInfoPlist } from 'expo/config-plugins';
 
 const pkg = require('../../package.json');
 

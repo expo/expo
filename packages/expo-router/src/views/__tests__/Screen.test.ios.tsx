@@ -92,12 +92,12 @@ describe('Screen', () => {
     });
 
     expect(headerTitle).toHaveBeenCalledTimes(2);
-    expect(headerTitle.mock.calls[0][0]).toEqual(
+    expect(headerTitle.mock.calls[0]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })
     );
-    expect(headerTitle.mock.calls[1][0]).toEqual(
+    expect(headerTitle.mock.calls[1]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })
@@ -111,12 +111,12 @@ describe('Screen', () => {
     });
 
     expect(headerTitle).toHaveBeenCalledTimes(2);
-    expect(headerTitle.mock.calls[0][0]).toEqual(
+    expect(headerTitle.mock.calls[0]![0]).toEqual(
       expect.objectContaining({
         children: 'index',
       })
     );
-    expect(headerTitle.mock.calls[1][0]).toEqual(
+    expect(headerTitle.mock.calls[1]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })

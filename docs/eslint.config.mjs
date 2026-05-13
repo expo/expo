@@ -61,7 +61,6 @@ export default defineConfig([
     '**/.swc/',
     '**/.wrangler/',
     '**/.worker-test/',
-    '**/.yarn/',
     '**/.vale',
     '**/node_modules',
     '**/out',

@@ -13,7 +13,7 @@ export declare function parseParams(request: Request, route: Route): Record<stri
  * @see import('expo-router/src/utils/matchers').getSingularId
  */
 export declare function resolveLoaderContextKey(contextKey: string, params: Record<string, string | string[]>): string;
-export declare function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL;
+export declare function getRedirectRewriteLocation(url: URL, request: Request, route: Route): string;
 /** Match `[page]` -> `page`
  * @privateRemarks Ported from `expo-router/src/matchers.tsx`
  */

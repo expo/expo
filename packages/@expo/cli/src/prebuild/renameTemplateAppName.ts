@@ -3,8 +3,6 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import { ExtractProps } from '../utils/npm';
-
 const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
 
 function escapeXMLCharacters(original: string): string {

@@ -90,6 +90,7 @@ export type ExpoGoConfig = {
   packagerOpts: {
     [key: string]: any;
   };
+  username?: string;
 };
 
 export type EASConfig = {

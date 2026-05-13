@@ -75,6 +75,11 @@ export type ExpoModuleConfig = {
     podName?: string;
     podspecPath?: string;
   };
+  apple?: {
+    subdirectory?: string;
+    podName?: string;
+    podspecPath?: string | string[];
+  };
   android?: {
     subdirectory?: string;
     name?: string;
@@ -152,10 +157,18 @@ export class Package {
       return this.expoModuleConfig.ios.podspecPath;
     }
 
-    // Obtain podspecName by looking for podspecs in both package's root directory and ios subdirectory.
-    const [podspecPath] = glob.sync(`{*,${this.iosSubdirectory}/*}.podspec`, {
-      cwd: this.path,
-    });
+    const applePodspecPath = this.expoModuleConfig?.apple?.podspecPath;
+    if (applePodspecPath) {
+      return Array.isArray(applePodspecPath) ? applePodspecPath[0] : applePodspecPath;
+    }
+
+    // Look for podspecs in the package root and both iOS-style subdirectories.
+    const [podspecPath] = glob.sync(
+      `{*,${this.iosSubdirectory}/*,${this.appleSubdirectory}/*}.podspec`,
+      {
+        cwd: this.path,
+      }
+    );
 
     return podspecPath || null;
   }
@@ -180,6 +193,10 @@ export class Package {
 
   get iosSubdirectory(): string {
     return this.expoModuleConfig?.ios?.subdirectory ?? 'ios';
+  }
+
+  get appleSubdirectory(): string {
+    return this.expoModuleConfig?.apple?.subdirectory ?? 'apple';
   }
 
   get androidSubdirectory(): string {
@@ -404,6 +421,7 @@ export class Package {
 
 /**
  * Resolves to a Package instance if the package with given name exists in the repository.
+ * Falls back to scanning the cached package list when the directory name doesn't match.
  */
 export function getPackageByName(packageName: string): Package | null {
   const packageJsonPath = pathToLocalPackageJson(packageName);
@@ -411,7 +429,7 @@ export function getPackageByName(packageName: string): Package | null {
     const packageJson = require(packageJsonPath);
     return new Package(path.dirname(packageJsonPath), packageJson);
   } catch {
-    return null;
+    return cachedPackages?.find((pkg) => pkg.packageName === packageName) ?? null;
   }
 }
 
@@ -467,5 +485,18 @@ function readExpoModuleConfigJson(expoModuleConfigJsonPath: string) {
 }
 
 function pathToLocalPackageJson(packageName: string): string {
+  if (packageName.startsWith('@')) {
+    try {
+      const resolved = require.resolve(`${packageName}/package.json`, { paths: [PACKAGES_DIR] });
+      // require.resolve walks up node_modules/. Reject realpaths outside PACKAGES_DIR
+      // so third-party scoped installs (e.g. @babel/core) fall through to the cache lookup.
+      const rel = path.relative(PACKAGES_DIR, fs.realpathSync(resolved));
+      if (!rel.startsWith('..') && !path.isAbsolute(rel)) {
+        return resolved;
+      }
+    } catch {
+      // Fall through — caller's cachedPackages fallback still applies.
+    }
+  }
   return path.join(PACKAGES_DIR, packageName, 'package.json');
 }

@@ -164,7 +164,7 @@ export function useDescriptors<
     >,
     overrides: Record<string, ScreenOptions>
   ) => {
-    const config = screens[route.name];
+    const config = screens[route.name]!;
     const screen = config.props;
 
     const optionsList = [
@@ -204,7 +204,7 @@ export function useDescriptors<
     customOptions: ScreenOptions,
     routeState: NavigationState | PartialState<NavigationState> | undefined
   ) => {
-    const config = screens[route.name];
+    const config = screens[route.name]!;
     const screen = config.props;
 
     const clearOptions = () =>
@@ -270,9 +270,9 @@ export function useDescriptors<
       >
     >
   >((acc, route, i) => {
-    const navigation = navigations[route.key];
-    const customOptions = getOptions(route, navigation, options[route.key]);
-    const element = render(route, navigation, customOptions, state.routes[i].state);
+    const navigation = navigations[route.key]!;
+    const customOptions = getOptions(route, navigation, options[route.key]!);
+    const element = render(route, navigation, customOptions, state.routes[i]!.state);
 
     acc[route.key] = {
       route,
@@ -300,7 +300,7 @@ export function useDescriptors<
         throw new Error(`Couldn't find a route with the key ${route.key}.`);
       }
 
-      return descriptors[route.key];
+      return descriptors[route.key]!;
     }
 
     const navigation = base;

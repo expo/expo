@@ -8,7 +8,9 @@ import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.ExposedDropdownMenuBoxComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class ExposedDropdownMenuBoxProps(
   val expanded: Boolean = false,
   val modifiers: ModifierList = emptyList()

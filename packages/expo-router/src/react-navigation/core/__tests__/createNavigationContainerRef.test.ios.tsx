@@ -25,7 +25,7 @@ test('adds the listener even if container is mounted later', () => {
       { title?: string },
       any
     >(MockRouter, props);
-    const { render, options } = descriptors[state.routes[state.index].key];
+    const { render, options } = descriptors[state.routes[state.index]!.key]!;
 
     return (
       <NavigationContent>

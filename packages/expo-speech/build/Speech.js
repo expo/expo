@@ -1,7 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 import ExponentSpeech from './ExponentSpeech';
-import { VoiceQuality } from './Speech.types';
-export { VoiceQuality };
+export { VoiceQuality, } from './Speech.types';
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
 let _didSetListeners = false;

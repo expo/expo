@@ -8,7 +8,7 @@ jobs:
   close-issues:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/stale@v4
+      - uses: actions/stale@a20b814fb01b71def3bd6f56e7494d667ddf28da # v4
         with:
           ascending: false
           operations-per-run: 300

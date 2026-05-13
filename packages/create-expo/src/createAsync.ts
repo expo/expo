@@ -3,10 +3,10 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import type { ExamplesMetadata } from './Examples';
 import {
   downloadAndExtractExampleAsync,
   ensureExampleExists,
-  ExamplesMetadata,
   fetchMetadataAsync,
   promptExamplesAsync,
 } from './Examples';
@@ -14,10 +14,10 @@ import * as Template from './Template';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
+import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
   installDependenciesAsync,
-  PackageManagerName,
   resolvePackageManager,
   formatSelfCommand,
 } from './resolvePackageManager';

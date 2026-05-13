@@ -1,9 +1,9 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import semver from 'semver';
 
-import { type ResolvedTemplateOption } from './resolveOptions';
+import type { ResolvedTemplateOption } from './resolveOptions';
 import { fetchAsync } from '../api/rest/client';
 import * as Log from '../log';
 import { resolveLocalTemplateAsync } from './resolveLocalTemplate';

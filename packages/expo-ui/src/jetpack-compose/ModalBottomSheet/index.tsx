@@ -1,19 +1,16 @@
 import { requireNativeView } from 'expo';
-import React, { Ref } from 'react';
-import { type ColorValue } from 'react-native';
+import type { Ref, ReactNode, ComponentType } from 'react';
+import type { ColorValue } from 'react-native';
 
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {
   slotName: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
-const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeView(
-  'ExpoUI',
-  'SlotView'
-);
+const SlotNativeView: ComponentType<SlotNativeViewProps> = requireNativeView('ExpoUI', 'SlotView');
 
 export type ModalBottomSheetRef = {
   /**
@@ -21,6 +18,15 @@ export type ModalBottomSheetRef = {
    * The returned promise resolves after the dismiss animation completes.
    */
   hide: () => Promise<void>;
+  /**
+   * Programmatically expands the bottom sheet to full height with an animation.
+   */
+  expand: () => Promise<void>;
+  /**
+   * Programmatically collapses the bottom sheet to partially expanded (~50%) state.
+   * Only works when `skipPartiallyExpanded` is `false`.
+   */
+  partialExpand: () => Promise<void>;
 };
 
 export type ModalBottomSheetProperties = {
@@ -41,7 +47,7 @@ export type ModalBottomSheetProps = {
    * The children of the `ModalBottomSheet` component.
    * Can include a `ModalBottomSheet.DragHandle` slot for a custom drag handle.
    */
-  children: React.ReactNode;
+  children: ReactNode;
   /**
    * Can be used to imperatively hide the bottom sheet with an animation.
    */
@@ -93,8 +99,10 @@ type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onDismissRequest
   onDismissRequest: () => void;
 };
 
-const ModalBottomSheetNativeView: React.ComponentType<NativeModalBottomSheetProps> =
-  requireNativeView('ExpoUI', 'ModalBottomSheetView');
+const ModalBottomSheetNativeView: ComponentType<NativeModalBottomSheetProps> = requireNativeView(
+  'ExpoUI',
+  'ModalBottomSheetView'
+);
 
 function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetProps {
   const { modifiers, onDismissRequest, ...restProps } = props;
@@ -115,7 +123,7 @@ function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetPro
  *
  * @platform android
  */
-function DragHandle(props: { children: React.ReactNode }) {
+function DragHandle(props: { children: ReactNode }) {
   return <SlotNativeView slotName="dragHandle">{props.children}</SlotNativeView>;
 }
 

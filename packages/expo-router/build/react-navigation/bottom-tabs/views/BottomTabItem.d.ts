@@ -1,5 +1,5 @@
 import React from 'react';
-import { ColorValue, type GestureResponderEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { type ColorValue, type GestureResponderEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 import { type Route } from '../../native';
 type Props = {
@@ -121,6 +121,6 @@ type Props = {
      */
     style?: StyleProp<ViewStyle>;
 };
-export declare function BottomTabItem({ route, href, focused, descriptor, label, icon, badge, badgeStyle, button, accessibilityLabel, testID, onPress, onLongPress, horizontal, compact, sidebar, variant, activeTintColor: customActiveTintColor, inactiveTintColor: customInactiveTintColor, activeBackgroundColor: customActiveBackgroundColor, inactiveBackgroundColor, showLabel, allowFontScaling, labelStyle, iconStyle, style, }: Props): React.JSX.Element;
+export declare function BottomTabItem({ route, href, focused, descriptor, label, icon, badge, badgeStyle, button, accessibilityLabel, testID, onPress, onLongPress, horizontal, compact, sidebar, variant, activeTintColor: customActiveTintColor, inactiveTintColor: customInactiveTintColor, activeBackgroundColor: customActiveBackgroundColor, inactiveBackgroundColor, showLabel, allowFontScaling, labelStyle, iconStyle, style, }: Props): import("react/jsx-runtime").JSX.Element;
 export {};
 //# sourceMappingURL=BottomTabItem.d.ts.map

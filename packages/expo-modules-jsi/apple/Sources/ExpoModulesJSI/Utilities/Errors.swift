@@ -29,4 +29,17 @@ internal struct FatalError {
   internal static func valuesBufferNotRepresentable() -> Never {
     fatalError("JavaScript values buffer cannot be represented as a single value")
   }
+
+  /**
+   Stops program execution when the Swift setter trampoline runs for a host object that
+   was created with `set: nil`. The C++ `HostObjectCallbacks::set` is supposed to throw a
+   `jsi::JSError` for read-only host objects without re-entering Swift, so reaching this
+   means that contract has drifted — check its null-setter short-circuit.
+   */
+  internal static func readOnlyHostObjectSetterInvoked() -> Never {
+    fatalError(
+      "createHostObject setter trampoline ran despite set: nil — HostObjectCallbacks::set should throw a jsi::JSError for read-only host objects without re-entering Swift. "
+      + "Check that its null-setter short-circuit is still in place."
+    )
+  }
 }

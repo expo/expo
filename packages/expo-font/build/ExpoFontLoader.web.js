@@ -32,7 +32,7 @@ function getFontFaceRulesMatchingResource(fontFamilyName, options) {
     });
 }
 const serverContext = new Set();
-function getHeadElements() {
+function getServerResourceDescriptors() {
     const entries = [...serverContext.entries()];
     if (!entries.length) {
         return [];
@@ -42,17 +42,16 @@ function getHeadElements() {
     // TODO: Maybe return nothing if no fonts were loaded.
     return [
         {
-            $$type: 'style',
-            children: css,
+            css,
             id: ID,
-            type: 'text/css',
+            type: 'style',
         },
         ...links.map((resourceId) => ({
-            $$type: 'link',
-            rel: 'preload',
-            href: resourceId,
             as: 'font',
-            crossorigin: '',
+            crossOrigin: '',
+            href: resourceId,
+            rel: 'preload',
+            type: 'link',
         })),
     ];
 }
@@ -75,19 +74,22 @@ const ExpoFontLoader = {
         }
     },
     getServerResources() {
-        const elements = getHeadElements();
+        const elements = getServerResourceDescriptors();
         return elements
             .map((element) => {
-            switch (element.$$type) {
+            switch (element.type) {
                 case 'style':
-                    return `<style id="${element.id}">${element.children}</style>`;
+                    return `<style id="${element.id}">${element.css}</style>`;
                 case 'link':
-                    return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossorigin}" />`;
+                    return `<link rel="${element.rel}" href="${element.href}" as="${element.as}" crossorigin="${element.crossOrigin}" />`;
                 default:
                     return '';
             }
         })
             .filter(Boolean);
+    },
+    getServerResourceDescriptors() {
+        return getServerResourceDescriptors();
     },
     resetServerContext() {
         serverContext.clear();

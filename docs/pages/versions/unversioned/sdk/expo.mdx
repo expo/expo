@@ -46,6 +46,8 @@ const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 
 console.log(buffer.length); // 512
 ```
 
+> **Note:** On Android and iOS, `expo/fetch` is also installed as the global `fetch`. This means any calls to `fetch(...)` without importing from `expo/fetch` use the same WinterCG-compliant implementation. To keep React Native's built-in `fetch` as the global, set `EXPO_PUBLIC_USE_RN_FETCH=1` in your [environment variables](/guides/environment-variables/). Named imports from `expo/fetch` continue to work regardless of this flag.
+
 ### Encoding APIs
 
 `TextEncoder` and `TextDecoder` are built-in APIs that provide a way to encode and decode text in various character encodings. They are available on all platforms. Refer to the [browser and server runtime support](https://caniuse.com/textencoder) for web and Node.js.

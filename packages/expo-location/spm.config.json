@@ -5,7 +5,7 @@
       "name": "ExpoLocation",
       "podName": "ExpoLocation",
       "platforms": [
-        "iOS(.v15)"
+        "iOS(.v16)"
       ],
       "externalDependencies": [
         "ReactNativeDependencies",

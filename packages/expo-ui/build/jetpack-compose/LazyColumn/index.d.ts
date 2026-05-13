@@ -1,4 +1,4 @@
-import { ExpoModifier } from '../../types';
+import type { ExpoModifier } from '../../types';
 /**
  * Content padding values for LazyColumn.
  */
@@ -48,5 +48,5 @@ export type LazyColumnProps = {
 /**
  * A lazy column component that efficiently displays a vertically scrolling list.
  */
-export declare function LazyColumn(props: LazyColumnProps): import("react").JSX.Element;
+export declare function LazyColumn(props: LazyColumnProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

@@ -1,4 +1,4 @@
-import { ExpoConfig, PackageJSONConfig } from '@expo/config';
+import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import semver from 'semver';
 
 import {
@@ -13,6 +13,7 @@ import { DependencyVersionOverrideCheck } from '../checks/DependencyVersionOverr
 import { DirectPackageInstallCheck } from '../checks/DirectPackageInstallCheck';
 import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck';
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
+import { ExpoRouterReactNavigationCheck } from '../checks/ExpoRouterReactNavigationCheck';
 import { GlobalPackageInstalledLocallyCheck } from '../checks/GlobalPackageInstalledLocallyCheck';
 import { IllegalPackageCheck } from '../checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
@@ -26,7 +27,8 @@ import { ProjectSetupCheck } from '../checks/ProjectSetupCheck';
 import { ReactNativeDirectoryCheck } from '../checks/ReactNativeDirectoryCheck';
 import { StoreCompatibilityCheck } from '../checks/StoreCompatibilityCheck';
 import { SupportPackageVersionCheck } from '../checks/SupportPackageVersionCheck';
-import { DoctorCheck } from '../checks/checks.types';
+import { VectorIconsCheck } from '../checks/VectorIconsCheck';
+import type { DoctorCheck } from '../checks/checks.types';
 
 /**
  * Resolves the checks that should be run for a given project.
@@ -51,7 +53,9 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new GlobalPackageInstalledLocallyCheck(),
     new DirectPackageInstallCheck(),
     new PeerDependencyChecks(),
+    new ExpoRouterReactNavigationCheck(),
     new AutolinkingDependencyDuplicatesCheck(),
+    new VectorIconsCheck(),
 
     // Version Checks
     new SupportPackageVersionCheck(),

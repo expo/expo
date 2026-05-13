@@ -1,4 +1,3 @@
-import { composeSourceMaps } from '@expo/metro/metro-source-map';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -6,6 +5,8 @@ import os from 'os';
 import path from 'path';
 import process from 'process';
 import resolveFrom from 'resolve-from';
+
+import { composeSourceMaps } from './sourceMap';
 
 const debug = require('debug')('expo:metro:hermes') as typeof console.log;
 

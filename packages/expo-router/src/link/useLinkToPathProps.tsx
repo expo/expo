@@ -1,9 +1,11 @@
-import { MouseEvent } from 'react';
-import { GestureResponderEvent, Platform } from 'react-native';
+import type { MouseEvent } from 'react';
+import type { GestureResponderEvent } from 'react-native';
+import { Platform } from 'react-native';
 
 import { emitDomLinkEvent } from '../domComponents/emitDomEvent';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
-import { linkTo, LinkToOptions } from '../global-state/routing';
+import type { LinkToOptions } from '../global-state/routing';
+import { linkTo } from '../global-state/routing';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import { shouldLinkExternally } from '../utils/url';
 
