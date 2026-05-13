@@ -164,9 +164,10 @@ final class MetricsDatabase: Sendable {
    */
   private static func removeDatabaseFile(at fileUrl: URL) throws {
     let fileManager = FileManager.default
-    for url in [fileUrl, fileUrl.appendingPathExtension("wal"), fileUrl.appendingPathExtension("shm")] {
-      if fileManager.fileExists(atPath: url.path) {
-        try fileManager.removeItem(at: url)
+    let basePath = fileUrl.path
+    for path in [basePath, basePath + "-wal", basePath + "-shm"] {
+      if fileManager.fileExists(atPath: path) {
+        try fileManager.removeItem(atPath: path)
       }
     }
   }
