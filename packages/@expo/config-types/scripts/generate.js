@@ -104,4 +104,5 @@ async function fetchSchemaAsync(version) {
   });
 
   await fs.promises.writeFile('src/ExpoConfig.ts', code, 'utf8');
+  await fs.promises.writeFile('src/__tests__/fixtures/ExpoConfig.backup.ts', code, 'utf8');
 })();
