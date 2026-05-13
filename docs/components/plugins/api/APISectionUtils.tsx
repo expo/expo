@@ -150,7 +150,7 @@ const renderWithLink = ({
 
 const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: string }) =>
   types
-    .map((type) => resolveTypeName(type, sdkVersion))
+    .map(type => resolveTypeName(type, sdkVersion))
     .map((valueToRender, index) => (
       <span key={`union-type-${index}`}>
         {valueToRender}
@@ -413,7 +413,7 @@ export const parseParamName = (name: string) => (name.startsWith('__') ? name.sl
 export const listParams = (parameters: MethodParamData[]) =>
   parameters
     ? parameters
-        ?.map((param) => {
+        ?.map(param => {
           if (param.flags?.isRest) {
             return `...${parseParamName(param.name)}`;
           }
@@ -457,7 +457,7 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   [...(comment?.blockTags ?? []), ...(comment?.modifierTags ?? [])]
-    .map((tag) => {
+    .map(tag => {
       if (typeof tag === 'string') {
         return {
           tag,
@@ -481,11 +481,11 @@ export const getAllTagData = (tagName: string, comment?: CommentData) =>
       }
       return tag;
     })
-    .filter((tag) => tag.tag.slice(1) === tagName);
+    .filter(tag => tag.tag.slice(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
-    ...(getAllTagData('platform', comment)?.map((platformData) =>
+    ...(getAllTagData('platform', comment)?.map(platformData =>
       getCommentContent(platformData.content)
     ) || []),
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
@@ -494,7 +494,7 @@ export const getTagNamesList = (comment?: CommentData) =>
 
 export function getTypeParametersNames(typeParameters?: TypeParameterData[]) {
   if (typeParameters?.length) {
-    return `<${typeParameters.map((param) => param.name).join(', ')}>`;
+    return `<${typeParameters.map(param => param.name).join(', ')}>`;
   }
   return '';
 }
@@ -521,7 +521,7 @@ export const getMethodName = (
 
 export const getCommentContent = (content: CommentContentData[]) => {
   return content
-    .map((entry) => {
+    .map(entry => {
       if (entry.tag === '@link' && !entry.text.includes('/')) {
         return `[\`${entry.tsLinkText?.length ? entry.tsLinkText : entry.text}\`](#${slug(entry.text)})`;
       }
@@ -594,7 +594,7 @@ export function defineLiteralType(types: TypeDefinitionData[]) {
   if (uniqueTypes.length === 1) {
     return <CODE>{uniqueTypes[0]}</CODE>;
   }
-  if (uniqueTypes.filter(Boolean).every((type) => typeof type === 'string')) {
+  if (uniqueTypes.filter(Boolean).every(type => typeof type === 'string')) {
     return <CODE>union</CODE>;
   }
   return null;
