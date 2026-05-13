@@ -4,9 +4,53 @@
 
 import { FetchResponse } from '../FetchResponse';
 
+if (typeof globalThis.ReadableStream === 'undefined') {
+  globalThis.ReadableStream = require('node:stream/web').ReadableStream;
+}
+
 jest.mock('../ExpoFetchModule', () => {
-  class StubNativeResponse {}
+  const { TextEncoder, TextDecoder } = require('node:util');
+  const helloWorld = new TextEncoder().encode('hello world');
+
+  class StubNativeResponse {
+    private _bodyUsed = false;
+
+    readonly _rawHeaders: [string, string][] = [['content-type', 'text/plain']];
+    readonly status = 200;
+    readonly statusText = 'OK';
+    readonly url = 'https://example.test/';
+    readonly redirected = false;
+
+    get bodyUsed(): boolean {
+      return this._bodyUsed;
+    }
+
+    addListener() {}
+    removeListener() {}
+    removeAllListeners() {}
+
+    async arrayBuffer(): Promise<ArrayBuffer> {
+      this._bodyUsed = true;
+      return helloWorld.buffer.slice(
+        helloWorld.byteOffset,
+        helloWorld.byteOffset + helloWorld.byteLength
+      ) as ArrayBuffer;
+    }
+
+    async text(): Promise<string> {
+      this._bodyUsed = true;
+      return new TextDecoder().decode(helloWorld);
+    }
+
+    async startStreaming(): Promise<Uint8Array | null> {
+      return helloWorld;
+    }
+
+    cancelStreaming() {}
+  }
+
   class StubNativeRequest {}
+
   return {
     ExpoFetchModule: {
       NativeRequest: StubNativeRequest,
@@ -15,8 +59,116 @@ jest.mock('../ExpoFetchModule', () => {
   };
 });
 
+function makeResponse(): FetchResponse {
+  return new FetchResponse(() => {});
+}
+
 describe('FetchResponse', () => {
   it('identifies as a standard Response via Symbol.toStringTag', () => {
     expect(Object.prototype.toString.call(FetchResponse.prototype)).toBe('[object Response]');
+  });
+
+  describe('clone()', () => {
+    it('returns a Response that exposes the same metadata', () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      expect(cloned.status).toBe(response.status);
+      expect(cloned.statusText).toBe(response.statusText);
+      expect(cloned.url).toBe(response.url);
+      expect(cloned.redirected).toBe(response.redirected);
+      expect(cloned.ok).toBe(response.ok);
+      expect(cloned.type).toBe('default');
+      expect(cloned.headers.get('content-type')).toBe('text/plain');
+      expect(Object.prototype.toString.call(cloned)).toBe('[object Response]');
+    });
+
+    it('lets the original and the clone read the body independently', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+
+      const [originalBytes, clonedBytes] = await Promise.all([
+        response.arrayBuffer(),
+        cloned.arrayBuffer(),
+      ]);
+
+      expect(originalBytes.byteLength).toBe(11);
+      expect(clonedBytes.byteLength).toBe(11);
+      expect(response.bodyUsed).toBe(true);
+      expect(cloned.bodyUsed).toBe(true);
+    });
+
+    it('supports cloning the clone', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      const reCloned = cloned.clone();
+      const bytes = await reCloned.arrayBuffer();
+      expect(bytes.byteLength).toBe(11);
+    });
+
+    it('throws a TypeError if the body has already been read', async () => {
+      const response = makeResponse();
+      await response.arrayBuffer();
+      expect(() => response.clone()).toThrow(TypeError);
+    });
+
+    it('throws a TypeError if the body stream is locked', () => {
+      const response = makeResponse();
+      response.body!.getReader();
+      expect(() => response.clone()).toThrow(TypeError);
+    });
+  });
+
+  describe('body methods', () => {
+    it('rejects a second arrayBuffer() call with TypeError', async () => {
+      const response = makeResponse();
+      await response.arrayBuffer();
+      await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
+    });
+
+    it('rejects a second text() call with TypeError', async () => {
+      const response = makeResponse();
+      await response.arrayBuffer();
+      await expect(response.text()).rejects.toThrow(TypeError);
+    });
+
+    it('rejects text() when the body stream is locked', async () => {
+      const response = makeResponse();
+      response.body!.getReader();
+      await expect(response.text()).rejects.toThrow(TypeError);
+    });
+
+    it('rejects arrayBuffer() when the body stream is locked', async () => {
+      const response = makeResponse();
+      response.body!.getReader();
+      await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
+    });
+
+    it('rejects body methods on a clone after its body has been read', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      await cloned.arrayBuffer();
+      await expect(cloned.text()).rejects.toThrow(TypeError);
+    });
+
+    it('flips bodyUsed on a clone after reading its body stream directly', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      const reader = cloned.body!.getReader();
+
+      while (true) {
+        const { done } = await reader.read();
+        if (done) break;
+      }
+
+      reader.releaseLock();
+      expect(cloned.bodyUsed).toBe(true);
+    });
+
+    it('does not flip bodyUsed on the original when only the clone is read', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      await cloned.arrayBuffer();
+      expect(response.bodyUsed).toBe(false);
+    });
   });
 });

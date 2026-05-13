@@ -10,8 +10,11 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     private readonly abortCleanupFunction;
     private streamingState;
     private bodyStream;
+    private consumed;
+    private wasCloned;
     constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
     get body(): ReadableStream<Uint8Array<ArrayBuffer>> | null;
+    get bodyUsed(): boolean;
     get headers(): Headers;
     get ok(): boolean;
     readonly type = "default";
@@ -22,9 +25,14 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     formData(): Promise<UniversalFormData>;
     json(): Promise<any>;
     bytes(): Promise<Uint8Array<ArrayBuffer>>;
+    arrayBuffer(): Promise<ArrayBuffer>;
+    text(): Promise<string>;
     toString(): string;
     toJSON(): object;
-    clone(): Response;
+    clone(): FetchResponse;
+    private wrapBodyStreamWithConsumption;
+    private checkBodyUsedError;
+    private readBodyAsBuffer;
     private finalize;
 }
 export {};

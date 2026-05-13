@@ -17,7 +17,7 @@ export type NativeResponseEvents = {
     readyForJSFinalization(): void;
 };
 export declare class NativeResponse extends SharedObject<NativeResponseEvents> {
-    readonly bodyUsed: boolean;
+    get bodyUsed(): boolean;
     readonly _rawHeaders: NativeHeadersType;
     readonly status: number;
     readonly statusText: string;
