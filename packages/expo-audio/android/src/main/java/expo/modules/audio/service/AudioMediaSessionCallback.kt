@@ -57,7 +57,7 @@ class AudioMediaSessionCallback(
         session.player.seekTo(session.player.currentPosition + forwardMs)
       }
       AudioControlsService.ACTION_SEEK_BACKWARD -> {
-        session.player.seekTo(session.player.currentPosition - backwardMs)
+        session.player.seekTo((session.player.currentPosition - backwardMs).coerceAtLeast(0))
       }
     }
     return super.onCustomCommand(session, controller, command, args)
