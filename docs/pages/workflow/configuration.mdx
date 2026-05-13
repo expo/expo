@@ -1,177 +1,242 @@
----
-title: Configure with app config
-description: Learn about what app.json/app.config.js/app.config.ts files are and how you can customize and use them dynamically.
----
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { DocsLogo } from '@expo/styleguide';
+const Stack = createNativeStackNavigator();
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import PossibleRedirectNotification from '~/ui/components/PossibleRedirectNotification';
-import { Terminal } from '~/ui/components/Snippet';
+// --- SCREEN 1: SPLASH SCREEN ---
+function SplashScreen({ navigation }) {
+  useEffect(() => {
+    // Automatically move to the Login screen after 3 seconds
+    const timer = setTimeout(() => {
+      navigation.replace('Login');
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
-<PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
-
-The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/more/glossary-of-terms/#prebuild) generation, how a project loads in [Expo Go](/get-started/set-up-your-environment/), and the OTA update manifest.
-
-It must be located at the root of your project, next to the **package.json**. Here is a minimal example:
-
-```json app.json
-{
-  "name": "My app",
-  "slug": "my-app"
+  return (
+    <View style={[styles.container, { backgroundColor: '#FFD700' }]}>
+      <Text style={styles.titleText}>How Money Works</Text>
+      <Text style={styles.subtitleText}>Loading...</Text>
+    </View>
+  );
 }
-```
 
-If your Expo config has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
+// --- SCREEN 2: LOGIN SCREEN ---
+function LoginScreen({ navigation }) {
+  return (
+    <View style={[styles.container, { backgroundColor: '#87CEEB' }]}>
+      <Text style={styles.titleText}>How would you like to log in?</Text>
+      
+      <TouchableOpacity 
+        style={styles.chunkyButton} 
+        onPress={() => navigation.replace('Hub')}
+        accessible={true}
+        accessibilityLabel="Log in with Face ID"
+      >
+        <Text style={styles.buttonText}>Face ID / Fingerprint</Text>
+      </TouchableOpacity>
 
-<BoxLink
-  title="App config schema reference"
-  description="Explore the full schema of the app config (app.json/app.config.js)."
-  href="/versions/latest/config/app/"
-  Icon={DocsLogo}
-/>
+      <TouchableOpacity 
+        style={styles.chunkyButton} 
+        onPress={() => navigation.replace('Hub')}
+        accessible={true}
+        accessibilityLabel="Log in with a PIN code"
+      >
+        <Text style={styles.buttonText}>4-Digit PIN</Text>
+      </TouchableOpacity>
 
-## Properties
-
-The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js/app.config.ts reference](/versions/latest/config/app/).
-
-> **info** Do you use Visual Studio Code? If so, we recommend that you install the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) extension to get auto-completion of properties in **app.json** files.
-
-## Reading configuration values in your app
-
-Most configuration in the app config is accessible at runtime from your JavaScript code, using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties). You **should not** include any sensitive information in the app config (with a few exceptions for fields that are filtered out, as outlined below).
-
-You can verify which configuration will be embedded in your builds/updates and available at runtime by running `npx expo config --type public`.
-
-<Collapsible summary="Which fields are filtered out of the public app config?">
-
-The following fields are filtered out of the public app config (and not accessible through the `Constants.expoConfig` object):
-
-- [`hooks`](/versions/latest/config/app/#hooks)
-- [`ios.config`](/versions/latest/config/app/#config)
-- [`android.config`](/versions/latest/config/app/#config-1)
-- [`updates.codeSigningCertificate`](/versions/latest/config/app/#codesigningcertificate)
-- [`updates.codeSigningMetadata`](/versions/latest/config/app/#codesigningmetadata)
-
-</Collapsible>
-
-> **warning** You should also avoid importing **app.json** or **app.config.js** directly in your JavaScript code, because this will import the entire file rather than a processed version of it. Instead, use [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants--properties) to access the configuration.
-
-## Extending configuration
-
-Library authors can extend the app config by using [Expo Config plugins](/config-plugins/introduction/).
-
-> **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/more/glossary-of-terms/#prebuild) command.
-
-## Dynamic configuration
-
-For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of-appconfigjs) (**app.config.ts**). These configs have the following properties:
-
-- Comments, variables, and single quotes.
-- ESM import syntax (the `import` keyword) is not supported, except when using [TypeScript with `tsx`](/guides/typescript/#appconfigjs). JS files that are compatible with your current version of Node.js can be imported with `require()`.
-- TypeScript support with nullish coalescing and optional chaining.
-- Updated whenever Metro bundler reloads.
-- Provide environment information to your app.
-- Does not support Promises.
-
-For example, you can export an object to define your custom config:
-
-```js app.config.js
-const myValue = 'My App';
-
-module.exports = {
-  name: myValue,
-  version: process.env.MY_CUSTOM_PROJECT_VERSION || '1.0.0',
-  // All values in extra will be passed to your app.
-  extra: {
-    fact: 'kittens are cool',
-  },
-};
-```
-
-The `"extra"` key allows passing arbitrary configuration data to your app. The value of this key is accessed using [`expo-constants`](/versions/latest/sdk/constants/):
-
-```js App.js
-import Constants from 'expo-constants';
-
-Constants.expoConfig.extra.fact === 'kittens are cool';
-```
-
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**.
-
-For example, your **app.json** could look like this:
-
-```json app.json
-{
-  "name": "My App"
+      <TouchableOpacity 
+        style={styles.chunkyButton} 
+        onPress={() => navigation.replace('Hub')}
+        accessible={true}
+        accessibilityLabel="Log in with picture password"
+      >
+        <Text style={styles.buttonText}>Picture Password</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
-```
 
-And in your **app.config.js**, you are provided with that configuration in the arguments to the exported function:
+// --- SCREEN 3: MAIN HUB ---
+function HubScreen({ navigation }) {
+  // We start the user with 0 stars
+  const [stars, setStars] = useState(0);
 
-```js app.config.js
-module.exports = ({ config }) => {
-  console.log(config.name); // prints 'My App'
-  return {
-    ...config,
+  return (
+    <View style={[styles.container, { backgroundColor: '#F0F8FF' }]}>
+      <View style={styles.starJar}>
+        <Text style={styles.starText}>⭐ Star Jar: {stars}</Text>
+      </View>
+
+      <Text style={styles.titleText}>Welcome back!</Text>
+
+      <TouchableOpacity 
+        style={[styles.chunkyButton, { backgroundColor: '#FFA500' }]} 
+        onPress={() => navigation.navigate('LearningRoom')}
+        accessible={true}
+        accessibilityLabel="Go to the Learning Room"
+      >
+        <Text style={styles.buttonText}>💡 The Learning Room</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity 
+        style={[styles.chunkyButton, { backgroundColor: '#32CD32' }]} 
+        onPress={() => Alert.alert("Coming Soon", "The shop is currently being built!")}
+        accessible={true}
+        accessibilityLabel="Go to the Little Money Shop"
+      >
+        <Text style={styles.buttonText}>🏪 The Little Money Shop</Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+// --- SCREEN 4: THE LEARNING ROOM ---
+function LearningRoomScreen() {
+  const handleCoinPress = (coinName, value) => {
+    // In the real app, this will play audio. For now, it shows an alert.
+    Alert.alert(`This is a ${coinName}`, `It is worth ${value}.`);
   };
-};
-```
 
-### Switching configuration based on the environment
+  return (
+    <View style={[styles.container, { backgroundColor: '#FFF8DC' }]}>
+      <Text style={styles.titleText}>Meet the Coins</Text>
+      <Text style={styles.subtitleText}>Tap a coin to learn its name!</Text>
 
-It's common to have some different configuration in development, staging, and production environments, or to swap out configuration entirely to white label an app. To accomplish this, you can use **app.config.js** along with environment variables.
+      <View style={styles.coinRow}>
+        <TouchableOpacity 
+          style={styles.coinBronze} 
+          onPress={() => handleCoinPress('One Penny', '1p')}
+          accessible={true}
+          accessibilityLabel="One penny coin"
+        >
+          <Text style={styles.coinText}>1p</Text>
+        </TouchableOpacity>
 
-```js app.config.js
-module.exports = () => {
-  if (process.env.MY_ENVIRONMENT === 'production') {
-    return {
-      /* your production config */
-    };
-  } else {
-    return {
-      /* your development config */
-    };
+        <TouchableOpacity 
+          style={styles.coinSilver} 
+          onPress={() => handleCoinPress('Ten Pence', '10p')}
+          accessible={true}
+          accessibilityLabel="Ten pence coin"
+        >
+          <Text style={styles.coinText}>10p</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.coinSilverPolygon} 
+          onPress={() => handleCoinPress('Fifty Pence', '50p')}
+          accessible={true}
+          accessibilityLabel="Fifty pence coin"
+        >
+          <Text style={styles.coinText}>50p</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+// --- APP NAVIGATION SETUP ---
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Splash" component={SplashScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Hub" component={HubScreen} />
+        <Stack.Screen name="LearningRoom" component={LearningRoomScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+// --- VISUAL STYLES (Colors, Shapes, Sizes) ---
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  titleText: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitleText: {
+    fontSize: 20,
+    color: '#555',
+    marginBottom: 30,
+  },
+  chunkyButton: {
+    backgroundColor: '#fff',
+    paddingVertical: 20,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginVertical: 10,
+    width: '90%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  buttonText: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
+  },
+  starJar: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    backgroundColor: '#FFF',
+    padding: 10,
+    borderRadius: 15,
+    borderWidth: 2,
+    borderColor: '#FFD700',
+  },
+  starText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  coinRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 20,
+  },
+  coinBronze: {
+    backgroundColor: '#CD7F32',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinSilver: {
+    backgroundColor: '#C0C0C0',
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinSilverPolygon: {
+    backgroundColor: '#C0C0C0',
+    width: 90,
+    height: 90,
+    borderRadius: 20, 
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  coinText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
   }
-};
-```
-
-To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values as shown in the example:
-
-<Terminal cmd={['$ MY_ENVIRONMENT=production eas update']} />
-
-This is not anything unique to Expo CLI. On Windows you can approximate the above command with:
-
-<Terminal cmd={['$ npx cross-env MY_ENVIRONMENT=production eas update']} />
-
-Or you can use any other mechanism that you are comfortable with for environment variables.
-
-### Using TypeScript for configuration: app.config.ts instead of app.config.js
-
-You can use autocomplete and doc-blocks with an Expo config in TypeScript. Create an **app.config.ts** with the following contents:
-
-```ts app.config.ts
-import { ExpoConfig, ConfigContext } from 'expo/config';
-
-export default ({ config }: ConfigContext): ExpoConfig => ({
-  ...config,
-  slug: 'my-app',
-  name: 'My App',
 });
-```
-
-To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`tsx`](/guides/typescript/#appconfigjs). `tsx` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
-
-### Configuration resolution rules
-
-There are two different types of configs: static (**app.config.json**, **app.json**), and dynamic (**app.config.js**, **app.config.ts**). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
-
-1. The static config is read if **app.config.json** exists (falls back to **app.json**). If no static config exists, then default values are inferred from the **package.json** and your dependencies.
-2. The dynamic config is read if either **app.config.ts** or **app.config.js** exist. If both exist, then the TypeScript config is used.
-3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values. Think of this like middleware for the static config.
-4. The return value from the dynamic config is used as the final config. It cannot have any promises.
-5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.
-6. If the final config object has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
-
-Running `npx expo config` will display the final configuration that will be used in Expo CLI after resolution has occurred.
