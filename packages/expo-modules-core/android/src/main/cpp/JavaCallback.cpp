@@ -168,35 +168,19 @@ void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
 }
 
 void JavaCallback::invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result) {
-  auto globalResult = jni::make_global(result);
+  jni::global_ref<jni::JCollection<jobject>> globalResult = jni::make_global(result);
   invokeWithResolver(
     [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
-      JNIEnv *env = jni::Environment::current();
-      size_t size = globalResult->size();
-      auto jsArray = jsi::Array(rt, size);
-      size_t index = 0;
-      for (const auto &item : *globalResult) {
-        jsArray.setValueAtIndex(rt, index++, convert(env, rt, item));
-      }
-      jsFunction.call(rt, std::move(jsArray));
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
     }
   );
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result) {
-  auto globalResult = jni::make_global(result);
+  jni::global_ref<jni::JMap<jstring, jobject>> globalResult = jni::make_global(result);
   invokeWithResolver(
     [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
-      JNIEnv *env = jni::Environment::current();
-      jsi::Object jsObject(rt);
-      for (const auto &entry : *globalResult) {
-        jsObject.setProperty(
-          rt,
-          entry.first->toStdString().c_str(),
-          convert(env, rt, entry.second)
-        );
-      }
-      jsFunction.call(rt, std::move(jsObject));
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
     }
   );
 }
