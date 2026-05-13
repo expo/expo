@@ -58,7 +58,7 @@ export async function test(t) {
     }
   });
 
-  t.describe('Stress tests', async () => {
+  t.describe('Stress tests', () => {
     t.it('creating files with the same filename', async () => {
       for (let i = 0; i < 40; i++) {
         const asset = await Asset.create(pngFile.localUri);
