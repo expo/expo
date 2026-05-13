@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Improve environment configuration types. ([#45734](https://github.com/expo/expo/pull/45734) by [@jakex7](https://github.com/jakex7))
+
 ### 💡 Others
 
 ## 56.0.7 — 2026-05-13
