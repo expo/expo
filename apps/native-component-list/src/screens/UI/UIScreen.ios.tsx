@@ -131,6 +131,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'AlertDialog component',
+    route: 'ui/alert-dialog',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./AlertDialogScreen'));
+    },
+  },
+  {
     name: 'ConfirmationDialog component',
     route: 'ui/confirmation-dialog',
     options: {},
