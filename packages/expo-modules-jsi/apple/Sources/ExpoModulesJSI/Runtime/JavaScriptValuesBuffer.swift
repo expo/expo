@@ -6,7 +6,10 @@ internal import jsi
  Used mainly to pass function arguments from C++ to Swift.
  */
 public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
-  internal weak let runtime: JavaScriptRuntime?
+  // Safe to use unowned — the buffer's lifetime is scoped to a host function call,
+  // so the runtime is always alive while the buffer exists.
+  internal unowned let runtime: JavaScriptRuntime
+
   internal nonisolated(unsafe) let bufferPointer: UnsafeMutableBufferPointer<facebook.jsi.Value>
   private let ownsMemory: Bool
 
@@ -16,6 +19,15 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
    */
   internal var baseAddress: UnsafePointer<facebook.jsi.Value>? {
     return UnsafePointer(bufferPointer.baseAddress)
+  }
+
+  /**
+   A type-erased raw pointer to the first value of the buffer, suitable for
+   passing across Swift/ObjC++ boundaries where `facebook.jsi.Value` cannot
+   appear in a public signature.
+   */
+  public var rawBaseAddress: UnsafeRawPointer? {
+    return baseAddress.map { UnsafeRawPointer($0) }
   }
 
   /**
@@ -41,26 +53,23 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
 
   deinit {
     if ownsMemory {
+      // Run the destructor for each `jsi::Value` so they release their strong refs to JS objects.
+      // Without this, calling host functions through this buffer leaks every JS-object argument.
+      bufferPointer.deinitialize()
       bufferPointer.deallocate()
     }
   }
 
   public subscript(index: Int) -> JavaScriptValue {
-    guard let runtime else {
-      FatalError.runtimeLost()
-    }
     return JavaScriptValue(runtime, bufferPointer[index])
   }
 
   @discardableResult
   internal consuming func set<T: JSIRepresentable>(value: borrowing T, atIndex index: Int) -> JavaScriptValuesBuffer where T: ~Copyable {
-    guard let jsiRuntime = runtime?.pointee else {
-      FatalError.runtimeLost()
-    }
     guard (0..<count).contains(index) else {
       FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
     }
-    bufferPointer.initializeElement(at: index, to: value.toJSIValue(in: jsiRuntime))
+    bufferPointer.initializeElement(at: index, to: value.toJSIValue(in: runtime.pointee))
     return self
   }
 
@@ -81,9 +90,6 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
    */
   @JavaScriptActor
   public func copy() -> JavaScriptValuesBuffer {
-    guard let runtime else {
-      FatalError.runtimeLost()
-    }
     let bufferCopy = JavaScriptValuesBuffer.copying(in: runtime, buffer: bufferPointer)
     return JavaScriptValuesBuffer(runtime, buffer: bufferCopy, ownsMemory: true)
   }
@@ -138,5 +144,20 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
       copy.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, buffer[index]))
     }
     return copy
+  }
+
+  /**
+   Allocates a new owning buffer holding a runtime-aware copy of each value's
+   underlying `facebook.jsi.Value`. The given `JavaScriptValue`s must all belong
+   to `runtime`; mixing runtimes will crash deep inside JSI.
+   */
+  @JavaScriptActor
+  public static func copying(in runtime: JavaScriptRuntime, values: [JavaScriptValue]) -> JavaScriptValuesBuffer {
+    let buffer = UnsafeMutableBufferPointer<facebook.jsi.Value>.allocate(capacity: values.count)
+    for (index, value) in values.enumerated() {
+      assert(value.runtime === runtime, "JavaScriptValue belongs to a different runtime than the buffer being initialized")
+      buffer.initializeElement(at: index, to: facebook.jsi.Value(runtime.pointee, value.pointee))
+    }
+    return JavaScriptValuesBuffer(runtime, buffer: buffer, ownsMemory: true)
   }
 }

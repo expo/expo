@@ -69,3 +69,25 @@ test('removes null from end of paths', () => {
 test('redirect SDK permissions to the permission guide', () => {
   expect(getRedirectPath('/versions/latest/sdk/permissions/')).toEqual('/guides/permissions/');
 });
+
+test('rewrites /eas/build/** prefix to /build/**', () => {
+  expect(getRedirectPath('/eas/build/introduction/')).toEqual('/build/introduction/');
+});
+
+test('rewrites /eas/update/** prefix to /eas-update/**', () => {
+  expect(getRedirectPath('/eas/update/introduction/')).toEqual('/eas-update/introduction/');
+});
+
+test('rewrites /eas/submit/** prefix to /submit/**', () => {
+  expect(getRedirectPath('/eas/submit/android/')).toEqual('/submit/android/');
+});
+
+test('rewrites /eas/insights/** prefix to /eas-insights/**', () => {
+  expect(getRedirectPath('/eas/insights/introduction/')).toEqual('/eas-insights/introduction/');
+});
+
+test('does not rewrite /eas/** paths that are canonical (workflows, hosting, metadata, ai)', () => {
+  expect(getRedirectPath('/eas/workflows/get-started/')).toEqual('/eas/workflows/get-started/');
+  expect(getRedirectPath('/eas/hosting/introduction/')).toEqual('/eas/hosting/introduction/');
+  expect(getRedirectPath('/eas/metadata/')).toEqual('/eas/metadata/');
+});

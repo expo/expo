@@ -3,6 +3,14 @@ import ComponentListScreen, { componentScreensToListElements } from '../Componen
 
 export const UIScreens = [
   {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
     name: 'Community Picker replacement',
     route: 'ui/community-picker',
     options: {},
@@ -16,6 +24,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
     },
   },
 ];

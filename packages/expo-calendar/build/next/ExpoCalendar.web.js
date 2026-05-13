@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
 const noPermissionResponse = {
     status: PermissionStatus.UNDETERMINED,
     canAskAgain: true,
@@ -7,6 +7,9 @@ const noPermissionResponse = {
 };
 class ExpoCalendar {
     constructor(id) {
+        throw new Error('Calendar API is not available on web');
+    }
+    async addEventWithForm(options) {
         throw new Error('Calendar API is not available on web');
     }
 }
@@ -40,6 +43,9 @@ export default {
         return [];
     },
     async getCalendarById(calendarId) {
+        throw new Error('Calendar API is not available on web');
+    },
+    async presentPicker() {
         throw new Error('Calendar API is not available on web');
     },
     async getEventById(eventId) {

@@ -158,7 +158,7 @@ export default function Details() {
 
   return (
     <View style={styles.container}>
-      <Stack.Screen.Title>{params.name}</Stack.Screen.Title>
+      <Stack.Title>{params.name}</Stack.Title>
       <Stack.Header style={{ backgroundColor: 'lightblue' }} />
       <Text
         onPress={() => {
@@ -261,9 +261,9 @@ export default function Home() {
 
   return (
     <>
-      <Stack.Screen.Title asChild>
+      <Stack.Title asChild>
         <LogoTitle />
-      </Stack.Screen.Title>
+      </Stack.Title>
       <Stack.Toolbar placement="right" asChild>
         <Button onPress={() => setCount(c => c + 1)} title="Update count" />
       </Stack.Toolbar>
@@ -555,7 +555,7 @@ For more information, see [JavaScript stack with `@react-navigation/stack`](#jav
 
 <Collapsible summary="Large title does not collapse when scrolling">
 
-When using `headerLargeTitle: true` (or `<Stack.Screen.Title large>`) with a `ScrollView` or `FlatList`, the large title may not collapse on scroll. This happens when the scrollable view is not the direct first child of the screen component.
+When using `headerLargeTitle: true` (or `<Stack.Title large>`) with a `ScrollView` or `FlatList`, the large title may not collapse on scroll. This happens when the scrollable view is not the direct first child of the screen component.
 
 To fix this, ensure `ScrollView` or `FlatList` is the first child rendered by your screen component. If you need a wrapper, set `collapsable={false}` on it:
 
@@ -567,7 +567,7 @@ import { ScrollView, View, Text } from 'react-native';
 export default function Home() {
   return (
     <ScrollView>
-      <Stack.Screen.Title large>Home</Stack.Screen.Title>
+      <Stack.Title large>Home</Stack.Title>
       <Text>Content here</Text>
     </ScrollView>
   );
@@ -587,7 +587,7 @@ export default function Home() {
     <View collapsable={false}>
       /* @end */
       <ScrollView>
-        <Stack.Screen.Title large>Home</Stack.Screen.Title>
+        <Stack.Title large>Home</Stack.Title>
         <Text>Content here</Text>
       </ScrollView>
     </View>

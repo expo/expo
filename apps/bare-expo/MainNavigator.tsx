@@ -151,7 +151,11 @@ export default function MainNavigator() {
       .catch(console.error)
       .finally(() => {
         setIsReady(true);
-        AppMetrics.markInteractive();
+        AppMetrics.markInteractive({
+          params: {
+            theme: themeName,
+          },
+        });
       });
   }, [isReady]);
 

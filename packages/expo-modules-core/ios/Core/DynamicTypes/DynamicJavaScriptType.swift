@@ -20,6 +20,13 @@ internal struct DynamicJavaScriptType: AnyDynamicType {
     return jsValue
   }
 
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    if let value = value as? JavaScriptValue {
+      return value
+    }
+    throw Conversions.ConversionToJSFailedException((kind: .undefined, nativeType: ValueType.self))
+  }
+
   var description: String {
     return "JavaScriptValue"
   }

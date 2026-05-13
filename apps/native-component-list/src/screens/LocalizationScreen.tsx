@@ -45,8 +45,6 @@ export default function LocalizationScreen() {
 
         <HeadingText>Calendars in Preference Order</HeadingText>
         <MonoText>{JSON.stringify(Localization.getCalendars(), null, 2)}</MonoText>
-
-        <HeadingText>Localization Table</HeadingText>
       </View>
     </ScrollView>
   );

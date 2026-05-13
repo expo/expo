@@ -146,6 +146,57 @@ We currently do two client-side redirects, using meta tags with `http-equiv="ref
 
 This works by loading a page and then immediately navigating, which can confuse assistive tech (announced content disappears, focus resets) and gives developers less control. Treat this as a fallback and prefer server-side redirects or the 404-based client rules when possible.
 
+## Serving Markdown to AI Agents
+
+Every published page is served in two formats: HTML for browsers, and markdown for AI agents and command-line tools. There are four layers to this:
+
+### 1. Build-time generation
+
+- `pnpm export` runs `scripts/generate-markdown-pages.ts` after `next build`. It walks every page in `out/`, converts the rendered HTML to markdown with cheerio + turndown (parallelized via worker threads), and writes the result next to the HTML at `out/<slug>/index.md`. Custom MDX components (`APISection`, `Terminal`, `Tabs`, and so on) are already rendered into HTML by Next.js, so the converter does not need to know about them.
+
+- `scripts/check-markdown-pages.ts` then runs as a CI gate. It fails the build if any markdown file is empty, is missing headings, contains leaked HTML or CSS class names, has unbalanced code fences, or if the markdown count diverges from the HTML count.
+
+### 2. Content negotiation
+
+`public/_worker.js` inspects the `Accept` header on every request. If it includes `text/markdown`, the worker rewrites the path to `<pathname>/index.md` and returns that asset with `Content-Type: text/markdown; charset=utf-8`. All other requests fall through to the normal asset pipeline.
+
+```sh
+curl -H "Accept: text/markdown" https://docs.expo.dev/get-started/set-up-your-environment/
+```
+
+### 3. Sibling `.md` URLs via `_redirects`
+
+Some agents prefer to append `.md` to a URL rather than negotiate via headers. Three rules at the bottom of `public/_redirects` handle that:
+
+```
+/index.md /index.md 200
+/*/index.md /:splat/index.md 200
+/*.md /:splat/index.md 200
+```
+
+The first two rules preserve the canonical `index.md` paths for each page. The third rule rewrites `/<slug>.md` to the file the build actually wrote at `/<slug>/index.md`. This allows agents to fetch markdown content with a `.md` suffix, which is a common convention for markdown files.
+
+### 4. Discovery hint in HTML
+
+Every page renders a discovery link in `<head>`:
+
+```html
+<link rel="alternate" type="text/markdown" href="/get-started/set-up-your-environment.md" />
+```
+
+`getMarkdownPath` in `common/routes.ts` builds this href, and `DocumentationHead.tsx` renders it. Crawlers that already have the HTML can follow this to fetch the markdown variant.
+
+### Summary
+
+A single page (for example, `/get-started/set-up-your-environment/`) is reachable as markdown four ways:
+
+| Request                                          | Served by                     |
+| ------------------------------------------------ | ----------------------------- |
+| `Accept: text/markdown` on the canonical URL     | `_worker.js`                  |
+| `/get-started/set-up-your-environment.md`        | `_redirects` sibling rule     |
+| `/get-started/set-up-your-environment/index.md`  | static asset (canonical path) |
+| Following `<link rel="alternate">` from the HTML | discovery hint                |
+
 ## Search
 
 We use Algolia as the main search results provider for our docs. This is set up in the `@expo/styleguide` library, which provides a universal search component that is used in the docs, expo.dev, and EAS dashboard.
@@ -550,6 +601,27 @@ import { Terminal } from '~/ui/components/Snippet';
   cmd={['$ npx eas-cli deploy']}
   browserAction={{ href: 'https://expo.dev/eas', label: 'Open in expo.dev' }}
 />
+```
+
+### Use `Prerequisites` for setup checklists
+
+When a guide depends on the reader having a specific environment or prior step in place, wrap the requirements in a `Prerequisites` component. It renders as a collapsible block and threads each requirement's title through the page heading manager so it can be linked.
+
+```mdx
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+
+<Prerequisites>
+  <Requirement title="Set up your development environment">
+    Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+  </Requirement>
+  <Requirement title="Install EAS CLI">Run `npm install -g eas-cli` and log in.</Requirement>
+</Prerequisites>
+```
+
+Pass `open` to render the block expanded by default:
+
+```mdx
+<Prerequisites open>...</Prerequisites>
 ```
 
 ### Use callouts

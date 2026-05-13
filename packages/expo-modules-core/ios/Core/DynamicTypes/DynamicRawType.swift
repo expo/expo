@@ -1,5 +1,7 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  A dynamic type that can wrap any type, but it casts only type-compatible values using `as?` keyword.
  The innermost type of the other dynamic types like `ArrayArgumentType` and `OptionalArgumentType`.
@@ -13,6 +15,10 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
 
   func equals(_ type: AnyDynamicType) -> Bool {
     return type is Self
+  }
+
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    return try cast(jsValue.getAny(), appContext: appContext)
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
@@ -29,6 +35,24 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
       throw Conversions.NullCastException<InnerType>()
     }
     throw Conversions.CastingException<InnerType>(value)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try castToJS(value, appContext: appContext, in: try appContext.runtime)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    if Optional.isNil(value) {
+      return .null
+    }
+    // When `InnerType` is `Any` (e.g. `[String: Any]` value slot), the runtime type of the
+    // value is more specific than the static type, so we dispatch on it to reach proper
+    // handlers like `DynamicEnumType.castToJS`. Guarded against infinite recursion: the
+    // dispatch only kicks in when the value's runtime type differs from `innerType`.
+    if InnerType.self != type(of: value as Any), let argument = value as? AnyArgument {
+      return try type(of: argument).getDynamicType().castToJS(argument, appContext: appContext, in: runtime)
+    }
+    return try Conversions.unknownToJavaScriptValue(value, appContext: appContext, in: runtime)
   }
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {

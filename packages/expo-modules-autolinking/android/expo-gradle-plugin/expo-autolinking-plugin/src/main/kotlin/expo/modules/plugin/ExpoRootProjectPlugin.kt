@@ -34,18 +34,27 @@ fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
   val kotlin = extra.setIfNotExist("kotlinVersion") { versionCatalogs.getVersionOrDefault("kotlin", "2.0.21") }
   val ksp = extra.setIfNotExist("kspVersion") {
     versionCatalogs.getVersionOrDefault("ksp") {
-      try {
-        return@getVersionOrDefault KSPLookup.getValue(extra.get("kotlinVersion") as String)
-      } catch (e: Throwable) {
-        throw IllegalStateException(
-          "Can't find KSP version for Kotlin version '${extra.get("kotlinVersion")}'. You're probably using an unsupported version of Kotlin. Supported versions are: '${KSPLookup.keys.joinToString(", ")}'",
-          e
-        )
+      val kotlinVersion = extra.get("kotlinVersion") as String
+
+      KSPLookup[kotlinVersion]?.let { return@getVersionOrDefault it }
+      if (kotlinVersion >= "2.3.0") {
+        return@getVersionOrDefault latestKspVersion
       }
+
+      val minSupported = KSPLookup.keys.min()
+      throw IllegalStateException(
+        """
+        Kotlin $kotlinVersion is not supported by Expo modules.
+        The minimum supported Kotlin version is $minSupported. 
+        Update 'kotlinVersion' in your project's build.gradle to a supported version. 
+        Alternatively, you can set 'kspVersion' explicitly in build.gradle to bypass this check, but this is unsupported and may cause build failures.  
+        """.trimIndent()
+      )
     }
   }
 
-  project.logger.quiet("""
+  project.logger.quiet(
+    """
     ${"[ExpoRootProject]".withColor(Colors.GREEN)} Using the following versions:
       - buildTools:  ${buildTools.withColor(Colors.GREEN)}
       - minSdk:      ${minSdk.withColor(Colors.GREEN)}
@@ -54,7 +63,8 @@ fun Project.defineDefaultProperties(versionCatalogs: Optional<VersionCatalog>) {
       - ndk:         ${ndk.withColor(Colors.GREEN)}
       - kotlin:      ${kotlin.withColor(Colors.GREEN)}
       - ksp:         ${ksp.withColor(Colors.GREEN)}
-  """.trimIndent())
+  """.trimIndent()
+  )
 }
 
 inline fun ExtraPropertiesExtension.setIfNotExist(name: String, value: () -> Any): Any? {

@@ -21,9 +21,10 @@ function getActionFromState(state, options) {
         };
     }
     const route = state.routes[state.index ?? state.routes.length - 1];
+    // TODO(@kitten): The `route` here was treated as optional, but `config` is treated as non-optional. Looks fishy
     let current = route?.state;
-    let config = normalizedConfig?.screens?.[route?.name];
-    let params = { ...route.params };
+    let config = route != null ? normalizedConfig?.screens?.[route.name] : undefined;
+    let params = { ...route?.params };
     const payload = route ? { name: route.name, path: route.path, params } : undefined;
     // If the screen contains a navigator, pop other screens to navigate to it
     // This avoid pushing multiple instances of navigators onto a stack

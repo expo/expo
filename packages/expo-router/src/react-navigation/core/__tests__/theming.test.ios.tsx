@@ -13,7 +13,7 @@ test('can get current theme with useTheme', () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -52,7 +52,7 @@ test("throws if theme isn't passed to BaseNavigationContainer", () => {
 
     return (
       <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key].render())}
+        {state.routes.map((route) => descriptors[route.key]!.render())}
       </NavigationContent>
     );
   };
@@ -88,7 +88,7 @@ test('passes theme to options prop', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors } = useNavigationBuilder(MockRouter, props);
 
-    expect(descriptors[state.routes[0].key].options).toEqual({
+    expect(descriptors[state.routes[0]!.key]!.options).toEqual({
       title: 'tomato',
     });
 
@@ -119,11 +119,11 @@ test('passes theme to screenOptions prop', () => {
   const TestNavigator = (props: any): any => {
     const { state, descriptors } = useNavigationBuilder(MockRouter, props);
 
-    expect(descriptors[state.routes[0].key].options).toEqual({
+    expect(descriptors[state.routes[0]!.key]!.options).toEqual({
       title: 'tomato',
     });
 
-    expect(descriptors[state.routes[1].key].options).toEqual({
+    expect(descriptors[state.routes[1]!.key]!.options).toEqual({
       title: 'tomato',
     });
 

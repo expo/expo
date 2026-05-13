@@ -4,16 +4,54 @@
 
 ### 🛠 Breaking changes
 
-- Removed deprecated `setString` function. Use `setStringAsync` instead. ([#41758](https://github.com/expo/expo/pull/41758) by [@barthap](https://github.com/barthap))
-- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Removed deprecated `setString` function. Use `setStringAsync` instead. ([#41758](https://github.com/expo/expo/pull/41758) by [@barthap](https://github.com/barthap))
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
 - [Android] Instead of exporting the `ClipboardFileProvider` use `android:grantUriPermissions` to share image files. ([#44556](https://github.com/expo/expo/pull/44556) by [@behenate](https://github.com/behenate))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
 
 ## 55.0.8 — 2026-02-25
 

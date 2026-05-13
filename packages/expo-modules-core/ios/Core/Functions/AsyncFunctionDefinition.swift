@@ -59,6 +59,12 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     self.dynamicArgumentTypes = dynamicArgumentTypes
     self.returnType = returnType
     self.body = body
+
+    self.trailingOptionalArgumentsCount = dynamicArgumentTypes
+      .dropLast(takesPromise ? 1 : 0)
+      .reversed()
+      .prefix(while: { $0 is DynamicOptionalType })
+      .count
   }
 
   // MARK: - AnyFunction
@@ -67,8 +73,14 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
 
   let dynamicArgumentTypes: [AnyDynamicType]
 
+  private let trailingOptionalArgumentsCount: Int
+
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0) - (takesPromise ? 1 : 0)
+  }
+
+  var requiredArgumentsCount: Int {
+    return argumentsCount - trailingOptionalArgumentsCount
   }
 
   var takesOwner: Bool = false
@@ -103,7 +115,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       let returnedValue: ReturnType
 
       do {
-        guard let argumentsTuple = try Conversions.toTuple(nativeArguments) as? Args else {
+        guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
           throw ArgumentConversionException()
         }
         returnedValue = try body(argumentsTuple)
@@ -198,24 +210,4 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
   }
 }
 
-extension AsyncFunctionDefinition {
-  var requiredArgumentsCount: Int {
-    var trailingOptionalArgumentsCount: Int = 0
 
-    let reversedArgumentTypes = dynamicArgumentTypes.reversed()
-
-    let reversedArgumentsToIterate: any Sequence<AnyDynamicType> = takesPromise
-      ? reversedArgumentTypes.dropFirst()
-      : reversedArgumentTypes
-
-    for dynamicArgumentType in reversedArgumentsToIterate {
-      if dynamicArgumentType is DynamicOptionalType {
-        trailingOptionalArgumentsCount += 1
-      } else {
-        break
-      }
-    }
-
-    return argumentsCount - trailingOptionalArgumentsCount
-  }
-}

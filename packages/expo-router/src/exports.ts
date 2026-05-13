@@ -12,9 +12,10 @@ export {
   useRootNavigation,
   useRootNavigationState,
   useLoaderData,
+  useCurrentRouteInfo,
 } from './hooks';
 
-export { router, type Router } from './imperative-api';
+export { router, type ImperativeRouter } from './imperative-api';
 
 export { withLayoutContext } from './layouts/withLayoutContext';
 export { Navigator, Slot };
@@ -41,6 +42,14 @@ export { useFocusEffect, type EffectCallback } from './useFocusEffect';
 export { useIsFocused } from './useIsFocused';
 export type { ResultState } from './fork/getStateFromPath';
 
+export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
+export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';
+export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
+export { useTheme } from './react-navigation/core/theming/useTheme';
+export { useRoutePath } from './react-navigation/native/useRoutePath';
+export { useScrollToTop } from './react-navigation/native/useScrollToTop';
+export { useRoute } from './react-navigation/core/useRoute';
+
 export type { RedirectConfig } from './getRoutesCore';
 export type { SingularOptions } from './useScreens';
 
@@ -58,10 +67,24 @@ export {
 } from './primitives';
 
 export { unstable_navigationEvents } from './navigationEvents';
+export type {
+  PageWillRender,
+  PageFocusedEvent,
+  PageBlurredEvent,
+  PageRemoved,
+  ActionDispatchedEvent,
+  AnalyticsEvent,
+} from './navigationEvents';
 
 /**
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
  */
 export { Tabs } from './layouts/Tabs';
 
-export * from './react-navigation';
+export { ExperimentalStack } from './layouts/experimental-stack';
+export type {
+  ExperimentalStackNavigationOptions,
+  ExperimentalStackNavigationEventMap,
+  ExperimentalStackNavigationProp,
+  ExperimentalStackScreenProps,
+} from './layouts/experimental-stack';

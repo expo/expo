@@ -15,6 +15,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
+import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 
@@ -32,7 +33,6 @@ class ObservabilityBackgroundWorker(
   private val observabilityManager: BaseObservabilityManager? = run {
     val projectId = inputData.getString("projectId")
     val baseUrl = inputData.getString("baseUrl")
-    val enableInDebug = inputData.getBoolean("enableInDebug", false)
     val useOpenTelemetry = inputData.getBoolean("useOpenTelemetry", false)
 
     if (projectId == null || baseUrl == null) {
@@ -44,14 +44,16 @@ class ObservabilityBackgroundWorker(
     )
 
     val pendingMetricsManager = PendingMetricsManager(context)
+    val pendingLogsManager = PendingLogsManager(context)
 
     BaseObservabilityManager(
       context = context,
       projectId = projectId,
       sessionManager = sessionManager,
       pendingMetricsManager = pendingMetricsManager,
+      pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
-      enableInDebug = enableInDebug,
+      isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
     )
   }
@@ -82,7 +84,8 @@ class ObservabilityBackgroundWorker(
       // This also adds a side benefit of cleaning up even if dispatch fails
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
-      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics")
+      observabilityManager.dispatchUnsentLogs()
+      Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
       Result.success()
     } catch (e: Exception) {
       Log.e(OBSERVE_TAG, "Failed to dispatch metrics", e)
@@ -98,7 +101,6 @@ class ObservabilityBackgroundWorker(
       context: Context,
       projectId: String,
       baseUrl: String,
-      enableInDebug: Boolean = false,
       useOpenTelemetry: Boolean = false
     ) {
       val constraints = Constraints
@@ -109,7 +111,6 @@ class ObservabilityBackgroundWorker(
       val data = workDataOf(
         Pair("projectId", projectId),
         Pair("baseUrl", baseUrl),
-        Pair("enableInDebug", enableInDebug),
         Pair("useOpenTelemetry", useOpenTelemetry)
       )
 

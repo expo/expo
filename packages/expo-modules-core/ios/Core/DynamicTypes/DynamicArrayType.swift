@@ -50,18 +50,40 @@ internal struct DynamicArrayType: AnyDynamicType {
   }
 
   /**
-   Type-aware conversion: converts each element using `elementType.castToJS` so types like
-   `SharedObject` — which need per-type JS representations — are handled correctly when
-   nested inside an array.
+   Type-aware conversion for arrays that were already normalized by `convertResult`.
+   Elements must use `castToJS` here to avoid re-entering `convertResult` for values that
+   are already in their post-conversion shape, such as `JavaScriptValue.undefined`.
    */
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try castToJS(value, appContext: appContext, in: try appContext.runtime)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     guard let array = value as? [Any] else {
-      return try Conversions.anyToJavaScriptValue(value, runtime: appContext.runtime)
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext, in: runtime)
     }
-    let runtime = try appContext.runtime
     let jsArray = runtime.createArray(length: array.count)
     for (index, element) in array.enumerated() {
-      try jsArray.set(value: try elementType.castToJS(element, appContext: appContext), at: index)
+      try jsArray.set(value: try elementType.castToJS(element, appContext: appContext, in: runtime), at: index)
+    }
+    return jsArray.asValue()
+  }
+
+  /**
+   Converts original native arrays directly to JavaScript, allowing nested elements
+   to use their own direct conversion paths before any array-level normalization.
+   */
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try convertToJS(value, appContext: appContext, in: try appContext.runtime)
+  }
+
+  func convertToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    guard let array = value as? [Any] else {
+      return try Conversions.anyToJavaScriptValue(value, appContext: appContext, in: runtime)
+    }
+    let jsArray = runtime.createArray(length: array.count)
+    for (index, element) in array.enumerated() {
+      try jsArray.set(value: try elementType.convertToJS(element, appContext: appContext, in: runtime), at: index)
     }
     return jsArray.asValue()
   }

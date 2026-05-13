@@ -3,15 +3,20 @@ title: Using Bun
 description: A guide on using Bun with Expo and EAS.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
 [Bun](https://bun.sh/) is a JavaScript runtime and a drop-in alternative for [Node.js](https://nodejs.org/en). In Expo projects, Bun can be used to install npm packages and run Node.js scripts. The benefits of using Bun are faster package installation than npm, pnpm, or Yarn and [at least 4x faster startup time compared to Node.js](https://bun.sh/docs#design-goals), which gives a huge boost to your local development experience.
 
-## Prerequisites
-
-> **Note:** While Bun replaces Node.js for most use cases in your project, at this time, a [Node.js LTS version](https://nodejs.org/) is still required to be installed for the `bun create expo` and `bun expo prebuild` commands. These commands use `npm pack` to download project templates.
-
-To create a new app using Bun, [install Bun on your local machine](https://bun.sh/docs/installation#installing).
+<Prerequisites>
+  <Requirement title="Bun installed on your machine">
+    [Install Bun](https://bun.sh/docs/installation#installing) to create a new app.
+  </Requirement>
+  <Requirement title="Node.js (LTS)">
+    A [Node.js (LTS) version](https://nodejs.org/) is still required for the `bun create expo` and
+    `bun expo prebuild` commands, which use `npm pack` to download project templates.
+  </Requirement>
+</Prerequisites>
 
 ## Start a new Expo project with Bun
 

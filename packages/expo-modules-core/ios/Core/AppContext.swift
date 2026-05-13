@@ -148,7 +148,12 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    */
   internal private(set) lazy var coreModuleHolder = ModuleHolder(appContext: self, module: coreModule, name: nil)
 
-  internal private(set) lazy var converter = MainValueConverter(appContext: self)
+  internal var converter: MainValueConverter {
+    // MainValueConverter is ~Copyable so it can't be stored in a lazy var (which uses Optional internally).
+    // This is zero-cost at runtime — the struct contains only an unowned pointer to self, so constructing
+    // it is a single pointer store with no allocations, reference counting, or weak-ref side table work.
+    return MainValueConverter(appContext: self)
+  }
 
   /**
    Designated initializer without modules provider.
@@ -186,8 +191,14 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
 
   // MARK: - UI
 
+  /**
+   Looks up a view by its React tag. Ensures the lookup runs on the main thread.
+   */
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
-    return hostWrapper?.findView(withTag: viewTag) as? ViewType
+    // TODO: Migrate to @MainActor to get compile-time thread safety instead of runtime dispatch
+    return performSynchronouslyOnMainThread {
+      return hostWrapper?.findView(withTag: viewTag) as? ViewType
+    }
   }
 
   // MARK: - Running on specific queues
@@ -418,12 +429,34 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
   // MARK: - Runtime
 
   /**
-   Sets the JavaScript runtime from a raw pointer to a `facebook::jsi::Runtime` instance.
-   Called from ObjC++ (e.g. `ExpoReactNativeFactory`) when React Native initializes the runtime.
+   Sets the JavaScript runtime from raw pointers. Called by `ExpoReactNativeFactory`
+   when React Native initializes the runtime. When `scheduler` and `dispatch`
+   are both provided, `JavaScriptRuntime.schedule(...)` / `.execute(...)` dispatch
+   onto the JS thread through them. When either is `nil`, the runtime falls back
+   to a synchronous no-op scheduler — callers can detect this via
+   `JavaScriptRuntime.supportsAsyncScheduling`.
+
+   `dispatch` is a raw pointer to a C function with signature
+   `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
+   to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
+   here rather than `@convention(c)` so the symbol can cross the Objective-C
+   bridge without needing a Swift-typed entry point.
    */
   @objc
-  public func setRuntime(_ runtimePointer: UnsafeMutableRawPointer) {
-    _runtime = ExpoRuntime(unsafePointer: runtimePointer)
+  public func setRuntime(
+    _ runtimePointer: UnsafeMutableRawPointer,
+    scheduler: UnsafeMutableRawPointer?,
+    dispatch: UnsafeRawPointer?
+  ) {
+    if let scheduler, let dispatch {
+      _runtime = ExpoRuntime(
+        unsafePointer: runtimePointer,
+        scheduler: scheduler,
+        dispatch: dispatch
+      )
+    } else {
+      _runtime = ExpoRuntime(unsafePointer: runtimePointer)
+    }
   }
 
   @JavaScriptActor

@@ -129,9 +129,7 @@ struct JavaScriptRuntimeTests {
         }
         return .undefined
       },
-      set: { _, _ in },
-      getPropertyNames: { ["foo"] },
-      dealloc: {}
+      getPropertyNames: { ["foo"] }
     )
 
     #expect(hostObject.getProperty("foo").getInt() == 42)
@@ -154,8 +152,7 @@ struct JavaScriptRuntimeTests {
           storedValue = value.getInt()
         }
       },
-      getPropertyNames: { ["value"] },
-      dealloc: {}
+      getPropertyNames: { ["value"] }
     )
 
     hostObject.setProperty("value", value: 99)
@@ -173,9 +170,7 @@ struct JavaScriptRuntimeTests {
         default: return .undefined
         }
       },
-      set: { _, _ in },
-      getPropertyNames: { ["a", "b"] },
-      dealloc: {}
+      getPropertyNames: { ["a", "b"] }
     )
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
@@ -195,15 +190,278 @@ struct JavaScriptRuntimeTests {
         }
         return .undefined
       },
-      set: { _, _ in },
-      getPropertyNames: { ["greeting"] },
-      dealloc: {}
+      getPropertyNames: { ["greeting"] }
     )
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
     let result = try runtime.eval("globalThis.hostObj.greeting")
 
     #expect(result.getString() == "hello")
+  }
+
+  @Test
+  func `isHostObject distinguishes host objects from plain ones`() {
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined }
+    )
+    let plainObject = runtime.createObject()
+
+    #expect(hostObject.isHostObject() == true)
+    #expect(plainObject.isHostObject() == false)
+  }
+
+  @Test
+  func `host object default getPropertyNames returns no keys in JavaScript`() throws {
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let count = try runtime.eval("Object.keys(globalThis.hostObj).length")
+    #expect(count.getInt() == 0)
+  }
+
+  // MARK: - Host object error propagation
+
+  @Test
+  func `throwing host object setter propagates error to JavaScript`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "set failed" }
+    }
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined },
+      set: { _, _ in throw TestError() }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
+    """)
+
+    #expect(result.getString().contains("set failed"))
+  }
+
+  @Test
+  func `throwing host object setter with JavaScriptThrowable preserves code`() throws {
+    struct TypedError: JavaScriptThrowable {
+      var message: String { "read only" }
+      var code: String { "ERR_READ_ONLY" }
+    }
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined },
+      set: { _, _ in throw TypedError() }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+    """).getArray()
+
+    #expect(result[0].getString() == "read only")
+    #expect(result[1].getString() == "ERR_READ_ONLY")
+  }
+
+  @Test
+  func `throwing host object getter propagates error to JavaScript`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "get failed" }
+    }
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in throw TestError() }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo; 'no error' } catch (e) { e.message }
+    """)
+
+    #expect(result.getString().contains("get failed"))
+  }
+
+  @Test
+  func `throwing host object getter with JavaScriptThrowable preserves code`() throws {
+    struct TypedError: JavaScriptThrowable {
+      var message: String { "missing" }
+      var code: String { "ERR_MISSING" }
+    }
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in throw TypedError() }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+    """).getArray()
+
+    #expect(result[0].getString() == "missing")
+    #expect(result[1].getString() == "ERR_MISSING")
+  }
+
+  @Test
+  func `host object setter recovers after throwing`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "boom" }
+    }
+    var stored: Int = 0
+    var shouldThrow = true
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in JavaScriptValue(self.runtime, stored) },
+      set: { _, value in
+        if shouldThrow {
+          throw TestError()
+        }
+        stored = value.getInt()
+      },
+      getPropertyNames: { ["value"] }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    // First write throws and is caught in JS.
+    let firstAttempt = try runtime.eval("""
+      try { globalThis.hostObj.value = 1; 'no error' } catch (e) { e.message }
+    """)
+    #expect(firstAttempt.getString().contains("boom"))
+
+    // Subsequent write must succeed — verifies the C++ thread-local error
+    // state is cleared after being rethrown, not leaked to the next call.
+    shouldThrow = false
+    let secondAttempt = try runtime.eval("""
+      try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
+    """)
+    #expect(secondAttempt.getInt() == 7)
+  }
+
+  @Test
+  func `host object setter error does not pollute later getter`() throws {
+    struct TestError: Error, CustomStringConvertible {
+      var description: String { "set failed" }
+    }
+
+    let hostObject = runtime.createHostObject(
+      get: { name in
+        if name == "ok" {
+          return JavaScriptValue(self.runtime, 123)
+        }
+        return .undefined
+      },
+      set: { _, _ in throw TestError() },
+      getPropertyNames: { ["ok"] }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    // A failing set followed by a successful get must not surface the
+    // earlier set error — checks the thread-local error slot is cleared.
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.value = 1 } catch (e) {}
+      globalThis.hostObj.ok
+    """)
+
+    #expect(result.getInt() == 123)
+  }
+
+  @Test
+  func `read-only host object rejects assignment from JavaScript`() throws {
+    let hostObject = runtime.createHostObject(
+      get: { _ in JavaScriptValue(self.runtime, 1) }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    // No `set` was provided — the C++ side raises a `jsi::JSError` directly,
+    // without crossing the Swift boundary.
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
+    """)
+    let message = result.getString()
+
+    #expect(message.contains("read-only host object"))
+    #expect(message.contains("'foo'"))
+  }
+
+  @Test
+  func `non-throwing host object setter does not trigger error`() throws {
+    var stored: Int = 0
+    let hostObject = runtime.createHostObject(
+      get: { _ in JavaScriptValue(self.runtime, stored) },
+      set: { _, value in stored = value.getInt() },
+      getPropertyNames: { ["value"] }
+    )
+
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
+    """)
+
+    #expect(result.getInt() == 7)
+  }
+
+  @Test
+  func `host getter that calls failing JS preserves the original error`() throws {
+    try runtime.eval("""
+      globalThis.throwTagged = function () {
+        const e = new Error('inner failure');
+        e.code = 'ERR_INNER';
+        throw e;
+      };
+    """)
+    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in
+        // Calling JS that throws surfaces an `expo.CppError` wrapping the original
+        // `jsi::JSError`. Letting it propagate exercises the CppError relay path.
+        _ = try throwTagged.call()
+        return .undefined
+      }
+    )
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+    """).getArray()
+
+    #expect(result[0].getString() == "inner failure")
+    #expect(result[1].getString() == "ERR_INNER")
+  }
+
+  @Test
+  func `host setter that calls failing JS preserves the original error`() throws {
+    try runtime.eval("""
+      globalThis.throwTagged = function () {
+        const e = new Error('inner setter failure');
+        e.code = 'ERR_SETTER';
+        throw e;
+      };
+    """)
+    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+
+    let hostObject = runtime.createHostObject(
+      get: { _ in .undefined },
+      set: { _, _ in
+        _ = try throwTagged.call()
+      }
+    )
+    runtime.global().setProperty("hostObj", value: hostObject.asValue())
+
+    let result = try runtime.eval("""
+      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+    """).getArray()
+
+    #expect(result[0].getString() == "inner setter failure")
+    #expect(result[1].getString() == "ERR_SETTER")
   }
 
   // MARK: - Host function error propagation

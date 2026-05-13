@@ -203,6 +203,14 @@ export type ProductPlatform =
   | 'tvOS(.v15)'
   | 'macCatalyst(.v15)';
 
+/** Escape hatch: have a package-owned script produce the xcframework instead of the SPM generator. */
+export interface CustomBuild {
+  /** Path to the build script, relative to the package root. */
+  script: string;
+  /** Path to the xcframework the script produces, relative to the package root. */
+  output: string;
+}
+
 /**
  * A Swift Package product definition
  * Products contain their own targets directly
@@ -212,6 +220,15 @@ export interface SPMProduct {
   name: string;
   /** The CocoaPods pod name for this product. Must match the name in the corresponding .podspec file. */
   podName: string;
+  /** When set, the product is built by an external script rather than the SPM generator. */
+  customBuild?: CustomBuild;
+  /** When true, the product is never prebuilt as an xcframework — the prebuild flow
+   * skips it entirely (it does not generate sources, build, or resolve its
+   * externalDependencies). The product remains declared so autolinking
+   * (`autolinkWhen`) can still register the matching CocoaPods source pod.
+   * Use this for companion adapters that must always compile from source
+   * because they bridge to a peer pod that may not be present. */
+  sourceOnly?: boolean;
   /** The React Native codegen module name (from package.json codegenConfig.name). Only required for packages that use React Native codegen. */
   codegenName?: string;
   /** Supported platforms for this product */

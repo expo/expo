@@ -14,16 +14,17 @@ Pick the method that matches your tool:
 
 | Method                 | Best for                                               | How                                                                                                            |
 | ---------------------- | ------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------- |
-| Per-page markdown      | Chat interfaces (ChatGPT, Claude.ai) and coding agents | Append `/index.md` to any documentation page URL.                                                              |
+| Per-page markdown      | Chat interfaces (ChatGPT, Claude.ai) and coding agents | Append `/index.md` or `.md` to any documentation page URL.                                                     |
 | Copy Markdown dropdown | Quick prompts with a single page                       | Click **Copy page** > **Copy Markdown** at the top of any documentation page.                                  |
 | Section bundles        | Project rules and coding agents                        | Add a section-level `llms-*.txt` URL to your AI tool configuration or the general-purpose index (`/llms.txt`). |
 
 ## Per-page markdown
 
-Every documentation page has a lightweight markdown version accessible by appending `/index.md` to the page URL. For example:
+Every documentation page has a lightweight markdown version accessible by appending either `/index.md` or `.md` to the page URL. Both URLs serve the same file. For example:
 
 ```text Create a development build on EAS
-https://documentation.expo.dev/develop/development-builds/create-a-build/index.md
+https://docs.expo.dev/develop/development-builds/create-a-build/index.md
+https://docs.expo.dev/develop/development-builds/create-a-build.md
 ```
 
 The above method is useful when you want to give an AI agent context about a specific topic or page without overwhelming it with the full HTML of that page.
@@ -36,17 +37,19 @@ At Expo, we support the [llms.txt](https://llmstxt.org/) initiative to provide d
 
 | Endpoint                         | Description                                                                                              | Size    |
 | -------------------------------- | -------------------------------------------------------------------------------------------------------- | ------- |
-| [/llms.txt](/llms.txt)           | Index page with a list of all available documentation files.                                             | ~94 kB  |
+| [/llms.txt](/llms.txt)           | Index page with a list of all available documentation files.                                             | ~100 kB |
 | [/llms-full.txt](/llms-full.txt) | Complete documentation for Expo, including Expo Router, Expo Modules API, development process, and more. | ~1.9 MB |
 
 ### Section-wide bundles
 
 | Endpoint                       | Description                                                 | Size    |
 | ------------------------------ | ----------------------------------------------------------- | ------- |
-| [/llms-eas.txt](/llms-eas.txt) | Complete documentation for Expo Application Services (EAS). | ~974 kB |
-| [/llms-sdk.txt](/llms-sdk.txt) | Complete documentation for the latest Expo SDK.             | ~2.6 MB |
+| [/llms-eas.txt](/llms-eas.txt) | Complete documentation for Expo Application Services (EAS). | ~1.0 MB |
+| [/llms-sdk.txt](/llms-sdk.txt) | Complete documentation for the latest Expo SDK.             | ~2.8 MB |
 
 <Collapsible summary="Looking for deprecated Expo SDK versions?">
+
+- [/llms-sdk-v55.0.0.txt](/llms-sdk-v55.0.0.txt): Documentation for the Expo SDK v55.0.0
 
 - [/llms-sdk-v54.0.0.txt](/llms-sdk-v54.0.0.txt): Documentation for the Expo SDK v54.0.0
 

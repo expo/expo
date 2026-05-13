@@ -14,6 +14,7 @@ jest.mock('../utils/resolveModule.ts', () => {
       [
         'react-native-worklets/plugin',
         'react-native-reanimated/plugin',
+        '@expo/ui/babel-plugin',
         'expo-router/package.json',
         'expo-widgets/package.json',
         '@expo/vector-icons',
@@ -146,7 +147,7 @@ it(`compiles sample file with Metro targeting Hermes`, () => {
     babelrc: false,
     presets: [preset],
     sourceMaps: true,
-    caller: getCaller({ name: 'metro', engine: 'hermes', isHermesV1: true }),
+    caller: getCaller({ name: 'metro', engine: 'hermes' }),
   };
   const fileName = path.resolve(__dirname, 'samples/App.js');
 

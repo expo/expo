@@ -52,7 +52,7 @@ export interface RequestHandlerParams {
 }
 
 export interface RequestHandlerInput {
-  getHtml(request: Request, route: Route): Promise<string | Response | null>;
+  getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
   getMiddleware(route: MiddlewareInfo): Promise<MiddlewareModule>;
@@ -271,7 +271,7 @@ export function createRequestHandler({
   }
 
   async function respondNotFoundHTML(
-    html: string | Response | null,
+    html: string | ReadableStream | Response | null,
     route: Route
   ): Promise<Response> {
     if (typeof html === 'string') {
@@ -286,6 +286,15 @@ export function createRequestHandler({
     if (isResponse(html)) {
       // Only used for development errors
       return html;
+    }
+
+    if (html != null) {
+      return createResponse('notFoundHtml', route, html, {
+        status: 404,
+        headers: new Headers({
+          'Content-Type': 'text/html',
+        }),
+      });
     }
 
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
@@ -322,7 +331,7 @@ export function createRequestHandler({
     return createResponseFrom('api', route, response);
   }
 
-  function respondHTML(html: string | Response | null, route: Route): Response {
+  function respondHTML(html: string | ReadableStream | Response | null, route: Route): Response {
     if (typeof html === 'string') {
       return createResponse('html', route, html, {
         status: 200,
@@ -335,6 +344,15 @@ export function createRequestHandler({
     if (isResponse(html)) {
       // Only used for development error responses
       return html;
+    }
+
+    if (html != null) {
+      return createResponse('html', route, html, {
+        status: 200,
+        headers: new Headers({
+          'Content-Type': 'text/html',
+        }),
+      });
     }
 
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);

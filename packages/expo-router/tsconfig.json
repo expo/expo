@@ -8,10 +8,7 @@
     "verbatimModuleSyntax": false,
     "noEmit": false,
     "resolveJsonModule": true,
-    "types": ["jest", "node"],
-
-    // TODO: Enable in the future
-    "noUncheckedIndexedAccess": false
+    "types": ["jest", "node"]
   },
   "include": ["./src"],
   "exclude": ["**/__tests__/", "**/__rsc_tests__/"]

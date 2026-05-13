@@ -99,6 +99,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
     name: 'Community Picker replacement',
     route: 'ui/community-picker',
     options: {},
@@ -120,6 +128,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+  {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
     },
   },
   {
@@ -243,6 +267,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'HorizontalPager component',
+    route: 'ui/horizontal-pager',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalPagerScreen'));
+    },
+  },
+  {
     name: 'Carousel component',
     route: 'ui/carousel',
     options: {},
@@ -336,6 +368,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./TooltipScreen'));
+    },
+  },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
 ];

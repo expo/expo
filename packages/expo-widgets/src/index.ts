@@ -4,6 +4,7 @@ export type {
   LevelOfDetail,
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
+  LiveActivityEnvironment,
   LiveActivityEvents,
   LiveActivityLayout,
   PushTokenEvent,

@@ -44,6 +44,9 @@ public final class ExpoUIModule: Module {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
       }
+      AsyncFunction("clear") { (view: SecureFieldView) in
+        view.clear()
+      }
       AsyncFunction("blur") { (view: SecureFieldView) in
         view.blur()
       }
@@ -54,6 +57,9 @@ public final class ExpoUIModule: Module {
     ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: TextFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: TextFieldView) in
         view.blur()
@@ -135,6 +141,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
     ExpoUIView(OverlayView.self)
+    ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
     ExpoUIView(LinkView.self)

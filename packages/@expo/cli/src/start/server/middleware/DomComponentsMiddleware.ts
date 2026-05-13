@@ -2,27 +2,16 @@ import { convertEntryPointToRelative } from '@expo/config/paths';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { DOM_POLYFILLS_SCRIPT } from './domPolyfills';
 import type { ExpoMetroOptions } from './metroOptions';
 import { createBundleUrlPath } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { toPosixPath } from '../../../utils/filePath';
-import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
-
-const checkWebViewInstalled = memoize((projectRoot: string) => {
-  const webViewInstalled =
-    resolveFrom.silent(projectRoot, 'react-native-webview') ||
-    resolveFrom.silent(projectRoot, '@expo/dom-webview');
-  if (!webViewInstalled) {
-    throw new Error(
-      `To use DOM Components, you must install the 'react-native-webview' package. Run 'npx expo install react-native-webview' to install it.`
-    );
-  }
-});
 
 type CreateDomComponentsMiddlewareOptions = {
   /** The absolute project root, used to resolve the `expo/dom/entry.js` path */
@@ -51,8 +40,6 @@ export function createDomComponentsMiddleware(
       res.statusMessage = 'Invalid file path: ' + file;
       return res.end();
     }
-
-    checkWebViewInstalled(projectRoot);
 
     // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     // Generate a unique entry file for the webview.
@@ -128,6 +115,17 @@ export function getDomComponentHtml(src?: string, { title }: { title?: string } 
     <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
         <!-- Root element for the DOM component. -->
         <div id="root"></div>
+        <script>${DOM_POLYFILLS_SCRIPT}</script>
+        <script>
+          var injectedObject = {};
+          try {
+            injectedObject = JSON.parse(window.ReactNativeWebView.injectedObjectJson());
+          } catch (e) {
+            throw new Error('Failed to parse injectedObjectJson: ' + e.message);
+          }
+          window.$$EXPO_DOM_HOST_OS = injectedObject.EXPO_DOM_HOST_OS;
+          window.$$EXPO_INITIAL_PROPS = injectedObject.initialProps;
+        </script>
         ${src ? `<script crossorigin src="${src.replace(/^https?:/, '')}"></script>` : ''}
     </body>
 </html>`;

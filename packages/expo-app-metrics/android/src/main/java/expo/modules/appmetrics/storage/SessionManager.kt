@@ -8,6 +8,9 @@ import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.utils.TimeUtils
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -22,7 +25,12 @@ class SessionManager(
     suspend fun onMetricsInserted(metricIds: List<String>)
   }
 
+  fun interface LogsInsertListener {
+    suspend fun onLogsInserted(logIds: List<String>)
+  }
+
   private val metricsInsertListeners = CopyOnWriteArrayList<MetricsInsertListener>()
+  private val logsInsertListeners = CopyOnWriteArrayList<LogsInsertListener>()
 
   fun addMetricsInsertListener(listener: MetricsInsertListener) {
     metricsInsertListeners.add(listener)
@@ -30,6 +38,14 @@ class SessionManager(
 
   fun removeMetricsInsertListener(listener: MetricsInsertListener) {
     metricsInsertListeners.remove(listener)
+  }
+
+  fun addLogsInsertListener(listener: LogsInsertListener) {
+    logsInsertListeners.add(listener)
+  }
+
+  fun removeLogsInsertListener(listener: LogsInsertListener) {
+    logsInsertListeners.remove(listener)
   }
 
   fun createSessionId(): String = UUID.randomUUID().toString()
@@ -50,7 +66,11 @@ class SessionManager(
       appIdentifier = metadata?.appIdentifier,
       appVersion = metadata?.appVersion,
       appBuildNumber = metadata?.appBuildNumber,
-      appUpdateId = metadata?.appUpdateId,
+      appUpdateId = metadata?.appUpdatesInfo?.updateId,
+      appUpdateRuntimeVersion = metadata?.appUpdatesInfo?.runtimeVersion,
+      appUpdateRequestHeaders = metadata?.appUpdatesInfo?.requestHeaders?.let {
+        Json.encodeToString(MapSerializer(String.serializer(), String.serializer()), it)
+      },
       appEasBuildId = metadata?.appEasBuildId,
       deviceOs = metadata?.deviceOs,
       deviceOsVersion = metadata?.deviceOsVersion,
@@ -83,7 +103,10 @@ class SessionManager(
   }
 
   suspend fun stopSession(sessionId: String) {
-    database.sessionDao().updateActiveStatus(sessionId, isActive = false)
+    database.sessionDao().stopSessionAt(
+      sessionId,
+      endTimestamp = TimeUtils.getCurrentTimestampInISOFormat()
+    )
   }
 
   suspend fun addMetrics(
@@ -104,6 +127,8 @@ class SessionManager(
 
   suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
 
+  suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
+
   suspend fun getAllActiveSessions(): List<SessionWithMetrics> = database.sessionDao().getAllActiveSessions()
 
   suspend fun removeSessions(session: List<SessionWithMetrics>) {
@@ -118,9 +143,34 @@ class SessionManager(
     database.sessionDao().deactivateAllSessionsBefore(timestamp)
   }
 
-  suspend fun cleanupOldMetrics() {
+  /**
+   * Prunes inactive sessions whose `startTimestamp` is older than the
+   * retention window. Their metrics are removed via the foreign-key cascade.
+   */
+  suspend fun cleanupOldSessions() {
     val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
-    database.metricDao().deleteMetricsOlderThan(cutoffTimestamp)
+    database.sessionDao().deleteSessionsOlderThan(cutoffTimestamp)
+  }
+
+  suspend fun addLogs(
+    logs: List<LogRecord>,
+    sessionId: String
+  ) {
+    val logsWithSession = logs.map { it.copy(sessionId = sessionId) }
+    database.logDao().insertAll(logsWithSession)
+    val logIds = logsWithSession.map { it.logId }
+    logsInsertListeners.forEach { listener ->
+      try {
+        listener.onLogsInserted(logIds)
+      } catch (e: Exception) {
+        Log.e(TAG, "LogsInsertListener failed", e)
+      }
+    }
+  }
+
+  suspend fun cleanupOldLogs() {
+    val cutoffTimestamp = TimeUtils.getTimestampInISOFormatFromPast(MetricsConstants.SECONDS_TO_REMOVE_OLD_METRICS)
+    database.logDao().deleteLogsOlderThan(cutoffTimestamp)
   }
 
   suspend fun updateEnvironmentForActiveSessions(environment: String) {
@@ -147,6 +197,30 @@ class SessionManager(
             .flatMap { it.metrics }
             .distinctBy { it.metricId }
             .filter { it.metricId in metricIdSet }
+        )
+      }
+  }
+
+  suspend fun getSessionsWithLogs(logIds: List<String>): List<SessionWithLogs> {
+    val logIdSet = logIds.toSet()
+    if (logIds.size <= SQLITE_MAX_BIND_VARIABLES) {
+      return database.sessionDao().getSessionsWithLogsByLogIds(logIds).map { sessionWithLogs ->
+        sessionWithLogs.copy(logs = sessionWithLogs.logs.filter { it.logId in logIdSet })
+      }
+    }
+
+    val allResults = logIds.chunked(SQLITE_MAX_BIND_VARIABLES).flatMap { chunk ->
+      database.sessionDao().getSessionsWithLogsByLogIds(chunk)
+    }
+    return allResults
+      .groupBy { it.session.id }
+      .map { (_, sessions) ->
+        SessionWithLogs(
+          session = sessions.first().session,
+          logs = sessions
+            .flatMap { it.logs }
+            .distinctBy { it.logId }
+            .filter { it.logId in logIdSet }
         )
       }
   }

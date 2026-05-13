@@ -1,8 +1,6 @@
+#include "ExpoHeader.pch"
 #include "MethodMetadata.h"
 #include "JSIContext.h"
-#include "JavaScriptValue.h"
-#include "JavaScriptObject.h"
-#include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
@@ -10,9 +8,6 @@
 #include "JSReferencesCache.h"
 
 #include <utility>
-#include <functional>
-#include <unistd.h>
-#include <optional>
 
 #include <react/bridging/LongLivedObject.h>
 

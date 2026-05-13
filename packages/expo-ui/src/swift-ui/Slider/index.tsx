@@ -22,6 +22,16 @@ export type SliderProps = {
    */
   max?: number;
   /**
+   * Lower limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `lowerLimit` during drag.
+   */
+  lowerLimit?: number;
+  /**
+   * Upper limit the user can drag the thumb to. The visible track still
+   * spans `min..max`, but the thumb stops at `upperLimit` during drag.
+   */
+  upperLimit?: number;
+  /**
    * A label describing the slider's purpose.
    */
   label?: React.ReactNode;

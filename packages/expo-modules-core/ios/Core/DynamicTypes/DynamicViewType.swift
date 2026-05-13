@@ -17,13 +17,13 @@ internal struct DynamicViewType: AnyDynamicType {
   }
 
   /**
-   Casts from the React component instance to the view tag (`Int`).
+   Resolves the React component instance to the native view via its tag.
    */
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let viewTag = findViewTag(jsValue) else {
       throw InvalidViewTagException()
     }
-    return viewTag
+    return try cast(viewTag, appContext: appContext)
   }
 
   /**
@@ -32,9 +32,6 @@ internal struct DynamicViewType: AnyDynamicType {
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     guard let viewTag = value as? Int else {
       throw InvalidViewTagException()
-    }
-    guard Thread.isMainThread else {
-      throw NonMainThreadException()
     }
     guard let view = appContext.findView(withTag: viewTag, ofType: innerType.self) else {
       throw Exceptions.ViewNotFound((tag: viewTag, type: innerType.self))
@@ -63,11 +60,5 @@ private func findViewTag(_ value: JavaScriptValue) -> Int? {
 internal final class InvalidViewTagException: Exception {
   override var reason: String {
     "The view tag must be a number"
-  }
-}
-
-internal final class NonMainThreadException: Exception {
-  override var reason: String {
-    "All operations on the views must run from the main UI thread"
   }
 }

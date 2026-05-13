@@ -9,7 +9,7 @@
  */
 import type { ReactNode, AnchorHTMLAttributes } from 'react';
 import type { RouteProps } from './common.js';
-import type { Router as ClassicExpoRouterType } from '../../imperative-api';
+import type { ImperativeRouter as ClassicExpoRouterType } from '../../imperative-api';
 import type { LinkProps as ClassicLinkProps, LinkComponent } from '../../link/Link.js';
 import type { Href } from '../../types.js';
 export declare function useRouter_UNSTABLE(): ClassicExpoRouterType & RouteProps & {

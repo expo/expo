@@ -161,6 +161,7 @@ export function synthesizeSkippedResult(
   const errors: UnitError[] = [];
 
   for (const product of pkg.getSwiftPMConfiguration().products) {
+    if (product.sourceOnly) continue;
     if (productFilter && productFilter !== product.name) continue;
     for (const flavor of buildFlavors) {
       const status = createUnitStatus(pkg.packageName, product.name, flavor);
@@ -220,6 +221,7 @@ async function executePackageStepsInner(
     artifactsPath: rootCtx.artifactsPath,
     dependsOn: rootCtx.dependsOn,
     artifactsByFlavor: rootCtx.artifactsByFlavor,
+    customBuiltProducts: rootCtx.customBuiltProducts,
     currentPackage: null,
     currentProduct: null,
     currentFlavor: null,
@@ -290,6 +292,10 @@ async function executePackageStepsInner(
       // --- Product loop ---
       for (const product of spmConfig.products) {
         if (ctx.cancelled) break;
+
+        // Skip products that opt out of the prebuild flow. They will be
+        // installed as source via CocoaPods autolinking instead.
+        if (product.sourceOnly) continue;
 
         if (request.productFilter && request.productFilter !== product.name) {
           continue;

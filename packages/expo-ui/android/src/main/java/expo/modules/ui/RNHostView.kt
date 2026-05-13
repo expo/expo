@@ -32,7 +32,6 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
-import expo.modules.kotlin.views.RNHostViewInterface
 import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedComposeProps
@@ -116,8 +115,11 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
     val childSize = remember {
       mutableStateOf(
-        if (childView.width > 0 && childView.height > 0) IntSize(childView.width, childView.height)
-        else IntSize.Zero
+        if (childView.width > 0 && childView.height > 0) {
+          IntSize(childView.width, childView.height)
+        } else {
+          IntSize.Zero
+        }
       )
     }
 

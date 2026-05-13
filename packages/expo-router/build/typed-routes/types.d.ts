@@ -35,7 +35,7 @@ export type HrefOutputParamsObject = {
 export type RelativePathString = `./${string}` | `../${string}` | '..';
 export type SearchOrHash = `?${string}` | `#${string}`;
 export type ExternalPathString = `${string}:${string}` | `//${string}`;
-export type Route = Exclude<Extract<Href, object>['pathname'], // Use the HrefObject, as it doesn't have query params
+export type RoutePath = Exclude<Extract<Href, object>['pathname'], // Use the HrefObject, as it doesn't have query params
 // Use the HrefObject, as it doesn't have query params
 RelativePathString | ExternalPathString>;
 /**

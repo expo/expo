@@ -4,30 +4,31 @@ public struct Conversions {
   /**
    Converts an array to tuple. Because of tuples nature, it's not possible to convert an array of any size, so we can support only up to some fixed size.
    */
-  static func toTuple(_ array: [Any?]) throws -> Any? {
+  @_transparent
+  static func toTuple<Args>(_ array: [Any]) throws -> Args? {
     switch array.count {
     case 0:
-      return ()
+      return () as? Args
     case 1:
-      return (array[0])
+      return (array[0]) as? Args
     case 2:
-      return (array[0], array[1])
+      return (array[0], array[1]) as? Args
     case 3:
-      return (array[0], array[1], array[2])
+      return (array[0], array[1], array[2]) as? Args
     case 4:
-      return (array[0], array[1], array[2], array[3])
+      return (array[0], array[1], array[2], array[3]) as? Args
     case 5:
-      return (array[0], array[1], array[2], array[3], array[4])
+      return (array[0], array[1], array[2], array[3], array[4]) as? Args
     case 6:
-      return (array[0], array[1], array[2], array[3], array[4], array[5])
+      return (array[0], array[1], array[2], array[3], array[4], array[5]) as? Args
     case 7:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6]) as? Args
     case 8:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7]) as? Args
     case 9:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8]) as? Args
     case 10:
-      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9])
+      return (array[0], array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[8], array[9]) as? Args
     default:
       throw TooManyArgumentsException((count: array.count, limit: 10))
     }
@@ -132,21 +133,51 @@ public struct Conversions {
   // MARK: - Any to JavaScript
 
   /**
-   Converts an arbitrary native value to a `JavaScriptValue`.
-   Handles Swift primitives, strings, arrays, and dictionaries with `Any` values
-   that can't be statically matched to `JavaScriptRepresentable`.
+   Converts a native value to a `JavaScriptValue`. When the value conforms to `AnyArgument`,
+   the fast path via `getDynamicType().castToJS()` is used. Otherwise falls back to
+   `unknownToJavaScriptValue` which handles type-erased values through `NSNumber`/`NSDictionary` matching.
    */
-  static func anyToJavaScriptValue(_ value: Any, runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+  static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try anyToJavaScriptValue(value, appContext: appContext, in: appContext.runtime)
+  }
+
+  /**
+   Variant that creates JS values in the given `runtime`, used by the worklet conversion.
+   */
+  static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    if ValueType.self is AnyOptional.Type, Optional.isNil(value) {
+      return .null
+    }
+    if let value = value as? AnyArgument {
+      return try type(of: value).getDynamicType().castToJS(value, appContext: appContext, in: runtime)
+    }
+    return try unknownToJavaScriptValue(value, appContext: appContext, in: runtime)
+  }
+
+  /**
+   Slow path for values whose concrete type is erased to `Any`.
+   Kept separate from `anyToJavaScriptValue` so that the default `AnyDynamicType.castToJS`
+   can call this without re-entering the `AnyArgument` check and causing infinite recursion.
+   */
+  static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext) throws -> JavaScriptValue {
+    return try unknownToJavaScriptValue(value, appContext: appContext, in: appContext.runtime)
+  }
+
+  /**
+   Variant that creates JS values in the given `runtime` — used by the worklet conversion
+   path so produced dicts/arrays live in the calling runtime, not the main runtime.
+   */
+  static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if let value = value as? JavaScriptRepresentable {
       return .representing(value: value, in: runtime)
     }
+
     switch value {
     case is Void:
       return .undefined
     case is NSNull:
       return .null
     case let number as NSNumber:
-      // NSNumber wrapping a boolean is also a valid NSNumber, so check for bool first.
       if number === kCFBooleanTrue {
         return .true()
       }
@@ -161,18 +192,18 @@ public struct Conversions {
     case let array as NSArray:
       let jsArray = runtime.createArray(length: array.count)
       for (index, element) in array.enumerated() {
-        try jsArray.set(value: anyToJavaScriptValue(element, runtime: runtime), at: index)
+        try jsArray.set(value: anyToJavaScriptValue(element, appContext: appContext, in: runtime), at: index)
       }
       return jsArray.asValue()
     case let dict as NSDictionary:
       let jsObject = runtime.createObject()
       for (key, element) in dict {
         guard let key = key as? String else { continue }
-        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, runtime: runtime))
+        jsObject.setProperty(key, value: try anyToJavaScriptValue(element, appContext: appContext, in: runtime))
       }
       return jsObject.asValue()
     default:
-      log.warn("anyToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
+      log.warn("unknownToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
       return .undefined
     }
   }

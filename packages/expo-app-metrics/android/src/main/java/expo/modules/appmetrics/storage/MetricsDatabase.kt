@@ -25,12 +25,14 @@ object MetricsConstants {
 }
 
 @Database(
-  entities = [Metric::class, Session::class],
-  version = 11,
+  entities = [Metric::class, LogRecord::class, Session::class],
+  version = 15,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
   abstract fun metricDao(): MetricDao
+
+  abstract fun logDao(): LogDao
 
   abstract fun sessionDao(): SessionDao
 
@@ -62,6 +64,7 @@ abstract class MetricsDatabase : RoomDatabase() {
 data class Session(
   @PrimaryKey @Field val id: String,
   @Field val startTimestamp: String, // ISO 8601 date string
+  @Field val endTimestamp: String? = null, // ISO 8601 date string. `null` while the session is still active.
   @Field val isActive: Boolean = true,
   // Environment
   @Field val environment: String? = null,
@@ -71,6 +74,9 @@ data class Session(
   @Field val appVersion: String? = null,
   @Field val appBuildNumber: String? = null,
   @Field val appUpdateId: String? = null,
+  @Field val appUpdateRuntimeVersion: String? = null,
+  // JSON-encoded Map<String, String> of update request headers
+  @Field val appUpdateRequestHeaders: String? = null,
   @Field val appEasBuildId: String? = null,
   // Device Info
   @Field val deviceOs: String? = null,
@@ -118,8 +124,49 @@ data class SessionWithMetrics(
     parentColumn = "id",
     entityColumn = "sessionId"
   )
-  @Field val metrics: List<Metric>
+  @Field val metrics: List<Metric>,
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "sessionId"
+  )
+  @Field val logs: List<LogRecord> = emptyList()
 ) : Record
+
+@Entity(
+  tableName = "logs",
+  indices = [Index("sessionId")],
+  foreignKeys = [
+    ForeignKey(
+      entity = Session::class,
+      parentColumns = ["id"],
+      childColumns = ["sessionId"],
+      onDelete = ForeignKey.CASCADE
+    )
+  ]
+)
+@Serializable
+data class LogRecord(
+  @PrimaryKey @Field val logId: String = UUID.randomUUID().toString(),
+  @Field val sessionId: String,
+  // ISO 8601 date string
+  @Field val timestamp: String,
+  @Field val name: String,
+  @Field val body: String? = null,
+  // Lowercase severity case name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`).
+  @Field val severity: String,
+  // JSON string. Typed encoding happens at OTel time, not at storage time.
+  @Field val attributes: String? = null,
+  @Field val droppedAttributesCount: Int = 0
+) : Record
+
+data class SessionWithLogs(
+  @Embedded val session: Session,
+  @Relation(
+    parentColumn = "id",
+    entityColumn = "sessionId"
+  )
+  val logs: List<LogRecord>
+)
 
 @Dao
 interface MetricDao {
@@ -131,9 +178,18 @@ interface MetricDao {
 
   @Delete
   suspend fun delete(metrics: List<Metric>)
+}
 
-  @Query("DELETE FROM metrics WHERE timestamp < :cutoffTimestamp")
-  suspend fun deleteMetricsOlderThan(cutoffTimestamp: String)
+@Dao
+interface LogDao {
+  @Insert(onConflict = OnConflictStrategy.IGNORE)
+  suspend fun insertAll(logs: List<LogRecord>)
+
+  @Delete
+  suspend fun delete(logs: List<LogRecord>)
+
+  @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
+  suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
 }
 
 @Dao
@@ -144,14 +200,24 @@ interface SessionDao {
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getById(id: String): Session?
 
-  @Query("UPDATE sessions SET isActive = :isActive WHERE id = :id")
-  suspend fun updateActiveStatus(
+  @Query("UPDATE sessions SET isActive = 0, endTimestamp = :endTimestamp WHERE id = :id")
+  suspend fun stopSessionAt(
     id: String,
-    isActive: Boolean
+    endTimestamp: String
   )
 
-  @Query("UPDATE sessions SET isActive = 0 WHERE startTimestamp < :timestamp")
+  // Stamps stale sessions as ended at `:timestamp`. Used at module creation
+  // to clean up sessions left behind when the previous process died (force-quit,
+  // OOM kill, crash) without an `OnActivityDestroys` callback.
+  @Query("UPDATE sessions SET isActive = 0, endTimestamp = :timestamp WHERE startTimestamp < :timestamp AND endTimestamp IS NULL")
   suspend fun deactivateAllSessionsBefore(timestamp: String)
+
+  // Drops sessions whose `startTimestamp` is older than the cutoff. Cascade
+  // deletes their metrics via the foreign-key relation. Live (`isActive = 1`)
+  // sessions are excluded so a long-running process doesn't lose its current
+  // session out from under it.
+  @Query("DELETE FROM sessions WHERE startTimestamp < :cutoffTimestamp AND isActive = 0")
+  suspend fun deleteSessionsOlderThan(cutoffTimestamp: String)
 
   @Query("UPDATE sessions SET environment = :environment WHERE id = :id")
   suspend fun updateEnvironment(
@@ -177,6 +243,14 @@ interface SessionDao {
   suspend fun getAll(): List<SessionWithMetrics>
 
   @Transaction
+  @Query("SELECT * FROM sessions WHERE id = :id")
+  suspend fun getSessionWithMetricsBySessionId(id: String): SessionWithMetrics?
+
+  @Transaction
   @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN metrics m ON s.id = m.sessionId WHERE m.metricId IN (:metricIds)")
   suspend fun getSessionsWithMetricsByMetricIds(metricIds: List<String>): List<SessionWithMetrics>
+
+  @Transaction
+  @Query("SELECT DISTINCT s.* FROM sessions s INNER JOIN logs l ON s.id = l.sessionId WHERE l.logId IN (:logIds)")
+  suspend fun getSessionsWithLogsByLogIds(logIds: List<String>): List<SessionWithLogs>
 }

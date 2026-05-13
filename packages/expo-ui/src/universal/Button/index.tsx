@@ -1,48 +1,40 @@
-import { useState } from 'react';
-import { Pressable, Text, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Text, type TextStyle, type ViewStyle } from 'react-native';
 
 import type { ButtonProps, ButtonVariant } from './types';
 import { useUniversalLifecycle } from '../hooks';
 
-const variantStyles: Record<ButtonVariant, ViewStyle> = {
-  filled: {
-    backgroundColor: '#007AFF',
+const styles = StyleSheet.create({
+  button: {
     paddingHorizontal: 16,
     paddingVertical: 10,
     borderRadius: 8,
+    userSelect: 'none',
   },
+  disabled: { opacity: 0.5 },
+  hidden: { display: 'none' },
+  label: { textAlign: 'center' },
+});
+
+const variantStyles = StyleSheet.create({
+  filled: { backgroundColor: '#007AFF' },
   outlined: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 8,
-    borderWidth: 1,
     borderColor: '#007AFF',
+    borderWidth: 1,
   },
-  text: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-};
+  text: {},
+} satisfies Record<ButtonVariant, ViewStyle>);
 
-const variantHoverStyles: Record<ButtonVariant, ViewStyle> = {
-  filled: {
-    backgroundColor: '#0066DB',
-  },
-  outlined: {
-    backgroundColor: 'rgba(0, 122, 255, 0.08)',
-  },
-  text: {
-    backgroundColor: 'rgba(0, 122, 255, 0.08)',
-  },
-};
+const variantHoverStyles = StyleSheet.create({
+  filled: { backgroundColor: '#0066DB' },
+  outlined: { backgroundColor: 'rgba(0, 122, 255, 0.08)' },
+  text: { backgroundColor: 'rgba(0, 122, 255, 0.08)' },
+} satisfies Record<ButtonVariant, ViewStyle>);
 
-const variantTextColors: Record<ButtonVariant, string> = {
-  filled: '#FFFFFF',
-  outlined: '#007AFF',
-  text: '#007AFF',
-};
+const variantLabelStyles = StyleSheet.create({
+  filled: { color: '#FFFFFF' },
+  outlined: { color: '#007AFF' },
+  text: { color: '#007AFF' },
+} satisfies Record<ButtonVariant, TextStyle>);
 
 /**
  * A pressable button that supports multiple visual variants.
@@ -55,32 +47,27 @@ export function Button({
   style,
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: ButtonProps) {
   useUniversalLifecycle(onAppear, onDisappear);
-  const [hovered, setHovered] = useState(false);
-
-  const pressableStyle: ViewStyle = {
-    ...variantStyles[variant],
-    ...style,
-    ...(hovered && !disabled ? variantHoverStyles[variant] : undefined),
-    ...(hidden ? { display: 'none' } : undefined),
-    ...(disabled ? { opacity: 0.5 } : undefined),
-  };
 
   return (
     <Pressable
-      style={pressableStyle}
+      role="button"
       onPress={onPress}
-      onHoverIn={() => setHovered(true)}
-      onHoverOut={() => setHovered(false)}
       disabled={disabled}
-      testID={testID}>
-      {children ?? (
-        <Text style={{ color: variantTextColors[variant], textAlign: 'center' }}>{label}</Text>
-      )}
+      testID={testID}
+      style={({ hovered }) => [
+        styles.button,
+        variantStyles[variant],
+        style,
+        hovered && !disabled && variantHoverStyles[variant],
+        hidden && styles.hidden,
+        disabled && styles.disabled,
+      ]}>
+      {children ?? <Text style={[styles.label, variantLabelStyles[variant]]}>{label}</Text>}
     </Pressable>
   );
 }

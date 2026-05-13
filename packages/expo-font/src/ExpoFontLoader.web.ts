@@ -1,9 +1,9 @@
 import { CodedError, registerWebModule } from 'expo-modules-core';
 import FontObserver from 'fontfaceobserver';
 
-import type { ExpoFontLoaderModule, ServerFontResourceDescriptor } from './ExpoFontLoader';
+import type { ExpoFontLoaderModule } from './ExpoFontLoader';
 import type { UnloadFontOptions } from './Font';
-import { FontDisplay, type FontResource } from './Font.types';
+import { FontDisplay, type FontResource, type ServerFontResourceDescriptor } from './Font.types';
 
 function getFontFaceStyleSheet(): CSSStyleSheet | null {
   if (typeof window === 'undefined') {
@@ -61,11 +61,11 @@ function getServerResourceDescriptors(): ServerFontResourceDescriptor[] {
     {
       css,
       id: ID,
-      type: 'style',
+      type: 'style' as const,
     },
     ...links.map((resourceId) => ({
       as: 'font' as const,
-      crossOrigin: '',
+      crossOrigin: '' as const,
       href: resourceId,
       rel: 'preload' as const,
       type: 'link' as const,

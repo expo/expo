@@ -367,6 +367,7 @@ function filterSingular(state, getId) {
     if (!state.routes) {
         return state;
     }
+    // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
     const currentIndex = state.index || state.routes.length - 1;
     const current = state.routes[currentIndex];
     const name = current.name;
@@ -435,6 +436,7 @@ const Stack = Object.assign((props) => {
     Protected: Protected_1.Protected,
     Header: stack_utils_1.StackHeader,
     SearchBar: stack_utils_1.StackSearchBar,
+    Title: stack_utils_1.StackTitle,
     Toolbar: stack_utils_1.StackToolbar,
 });
 function disableAnimationInScreenOptions(options, condition) {

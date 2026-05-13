@@ -1,5 +1,7 @@
 import { Children, Fragment, isValidElement, type ReactNode } from 'react';
 
+import type { FieldSectionFooterProps, FieldSectionHeaderProps } from './types';
+
 /**
  * Marker component that designates its children as the header of the
  * enclosing [`FieldGroup.Section`](#fieldgroupsection). Used via the
@@ -7,7 +9,7 @@ import { Children, Fragment, isValidElement, type ReactNode } from 'react';
  * Its only job is to tag a slot — the parent `FieldGroup.Section` extracts
  * and renders the children in the header position.
  */
-export function Header(props: { children?: ReactNode }) {
+export function Header(props: FieldSectionHeaderProps) {
   return <>{props.children}</>;
 }
 
@@ -18,7 +20,7 @@ export function Header(props: { children?: ReactNode }) {
  * Its only job is to tag a slot — the parent `FieldGroup.Section` extracts
  * and renders the children in the footer position.
  */
-export function Footer(props: { children?: ReactNode }) {
+export function Footer(props: FieldSectionFooterProps) {
   return <>{props.children}</>;
 }
 

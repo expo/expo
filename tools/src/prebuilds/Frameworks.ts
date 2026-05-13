@@ -41,7 +41,7 @@ const signXCFramework = (
   identity: string,
   useTimestamp: boolean = true
 ): void => {
-  logger.info(`🔏 Signing XCFramework with identity "${identity}"...`);
+  logger.verbose(`🔏 Signing XCFramework with identity "${identity}"...`);
 
   const timestampFlag = useTimestamp ? '--timestamp' : '';
   const command = `codesign ${timestampFlag} --sign "${identity}" "${xcframeworkPath}"`.trim();
@@ -74,7 +74,7 @@ export const Frameworks = {
   ): Promise<void> => {
     const spmConfig = pkg.getSwiftPMConfiguration();
 
-    logger.info(
+    logger.verbose(
       `🧩 Composing XCFramework for ${chalk.green(pkg.packageName) + '/' + chalk.green(product.name)}...`
     );
 
@@ -334,8 +334,6 @@ const processXCFrameworkSlices = async (
   textualHeaderModules: Set<string> = new Set()
 ): Promise<void> => {
   const sourceHeadersPath = path.join(xcframeworkOutputPath, 'Headers');
-  const submoduleNames = Array.from(targetModuleNames.keys());
-
   for (const slice of slices) {
     const slicePath = path.join(xcframeworkOutputPath, slice, `${product.name}.framework`);
     const destHeadersPath = path.join(slicePath, 'Headers');
@@ -360,15 +358,7 @@ const processXCFrameworkSlices = async (
     }
 
     // Copy Swift module interfaces (needed for ABI stability)
-    await copySwiftModuleInterfacesAsync(
-      pkg,
-      spmConfig,
-      product,
-      buildType,
-      slice,
-      slicePath,
-      submoduleNames
-    );
+    await copySwiftModuleInterfacesAsync(pkg, spmConfig, product, buildType, slice, slicePath);
   }
 };
 
@@ -494,7 +484,7 @@ const copySPMDependencyXCFrameworksAsync = async (
 
       const sharedPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
       const destPath = path.join(outputDir, `${productName}.xcframework`);
-      logger.info(
+      logger.verbose(
         `📦 Copying shared SPM dep ${chalk.cyan(productName)} from shared location → ${path.relative(pkg.path, destPath)}`
       );
       await fs.remove(destPath);
@@ -562,7 +552,7 @@ const copySPMDependencyXCFrameworksAsync = async (
       const sourceXCFrameworkPath = path.join(artifactsDir, xcframeworkName);
 
       if (await fs.pathExists(sourceXCFrameworkPath)) {
-        logger.info(
+        logger.verbose(
           `📦 Copying SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
         );
         await fs.remove(destXCFrameworkPath);
@@ -579,7 +569,7 @@ const copySPMDependencyXCFrameworksAsync = async (
     }
 
     // Compose the dependency xcframework with only the relevant slices
-    logger.info(
+    logger.verbose(
       `📦 Composing SPM dependency ${chalk.cyan(xcframeworkName)} → ${path.relative(pkg.path, destXCFrameworkPath)}`
     );
     await fs.remove(destXCFrameworkPath);
@@ -658,7 +648,7 @@ const createProductTarballAsync = async (
     }
   }
 
-  logger.info(
+  logger.verbose(
     `📦 Creating tarball for ${chalk.green(product.name)} (${buildType}): ${xcframeworkEntries.join(', ')}`
   );
 
@@ -1175,7 +1165,6 @@ const copyGeneratedObjCSwiftHeaderAsync = async (
  * @param buildType Build flavor
  * @param slice The xcframework slice name (e.g., "ios-arm64")
  * @param slicePath Path to the framework inside the slice
- * @param submoduleNames Names of submodules whose types might be referenced in Swift interfaces
  */
 const copySwiftModuleInterfacesAsync = async (
   pkg: SPMPackageSource,
@@ -1183,8 +1172,7 @@ const copySwiftModuleInterfacesAsync = async (
   product: SPMProduct,
   buildType: BuildFlavor,
   slice: string,
-  slicePath: string,
-  submoduleNames: string[] = []
+  slicePath: string
 ): Promise<void> => {
   // Find Swift targets in the product
   const swiftTarget = product.targets.find((target) => target?.type === 'swift');
@@ -1257,7 +1245,7 @@ const copySwiftModuleInterfacesAsync = async (
 
     // Post-process .swiftinterface files to fix internal module references
     if (file.endsWith('.swiftinterface')) {
-      await fixSwiftInterfaceModuleReferencesAsync(destFile, spmConfig, submoduleNames);
+      await fixSwiftInterfaceModuleReferencesAsync(destFile, spmConfig);
     }
   }
 
@@ -1266,39 +1254,19 @@ const copySwiftModuleInterfacesAsync = async (
 
 /**
  * Post-processes a .swiftinterface file to:
- * 1. Remove React imports (React.xcframework has VFS overlay issues that prevent module loading)
- * 2. Remap internal SPM target names to their product names
+ * 1. Remap internal SPM target names to their product names
  *    (e.g., ExpoModulesCore_ios_objc -> ExpoModulesCore)
- * 3. Add @_exported imports for submodules that contain types used in the interface
  *
  * @param swiftInterfaceFilePath Path to the .swiftinterface file
  * @param spmConfig SPM configuration containing product/target mappings
- * @param submoduleNames Names of submodules whose types might be referenced
  */
 const fixSwiftInterfaceModuleReferencesAsync = async (
   swiftInterfaceFilePath: string,
-  spmConfig: SPMConfig,
-  submoduleNames: string[] = []
+  spmConfig: SPMConfig
 ): Promise<void> => {
-  // Determine the product name from the file path
-  const pathParts = swiftInterfaceFilePath.split('/');
-  const frameworkName = pathParts.find((p) => p.endsWith('.framework'))?.replace('.framework', '');
-  const productName = frameworkName || '';
-
   // Read the swiftinterface file
   let content = await fs.readFile(swiftInterfaceFilePath, 'utf8');
   let modified = false;
-
-  // Remove React imports - React.xcframework has VFS overlays that cause issues
-  // when Swift tries to load the module at import time
-  const reactImportPatterns = [/^@_exported import React\s*$/gm, /^import React\s*$/gm];
-  for (const pattern of reactImportPatterns) {
-    const replaced = content.replace(pattern, '// Removed: import React');
-    if (replaced !== content) {
-      content = replaced;
-      modified = true;
-    }
-  }
 
   // Remap internal SPM target imports to product names
   // e.g., @_exported import ExpoModulesCore_ios_objc -> @_exported import ExpoModulesCore
@@ -1335,23 +1303,6 @@ const fixSwiftInterfaceModuleReferencesAsync = async (
         content = qualifiedReplaced;
         modified = true;
       }
-    }
-  }
-
-  // For submodules (ObjC modules within the same framework), rewrite
-  // ProductName.TypeName to just TypeName since the types are exposed via
-  // the umbrella header and are not in a separate Swift module.
-  // Note: We do NOT add @_exported import for submodules because they are
-  // ObjC/Clang modules, not Swift modules. The types are available through
-  // the framework's umbrella header.
-  if (submoduleNames.length > 0) {
-    // Rewrite ExpoModulesCore.TypedArrayKind -> TypedArrayKind
-    // These types come from ObjC headers and are available without qualification
-    const qualifiedTypePattern = new RegExp(`\\b${productName}\\.(\\w+)`, 'g');
-    const qualifiedTypeReplaced = content.replace(qualifiedTypePattern, '$1');
-    if (qualifiedTypeReplaced !== content) {
-      content = qualifiedTypeReplaced;
-      modified = true;
     }
   }
 

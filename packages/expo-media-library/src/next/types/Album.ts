@@ -60,17 +60,22 @@ export declare class Album {
   delete(): Promise<void>;
 
   /**
-   * Adds an asset to the album.
-   * @param asset - The {@link Asset} to add.
-   * @returns A promise that resolves once the asset has been added.
+   * Adds one or more assets to the album.
+   * @param assets - The {@link Asset} or list of {@link Asset} objects to add.
+   * @returns A promise that resolves once the assets have been added.
    *
    * @example
    * ```ts
    * const asset = await Asset.create("file:///path/to/photo.png");
    * await album.add(asset);
    * ```
+   *
+   * @example
+   * ```ts
+   * await album.add([asset1, asset2]);
+   * ```
    */
-  add(asset: Asset): Promise<void>;
+  add(assets: Asset | Asset[]): Promise<void>;
 
   /**
    * Removes assets from the album without deleting them from the library.

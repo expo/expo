@@ -5,8 +5,9 @@ import ExpoModulesJSI
 /**
  A converter associated with the specific app context that delegates value conversions to the dynamic type converters.
  */
-public struct MainValueConverter {
-  private(set) weak var appContext: AppContext?
+public struct MainValueConverter: ~Copyable {
+  // Safe to use unowned — the converter is a lazy property of AppContext, so AppContext always outlives it.
+  unowned let appContext: AppContext
 
   /**
    Casts the given JavaScriptValue to a non-JS value.
@@ -14,11 +15,7 @@ public struct MainValueConverter {
    */
   @JavaScriptActor
   public func toNative(_ value: JavaScriptValue, _ type: AnyDynamicType) throws -> Any {
-    guard let appContext else {
-      throw Exceptions.AppContextLost()
-    }
-    let rawValue = try type.cast(jsValue: value, appContext: appContext)
-    return try type.cast(rawValue, appContext: appContext)
+    return try type.cast(jsValue: value, appContext: appContext)
   }
 
   /**
@@ -31,7 +28,7 @@ public struct MainValueConverter {
       let type = types[index]
 
       do {
-        return try toNative(value.copy(), type)
+        return try toNative(value, type)
       } catch {
         throw ArgumentCastException((index: index, type: type)).causedBy(error)
       }
@@ -41,11 +38,16 @@ public struct MainValueConverter {
   /**
    Converts the given value to the type compatible with JavaScript.
    */
+  @JavaScriptActor
   public func toJS(_ value: Any, _ type: AnyDynamicType) throws -> JavaScriptValue {
-    guard let appContext else {
-      throw Exceptions.AppContextLost()
-    }
-    let result = Conversions.convertFunctionResult(value, appContext: appContext, dynamicType: type)
-    return try type.castToJS(result, appContext: appContext)
+    return try type.convertToJS(value, appContext: appContext)
+  }
+
+  /**
+   `toJS` variant that targets a specific runtime. Useful for Worklet runtime conversions.
+   */
+  @JavaScriptActor
+  public func toJS(_ value: Any, _ type: AnyDynamicType, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    return try type.convertToJS(value, appContext: appContext, in: runtime)
   }
 }

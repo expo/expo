@@ -26,7 +26,7 @@ const DEFAULT_OPTS = {
 function stripReactNativeImport(code: string) {
   return code
     .replace(
-      'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");var _Platform=_interopRequireDefault(require("react-native-web/dist/exports/Platform"));',
+      'var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault").default;var _Platform=_interopRequireDefault(require("react-native-web/dist/exports/Platform"));',
       ''
     )
     .replace('var _reactNative=require("react-native");', '');

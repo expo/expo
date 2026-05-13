@@ -6,6 +6,7 @@ import {
   DropdownMenuItem,
   Host,
   Icon,
+  RNHostView,
   Row,
   Switch,
   Text as ComposeText,
@@ -14,7 +15,7 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { background } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Alert, Pressable } from 'react-native';
 
 import { Section } from '../../components/Page';
 
@@ -39,6 +40,7 @@ export default function DropdownMenuScreen() {
   const [colorfulMenuExpanded, setColorfulMenuExpanded] = React.useState(false);
   const [sectionsMenuExpanded, setSectionsMenuExpanded] = React.useState(false);
   const [submenuExpanded, setSubmenuExpanded] = React.useState(false);
+  const [rnTriggerMenuExpanded, setRnTriggerMenuExpanded] = React.useState(false);
 
   React.useEffect(() => {
     if (sectionsMenuExpanded === false) {
@@ -68,6 +70,11 @@ export default function DropdownMenuScreen() {
               </DropdownMenu.Trigger>
               <DropdownMenu.Items>
                 <DropdownMenuItem
+                  elementColors={{
+                    leadingIconColor: '#ff0000',
+                    textColor: '#00ff00',
+                    trailingIconColor: '#0000ff',
+                  }}
                   onClick={() => {
                     setThemeMenuExpanded(false);
                     setSelectedTheme('Light');
@@ -108,6 +115,31 @@ export default function DropdownMenuScreen() {
                   }}>
                   <DropdownMenuItem.Text>
                     <ComposeText>Auto</ComposeText>
+                  </DropdownMenuItem.Text>
+                  <DropdownMenuItem.LeadingIcon>
+                    <Icon source={settingsIcon} size={24} />
+                  </DropdownMenuItem.LeadingIcon>
+                  {selectedTheme === 'Auto' && (
+                    <DropdownMenuItem.TrailingIcon>
+                      <Icon source={checkIcon} size={24} />
+                    </DropdownMenuItem.TrailingIcon>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  enabled={false}
+                  elementColors={{
+                    leadingIconColor: '#ff0000',
+                    textColor: '#00ff00',
+                    trailingIconColor: '#0000ff',
+                    disabledLeadingIconColor: '#808080',
+                    disabledTextColor: '#808080',
+                    disabledTrailingIconColor: '#808080',
+                  }}
+                  onClick={() => {
+                    Alert.alert('This should not happen');
+                  }}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Disabled</ComposeText>
                   </DropdownMenuItem.Text>
                   <DropdownMenuItem.LeadingIcon>
                     <Icon source={settingsIcon} size={24} />
@@ -284,6 +316,41 @@ export default function DropdownMenuScreen() {
                 <DropdownMenuItem.LeadingIcon>
                   <Icon source={logoutIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
+              </DropdownMenuItem>
+            </DropdownMenu.Items>
+          </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="Dropdown Menu with RN Trigger">
+        <Host matchContents>
+          <DropdownMenu
+            expanded={rnTriggerMenuExpanded}
+            onDismissRequest={() => setRnTriggerMenuExpanded(false)}>
+            <DropdownMenu.Trigger>
+              <RNHostView matchContents>
+                <Pressable
+                  onPress={() => setRnTriggerMenuExpanded(true)}
+                  style={{
+                    alignSelf: 'flex-start',
+                    paddingHorizontal: 16,
+                    paddingVertical: 10,
+                    borderRadius: 8,
+                    backgroundColor: '#9B59B6',
+                  }}>
+                  <Text style={{ color: 'white', fontWeight: '600' }}>RN Pressable Trigger</Text>
+                </Pressable>
+              </RNHostView>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
+              <DropdownMenuItem onClick={() => setRnTriggerMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Item 1</ComposeText>
+                </DropdownMenuItem.Text>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setRnTriggerMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Item 2</ComposeText>
+                </DropdownMenuItem.Text>
               </DropdownMenuItem>
             </DropdownMenu.Items>
           </DropdownMenu>

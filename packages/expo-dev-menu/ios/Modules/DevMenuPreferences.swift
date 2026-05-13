@@ -27,14 +27,16 @@ public class DevMenuPreferences: Module {
    */
   static func setup() {
     let fabDefault = Bundle.main.object(forInfoDictionaryKey: showFloatingActionButtonKey) as? Bool
+    let showsAtLaunchDefault = Bundle.main.object(forInfoDictionaryKey: showsAtLaunchKey) as? Bool
+    let isOnboardingFinishedDefault = Bundle.main.object(forInfoDictionaryKey: isOnboardingFinishedKey) as? Bool
 
     #if os(tvOS)
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: false,
       touchGestureEnabledKey: false,
       keyCommandsEnabledKey: true,
-      showsAtLaunchKey: false,
-      isOnboardingFinishedKey: true,
+      showsAtLaunchKey: showsAtLaunchDefault ?? false,
+      isOnboardingFinishedKey: isOnboardingFinishedDefault ?? true,
       showFloatingActionButtonKey: fabDefault ?? false
     ])
     #else
@@ -42,8 +44,8 @@ public class DevMenuPreferences: Module {
       motionGestureEnabledKey: true,
       touchGestureEnabledKey: true,
       keyCommandsEnabledKey: true,
-      showsAtLaunchKey: false,
-      isOnboardingFinishedKey: false,
+      showsAtLaunchKey: showsAtLaunchDefault ?? true,
+      isOnboardingFinishedKey: isOnboardingFinishedDefault ?? false,
       showFloatingActionButtonKey: fabDefault ?? true
     ])
     #endif

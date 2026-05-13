@@ -1,19 +1,10 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
+#include "ExpoHeader.pch"
 #include "JavaCallback.h"
 #include "JSIContext.h"
 #include "types/JNIToJSIConverter.h"
 #include "Exceptions.h"
-
-#include "JSIUtils.h"
-#include "JNIUtils.h"
-
-#include <fbjni/fbjni.h>
-#include <fbjni/fbjni.h>
-#include <folly/dynamic.h>
-#include <jsi/JSIDynamic.h>
-
-#include <functional>
 
 namespace expo {
 
@@ -59,7 +50,6 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeDoubleArray", JavaCallback::invokeDoubleArray),
                  });
 }
-
 
 jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
   JSIContext *jsiContext,
@@ -170,7 +160,11 @@ void JavaCallback::invokeFloat(float result) {
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
-  invokeJSFunction(result->toStdString());
+  JNIEnv *env = jni::Environment::current();
+  const char *rawValue = env->GetStringUTFChars(result.get(), nullptr);
+  std::string parsedResult = rawValue;
+  env->ReleaseStringUTFChars(result.get(), rawValue);
+  invokeJSFunction(parsedResult);
 }
 
 void JavaCallback::invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result) {
@@ -198,7 +192,8 @@ void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> 
   invokeJSFunction(jni::make_global(result));
 }
 
-void JavaCallback::invokeJavaScriptArrayBuffer(jni::alias_ref<JavaScriptArrayBuffer::javaobject> result) {
+void JavaCallback::invokeJavaScriptArrayBuffer(
+  jni::alias_ref<JavaScriptArrayBuffer::javaobject> result) {
   invokeJSFunction(jni::make_global(result));
 }
 

@@ -21,6 +21,12 @@
         android:value="" />
     </service>
 
+    <!-- Prevent external apps from directly invoking the underlying cropper library activity.
+         The library declares this activity with exported="true". -->
+    <activity
+      android:name="com.canhub.cropper.CropImageActivity"
+      android:exported="false"
+      tools:replace="android:exported" />
     <activity
       android:name="expo.modules.imagepicker.ExpoCropImageActivity"
       android:theme="@style/Base.Theme.AppCompat"

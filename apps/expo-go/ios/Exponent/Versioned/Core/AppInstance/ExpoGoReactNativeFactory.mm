@@ -3,9 +3,10 @@
 #import "ExpoAppInstance.h"
 #import <RCTAppSetupUtils.h>
 #import <React/CoreModulesPlugins.h>
-#import <ExpoModulesCore/EXRuntime.h>
 #import <ExpoModulesCore/EXHostWrapper.h>
+#import <ExpoModulesCore/EXReactSchedulerDispatch.h>
 #import <ExpoModulesCore-Swift.h>
+#import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 
 
 @implementation ExpoGoReactNativeFactory
@@ -45,13 +46,19 @@
   }
 }
 
-- (void)host:(nonnull RCTHost *)host didInitializeRuntime:(jsi::Runtime &)runtime
+- (void)host:(nonnull RCTHost *)host didInitializeRuntime:(facebook::jsi::Runtime &)runtime
 {
   ExpoAppInstance *appInstance = (ExpoAppInstance *)self.delegate;
   EXAppContext *appContext = [appInstance createExpoGoAppContext];
 
-  // Inject and decorate the `global.expo` object
-  appContext._runtime = [[EXRuntime alloc] initWithRuntime:runtime];
+  // See ExpoReactNativeFactory.mm for the rationale behind passing the React
+  // runtime scheduler + dispatch trampoline alongside the runtime pointer.
+  auto binding = facebook::react::RuntimeSchedulerBinding::getBinding(runtime);
+  auto scheduler = binding ? binding->getRuntimeScheduler() : nullptr;
+
+  [appContext setRuntime:&runtime
+               scheduler:scheduler.get()
+                dispatch:scheduler ? reinterpret_cast<const void *>(&expo::dispatchOnReactScheduler) : nullptr];
   [appContext setHostWrapper:[[EXHostWrapper alloc] initWithHost:host]];
 
   [appContext registerNativeModules];

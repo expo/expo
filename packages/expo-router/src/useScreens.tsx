@@ -1,16 +1,16 @@
 'use client';
 
-import React, { use, useEffect, useMemo } from 'react';
+import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
 import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
+import { useCurrentRouteInfo } from './hooks';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { unstable_navigationEvents } from './navigationEvents';
-import { generateStringUrlForState, getPathAndParamsFromStringUrl } from './navigationEvents/utils';
 import {
   hasParam,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
@@ -325,7 +325,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
 
     if (isFocused) {
       const state = navigation.getState();
-      const isLeaf = !(state && 'state' in state.routes[state.index]);
+      const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
     }
 
@@ -333,7 +333,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       () =>
         navigation.addListener('focus', () => {
           const state = navigation.getState();
-          const isLeaf = !(state && 'state' in state.routes[state.index]);
+          const isLeaf = !(state && 'state' in state.routes[state.index]!);
           // Because setFocusedState caches the route info, this call will only trigger rerenders
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
@@ -369,6 +369,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           <ZoomTransitionTargetContextProvider route={route}>
             <ZoomTransitionEnabler route={route} />
             <React.Suspense
+              name={route ? `Route(${route.name})` : undefined}
               fallback={
                 <ResolvedSuspenseFallback
                   route={value.contextKey}
@@ -405,51 +406,54 @@ function AnalyticsListeners({
   };
   screenId: string;
 }) {
-  const stateForPath = useStateForPath();
   const isFirstRenderRef = React.useRef(true);
   const hasBlurredRef = React.useRef(true);
-  const stringUrl = useMemo(() => generateStringUrlForState(stateForPath), [stateForPath]);
+  const routeInfo = useCurrentRouteInfo();
 
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
-    if (stringUrl) {
+    if (routeInfo) {
       unstable_navigationEvents.emit('pageWillRender', {
-        ...getPathAndParamsFromStringUrl(stringUrl),
+        pathname: routeInfo.pathname,
+        params: routeInfo.params,
         screenId,
       });
     }
   }
 
   useEffect(() => {
-    if (stringUrl) {
+    if (routeInfo) {
       return () => {
         unstable_navigationEvents.emit('pageRemoved', {
-          ...getPathAndParamsFromStringUrl(stringUrl),
+          pathname: routeInfo.pathname,
+          params: routeInfo.params,
           screenId,
         });
       };
     }
     return () => {};
-  }, [stringUrl, screenId]);
+  }, [routeInfo?.params, routeInfo?.pathname, screenId]);
 
   const isFocused = navigation.isFocused();
 
-  if (isFocused && stringUrl) {
+  if (isFocused && routeInfo) {
     unstable_navigationEvents.emit('pageFocused', {
-      ...getPathAndParamsFromStringUrl(stringUrl),
+      pathname: routeInfo.pathname,
+      params: routeInfo.params,
       screenId,
     });
     hasBlurredRef.current = false;
   }
 
   useEffect(() => {
-    if (stringUrl) {
+    if (routeInfo) {
       const cleanFocus = navigation.addListener('focus', () => {
         // If the screen was not blurred, don't emit focused again
         // hasBlurredRef will be false when the screen was initially focused
         if (hasBlurredRef.current) {
           unstable_navigationEvents.emit('pageFocused', {
-            ...getPathAndParamsFromStringUrl(stringUrl),
+            pathname: routeInfo.pathname,
+            params: routeInfo.params,
             screenId,
           });
           hasBlurredRef.current = false;
@@ -457,7 +461,8 @@ function AnalyticsListeners({
       });
       const cleanBlur = navigation.addListener('blur', () => {
         unstable_navigationEvents.emit('pageBlurred', {
-          ...getPathAndParamsFromStringUrl(stringUrl),
+          pathname: routeInfo.pathname,
+          params: routeInfo.params,
           screenId,
         });
         hasBlurredRef.current = true;
@@ -468,7 +473,7 @@ function AnalyticsListeners({
       };
     }
     return () => {};
-  }, [navigation, stringUrl, screenId]);
+  }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
 
   return null;
 }

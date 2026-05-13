@@ -1,6 +1,8 @@
 package expo.modules.observe
 
 import android.content.Context
+import expo.modules.easclient.EASClientID
+import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -12,7 +14,6 @@ class ObservabilityManager(
   val sessionManager: SessionManager
 ) {
   private val baseManager: BaseObservabilityManager
-  private val enableInDebug: Boolean
   private val useOpenTelemetry: Boolean
 
   // TODO: Can this information change during expo module lifecycle?
@@ -27,23 +28,27 @@ class ObservabilityManager(
       "Project ID is required to send observability metrics. Make sure you have configured it correctly in app.json."
     }
     val baseUrl = manifest.baseUrl ?: OBSERVE_DEFAULT_BASE_URL
-    enableInDebug = manifest.enableInDebug
     useOpenTelemetry = manifest.useOpenTelemetry
 
     val pendingMetricsManager = PendingMetricsManager(context)
+    val pendingLogsManager = PendingLogsManager(context)
 
     baseManager = BaseObservabilityManager(
       context = context,
       sessionManager = sessionManager,
       pendingMetricsManager = pendingMetricsManager,
+      pendingLogsManager = pendingLogsManager,
       projectId = projectId,
       baseUrl = baseUrl,
-      enableInDebug = enableInDebug,
+      isDebugBuild = BuildConfig.DEBUG,
       useOpenTelemetry = useOpenTelemetry
     )
 
     sessionManager.addMetricsInsertListener { metricIds ->
       pendingMetricsManager.addPendingMetrics(metricIds)
+    }
+    sessionManager.addLogsInsertListener { logIds ->
+      pendingLogsManager.addPendingLogs(logIds)
     }
   }
 
@@ -51,12 +56,15 @@ class ObservabilityManager(
     baseManager.dispatchUnsentMetrics()
   }
 
+  suspend fun dispatchUnsentLogs() {
+    baseManager.dispatchUnsentLogs()
+  }
+
   fun scheduleBackgroundDispatch() {
     ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
       context = context,
       projectId = baseManager.projectId,
       baseUrl = baseManager.baseUrl,
-      enableInDebug = enableInDebug,
       useOpenTelemetry = useOpenTelemetry
     )
   }
@@ -66,10 +74,14 @@ class BaseObservabilityManager(
   private val context: Context,
   private val sessionManager: SessionManager,
   private val pendingMetricsManager: PendingMetricsManager,
+  private val pendingLogsManager: PendingLogsManager,
   val projectId: String,
   val baseUrl: String,
-  private val enableInDebug: Boolean = false,
-  private val useOpenTelemetry: Boolean = false
+  private val isDebugBuild: Boolean = false,
+  private val useOpenTelemetry: Boolean = false,
+  private val deterministicUniformValueProvider: () -> Double = {
+    EASClientID.deterministicUniformValue(EASClientID(context).uuid)
+  }
 ) {
   private val eventDispatcher = EventDispatcher(
     context = context,
@@ -84,8 +96,7 @@ class BaseObservabilityManager(
       return
     }
 
-    // When disabled, mark pending metrics as sent without dispatching
-    if (!ObservePreferences.getDispatchingEnabled(context)) {
+    if (!shouldDispatch()) {
       pendingMetricsManager.removePendingMetrics(pendingIds)
       return
     }
@@ -103,22 +114,7 @@ class BaseObservabilityManager(
       return
     }
 
-    val (toDispatch, toSkip) = if (enableInDebug) {
-      Pair(sessionsWithPendingMetrics, emptyList())
-    } else {
-      sessionsWithPendingMetrics.partition { it.session.environment != "development" }
-    }
-
-    // Remove skipped (dev) metrics from pending table without dispatching
-    toSkip
-      .flatMap { it.metrics }
-      .map { it.metricId }
-      .takeIf { it.isNotEmpty() }
-      ?.let { pendingMetricsManager.removePendingMetrics(it) }
-
-    if (toDispatch.isEmpty()) return
-
-    val events = toDispatch.map { sessionWithMetrics ->
+    val events = sessionsWithPendingMetrics.map { sessionWithMetrics ->
       Event(
         metadata = Metadata.fromSessionMetadata(sessionWithMetrics.session),
         metrics = sessionWithMetrics.metrics.map { EASMetric.fromMetric(it) }
@@ -126,14 +122,77 @@ class BaseObservabilityManager(
     }
 
     if (eventDispatcher.dispatch(events)) {
-      val dispatchedMetricIds = toDispatch.flatMap { it.metrics }.map { it.metricId }
+      val dispatchedMetricIds = sessionsWithPendingMetrics.flatMap { it.metrics }.map { it.metricId }
       pendingMetricsManager.removePendingMetrics(dispatchedMetricIds)
     }
   }
 
+  /**
+   * Dispatches log events to `/v1/logs`. Independent from the metrics path —
+   * a logs failure doesn't affect the metrics pending table and vice versa.
+   */
+  suspend fun dispatchUnsentLogs() {
+    val pendingIds = pendingLogsManager.getAllPendingLogIds()
+    if (pendingIds.isEmpty()) {
+      return
+    }
+
+    if (!shouldDispatch()) {
+      pendingLogsManager.removePendingLogs(pendingIds)
+      return
+    }
+
+    val sessionsWithPendingLogs = sessionManager.getSessionsWithLogs(pendingIds)
+
+    // Clean up orphaned pending IDs (logs deleted from the `logs` table but
+    // still tracked in `pending_logs`).
+    val resolvedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }.toSet()
+    val orphanedIds = pendingIds.filter { it !in resolvedLogIds }
+    if (orphanedIds.isNotEmpty()) {
+      pendingLogsManager.removePendingLogs(orphanedIds)
+    }
+
+    if (sessionsWithPendingLogs.isEmpty()) {
+      return
+    }
+
+    val events = sessionsWithPendingLogs.map { sessionWithLogs ->
+      Event(
+        metadata = Metadata.fromSessionMetadata(sessionWithLogs.session),
+        metrics = emptyList(),
+        logs = sessionWithLogs.logs.map { LogEvent.fromLogRecord(it) }
+      )
+    }
+
+    if (eventDispatcher.dispatchLogs(events)) {
+      val dispatchedLogIds = sessionsWithPendingLogs.flatMap { it.logs }.map { it.logId }
+      pendingLogsManager.removePendingLogs(dispatchedLogIds)
+    }
+  }
+
+  private fun isInSample(): Boolean {
+    val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
+    val clamped = rate.coerceIn(0.0, 1.0)
+    return deterministicUniformValueProvider() < clamped
+  }
+
+  private fun shouldDispatch(): Boolean {
+    val config = ObservePreferences.getConfig(context)
+    val dispatchingEnabled = config?.dispatchingEnabled ?: true
+    val dispatchInDebug = config?.dispatchInDebug ?: false
+    // `isDev` is the OR of the JS-bundle dev flag (pushed via `setBundleDefaults` on JS
+    // package import) and the native build's debug flag. Either being true means the
+    // bundle should be treated as dev for dispatch-gating.
+    val isJsDev = ObservePreferences.getBundleDefaults(context)?.isJsDev ?: false
+    val isDev = isDebugBuild || isJsDev
+    return dispatchingEnabled && isInSample() && (!isDev || dispatchInDebug)
+  }
+
   suspend fun cleanup() {
     pendingMetricsManager.cleanupOldPendingMetrics()
-    // TODO(@ubax): Move sessionManager.cleanupOldMetrics() out of eas observe
-    sessionManager.cleanupOldMetrics()
+    pendingLogsManager.cleanupOldPendingLogs()
+    // TODO(@ubax): Move sessionManager.cleanupOldSessions out of eas observe
+    sessionManager.cleanupOldSessions()
+    sessionManager.cleanupOldLogs()
   }
 }

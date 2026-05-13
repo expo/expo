@@ -18,7 +18,7 @@ data class UpdatesStateEvent(
     DownloadCompleteWithRollback("downloadCompleteWithRollback"),
     DownloadError("downloadError"),
     DownloadProgress("downloadProgress"),
-    Restart("restart");
+    Restart("restart")
   }
 
   companion object {
