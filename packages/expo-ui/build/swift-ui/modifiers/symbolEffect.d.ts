@@ -83,7 +83,7 @@ export type SymbolEffectOptions = {
     speed?: number;
 };
 /** Equatable primitive accepted as a discrete effect trigger. */
-type DiscreteSymbolEffectValue = number | string | boolean;
+export type DiscreteSymbolEffectValue = number | string | boolean;
 /**
  * Applies an SF Symbol effect to a view.
  *
@@ -107,5 +107,5 @@ export declare const symbolEffect: (effect: SymbolEffect, args?: {
     /** Discrete effects: the effect fires once each time this value changes. */
     value?: ObservableState<DiscreteSymbolEffectValue>;
 }) => import("./createModifier").ModifierConfig;
-export {};
+export { type ObservableState };
 //# sourceMappingURL=symbolEffect.d.ts.map

@@ -77,6 +77,34 @@ export default function ImageVariableExample() {
 }
 ```
 
+### With symbol effect
+
+Apply an SF Symbol effect to animate the symbol. Pass a [`symbolEffect`](modifiers/#symboleffecteffect-args) modifier from `@expo/ui/swift-ui/modifiers`. The effect runs continuously by default. Pass `value` for a discrete trigger that fires once per change, or `isActive` for a boolean toggle that runs the effect while `true`. Requires iOS 17.0+.
+
+```tsx ImageSymbolEffectExample.tsx
+import { Host, Image } from '@expo/ui/swift-ui';
+import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
+
+export default function ImageSymbolEffectExample() {
+  return (
+    <Host matchContents>
+      <Image
+        systemName="wifi"
+        size={48}
+        color="blue"
+        modifiers={[
+          symbolEffect({
+            effect: 'variableColor',
+            fillStyle: 'iterative',
+            playbackStyle: 'reversing',
+          }),
+        ]}
+      />
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

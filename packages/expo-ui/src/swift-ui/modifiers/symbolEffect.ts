@@ -133,7 +133,7 @@ export type SymbolEffectOptions = {
 };
 
 /** Equatable primitive accepted as a discrete effect trigger. */
-type DiscreteSymbolEffectValue = number | string | boolean;
+export type DiscreteSymbolEffectValue = number | string | boolean;
 
 /**
  * Applies an SF Symbol effect to a view.
@@ -190,3 +190,6 @@ function flattenOptions(options?: SymbolEffectOptions) {
     speed,
   };
 }
+
+// exported for docs api data
+export { type ObservableState };
