@@ -279,16 +279,34 @@ struct JSValueEncoderTests {
       let aBool: Bool? = true
       let aString: String? = "expo"
       let aDouble: Double? = 1.5
+      let aFloat: Float? = 2.5
       let aInt: Int? = 7
+      let aInt8: Int8? = -8
+      let aInt16: Int16? = -16
+      let aInt32: Int32? = -32
+      let aInt64: Int64? = -64
+      let aUInt: UInt? = 1
+      let aUInt8: UInt8? = 8
       let aUInt16: UInt16? = 0xFFFF
+      let aUInt32: UInt32? = 32
+      let aUInt64: UInt64? = 64
     }
 
     let result = try encode(AllSet()).getObject()
     #expect(result.getProperty("aBool").getBool() == true)
     #expect(result.getProperty("aString").getString() == "expo")
     #expect(result.getProperty("aDouble").getDouble() == 1.5)
+    #expect(result.getProperty("aFloat").getDouble() == 2.5)
     #expect(result.getProperty("aInt").getInt() == 7)
+    #expect(result.getProperty("aInt8").getInt() == -8)
+    #expect(result.getProperty("aInt16").getInt() == -16)
+    #expect(result.getProperty("aInt32").getInt() == -32)
+    #expect(result.getProperty("aInt64").getInt() == -64)
+    #expect(result.getProperty("aUInt").getInt() == 1)
+    #expect(result.getProperty("aUInt8").getInt() == 8)
     #expect(result.getProperty("aUInt16").getInt() == 0xFFFF)
+    #expect(result.getProperty("aUInt32").getInt() == 32)
+    #expect(result.getProperty("aUInt64").getInt() == 64)
   }
 
   // MARK: - Convertible types

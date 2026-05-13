@@ -15,7 +15,7 @@ import ExpoModulesJSI
  classes) fall back to Swift's `Encodable` machinery via `value.encode(to:)`.
  */
 internal final class JSValueEncoder: Encoder {
-  private weak var appContext: AppContext?
+  private let appContext: AppContext
   private let runtime: JavaScriptRuntime
   private let valueHolder: JSValueHolder
 
@@ -36,7 +36,7 @@ internal final class JSValueEncoder: Encoder {
   /**
    Initializes the encoder with the given app context and an explicit runtime.
    Use this when produced JS values must live in a runtime other than the
-   app context's main runtime (e.g. a worklet runtime).
+   one currently held by the app context.
    */
   convenience init(appContext: AppContext, runtime: JavaScriptRuntime) {
     self.init(
@@ -48,7 +48,7 @@ internal final class JSValueEncoder: Encoder {
   }
 
   fileprivate init(
-    appContext: AppContext?,
+    appContext: AppContext,
     runtime: JavaScriptRuntime,
     codingPath: [any CodingKey],
     valueHolder: JSValueHolder
@@ -101,17 +101,13 @@ internal final class JSValueEncoder: Encoder {
  */
 private func encodeUsingDynamicType<ValueType: Encodable>(
   _ value: ValueType,
-  appContext: AppContext?,
+  appContext: AppContext,
   runtime: JavaScriptRuntime,
   codingPath: [any CodingKey]
 ) throws -> JavaScriptValue {
   let dynamicType = ~ValueType.self
 
   if !(dynamicType is DynamicEncodableType) {
-    guard let appContext else {
-      // App context is gone; nothing useful we can do.
-      return .undefined
-    }
     return try dynamicType.castToJS(value, appContext: appContext, in: runtime)
   }
 
@@ -140,12 +136,12 @@ private final class JSValueHolder {
  Single value container used to encode primitive values, including optionals.
  */
 private struct JSValueEncodingContainer: SingleValueEncodingContainer {
-  private weak var appContext: AppContext?
+  private let appContext: AppContext
   private let runtime: JavaScriptRuntime
   private let valueHolder: JSValueHolder
   let codingPath: [any CodingKey]
 
-  init(to valueHolder: JSValueHolder, appContext: AppContext?, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
+  init(to valueHolder: JSValueHolder, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
     self.valueHolder = valueHolder
     self.appContext = appContext
     self.runtime = runtime
@@ -176,13 +172,13 @@ private struct JSValueEncodingContainer: SingleValueEncodingContainer {
    Using a class sidesteps the constraint via reference semantics.
  */
 private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingContainerProtocol {
-  private weak var appContext: AppContext?
+  private let appContext: AppContext
   private let runtime: JavaScriptRuntime
   private let valueHolder: JSValueHolder
-  private var object: JavaScriptObject
+  private let object: JavaScriptObject
   let codingPath: [any CodingKey]
 
-  init(to valueHolder: JSValueHolder, appContext: AppContext?, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
+  init(to valueHolder: JSValueHolder, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
     let object = runtime.createObject()
     valueHolder.value = object.asValue()
 
@@ -207,10 +203,11 @@ private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingCont
     object.setProperty(key.stringValue, value: encoded)
   }
 
-  // The default `KeyedEncodingContainerProtocol.encodeIfPresent` skips nil values
-  // entirely, which would leave JS objects with missing keys. Override every
-  // overload (one per primitive plus a generic `Encodable` one) so nil optional
-  // fields produce an explicit `null` instead.
+  // The default `KeyedEncodingContainerProtocol.encodeIfPresent` does nothing for
+  // nil values, which leaves the JS object without the key entirely — so `'label' in obj`
+  // returns false and consumers can't distinguish "absent" from "explicitly null".
+  // Override every overload (one per primitive plus a generic `Encodable` one) so nil
+  // optional fields produce an explicit `null` instead.
   func encodeIfPresent<ValueType: Encodable>(_ value: ValueType?, forKey key: Key) throws {
     if let value {
       try encode(value, forKey: key)
@@ -283,14 +280,14 @@ private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingCont
  to be non-copyable.
  */
 private final class JSArrayEncodingContainer: UnkeyedEncodingContainer {
-  private weak var appContext: AppContext?
+  private let appContext: AppContext
   private let runtime: JavaScriptRuntime
   private let valueHolder: JSValueHolder
-  private var array: JavaScriptArray
+  private let array: JavaScriptArray
   let codingPath: [any CodingKey]
   var count: Int = 0
 
-  init(to valueHolder: JSValueHolder, appContext: AppContext?, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
+  init(to valueHolder: JSValueHolder, appContext: AppContext, runtime: JavaScriptRuntime, codingPath: [any CodingKey]) {
     let array = runtime.createArray()
     valueHolder.value = array.asValue()
 
@@ -361,7 +358,7 @@ private struct AnyCodingKey: CodingKey {
 
   init(stringValue: String) {
     self.stringValue = stringValue
-    self.intValue = nil
+    self.intValue = Int(stringValue)
   }
 
   init(intValue: Int) {
