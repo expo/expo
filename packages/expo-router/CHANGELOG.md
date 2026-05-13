@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- expose `pagePreloaded` listener ([#45725](https://github.com/expo/expo/pull/45725) by [@Ubax](https://github.com/Ubax))
+
 ## 56.1.4 — 2026-05-13
 
 ### 🎉 New features

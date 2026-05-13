@@ -410,10 +410,12 @@ function AnalyticsListeners({
   const hasBlurredRef = React.useRef(true);
   const routeInfo = useCurrentRouteInfo();
 
+  const isFocused = navigation.isFocused();
+
   if (isFirstRenderRef.current) {
     isFirstRenderRef.current = false;
-    if (routeInfo) {
-      unstable_navigationEvents.emit('pageWillRender', {
+    if (routeInfo && !isFocused) {
+      unstable_navigationEvents.emit('pagePreloaded', {
         pathname: routeInfo.pathname,
         params: routeInfo.params,
         screenId,
@@ -433,8 +435,6 @@ function AnalyticsListeners({
     }
     return () => {};
   }, [routeInfo?.params, routeInfo?.pathname, screenId]);
-
-  const isFocused = navigation.isFocused();
 
   // Emit `pageFocused` from an effect — not during render — so it fires after the
   // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.

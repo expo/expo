@@ -15,7 +15,6 @@ export function initListeners(storage, navigationEvents) {
     const appLaunchTime = performance.now();
     const cleanup = new Set();
     const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
-        // TODO(@ubax): Handle screen preloading
         // PRELOAD comes from router.prefetch() — a route warm-up, not a user
         // navigation — so it must not seed dispatchTime.
         if (event.actionType === 'PRELOAD')
@@ -26,6 +25,12 @@ export function initListeners(storage, navigationEvents) {
         });
     });
     cleanup.add(unsubscribeAction);
+    const unsubscribePreload = navigationEvents.addListener('pagePreloaded', (e) => {
+        // The screen rendered as part of a preload. Mark it as already rendered so
+        // the eventual `pageFocused` resolves to `warm_ttr` rather than `cold_ttr`.
+        storage.renderedScreensIds.add(e.screenId);
+    });
+    cleanup.add(unsubscribePreload);
     const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
         // Snapshot both clocks once so every metric written below is stamped with
         // the moment the focus event fired, not the moment `addCustomMetricToSession`

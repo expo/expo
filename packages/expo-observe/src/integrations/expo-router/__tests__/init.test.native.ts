@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
-import type { ActionDispatchedEvent, PageFocusedEvent } from 'expo-router';
+import type { ActionDispatchedEvent, PageFocusedEvent, PagePreloadedEvent } from 'expo-router';
 
 import { initListeners } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
@@ -55,6 +55,15 @@ function dispatch(events: FakeNavigationEvents, actionType: string) {
 function focus(events: FakeNavigationEvents, screenId: string) {
   events.emit<Partial<PageFocusedEvent>>('pageFocused', {
     type: 'pageFocused',
+    screenId,
+    pathname: `/${screenId}`,
+    params: {},
+  });
+}
+
+function preload(events: FakeNavigationEvents, screenId: string) {
+  events.emit<Partial<PagePreloadedEvent>>('pagePreloaded', {
+    type: 'pagePreloaded',
     screenId,
     pathname: `/${screenId}`,
     params: {},
@@ -163,13 +172,80 @@ describe('initListeners', () => {
     expect(mockAddCustomMetric).not.toHaveBeenCalled();
   });
 
-  it('cleanup unsubscribes both listeners', async () => {
+  it('records warm_ttr when a preloaded screen is focused for the first time', async () => {
+    dispatch(events, 'PRELOAD');
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+  });
+
+  it('records cold_ttr for a non-preloaded screen even when a different screen was preloaded', async () => {
+    dispatch(events, 'PRELOAD');
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
+  });
+
+  it('does not emit a metric when a screen is preloaded but never focused', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    dispatch(events, 'PRELOAD');
+    preload(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(storage.renderedScreensIds.has('a')).toBe(true);
+  });
+
+  it('handles a duplicate pagePreloaded for the same screen idempotently', async () => {
+    preload(events, 'a');
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(storage.renderedScreensIds.size).toBe(1);
+  });
+
+  it('treats subsequent focuses of a preloaded screen as warm_ttr', async () => {
+    preload(events, 'a');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'a');
+    await flushAsync();
+
+    expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
+    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
+  });
+
+  it('cleanup unsubscribes all listeners', async () => {
     cleanup();
     dispatch(events, 'NAVIGATE');
+    preload(events, 'a');
     focus(events, 'a');
     await flushAsync();
     expect(mockAddCustomMetric).not.toHaveBeenCalled();
     expect(storage.pendingActions).toHaveLength(0);
+    expect(storage.renderedScreensIds.size).toBe(0);
     cleanup = () => {};
   });
 

@@ -31,7 +31,7 @@ export type { SingularOptions } from './useScreens';
 export type * from './types';
 export { Badge, type BadgeProps, Icon, type IconProps, Label, type LabelProps, VectorIcon, type VectorIconProps, } from './primitives';
 export { unstable_navigationEvents } from './navigationEvents';
-export type { PageWillRender, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent, AnalyticsEvent, } from './navigationEvents';
+export type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemoved, ActionDispatchedEvent, AnalyticsEvent, } from './navigationEvents';
 /**
  * @deprecated Use `import { Tabs } from 'expo-router/js-tabs'` instead.
  */
