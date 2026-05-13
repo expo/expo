@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Forcefully exclude `.cxx/` folders from file discovery and watchers ([#45722](https://github.com/expo/expo/pull/45722) by [@kitten](https://github.com/kitten))
+
 ## 56.0.1 — 2026-05-11
 
 ### 🐛 Bug fixes
