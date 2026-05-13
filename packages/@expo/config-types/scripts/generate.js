@@ -6,6 +6,8 @@ const { compile } = require('json-schema-to-typescript');
 const fs = require('node:fs');
 const path = require('node:path');
 const semver = require('semver');
+const prettier = require('prettier');
+
 
 let version = '';
 
@@ -77,11 +79,25 @@ async function fetchSchemaAsync(version) {
     schema = await fetchSchemaAsync(parsedVersion);
   }
 
-  const ts = await compile(schema, 'ExpoConfig', {
-    bannerComment: `/* tslint:disable */\n/**\n* The standard Expo config object defined in \`app.config.js\` files.\n*/`,
+  let code = await compile(schema, 'ExpoConfig', {
+    bannerComment: [
+      '/* eslint-disable */',
+      '/* tslint:disable */',
+      '',
+      `/**\n* The standard Expo config object defined in \`app.config.js\` files.\n*/`,
+    ].join('\n'),
     unknownAny: false,
   });
-  const filepath = `src/ExpoConfig.ts`;
-  await fs.promises.mkdir(path.dirname(filepath), { recursive: true });
-  await fs.promises.writeFile(filepath, ts, 'utf8');
+  
+  code = await prettier.format(code, {
+    filepath: 'src/ExpoConfig.ts',
+    parser: 'typescript',
+    printWidth: 100,
+    tabWidth: 2,
+    singleQuote: true,
+    bracketSameLine: true,
+    trailingComma: 'es5',
+  });
+
+  await fs.promises.writeFile('src/ExpoConfig.ts', code, 'utf8');
 })();

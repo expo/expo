@@ -40,6 +40,7 @@
     "commander": "^12.1.0",
     "expo-module-scripts": "workspace:*",
     "json-schema-to-typescript": "^15.0.0",
+    "prettier": "^3.8.3",
     "semver": "^7.7.4"
   },
   "publishConfig": {
