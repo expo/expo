@@ -25,6 +25,11 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
     self.zxingBarcodeReaders = zxingBarcodeReaders
   }
 
+  func updateSettings(_ settings: [String: [AVMetadataObject.ObjectType]], zxingEnabled: Bool) {
+    self.settings = settings
+    self.zxingEnabled = zxingEnabled
+  }
+
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
     guard let settings = settings[BARCODE_TYPES_KEY] else {
       return

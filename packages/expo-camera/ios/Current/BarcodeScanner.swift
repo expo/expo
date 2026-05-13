@@ -43,7 +43,8 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
       // that behavior and avoid silently dropping detections, when `.itf14` is
       // requested we also register `.interleaved2of5` so both variants are scanned
       // for and the delegate's type-match succeeds. Results are normalized back to
-      // `itf14` in `BarcodeRecord.toBarcodeType(type:)`.
+      // `itf14` by `BarcodeType.toBarcodeType(type:)`, called from
+      // `BarcodeScannerUtils.avMetadataCodeObjectToDictionary`.
       var augmentedValue = value
       if augmentedValue.contains(.itf14) && !augmentedValue.contains(.interleaved2of5) {
         augmentedValue.append(.interleaved2of5)
@@ -54,6 +55,7 @@ class BarcodeScanner: NSObject, BarcodeScanningResponseHandler {
         settings[BARCODE_TYPES_KEY] = augmentedValue
         let zxingCoveredTypes = Set(zxingBarcodeReaders.keys)
         zxingEnabled = !zxingCoveredTypes.isDisjoint(with: newTypes)
+        delegate?.updateSettings(settings, zxingEnabled: zxingEnabled)
         maybeStartBarcodeScanning()
       }
     }
