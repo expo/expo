@@ -4919,7 +4919,7 @@ importers:
         specifier: ^22.14.0
         version: 22.19.15
       expo-type-information:
-        specifier: workspace:*
+        specifier: workspace:^0.0.1
         version: link:../expo-type-information
       glob:
         specifier: ^13.0.0
