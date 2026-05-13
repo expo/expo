@@ -34,6 +34,9 @@ _This version does not introduce any user-facing changes._
 - Make `ChartView` public. ([#45674](https://github.com/expo/expo/pull/45674) by [@jakex7](https://github.com/jakex7))
 - Added `@expo/ui/community/menu`, a drop-in replacement for `@react-native-menu/menu`. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
 - [android] Added Compose `combinedClickable` modifier. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
+- [universal] Added `Collapsible`, `List`, `ListItem`, and `Picker` components. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
+- [universal] Added `snapPoints` prop on `BottomSheet` and `colorScheme` / `layoutDirection` props on `Host`. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
+- [jetpack-compose] `background(color, { animationSpec })` accepts an optional `animationSpec` and wraps the color in `animateColorAsState` so changes between renders animate smoothly. ([#45754](https://github.com/expo/expo/pull/45754) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
