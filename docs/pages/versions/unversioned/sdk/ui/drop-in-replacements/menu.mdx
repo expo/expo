@@ -66,7 +66,7 @@ export default function MenuExample() {
 
 ## Long-press (context menu)
 
-Set `shouldOpenOnLongPress` to render as a context menu. On iOS this uses SwiftUI's `ContextMenu` and shows the trigger as a blurred preview; on Android the same controlled `DropdownMenu` opens from the `Pressable`'s `onLongPress` instead of `onPress`.
+Set `shouldOpenOnLongPress` to render as a context menu. On Android, the same controlled `DropdownMenu` opens from the `Pressable`'s `onLongPress` instead of `onPress`. On iOS, this uses SwiftUI's `ContextMenu` and shows the trigger as a blurred preview.
 
 ```tsx LongPressMenuExample.tsx
 import { Icon } from '@expo/ui';
@@ -102,7 +102,7 @@ export default function LongPressMenuExample() {
 
 ## Submenus and inline sections
 
-`subactions` renders nested actions as a submenu by default. Set `displayInline: true` on the parent to render the children as an inline section instead — useful for grouping. On iOS the parent's `title` becomes the section header; on Android only the divider appears (Material's `DropdownMenu` has no section primitive).
+`subactions` renders nested actions as a submenu by default. Set `displayInline: true` on the parent to render the children as an inline section instead, which is useful for grouping. On Android, only the divider appears (Material's `DropdownMenu` has no section primitive). On iOS, the parent's `title` becomes the section header.
 
 ```tsx SubmenuExample.tsx
 import { MenuView } from '@expo/ui/community/menu';
