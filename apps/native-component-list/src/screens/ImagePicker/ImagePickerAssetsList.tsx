@@ -8,9 +8,7 @@ export default function ImagePickerAssetsList(
 ): React.ReactElement | void {
   return (
     <View>
-      {result.assets?.map((asset, index) => (
-        <AssetViewContainer key={index} asset={asset} />
-      ))}
+      {result.assets?.map((asset, index) => <AssetViewContainer key={index} asset={asset} />)}
     </View>
   );
 }
