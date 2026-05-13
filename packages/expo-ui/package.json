@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "56.0.3",
+  "version": "56.0.6",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js"
@@ -42,6 +42,10 @@
     "./community/picker": {
       "types": "./build/community/picker/index.d.ts",
       "default": "./src/community/picker/index.tsx"
+    },
+    "./community/slider": {
+      "types": "./build/community/slider/index.d.ts",
+      "default": "./src/community/slider/index.tsx"
     },
     "./community/masked-view": {
       "types": "./build/community/masked-view/index.d.ts",
@@ -91,7 +95,7 @@
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
-    "react-native-reanimated": "4.3.0",
+    "react-native-reanimated": "4.3.1",
     "react-native-worklets": "0.8.3"
   },
   "jest": {

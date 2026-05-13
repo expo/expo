@@ -59,6 +59,7 @@ exceptions:
   - '.*CLI.*'
   - '.*TTI.*'
   - '.*Classic Updates.*'
+  - '.*Clerk.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
@@ -84,6 +85,7 @@ exceptions:
   - '.*Element Inspector.*'
   - '.*Environment Variables.*'
   - '.*ESLint.*'
+  - '.*EXIF.*'
   - '.*Expo.*'
   - '.*ExpoKit.*'
   - '.*Expo Application Services.*'
@@ -313,3 +315,4 @@ exceptions:
   - HorizontalCenteredHeroCarousel
   - HorizontalUncontainedCarousel
   - Serving Markdown to AI Agents
+  - Clerk Publishable Key

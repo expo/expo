@@ -2,31 +2,17 @@
 
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "JavaScriptRuntime.h"
 #include "JavaScriptModuleObject.h"
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
-#include "JavaReferencesCache.h"
 #include "JSReferencesCache.h"
 #include "JNIDeallocator.h"
 #include "ThreadSafeJNIGlobalRef.h"
 #include "javaclasses/JSRunnable.h"
 
-#include <fbjni/fbjni.h>
-#include <jsi/jsi.h>
-#include <ReactCommon/CallInvokerHolder.h>
 #include <ReactCommon/CallInvoker.h>
-
-#if IS_NEW_ARCHITECTURE_ENABLED
-
-#include <ReactCommon/RuntimeExecutor.h>
-#include <react/jni/JRuntimeExecutor.h>
-
-#endif
-
-#include <ReactCommon/NativeMethodCallInvokerHolder.h>
-
-#include <memory>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;

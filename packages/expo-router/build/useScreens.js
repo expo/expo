@@ -48,11 +48,11 @@ const react_2 = __importStar(require("react"));
 const Route_1 = require("./Route");
 const storeContext_1 = require("./global-state/storeContext");
 const utils_1 = require("./global-state/utils");
+const hooks_1 = require("./hooks");
 const import_mode_1 = __importDefault(require("./import-mode"));
 const ZoomTransitionEnabler_1 = require("./link/zoom/ZoomTransitionEnabler");
 const zoom_transition_context_providers_1 = require("./link/zoom/zoom-transition-context-providers");
 const navigationEvents_1 = require("./navigationEvents");
-const utils_2 = require("./navigationEvents/utils");
 const navigationParams_1 = require("./navigationParams");
 const primitives_1 = require("./primitives");
 const native_1 = require("./react-navigation/native");
@@ -248,7 +248,7 @@ function getQualifiedRouteComponent(value) {
         }, [navigation]);
         const isRouteType = value.type === 'route';
         const hasRouteKey = !!route?.key;
-        return ((0, jsx_runtime_1.jsx)(Route_1.Route, { node: value, params: route?.params, children: (0, jsx_runtime_1.jsxs)(Route_1.SuspenseFallbackContext, { value: providedSuspenseFallback, children: [navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && ((0, jsx_runtime_1.jsx)(AnalyticsListeners, { navigation: navigation, screenId: route.key })), (0, jsx_runtime_1.jsxs)(zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider, { route: route, children: [(0, jsx_runtime_1.jsx)(ZoomTransitionEnabler_1.ZoomTransitionEnabler, { route: route }), (0, jsx_runtime_1.jsx)(react_2.default.Suspense, { fallback: (0, jsx_runtime_1.jsx)(ResolvedSuspenseFallback, { route: value.contextKey, params: (route?.params ?? {}) }), children: (0, jsx_runtime_1.jsx)(WrappedScreenComponent, { ...props, 
+        return ((0, jsx_runtime_1.jsx)(Route_1.Route, { node: value, params: route?.params, children: (0, jsx_runtime_1.jsxs)(Route_1.SuspenseFallbackContext, { value: providedSuspenseFallback, children: [navigationEvents_1.unstable_navigationEvents.isEnabled() && isRouteType && hasRouteKey && ((0, jsx_runtime_1.jsx)(AnalyticsListeners, { navigation: navigation, screenId: route.key })), (0, jsx_runtime_1.jsxs)(zoom_transition_context_providers_1.ZoomTransitionTargetContextProvider, { route: route, children: [(0, jsx_runtime_1.jsx)(ZoomTransitionEnabler_1.ZoomTransitionEnabler, { route: route }), (0, jsx_runtime_1.jsx)(react_2.default.Suspense, { name: route ? `Route(${route.name})` : undefined, fallback: (0, jsx_runtime_1.jsx)(ResolvedSuspenseFallback, { route: value.contextKey, params: (route?.params ?? {}) }), children: (0, jsx_runtime_1.jsx)(WrappedScreenComponent, { ...props, 
                                     // Expose the template segment path, e.g. `(home)`, `[foo]`, `index`
                                     // the intention is to make it possible to deduce shared routes.
                                     segment: value.route }) })] })] }) }));
@@ -260,46 +260,53 @@ function getQualifiedRouteComponent(value) {
     return BaseRoute;
 }
 function AnalyticsListeners({ navigation, screenId, }) {
-    const stateForPath = (0, native_1.useStateForPath)();
     const isFirstRenderRef = react_2.default.useRef(true);
     const hasBlurredRef = react_2.default.useRef(true);
-    const stringUrl = (0, react_2.useMemo)(() => (0, utils_2.generateStringUrlForState)(stateForPath), [stateForPath]);
+    const routeInfo = (0, hooks_1.useCurrentRouteInfo)();
+    const isFocused = navigation.isFocused();
     if (isFirstRenderRef.current) {
         isFirstRenderRef.current = false;
-        if (stringUrl) {
-            navigationEvents_1.unstable_navigationEvents.emit('pageWillRender', {
-                ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+        if (routeInfo && !isFocused) {
+            navigationEvents_1.unstable_navigationEvents.emit('pagePreloaded', {
+                pathname: routeInfo.pathname,
+                params: routeInfo.params,
                 screenId,
             });
         }
     }
     (0, react_2.useEffect)(() => {
-        if (stringUrl) {
+        if (routeInfo) {
             return () => {
                 navigationEvents_1.unstable_navigationEvents.emit('pageRemoved', {
-                    ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                    pathname: routeInfo.pathname,
+                    params: routeInfo.params,
                     screenId,
                 });
             };
         }
         return () => { };
-    }, [stringUrl, screenId]);
-    const isFocused = navigation.isFocused();
-    if (isFocused && stringUrl) {
-        navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
-            ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
-            screenId,
-        });
-        hasBlurredRef.current = false;
-    }
+    }, [routeInfo?.params, routeInfo?.pathname, screenId]);
+    // Emit `pageFocused` from an effect — not during render — so it fires after the
+    // focused screen's content has committed. `hasBlurredRef` deduplicates across both paths.
     (0, react_2.useEffect)(() => {
-        if (stringUrl) {
+        if (isFocused && routeInfo && hasBlurredRef.current) {
+            navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
+                pathname: routeInfo.pathname,
+                params: routeInfo.params,
+                screenId,
+            });
+            hasBlurredRef.current = false;
+        }
+    }, [isFocused, routeInfo?.pathname, routeInfo?.params, screenId]);
+    (0, react_2.useEffect)(() => {
+        if (routeInfo) {
             const cleanFocus = navigation.addListener('focus', () => {
                 // If the screen was not blurred, don't emit focused again
                 // hasBlurredRef will be false when the screen was initially focused
                 if (hasBlurredRef.current) {
                     navigationEvents_1.unstable_navigationEvents.emit('pageFocused', {
-                        ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                        pathname: routeInfo.pathname,
+                        params: routeInfo.params,
                         screenId,
                     });
                     hasBlurredRef.current = false;
@@ -307,7 +314,8 @@ function AnalyticsListeners({ navigation, screenId, }) {
             });
             const cleanBlur = navigation.addListener('blur', () => {
                 navigationEvents_1.unstable_navigationEvents.emit('pageBlurred', {
-                    ...(0, utils_2.getPathAndParamsFromStringUrl)(stringUrl),
+                    pathname: routeInfo.pathname,
+                    params: routeInfo.params,
                     screenId,
                 });
                 hasBlurredRef.current = true;
@@ -318,7 +326,7 @@ function AnalyticsListeners({ navigation, screenId, }) {
             };
         }
         return () => { };
-    }, [navigation, stringUrl, screenId]);
+    }, [navigation, routeInfo?.pathname, routeInfo?.params, screenId]);
     return null;
 }
 function screenOptionsFactory(route, options) {

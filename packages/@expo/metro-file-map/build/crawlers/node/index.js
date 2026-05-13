@@ -58,12 +58,23 @@ function find(roots, extensions, ignore, includeSymlinks, rootDir, console, prev
         fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
             activeCalls--;
             if (err) {
-                console.warn(`Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`);
+                // NOTE(@kitten): This isn't necessarily a problem and we can ignore this
+                /*
+                console.warn(
+                  `Error "${(err as any).code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
+                );
+                */
             }
             else {
                 for (let idx = 0; idx < entries.length; idx++) {
                     const entry = entries[idx];
-                    const name = entry.name.toString();
+                    const name = entry.name;
+                    // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
+                    // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
+                    const isDirectory = entry.isDirectory();
+                    if (isDirectory && (name === '.git' || name === '.hg' || name === '.cxx')) {
+                        continue;
+                    }
                     const file = directory + path.sep + name;
                     const isSymbolicLink = entry.isSymbolicLink();
                     if (ignore(file) || (!includeSymlinks && isSymbolicLink)) {
@@ -77,7 +88,7 @@ function find(roots, extensions, ignore, includeSymlinks, rootDir, console, prev
                         : dirNormal === ''
                             ? name
                             : dirNormal + path.sep + name;
-                    if (entry.isDirectory()) {
+                    if (isDirectory) {
                         // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively based
                         // on their normal paths, so we can exclude using `^...`
                         if (!ignore(childNormal)) {

@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 56.1.0 — 2026-05-08
+
+### 🎉 New features
+
+- Add Node built-in source-map support to `evalModule` ([#45507](https://github.com/expo/expo/pull/45507) by [@kitten](https://github.com/kitten))
+- Add `cache` flag to remove retaining modules from `evalModule` ([#45509](https://github.com/expo/expo/pull/45509) by [@kitten](https://github.com/kitten))
+
 ## 56.0.1 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

@@ -24,10 +24,31 @@ The example below masks a phone number as the user types. The formatting and the
 ```tsx WorkletPhoneMaskExample.tsx
 import { Host, TextField, Text as ComposeText, useNativeState } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+import { useEffectEvent } from 'react';
 
 export default function WorkletPhoneMaskExample() {
   const maskedPhone = useNativeState('');
   const selection = useNativeState({ start: 0, end: 0 });
+
+  const handleValueChange = useEffectEvent((v: string) => {
+    'worklet';
+    const digits = v.replace(/\D/g, '').slice(0, 10);
+    let formatted: string;
+    if (digits.length === 0) {
+      formatted = '';
+    } else if (digits.length <= 3) {
+      formatted = digits;
+    } else if (digits.length <= 6) {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    } else {
+      formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+    }
+    if (formatted !== v) {
+      maskedPhone.value = formatted;
+      // Snaps to end for demo. Real masks need smarter cursor handling.
+      selection.value = { start: formatted.length, end: formatted.length };
+    }
+  });
 
   return (
     <Host matchContents>
@@ -36,24 +57,7 @@ export default function WorkletPhoneMaskExample() {
         selection={selection}
         keyboardOptions={{ keyboardType: 'phone' }}
         modifiers={[fillMaxWidth()]}
-        onValueChange={v => {
-          'worklet';
-          const digits = v.replace(/\D/g, '').slice(0, 10);
-          let formatted: string;
-          if (digits.length === 0) {
-            formatted = '';
-          } else if (digits.length <= 3) {
-            formatted = digits;
-          } else if (digits.length <= 6) {
-            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
-          } else {
-            formatted = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
-          }
-          if (formatted !== v) {
-            maskedPhone.value = formatted;
-            selection.value = { start: formatted.length, end: formatted.length };
-          }
-        }}>
+        onValueChange={handleValueChange}>
         <TextField.Placeholder>
           <ComposeText>(555) 123-4567</ComposeText>
         </TextField.Placeholder>

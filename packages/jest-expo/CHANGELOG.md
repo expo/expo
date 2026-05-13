@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 56.0.1 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- Switch from `react-native/jest-preset` to `@react-native/jest-preset` ([#45699](https://github.com/expo/expo/pull/45699) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
+
 ## 56.0.0 — 2026-05-05
 
 ### 🐛 Bug fixes

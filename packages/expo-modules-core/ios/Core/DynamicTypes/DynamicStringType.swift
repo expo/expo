@@ -28,8 +28,12 @@ internal struct DynamicStringType: AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try castToJS(value, appContext: appContext, in: try appContext.runtime)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if let string = value as? String {
-      return JavaScriptValue(try appContext.runtime, string)
+      return JavaScriptValue(runtime, string)
     }
     throw Conversions.ConversionToJSFailedException((kind: .string, nativeType: ValueType.self))
   }

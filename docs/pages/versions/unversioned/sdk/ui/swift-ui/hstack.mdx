@@ -8,18 +8,16 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI HStack matches the official SwiftUI [HStack API](https://developer.apple.com/documentation/swiftui/hstack) and arranges its children horizontally.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/hstack/ios-light.webp"
-    darkSource="/static/images/expo-ui/hstack/ios-dark.webp"
-    alt="Four numbered colored rounded squares arranged horizontally in an HStack"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/hstack/ios-light.webp"
+  darkSource="/static/images/expo-ui/hstack/ios-dark.webp"
+  alt="Four numbered colored rounded squares arranged horizontally in an HStack"
+/>
 
 ## Installation
 

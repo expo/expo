@@ -36,13 +36,14 @@
     "expo-modules-core": "workspace:*",
     "jest-expo": "workspace:*",
     "jsc-android": "^250231.0.0",
-    "prettier": "~3.5.3"
+    "prettier": "~3.8.3"
   },
   "volta": {
     "node": "22.14.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
+    "@types/node": "^22.14.0",
     "@vercel/ncc": "^0.38.4",
     "expo-module-scripts": "workspace:*",
     "expotools": "workspace:*",

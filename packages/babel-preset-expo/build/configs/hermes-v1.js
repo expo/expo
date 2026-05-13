@@ -11,11 +11,18 @@
  * https://github.com/facebook/react-native/blob/main/packages/react-native-babel-preset/src/configs/main.js
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+const fix_hermes_v1_async_arrow_non_simple_params_1 = require("../plugins/fix-hermes-v1-async-arrow-non-simple-params");
+const fix_hermes_v1_class_in_finally_1 = require("../plugins/fix-hermes-v1-class-in-finally");
+const fix_hermes_v1_super_in_object_accessor_1 = require("../plugins/fix-hermes-v1-super-in-object-accessor");
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 /** The JS syntax preset used with Hermes v1 (SDK 56+) */
 module.exports = function (_api, _options) {
     const plugins = [
+        // NOTE(@kitten): See individual plugins for which Hermes v1 fixes they correspond to
+        [fix_hermes_v1_async_arrow_non_simple_params_1.fixHermesV1AsyncArrowNonSimpleParams],
+        [fix_hermes_v1_super_in_object_accessor_1.fixHermesV1SuperInObjectAccessor],
+        [fix_hermes_v1_class_in_finally_1.fixHermesV1ClassInFinally],
         [require('@babel/plugin-transform-block-scoping')],
         [require('@babel/plugin-transform-class-static-block'), { loose }],
         [require('@babel/plugin-transform-async-generator-functions')],

@@ -1,9 +1,9 @@
 import { Row as ComposeRow } from '@expo/ui/jetpack-compose';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
 import type { RowProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 const alignmentMap: Record<UniversalAlignment, 'top' | 'center' | 'bottom'> = {
   start: 'top',

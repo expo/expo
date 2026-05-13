@@ -763,10 +763,14 @@ struct DynamicTypeTests {
       let result = try (~TestEncodable.self).castToJS(encodable, appContext: appContext)
       let propertyNames = result.getObject().getPropertyNames()
 
-      #expect(propertyNames.count == 3)
+      // Nil optional fields are emitted as explicit `null` rather than omitted,
+      // so the resulting JS object exposes every declared field.
+      #expect(propertyNames.count == 5)
       #expect(propertyNames.contains("string"))
       #expect(propertyNames.contains("number"))
       #expect(propertyNames.contains("bool"))
+      #expect(propertyNames.contains("object"))
+      #expect(propertyNames.contains("array"))
     }
 
     @Test
@@ -778,8 +782,8 @@ struct DynamicTypeTests {
       #expect(try object.getProperty("string").asString() == encodable.string)
       #expect(try object.getProperty("number").asInt() == encodable.number)
       #expect(try object.getProperty("bool").asBool() == encodable.bool)
-      #expect(object.getProperty("object").isUndefined() == true)
-      #expect(object.getProperty("array").isUndefined() == true)
+      #expect(object.getProperty("object").isNull() == true)
+      #expect(object.getProperty("array").isNull() == true)
     }
 
     @Test

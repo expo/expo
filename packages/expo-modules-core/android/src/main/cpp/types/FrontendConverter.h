@@ -2,10 +2,8 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "CppType.h"
-
-#include <jsi/jsi.h>
-#include <fbjni/fbjni.h>
 
 #if WORKLETS_ENABLED
 

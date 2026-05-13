@@ -36,7 +36,7 @@ runs:
   steps:
     - name: Gather job details
       id: details
-      uses: actions/github-script@v8
+      uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
       env:
         JOB_NAME: ${{ inputs.job_name }}
         JOB_STATUS: ${{ inputs.status }}
@@ -186,7 +186,7 @@ runs:
           core.setOutput('author_name', escape(process.env.AUTHOR_NAME));
 
     - name: Send to Slack
-      uses: slackapi/slack-github-action@v2.1.1
+      uses: slackapi/slack-github-action@91efab103c0de0a537f72a35f6b8cda0ee76bf0a # v2.1.1
       with:
         webhook: ${{ inputs.webhook }}
         webhook-type: incoming-webhook

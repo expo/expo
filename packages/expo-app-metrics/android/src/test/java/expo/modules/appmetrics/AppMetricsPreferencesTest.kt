@@ -26,8 +26,8 @@ class AppMetricsPreferencesTest {
 
   @Test
   fun `getEnvironment returns default environment when nothing saved`() {
-    // Robolectric apps are debuggable by default
-    assertEquals("development", AppMetricsPreferences.getEnvironment(context))
+    val expected = if (BuildConfig.DEBUG) "development" else null
+    assertEquals(expected, AppMetricsPreferences.getEnvironment(context))
   }
 
   @Test
@@ -43,8 +43,8 @@ class AppMetricsPreferencesTest {
   }
 
   @Test
-  fun `getDefaultEnvironment returns development in debug builds`() {
-    // testDebugUnitTest has BuildConfig.DEBUG = true
-    assertEquals("development", AppMetricsPreferences.getDefaultEnvironment())
+  fun `getDefaultEnvironment matches build variant`() {
+    val expected = if (BuildConfig.DEBUG) "development" else null
+    assertEquals(expected, AppMetricsPreferences.getDefaultEnvironment())
   }
 }

@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- Add missing `pathPrefix`, `pathSuffix`, `mimeType`, `pathPattern`, `pathAdvancedPattern`, and `port` to intent filter types ([#45718](https://github.com/expo/expo/pull/45718) by [@kitten](https://github.com/kitten)
+
+## 56.0.4 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.2 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

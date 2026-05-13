@@ -1,14 +1,12 @@
 #pragma once
 
+#include "../ExpoHeader.pch"
+
 #if WORKLETS_ENABLED
 
 #include <ReactCommon/CallInvoker.h>
-#include <ReactCommon/RuntimeExecutor.h>
 
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
-
-#include <memory>
-
 
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;

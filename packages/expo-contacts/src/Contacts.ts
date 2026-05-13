@@ -1,9 +1,5 @@
-import {
-  type EventSubscription,
-  type PermissionResponse,
-  UnavailabilityError,
-  uuid,
-} from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-core';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -582,11 +578,7 @@ export type Container = {
 };
 
 // TODO(@kitten): Remove re-exports from EMC
-export {
-  PermissionStatus,
-  type PermissionResponse,
-  type PermissionExpiration,
-} from 'expo-modules-core';
+export { PermissionStatus, type PermissionResponse, type PermissionExpiration } from 'expo';
 
 /**
  * Returns whether the Contacts API is enabled on the current device. This method does not check the app permissions.

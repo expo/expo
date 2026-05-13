@@ -47,6 +47,7 @@ target 'Expo Go' do
   # Expo modules
   use_expo_modules!({
     exclude: [
+      'expo-app-metrics',
       'expo-module-template',
       'expo-dev-launcher',
       'expo-dev-client',
@@ -58,7 +59,8 @@ target 'Expo Go' do
       'expo-splash-screen',
       '@expo/app-integrity',
       'expo-brownfield',
-      'expo-widgets'
+      'expo-widgets',
+      'expo-observe'
     ],
     includeTests: true,
     flags: {

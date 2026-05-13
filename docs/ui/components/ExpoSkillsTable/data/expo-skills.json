@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-04-23T16:26:03.579Z"
+    "fetchedAt": "2026-05-08T17:16:55.564Z"
   },
   "totalSkills": 13,
   "skills": [
@@ -38,7 +38,7 @@
     },
     {
       "name": "expo-module",
-      "description": "Guide for writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo.",
+      "description": "Guide for creating and writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-module/SKILL.md"
     },
     {

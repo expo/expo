@@ -87,6 +87,36 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
     }
 
+    AsyncFunction("addCustomMetricToSession") { (metric: JsMetric) in
+      try await AppMetricsActor.isolated {
+        AppMetrics.storage.findSession(byId: metric.sessionId)?.receiveMetric(metric.toMetric())
+      }
+    }
+
+    AsyncFunction("getMainSession") { () -> [String: Any]? in
+      // Snapshot + encode on the actor so we don't race metric writes, then
+      // return the encoded JSON `Data` (Sendable) for off-actor parsing.
+      let (mainSessionId, data) = try await AppMetricsActor.isolated { () -> (String, Data) in
+        let mainSession = AppMetrics.mainSession
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        return (mainSession.id, try encoder.encode(SessionCoder(mainSession)))
+      }
+      guard var dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+        return nil
+      }
+      // Inject `sessionId` on each metric so the payload matches the TS
+      // `Metric` shape, which carries sessionId per-metric
+      if let metrics = dict["metrics"] as? [[String: Any]] {
+        dict["metrics"] = metrics.map { metric -> [String: Any] in
+          var withSessionId = metric
+          withSessionId["sessionId"] = mainSessionId
+          return withSessionId
+        }
+      }
+      return dict
+    }
+
     Function("simulateCrashReport") {
       simulateCrashReport()
     }

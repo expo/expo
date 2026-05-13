@@ -3,9 +3,9 @@ import type { ColorValue, KeyboardTypeOptions, ReturnKeyTypeOptions } from 'reac
 
 import type { ModifierConfig } from '../../types';
 import type { ObservableState } from '../State';
+import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 import type { UniversalTextStyle } from '../Text/types';
 import type { UniversalStyle } from '../types';
-import type { AutoComplete, EnterKeyHint, InputMode } from './utils';
 
 /**
  * Imperative methods exposed via the `TextInput` ref.

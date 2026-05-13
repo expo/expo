@@ -1,5 +1,6 @@
 package expo.modules.observe
 
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
 import kotlinx.serialization.Serializable
@@ -104,8 +105,43 @@ data class EASMetric(
   }
 }
 
+/**
+ * Wire shape of a log event ready for dispatch. Distinct from the storage-side
+ * `LogRecord`: this form has the JSON `attributes` blob already parsed back
+ * into a structured object (so the OTel encoder can map values to typed
+ * `OTAnyValue`s) and drops storage-only columns like `logId`.
+ */
+@Serializable
+data class LogEvent(
+  val sessionId: String,
+  val timestamp: String,
+  val name: String,
+  val body: String? = null,
+  val severity: String,
+  val attributes: JsonObject? = null,
+  val droppedAttributesCount: Int = 0
+) {
+  companion object {
+    fun fromLogRecord(log: LogRecord): LogEvent =
+      LogEvent(
+        sessionId = log.sessionId,
+        timestamp = log.timestamp,
+        name = log.name,
+        body = log.body,
+        severity = log.severity,
+        // Stored as a JSON string; parse defensively, falling back to no
+        // attributes if the blob is somehow malformed.
+        attributes = log.attributes?.let {
+          runCatching { Json.decodeFromString<JsonObject>(it) }.getOrNull()
+        },
+        droppedAttributesCount = log.droppedAttributesCount
+      )
+  }
+}
+
 @Serializable
 data class Event(
   val metadata: Metadata,
-  val metrics: List<EASMetric>
+  val metrics: List<EASMetric>,
+  val logs: List<LogEvent> = emptyList()
 )

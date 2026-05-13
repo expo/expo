@@ -315,19 +315,19 @@ export function withExtendedResolver(
 
         if (context.customResolverOptions?.environment === 'react-server') {
           // Ensure these non-react-server modules are excluded when bundling for React Server Components in development.
-          return /^(source-map-support(\/.*)?|@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
+          return /^(@babel\/runtime\/.+|debug|metro-runtime\/src\/modules\/HMRClient|metro|acorn-loose|acorn|chalk|ws|ansi-styles|supports-color|color-convert|has-flag|utf-8-validate|color-name|react-refresh\/runtime|@remix-run\/node\/.+)$/.test(
             moduleName
           );
         }
 
         // TODO: Windows doesn't support externals somehow.
         if (process.platform === 'win32') {
-          return /^(source-map-support(\/.*)?)$/.test(moduleName);
+          return false;
         }
 
         // Extern these modules in standard Node.js environments in development to prevent API routes side-effects
         // from leaking into the dev server process.
-        return /^(source-map-support(\/.*)?|react|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
+        return /^(react|@radix-ui\/.+|@babel\/runtime\/.+|react-dom(\/.+)?|debug|acorn-loose|acorn|css-in-js-utils\/lib\/.+|hyphenate-style-name|color|color-string|color-convert|color-name|fontfaceobserver|fast-deep-equal|query-string|escape-string-regexp|invariant|postcss-value-parser|memoize-one|nullthrows|strict-uri-encode|decode-uri-component|split-on-first|filter-obj|warn-once|simple-swizzle|is-arrayish|inline-style-prefixer\/.+)$/.test(
           moduleName
         );
       },
@@ -634,13 +634,31 @@ export function withExtendedResolver(
         if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
           const filePath = context.originModulePath;
           if (!filePath.includes('node_modules')) {
+            if (
+              moduleName === '@react-navigation/native-stack' ||
+              moduleName === '@react-navigation/drawer'
+            ) {
+              throw new Error(
+                [
+                  'As of SDK 56, expo-router is no longer compatible with react-navigation.',
+                  '',
+                  `Instead of ${moduleName}, use Stack or Drawer from expo-router instead:`,
+                  '',
+                  "  import { Stack } from 'expo-router';",
+                  "  import { Drawer } from 'expo-router/drawer';",
+                  '',
+                  'For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/.',
+                  'You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.',
+                ].join('\n')
+              );
+            }
             throw new Error(
               'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
             );
           }
           if (moduleName === '@react-navigation/core') {
             // We already checked if expo-router resolves
-            return doResolve('expo-router');
+            return doResolve('expo-router/react-navigation');
           }
         }
       }

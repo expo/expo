@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 3.8.0 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^2.3.2` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
 ## 3.7.3 — 2026-05-07
 
 ### 💡 Others

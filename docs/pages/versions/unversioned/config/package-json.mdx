@@ -5,7 +5,7 @@ description: A reference for Expo-specific properties that can be used in the pa
 
 import { PaddedAPIBox } from '~/components/plugins/PaddedAPIBox';
 
-**package.json** is a JSON file that contains the metadata for a JavaScript project. This is a reference to Expo-specific properties that can be used in the **package.json** file.
+**package.json** is a JSON file that contains the metadata for a JavaScript project. This is a reference to Expo-specific properties that can be used by adding an `expo` field in the **package.json** file.
 
 <PaddedAPIBox>
 
@@ -16,7 +16,7 @@ The following commands perform a version check for the libraries installed in a 
 - `npx expo start` and `npx expo-doctor`
 - `npx expo install` (when installing a new version of that library or using `--check` or `--fix` options)
 
-By specifying the library under the `install.exclude` array in the **package.json** file, you can exclude it from the version checks:
+By adding the library under the `install.exclude` array in the **package.json** file, you can exclude it from the version checks:
 
 ```json package.json
 {
@@ -35,6 +35,16 @@ By specifying the library under the `install.exclude` array in the **package.jso
 ## `autolinking`
 
 Allows configuring module resolution behavior by using `autolinking` property in **package.json**.
+
+```json package.json
+{
+  "expo": {
+    "autolinking": {
+      "nativeModulesDir": "./modules"
+    }
+  }
+}
+```
 
 For complete reference, see [Autolinking configuration](/modules/autolinking/#configuration).
 

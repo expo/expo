@@ -1,5 +1,4 @@
-import type { PermissionExpiration, PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus, type PermissionExpiration, type PermissionHookOptions, type PermissionResponse } from 'expo';
 import type { CameraPermissionResponse, ImagePickerErrorResult, ImagePickerOptions, ImagePickerResult, MediaLibraryPermissionResponse } from './ImagePicker.types';
 /**
  * Checks user's permissions for accessing camera.

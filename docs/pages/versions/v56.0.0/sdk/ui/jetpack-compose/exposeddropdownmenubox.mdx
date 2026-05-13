@@ -8,8 +8,16 @@ platforms: ['android', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI `ExposedDropdownMenuBox` matches the official Jetpack Compose [`ExposedDropdownMenuBox`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-exposed-dropdown-menu-box.html). Use the `menuAnchor()` modifier on the anchor content (typically a read-only `TextField`) and `ExposedDropdownMenu` to wrap `DropdownMenuItem` children.
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/exposeddropdownmenubox/android-light.webp"
+  darkSource="/static/images/expo-ui/exposeddropdownmenubox/android-dark.webp"
+  alt="Exposed dropdown menu showing four language options anchored to a text field"
+/>
 
 ## Installation
 

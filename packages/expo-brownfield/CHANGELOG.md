@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-11
+
+### 🐛 Bug fixes
+
+- Fix reading updates app.manifest and meta-data tags ([#45655](https://github.com/expo/expo/pull/45655) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.4 — 2026-05-07
 
 ### 🐛 Bug fixes

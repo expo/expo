@@ -308,11 +308,11 @@ extension JavaScriptBigInt: JavaScriptRepresentable {
 }
 
 extension JavaScriptBigInt: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptBigInt {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptBigInt {
     fatalError("Not implemented: Use JavaScriptValue.getBigInt() instead")
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
   }
 }

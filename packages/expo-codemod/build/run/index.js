@@ -63,7 +63,7 @@ async function parseAndValidateArgs(argv) {
     });
     const transforms = await (0, transforms_1.listTransformsAsync)();
     const [transform, ...paths] = positionals;
-    if (values.help || !transform || paths.length === 0) {
+    if (values.help || !transform) {
         (0, args_1.printHelp)('Run a codemod transform against the given paths.', 'npx expo-codemod <transform> <paths...>', [
             '<transform>                   (required) name of transform to apply to files',
             '                              (see a list of transforms available below)',
@@ -74,6 +74,11 @@ async function parseAndValidateArgs(argv) {
     }
     if (!transforms.includes(transform)) {
         Log.exit(`Transform "${transform}" does not exist. Valid options: ${transforms.join(', ')}`);
+    }
+    if (paths.length === 0) {
+        Log.exit(`No paths provided to expo-codemod. Pass one or more file paths or globs to apply the "${transform}" transform to.\n` +
+            `Example: npx expo-codemod ${transform} 'src/**/*.{ts,tsx,js,jsx}'\n` +
+            `Run "npx expo-codemod --help" to see all options.`);
     }
     return { transform, paths };
 }

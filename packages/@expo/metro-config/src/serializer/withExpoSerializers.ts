@@ -6,7 +6,7 @@
  */
 import type { MetroConfig } from '@expo/metro/metro';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
-import type { ReadOnlyDependencies, SerializerOptions } from '@expo/metro/metro/DeltaBundler/types';
+import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
@@ -16,21 +16,12 @@ import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { env } from '../env';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
-import { env } from '../env';
+import { sourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
-
-// Lazy-loaded to avoid pulling in metro-source-map and @babel/traverse at startup (~100ms savings)
-let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-function getSourceMapString() {
-  if (!_sourceMapString) {
-    _sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-  }
-  return _sourceMapString;
-}
 
 // Lazy-loaded to avoid pulling in @babel/generator, @babel/core at startup
 let _reconcileTransformSerializerPlugin: typeof import('./reconcileTransformSerializerPlugin').reconcileTransformSerializerPlugin;
@@ -50,7 +41,7 @@ function getTreeShakeSerializer() {
   return _treeShakeSerializer;
 }
 
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString chain at startup
+// Lazy-loaded to avoid pulling in metro's getAppendScripts at startup
 let _baseJSBundle: typeof import('./fork/baseJSBundle').baseJSBundle;
 function getBaseJSBundle() {
   if (!_baseJSBundle) {
@@ -134,7 +125,7 @@ export function createDefaultExportCustomSerializer(
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
-    inputOptions: SerializerOptions
+    inputOptions: ExpoSerializerOptions
   ): Promise<string | { code: string; map: string }> => {
     // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
     const isPossiblyDev =
@@ -148,7 +139,7 @@ export function createDefaultExportCustomSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
-    const options: SerializerOptions = {
+    const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
         if (props.length > 0) {
@@ -211,12 +202,10 @@ export function createDefaultExportCustomSerializer(
     }
 
     const getEnsuredMaps = () => {
-      bundleMap ??= getSourceMapString()(
+      bundleMap ??= sourceMapString(
         [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
         {
-          // TODO: Surface this somehow.
-          excludeSource: false,
-          // excludeSource: options.serializerOptions?.excludeSource,
+          excludeSource: options.serializerOptions?.excludeSource ?? false,
           processModuleFilter: options.processModuleFilter,
           shouldAddToIgnoreList: options.shouldAddToIgnoreList,
         }

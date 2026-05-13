@@ -1,7 +1,22 @@
-import { ScrollView as RNScrollView, type ViewStyle } from 'react-native';
+import { ScrollView as RNScrollView, StyleSheet } from 'react-native';
 
 import type { ScrollViewProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
+
+const styles = StyleSheet.create({
+  container: {
+    // Constrain to viewport width so horizontal content overflows and scrolls
+    // instead of expanding the parent layout.
+    // @ts-expect-error
+    maxWidth: '100vw',
+  },
+  noGrow: { flexGrow: 0 },
+  hidden: { display: 'none' },
+  disabled: {
+    opacity: 0.5,
+    pointerEvents: 'none',
+  },
+});
 
 /**
  * A scrollable container that supports vertical or horizontal scrolling.
@@ -15,23 +30,13 @@ export function ScrollView({
   // API compatibility but silently ignored (RN ScrollView has no press handler).
   onAppear,
   onDisappear,
-  disabled,
-  hidden,
+  disabled = false,
+  hidden = false,
   testID,
 }: ScrollViewProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
   const isHorizontal = direction === 'horizontal';
-
-  const containerStyle: ViewStyle = {
-    // Constrain to viewport width so horizontal content overflows and scrolls
-    // instead of expanding the parent layout.
-    maxWidth: '100vw' as any,
-    ...style,
-    ...(style?.height != null ? { flexGrow: 0 } : undefined),
-    ...(hidden ? { display: 'none' } : undefined),
-    ...(disabled ? { opacity: 0.5, pointerEvents: 'none' } : undefined),
-  };
 
   // react-native-web does not support separate vertical and horizontal indicator props,
   // so we map both to its single `showsIndicators` prop.
@@ -43,9 +48,15 @@ export function ScrollView({
       horizontal={isHorizontal}
       showsVerticalScrollIndicator={showVerticalIndicator}
       showsHorizontalScrollIndicator={showHorizontalIndicator}
-      style={containerStyle}
       nestedScrollEnabled
-      testID={testID}>
+      testID={testID}
+      style={[
+        styles.container,
+        style,
+        style?.height != null && styles.noGrow,
+        hidden && styles.hidden,
+        disabled && styles.disabled,
+      ]}>
       {children}
     </RNScrollView>
   );

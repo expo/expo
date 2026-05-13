@@ -8,18 +8,16 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { Diagram } from '~/ui/components/Diagram';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Spacer matches the official SwiftUI [Spacer API](https://developer.apple.com/documentation/swiftui/spacer) and expands to fill available space in a stack.
 
-<div className="mx-auto w-fit [&_img]:max-h-[360px] [&_img]:w-auto">
-  <Diagram
-    source="/static/images/expo-ui/spacer/ios-light.webp"
-    darkSource="/static/images/expo-ui/spacer/ios-dark.webp"
-    alt="A red A square at the leading edge and a blue B square at the trailing edge of an HStack, separated by a Spacer"
-    disableSrcSet
-  />
-</div>
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/spacer/ios-light.webp"
+  darkSource="/static/images/expo-ui/spacer/ios-dark.webp"
+  alt="A red A square at the leading edge and a blue B square at the trailing edge of an HStack, separated by a Spacer"
+/>
 
 ## Installation
 

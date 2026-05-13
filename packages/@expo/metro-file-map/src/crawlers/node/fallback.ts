@@ -91,7 +91,9 @@ export default function createFallbackFilesystem(
       }
 
       if (entry.isDirectory()) {
-        if (!result.has(name)) {
+        // NOTE(@kitten): ".git" and ".hg" check replace the VCS_DIRECTORIES ignore pattern
+        // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
+        if (!result.has(name) && name !== '.git' && name !== '.hg' && name !== '.cxx') {
           const childDir = new Map();
           markDir(childDir, FallbackFlag.VISITED);
           result.set(name, childDir);

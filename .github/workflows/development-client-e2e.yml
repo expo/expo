@@ -24,7 +24,7 @@ jobs:
         api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🍺 Install required tools
@@ -33,18 +33,18 @@ jobs:
           brew install applesimutils
           brew install watchman
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
           bundler-cache: true
           ruby-version: 3.2.2
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 10
       - name: 🔨 Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: 'pnpm'
@@ -70,7 +70,7 @@ jobs:
         working-directory: packages/expo-dev-client
       - name: 💾 Store artifacts of build failures
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: expo-dev-client-e2e-artifacts
           path: packages/expo-dev-client/artifacts

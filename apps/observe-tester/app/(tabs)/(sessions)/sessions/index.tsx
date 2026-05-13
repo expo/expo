@@ -1,6 +1,7 @@
 import AppMetrics, { type Session } from 'expo-app-metrics';
+import { useObserve } from 'expo-observe';
 import { router, Stack, useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Platform,
@@ -23,6 +24,13 @@ export default function SessionsList() {
   const isActive = (s: Session) =>
     !s.endDate && currentMainStart != null && s.startDate >= currentMainStart;
 
+  const { markInteractive } = useObserve();
+  useEffect(() => {
+    setTimeout(() => {
+      markInteractive();
+    }, 100);
+  }, []);
+
   const refresh = useCallback(async () => {
     const result = await AppMetrics.getAllSessions();
     const sorted = [...result].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
@@ -41,11 +49,7 @@ export default function SessionsList() {
 
   useFocusEffect(
     useCallback(() => {
-      if (Platform.OS === 'ios') {
-        refresh();
-      } else {
-        setLoaded(true);
-      }
+      refresh();
     }, [refresh])
   );
 

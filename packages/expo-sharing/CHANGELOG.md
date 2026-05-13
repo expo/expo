@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 56.0.7 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `shareAsync` promise leaking when the user picks an activity and then cancels its follow-up dialog (e.g. taps Print, then cancels the print dialog). The completion handler now resolves unconditionally on dismissal. ([@Elehiggle](https://github.com/Elehiggle))
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.4 — 2026-05-07
 
 _This version does not introduce any user-facing changes._
