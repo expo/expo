@@ -71,9 +71,13 @@ export interface ExpoAgeRangeModule extends NativeModule {
    * regions). Use this to short-circuit age gating outside of those jurisdictions
    * without implementing custom geo-tracking.
    *
-   * Resolves with `null` on iOS versions earlier than 26.2, on platforms other
-   * than iOS, or when the underlying call throws — callers should treat `null`
-   * as "unknown / not supported" rather than as a definitive `false`.
+   * Rejects with `ERR_AGE_RANGE_NOT_AVAILABLE` on iOS 26.2+ when the
+   * age-assurance service is unavailable (for example, no signed-in Apple
+   * Account).
+   *
+   * Resolves with `null` on iOS versions earlier than 26.2 and on platforms
+   * other than iOS — callers should treat `null` as "unknown / not supported"
+   * rather than as a definitive `false`.
    *
    * @platform ios 26.2+
    */
