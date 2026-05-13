@@ -12,6 +12,7 @@ import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
+import type { Socket } from 'node:net';
 import type { WebSocketServer } from 'ws';
 
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
@@ -38,6 +39,11 @@ interface RunServerOptionsFork {
   onError?($$PARAM_0$$: Error & { code?: string }): void;
   onReady?(server: http.Server | https.Server): void;
   onClose?(): void;
+  /**
+   * Called when a WebSocket peer upgrades the connection. Used to detect remote
+   * (non-loopback) clients that bypass the HTTP middleware chain (HMR via `/hot`).
+   */
+  onRemotePeer?(socket: Socket | undefined, userAgent: string | undefined): void;
   websocketEndpoints?: RunServerOptions['websocketEndpoints'];
   secureServerOptions?: SecureServerOptions;
   waitForBundler?: boolean;
@@ -52,6 +58,7 @@ export const runServer = async (
     host,
     onError,
     onReady,
+    onRemotePeer,
     secureServerOptions,
     websocketEndpoints = {},
     watch,
@@ -181,6 +188,10 @@ export const runServer = async (
       httpServer.on('upgrade', (request, socket, head) => {
         const { pathname } = new URL(request.url!, 'http://localhost');
         if (pathname != null && websocketEndpoints[pathname]) {
+          if (onRemotePeer) {
+            const ua = request.headers['user-agent'];
+            onRemotePeer(request.socket, Array.isArray(ua) ? ua[0] : ua);
+          }
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
             websocketEndpoints[pathname]?.emit('connection', ws, request);
           });

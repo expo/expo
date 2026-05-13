@@ -34,6 +34,7 @@ import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { createCorsMiddleware } from '../middleware/CorsMiddleware';
+import { createRemotePeerWarning } from '../middleware/RemotePeerWarningMiddleware';
 import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
 import { prependMiddleware } from '../middleware/mutations';
 import { getPlatformBundlers } from '../platformBundlers';
@@ -398,9 +399,17 @@ export async function instantiateMetroAsync(
     .getUrlCreator()
     .constructUrl({ scheme: 'http', hostType: 'localhost' });
 
+  // Warn the developer when a non-loopback peer (real device / another machine on the LAN)
+  // first talks to this dev server. HTTP requests go through the middleware; HMR/WebSocket
+  // upgrades bypass it, so the same deduplication state is shared with the WS upgrade handler below.
+  const remotePeerWarning = !isExporting ? createRemotePeerWarning() : null;
+
   if (!isExporting) {
     // Enable correct CORS headers for Expo Router features
     prependMiddleware(middleware, createCorsMiddleware(exp));
+    if (remotePeerWarning) {
+      prependMiddleware(middleware, remotePeerWarning.middleware);
+    }
 
     // Enable debug middleware for CDP-related debugging
     const { debugMiddleware, debugWebsocketEndpoints } = createDebugMiddleware({
@@ -464,6 +473,7 @@ export async function instantiateMetroAsync(
         websocketEndpoints,
         watch,
         secureServerOptions,
+        onRemotePeer: remotePeerWarning?.onRemotePeer,
       },
       {
         mockServer: isExporting,

@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Display warning when device from LAN network connects ([#45751](https://github.com/expo/expo/pull/45751) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
