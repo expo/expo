@@ -107,7 +107,7 @@ private func encodeUsingDynamicType<ValueType: Encodable>(
 ) throws -> JavaScriptValue {
   let dynamicType = ~ValueType.self
 
-  if !(dynamicType is DynamicEncodableType) {
+  if !(dynamicType is DynamicCodableType<ValueType>) {
     return try dynamicType.castToJS(value, appContext: appContext, in: runtime)
   }
 
@@ -345,24 +345,3 @@ private final class JSArrayEncodingContainer: UnkeyedEncodingContainer {
   }
 }
 
-// MARK: - Helpers
-
-/**
- A coding key carrying just a string and an integer index. Used to extend
- `codingPath` with array indices in the unkeyed container, since unkeyed
- containers have no associated `Key` type to draw from.
- */
-private struct AnyCodingKey: CodingKey {
-  let stringValue: String
-  let intValue: Int?
-
-  init(stringValue: String) {
-    self.stringValue = stringValue
-    self.intValue = Int(stringValue)
-  }
-
-  init(intValue: Int) {
-    self.stringValue = String(intValue)
-    self.intValue = intValue
-  }
-}

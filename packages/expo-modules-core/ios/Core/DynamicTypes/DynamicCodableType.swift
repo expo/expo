@@ -3,29 +3,33 @@
 import ExpoModulesJSI
 
 /**
- Dynamic type for values conforming to `Encodable` protocol.
- Note that currently it can only encode from native to JavaScript values, thus cannot be used for arguments.
+ Dynamic type for values that conform to `Encodable` and/or `Decodable`. Native→JS
+ goes through `JSValueEncoder` (requires `Encodable`); JS→native goes through
+ `JSValueDecoder` (requires `Decodable`). Either direction throws if the wrapped
+ type doesn't conform to the protocol it needs.
  */
-internal struct DynamicEncodableType: AnyDynamicType {
-  static let shared = DynamicEncodableType()
-
-  func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
-    return type is Encodable
+internal struct DynamicCodableType<InnerType>: AnyDynamicType {
+  func wraps<AnyInnerType>(_ type: AnyInnerType.Type) -> Bool {
+    return type == InnerType.self
   }
 
   func equals(_ type: any AnyDynamicType) -> Bool {
-    // Just mocking it here as we don't really need this function and we rather want to keep it a singleton
-    return false
+    return type is Self
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    // TODO: Create DynamicDecodableType and reuse it here – that would work perfectly with Codable types
-    fatalError("DynamicEncodableType can only cast to JavaScript, not from")
+    guard let DecodableType = InnerType.self as? Decodable.Type else {
+      throw Conversions.CastingJSValueException<InnerType>(jsValue.kind)
+    }
+    let decoder = try JSValueDecoder(value: jsValue, appContext: appContext)
+    return try DecodableType.init(from: decoder)
   }
 
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
-    // TODO: Create DynamicDecodableType and reuse it here – that would work perfectly with Codable types
-    fatalError("DynamicEncodableType can only cast to JavaScript, not from")
+    if let value = value as? InnerType {
+      return value
+    }
+    throw Conversions.CastingException<InnerType>(value)
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
@@ -50,6 +54,6 @@ internal struct DynamicEncodableType: AnyDynamicType {
   }
 
   var description: String {
-    "Encodable"
+    "Codable<\(InnerType.self)>"
   }
 }

@@ -19,10 +19,10 @@ private func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if T.self == Void.self {
     return DynamicVoidType.shared
   }
-  if T.self is Encodable.Type {
-    // There is no dedicated `~` operator overload for encodables to avoid ambiguity
-    // when the type is both `AnyArgument` and `Encodable` (e.g. strings, numeric types).
-    return DynamicEncodableType.shared
+  if T.self is Encodable.Type || T.self is Decodable.Type {
+    // There is no dedicated `~` operator overload for Codable types to avoid ambiguity
+    // when the type is both `AnyArgument` and `Encodable`/`Decodable` (e.g. strings, numeric types).
+    return DynamicCodableType<T>()
   }
   return DynamicRawType(innerType: T.self)
 }
