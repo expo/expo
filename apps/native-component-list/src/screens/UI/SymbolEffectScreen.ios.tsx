@@ -185,10 +185,7 @@ function DiscreteRow({
   return (
     <HStack
       spacing={16}
-      modifiers={[
-        padding({ vertical: 10 }),
-        onTapGesture(() => incrementOnUI(trigger)),
-      ]}>
+      modifiers={[padding({ vertical: 10 }), onTapGesture(() => incrementOnUI(trigger))]}>
       <Image
         systemName={systemName}
         size={SYMBOL_SIZE}
@@ -206,11 +203,7 @@ function DiscreteRow({
         </Text>
       </VStack>
       <Spacer />
-      <Image
-        systemName="play.circle"
-        size={22}
-        color="#8E8E93"
-      />
+      <Image systemName="play.circle" size={22} color="#8E8E93" />
     </HStack>
   );
 }
@@ -233,10 +226,7 @@ function TransitionRow({
   return (
     <HStack
       spacing={16}
-      modifiers={[
-        padding({ vertical: 10 }),
-        onTapGesture(() => toggleOnUI(isActive)),
-      ]}>
+      modifiers={[padding({ vertical: 10 }), onTapGesture(() => toggleOnUI(isActive))]}>
       <Image
         systemName={systemName}
         size={SYMBOL_SIZE}
@@ -254,11 +244,7 @@ function TransitionRow({
         </Text>
       </VStack>
       <Spacer />
-      <Image
-        systemName="play.circle"
-        size={22}
-        color="#8E8E93"
-      />
+      <Image systemName="play.circle" size={22} color="#8E8E93" />
     </HStack>
   );
 }

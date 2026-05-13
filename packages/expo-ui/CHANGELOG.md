@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `symbolEffect` modifier. ([#45727](https://github.com/expo/expo/pull/45727) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
