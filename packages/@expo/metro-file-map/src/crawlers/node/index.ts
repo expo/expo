@@ -49,9 +49,12 @@ function find(
     fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
       activeCalls--;
       if (err) {
+        // NOTE(@kitten): This isn't necessarily a problem and we can ignore this
+        /*
         console.warn(
           `Error "${(err as any).code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
         );
+        */
       } else {
         for (let idx = 0; idx < entries.length; idx++) {
           const entry = entries[idx]!;
