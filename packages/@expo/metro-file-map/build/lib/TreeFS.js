@@ -13,10 +13,10 @@ const fs_1 = __importDefault(require("fs"));
 const invariant_1 = __importDefault(require("invariant"));
 const path_1 = __importDefault(require("path"));
 const constants_1 = __importDefault(require("../constants"));
+const RootPathUtils_1 = require("./RootPathUtils");
 const normalizePathSeparatorsToPosix_1 = __importDefault(require("./normalizePathSeparatorsToPosix"));
 const normalizePathSeparatorsToSystem_1 = __importDefault(require("./normalizePathSeparatorsToSystem"));
 const fallback_1 = require("../crawlers/node/fallback");
-const RootPathUtils_1 = require("./RootPathUtils");
 function isDirectory(node) {
     return node instanceof Map;
 }
