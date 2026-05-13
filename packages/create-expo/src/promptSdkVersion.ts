@@ -13,7 +13,7 @@ const debug = require('debug')('expo:init:sdk') as typeof console.log;
 // `expoGoSdkVersion` reports the SDK currently shipping in store Expo Go and
 // is treated as optional — when absent, the "For learning with Expo Go" choice
 // is hidden.
-const VERSIONS_URL = 'https://exp.host/--/api/v2/versions';
+const VERSIONS_URL = 'https://api.expo.dev/v2/versions';
 
 type VersionsResponse = {
   expoGoSdkVersion?: string;
