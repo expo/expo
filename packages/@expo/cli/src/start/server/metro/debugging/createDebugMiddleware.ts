@@ -2,10 +2,10 @@ import type { NextHandleFunction } from 'connect';
 import { WebSocketServer } from 'ws';
 
 import { createHandlersFactory } from './createHandlersFactory';
+import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 import { env, envIsHeadless } from '../../../../utils/env';
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 import type { TerminalReporter } from '../TerminalReporter';
-import { NETWORK_RESPONSE_STORAGE } from './messageHandlers/NetworkResponse';
 
 const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
 

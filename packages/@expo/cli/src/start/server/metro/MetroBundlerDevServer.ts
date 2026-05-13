@@ -1697,9 +1697,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         callback: async () => {
           // Run once, this prevents the TypeScript project prerequisite from running on every file change.
           off();
-          const { TypeScriptProjectPrerequisite } = await import(
-            '../../doctor/typescript/TypeScriptProjectPrerequisite.js'
-          );
+          const { TypeScriptProjectPrerequisite } =
+            await import('../../doctor/typescript/TypeScriptProjectPrerequisite.js');
 
           try {
             const req = new TypeScriptProjectPrerequisite(this.projectRoot);

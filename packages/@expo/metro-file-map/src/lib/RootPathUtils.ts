@@ -107,7 +107,6 @@ export class RootPathUtils {
       absolutePath.startsWith(nextPart, endOfMatchingPrefix) &&
       (absolutePath.length === endOfMatchingPrefix + nextLength ||
         absolutePath[endOfMatchingPrefix + nextLength] === path.sep);
-
     ) {
       // Move our matching pointer forward and load the next part.
       endOfMatchingPrefix += nextLength + 1;

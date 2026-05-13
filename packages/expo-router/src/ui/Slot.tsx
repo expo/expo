@@ -42,7 +42,9 @@ function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
   });
 }
 
-export interface Slot<Props = ViewProps, Ref = Component<ViewProps>>
-  extends ForwardRefExoticComponent<Props & RefAttributes<Ref>> {}
+export interface Slot<
+  Props = ViewProps,
+  Ref = Component<ViewProps>,
+> extends ForwardRefExoticComponent<Props & RefAttributes<Ref>> {}
 
 export const Slot: Slot = ShimSlotForReactNative(RUISlot) as Slot;

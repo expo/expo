@@ -5,6 +5,7 @@ import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import requireString from 'require-from-string';
 
+import { copyDirSync } from './vol-utils';
 import { getExpoConfigAsync } from '../../ExpoConfig';
 import type { HashSource, HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
@@ -19,7 +20,6 @@ import {
   getExpoCNGPatchSourcesAsync,
   sortExpoAutolinkingAndroidConfig,
 } from '../Expo';
-import { copyDirSync } from './vol-utils';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs/promises');

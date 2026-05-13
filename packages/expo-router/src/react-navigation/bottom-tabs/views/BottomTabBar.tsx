@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { BottomTabItem } from './BottomTabItem';
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {
   CommonActions,
@@ -22,7 +23,6 @@ import {
   useTheme,
 } from '../../native';
 import type { BottomTabBarProps, BottomTabDescriptorMap } from '../types';
-import { BottomTabItem } from './BottomTabItem';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { useIsKeyboardShown } from '../utils/useIsKeyboardShown';
 
