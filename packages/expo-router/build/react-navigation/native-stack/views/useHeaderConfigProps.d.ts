@@ -1,6 +1,6 @@
 import { type ScreenStackHeaderConfigProps } from 'react-native-screens';
-import type { NativeStackNavigationOptions } from '../types';
 import { type Route } from '../../native';
+import type { NativeStackNavigationOptions } from '../types';
 type Props = NativeStackNavigationOptions & {
     headerTopInsetEnabled: boolean;
     headerHeight: number;

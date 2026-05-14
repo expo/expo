@@ -292,6 +292,31 @@ export const clickable = (handler: () => void, options?: { indication?: boolean 
   });
 
 /**
+ * Makes the view respond to both click and long-click gestures.
+ * Wraps Compose's `Modifier.combinedClickable`. Useful for triggering a `DropdownMenu`
+ * on long-press while keeping a separate short-press action.
+ * @param handlers.onClick - Function to call on a short tap.
+ * @param handlers.onLongClick - Function to call on a long press.
+ * @param options - Optional configuration.
+ * @param options.indication - Whether to show a ripple indication. Defaults to `true`.
+ */
+export const combinedClickable = (
+  handlers: { onClick?: () => void; onLongClick?: () => void },
+  options?: { indication?: boolean }
+) =>
+  createModifierWithEventListener(
+    'combinedClickable',
+    (params: { event: 'click' | 'longClick' }) => {
+      if (params.event === 'click') {
+        handlers.onClick?.();
+      } else if (params.event === 'longClick') {
+        handlers.onLongClick?.();
+      }
+    },
+    { indication: options?.indication ?? true }
+  );
+
+/**
  * Makes the view selectable, like a radio button row.
  * @param selected - Whether the item is currently selected.
  * @param handler - Function to call when the item is clicked.

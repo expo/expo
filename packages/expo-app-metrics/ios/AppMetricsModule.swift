@@ -68,53 +68,38 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     AsyncFunction("getStoredEntries") { () -> [Any] in
-      let entries = await AppMetrics.storage.getAllEntries()
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(entries)
-      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
+      return []
     }
 
     AsyncFunction("clearStoredEntries") {
-      return try await AppMetrics.storage.clear()
+      // no-op
     }
 
-    AsyncFunction("getAllSessions") { () -> [Any] in
-      let sessions = await AppMetrics.storage.getAllSessions()
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(sessions.map(SessionCoder.init))
-      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
+    AsyncFunction("getAllSessions") { () -> [StoredSession] in
+      return try await AppMetricsActor.isolated {
+        return try AppMetrics.database?
+          .getAllSessionsWithChildren()
+          .map { StoredSession(from: $0) } ?? []
+      }.value
     }
 
-    AsyncFunction("addCustomMetricToSession") { (metric: JsMetric) in
+    AsyncFunction("addCustomMetricToSession") { (jsMetric: JsMetric) in
       try await AppMetricsActor.isolated {
-        AppMetrics.storage.findSession(byId: metric.sessionId)?.receiveMetric(metric.toMetric())
-      }
+        let metric = jsMetric.toMetric()
+        try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: jsMetric.sessionId))
+      }.value
     }
 
-    AsyncFunction("getMainSession") { () -> [String: Any]? in
-      // Snapshot + encode on the actor so we don't race metric writes, then
-      // return the encoded JSON `Data` (Sendable) for off-actor parsing.
-      let (mainSessionId, data) = try await AppMetricsActor.isolated { () -> (String, Data) in
-        let mainSession = AppMetrics.mainSession
-        let encoder = JSONEncoder()
-        encoder.dateEncodingStrategy = .iso8601
-        return (mainSession.id, try encoder.encode(SessionCoder(mainSession)))
-      }
-      guard var dict = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
-        return nil
-      }
-      // Inject `sessionId` on each metric so the payload matches the TS
-      // `Metric` shape, which carries sessionId per-metric
-      if let metrics = dict["metrics"] as? [[String: Any]] {
-        dict["metrics"] = metrics.map { metric -> [String: Any] in
-          var withSessionId = metric
-          withSessionId["sessionId"] = mainSessionId
-          return withSessionId
+    AsyncFunction("getMainSession") { () -> StoredSession? in
+      return try await AppMetricsActor.isolated {
+        let mainSessionId = AppMetrics.mainSession.id
+        guard let row = try AppMetrics.database?
+          .getAllSessionsWithChildren()
+          .first(where: { $0.session.id == mainSessionId }) else {
+          return nil
         }
-      }
-      return dict
+        return StoredSession(from: row)
+      }.value
     }
 
     Function("simulateCrashReport") {

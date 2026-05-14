@@ -62,11 +62,8 @@ final class VersionManager: EXVersionManagerObjC {
     self.appContext = appContext
     self.legacyModuleRegistry = legacyModuleRegistry
 
-    // The ConstantsProvider hardcodes `executionEnvironment ti "bare"` and reads `manifest` from
-    // EXConstants.bundle. In Expo Go we need `executionEnvironment to be
-    // "storeClient". EXConstantsBinding merges them on top of the
-    // base constants, so installing it here makes `Constants.expoConfig`,
-    // `Constants.executionEnvironment` resolve correctly.
+    // The default ConstantsProvider returns "bare" for `executionEnvironment`, Expo Go
+    // needs "storeClient" and the loaded app's manifest, which EXConstantsBinding provides.
     appContext.constants = EXConstantsBinding(params: params)
 
     registerExpoModules(appContext)

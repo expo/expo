@@ -36,7 +36,8 @@ import expo.modules.kotlin.views.OptimizedComposeProps
 
 @OptimizedComposeProps
 internal data class RNHostViewProps(
-  val matchContents: MutableState<Boolean?> = mutableStateOf(null)
+  val matchContents: MutableState<Boolean?> = mutableStateOf(null),
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
 @SuppressLint("ViewConstructor")
@@ -86,23 +87,26 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   @Composable
   override fun ComposableScope.Content() {
     val matchContents = props.matchContents.value ?: false
+    val scope: ComposableScope = this
 
     wrapperState.value?.let { wrapper ->
       val childView = childViewState.value ?: return@let
-      val modifier = if (matchContents) {
+      val sizingModifier = if (matchContents) {
         applySizeFromYogaNodeModifier(childView)
       } else {
         Modifier
           .fillMaxSize()
           .then(reportSizeToYogaNodeModifier())
       }
+      val modifiers = sizingModifier
+        .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher))
 
       AndroidView(
         factory = {
           (wrapper.parent as? ViewGroup)?.removeView(wrapper)
           wrapper
         },
-        modifier = modifier
+        modifier = modifiers
       )
     }
   }

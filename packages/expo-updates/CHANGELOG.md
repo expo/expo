@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.11 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [Android] Fix app restart when not using `ReactApplication` ([#45660](https://github.com/expo/expo/pull/45660) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 56.0.10 — 2026-05-13
 
 _This version does not introduce any user-facing changes._

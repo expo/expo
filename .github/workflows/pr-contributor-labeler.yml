@@ -48,17 +48,6 @@ jobs:
               return;
             }
 
-            // We rely on `author_association` from the webhook payload rather
-            // than the org-membership API because the bot token can only see
-            // *public* org members, which would mislabel ~70% of the team.
-            const INTERNAL = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
-            if (INTERNAL.has(pr.author_association)) {
-              core.info(`${username} is internal (${pr.author_association})`);
-              await applyLabel('contributor: internal', 'b6f3a4',
-                'PR author is a member, owner, or collaborator of the expo org');
-              return;
-            }
-
             async function isMember(org, user) {
               try {
                 await github.rest.orgs.checkMembershipForUser({ org, username: user });
@@ -86,6 +75,30 @@ jobs:
                 issue_number: pr.number,
                 labels: [name],
               });
+            }
+
+            async function labelInternal(reason) {
+              core.info(`${username} is internal (${reason})`);
+              await applyLabel('contributor: internal', 'b6f3a4',
+                'PR author is a member, owner, or collaborator of the expo org');
+            }
+
+            // Prefer author_association from the webhook payload — GitHub
+            // itself attests to the relationship, no token dependency.
+            const INTERNAL = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
+            if (INTERNAL.has(pr.author_association)) {
+              await labelInternal(pr.author_association);
+              return;
+            }
+
+            // Fall back to the org-membership API. The webhook reports
+            // author_association NONE for users whose expo org membership is
+            // private, so author_association alone misses ~70% of the team.
+            // expo-bot is itself an expo org member, so with read:org the
+            // membership check sees private members too.
+            if (await isMember('expo', username)) {
+              await labelInternal('private member, via API');
+              return;
             }
 
             await applyLabel('contributor: external', 'ededed',

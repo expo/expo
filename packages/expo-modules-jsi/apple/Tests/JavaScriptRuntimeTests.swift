@@ -118,6 +118,47 @@ struct JavaScriptRuntimeTests {
     #expect(result == 100)
   }
 
+  // The execute<R> overloads have a same-thread fast path and a cross-thread path that
+  // schedules the closure onto the JS thread and pumps the caller's run loop until it
+  // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
+  // exercise the fast path. The next three hop off the JS thread first to cover the
+  // cross-thread scheduling + run-loop pump.
+
+  @Test
+  func `execute sync from off-thread caller`() async throws {
+    let runtime = self.runtime
+    let result = try await Task.detached { @Sendable in
+      try runtime.execute { @JavaScriptActor in
+        runtime.global().hasProperty("Object") ? 1 : 0
+      }
+    }.value
+    #expect(result == 1)
+  }
+
+  @Test
+  func `execute blocking-async from off-thread caller`() async throws {
+    let runtime = self.runtime
+    let result = try await Task.detached { @Sendable in
+      try runtime.execute { @JavaScriptActor () async in
+        await Task.yield()
+        return runtime.global().hasProperty("Object") ? 1 : 0
+      }
+    }.value
+    #expect(result == 1)
+  }
+
+  @Test
+  func `execute sync rethrows from off-thread caller`() async throws {
+    let runtime = self.runtime
+    await #expect(throws: ScriptEvaluationError.self) {
+      try await Task.detached { @Sendable in
+        try runtime.execute { @JavaScriptActor in
+          try runtime.eval("invalid syntax +++")
+        }
+      }.value
+    }
+  }
+
   // MARK: - Host objects
 
   @Test

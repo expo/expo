@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.8'
+version = '56.0.9'
 
 expoModule {
   canBePublished false
@@ -18,7 +18,7 @@ android {
   namespace "expo.modules.logbox"
   defaultConfig {
     versionCode 1
-    versionName "56.0.8"
+    versionName "56.0.9"
     buildConfigField "boolean", "EXPO_UNSTABLE_LOG_BOX", isEnabled ? "true" : "false"
   }
 

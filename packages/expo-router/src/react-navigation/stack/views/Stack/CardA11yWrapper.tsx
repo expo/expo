@@ -35,10 +35,10 @@ export const CardA11yWrapper = ({
   return (
     <View
       aria-hidden={!focused}
-      pointerEvents={(animated ? inert : !focused) ? 'none' : 'box-none'}
       style={[
         StyleSheet.absoluteFill,
         {
+          pointerEvents: (animated ? inert : !focused) ? 'none' : 'box-none',
           // This is necessary to avoid unfocused larger pages increasing scroll area
           // The issue can be seen on the web when a smaller screen is pushed over a larger one
           overflow: active ? undefined : 'hidden',

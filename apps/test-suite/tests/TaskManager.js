@@ -23,7 +23,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('isTaskRegisteredAsync()', async () => {
+    t.describe('isTaskRegisteredAsync()', () => {
       t.beforeAll(async () => {
         await BackgroundFetch.registerTaskAsync(DEFINED_TASK_NAME);
       });
@@ -41,7 +41,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('getTaskOptionsAsync()', async () => {
+    t.describe('getTaskOptionsAsync()', () => {
       let taskOptions;
 
       t.it('returns null for unregistered tasks', async () => {
@@ -62,7 +62,7 @@ export async function test(t) {
       });
     });
 
-    t.describe('getRegisteredTasksAsync()', async () => {
+    t.describe('getRegisteredTasksAsync()', () => {
       let registeredTasks;
 
       t.it('returns empty array if there are no tasks', async () => {

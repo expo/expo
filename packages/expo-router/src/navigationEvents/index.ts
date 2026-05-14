@@ -1,5 +1,5 @@
 import type {
-  PageWillRender,
+  PagePreloadedEvent,
   PageFocusedEvent,
   PageBlurredEvent,
   PageRemoved,
@@ -7,7 +7,7 @@ import type {
 } from './types';
 
 export type {
-  PageWillRender,
+  PagePreloadedEvent,
   PageFocusedEvent,
   PageBlurredEvent,
   PageRemoved,
@@ -15,14 +15,14 @@ export type {
 } from './types';
 
 export type AnalyticsEvent =
-  | PageWillRender
+  | PagePreloadedEvent
   | PageFocusedEvent
   | PageBlurredEvent
   | PageRemoved
   | ActionDispatchedEvent;
 
 const availableEvents: AnalyticsEvent['type'][] = [
-  'pageWillRender',
+  'pagePreloaded',
   'pageFocused',
   'pageBlurred',
   'pageRemoved',

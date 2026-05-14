@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.7 — 2026-05-13
 
 ### 🐛 Bug fixes

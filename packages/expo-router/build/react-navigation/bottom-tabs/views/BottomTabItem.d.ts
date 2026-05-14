@@ -1,7 +1,7 @@
 import React from 'react';
 import { type ColorValue, type GestureResponderEvent, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
-import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 import { type Route } from '../../native';
+import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 type Props = {
     /**
      * The route object which should be specified by the tab.

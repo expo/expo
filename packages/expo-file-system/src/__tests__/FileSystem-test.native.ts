@@ -1,10 +1,12 @@
-import { File, Directory, Paths } from '../..';
+import { DownloadTask, File, Directory, Paths, UploadTask } from '../..';
 
 describe('expo-file-system new API', () => {
-  it('exports File, Directory, and Paths classes', () => {
+  it('exports File, Directory, Paths, and network task classes', () => {
     expect(File).toBeDefined();
     expect(Directory).toBeDefined();
     expect(Paths).toBeDefined();
+    expect(UploadTask).toBeDefined();
+    expect(DownloadTask).toBeDefined();
   });
 
   it('Paths.document returns a Directory with a mock URI', () => {

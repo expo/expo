@@ -14,7 +14,7 @@ import { SUPPORTED_TAB_BAR_ITEM_LABEL_VISIBILITY_MODES, type NativeTabsViewProps
 import { convertOptionsIconToScreensPropsIcon } from './utils/optionsIconConverter';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { disableIndicator, tabs, unstable_nativeProps } = props;
+  const { disableIndicator, tabBarRespectsIMEInsets, tabs, unstable_nativeProps } = props;
   const {
     android: rawAndroidProps,
     ios: _ignoredRawIosProps,
@@ -61,8 +61,10 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 
   return (
     <Tabs.Host
-      // TODO(@ubax): Adjust docs and add support for tabBarRespectsIMEInsets
-      android={{ ...rawAndroidProps }}
+      android={{
+        tabBarRespectsIMEInsets: !!tabBarRespectsIMEInsets,
+        ...rawAndroidProps,
+      }}
       tabBarHidden={props.hidden}
       {...rawHostRestProps}
       navStateRequest={{ selectedScreenKey, baseProvenance: provenance }}

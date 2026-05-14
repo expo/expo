@@ -35,6 +35,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Generate `AGENTS.md`, `CLAUDE.md`, and `.claude/settings.json` for new projects to provide AI coding agents with Expo-specific guidance and the `expo` skills plugin. Use `--no-agents-md` to skip. ([#44618](https://github.com/expo/expo/pull/44618) by [@EvanBacon](https://github.com/EvanBacon))
+- Prompt for the Expo SDK version when scaffolding the default template. ([#45369](https://github.com/expo/expo/pull/45369) by [@brentvatne](https://github.com/brentvatne))
 
 ### 💡 Others
 

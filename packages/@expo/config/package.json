@@ -1,6 +1,6 @@
 {
   "name": "@expo/config",
-  "version": "56.0.4",
+  "version": "56.0.5",
   "description": "A library for interacting with the app.json",
   "main": "build/index.js",
   "scripts": {
@@ -32,8 +32,8 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-plugins": "workspace:~56.0.4",
-    "@expo/config-types": "workspace:^56.0.3",
+    "@expo/config-plugins": "workspace:~56.0.5",
+    "@expo/config-types": "workspace:^56.0.4",
     "@expo/json-file": "workspace:^10.1.0",
     "@expo/require-utils": "workspace:^56.1.0",
     "deepmerge": "^4.3.1",

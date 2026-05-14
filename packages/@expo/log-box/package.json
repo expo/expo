@@ -1,6 +1,6 @@
 {
   "name": "@expo/log-box",
-  "version": "56.0.8",
+  "version": "56.0.9",
   "main": "app/index.ts",
   "scripts": {
     "start": "expo start",
@@ -20,7 +20,7 @@
     "export:web": "expo export -p web --no-minify"
   },
   "dependencies": {
-    "@expo/dom-webview": "workspace:^56.0.4",
+    "@expo/dom-webview": "workspace:^56.0.5",
     "anser": "^1.4.9",
     "stacktrace-parser": "^0.1.10"
   },
@@ -41,7 +41,7 @@
     "typescript-plugin-css-modules": "^5.2.0"
   },
   "peerDependencies": {
-    "@expo/dom-webview": "workspace:^56.0.4",
+    "@expo/dom-webview": "workspace:^56.0.5",
     "expo": "*",
     "react": "*",
     "react-native": "*"

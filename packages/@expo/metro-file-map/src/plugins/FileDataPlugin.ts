@@ -25,8 +25,7 @@ export interface FileDataPluginOptions extends FileMapPluginWorker {
  */
 export default class FileDataPlugin<
   PerFileData extends undefined | V8Serializable = undefined | V8Serializable,
-> implements FileMapPlugin<null, PerFileData>
-{
+> implements FileMapPlugin<null, PerFileData> {
   readonly name: string;
 
   #worker: FileMapPluginWorker;

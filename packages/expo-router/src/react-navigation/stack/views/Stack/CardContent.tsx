@@ -72,11 +72,7 @@ export function CardContent({ enabled, layout, style, ...rest }: Props) {
   }, [layout.height, layout.width]);
 
   return (
-    <View
-      {...rest}
-      pointerEvents="box-none"
-      style={[enabled && fill ? styles.page : styles.card, style]}
-    />
+    <View {...rest} style={[styles.boxNone, enabled && fill ? styles.page : styles.card, style]} />
   );
 }
 
@@ -87,5 +83,8 @@ const styles = StyleSheet.create({
   card: {
     flex: 1,
     overflow: 'hidden',
+  },
+  boxNone: {
+    pointerEvents: 'box-none',
   },
 });

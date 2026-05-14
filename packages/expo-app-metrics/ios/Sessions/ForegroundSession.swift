@@ -8,8 +8,4 @@ internal final class ForegroundSession: Session {
   init() {
     super.init(type: .foreground)
   }
-
-  required init(from decoder: any Decoder) throws {
-    try super.init(from: decoder)
-  }
 }

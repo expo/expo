@@ -65,9 +65,13 @@ class ScreenOrientationViewController: UIViewController {
 
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     if let vc = vcWithRNScreenOrientation() {
-      // react-native-screens has per-screen orientation set. Return that VC's
-      // supportedInterfaceOrientations — which RNScreens has swizzled to resolve
-      // the active screen's orientation mask.
+      // react-native-screens has per-screen orientation set. Defer to that VC's
+      // supportedInterfaceOrientations so RNScreens' swizzled implementation can
+      // resolve the active screen's orientation mask. When the matching VC is
+      // self, call super to avoid recursing into this override.
+      if vc === self {
+        return super.supportedInterfaceOrientations
+      }
       return vc.supportedInterfaceOrientations
     }
 

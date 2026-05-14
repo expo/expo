@@ -96,18 +96,21 @@ export class FileSystemWatcher {
   stop(): void {}
 }
 
-// SharedObject-based task classes.
-// In the test environment the polyfill `SharedObject` (which provides a working
-// EventEmitter with `addListener`/`emit`) is installed on `globalThis.expo`
-// by jest-expo's setup *before* mock modules are loaded.
-// We extend it so that the JS subclasses (`UploadTask` / `DownloadTask`) can
-// call `this.addListener(...)` and friends.
+// Native task handle mocks.
+// In the test environment the polyfill `SharedObject` is installed on
+// `globalThis.expo` by jest-expo's setup before mock modules are loaded.
+// Public `UploadTask` / `DownloadTask` instances compose these native handles,
+// so the handles provide SharedObject APIs while the public tasks expose only
+// their explicit facade methods.
 
 const { SharedObject } = globalThis.expo;
 
 export class FileSystemUploadTask extends SharedObject {
   start(_url: string, _file: any, _options: any): Promise<any> {
     return Promise.resolve({ body: '', status: 200, headers: {} });
+  }
+  release(): void {
+    super.release();
   }
   cancel(): void {}
 }
@@ -126,6 +129,9 @@ export class FileSystemDownloadTask extends SharedObject {
     _options?: any
   ): Promise<string | null> {
     return Promise.resolve('file:///mock/downloaded-file');
+  }
+  release(): void {
+    super.release();
   }
   cancel(): void {}
 }

@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 56.0.8 — 2026-05-13
+
+### 🎉 New features
+
+- Support configurable widgets. ([#45726](https://github.com/expo/expo/pull/45726) by [@jakex7](https://github.com/jakex7))
+- Improve RedBox messages. ([#45732](https://github.com/expo/expo/pull/45732) by [@jakex7](https://github.com/jakex7))
+
+### 🐛 Bug fixes
+
+- Improve environment configuration types. ([#45734](https://github.com/expo/expo/pull/45734) by [@jakex7](https://github.com/jakex7))
+
 ## 56.0.7 — 2026-05-13
 
 ### 🎉 New features

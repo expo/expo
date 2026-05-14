@@ -26,6 +26,11 @@ class MetaDataDelegate: NSObject, AVCaptureMetadataOutputObjectsDelegate, AVCapt
     self.barcodeProvider = barcodeProvider
   }
 
+  func updateSettings(_ settings: [String: [AVMetadataObject.ObjectType]], barcodeProviderEnabled: Bool) {
+    self.settings = settings
+    self.barcodeProviderEnabled = barcodeProviderEnabled
+  }
+
   func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
     guard let settings = settings[BARCODE_TYPES_KEY] else {
       return
