@@ -7,12 +7,25 @@ import { tryRenameAndDeleteAsync } from './file-store';
 
 const debug = require('debug')('expo:metro:cache') as typeof console.log;
 
+/** Pre-create shard directories all at once as a preflight task */
+function ensureShardDirs(root: string): Promise<void> {
+  const tasks: Promise<unknown>[] = [];
+  for (let i = 0; i < 256; i++) {
+    const shard = ('0' + i.toString(16)).slice(-2);
+    tasks.push(fs.promises.mkdir(path.join(root, shard), { recursive: true }));
+  }
+  return Promise.all(tasks).then(() => undefined);
+}
+
 class BinaryFileStore<T> extends UpstreamFileStore<T> {
   #root: string;
+  #prepare: Promise<void> | undefined;
 
   #packr = new Packr({
     useRecords: true,
     moreTypes: true,
+    // NOTE(@kitten): Experimentally validated to help performance with our cache file format
+    bundleStrings: true,
   });
 
   constructor(options: Options) {
@@ -20,15 +33,21 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
     this.#root = options.root;
   }
 
+  prepare() {
+    if (!this.#prepare) {
+      this.#prepare = ensureShardDirs(this.#root);
+    }
+    return this.#prepare;
+  }
+
   async get(key: Buffer): Promise<T | null | undefined> {
     let data: Buffer;
     try {
       data = await fs.promises.readFile(this.#getFilePath(key));
     } catch (err: any) {
-      if (err.code === 'ENOENT' || err instanceof SyntaxError) {
+      if (err.code === 'ENOENT') {
         return null;
       }
-
       throw err;
     }
     return this.#packr.decode(data);
@@ -41,21 +60,13 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
       return;
     }
 
-    const filePath = this.#getFilePath(key);
     const buffer = this.#packr.encode(value);
-    try {
-      await fs.promises.writeFile(filePath, buffer);
-    } catch (err: any) {
-      if (err.code === 'ENOENT') {
-        fs.mkdirSync(path.dirname(filePath), { recursive: true });
-        await fs.promises.writeFile(filePath, buffer);
-      } else {
-        throw err;
-      }
-    }
+    await this.prepare();
+    await fs.promises.writeFile(this.#getFilePath(key), buffer);
   }
 
   clear() {
+    this.#prepare = undefined;
     if (!tryRenameAndDeleteAsync(this.#root)) {
       super.clear();
     }
