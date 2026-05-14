@@ -26,4 +26,4 @@ export async function preventAutoHideAsync() {
     }
     return SplashModule.preventAutoHideAsync();
 }
-//# sourceMappingURL=index.native.js.map
+//# sourceMappingURL=SplashScreen.native.js.map

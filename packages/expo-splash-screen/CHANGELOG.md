@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `exports` field resolving to the web stubs on native, making functions like `preventAutoHideAsync` no-ops.
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-13
