@@ -2,12 +2,20 @@ package expo.modules.appmetrics
 
 import android.content.Context
 import expo.modules.appmetrics.appstartup.AppStartupManager
+import expo.modules.appmetrics.logevents.LogEventOptions
+import expo.modules.appmetrics.logevents.Severity
+import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
+import expo.modules.appmetrics.logevents.validateEventBody
+import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.JsSession
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
+import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -23,7 +31,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
 
 class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val context: Context
@@ -67,6 +74,35 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         scope.launch {
           saveStartupMetricsIfNotSaved()
+        }
+      }
+
+      Function("logEvent") { name: String, options: LogEventOptions? ->
+        val validatedName = validateEventName(name) ?: return@Function
+        val validatedBody = validateEventBody(options?.body)
+        val sanitized = sanitizeLogEventAttributes(options?.attributes)
+        val severity = options?.severity ?: Severity.INFO
+
+        scope.launch {
+          // Attach any pending startup metrics first so the session has them
+          // alongside whatever's being logged. The session row itself is
+          // already persisted eagerly in `OnCreate`, so this is purely about
+          // ordering startup-metric writes ahead of caller-driven log events.
+          saveStartupMetricsIfNotSaved()
+          sessionManager.addLogs(
+            listOf(
+              LogRecord(
+                sessionId = appSessionId,
+                timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
+                name = validatedName,
+                body = validatedBody,
+                severity = severity.rawValue,
+                attributes = sanitized.attributes?.let { JsonAny.encodeMapToJsonString(it) },
+                droppedAttributesCount = sanitized.droppedCount
+              )
+            ),
+            sessionId = appSessionId
+          )
         }
       }
 
@@ -134,30 +170,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
 
-      Function("startSession") {
-        val sessionId = sessionManager.createSessionId()
-        val timestamp = TimeUtils.getCurrentTimestampInISOFormat()
-        val sessionMetadata = metadata
-
-        scope.launch {
-          sessionManager.startSessionWithIdAt(
-            sessionId = sessionId,
-            timestamp = timestamp,
-            metadata = sessionMetadata
-          )
-        }
-
-        return@Function sessionId
-      }
-
-      Function("stopSession") { sessionId: String ->
-        scope.launch {
-          sessionManager.stopSession(sessionId = sessionId)
-        }
-      }
-
-      AsyncFunction("addCustomMetricToSession") Coroutine { sessionId: String, metric: PartialMetric ->
-        sessionManager.addMetrics(listOf(metric.toMetric(sessionId)), sessionId = sessionId)
+      AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
+        sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
       }
 
       AsyncFunction("getMainSession") Coroutine { ->
@@ -180,9 +194,9 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     if (UpdatesStateEvent.fromMap(event)?.type == UpdatesStateEvent.EventType.DownloadCompleteWithUpdate) {
       updatesMonitoring.downloadTimeMetric(subscription)?.let { metric ->
         scope.launch {
-          // Ensure the session row exists before inserting the metric,
-          // since the session may not have been saved yet if the download
-          // completes before markInteractive or app backgrounding.
+          // Attach any pending startup metrics first so the download-time
+          // metric lands alongside them. The session row itself is already
+          // persisted eagerly in `OnCreate`.
           saveStartupMetricsIfNotSaved()
           sessionManager.addMetrics(listOf(metric), sessionId = appSessionId)
         }
@@ -199,25 +213,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       didSaveStartupMetrics = true
     }
   }
-}
-
-data class PartialMetric(
-  @Field val category: String,
-  @Field val name: String,
-  @Field val value: Double,
-  @Field val routeName: String? = null,
-  @Field val params: Map<String, Any>? = null
-) : Record {
-  fun toMetric(sessionId: String): Metric =
-    Metric(
-      sessionId = sessionId,
-      timestamp = TimeUtils.getCurrentTimestampInISOFormat(),
-      category = category,
-      name = name,
-      value = value,
-      routeName = routeName,
-      params = params?.let { Json.encodeToString(it) }
-    )
 }
 
 data class MetricAttributes(

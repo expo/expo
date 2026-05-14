@@ -14,6 +14,7 @@ import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
+import { handleNavigationOnReady } from './navigationEvents/navigation';
 import { Screen } from './primitives';
 import type { LinkingOptions, NavigationAction } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
@@ -88,6 +89,12 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
+// TODO(@ubax): Refactor onReady logic and use listeners pattern
+function onNavigationReady() {
+  handleNavigationOnReady();
+  store.onReady();
+}
+
 function ContextNavigator({
   context,
   location: initialLocation = initialUrl,
@@ -154,7 +161,7 @@ function ContextNavigator({
         onUnhandledAction={onUnhandledAction}
         onStateChange={store.onStateChange}
         documentTitle={documentTitle}
-        onReady={store.onReady}>
+        onReady={onNavigationReady}>
         <ServerContext.Provider value={serverContext}>
           <WrapperComponent>
             <Content />

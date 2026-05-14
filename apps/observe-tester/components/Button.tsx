@@ -9,6 +9,7 @@ type ButtonColors = {
   backgroundColor?: string;
   borderColor?: string;
   textColor?: string;
+  descriptionColor?: string;
 };
 
 type ButtonProps = {
@@ -42,6 +43,11 @@ export function Button({
     : (colors?.backgroundColor ?? tokens.background);
   const borderColor = disabled ? disabledTokens.border : (colors?.borderColor ?? tokens.border);
   const textColor = disabled ? disabledTokens.text : (colors?.textColor ?? tokens.text);
+  // text.tertiary reads as muted on light button backgrounds, but disappears on the dark primary
+  // fill. Default the description to a translucent shade of the title color for primary.
+  const descriptionColor =
+    colors?.descriptionColor ??
+    (theme === 'primary' ? 'rgba(255, 255, 255, 0.85)' : styleguide.text.tertiary);
 
   return (
     <Pressable
@@ -56,9 +62,7 @@ export function Button({
       <View style={styles.labelContainer}>
         <Text style={[styles.text, { color: textColor }]}>{title}</Text>
         {description ? (
-          <Text style={[styles.description, { color: styleguide.text.tertiary }]}>
-            {description}
-          </Text>
+          <Text style={[styles.description, { color: descriptionColor }]}>{description}</Text>
         ) : null}
       </View>
     </Pressable>

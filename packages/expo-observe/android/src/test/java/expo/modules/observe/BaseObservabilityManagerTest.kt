@@ -25,6 +25,7 @@ class BaseObservabilityManagerTest {
   private lateinit var mockSessionManager: SessionManager
   private lateinit var mockEventDispatcher: EventDispatcher
   private lateinit var mockPendingMetricsManager: PendingMetricsManager
+  private lateinit var mockPendingLogsManager: expo.modules.observe.storage.PendingLogsManager
 
   private val testProjectId = "test-project-123"
   private val testBaseUrl = "https://test.example.com/"
@@ -35,6 +36,7 @@ class BaseObservabilityManagerTest {
     mockSessionManager = mockk(relaxed = true)
     mockEventDispatcher = mockk(relaxed = true)
     mockPendingMetricsManager = mockk(relaxed = true)
+    mockPendingLogsManager = mockk(relaxed = true)
 
     // Default to enabled so existing tests aren't short-circuited
     mockkObject(ObservePreferences)
@@ -753,7 +755,7 @@ class BaseObservabilityManagerTest {
   // region Cleanup tests
 
   @Test
-  fun `cleanup prunes pending metrics and stale sessions`() =
+  fun `cleanup prunes pending metrics, pending logs, stale sessions, and stale logs`() =
     runTest {
       // Arrange
       val manager = createManager()
@@ -763,7 +765,9 @@ class BaseObservabilityManagerTest {
 
       // Assert
       coVerify(exactly = 1) { mockPendingMetricsManager.cleanupOldPendingMetrics() }
+      coVerify(exactly = 1) { mockPendingLogsManager.cleanupOldPendingLogs() }
       coVerify(exactly = 1) { mockSessionManager.cleanupOldSessions() }
+      coVerify(exactly = 1) { mockSessionManager.cleanupOldLogs() }
     }
 
   // endregion
@@ -1009,6 +1013,7 @@ class BaseObservabilityManagerTest {
       context = mockContext,
       sessionManager = mockSessionManager,
       pendingMetricsManager = mockPendingMetricsManager,
+      pendingLogsManager = mockPendingLogsManager,
       projectId = testProjectId,
       baseUrl = testBaseUrl,
       isDebugBuild = isDebugBuild,

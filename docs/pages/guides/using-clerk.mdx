@@ -9,8 +9,10 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { TabsGroup, Tabs, Tab } from '~/ui/components/Tabs';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+<TabsGroup>
 
 [Clerk](https://clerk.com/expo-authentication) is an authentication and user management platform that provides sign-up, sign-in, multi-factor authentication, social sign-in, organizations, and a hosted user database. The [`@clerk/expo`](https://www.npmjs.com/package/@clerk/expo) SDK gives you React hooks, control components, and prebuilt native UI components that render with Jetpack Compose on Android and SwiftUI on iOS.
 
@@ -137,7 +139,7 @@ In Core 3, `publishableKey` is required on `<ClerkProvider>` for Expo apps. Envi
 
 The next step depends on which approach you chose. The tabs below show the minimum code for each.
 
-<Tabs tabs={['Native UI components', 'JavaScript with native sign-in', 'JavaScript only (Expo Go)']}>
+<Tabs tabs={['Native UI components', 'JavaScript with native sign-in', 'JavaScript-only (Expo Go)']}>
 
 <Tab>
 
@@ -444,3 +446,5 @@ For the JavaScript-only approach, run the following command and open the project
   href="https://clerk.com/docs/guides/development/deployment/expo"
   Icon={BookOpen02Icon}
 />
+
+</TabsGroup>

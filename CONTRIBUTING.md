@@ -41,7 +41,7 @@ If you plan to contribute to the documentation, run `npm run setup:docs`.
 
 ### Set up Android
 
-If you plan to contribute to Android, run `npm run setup:native`. This command does the following for you:
+If you plan to contribute to Android, run `pnpm run setup:native`. This command does the following for you:
 
 - Downloads submodules (like `react-native`) with `git submodule update --init`
 - Ensures pnpm is installed
@@ -62,6 +62,23 @@ export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 ```
 
 `ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
+
+### (Optional) Speed up Android native builds with ccache
+
+[ccache](https://ccache.dev/) caches C/C++ compilation results so rebuilds of native code are nearly instant when source files haven't changed.
+
+1. Install ccache: `brew install ccache`
+2. Add to your `~/.zshrc` (or `~/.bashrc`):
+   ```sh
+   export CMAKE_C_COMPILER_LAUNCHER="ccache"
+   export CMAKE_CXX_COMPILER_LAUNCHER="ccache"
+   ```
+3. Enable precompiled header support (required by some modules like `expo-modules-core`):
+   ```sh
+   ccache -o sloppiness=pch_defines,time_macros
+   ```
+
+The repo's `.envrc` automatically sets `CCACHE_BASEDIR` via direnv, so cache is shared across git worktrees with no extra setup.
 
 ### Set up iOS
 

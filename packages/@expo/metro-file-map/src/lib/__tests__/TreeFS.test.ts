@@ -88,6 +88,35 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
     expect(tfs.exists(p('/project/link-to-nowhere'))).toBe(false);
   });
 
+  describe('linkStats edge cases (followLeaf=false)', () => {
+    test('returns type "l" for a symlink to a directory', () => {
+      // link-to-foo → foo (a directory). followLeaf=false returns the symlink.
+      expect(tfs.linkStats(p('/project/link-to-foo'))).toMatchObject({ fileType: 'l' });
+    });
+
+    test('returns type "l" for a broken symlink at the leaf', () => {
+      // followLeaf=false: leaf symlink is returned regardless of target validity.
+      expect(tfs.linkStats(p('/project/link-to-nowhere'))).toMatchObject({ fileType: 'l' });
+    });
+
+    test('resolves non-leaf symlinks, returns terminal symlink as "l"', () => {
+      // link-to-foo is followed (non-leaf); link-to-bar.js at leaf is returned as 'l'.
+      expect(tfs.linkStats(p('/project/link-to-foo/link-to-bar.js'))).toMatchObject({
+        fileType: 'l',
+      });
+    });
+
+    test('returns null when a non-leaf segment is a regular file', () => {
+      expect(tfs.linkStats(p('/project/bar.js/no-such'))).toBeNull();
+    });
+
+    test('cycling symlink at leaf returns "l" without consulting cycle detection', () => {
+      // followLeaf=false short-circuits at the leaf — the symlink target isn't
+      // resolved, so the cycle never has a chance to be observed.
+      expect(tfs.linkStats(p('/project/link-cycle-1'))).toMatchObject({ fileType: 'l' });
+    });
+  });
+
   test('implements linkStats()', () => {
     expect(tfs.linkStats(p('/project/link-to-foo/another.js'))).toEqual({
       fileType: 'f',
@@ -198,6 +227,15 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         exists: false,
         missing: p('/deep/project/root/baz.js'),
       });
+    });
+
+    test('symlink to itself returns missing (cycle detection)', () => {
+      expect(tfs.lookup(p('/project/link-to-self'))).toMatchObject({ exists: false });
+    });
+
+    test('two-node symlink cycle returns missing from either entry point', () => {
+      expect(tfs.lookup(p('/project/link-cycle-1'))).toMatchObject({ exists: false });
+      expect(tfs.lookup(p('/project/link-cycle-2'))).toMatchObject({ exists: false });
     });
   });
 
@@ -686,6 +724,32 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
       expect(nullMtimeTfs.getMtimeByNormalPath(p('a.js'))).toBeNull();
     });
+
+    test('skipFallback: does not invoke the fallback filesystem', () => {
+      // getMtimeByNormalPath passes skipFallback: true. Even when a fallback FS
+      // is configured, missing paths must return null without consulting it.
+      const mockFallback = {
+        lookup: jest.fn().mockReturnValue(null),
+        readdir: jest.fn().mockReturnValue(null),
+      };
+      const fbTfs = new TreeFS({
+        rootDir: p('/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('existing.js'), [555, 5, 0, null, 0, null]],
+        ]),
+        fallbackFilesystem: mockFallback,
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+      // In-tree path: returns mtime, no fallback call.
+      expect(fbTfs.getMtimeByNormalPath(p('existing.js'))).toBe(555);
+      // Missing path: returns null, fallback not consulted.
+      expect(fbTfs.getMtimeByNormalPath(p('missing.js'))).toBeNull();
+      expect(fbTfs.getMtimeByNormalPath(p('missing/dir/file.js'))).toBeNull();
+      expect(mockFallback.lookup).not.toHaveBeenCalled();
+      expect(mockFallback.readdir).not.toHaveBeenCalled();
+    });
   });
 
   describe('hierarchicalLookup', () => {
@@ -845,6 +909,84 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         expect(invalidatedBy).toEqual(new Set(expectedInvalidatedBy.map(p)));
       }
     );
+
+    test('subpathType "d": matches directory child', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a'), 'b', {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'd',
+        })
+      ).toEqual({ absolutePath: p('/A/B/C/a/b'), containerRelativePath: '' });
+      expect(invalidatedBy).toEqual(new Set());
+    });
+
+    test('subpathType "d": skips file ancestor, matches directory ancestor', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a/b/c/d/foo.js'), 'package.json', {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'd',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/b/package.json'),
+        containerRelativePath: p('c/d/foo.js'),
+      });
+      expect(invalidatedBy).toEqual(
+        new Set([
+          p('/A/B/C/a/b/c/d/foo.js'),
+          p('/A/B/C/a/b/c/d/package.json'),
+          p('/A/B/C/a/b/c/package.json'),
+        ])
+      );
+    });
+
+    test('multi-segment subpath resolves against Phase 1 candidate', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a/n_m/pkg/foo.js'), p('subpath/package.json'), {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'f',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/n_m/pkg/subpath/package.json'),
+        containerRelativePath: 'foo.js',
+      });
+    });
+
+    test('multi-segment subpath resolves against Phase 2 candidate above root', () => {
+      // Phase 2 candidate ends in `..`, so `start` is not forwarded to the
+      // slow path — joinNormalToRelative would otherwise collapse the suffix.
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/foo'), p('C/a/package.json'), {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'f',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/package.json'),
+        containerRelativePath: 'foo',
+      });
+      expect(invalidatedBy).toEqual(new Set([p('/A/B/foo')]));
+    });
+
+    test('symlink at subpath resolves via slow path', () => {
+      const invalidatedBy = new Set<string>();
+      expect(
+        hlTfs.hierarchicalLookup(p('/A/B/C/a/1/foo.js'), 'package.json', {
+          breakOnSegment: 'n_m',
+          invalidatedBy,
+          subpathType: 'f',
+        })
+      ).toEqual({
+        absolutePath: p('/A/B/C/a/1/real-package.json'),
+        containerRelativePath: 'foo.js',
+      });
+    });
   });
 
   describe('matchFiles', () => {
@@ -1973,23 +2115,22 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         const fbTfs = makeFallbackTfs({
           serverRoot: p('/project'),
           files: new Map([
-            [p('node_modules/react'), [0, 0, 0, null, '../../.bun-cache/react', null] as any],
+            // Canonical normal target for /.bun-cache/react under rootDir
+            // /project is '../.bun-cache/react' (rootDepth=1).
+            [p('node_modules/react'), [0, 0, 0, null, '../.bun-cache/react', null] as any],
           ]),
         });
 
         mockFallback.readdir.mockImplementation(
           (normalPath: string, _absolutePath: string, dirNode: any) => {
             const result = dirNode ?? new Map();
-            if (normalPath === p('../..')) {
+            if (normalPath === p('..')) {
               if (!result.has('.bun-cache')) {
                 result.set('.bun-cache', markFallbackDir(new Map()));
               }
               return markFallbackDir(result, 1);
             }
-            if (
-              normalPath === p('../../.bun-cache/react') ||
-              normalPath === p('node_modules/react')
-            ) {
+            if (normalPath === p('../.bun-cache/react') || normalPath === p('node_modules/react')) {
               result.set('package.json', [100, 5, 0, null, 0, null]);
               result.set('index.js', [100, 5, 0, null, 0, null]);
               return markFallbackDir(result, 1);
@@ -1998,7 +2139,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           }
         );
         mockFallback.lookup.mockImplementation((normalPath: string) => {
-          if (normalPath === p('../../.bun-cache/react')) {
+          if (normalPath === p('../.bun-cache/react')) {
             return markFallbackDir(new Map<string, any>());
           }
           return null;
@@ -2013,7 +2154,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         );
         expect(found).not.toBeNull();
         expect(found?.absolutePath).toBe(
-          mockPathModule.resolve(p('/project'), p('../../.bun-cache/react/package.json'))
+          mockPathModule.resolve(p('/project'), p('../.bun-cache/react/package.json'))
         );
       });
 
@@ -2497,4 +2638,70 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
   });
+
+  if (platform === 'win32') {
+    describe('cross-drive paths (Windows)', () => {
+      let tfsCD: TreeFSType;
+      const externalMeta: FileMetadata = [123, 4, 0, null, 0, 'external'];
+
+      beforeEach(() => {
+        tfsCD = new TreeFS({
+          rootDir: 'C:\\project',
+          files: new Map<CanonicalPath, FileMetadata>([
+            ['bar.js', [234, 3, 0, null, 0, 'bar']],
+            // Canonical form of 'D:\\external\\file.js' for rootDepth=1.
+            ['..\\..\\D:\\external\\file.js', externalMeta],
+          ]),
+          processFile: async () => {
+            throw new Error('Not implemented');
+          },
+        });
+      });
+
+      test('exists() finds a seeded cross-drive file', () => {
+        expect(tfsCD.exists('D:\\external\\file.js')).toBe(true);
+      });
+
+      test('lookup() returns the absolute drive-prefixed path as realPath', () => {
+        expect(tfsCD.lookup('D:\\external\\file.js')).toMatchObject({
+          exists: true,
+          type: 'f',
+          realPath: 'D:\\external\\file.js',
+        });
+      });
+
+      test('getAllFiles() enumerates cross-drive and in-tree files side by side', () => {
+        expect(tfsCD.getAllFiles().sort()).toEqual([
+          'C:\\project\\bar.js',
+          'D:\\external\\file.js',
+        ]);
+      });
+
+      test('addOrModify() accepts a new cross-drive absolute path', () => {
+        tfsCD.addOrModify('D:\\added\\later.js', [1, 1, 0, null, 0, 'later']);
+        expect(tfsCD.exists('D:\\added\\later.js')).toBe(true);
+        expect(tfsCD.lookup('D:\\added\\later.js')).toMatchObject({
+          exists: true,
+          type: 'f',
+          realPath: 'D:\\added\\later.js',
+        });
+      });
+
+      test('remove() deletes a cross-drive entry and prunes empty ancestor dirs', () => {
+        tfsCD.remove('D:\\external\\file.js');
+        expect(tfsCD.exists('D:\\external\\file.js')).toBe(false);
+        // Intermediate 'D:' / 'external' directory nodes pruned.
+        expect(tfsCD.lookup('D:\\external').exists).toBe(false);
+        expect(tfsCD.exists('C:\\project\\bar.js')).toBe(true);
+      });
+
+      test('lookup() reports missing for non-existent cross-drive path', () => {
+        expect(tfsCD.lookup('D:\\external\\missing.js')).toMatchObject({
+          exists: false,
+        });
+        // A different drive (E:) was never seeded — also missing.
+        expect(tfsCD.exists('E:\\anywhere.js')).toBe(false);
+      });
+    });
+  }
 });

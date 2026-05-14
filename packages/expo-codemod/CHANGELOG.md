@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-11
+
+### 🎉 New features
+
+- Warn when no paths are specified ([#45411](https://github.com/expo/expo/pull/45411) by [@Ubax](https://github.com/Ubax))
+
 ## 56.0.2 — 2026-05-08
 
 ### 🎉 New features

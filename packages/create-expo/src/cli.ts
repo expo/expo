@@ -68,9 +68,8 @@ async function run() {
     );
   }
 
-  const { AnalyticsEventPhases, AnalyticsEventTypes, flushAsync, track } = await import(
-    './telemetry'
-  );
+  const { AnalyticsEventPhases, AnalyticsEventTypes, flushAsync, track } =
+    await import('./telemetry');
   try {
     const parsed = await resolveStringOrBooleanArgsAsync(argv, rawArgsMap, {
       '--template': Boolean,

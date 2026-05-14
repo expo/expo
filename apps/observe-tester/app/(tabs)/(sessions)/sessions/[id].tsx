@@ -1,6 +1,7 @@
 import AppMetrics, { type Session } from 'expo-app-metrics';
+import { useObserve } from 'expo-observe';
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Platform, Pressable, ScrollView, StyleSheet, Text } from 'react-native';
 
 import { CallStackTreeView } from '@/components/CallStackTreeView';
@@ -19,6 +20,13 @@ export default function SessionDetail() {
   const [session, setSession] = useState<Session | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [showRawJson, setShowRawJson] = useState(false);
+
+  const { markInteractive } = useObserve();
+  useEffect(() => {
+    setTimeout(() => {
+      markInteractive();
+    }, 100);
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

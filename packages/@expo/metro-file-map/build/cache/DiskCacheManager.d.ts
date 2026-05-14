@@ -5,6 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { BuildParameters, CacheData, CacheManager, CacheManagerFactoryOptions, CacheManagerWriteOptions } from '../types';
+declare global {
+    namespace NodeJS {
+        interface Process {
+            isBun?: boolean;
+        }
+    }
+}
 interface AutoSaveOptions {
     readonly debounceMs: number;
 }

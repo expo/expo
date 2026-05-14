@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 56.0.2 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- Fix `'..'` at root handling to align with Metro ([#45687](https://github.com/expo/expo/pull/45687) by [@kitten](https://github.com/kitten))
+- Fork disk cache binary file for Bun ([#45677](https://github.com/expo/expo/pull/45677) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Forcefully exclude `.cxx/` folders from file discovery and watchers ([#45722](https://github.com/expo/expo/pull/45722) by [@kitten](https://github.com/kitten))
+
+## 56.0.1 — 2026-05-11
+
+### 🐛 Bug fixes
+
+- Fix Windows path resolution for cross-device resolved paths ([#45648](https://github.com/expo/expo/pull/45648) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Add hints and start node for `TreeFS.hierarchicalLookup` improving performance for metro's `getClosestPackage` lookups ([#45650](https://github.com/expo/expo/pull/45650) by [@kitten](https://github.com/kitten))
+- Refactor `TreeFS` to make tree walkers monomorphic and ditch generators ([#45651](https://github.com/expo/expo/pull/45651) by [@kitten](https://github.com/kitten))
+
 ## 56.0.0 — 2026-05-08
 
 ### 💡 Others

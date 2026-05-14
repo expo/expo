@@ -131,11 +131,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+  {
     name: 'Community MaskedView replacement',
     route: 'ui/community-masked-view',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
+    name: 'Community Menu replacement',
+    route: 'ui/community-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMenuScreen'));
     },
   },
   {

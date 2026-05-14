@@ -13,6 +13,8 @@ import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-conf
 import { Terminal } from '@expo/metro/metro-core';
 import type { createStableModuleIdFactory } from '@expo/metro-config';
 import { getDefaultConfig } from '@expo/metro-config';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
@@ -25,7 +27,7 @@ import { replaceMetroFileMap } from './createFileMap-fork';
 import { attachAtlasAsync } from './debugging/attachAtlas';
 import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
-import { runServer, type SecureServerOptions } from './runServer-fork';
+import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 import { events, shouldReduceLogs } from '../../../events';
 import { Log } from '../../../log';
@@ -125,6 +127,16 @@ class LogRespectingTerminal extends Terminal {
     console.info = sendLog;
     console.warn = sendStderr;
     console.error = sendStderr;
+
+    // NOTE(@kitten): We flush the stderr queue immediately when we're about to exit
+    process.on('exit', () => {
+      if (!this.#drainingStderr && this.#stderrQueue.length) {
+        this.#drainingStderr = true;
+        this.status('');
+        const lines = this.#stderrQueue.splice(0);
+        process.stderr.write(lines.join('\n') + '\n');
+      }
+    });
   }
 
   /** Write to stderr without corrupting Terminal's cursor tracking. */
@@ -358,6 +370,7 @@ export async function instantiateMetroAsync(
   metro: MetroServer;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
   server: http.Server;
+  address: ServerAddressInfo | null;
   middleware: any;
   messageSocket: MessageSocket;
 }> {
@@ -494,6 +507,12 @@ export async function instantiateMetroAsync(
     );
   };
 
+  // Layered on top of the prune patch above. Both fresh worker results
+  // and cache hits flow through `Bundler.transformFile`, so wrapping
+  // here covers both.
+  patchTransformFileForPackedMaps(metro.getBundler().getBundler());
+  patchMetroSourceMapStringForPackedMaps();
+
   setEventReporter(eventsSocket.reportMetroEvent);
 
   // This function ensures that modules in source maps are sorted in the same
@@ -605,6 +624,7 @@ export async function instantiateMetroAsync(
     server,
     middleware,
     messageSocket: messagesSocket,
+    address,
   };
 }
 

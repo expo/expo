@@ -14,9 +14,6 @@ template<typename T>
 concept HasCthis = requires(T &t) { t->cthis(); };
 
 template<typename T>
-concept HasToStdString = requires(T &t) { t->toStdString(); };
-
-template<typename T>
 concept HasValue = requires(T &t) { t->value(); };
 
 template<typename T>
@@ -24,6 +21,9 @@ concept HasGetRegion = requires(T &t, jsize s) { t->getRegion(s, s); };
 
 template<typename T>
 concept IsJBoolean = std::is_same_v<jni_deref_t<T>, jni::JBoolean>;
+
+template<typename T>
+concept IsJString = std::is_same_v<jni_deref_t<T>, jni::JString>;
 
 template<typename T>
 concept JniRef =

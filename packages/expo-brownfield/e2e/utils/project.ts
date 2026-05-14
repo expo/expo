@@ -134,32 +134,55 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
   ]);
 };
 
+const listWorkspaces = async (): Promise<Record<string, string>> => {
+  const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
+    cwd: path.join(__dirname, '../../'),
+  });
+  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
+  return workspaces.reduce((acc, entry) => {
+    acc[entry.name] = entry.path;
+    return acc;
+  }, {} as Record<string, string>);
+};
+
 /**
  * Install `expo-brownfield` package from a tarball
  */
 const installPackage = async (projectRoot: string) => {
-  const packageRoot = path.join(__dirname, '../../');
-  let tarballs = await glob('*.tgz', { cwd: packageRoot });
-  if (tarballs.length === 0) {
-    await executeCommandAsync(packageRoot, 'pnpm', ['pack', '--json']);
-    tarballs = await glob('*.tgz', { cwd: packageRoot });
-    if (tarballs.length === 0) {
-      throw new Error(`No tarballs found in package directory: ${packageRoot}`);
-    }
-  }
+  const packageJsonPath = path.join(projectRoot, 'package.json');
+  const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
 
-  const packageTarball = tarballs[0];
-  const packageTarballPath = path.join(packageRoot, packageTarball);
-  await fs.promises.cp(packageTarballPath, path.join(projectRoot, packageTarball), {
-    recursive: true,
-    force: true,
-  });
+  packageJson.resolutions ??= {};
+  packageJson.dependencies ??= {};
 
   // Strip npm_config_minimum_release_age inherited from the monorepo's pnpm-workspace.yaml,
   // as it blocks recently published packages without the matching exclusion list.
   const { npm_config_minimum_release_age, ...processEnv } = process.env;
 
-  await spawnAsync('pnpm', ['add', `./${packageTarball}`], {
+  const packageRoot = path.join(__dirname, '../../');
+  packageJson.resolutions['expo-brownfield'] = `link:${path.relative(projectRoot, packageRoot)}`;
+  packageJson.dependencies['expo-brownfield'] = '*';
+
+  // NOTE(@kitten): Forcefully links all monorepo packages
+  // The tests will still pass without this in this case for expo-brownfield, but linking
+  // ensures the prebuild logic is tested too and this installs faster
+  const workspaces = await listWorkspaces();
+  for (const name in packageJson.dependencies) {
+    if (workspaces[name]) {
+      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      packageJson.dependencies[name] = '*';
+    }
+  }
+  for (const name in packageJson.devDependencies) {
+    if (workspaces[name]) {
+      packageJson.resolutions[name] = `link:${path.relative(projectRoot, workspaces[name])}`;
+      packageJson.dependencies[name] = '*';
+    }
+  }
+
+  await fs.promises.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+  await spawnAsync('pnpm', ['install'], {
     cwd: projectRoot,
     stdio: 'pipe',
     env: processEnv,

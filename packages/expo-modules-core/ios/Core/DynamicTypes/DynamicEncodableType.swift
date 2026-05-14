@@ -29,15 +29,16 @@ internal struct DynamicEncodableType: AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
+    return try castToJS(value, appContext: appContext, in: try appContext.runtime)
+  }
+
+  func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if let value = value as? JavaScriptValue {
       return value
     }
     if let value = value as? Encodable {
-      let runtime = try appContext.runtime
-      let encoder = JSValueEncoder(runtime: runtime)
-
+      let encoder = JSValueEncoder(appContext: appContext, runtime: runtime)
       try value.encode(to: encoder)
-
       return encoder.value
     }
     throw Conversions.ConversionToJSFailedException((kind: .object, nativeType: ValueType.self))

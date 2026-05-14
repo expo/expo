@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 56.0.6 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 🐛 Bug fixes
+
+[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
+
+## 56.0.4 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.3 — 2026-05-08
 
 ### 🐛 Bug fixes

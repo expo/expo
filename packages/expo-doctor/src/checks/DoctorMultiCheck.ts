@@ -8,9 +8,9 @@ export interface DoctorMultiCheckItemBase {
 }
 
 //
-export abstract class DoctorMultiCheck<TCheckItem extends DoctorMultiCheckItemBase>
-  implements DoctorCheck
-{
+export abstract class DoctorMultiCheck<
+  TCheckItem extends DoctorMultiCheckItemBase,
+> implements DoctorCheck {
   abstract readonly checkItems: TCheckItem[];
 
   abstract description: string;

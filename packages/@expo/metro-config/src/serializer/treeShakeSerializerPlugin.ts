@@ -849,7 +849,7 @@ export async function treeShakeSerializer(
 
       const isUsed = (
         specifier: // import { imported as local } from './foo'
-        | types.ImportSpecifier
+          | types.ImportSpecifier
           // import local from './foo'
           | types.ImportDefaultSpecifier
           // import * as local from './foo'

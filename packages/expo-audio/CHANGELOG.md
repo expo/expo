@@ -10,6 +10,20 @@
 
 ### 💡 Others
 
+## 56.0.6 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+### 💡 Others
+
+- Updated permission type and permission status imports to be imported from `expo` instead of `expo-modules-core` ([#45565](https://github.com/expo/expo/pull/45565) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.4 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
@@ -42,6 +56,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Prevent stale lock screen artwork updates from crashing or overwriting newer metadata. ([#44498](https://github.com/expo/expo/pull/44498) by [@kotadd](https://github.com/kotadd))
 - [iOS] Fix playback progress continuing after pause by setting correct playback rate in now playing info. ([#44974](https://github.com/expo/expo/pull/44974) by [@JstUsername](https://github.com/JstUsername))
 - [Android] Remove `RECORD_AUDIO` from the manifest so `recordAudioAndroid` depends on the plugin. ([#45131](https://github.com/expo/expo/pull/45131) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix pixelated lock screen artwork on Android 13+ by setting `artworkUri` on the session's `MediaMetadata`. ([#44953](https://github.com/expo/expo/pull/44953) by [@radko93](https://github.com/radko93))
 
 ### 💡 Others
 

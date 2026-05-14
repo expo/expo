@@ -6,15 +6,16 @@ import {
   DropdownMenuItem,
   Host,
   Icon,
+  RNHostView,
   Row,
   Switch,
   Text as ComposeText,
   FilledTonalButton,
   OutlinedButton,
 } from '@expo/ui/jetpack-compose';
-import { background } from '@expo/ui/jetpack-compose/modifiers';
+import { background, combinedClickable, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, Pressable } from 'react-native';
 
 import { Section } from '../../components/Page';
 
@@ -39,6 +40,10 @@ export default function DropdownMenuScreen() {
   const [colorfulMenuExpanded, setColorfulMenuExpanded] = React.useState(false);
   const [sectionsMenuExpanded, setSectionsMenuExpanded] = React.useState(false);
   const [submenuExpanded, setSubmenuExpanded] = React.useState(false);
+  const [longPressMenuExpanded, setLongPressMenuExpanded] = React.useState(false);
+  const [longPressTapCount, setLongPressTapCount] = React.useState(0);
+  const [rnTriggerMenuExpanded, setRnTriggerMenuExpanded] = React.useState(false);
+  const [rnTriggerTapCount, setRnTriggerTapCount] = React.useState(0);
 
   React.useEffect(() => {
     if (sectionsMenuExpanded === false) {
@@ -304,16 +309,100 @@ export default function DropdownMenuScreen() {
               </DropdownMenu>
               <HorizontalDivider />
               <DropdownMenuItem
+                elementColors={{ textColor: '#B3261E', leadingIconColor: '#B3261E' }}
                 onClick={() => {
                   setSectionsMenuExpanded(false);
-                  console.log('Logout pressed');
+                  console.log('Delete account pressed');
                 }}>
                 <DropdownMenuItem.Text>
-                  <ComposeText>Logout</ComposeText>
+                  <ComposeText>Delete account</ComposeText>
                 </DropdownMenuItem.Text>
                 <DropdownMenuItem.LeadingIcon>
                   <Icon source={logoutIcon} size={24} />
                 </DropdownMenuItem.LeadingIcon>
+              </DropdownMenuItem>
+            </DropdownMenu.Items>
+          </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="Long-press to open">
+        <Host matchContents>
+          <DropdownMenu
+            expanded={longPressMenuExpanded}
+            onDismissRequest={() => setLongPressMenuExpanded(false)}>
+            <DropdownMenu.Trigger>
+              <ComposeText
+                modifiers={[
+                  background('#e0e0e0'),
+                  paddingAll(12),
+                  combinedClickable({
+                    onClick: () => setLongPressTapCount((count) => count + 1),
+                    onLongClick: () => setLongPressMenuExpanded(true),
+                  }),
+                ]}>
+                {`Long-press to open · taps: ${longPressTapCount}`}
+              </ComposeText>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
+              <DropdownMenuItem onClick={() => setLongPressMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Copy</ComposeText>
+                </DropdownMenuItem.Text>
+                <DropdownMenuItem.LeadingIcon>
+                  <Icon source={profileIcon} size={24} />
+                </DropdownMenuItem.LeadingIcon>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setLongPressMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Share</ComposeText>
+                </DropdownMenuItem.Text>
+                <DropdownMenuItem.LeadingIcon>
+                  <Icon source={starIcon} size={24} />
+                </DropdownMenuItem.LeadingIcon>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                elementColors={{ textColor: '#B3261E', leadingIconColor: '#B3261E' }}
+                onClick={() => setLongPressMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Delete</ComposeText>
+                </DropdownMenuItem.Text>
+                <DropdownMenuItem.LeadingIcon>
+                  <Icon source={logoutIcon} size={24} />
+                </DropdownMenuItem.LeadingIcon>
+              </DropdownMenuItem>
+            </DropdownMenu.Items>
+          </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="RN trigger long-press (spike)">
+        <Host matchContents>
+          <DropdownMenu
+            expanded={rnTriggerMenuExpanded}
+            onDismissRequest={() => setRnTriggerMenuExpanded(false)}>
+            <DropdownMenu.Trigger>
+              <RNHostView matchContents>
+                <Pressable
+                  onPress={() => setRnTriggerTapCount((c) => c + 1)}
+                  onLongPress={() => setRnTriggerMenuExpanded(true)}
+                  style={{ padding: 16, backgroundColor: '#ffe0b2', borderRadius: 8 }}>
+                  <Text style={{ fontSize: 16 }}>
+                    {`RN child trigger · taps: ${rnTriggerTapCount}`}
+                  </Text>
+                </Pressable>
+              </RNHostView>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Items>
+              <DropdownMenuItem onClick={() => setRnTriggerMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Item from RN-anchored menu</ComposeText>
+                </DropdownMenuItem.Text>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                elementColors={{ textColor: '#B3261E' }}
+                onClick={() => setRnTriggerMenuExpanded(false)}>
+                <DropdownMenuItem.Text>
+                  <ComposeText>Destructive item</ComposeText>
+                </DropdownMenuItem.Text>
               </DropdownMenuItem>
             </DropdownMenu.Items>
           </DropdownMenu>

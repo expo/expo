@@ -40,9 +40,8 @@ Resolve expo-updates runtime version
     );
   }
 
-  const { resolveRuntimeVersionAsync } = await import(
-    '../../utils/build/resolveRuntimeVersionAsync.js'
-  );
+  const { resolveRuntimeVersionAsync } =
+    await import('../../utils/build/resolveRuntimeVersionAsync.js');
 
   const platform = requireArg(args, '--platform');
   if (!['ios', 'android'].includes(platform)) {

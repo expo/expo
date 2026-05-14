@@ -193,13 +193,11 @@ abstract class ExpoComposeView<T : ComposeProps>(
           Content()
         }
       }
-      it.addOnAttachStateChangeListener(object : OnAttachStateChangeListener {
-        override fun onViewAttachedToWindow(v: View) {
+      it.addOnAttachStateChangeListener(
+        OnAttachAfterDetachmentListener(onAttachAfterDetachment = {
           it.disposeComposition()
-        }
-
-        override fun onViewDetachedFromWindow(v: View) = Unit
-      })
+        })
+      )
     }
     addView(composeView)
   }

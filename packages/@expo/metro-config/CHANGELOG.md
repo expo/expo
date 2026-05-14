@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 56.0.8 — 2026-05-13
+
+### 💡 Others
+
+- Skip Babel transform for CSS's JS mount module ([#45657](https://github.com/expo/expo/pull/45657) by [@kitten](https://github.com/kitten))
+
+## 56.0.7 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
+
+## 56.0.6 — 2026-05-11
+
+### 🛠 Breaking changes
+
+- Replace source-map representation used internally, and source-map format returned by transformer, reducing peak and retained memory usage ([#45594](https://github.com/expo/expo/pull/45594) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Bump to `postcss@^8.5.14` ([#45626](https://github.com/expo/expo/pull/45626) by [@kitten](https://github.com/kitten))
+
 ## 56.0.5 — 2026-05-08
 
 ### 💡 Others

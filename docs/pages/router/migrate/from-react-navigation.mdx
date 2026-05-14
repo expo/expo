@@ -6,7 +6,9 @@ description: Learn how to migrate a project using React Navigation to Expo Route
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
-import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+import { DiffBlock } from '~/ui/components/Snippet';
+
+> **info** This guide targets **SDK 56 and later**. In SDK 56, Expo Router stopped accepting application-code imports from `@react-navigation/*. They now come from `expo-router/\*` entry points. If you are upgrading an existing Expo Router app from SDK 55 or earlier, follow the [SDK 55 to 56 migration guide](/router/migrate/sdk-55-to-56). The samples below already use the SDK 56 and later import paths.
 
 ## Pitch
 
@@ -334,7 +336,7 @@ The [`fallback`](https://reactnavigation.org/docs/navigation-container/#fallback
 In React Navigation, you set the theme for the entire app using the [`<NavigationContainer />`](https://reactnavigation.org/docs/navigation-container/#theme) component. Expo Router manages the root container for you, so instead you should set the theme using the `ThemeProvider` directly.
 
 ```tsx src/app/_layout.tsx
-import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from 'expo-router/react-navigation';
 import { Slot } from 'expo-router';
 
 export default function RootLayout() {
@@ -348,7 +350,7 @@ export default function RootLayout() {
 }
 ```
 
-You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed with the `useTheme` hook from `@react-navigation/native`.
+You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed with the `useTheme` hook from `expo-router/react-navigation`.
 
 #### `children`
 
@@ -396,7 +398,7 @@ Custom layouts have an internal context that is ignored when using the `<Slot />
 {/* prettier-ignore */}
 ```jsx
 import { View } from 'react-native';
-import { TabRouter } from '@react-navigation/native';
+import { TabRouter } from 'expo-router/react-navigation';
 
 import { Navigator, usePathname, Slot, Link } from 'expo-router';
 
@@ -457,12 +459,12 @@ In React Navigation, you can use the `initialRouteName` property of the linking 
 
 You can use the [`reset`](https://reactnavigation.org/docs/navigation-actions/#reset) action from the React Navigation library to reset the navigation state. It is dispatched using the [`useNavigation`](/versions/latest/sdk/router/#usenavigation) hook from Expo Router to access the `navigation` prop.
 
-In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `@react-navigation/native`. The object specified in the `reset` action replaces the existing navigation state with the new one.
+In the below example, the `navigation` prop is accessible from the `useNavigation` hook and the `CommonActions.reset` action from `expo-router/react-navigation`. The object specified in the `reset` action replaces the existing navigation state with the new one.
 
 {/* prettier-ignore */}
 ```tsx src/app/screen.tsx
 import { useNavigation } from 'expo-router'
-import { CommonActions } from '@react-navigation/native'
+import { CommonActions } from 'expo-router/react-navigation'
 
 export default function Screen() {
   const navigation = useNavigation();
@@ -494,7 +496,7 @@ React Navigation navigators `<Stack>`, `<Drawer>`, and `<Tabs>` use a shared app
 
 ```tsx src/app/_layout.tsx
 /* @info Import theme APIs from React Navigation directly. */
-import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from '@react-navigation/native';
+import { ThemeProvider, DarkTheme, DefaultTheme, useTheme } from 'expo-router/react-navigation';
 /* @end */
 import { Slot } from 'expo-router';
 
@@ -509,14 +511,16 @@ export default function RootLayout() {
 }
 ```
 
-You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed via `useTheme` hook from `@react-navigation/native`.
+You can use this technique at any layer of the app to set the theme for a specific layout. The current theme can be accessed via `useTheme` hook from `expo-router/react-navigation`.
 
 ### React Navigation Elements
 
-The [`@react-navigation/elements`](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
+The [React Navigation Elements](https://reactnavigation.org/docs/elements/) library provides a set of UI elements and helpers that can be used to build a navigation UI. These components are designed to be composable and customizable. You can reuse the default functionality from the library or build your navigator's UI on top of it.
 
-To use it with Expo Router, you need to install the library:
+In SDK 56 and later, this library is re-exported from `expo-router/react-navigation` and there is no separate package to install:
 
-<Terminal cmd={['$ npx expo install @react-navigation/elements']} />
+```tsx
+import { Header, HeaderBackButton } from 'expo-router/react-navigation';
+```
 
 To learn more about the components and utilities the library provides, see [Elements library](https://reactnavigation.org/docs/elements/) documentation.

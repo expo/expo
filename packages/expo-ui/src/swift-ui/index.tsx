@@ -1,6 +1,7 @@
 import '../State/index.fx';
 
 export * from './AccessoryWidgetBackground';
+export * from './Alert';
 export * from './BottomSheet';
 export * from './Button';
 export * from './Chart';

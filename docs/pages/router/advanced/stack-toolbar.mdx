@@ -1,17 +1,62 @@
 ---
 title: Stack Toolbar
-description: Learn how to use the iOS toolbar in Stack navigation with Expo Router.
+description: Learn how to use the native toolbar in Stack navigation with Expo Router.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
-> **important** `Stack.Toolbar` is an [alpha](/more/release-statuses/#alpha) API available on **iOS only** in **Expo SDK 55** and later. The API is subject to breaking changes.
+> **important** `Stack.Toolbar` is an [alpha](/more/release-statuses/#alpha) API available on Android in **Expo SDK 56** and later, and on iOS in **Expo SDK 55** and later. The API is subject to breaking changes.
 
-[`Stack.Toolbar`](/versions/latest/sdk/router/stack/#stacktoolbar) lets you add native iOS toolbar items to your Stack screens. You can place buttons, menus, and custom views in the header (left or right side) or in the bottom toolbar area.
+[`Stack.Toolbar`](/versions/latest/sdk/router/stack/#stacktoolbar) lets you add native toolbar items to your Stack screens on Android and iOS. You can place buttons, menus, and custom views in the header (left or right side) or in the bottom toolbar.
 
 ## Adding header buttons
 
 Use [`Stack.Toolbar.Button`](/versions/latest/sdk/router/stack/#stacktoolbarbutton) within `Stack.Toolbar` with `placement="right"` or `placement="left"` to add buttons to the navigation header. This is useful for actions like favoriting, sharing, or editing content.
+
+<Tabs>
+
+<Tab label="Android">
+
+```tsx src/app/notes/[id].tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+import { View, Text, Alert } from 'react-native';
+
+export default function NoteScreen() {
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          // Replace with your own icons
+          icon={isFavorite ? require('./assets/star-filled.png') : require('./assets/star.png')}
+          onPress={() => setIsFavorite(!isFavorite)}
+        />
+        <Stack.Toolbar.Button
+          icon={require('./assets/share.png')}
+          onPress={() => Alert.alert('Share')}
+        />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button
+          icon={require('./assets/sidebar.png')}
+          onPress={() => Alert.alert('Sidebar')}
+        />
+      </Stack.Toolbar>
+
+      <View style={{ flex: 1, padding: 16 }}>
+        <Text>Note content...</Text>
+      </View>
+    </>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
 
 ```tsx src/app/notes/[id].tsx
 import { useState } from 'react';
@@ -42,13 +87,17 @@ export default function NoteScreen() {
 }
 ```
 
+</Tab>
+
+</Tabs>
+
 ## Icons
 
-Toolbar buttons support two types of icons: SF Symbols and custom images.
+Toolbar buttons accept SF Symbols (iOS only) and custom images (Android and iOS).
 
-### SF Symbols
+### SF Symbols (iOS only)
 
-The easiest way to add icons is using [SF Symbols](https://developer.apple.com/sf-symbols/), Apple's built-in icon library. Pass the symbol name directly to the `icon` prop:
+The easiest way to add icons on iOS is to use [SF Symbols](https://developer.apple.com/sf-symbols/), Apple's built-in icon library. Pass the symbol name directly to the `icon` prop:
 
 ```tsx
 <Stack.Toolbar.Button icon="star.fill" onPress={() => {}} />
@@ -58,11 +107,61 @@ The easiest way to add icons is using [SF Symbols](https://developer.apple.com/s
 
 You can browse available symbols in Apple's SF Symbols app.
 
+> **info** SF Symbols are an iOS-only feature.
+
 ### Custom images
 
-You can also use custom images. In header toolbars (`placement="left"` or `placement="right"`), pass an image source directly to the `icon` prop.
+You can also use custom images. The API for passing them differs by platform:
 
-> **info** Using custom images inside submenus (`Stack.Toolbar.Menu`) in header placements requires `react-native-screens` 4.24.0 or later. SDK 55 bundles `~4.23.0`, so you need to install `react-native-screens@~4.24.0` manually to use this feature.
+<Tabs>
+
+<Tab label="Android">
+
+Pass an image to the `icon` prop:
+
+```tsx
+import { Stack } from 'expo-router';
+
+export default function Page() {
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Button icon={require('./assets/expo.png')} onPress={() => {}} />
+      </Stack.Toolbar>
+      {/* Screen content */}
+    </>
+  );
+}
+```
+
+Image-source icons are tinted with the toolbar's tint color by default (`iconRenderingMode` defaults to `'template'`). Pass `iconRenderingMode="original"` to keep the source's original colors, useful for multi-color icons:
+
+```tsx
+import { Stack } from 'expo-router';
+
+export default function Page() {
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Button
+          icon={require('./assets/expo.png')}
+          iconRenderingMode="original"
+          onPress={() => {}}
+        />
+      </Stack.Toolbar>
+      {/* Screen content */}
+    </>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
+
+iOS uses two different APIs depending on placement: pass an image source directly to `icon` for header toolbars, and use `useImage` with the `image` prop for the bottom toolbar.
+
+> **info** Using custom images inside submenus (`Stack.Toolbar.Menu`) in header placements requires `react-native-screens` 4.24.0 or later. SDK 55 bundles `~4.23.0`, so you need to install `react-native-screens@~4.24.0` manually to use this feature. SDK 56 bundles a compatible version by default.
 
 ```tsx
 import { Stack } from 'expo-router';
@@ -102,11 +201,70 @@ export default function Page() {
 }
 ```
 
-> **info** The `useImage` and `image` prop pattern for bottom toolbar custom images is a temporary API and may change in future releases.
+> **info** The `useImage` and `image` prop pattern for bottom toolbar custom images is iOS-only and is a temporary API that may change in future releases.
+
+</Tab>
+
+</Tabs>
 
 ## Building action menus
 
 For screens with multiple actions, use [`Stack.Toolbar.Menu`](/versions/latest/sdk/router/stack/#stacktoolbarmenu) to group them into a dropdown menu:
+
+> **info** Some [`Stack.Toolbar.Menu`](/versions/latest/sdk/router/stack/#stacktoolbarmenu) and [`Stack.Toolbar.MenuAction`](/versions/latest/sdk/router/stack/#stacktoolbarmenuaction) props are iOS-only. See the API reference for per-prop platform availability.
+
+<Tabs>
+
+<Tab label="Android">
+
+```tsx src/app/mail/[id].tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+import { Alert } from 'react-native';
+
+export default function EmailScreen() {
+  const [isArchived, setIsArchived] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Menu icon={require('./assets/menu.png')}>
+          <Stack.Toolbar.MenuAction
+            icon={require('./assets/reply.png')}
+            onPress={() => Alert.alert('Reply')}>
+            Reply
+          </Stack.Toolbar.MenuAction>
+
+          <Stack.Toolbar.MenuAction
+            icon={require('./assets/forward.png')}
+            onPress={() => Alert.alert('Forward')}>
+            Forward
+          </Stack.Toolbar.MenuAction>
+
+          <Stack.Toolbar.MenuAction
+            icon={isArchived ? require('./assets/unarchive.png') : require('./assets/archive.png')}
+            isOn={isArchived}
+            onPress={() => setIsArchived(!isArchived)}>
+            {isArchived ? 'Unarchive' : 'Archive'}
+          </Stack.Toolbar.MenuAction>
+
+          <Stack.Toolbar.MenuAction
+            icon={require('./assets/trash.png')}
+            destructive
+            onPress={() => Alert.alert('Delete')}>
+            Delete
+          </Stack.Toolbar.MenuAction>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar>
+      {/* Email content */}
+    </>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
 
 ```tsx src/app/mail/[id].tsx
 import { useState } from 'react';
@@ -150,11 +308,62 @@ export default function EmailScreen() {
 }
 ```
 
-The `isOn` prop on [`Stack.Toolbar.MenuAction`](/versions/latest/sdk/router/stack/#stacktoolbarmenuaction) shows a checkmark next to the action, useful for toggle states. The `destructive` prop styles the action in red to indicate a dangerous operation.
+</Tab>
+
+</Tabs>
 
 ### Nested submenus
 
 For more complex menus, nest `Stack.Toolbar.Menu` inside another menu. Use the `inline` prop to display submenu items directly without collapsing:
+
+<Tabs>
+
+<Tab label="Android">
+
+```tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+
+export default function EmailScreen() {
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'size'>('name');
+  const [showHiddenFiles, setShowHiddenFiles] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Menu icon={require('./assets/menu.png')}>
+          {/* Inline submenu - options appear directly in the menu */}
+          <Stack.Toolbar.Menu inline title="Sort By">
+            <Stack.Toolbar.MenuAction isOn={sortBy === 'name'} onPress={() => setSortBy('name')}>
+              Name
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction isOn={sortBy === 'date'} onPress={() => setSortBy('date')}>
+              Date
+            </Stack.Toolbar.MenuAction>
+            <Stack.Toolbar.MenuAction isOn={sortBy === 'size'} onPress={() => setSortBy('size')}>
+              Size
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+
+          {/* Nested submenu - opens as a separate menu */}
+          <Stack.Toolbar.Menu title="Preferences">
+            <Stack.Toolbar.MenuAction
+              isOn={showHiddenFiles}
+              onPress={() => setShowHiddenFiles(!showHiddenFiles)}>
+              Show Hidden Files
+            </Stack.Toolbar.MenuAction>
+          </Stack.Toolbar.Menu>
+        </Stack.Toolbar.Menu>
+      </Stack.Toolbar>
+      {/* Email content */}
+    </>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
 
 ```tsx
 import { useState } from 'react';
@@ -197,9 +406,44 @@ export default function EmailScreen() {
 }
 ```
 
+</Tab>
+
+</Tabs>
+
 ## Using the bottom toolbar
 
-iOS apps commonly have a bottom toolbar for primary actions. To add one, use `Stack.Toolbar` without a placement prop (it defaults to `"bottom"`):
+Bottom toolbars are commonly used on iOS for primary screen actions, such as the toolbars in the Photos and Mail apps. To add one, use `Stack.Toolbar` without a placement prop, it defaults to `"bottom"`:
+
+<Tabs>
+
+<Tab label="Android">
+
+```tsx src/app/photos/index.tsx
+import { Stack } from 'expo-router';
+import { Alert } from 'react-native';
+
+export default function PhotosScreen() {
+  return (
+    <>
+      <Stack.Toolbar>
+        <Stack.Toolbar.Button
+          icon={require('./assets/select.png')}
+          onPress={() => Alert.alert('Select')}
+        />
+        <Stack.Toolbar.Spacer width={24} />
+        <Stack.Toolbar.Button
+          icon={require('./assets/plus.png')}
+          onPress={() => Alert.alert('Add')}
+        />
+      </Stack.Toolbar>
+    </>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
 
 ```tsx src/app/photos/index.tsx
 import { Stack } from 'expo-router';
@@ -222,11 +466,20 @@ export default function PhotosScreen() {
 }
 ```
 
-[`Stack.Toolbar.Spacer`](/versions/latest/sdk/router/stack/#stacktoolbarspacer) creates flexible space between items, pushing them to opposite sides. This is how you achieve layouts like having buttons on both ends of the toolbar.
+</Tab>
+
+</Tabs>
 
 > **info** Bottom toolbars can only be used inside page components, not in layout files.
 
-## Adding badges to buttons
+## Spacers
+
+Use [`Stack.Toolbar.Spacer`](/versions/latest/sdk/router/stack/#stacktoolbarspacer) to add space between toolbar items. Behavior differs by platform:
+
+- **Android**: `Stack.Toolbar.Spacer` always requires an explicit `width`. There is no flexible-fill spacer at the moment.
+- **iOS**: a `Stack.Toolbar.Spacer` without a `width` creates flexible space between items, pushing them to opposite sides. This is useful for layouts like buttons on both ends of the toolbar. Pass a `width` for fixed-size spacing.
+
+## Adding badges to buttons (iOS only)
 
 In header toolbars, you can add badges to indicate counts or status. Use [`Stack.Toolbar.Icon`](/versions/latest/sdk/router/stack/#stacktoolbaricon), [`Stack.Toolbar.Label`](/versions/latest/sdk/router/stack/#stacktoolbarlabel), and [`Stack.Toolbar.Badge`](/versions/latest/sdk/router/stack/#stacktoolbarbadge) to compose the button content:
 
@@ -251,7 +504,7 @@ export default function InboxScreen() {
 }
 ```
 
-> **info** Badges only work in header placements (`left` or `right`), not in the bottom toolbar.
+> **info** Badges only work in iOS header placements (`left` or `right`), not in the bottom toolbar nor on Android.
 
 ## Embedding custom views
 
@@ -272,7 +525,13 @@ export default function SearchScreen() {
             onPress={() => {
               Alert.alert('Filter pressed');
             }}>
-            <SymbolView name="line.3.horizontal.decrease.circle" size={24} />
+            <SymbolView
+              name={{
+                ios: 'line.3.horizontal.decrease.circle',
+                android: 'filter_list',
+              }}
+              size={24}
+            />
           </Pressable>
         </Stack.Toolbar.View>
       </Stack.Toolbar>
@@ -285,6 +544,41 @@ export default function SearchScreen() {
 ## Showing and hiding items dynamically
 
 Use the `hidden` prop to toggle toolbar items based on state:
+
+<Tabs>
+
+<Tab label="Android">
+
+```tsx src/app/document.tsx
+import { useState } from 'react';
+import { Stack } from 'expo-router';
+
+export default function DocumentScreen() {
+  const [isEditing, setIsEditing] = useState(false);
+
+  return (
+    <>
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          hidden={isEditing}
+          icon={require('./assets/pencil.png')}
+          onPress={() => setIsEditing(true)}
+        />
+        <Stack.Toolbar.Button
+          hidden={!isEditing}
+          icon={require('./assets/check.png')}
+          onPress={() => setIsEditing(false)}
+        />
+      </Stack.Toolbar>
+      {/* Document content */}
+    </>
+  );
+}
+```
+
+</Tab>
+
+<Tab label="iOS">
 
 ```tsx src/app/document.tsx
 import { useState } from 'react';
@@ -306,6 +600,10 @@ export default function DocumentScreen() {
   );
 }
 ```
+
+</Tab>
+
+</Tabs>
 
 ## Common problems
 
@@ -407,9 +705,23 @@ export default function Home() {
 
 ## Known limitations
 
-<Collapsible summary="iOS only">
+<Collapsible summary="Native only">
 
-`Stack.Toolbar` is only available on iOS. On Android and web, the component will not render.
+`Stack.Toolbar` only renders on Android and iOS. Web has no standard toolbar, so you need to implement your own if you need toolbar behavior there.
+
+</Collapsible>
+
+<Collapsible summary="Custom icons are the only supported icon type on Android">
+
+On Android, `icon` must be an `ImageSourcePropType`. For example `require('./icon.png')` or `{ uri: '...' }`.
+
+You can also use [`Stack.Toolbar.Icon`](/versions/latest/sdk/router/stack/#stacktoolbaricon) with the `src` prop to provide cross-platform icons.
+
+</Collapsible>
+
+<Collapsible summary="Spacer requires an explicit width on Android">
+
+Flexible spacers (`<Stack.Toolbar.Spacer />` with no `width`) are iOS-only. On Android, a `Stack.Toolbar.Spacer` without a `width` renders nothing — pass a fixed `width` such as `<Stack.Toolbar.Spacer width={24} />` in every placement.
 
 </Collapsible>
 
@@ -428,6 +740,18 @@ You cannot nest `Stack.Toolbar` components inside each other.
 <Collapsible summary="Badge only in header placements">
 
 `Stack.Toolbar.Badge` is only supported when using `placement="left"` or `placement="right"`. Badges are not displayed in the bottom toolbar.
+
+</Collapsible>
+
+<Collapsible summary="Badge and Label primitives are not supported on Android">
+
+On Android, `Stack.Toolbar.Button` renders only its icon &mdash; the `Stack.Toolbar.Badge` and `Stack.Toolbar.Label` children are dropped. If you need badge-like UI on Android, embed a custom component using [`Stack.Toolbar.View`](/versions/latest/sdk/router/stack/#stacktoolbarview).
+
+</Collapsible>
+
+<Collapsible summary="SearchBarSlot is not supported on Android">
+
+`Stack.Toolbar.SearchBarSlot` renders nothing on Android. Use [`Stack.SearchBar`](/versions/latest/sdk/router/stack/#stacksearchbar) for cross-platform search bar support.
 
 </Collapsible>
 

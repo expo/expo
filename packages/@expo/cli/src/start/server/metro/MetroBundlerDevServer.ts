@@ -8,15 +8,7 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
-import {
-  sourceMapGeneratorNonBlocking,
-  type SourceMapGeneratorOptions,
-} from '@expo/metro/metro/DeltaBundler/Serializers/sourceMapGenerator';
-import type {
-  Module,
-  DeltaResult,
-  TransformInputOptions,
-} from '@expo/metro/metro/DeltaBundler/types';
+import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
 import type {
   default as MetroHmrServer,
   Client as MetroHmrClient,
@@ -28,6 +20,7 @@ import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
@@ -39,7 +32,6 @@ import {
   type ImmutableRequest,
   resolveLoaderContextKey,
 } from 'expo-server/private';
-import https from 'https';
 import path from 'path';
 
 import {
@@ -1337,19 +1329,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       exporting: !!options.isExporting,
     });
 
-    const { metro, hmrServer, server, middleware, messageSocket } = await instantiateMetroAsync(
-      this,
-      parsedOptions,
-      {
+    const { metro, hmrServer, address, server, middleware, messageSocket } =
+      await instantiateMetroAsync(this, parsedOptions, {
         isExporting: !!options.isExporting,
         exp,
-      }
-    );
-
-    const protocol = server instanceof https.Server ? 'https' : 'http';
+      });
 
     // Required for symbolication:
-    process.env.EXPO_DEV_SERVER_ORIGIN = `${protocol}://localhost:${options.port}`;
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
       const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
@@ -1581,11 +1569,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port: options.port,
+        port: address?.port ?? options.port,
         // localhost isn't always correct.
         host: 'localhost',
-        url: `${protocol}://localhost:${options.port}`,
-        protocol,
+        url: serverBaseUrl,
+        protocol: address?.protocol ?? 'http',
       },
       middleware,
       messageSocket,
@@ -1709,9 +1697,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         callback: async () => {
           // Run once, this prevents the TypeScript project prerequisite from running on every file change.
           off();
-          const { TypeScriptProjectPrerequisite } = await import(
-            '../../doctor/typescript/TypeScriptProjectPrerequisite.js'
-          );
+          const { TypeScriptProjectPrerequisite } =
+            await import('../../doctor/typescript/TypeScriptProjectPrerequisite.js');
 
           try {
             const req = new TypeScriptProjectPrerequisite(this.projectRoot);
@@ -2239,7 +2226,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           prepend = [];
         }
 
-        bundleMap = await sourceMapStringAsync(
+        bundleMap = await sourceMapStringNonBlocking(
           [
             //
             ...prepend,
@@ -2349,15 +2336,6 @@ function wrapBundle(str: string) {
   // Replace the __r() call with an export statement.
   // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
   return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
-}
-
-async function sourceMapStringAsync(
-  modules: readonly Module[],
-  options: SourceMapGeneratorOptions
-): Promise<string> {
-  return (await sourceMapGeneratorNonBlocking(modules, options)).toString(undefined, {
-    excludeSource: options.excludeSource,
-  });
 }
 
 function unique<T>(array: T[]): T[] {

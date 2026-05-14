@@ -1137,5 +1137,105 @@ export function test({ describe, it, xit, expect }) {
         }
       });
     });
+
+    describe('destructuring + state lifting (generators)', () => {
+      // See: https://github.com/expo/expo/issues/45592
+      it('async generator with destructured object param yields binding', async () => {
+        async function* gen({ b }) {
+          yield b;
+          yield b + 1;
+        }
+        const g = gen({ b: 41 });
+        expect(await g.next()).toEqual({ value: 41, done: false });
+        expect(await g.next()).toEqual({ value: 42, done: false });
+        expect((await g.next()).done).toBe(true);
+      });
+
+      it('async generator with destructured array param', async () => {
+        async function* gen([a, b]) {
+          yield a;
+          yield b;
+        }
+        const g = gen([1, 2]);
+        expect(await g.next()).toEqual({ value: 1, done: false });
+        expect(await g.next()).toEqual({ value: 2, done: false });
+      });
+
+      it('async generator with destructured param + internal await', async () => {
+        async function* gen({ b }) {
+          const v = await Promise.resolve(b);
+          yield v;
+          return v + 1;
+        }
+        const g = gen({ b: 41 });
+        expect(await g.next()).toEqual({ value: 41, done: false });
+        expect(await g.next()).toEqual({ value: 42, done: true });
+      });
+
+      it('async generator with destructured param iterates via for-await-of', async () => {
+        async function* gen({ b }) {
+          yield b;
+          yield b + 1;
+        }
+        const collected = [];
+        for await (const v of gen({ b: 10 })) {
+          collected.push(v);
+        }
+        expect(collected).toEqual([10, 11]);
+      });
+
+      it('class async generator method with destructured param', async () => {
+        class C {
+          async *gen({ b }) {
+            yield b;
+            return b + 1;
+          }
+        }
+        const g = new C().gen({ b: 41 });
+        expect(await g.next()).toEqual({ value: 41, done: false });
+        expect(await g.next()).toEqual({ value: 42, done: true });
+      });
+
+      it('object shorthand async generator method with destructured param', async () => {
+        const o = {
+          async *gen({ b }) {
+            yield b;
+            return b + 1;
+          },
+        };
+        const g = o.gen({ b: 41 });
+        expect(await g.next()).toEqual({ value: 41, done: false });
+        expect(await g.next()).toEqual({ value: 42, done: true });
+      });
+
+      it('sync generator with destructured object param yields binding', () => {
+        function* gen({ b }) {
+          yield b;
+          return b + 1;
+        }
+        const g = gen({ b: 41 });
+        expect(g.next()).toEqual({ value: 41, done: false });
+        expect(g.next()).toEqual({ value: 42, done: true });
+      });
+
+      it('control: async generator with plain params', async () => {
+        async function* gen(a, b) {
+          yield a;
+          yield b;
+        }
+        const g = gen(1, 2);
+        expect(await g.next()).toEqual({ value: 1, done: false });
+        expect(await g.next()).toEqual({ value: 2, done: false });
+      });
+
+      it('control: async generator destructure in body (not in params)', async () => {
+        async function* gen(x) {
+          const { b } = x;
+          yield b;
+        }
+        const g = gen({ b: 42 });
+        expect(await g.next()).toEqual({ value: 42, done: false });
+      });
+    });
   });
 }

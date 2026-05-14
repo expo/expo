@@ -78,14 +78,14 @@ runs:
   steps:
     - name: ♻️ Restore /docs node modules
       if: inputs.pnpm-docs == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: docs-modules-cache
       with:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/pnpm-lock.yaml') }}
     - name: ♻️ Restore Docs Next cache
       if: inputs.pnpm-docs == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: docs/.next/cache
         key: ${{ runner.os }}-docs-${{ hashFiles('docs/pnpm-lock.yaml') }}-${{ hashFiles('docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.ts', 'docs/**/*.tsx') }}
@@ -93,7 +93,7 @@ runs:
           ${{ runner.os }}-docs-${{ hashFiles('docs/pnpm-lock.yaml') }}-
     - name: ♻️ Restore Docs ESLint cache
       if: inputs.pnpm-docs == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: docs/.eslintcache
         key: ${{ runner.os }}-docs-eslint-${{ hashFiles('docs/pnpm-lock.yaml') }}-${{ hashFiles('docs/eslint.config.mjs') }}
@@ -101,7 +101,7 @@ runs:
 
     - name: ♻️ Restore Docs API data
       if: inputs.docs-api-data == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: docs-api-data-cache
       with:
         path: docs/public/static/data/unversioned
@@ -109,7 +109,7 @@ runs:
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: ios-pods-cache
       with:
         path: ios/Pods
@@ -117,7 +117,7 @@ runs:
 
     - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
       if: inputs.bare-expo-pods == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: bare-expo-pods-cache
       with:
         path: apps/bare-expo/ios/Pods
@@ -125,7 +125,7 @@ runs:
 
     - name: ♻️ Restore apps/bare-expo/macos/Pods from cache
       if: inputs.bare-expo-macos-pods == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: bare-expo-macos-pods-cache
       with:
         path: apps/bare-expo/macos/Pods
@@ -133,7 +133,7 @@ runs:
 
     - name: ♻️ Restore apps/native-tests/ios/Pods from cache
       if: inputs.native-tests-pods == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: native-tests-pods-cache
       with:
         path: apps/native-tests/ios/Pods
@@ -141,13 +141,13 @@ runs:
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'
-      uses: gradle/actions/setup-gradle@v4
+      uses: gradle/actions/setup-gradle@ed408507eac070d1f99cc633dbcf757c94c7933a # v4
       with:
         cache-read-only: ${{ github.ref != 'refs/heads/main' && !contains(github.ref, 'sdk-') }}
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: cache-android-ndk
       with:
         path: /usr/local/lib/android/sdk/ndk/${{ inputs.ndk-version }}/
@@ -165,7 +165,7 @@ runs:
 
     - name: ♻️ Restore ccache (iOS)
       if: inputs.ccache == 'true' && runner.os == 'macOS'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: ${{ runner.temp }}/.ccache
         # It is necessary to include Xcode version in the cache key, because each Xcode version introduces changes to clang compiler,
@@ -175,7 +175,7 @@ runs:
 
     - name: ♻️ Restore ccache (Android)
       if: inputs.ccache == 'true' && runner.os == 'Linux'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: ${{ runner.temp }}/.ccache
         key: ${{ runner.os }}-ccache-${{ hashFiles('pnpm-lock.yaml', 'packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle') }}
@@ -187,7 +187,7 @@ runs:
       run: echo "sha256=$(git lfs ls-files | openssl dgst -sha256)" >> $GITHUB_OUTPUT
       shell: bash
     - name: ♻️ Restore Git LFS cache
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       if: inputs.git-lfs == 'true'
       with:
         path: .git/lfs
@@ -195,7 +195,7 @@ runs:
 
     - name: ♻️ Restore hermes-engine AAR cache
       if: inputs.hermes-engine-aar == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: android/prebuiltHermes
         key: hermes-engine-aar-v2-${{ hashFiles('react-native-lab/react-native/packages/react-native/sdks/.hermesversion') }}
@@ -234,7 +234,7 @@ runs:
       run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> $GITHUB_ENV
     - name: ♻️ Restore Gradle downloads cache for React Native libraries
       if: inputs.react-native-gradle-downloads == 'true'
-      uses: actions/cache@v4
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
         key: gradle-downloads-${{ hashFiles('pnpm-lock.yaml') }}

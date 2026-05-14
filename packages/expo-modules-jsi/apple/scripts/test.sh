@@ -29,26 +29,11 @@ set -eo pipefail
 
 PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# --- PODS_ROOT ---
-#
-# Prefer an explicit PODS_ROOT (e.g. to test against a different app's Pods).
-# Otherwise fall back to bare-expo under EXPO_ROOT_DIR (set by the repo's
-# direnv config). Without either, point at a likely repo root computed from
-# this script's location so the script still works outside a direnv shell.
+source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
 
-if [[ -z "${PODS_ROOT:-}" ]]; then
-  : "${EXPO_ROOT_DIR:=$(cd "${PACKAGE_DIR}/../../.." && pwd)}"
-  PODS_ROOT="${EXPO_ROOT_DIR}/apps/bare-expo/ios/Pods"
-fi
-if [[ ! -d "$PODS_ROOT" ]]; then
-  echo "error: PODS_ROOT does not exist: $PODS_ROOT" >&2
-  echo "       Run \`pod install\` in apps/bare-expo/ios first, or set PODS_ROOT explicitly." >&2
-  exit 1
-fi
-PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
-# Export so xcodebuild forwards it to SwiftPM's manifest evaluation, where
-# Package.swift reads it via resolvePodsRoot().
-export PODS_ROOT
+# Resolve PODS_ROOT with fallback logic (from xcframework-helpers.sh).
+# Must be passed to subprocess calls, not exported, to avoid polluting the environment.
+resolve_pods_root "$PACKAGE_DIR"
 
 # --- Symlink xcframeworks for SwiftPM binary targets ---
 
@@ -79,7 +64,7 @@ link_xcframework "ReactNativeDependencies" \
 
 # --- Generate the jsi module map ---
 
-"${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+env PODS_ROOT="$PODS_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
 
 # --- Pick a simulator destination ---
 
@@ -113,7 +98,7 @@ fi
 # --- Run the tests ---
 
 cd "$PACKAGE_DIR"
-exec xcodebuild test \
+exec env PODS_ROOT="$PODS_ROOT" xcodebuild test \
   -scheme ExpoModulesJSI \
   -destination "$DESTINATION" \
   -derivedDataPath "${PACKAGE_DIR}/.DerivedData" \

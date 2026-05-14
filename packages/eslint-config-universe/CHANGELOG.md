@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 15.1.1 — 2026-05-13
+
+### 💡 Others
+
+- Bump to `eslint-plugin-react-hooks@^7.0.0` ([#43820](https://github.com/expo/expo/pull/43820) by [@hassankhan](https://github.com/hassankhan))
+
 ## 15.1.0 — 2026-05-05
 
 ### 🎉 New features
