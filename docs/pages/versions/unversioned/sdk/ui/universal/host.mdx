@@ -91,7 +91,7 @@ export default function OnLayoutContentExample() {
 
 ### Filling the viewport
 
-Use `useViewportSizeMeasurement` for content that should size to the available viewport space. On Android and iOS this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web the host's underlying `View` is given the current window's width and height; any explicit `style` you pass still wins.
+Use `useViewportSizeMeasurement` for content that should size to the available viewport space. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, the host's underlying `View` is given the current window's width and height; any explicit `style` you pass still wins.
 
 ```tsx UseViewportSizeMeasurementExample.tsx
 import { Host, Column, Text } from '@expo/ui';
