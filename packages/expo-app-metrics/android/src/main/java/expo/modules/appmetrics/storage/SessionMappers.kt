@@ -10,48 +10,24 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 
 /**
- * JS-facing shape of a session. Field names mirror the TypeScript `Session`
- * type (`startDate` / `endDate`), distinct from the Room column names
- * (`startTimestamp` / `endTimestamp`).
- *
- * `type` is hard-coded to `"main"` since the per-launch session opened in
- * `AppMetricsModule.OnCreate` is the only one we track. A future change
- * should add a real `type` column and lifecycle hooks for
- * foreground/screen/custom sessions.
+ * JS-facing shape of a metric. Mirrors the TypeScript `Metric` type. The
+ * storage-only `sessionId` foreign key is omitted — JS consumers receive
+ * metrics either through a session shared object (where the owning session is
+ * implicit) or through `getStoredEntries()`, neither of which expose the id on
+ * the wire. The id is stamped natively from the receiving session when the
+ * record arrives as `Session.addMetric` input.
  */
-data class JsSession(
-  @Field val id: String,
-  @Field val type: String,
-  @Field val startDate: String,
-  @Field val endDate: String?,
-  @Field val metrics: List<JsMetric>,
-  @Field val logs: List<JsLogRecord>
-) : Record {
-  companion object {
-    fun fromSessionWithMetrics(value: SessionWithMetrics): JsSession =
-      JsSession(
-        id = value.session.id,
-        type = "main",
-        startDate = value.session.startTimestamp,
-        endDate = value.session.endTimestamp,
-        metrics = value.metrics.map { JsMetric.fromMetric(it) },
-        logs = value.logs.map { JsLogRecord.fromLogRecord(it) }
-      )
-  }
-}
-
 data class JsMetric(
-  @Field val sessionId: String,
   @Field val category: String,
   @Field val name: String,
   @Field val value: Double,
-  @Field val metricId: String? = UUID.randomUUID().toString(),
+  @Field val metricId: String? = null,
   @Field val timestamp: String = TimeUtils.getCurrentTimestampInISOFormat(),
   @Field val routeName: String? = null,
   @Field val updateId: String? = null,
   @Field val params: Map<String, Any?>? = null
 ) : Record {
-  fun toMetric(): Metric =
+  fun toMetric(sessionId: String): Metric =
     Metric(
       metricId = metricId ?: UUID.randomUUID().toString(),
       sessionId = sessionId,
@@ -68,7 +44,6 @@ data class JsMetric(
     fun fromMetric(metric: Metric): JsMetric =
       JsMetric(
         metricId = metric.metricId,
-        sessionId = metric.sessionId,
         timestamp = metric.timestamp,
         category = metric.category,
         name = metric.name,
@@ -86,7 +61,7 @@ data class JsMetric(
  *
  * `logId`, `sessionId`, and `droppedAttributesCount` are storage- and
  * dispatch-side concerns: JS consumers see the record under its parent
- * `Session.logs` (so the parent ID is implicit), and the dropped-attribute
+ * session (so the parent id is implicit), and the dropped-attribute
  * bookkeeping is only meaningful on the OTel wire payload.
  */
 data class JsLogRecord(

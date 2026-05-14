@@ -3,6 +3,18 @@ import EXUpdatesInterface
 
 internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
+/// Encodes a `Codable` payload into a Foundation JSON object so it can flow
+/// across the JS bridge as `[String: Any]` / `[Any]`. The bridge can't accept
+/// arbitrary `Codable` Swift types directly, so we go through `JSONEncoder`
+/// once and `JSONSerialization` once. Dates are emitted as ISO-8601 strings
+/// to match the JS `Metric` / `LogRecord` / `CrashReport` shapes.
+private func encodeAsJSONObject<T: Encodable>(_ value: T) throws -> Any {
+  let encoder = JSONEncoder()
+  encoder.dateEncodingStrategy = .iso8601
+  let data = try encoder.encode(value)
+  return try JSONSerialization.jsonObject(with: data)
+}
+
 public final class AppMetricsModule: Module, UpdatesStateChangeListener {
   var subscription: UpdatesStateChangeSubscription?
 
@@ -71,31 +83,93 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       // no-op
     }
 
-    AsyncFunction("getAllSessions") { () -> [StoredSession] in
+    AsyncFunction("getAllSessions") { () -> [SessionSharedObject] in
       return try await AppMetricsActor.isolated {
-        return try AppMetrics.database?
-          .getAllSessionsWithChildren()
-          .map { StoredSession(from: $0) } ?? []
+        try AppMetrics.database?.getAllSessions().map(SessionSharedObject.init) ?? []
       }.value
     }
 
-    AsyncFunction("addCustomMetricToSession") { (jsMetric: JsMetric) in
-      try await AppMetricsActor.isolated {
-        let metric = jsMetric.toMetric()
-        try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: jsMetric.sessionId))
-      }.value
-    }
-
-    AsyncFunction("getMainSession") { () -> StoredSession? in
+    AsyncFunction("getMainSession") { () -> SessionSharedObject? in
       return try await AppMetricsActor.isolated {
         let mainSessionId = AppMetrics.mainSession.id
-        guard let row = try AppMetrics.database?
-          .getAllSessionsWithChildren()
-          .first(where: { $0.session.id == mainSessionId }) else {
+        guard let row = try AppMetrics.database?.getSession(id: mainSessionId) else {
           return nil
         }
-        return StoredSession(from: row)
+        return SessionSharedObject(row)
       }.value
+    }
+
+    // JS-bridge class name is "Session" so `instanceof ExpoAppMetrics.Session`
+    // works as expected. Metrics, logs, and the crash report are read lazily
+    // from the database, keyed by the session id captured on the shared object
+    // at construction time — the JS handle stays cheap and doesn't keep any
+    // domain object alive past its natural lifetime.
+    Class("Session", SessionSharedObject.self) {
+      Property("id") { (ref: SessionSharedObject) in ref.id }
+      Property("type") { (ref: SessionSharedObject) in ref.type }
+      Property("startDate") { (ref: SessionSharedObject) in ref.startDate }
+      Property("endDate") { (ref: SessionSharedObject) in ref.endDate }
+
+      AsyncFunction("getMetrics") { (ref: SessionSharedObject) -> [Any] in
+        let sessionId = ref.id
+        let rows: [MetricRow] = try await AppMetricsActor.isolated {
+          try AppMetrics.database?.getMetrics(sessionId: sessionId) ?? []
+        }.value
+        let metrics: [Metric] = rows.map { row in
+          Metric(
+            category: row.category.flatMap { Metric.Category(rawValue: $0) },
+            name: row.name,
+            value: row.value,
+            timestamp: row.timestamp,
+            routeName: row.routeName,
+            updateId: row.updateId,
+            params: decodeJSONDictionary(row.params),
+            sessionId: row.sessionId
+          )
+        }
+        return (try encodeAsJSONObject(metrics) as? [Any]) ?? []
+      }
+
+      AsyncFunction("getLogs") { (ref: SessionSharedObject) -> [Any] in
+        let sessionId = ref.id
+        let rows: [LogRow] = try await AppMetricsActor.isolated {
+          try AppMetrics.database?.getLogs(sessionId: sessionId) ?? []
+        }.value
+        let logs: [LogRecord] = rows.map { row in
+          LogRecord(
+            name: row.name,
+            body: row.body,
+            attributes: decodeJSONDictionary(row.attributes),
+            droppedAttributesCount: row.droppedAttributesCount,
+            severity: Severity(rawValue: row.severity) ?? .info,
+            timestamp: row.timestamp
+          )
+        }
+        return (try encodeAsJSONObject(logs) as? [Any]) ?? []
+      }
+
+      AsyncFunction("addMetric") { (ref: SessionSharedObject, jsMetric: JsMetric) in
+        let sessionId = ref.id
+        try await AppMetricsActor.isolated {
+          let metric = jsMetric.toMetric()
+          try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: sessionId))
+        }.value
+      }
+
+      // Only the main session ever carries a crash report; every other session
+      // type returns `nil` here. Exposing the function uniformly keeps the JS
+      // surface symmetric with Android, where the call always returns `nil`
+      // until crash reporting lands there. The payload is stored as a JSON
+      // string by `MetricKitSubscriber`, so we hand the same bytes back to JS
+      // without re-encoding through `CrashReport`.
+      AsyncFunction("getCrashReport") { (ref: SessionSharedObject) -> [String: Any]? in
+        let sessionId = ref.id
+        let payload: String? = try await AppMetricsActor.isolated {
+          try AppMetrics.database?.getCrashReport(sessionId: sessionId)
+        }.value
+        guard let payload, let data = payload.data(using: .utf8) else { return nil }
+        return try JSONSerialization.jsonObject(with: data) as? [String: Any]
+      }
     }
 
     Function("simulateCrashReport") {

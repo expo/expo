@@ -8,12 +8,14 @@ import * as routerModule from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 import { useObserveForRouter } from '../useObserveForRouter';
 
+const mockAddMetric = jest.fn();
+const mockMainSession = { id: 'session-1', addMetric: mockAddMetric };
+
 jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: {
     markInteractive: jest.fn(),
-    getMainSession: jest.fn(() => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(),
+    getMainSession: jest.fn(() => Promise.resolve(mockMainSession)),
   },
 }));
 
@@ -45,7 +47,6 @@ jest.mock('../router', () => {
   };
 });
 
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
 const mockUseRoute = (routerModule as unknown as { __useRoute: jest.Mock }).__useRoute;
 const mockUseNavigation = (routerModule as unknown as { __useNavigation: jest.Mock })
   .__useNavigation;
@@ -79,9 +80,8 @@ describe('useObserveForRouter', () => {
       await result.current!();
     });
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: 'session-1',
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledWith({
       timestamp: expect.any(String),
       category: 'navigation',
       routeName: '/test',
@@ -112,8 +112,7 @@ describe('useObserveForRouter', () => {
     });
 
     expect(AppMetrics.markInteractive).not.toHaveBeenCalled();
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: 'session-1',
+    expect(mockAddMetric).toHaveBeenCalledWith({
       timestamp: expect.any(String),
       category: 'navigation',
       routeName: '/test',
@@ -129,7 +128,7 @@ describe('useObserveForRouter', () => {
     await act(async () => {
       await result.current!();
     });
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
   });
 

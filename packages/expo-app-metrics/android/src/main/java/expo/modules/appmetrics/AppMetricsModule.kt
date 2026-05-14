@@ -8,11 +8,11 @@ import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateEventBody
 import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
-import expo.modules.appmetrics.storage.JsSession
 import expo.modules.appmetrics.storage.LogRecord
-import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.SessionSharedObject
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.JsonAny
@@ -112,7 +112,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         appSessionId = sessionManager.createSessionId()
 
         // Persist the session row eagerly so it's visible to readers
-        // (`getAllSessions`, `addCustomMetricToSession`, …) before any startup
+        // (`getAllSessions`, `Session.addMetric`, …) before any startup
         // metrics arrive. Older app runs are deactivated in the same coroutine
         // to keep the order well-defined. The `Job` is captured so `OnDestroy`
         // can wait for the INSERT before stamping `endTimestamp`.
@@ -159,7 +159,18 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       AsyncFunction("getAllSessions") Coroutine { ->
-        sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
+        sessionManager.getAllSessionMetadata().map { row ->
+          SessionSharedObject(
+            appContext = appContext,
+            id = row.id,
+            // TODO: surface the real session type when foreground / screen /
+            // custom sessions land on Android.
+            type = "main",
+            startDate = row.startTimestamp,
+            endDate = row.endTimestamp,
+            sessionManager = sessionManager
+          )
+        }
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
@@ -168,12 +179,49 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
 
-      AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
-        sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)
+      AsyncFunction("getMainSession") Coroutine { ->
+        sessionManager.getSessionMetadata(appSessionId)?.let { row ->
+          SessionSharedObject(
+            appContext = appContext,
+            id = row.id,
+            type = "main",
+            startDate = row.startTimestamp,
+            endDate = row.endTimestamp,
+            sessionManager = sessionManager
+          )
+        }
       }
 
-      AsyncFunction("getMainSession") Coroutine { ->
-        sessionManager.getSessionById(appSessionId)?.let { JsSession.fromSessionWithMetrics(it) }
+      // JS-bridge class name is "Session" so `instanceof ExpoAppMetrics.Session`
+      // works as expected. `Metric` / `LogRecord` Room entities returned from
+      // `SessionManager` are mapped to their JS-facing shapes here, at the
+      // module boundary, so the storage layer doesn't depend on bridge types.
+      Class("Session", SessionSharedObject::class) {
+        Property("id") { ref: SessionSharedObject -> ref.id }
+        Property("type") { ref: SessionSharedObject -> ref.type }
+        Property("startDate") { ref: SessionSharedObject -> ref.startDate }
+        Property("endDate") { ref: SessionSharedObject -> ref.endDate }
+
+        AsyncFunction("getMetrics") Coroutine { ref: SessionSharedObject ->
+          ref.sessionManager.getMetricsForSession(ref.id).map(JsMetric::fromMetric)
+        }
+        AsyncFunction("getLogs") Coroutine { ref: SessionSharedObject ->
+          ref.sessionManager.getLogsForSession(ref.id).map(JsLogRecord::fromLogRecord)
+        }
+        AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: JsMetric ->
+          ref.sessionManager.addMetrics(
+            listOf(metric.toMetric(sessionId = ref.id)),
+            sessionId = ref.id
+          )
+        }
+        // TODO: surface the real crash report on the main session once Android
+        // crash reporting lands. Until then this is always `null`, matching
+        // the iOS contract for non-main sessions. Typed as a `Map` so the
+        // bridge serializes today's `null` the same way it'll serialize a
+        // real report payload later.
+        AsyncFunction("getCrashReport") Coroutine { _: SessionSharedObject ->
+          null as Map<String, Any?>?
+        }
       }
     }
 

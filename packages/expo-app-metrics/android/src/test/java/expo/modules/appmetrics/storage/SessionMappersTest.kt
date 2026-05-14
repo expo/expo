@@ -1,6 +1,8 @@
 package expo.modules.appmetrics.storage
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,17 +12,6 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
 class SessionMappersTest {
-  private fun makeSession(
-    id: String = "session-1",
-    startTimestamp: String = "2025-01-01T00:00:00.000Z",
-    endTimestamp: String? = null
-  ): Session = Session(
-    id = id,
-    startTimestamp = startTimestamp,
-    endTimestamp = endTimestamp,
-    isActive = endTimestamp == null
-  )
-
   private fun makeMetric(
     metricId: String = "metric-1",
     sessionId: String = "session-1",
@@ -51,34 +42,6 @@ class SessionMappersTest {
   )
 
   @Test
-  fun `JsSession_fromSessionWithMetrics exposes the JS-facing field names`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(id = "abc", startTimestamp = "2025-06-15T10:00:00.000Z"),
-      metrics = emptyList()
-    )
-
-    val js = JsSession.fromSessionWithMetrics(swm)
-
-    assertEquals("abc", js.id)
-    assertEquals("main", js.type)
-    assertEquals("2025-06-15T10:00:00.000Z", js.startDate)
-    assertNull(js.endDate)
-    assertEquals(emptyList<JsMetric>(), js.metrics)
-  }
-
-  @Test
-  fun `JsSession_fromSessionWithMetrics surfaces endDate when set`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(endTimestamp = "2025-01-02T00:00:00.000Z"),
-      metrics = emptyList()
-    )
-
-    val js = JsSession.fromSessionWithMetrics(swm)
-
-    assertEquals("2025-01-02T00:00:00.000Z", js.endDate)
-  }
-
-  @Test
   fun `JsMetric_fromMetric decodes params from JSON`() {
     val metric = makeMetric(params = """{"screen":"Home","attempt":3,"flag":true}""")
 
@@ -105,33 +68,52 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsMetric_fromMetric copies scalar fields verbatim`() {
+  fun `JsMetric_fromMetric copies scalar fields verbatim and drops sessionId`() {
     val js = JsMetric.fromMetric(makeMetric(metricId = "m-42", sessionId = "session-1"))
 
     assertEquals("m-42", js.metricId)
-    assertEquals("session-1", js.sessionId)
     assertEquals("appStartup", js.category)
     assertEquals("timeToInteractive", js.name)
     assertEquals(1.5, js.value, 0.0)
     assertEquals("2025-01-01T00:00:01.000Z", js.timestamp)
+    // sessionId is intentionally absent from the JS-facing shape — the owning
+    // session is implicit on every output path (the `Session` shared object
+    // for `getMetrics()`, the `getStoredEntries` payload that doesn't carry
+    // it on the wire either).
   }
 
   @Test
-  fun `JsSession_fromSessionWithMetrics surfaces stored logs`() {
-    val swm = SessionWithMetrics(
-      session = makeSession(),
-      metrics = emptyList(),
-      logs = listOf(
-        makeLog(logId = "l-1", name = "first.event"),
-        makeLog(logId = "l-2", name = "second.event")
-      )
+  fun `JsMetric_toMetric stamps the sessionId argument onto the Room entity`() {
+    val input = JsMetric(
+      category = "user",
+      name = "tap",
+      value = 1.0,
+      metricId = "m-input",
+      timestamp = "2025-01-01T00:00:00.000Z"
     )
 
-    val js = JsSession.fromSessionWithMetrics(swm)
+    val entity = input.toMetric(sessionId = "session-xyz")
 
-    assertEquals(2, js.logs.size)
-    assertEquals("first.event", js.logs[0].name)
-    assertEquals("second.event", js.logs[1].name)
+    assertEquals("m-input", entity.metricId)
+    assertEquals("session-xyz", entity.sessionId)
+    assertEquals("user", entity.category)
+    assertEquals("tap", entity.name)
+  }
+
+  @Test
+  fun `JsMetric_toMetric generates a fresh metricId when none is provided`() {
+    val input = JsMetric(
+      category = "user",
+      name = "tap",
+      value = 1.0,
+      timestamp = "2025-01-01T00:00:00.000Z"
+    )
+
+    val first = input.toMetric(sessionId = "session-xyz")
+    val second = input.toMetric(sessionId = "session-xyz")
+
+    assertNotNull(first.metricId)
+    assertNotEquals("metric ids must be unique per call when caller omits one", first.metricId, second.metricId)
   }
 
   @Test
@@ -183,6 +165,7 @@ class SessionMappersTest {
     // Both should decode the nested user object the same way.
     @Suppress("UNCHECKED_CAST")
     val metricUser = metricResult?.get("user") as? Map<String, Any?>
+
     @Suppress("UNCHECKED_CAST")
     val logUser = logResult?.get("user") as? Map<String, Any?>
     assertEquals(metricUser, logUser)

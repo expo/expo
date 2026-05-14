@@ -94,12 +94,11 @@ export function useObserveForRouter(): MarkInteractive | null {
 
       // Stored in seconds to match the OTel `unit = "s"` convention
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
+      const mainSession = await AppMetrics.getMainSession();
       // TODO(@ubax): we should count the time against the action which caused the first navigation
       // and add a param stating if during that time there was any navigation
-      if (mainSessionId) {
-        await AppMetrics.addCustomMetricToSession({
-          sessionId: mainSessionId,
+      if (mainSession) {
+        await mainSession.addMetric({
           timestamp,
           category: 'navigation',
           // TODO(@ubax): Use segments.join here to get full routeName and pass pathname and params via params

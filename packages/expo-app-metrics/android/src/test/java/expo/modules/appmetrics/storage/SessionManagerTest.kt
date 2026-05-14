@@ -687,6 +687,180 @@ class SessionManagerTest {
 
   // endregion
 
+  // region Per-session lazy getters (SharedObject path)
+
+  @Test
+  fun `getSessionMetadata returns metadata without materializing metrics or logs`() =
+    runTest {
+      // Arrange — a session with both metrics and logs. The metadata getter
+      // is the path used to construct a SessionSharedObject without paying for
+      // the metric/log fetch, so it must return a row even when those tables
+      // are heavily populated.
+      val sessionId = "metadata-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(
+        listOf(createMetric("m-1", sessionId), createMetric("m-2", sessionId))
+      )
+      database.logDao().insertAll(listOf(createLog("l-1", sessionId)))
+
+      // Act
+      val metadata = sessionManager.getSessionMetadata(sessionId)
+
+      // Assert
+      assertNotNull(metadata)
+      assertEquals(sessionId, metadata?.id)
+      assertEquals("2025-01-01T00:00:00.000Z", metadata?.startTimestamp)
+      assertTrue(metadata?.isActive ?: false)
+    }
+
+  @Test
+  fun `getSessionMetadata returns null for unknown id`() =
+    runTest {
+      assertNull(sessionManager.getSessionMetadata("does-not-exist"))
+    }
+
+  @Test
+  fun `getAllSessionMetadata returns every session row`() =
+    runTest {
+      // Arrange
+      sessionManager.startSessionWithIdAt("a", "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt("b", "2025-01-01T01:00:00.000Z")
+      sessionManager.startSessionWithIdAt("c", "2025-01-01T02:00:00.000Z")
+
+      // Act
+      val all = sessionManager.getAllSessionMetadata()
+
+      // Assert
+      assertEquals(3, all.size)
+      assertEquals(setOf("a", "b", "c"), all.map { it.id }.toSet())
+    }
+
+  @Test
+  fun `getMetricsForSession returns only metrics for the requested session`() =
+    runTest {
+      // Arrange
+      val s1 = "session-1"
+      val s2 = "session-2"
+      sessionManager.startSessionWithIdAt(s1, "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt(s2, "2025-01-01T01:00:00.000Z")
+      database.metricDao().insertAll(
+        listOf(
+          createMetric("m-1", s1),
+          createMetric("m-2", s1),
+          createMetric("m-3", s2)
+        )
+      )
+
+      // Act
+      val s1Metrics = sessionManager.getMetricsForSession(s1)
+      val s2Metrics = sessionManager.getMetricsForSession(s2)
+
+      // Assert
+      assertEquals(2, s1Metrics.size)
+      assertEquals(setOf("m-1", "m-2"), s1Metrics.map { it.metricId }.toSet())
+      assertEquals(1, s2Metrics.size)
+      assertEquals("m-3", s2Metrics.single().metricId)
+    }
+
+  @Test
+  fun `getMetricsForSession returns empty list when session has no metrics`() =
+    runTest {
+      // Arrange — session row exists, no metrics inserted.
+      val sessionId = "empty-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      // Act
+      val metrics = sessionManager.getMetricsForSession(sessionId)
+
+      // Assert
+      assertEquals(emptyList<Metric>(), metrics)
+    }
+
+  @Test
+  fun `getLogsForSession returns only logs for the requested session`() =
+    runTest {
+      // Arrange
+      val s1 = "session-1"
+      val s2 = "session-2"
+      sessionManager.startSessionWithIdAt(s1, "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt(s2, "2025-01-01T01:00:00.000Z")
+      database.logDao().insertAll(
+        listOf(
+          createLog("l-1", s1),
+          createLog("l-2", s2),
+          createLog("l-3", s1)
+        )
+      )
+
+      // Act
+      val s1Logs = sessionManager.getLogsForSession(s1)
+      val s2Logs = sessionManager.getLogsForSession(s2)
+
+      // Assert
+      assertEquals(2, s1Logs.size)
+      assertEquals(1, s2Logs.size)
+    }
+
+  @Test
+  fun `getLogsForSession returns empty list when session has no logs`() =
+    runTest {
+      val sessionId = "log-free-session"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      assertEquals(emptyList<LogRecord>(), sessionManager.getLogsForSession(sessionId))
+    }
+
+  @Test
+  fun `getAllSessionMetadata returns sessions newest-first`() =
+    runTest {
+      // Arrange — JSDoc on `getAllSessions()` promises "current launch first",
+      // which translates to newest startTimestamp first.
+      sessionManager.startSessionWithIdAt("old", "2025-01-01T00:00:00.000Z")
+      sessionManager.startSessionWithIdAt("middle", "2025-06-15T12:00:00.000Z")
+      sessionManager.startSessionWithIdAt("new", "2026-01-01T00:00:00.000Z")
+
+      // Act
+      val ordered = sessionManager.getAllSessionMetadata().map { it.id }
+
+      // Assert
+      assertEquals(listOf("new", "middle", "old"), ordered)
+    }
+
+  @Test
+  fun `getMetricsForSession returns empty after clearAllData cascades`() =
+    runTest {
+      // Arrange — cascade delete should drop metrics. The lazy getter must
+      // honor the cascade, not return stale rows.
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      database.metricDao().insertAll(listOf(createMetric("m-1", sessionId)))
+      assertEquals(1, sessionManager.getMetricsForSession(sessionId).size)
+
+      // Act
+      sessionManager.clearAllData()
+
+      // Assert
+      assertEquals(emptyList<Metric>(), sessionManager.getMetricsForSession(sessionId))
+    }
+
+  @Test
+  fun `getSessionMetadata surfaces endTimestamp after stopSession`() =
+    runTest {
+      // The SharedObject relies on this getter for `endDate`, so a stamped
+      // endTimestamp on `stopSession` must round-trip through the metadata
+      // projection.
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+      sessionManager.stopSession(sessionId)
+
+      val metadata = sessionManager.getSessionMetadata(sessionId)
+
+      assertNotNull(metadata?.endTimestamp)
+      assertEquals(false, metadata?.isActive)
+    }
+
+  // endregion
+
   // region Helper Methods
 
   private fun createMetric(

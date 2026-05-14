@@ -176,6 +176,9 @@ interface MetricDao {
 
   @Delete
   suspend fun delete(metrics: List<Metric>)
+
+  @Query("SELECT * FROM metrics WHERE sessionId = :sessionId")
+  suspend fun getBySessionId(sessionId: String): List<Metric>
 }
 
 @Dao
@@ -188,6 +191,10 @@ interface LogDao {
 
   @Query("DELETE FROM logs WHERE timestamp < :cutoffTimestamp")
   suspend fun deleteLogsOlderThan(cutoffTimestamp: String)
+
+  // TODO(@ubax): unify the naming convention for Metics, Logs and Sessions
+  @Query("SELECT * FROM logs WHERE sessionId = :sessionId")
+  suspend fun getBySessionId(sessionId: String): List<LogRecord>
 }
 
 @Dao
@@ -197,6 +204,11 @@ interface SessionDao {
 
   @Query("SELECT * FROM sessions WHERE id = :id")
   suspend fun getById(id: String): Session?
+
+  // Newest-first so the current launch sorts ahead of historical entries —
+  // this is the ordering promised by `getAllSessions()` on the JS side.
+  @Query("SELECT * FROM sessions ORDER BY startTimestamp DESC")
+  suspend fun getAllMetadata(): List<Session>
 
   @Query("UPDATE sessions SET isActive = 0, endTimestamp = :endTimestamp WHERE id = :id")
   suspend fun stopSessionAt(

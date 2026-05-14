@@ -1,3 +1,5 @@
+import type { Session } from './Session';
+
 export type AppStartupTimes = {
   /**
    * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -94,7 +96,6 @@ export interface Metric {
   category: string;
   name: string;
   value: number;
-  sessionId: string;
   routeName?: string;
   params?: Record<string, unknown>;
 }
@@ -192,6 +193,21 @@ export type LogEventOptions = {
 
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 
+/**
+ * `Session` narrowed to the main, per-process-launch session. The narrower
+ * `type` field lets `instanceof`-free discrimination still work in TypeScript,
+ * matching the shape that used to be exposed before sessions became shared
+ * objects.
+ */
+export type MainSession = Session & { readonly type: 'main' };
+
+/**
+ * `Session` narrowed to anything that isn't the main session. Matches the
+ * previous union-typed shape so existing consumers that switched on `type`
+ * keep their narrowing.
+ */
+export type GenericSession = Session & { readonly type: Exclude<SessionType, 'main'> };
+
 export type CrashKind =
   | 'badAccess'
   | 'fatalError'
@@ -200,25 +216,6 @@ export type CrashKind =
   | 'arrayOutOfBounds'
   | 'objcException'
   | 'stackOverflow';
-
-type SessionBase = {
-  id: string;
-  startDate: string;
-  endDate?: string | null;
-  metrics: Metric[];
-  logs: LogRecord[];
-};
-
-export type MainSession = SessionBase & {
-  type: 'main';
-  crashReport?: CrashReport | null;
-};
-
-export type GenericSession = SessionBase & {
-  type: Exclude<SessionType, 'main'>;
-};
-
-export type Session = MainSession | GenericSession;
 
 export type CallStackFrame = {
   binaryName?: string | null;
@@ -286,7 +283,6 @@ export interface ExpoAppMetricsModuleType {
    * ordered with the current launch first.
    *
    * @private This API is unstable and may change without notice.
-   * @platform ios
    */
   getAllSessions(): Promise<Session[]>;
 
@@ -309,13 +305,11 @@ export interface ExpoAppMetricsModuleType {
   triggerCrash(kind: CrashKind): void;
 
   /**
-   * @private This API is unstable and may change without notice.
-   */
-  addCustomMetricToSession(metric: Metric): Promise<void>;
-  /**
-   * Returns the current main session, including its metrics.
+   * Returns the current main session.
    *
    * @private This API is unstable and may change without notice.
    */
   getMainSession(): Promise<MainSession | null>;
+
+  Session: typeof Session;
 }

@@ -46,15 +46,15 @@ export function initListeners(
 
   const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
     // Snapshot both clocks once so every metric written below is stamped with
-    // the moment the focus event fired, not the moment `addCustomMetricToSession`
+    // the moment the focus event fired, not the moment `session.addMetric`
     // happens to run after the awaited `getMainSession()` round-trip.
     const now = performance.now();
     const timestamp = new Date().toISOString();
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) {
+    const mainSession = await AppMetrics.getMainSession();
+    if (!mainSession) {
       return;
     }
 
@@ -62,8 +62,7 @@ export function initListeners(
       // Stored in seconds to match the OTel `unit = "s"` convention
       const appLaunchTtrSeconds = (now - appLaunchTime) / 1000;
       storage.hasRecordedInitialTtr = true;
-      AppMetrics.addCustomMetricToSession({
-        sessionId: mainSessionId,
+      mainSession.addMetric({
         timestamp,
         category: 'navigation',
         name,
@@ -84,8 +83,7 @@ export function initListeners(
         dispatchTime,
       };
 
-      AppMetrics.addCustomMetricToSession({
-        sessionId: mainSessionId,
+      mainSession.addMetric({
         timestamp,
         category: 'navigation',
         name,
