@@ -106,7 +106,7 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // Only the camera flow's edit screen needs this workaround. The library
     // picker hosts its editor in a separate system process via `_UISceneHostingView`,
     // so the fix is not applicable.
-    if sourceType == .camera {
+    if sourceType == .camera && options.allowsEditing {
       picker.fixCannotMoveEditingBox()
     }
 
