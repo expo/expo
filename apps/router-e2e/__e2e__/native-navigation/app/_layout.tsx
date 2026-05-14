@@ -4,7 +4,7 @@ import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 const appStart = Date.now();
 
 unstable_navigationEvents.enable();
-(['pageWillRender', 'pageFocused', 'pageBlurred', 'pageRemoved'] as const).forEach((eventType) => {
+(['pagePreloaded', 'pageFocused', 'pageBlurred', 'pageRemoved'] as const).forEach((eventType) => {
   unstable_navigationEvents.addListener(eventType, (event) => {
     console.log(
       `[${Date.now() - appStart}ms] ${eventType}:`,

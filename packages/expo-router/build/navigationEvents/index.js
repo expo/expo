@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.unstable_navigationEvents = void 0;
 exports.emit = emit;
 const availableEvents = [
-    'pageWillRender',
+    'pagePreloaded',
     'pageFocused',
     'pageBlurred',
     'pageRemoved',

@@ -1,6 +1,6 @@
 {
   "name": "@expo/ui",
-  "version": "56.0.5",
+  "version": "56.0.7",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js"
@@ -50,6 +50,10 @@
     "./community/masked-view": {
       "types": "./build/community/masked-view/index.d.ts",
       "default": "./src/community/masked-view/index.tsx"
+    },
+    "./community/menu": {
+      "types": "./build/community/menu/index.d.ts",
+      "default": "./src/community/menu/index.tsx"
     },
     "./babel-plugin": {
       "types": "./plugin/babel-plugin.d.ts",

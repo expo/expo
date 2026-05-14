@@ -14,3 +14,11 @@ Namespaces:
       SwiftImportAs: reference
       SwiftReleaseOp: immortal
       SwiftRetainOp: immortal
+    - Name: IRuntime
+      SwiftImportAs: reference
+      SwiftReleaseOp: immortal
+      SwiftRetainOp: immortal
+    - Name: ICast
+      SwiftImportAs: reference
+      SwiftReleaseOp: immortal
+      SwiftRetainOp: immortal

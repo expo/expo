@@ -44,9 +44,10 @@ const CardA11yWrapper = ({ ref, focused, active, animated, isNextScreenTranspare
     const [inert, setInert] = React.useState(false);
     React.useImperativeHandle(ref, () => ({ setInert }), []);
     const isHidden = !animated && isNextScreenTransparent === false && detachCurrentScreen !== false && !focused;
-    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { "aria-hidden": !focused, pointerEvents: (animated ? inert : !focused) ? 'none' : 'box-none', style: [
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { "aria-hidden": !focused, style: [
             react_native_1.StyleSheet.absoluteFill,
             {
+                pointerEvents: (animated ? inert : !focused) ? 'none' : 'box-none',
                 // This is necessary to avoid unfocused larger pages increasing scroll area
                 // The issue can be seen on the web when a smaller screen is pushed over a larger one
                 overflow: active ? undefined : 'hidden',

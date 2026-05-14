@@ -587,11 +587,11 @@ extension JavaScriptObject: JavaScriptRepresentable {
 }
 
 extension JavaScriptObject: JSIRepresentable {
-  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.Runtime) -> JavaScriptObject {
+  static func fromJSIValue(_ value: borrowing facebook.jsi.Value, in runtime: facebook.jsi.IRuntime) -> JavaScriptObject {
     FatalError.unimplemented()
   }
 
-  func toJSIValue(in runtime: facebook.jsi.Runtime) -> facebook.jsi.Value {
+  func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
   }
 }

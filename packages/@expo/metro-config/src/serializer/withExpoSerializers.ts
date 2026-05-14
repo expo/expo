@@ -16,10 +16,10 @@ import {
   environmentVariableSerializerPlugin,
   serverPreludeSerializerPlugin,
 } from './environmentVariableSerializerPlugin';
+import { env } from '../env';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import { sourceMapString } from './sourceMap';
-import { env } from '../env';
 
 export type { SerialAsset } from './serializerAssets';
 

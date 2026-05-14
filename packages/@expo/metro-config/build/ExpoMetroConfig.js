@@ -15,10 +15,10 @@ const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const binary_file_store_1 = require("./binary-file-store");
 const customizeFrame_1 = require("./customizeFrame");
 Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", { enumerable: true, get: function () { return customizeFrame_1.INTERNAL_CALLSITES_REGEX; } });
 const env_1 = require("./env");
-const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
@@ -184,7 +184,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log();
     }
     const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
-    const cacheStore = new file_store_1.FileStore({
+    const cacheStore = new binary_file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);

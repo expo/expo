@@ -1,4 +1,4 @@
+import type { AndroidSymbol } from 'expo-symbols';
 import type { convertComponentSrcToImageSource } from './icon';
-import type { MaterialIcon } from '../common/elements';
-export declare function convertMaterialIconNameToImageSource(name: MaterialIcon['md']): ReturnType<typeof convertComponentSrcToImageSource>;
+export declare function convertMaterialIconNameToImageSource(name: AndroidSymbol): ReturnType<typeof convertComponentSrcToImageSource>;
 //# sourceMappingURL=materialIconConverter.d.ts.map

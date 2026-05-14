@@ -91,6 +91,7 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Expo UI Views
 
+    ExpoUIView(AlertView.self)
     ExpoUIView(BottomSheetView.self)
     ExpoUIView(ExpoUI.Button.self)
     ExpoUIView(ChartView.self)
@@ -131,6 +132,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
     ExpoUIView(ScrollViewComponent.self)
+    ExpoUIView(SwipeActionsView.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)

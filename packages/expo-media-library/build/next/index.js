@@ -1,4 +1,5 @@
-import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';
 import { MediaSubtype } from './types/MediaSubtype';

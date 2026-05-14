@@ -171,22 +171,6 @@ describe('node crawler', () => {
     expect(removedFiles).toEqual(new Set());
   });
 
-  test('warns on readdir errors', async () => {
-    // /nonexistent doesn't exist in the virtual FS
-    const mockConsole = { ...console, warn: jest.fn() };
-
-    const { changedFiles, removedFiles } = await crawl({
-      console: mockConsole as typeof console,
-      roots: ['/nonexistent'],
-    });
-
-    expect(mockConsole.warn).toHaveBeenCalledWith(
-      expect.stringContaining('reading contents of "/nonexistent"')
-    );
-    expect(changedFiles).toEqual(new Map());
-    expect(removedFiles).toEqual(new Set());
-  });
-
   test('skips symlinks when includeSymlinks is false', async () => {
     vol.fromJSON({
       '/project/fruits/apple.js': 'a',

@@ -26,6 +26,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   // drop-in replacements
   'expo-ui/community/datetime-picker': ['community/datetime-picker/index.tsx', 'expo-ui'],
   'expo-ui/community/masked-view': ['community/masked-view/index.tsx', 'expo-ui'],
+  'expo-ui/community/menu': ['community/menu/index.tsx', 'expo-ui'],
   'expo-ui/community/picker': ['community/picker/index.tsx', 'expo-ui'],
   'expo-ui/community/segmented-control': ['community/segmented-control/index.tsx', 'expo-ui'],
   'expo-ui/community/slider': ['community/slider/index.tsx', 'expo-ui'],
@@ -70,6 +71,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/swift-ui/securefield': ['swift-ui/SecureField/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/slider': ['swift-ui/Slider/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/spacer': ['swift-ui/Spacer/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/swipeactions': ['swift-ui/SwipeActions/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/tabview': ['swift-ui/TabView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/text': ['swift-ui/Text/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/textfield': ['swift-ui/TextField/index.tsx', 'expo-ui'],

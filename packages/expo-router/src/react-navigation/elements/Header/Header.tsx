@@ -101,7 +101,7 @@ export function Header(props: Props) {
     back,
     title,
     headerTitle: customTitle,
-    headerTitleAlign = Platform.OS === 'ios' ? 'center' : 'left',
+    headerTitleAlign = process.env.EXPO_OS === 'ios' ? 'center' : 'left',
     headerLeft = back ? (props) => <HeaderBackButton {...props} /> : undefined,
     headerSearchBarOptions,
     headerTransparent,
@@ -113,7 +113,7 @@ export function Header(props: Props) {
     headerLeftContainerStyle: leftContainerStyle,
     headerRightContainerStyle: rightContainerStyle,
     headerTitleContainerStyle: titleContainerStyle,
-    headerBackButtonDisplayMode = Platform.OS === 'ios' ? 'default' : 'minimal',
+    headerBackButtonDisplayMode = process.env.EXPO_OS === 'ios' ? 'default' : 'minimal',
     headerBackTitleStyle,
     headerBackgroundContainerStyle: backgroundContainerStyle,
     headerStyle: customHeaderStyle,
@@ -298,38 +298,37 @@ export function Header(props: Props) {
       : customTitle;
 
   return (
-    <Animated.View
-      pointerEvents="box-none"
-      style={[{ height, minHeight, maxHeight, opacity, transform }]}>
-      <Animated.View
-        pointerEvents="box-none"
-        style={[StyleSheet.absoluteFill, backgroundContainerStyle]}>
+    <Animated.View style={[styles.boxNone, { height, minHeight, maxHeight, opacity, transform }]}>
+      <Animated.View style={[StyleSheet.absoluteFill, styles.boxNone, backgroundContainerStyle]}>
         {headerBackground ? (
           headerBackground({ style: backgroundStyle })
         ) : (
           <HeaderBackground
-            pointerEvents={
-              // Allow touch through the header when background color is transparent
-              headerTransparent &&
-              (backgroundStyle.backgroundColor === 'transparent' ||
-                (backgroundStyle.backgroundColor &&
-                  Color(backgroundStyle.backgroundColor)?.alpha() === 0))
-                ? 'none'
-                : 'auto'
-            }
-            style={backgroundStyle}
+            style={[
+              {
+                // Allow touch through the header when background color is transparent
+                pointerEvents:
+                  headerTransparent &&
+                  (backgroundStyle.backgroundColor === 'transparent' ||
+                    (backgroundStyle.backgroundColor &&
+                      Color(backgroundStyle.backgroundColor)?.alpha() === 0))
+                    ? 'none'
+                    : 'auto',
+              },
+              backgroundStyle,
+            ]}
           />
         )}
       </Animated.View>
-      <View pointerEvents="none" style={{ height: headerStatusBarHeight }} />
+      <View style={[styles.pointerEventsNone, { height: headerStatusBarHeight }]} />
       <View
-        pointerEvents="box-none"
         style={[
           styles.content,
-          Platform.OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH ? styles.large : null,
+          process.env.EXPO_OS === 'ios' && frame.width >= IPAD_MINI_MEDIUM_WIDTH
+            ? styles.large
+            : null,
         ]}>
         <Animated.View
-          pointerEvents="box-none"
           style={[
             styles.start,
             !searchBarVisible && headerTitleAlign === 'center' && styles.expand,
@@ -338,10 +337,9 @@ export function Header(props: Props) {
           ]}>
           {leftButton}
         </Animated.View>
-        {Platform.OS === 'ios' || !searchBarVisible ? (
+        {process.env.EXPO_OS === 'ios' || !searchBarVisible ? (
           <>
             <Animated.View
-              pointerEvents="box-none"
               style={[
                 styles.title,
                 {
@@ -373,7 +371,6 @@ export function Header(props: Props) {
               })}
             </Animated.View>
             <Animated.View
-              pointerEvents="box-none"
               style={[styles.end, styles.expand, { marginEnd: insets.right }, rightContainerStyle]}>
               {rightButton}
               {headerSearchBarOptions ? (
@@ -391,7 +388,7 @@ export function Header(props: Props) {
             </Animated.View>
           </>
         ) : null}
-        {Platform.OS === 'ios' || searchBarVisible ? (
+        {process.env.EXPO_OS === 'ios' || searchBarVisible ? (
           <HeaderSearchBar
             {...headerSearchBarOptions}
             visible={searchBarVisible}
@@ -401,7 +398,7 @@ export function Header(props: Props) {
             }}
             tintColor={headerTintColor}
             style={[
-              Platform.OS === 'ios'
+              process.env.EXPO_OS === 'ios'
                 ? [
                     StyleSheet.absoluteFill,
                     { paddingTop: headerStatusBarHeight ? 0 : 4 },
@@ -421,19 +418,23 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'stretch',
+    pointerEvents: 'box-none',
   },
   large: {
     marginHorizontal: 5,
   },
   title: {
+    pointerEvents: 'box-none',
     justifyContent: 'center',
   },
   start: {
+    pointerEvents: 'box-none',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
   end: {
+    pointerEvents: 'box-none',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
@@ -441,5 +442,11 @@ const styles = StyleSheet.create({
   expand: {
     flexGrow: 1,
     flexBasis: 0,
+  },
+  boxNone: {
+    pointerEvents: 'box-none',
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none',
   },
 });

@@ -173,6 +173,62 @@ export default function ContextMenuWithSectionsExample() {
 }
 ```
 
+### Disabled items
+
+Use the [`disabled(true)`](modifiers/#disableddisabled) modifier on a menu `Button` to render it greyed-out and non-interactive.
+
+```tsx DisabledContextMenuItemExample.tsx
+import { Host, ContextMenu, Button, Text } from '@expo/ui/swift-ui';
+import { disabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function DisabledContextMenuItemExample() {
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Button label="Edit" onPress={() => console.log('Edit')} />
+          <Button
+            label="Locked"
+            systemImage="lock"
+            modifiers={[disabled(true)]}
+            onPress={() => console.log('This never fires')}
+          />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press me</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
+### Selectable items (checkmarks)
+
+A SwiftUI [`Toggle`](toggle) inside `ContextMenu.Items` automatically renders as a row with a leading SF Symbol and a trailing checkmark when `isOn` is `true`.
+
+```tsx CheckmarkContextMenuItemExample.tsx
+import { Host, ContextMenu, Toggle, Text } from '@expo/ui/swift-ui';
+import { useState } from 'react';
+
+export default function CheckmarkContextMenuItemExample() {
+  const [pinned, setPinned] = useState(false);
+
+  return (
+    <Host matchContents>
+      <ContextMenu>
+        <ContextMenu.Items>
+          <Toggle isOn={pinned} label="Pin" systemImage="pin" onIsOnChange={setPinned} />
+        </ContextMenu.Items>
+        <ContextMenu.Trigger>
+          <Text>Long press me</Text>
+        </ContextMenu.Trigger>
+      </ContextMenu>
+    </Host>
+  );
+}
+```
+
 ### Nested context menus
 
 Use nested `ContextMenu` components to create submenus.

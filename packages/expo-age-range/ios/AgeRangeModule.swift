@@ -35,5 +35,16 @@ public class AgeRangeModule: Module, @unchecked Sendable {
         throw AgeRangeInvalidRequestException()
       }
     }
+
+    AsyncFunction("isEligibleForAgeFeaturesAsync") { () -> Bool? in
+      guard #available(iOS 26.2, *) else {
+        return nil
+      }
+      do {
+        return try await AgeRangeService.shared.isEligibleForAgeFeatures
+      } catch AgeRangeService.Error.notAvailable {
+        throw AgeRangeNotAvailableException()
+      }
+    }
   }
 }

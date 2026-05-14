@@ -60,10 +60,8 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
   return object;
 }
 
-template<typename T>
-void JavaCallback::invokeJSFunction(
-  ArgsConverter<typename std::remove_const<T>::type> argsConverter,
-  T arg
+void JavaCallback::invokeWithResolver(
+  std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction)> resolver
 ) {
   const auto strongCallbackContext = this->callbackContext.lock();
   // The context were deallocated before the callback was invoked.
@@ -80,8 +78,7 @@ void JavaCallback::invokeJSFunction(
   jsInvoker->invokeAsync(
     [
       context = callbackContext,
-      argsConverter = std::move(argsConverter),
-      arg = std::move(arg)
+      resolver = std::move(resolver)
     ]() -> void {
       auto strongContext = context.lock();
       // The context were deallocated before the callback was invoked.
@@ -98,23 +95,9 @@ void JavaCallback::invokeJSFunction(
       jsi::Function &jsFunction = strongContext->resolveHolder.value();
       jsi::Runtime &rt = strongContext->rt;
 
-      argsConverter(rt, jsFunction, std::move(arg));
+      resolver(rt, jsFunction);
       strongContext->invalidate();
     });
-}
-
-template<class T>
-void JavaCallback::invokeJSFunction(T arg) {
-  invokeJSFunction<T>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      T arg
-    ) {
-      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::forward<T>(arg)));
-    },
-    arg
-  );
 }
 
 template<class T>
@@ -125,38 +108,51 @@ void JavaCallback::invokeJSFunctionForArray(T &arg) {
   rawArray.size = size;
   rawArray.data = std::move(region);
 
-  invokeJSFunction<decltype(rawArray)>(
-    std::move(rawArray)
+  invokeWithResolver(
+    [rawArray = std::move(rawArray)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(rawArray)));
+    }
   );
 }
 
 void JavaCallback::invoke() {
-  invokeJSFunction<nullptr_t>(
-    [](
-      jsi::Runtime &rt,
-      jsi::Function &jsFunction,
-      nullptr_t arg
-    ) {
+  invokeWithResolver(
+    [](jsi::Runtime &rt, jsi::Function &jsFunction) {
       jsFunction.call(rt, {jsi::Value::null()});
-    },
-    nullptr
+    }
   );
 }
 
 void JavaCallback::invokeBool(bool result) {
-  invokeJSFunction(result);
+  invokeWithResolver(
+    [result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, result));
+    }
+  );
 }
 
 void JavaCallback::invokeInt(int result) {
-  invokeJSFunction(result);
+  invokeWithResolver(
+    [result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, result));
+    }
+  );
 }
 
 void JavaCallback::invokeDouble(double result) {
-  invokeJSFunction(result);
+  invokeWithResolver(
+    [result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, result));
+    }
+  );
 }
 
 void JavaCallback::invokeFloat(float result) {
-  invokeJSFunction(result);
+  invokeWithResolver(
+    [result](jsi::Runtime &rt, jsi::Function &jsFunction) {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, result));
+    }
+  );
 }
 
 void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
@@ -164,41 +160,76 @@ void JavaCallback::invokeString(jni::alias_ref<jstring> result) {
   const char *rawValue = env->GetStringUTFChars(result.get(), nullptr);
   std::string parsedResult = rawValue;
   env->ReleaseStringUTFChars(result.get(), rawValue);
-  invokeJSFunction(parsedResult);
+  invokeWithResolver(
+    [parsedResult = std::move(parsedResult)](jsi::Runtime &rt, jsi::Function &jsFunction) {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, parsedResult));
+    }
+  );
 }
 
 void JavaCallback::invokeCollection(jni::alias_ref<jni::JCollection<jobject>> result) {
-  invokeJSFunction<
-    jni::global_ref<jni::JCollection<jobject>>
-  >(jni::make_global(result));
+  jni::global_ref<jni::JCollection<jobject>> globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
 }
 
 void JavaCallback::invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result) {
-  invokeJSFunction<
-    jni::global_ref<jni::JMap<jstring, jobject>>
-  >(jni::make_global(result));
+  jni::global_ref<jni::JMap<jstring, jobject>> globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
 }
 
 void
 JavaCallback::invokeWritableArray(jni::alias_ref<react::WritableNativeArray::javaobject> result) {
-  invokeJSFunction(result->cthis()->consume());
+  auto consumed = result->cthis()->consume();
+  invokeWithResolver(
+    [consumed = std::move(consumed)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(consumed)));
+    }
+  );
 }
 
 void JavaCallback::invokeWritableMap(jni::alias_ref<react::WritableNativeMap::javaobject> result) {
-  invokeJSFunction(result->cthis()->consume());
+  auto consumed = result->cthis()->consume();
+  invokeWithResolver(
+    [consumed = std::move(consumed)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(consumed)));
+    }
+  );
 }
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
-  invokeJSFunction(jni::make_global(result));
+  auto globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
 }
 
 void JavaCallback::invokeJavaScriptArrayBuffer(
   jni::alias_ref<JavaScriptArrayBuffer::javaobject> result) {
-  invokeJSFunction(jni::make_global(result));
+  auto globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
 }
 
 void JavaCallback::invokeNativeArrayBuffer(jni::alias_ref<NativeArrayBuffer::javaobject> result) {
-  invokeJSFunction(jni::make_global(result));
+  auto globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
 }
 
 void JavaCallback::invokeIntArray(jni::alias_ref<jni::JArrayInt> result) {

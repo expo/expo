@@ -8,7 +8,25 @@
 
 ### 🐛 Bug fixes
 
+- Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Add general `eslint-disable` comment to Router's type-gen output ([#41637](https://github.com/expo/expo/pull/41637) by [@matinzd](https://github.com/matinzd))
+- Drop `better-opn` ([#45654](https://github.com/expo/expo/pull/45654) by [@kitten](https://github.com/kitten))
+
+## 56.1.4 — 2026-05-13
+
+### 💡 Others
+
+- [Internal] Thread `https` protocol state through from from `runServer-fork` ([#45676](https://github.com/expo/expo/pull/45676) by [@kitten](https://github.com/kitten))
+
+## 56.1.3 — 2026-05-13
+
+### 💡 Others
+
+- Target only the first compatible device architecture during Android debug builds to speed up build time. ([#44907](https://github.com/expo/expo/pull/44907) by [@AntoineThibi](https://github.com/AntoineThibi))
+- Bump to `picomatch@^4.0.4` ([#45698](https://github.com/expo/expo/pull/45698) by [@kitten](https://github.com/kitten))
 
 ## 56.1.2 — 2026-05-12
 
@@ -22,6 +40,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
+- Migrate `expo login --browser`/`--sso` to OAuth 2.0 authorization code flow with PKCE. ([#44938](https://github.com/expo/expo/pull/44938) by [@byronkarlen](https://github.com/byronkarlen))
 - Deserialize new `@expo/metro-config` packed source-map format and update to use new source-map representation internally ([#45594](https://github.com/expo/expo/pull/45594) by [@kitten](https://github.com/kitten))
 
 ## 56.1.0 — 2026-05-08

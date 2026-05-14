@@ -65,4 +65,5 @@ export type AgeRangeResponse = {
 
 export interface ExpoAgeRangeModule extends NativeModule {
   requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+  isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
 }

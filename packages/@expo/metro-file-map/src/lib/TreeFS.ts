@@ -10,6 +10,7 @@ import invariant from 'invariant';
 import path from 'path';
 
 import H from '../constants';
+import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
 import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 import { isFallbackDir, shouldFallbackCrawlDir } from '../crawlers/node/fallback';
@@ -25,7 +26,6 @@ import type {
   Path,
   ProcessFileFunction,
 } from '../types';
-import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
 
 type DirectoryNode = Map<string, MixedNode | null>;
 type FileNode = FileMetadata;

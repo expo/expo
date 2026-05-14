@@ -68,7 +68,7 @@ export {
 
 export { unstable_navigationEvents } from './navigationEvents';
 export type {
-  PageWillRender,
+  PagePreloadedEvent,
   PageFocusedEvent,
   PageBlurredEvent,
   PageRemoved,

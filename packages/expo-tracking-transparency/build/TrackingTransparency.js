@@ -1,4 +1,5 @@
-import { PermissionStatus, UnavailabilityError, createPermissionHook, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 /**

@@ -1,5 +1,6 @@
 import { useLoaderData, useLocalSearchParams, usePathname } from 'expo-router';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
+import { Button } from 'react-native';
 
 import { Loading } from '../components/Loading';
 import { Table, TableRow } from '../components/Table';
@@ -23,6 +24,7 @@ const IndexScreen = () => {
   const pathname = usePathname();
   const localParams = useLocalSearchParams();
   const data = useLoaderData<typeof loader>();
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -30,6 +32,11 @@ const IndexScreen = () => {
         <TableRow label="Pathname" value={pathname} testID="pathname-result" />
         <TableRow label="Local Params" value={localParams} testID="localparams-result" />
         <TableRow label="Loader Data" value={data} testID="loader-result" />
+      </Table>
+
+      <Table>
+        <Button testID="index-increment" onPress={() => setCount((c) => c + 1)} title="increment" />
+        <TableRow label="Count" value={count} testID="index-count" />
       </Table>
 
       <SiteLinks>
@@ -48,5 +55,3 @@ const IndexScreen = () => {
     </>
   );
 };
-
-

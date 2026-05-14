@@ -308,9 +308,12 @@ describe('useSQLiteDatabase - SQL Query Building', () => {
 
     // Test updateRow
     await act(async () => {
-      const changes = await result.current.updateRow('users', { name: 'Bob', age: 31 }, 'id = ?', [
-        5,
-      ]);
+      const changes = await result.current.updateRow(
+        'users',
+        { name: 'Bob', age: 31 },
+        'id = ?',
+        [5]
+      );
 
       expect(changes).toBe(1);
     });

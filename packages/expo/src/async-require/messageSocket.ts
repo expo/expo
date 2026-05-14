@@ -5,6 +5,7 @@
 
 declare namespace globalThis {
   const __EXPO_RSC_RELOAD_LISTENERS__: (() => unknown)[] | undefined;
+  const __EXPO_LOADER_INVALIDATE_LISTENERS__: (() => unknown)[] | undefined;
 }
 
 if (__DEV__) {
@@ -23,6 +24,9 @@ if (__DEV__) {
               return;
             }
             globalThis.__EXPO_RSC_RELOAD_LISTENERS__?.forEach((l) => l());
+            break;
+          case 'loader-invalidate':
+            globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__?.forEach((l) => l());
             break;
           // Inject CSS modules from server components into the root client bundle in development.
           case 'module-import':

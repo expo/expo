@@ -1,9 +1,5 @@
-import type {
-  EventSubscription,
-  PermissionHookOptions,
-  PermissionResponse,
-} from 'expo-modules-core';
-import { createPermissionHook, UnavailabilityError } from 'expo-modules-core';
+import { createPermissionHook, type PermissionHookOptions, type PermissionResponse } from 'expo';
+import { UnavailabilityError, type EventSubscription } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
 import ExpoMediaLibraryNext from './ExpoMediaLibraryNext';

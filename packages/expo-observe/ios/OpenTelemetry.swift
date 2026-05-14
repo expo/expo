@@ -11,10 +11,6 @@ struct OTStringValue: Codable, Sendable {
  Tagged union mirroring the OTLP `AnyValue` shape — encodes as an object with
  exactly one of `stringValue` / `intValue` / `doubleValue` / `boolValue` /
  `arrayValue` / `kvlistValue`, depending on the variant.
-
- OTLP encodes 64-bit integers as JSON strings to avoid precision loss; we follow
- that convention so collectors that rely on the protobuf-JSON mapping accept the
- payload.
  */
 enum OTAnyValue: Codable, Sendable {
   case string(String)
@@ -34,7 +30,10 @@ enum OTAnyValue: Codable, Sendable {
     case .string(let value):
       try container.encode(value, forKey: .stringValue)
     case .int(let value):
-      try container.encode(String(value), forKey: .intValue)
+      // OTLP/JSON spec encodes int64 as a stringified number to avoid loss in JS-style number
+      // handling, but the EAS observability backend (ClickHouse) rejects strings here and requires
+      // a JSON number. Emit as a number to match the server contract.
+      try container.encode(value, forKey: .intValue)
     case .double(let value):
       try container.encode(value, forKey: .doubleValue)
     case .bool(let value):
@@ -50,8 +49,8 @@ enum OTAnyValue: Codable, Sendable {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     if let value = try container.decodeIfPresent(String.self, forKey: .stringValue) {
       self = .string(value)
-    } else if let value = try container.decodeIfPresent(String.self, forKey: .intValue), let parsed = Int64(value) {
-      self = .int(parsed)
+    } else if let value = try container.decodeIfPresent(Int64.self, forKey: .intValue) {
+      self = .int(value)
     } else if let value = try container.decodeIfPresent(Double.self, forKey: .doubleValue) {
       self = .double(value)
     } else if let value = try container.decodeIfPresent(Bool.self, forKey: .boolValue) {
@@ -180,19 +179,27 @@ private let semConvSchemaUrl = "https://opentelemetry.io/schemas/1.27.0"
 
 // This must be kept in sync with the INTERNAL_TO_OTEL map in universe
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
+// Keyed by "<category>/<name>" — mirrors the (category, name) pair used by the
+// Android port so the same metric name under a different category never silently
+// collides.
 let metricNameMap = [
-  "timeToInteractive": "expo.app_startup.tti",
-  "timeToFirstRender": "expo.app_startup.ttr",
-  "coldLaunchTime": "expo.app_startup.cold_launch_time",
-  "warmLaunchTime": "expo.app_startup.warm_launch_time",
-  "bundleLoadTime": "expo.app_startup.bundle_load_time",
+  // App startup
+  "appStartup/timeToInteractive": "expo.app_startup.tti",
+  "appStartup/timeToFirstRender": "expo.app_startup.ttr",
+  "appStartup/coldLaunchTime": "expo.app_startup.cold_launch_time",
+  "appStartup/warmLaunchTime": "expo.app_startup.warm_launch_time",
+  "appStartup/bundleLoadTime": "expo.app_startup.bundle_load_time",
 
-  // Legacy metrics - will be removed in a future release
-  "loadTime": "expo.app_startup.load_time",
-  "launchTime": "expo.app_startup.launch_time",
+  // Legacy app startup metrics - will be removed in a future release
+  "appStartup/loadTime": "expo.app_startup.load_time",
+  "appStartup/launchTime": "expo.app_startup.launch_time",
 
   // Updates
-  "updateDownloadTime": "expo.updates.download_time"
+  "updates/updateDownloadTime": "expo.updates.download_time",
+
+  // Navigation
+  "navigation/cold_ttr": "expo.navigation.cold_ttr",
+  "navigation/warm_ttr": "expo.navigation.warm_ttr"
 ]
 
 nonisolated(unsafe) let formatter = ISO8601DateFormatter()
@@ -224,9 +231,10 @@ extension Event.Metric {
       attributes.append(OTAttribute(key: "expo.custom_params", rawValue: customParamsString))
     }
 
+    let lookupKey = "\(self.category ?? "unknown")/\(self.name)"
     return OTMetric(
       unit: "s",
-      name: metricNameMap[self.name] ?? "expo.app_startup.\(self.name)",
+      name: metricNameMap[lookupKey] ?? "expo.unknown.\(self.name)",
       gauge: OTGauge(dataPoints: [
         OTDataPoint(
           timeUnixNano: nsFromISODateString(),
@@ -294,7 +302,10 @@ func otAttributesFromUserDict(_ dict: [String: Any]) -> (attributes: [OTAttribut
  and would otherwise be matched as `Int` first.
  */
 func otAnyValue(from value: Any) -> OTAnyValue? {
-  if let bool = value as? Bool {
+  // `as? Bool` succeeds for any NSNumber holding 0 or 1 — including `Int(0)` / `Int(1)` from JS,
+  // which would otherwise quietly emit as `boolValue` instead of `intValue`. Distinguish real
+  // booleans by checking against `CFBoolean`'s type id, which only the actual boxed Bool matches.
+  if CFGetTypeID(value as CFTypeRef) == CFBooleanGetTypeID(), let bool = value as? Bool {
     return .bool(bool)
   }
   if let int = value as? Int64 {
