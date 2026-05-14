@@ -94,6 +94,15 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
 
   const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
 
+  const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
+  if (
+    process.env.NODE_ENV === 'development' &&
+    importMode === 'sync' &&
+    !options.ignoreRequireErrors
+  ) {
+    validateRouteTreeExports(rootNode);
+  }
+
   if (middleware) {
     rootNode.middleware = middleware;
   }
@@ -453,28 +462,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       processedRedirectsRewrites.add(meta.route);
     }
 
-    if (process.env.NODE_ENV === 'development') {
-      // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
-      // filter the missing routes.
-      if (node.type !== 'api' && importMode === 'sync') {
-        const routeItem = node.loadRoute();
-        // Have a warning for nullish ex
-        const route = routeItem?.default;
-        if (route == null) {
-          // Do not throw an error since a user may just be creating a new route.
-          console.warn(
-            `Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`
-          );
-          continue;
-        }
-        if (['boolean', 'number', 'string'].includes(typeof route)) {
-          throw new Error(
-            `The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
-          );
-        }
-      }
-    }
-
     /**
      * A single filepath may be extrapolated into multiple routes if it contains array syntax.
      * Another way to thinking about is that a filepath node is present in multiple leaves of the directory tree.
@@ -680,6 +667,34 @@ function flattenDirectoryTreeToRoutes(
   }
 
   return layout;
+}
+
+function validateRouteTreeExports(node: RouteNode) {
+  if (process.env.NODE_ENV !== 'development' || node.type === 'api') {
+    return;
+  }
+
+  function runtimeValidateRouteNode(node: RouteNode) {
+    const routeItem = node.loadRoute();
+    // Have a warning for nullish ex
+    const route = routeItem?.default;
+    if (route == null) {
+      // Do not throw an error since a user may just be creating a new route.
+      console.warn(
+        `Route "${node.contextKey}" is missing the required default export. Ensure a React component is exported as default.`
+      );
+    }
+    if (['boolean', 'number', 'string'].includes(typeof route)) {
+      throw new Error(
+        `The default export from route "${node.contextKey}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
+      );
+    }
+  }
+
+  runtimeValidateRouteNode(node);
+  for (const child of node.children) {
+    validateRouteTreeExports(child);
+  }
 }
 
 function getFileMeta(
