@@ -1,5 +1,6 @@
-// Declares macro signatures whose implementations are provided by the `@expo/expo-modules-macros-plugin` binary.
-// Keep in sync with the macro declarations in the `@expo/expo-modules-macros-plugin` package.
+// Declares macro signatures whose implementations are provided by the `ExpoModulesMacros` compiler
+// plugin shipped in the `@expo/expo-modules-macros-plugin` package. Keep the `#externalMacro`
+// module/type names below in sync with the macro implementations in that package.
 
 // MARK: - Macro declarations
 
