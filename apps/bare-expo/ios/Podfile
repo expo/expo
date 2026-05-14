@@ -19,11 +19,11 @@ end
 prepare_react_native_project!
 
 abstract_target 'BareExpoMain' do
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+#  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
-  use_expo_modules!(
-    includeTests: true,
-  )
+#  use_expo_modules!(
+#    includeTests: true,
+#  )
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
@@ -80,6 +80,6 @@ abstract_target 'BareExpoMain' do
       :app_path => "#{Pod::Config.instance.installation_root}/..",
     )
 
-    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
+#    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
   end
 end
