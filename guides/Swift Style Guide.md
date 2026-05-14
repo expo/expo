@@ -31,7 +31,7 @@ No extra install needed. The pnpm scripts pick this up automatically.
 Build from source at the version CI uses:
 
 ```sh
-git clone --depth 1 --branch 603.0.0 https://github.com/swiftlang/swift-format.git /tmp/swift-format
+git clone --depth 1 --branch 603.0.0-prerelease-2026-02-09 https://github.com/swiftlang/swift-format.git /tmp/swift-format
 (cd /tmp/swift-format && swift build -c release)
 mkdir -p ~/.local/bin
 cp /tmp/swift-format/.build/release/swift-format ~/.local/bin/
@@ -39,7 +39,7 @@ cp /tmp/swift-format/.build/release/swift-format ~/.local/bin/
 
 Make sure `~/.local/bin` is on your `PATH`.
 
-The version must match the pin in `scripts/swift-format.sh` (`REQUIRED_GIT_TAG` / `REQUIRED_XCODE_VERSION`) and `SWIFT_FORMAT_VERSION` in `.github/workflows/swift-format.yml`. CI runs the version pinned there; mismatches can produce different output. Note: the swift-format Git tag uses the form `603.0.0`, but the same binary reports `6.3.0` when bundled with Xcode — both refer to the same release.
+The version must match the pin in `scripts/swift-format.sh` (`EXPECTED_VERSION` / `EXPECTED_XCODE_VERSION`) and `SWIFT_FORMAT_VERSION` in `.github/workflows/swift-format.yml`. CI runs the version pinned there; mismatches can produce different output. Note: the swift-format Git tag is currently a 603 prerelease (no final `603.0.0` exists yet); the same binary reports `6.3.0` when bundled with Xcode — both refer to the same series.
 
 ## Running the formatter
 

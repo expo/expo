@@ -12,9 +12,9 @@ else
 fi
 
 # Keep in sync with SWIFT_FORMAT_VERSION in .github/workflows/swift-format.yml.
-# The same binary reports the Git tag (603.0.0) when built from source and the
-# Xcode-style version (6.3.0) when bundled with the toolchain.
-readonly EXPECTED_VERSION=603.0.0
+# The Xcode-bundled binary reports `6.3.0`; the swift-format Git tag is a 603
+# prerelease (no final 603.0.0 has been cut). Both refer to the same series.
+readonly EXPECTED_VERSION=603.0.0-prerelease-2026-02-09
 readonly EXPECTED_XCODE_VERSION=6.3.0
 got_version=$("${bin[@]}" --version 2>/dev/null || true)
 if [[ "$got_version" != "$EXPECTED_VERSION" && "$got_version" != "$EXPECTED_XCODE_VERSION" ]]; then

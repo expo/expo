@@ -23,7 +23,9 @@ concurrency:
 env:
   # The version of swift-format used by CI and contributors. Keep in sync with
   # the EXPECTED_VERSION constants in scripts/swift-format.sh.
-  SWIFT_FORMAT_VERSION: '603.0.0'
+  # No final 603.0.0 release exists yet; track the latest 603 prerelease,
+  # which aligns with the swift-format Xcode 26.2 bundles.
+  SWIFT_FORMAT_VERSION: '603.0.0-prerelease-2026-02-09'
   SWIFT_VERSION: '6.3'
   SWIFT_PLATFORM: ubuntu24.04
 
