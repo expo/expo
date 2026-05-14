@@ -10,17 +10,17 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ComponentDiagram } from '~/ui/components/Diagram';
 
+Expo UI exposes two components that mirror Jetpack Compose's [Snackbar](https://developer.android.com/develop/ui/compose/components/snackbar) APIs:
+
+- [`SnackbarHost`](#snackbarhost) wraps Compose's [SnackbarHost](https://developer.android.com/reference/kotlin/androidx/compose/material3/SnackbarHost.composable) and [SnackbarHostState](https://developer.android.com/reference/kotlin/androidx/compose/material3/SnackbarHostState). Place it once in your layout, then call `showSnackbar` on the `ref`. Snackbars auto-dismiss based on `duration` and can also be dismissed via the action button or the optional close icon.
+- [`Snackbar`](#snackbar) is a styling-only child of [`SnackbarHost`](#snackbarhost). Pass one to override colors or place the action on a new line.
+
 <ComponentDiagram
   mode="landscape"
   source="/static/images/expo-ui/snackbar/android-light.webp"
   darkSource="/static/images/expo-ui/snackbar/android-dark.webp"
   alt="Material 3 snackbar showing the message 'Item archived' with an Undo action"
 />
-
-Expo UI exposes two components that mirror Jetpack Compose's [Snackbar](https://developer.android.com/develop/ui/compose/components/snackbar) APIs:
-
-- [`SnackbarHost`](#snackbarhost) wraps Compose's [SnackbarHost](https://developer.android.com/reference/kotlin/androidx/compose/material3/SnackbarHost.composable) and [SnackbarHostState](https://developer.android.com/reference/kotlin/androidx/compose/material3/SnackbarHostState). Place it once in your layout, then call `showSnackbar` on the `ref`. Snackbars auto-dismiss based on `duration` and can also be dismissed via the action button or the optional close icon.
-- [`Snackbar`](#snackbar) is a styling-only child of [`SnackbarHost`](#snackbarhost). Pass one to override colors or place the action on a new line.
 
 ## Installation
 
