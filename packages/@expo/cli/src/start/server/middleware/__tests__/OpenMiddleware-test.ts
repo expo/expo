@@ -28,13 +28,11 @@ function createMockResponse() {
 
 function singleResult(overrides: Partial<OpenSinglePlatformResult> = {}): OpenSinglePlatformResult {
   return {
-    platform: 'ios',
     runtime: 'expo',
     url: 'exp://127.0.0.1:8081',
     scheme: 'myapp',
     availableRuntimes: ['expo', 'custom'],
     appId: 'com.example.app',
-    host: fullSupport,
     ...overrides,
   };
 }
@@ -49,9 +47,8 @@ function createMiddleware(overrides: Partial<OpenMiddlewareOptions> = {}): {
 } {
   const getInfo =
     (overrides.getInfo as GetInfoMock) ??
-    (jest.fn(async ({ platform, runtime }) =>
+    (jest.fn(async ({ runtime }) =>
       singleResult({
-        platform: platform ?? 'ios',
         runtime: runtime === 'default' ? 'expo' : runtime,
       })
     ) as GetInfoMock);
@@ -100,13 +97,11 @@ describe('GET /_expo/open with platform', () => {
     expect(res.statusCode).toBe(200);
     const body = JSON.parse((res.end as jest.Mock).mock.calls[0][0]);
     expect(body).toEqual({
-      platform: 'ios',
       runtime: 'expo',
       url: 'exp://127.0.0.1:8081',
       scheme: 'myapp',
       availableRuntimes: ['expo', 'custom'],
       appId: 'com.example.app',
-      host: { canOpen: true },
     });
   });
 
@@ -138,11 +133,9 @@ describe('GET /_expo/open with platform', () => {
     const disambiguation: OpenPlatformInfo = {
       url: 'http://127.0.0.1:8081/_expo/loading?platform=ios',
       appId: 'com.example.app',
-      host: fullSupport,
     };
     const { middleware } = createMiddleware({
       getInfo: jest.fn(async () => ({
-        platform: 'ios',
         scheme: 'myapp',
         availableRuntimes: ['expo', 'custom'],
         ...disambiguation,
@@ -158,20 +151,6 @@ describe('GET /_expo/open with platform', () => {
     expect(Object.hasOwn(body, 'runtime')).toBe(false);
     expect(body.url).toMatch(/_expo\/loading/);
     expect(body.availableRuntimes).toEqual(['expo', 'custom']);
-  });
-
-  it('returns host info that flags iOS as unopenable on linux', async () => {
-    const { middleware } = createMiddleware({
-      getInfo: jest.fn(async () => singleResult({ host: iosBlocked })),
-    });
-    const res = createMockResponse();
-    await middleware.handleRequestAsync(
-      asReq({ url: 'http://localhost:8081/_expo/open?platform=ios', method: 'GET', headers: {} }),
-      res
-    );
-    const body = JSON.parse((res.end as jest.Mock).mock.calls[0][0]);
-    expect(body.host.canOpen).toBe(false);
-    expect(body.host.reason).toMatch(/linux/);
   });
 
   it('400s on unsupported runtime', async () => {
@@ -209,9 +188,9 @@ describe('GET /_expo/open without platform (discovery)', () => {
         availableRuntimes: ['expo', 'custom'],
         platforms: {
           // ios & android omit `runtime` because the URL is the disambiguation page
-          ios: { url: 'http://127.0.0.1:8081/_expo/loading?platform=ios', appId: 'com.example.ios', host: iosBlocked },
-          android: { url: 'http://127.0.0.1:8081/_expo/loading?platform=android', appId: 'com.example.android', host: fullSupport },
-          web: { runtime: 'web', url: 'http://127.0.0.1:8081', appId: null, host: fullSupport },
+          ios: { url: 'http://127.0.0.1:8081/_expo/loading?platform=ios', appId: 'com.example.ios' },
+          android: { url: 'http://127.0.0.1:8081/_expo/loading?platform=android', appId: 'com.example.android' },
+          web: { runtime: 'web', url: 'http://127.0.0.1:8081', appId: null },
         },
       })),
     });
@@ -228,7 +207,6 @@ describe('GET /_expo/open without platform (discovery)', () => {
     expect(body.availableRuntimes).toEqual(['expo', 'custom']);
     expect(Object.keys(body.platforms)).toEqual(['ios', 'android', 'web']);
     expect(body.platforms.ios.runtime).toBeUndefined();
-    expect(body.platforms.ios.host.canOpen).toBe(false);
     expect(body.platforms.web.runtime).toBe('web');
   });
 });

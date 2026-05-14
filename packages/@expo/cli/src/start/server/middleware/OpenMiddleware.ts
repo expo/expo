@@ -45,8 +45,6 @@ export interface OpenPlatformInfo {
    * present before opening a deep link.
    */
   appId: string | null;
-  /** Whether the dev server's host can launch this platform locally. */
-  host: OpenHostSupportEntry;
 }
 
 /** Project-level metadata returned on every GET. */
@@ -63,9 +61,7 @@ interface OpenProjectMeta {
 }
 
 /** GET `/_expo/open?platform=…` — focused per-platform response. */
-export interface OpenSinglePlatformResult extends OpenProjectMeta, OpenPlatformInfo {
-  platform: OpenPlatform;
-}
+export interface OpenSinglePlatformResult extends OpenProjectMeta, OpenPlatformInfo {}
 
 /** GET `/_expo/open` — discovery response with all platforms. */
 export interface OpenDiscoveryResult extends OpenProjectMeta {

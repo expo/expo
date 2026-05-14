@@ -15,7 +15,6 @@ interface ResolveInfoDeps {
   isDevClient: boolean;
   /** Result of `BundlerDevServer.isRedirectPageEnabled()` — true when the project supports both Expo Go and a dev build. */
   isRedirectPageEnabled: boolean;
-  getHostSupport: (platform: OpenPlatform) => OpenHostSupportEntry;
   /**
    * Resolve the native application identifier for a platform (iOS bundle id / Android package
    * name). Implementations should return `null` instead of throwing when the project has no
@@ -42,7 +41,6 @@ export async function resolveOpenInfo(
 
   if (platform) {
     return {
-      platform,
       scheme,
       availableRuntimes,
       ...(await resolvePlatformInfo(platform, runtime, deps)),
@@ -62,14 +60,13 @@ async function resolvePlatformInfo(
   runtime: OpenRequestedRuntime,
   deps: ResolveInfoDeps
 ): Promise<OpenPlatformInfo> {
-  const { urlCreator, isDevClient, isRedirectPageEnabled, getHostSupport, getAppId } = deps;
-  const host = getHostSupport(platform);
+  const { urlCreator, isDevClient, isRedirectPageEnabled, getAppId } = deps;
   const appId = await getAppId(platform);
 
   if (platform === 'web') {
     // constructUrl inherits the tunnel host from `defaults.hostType` when --tunnel is active,
     // so this returns the ngrok URL instead of localhost in that case.
-    return { runtime: 'web', url: urlCreator.constructUrl({ scheme: 'http' }), appId, host };
+    return { runtime: 'web', url: urlCreator.constructUrl({ scheme: 'http' }), appId };
   }
 
   // `runtime: 'default'` mirrors what pressing `i` / `a` does in the terminal:
@@ -79,18 +76,14 @@ async function resolvePlatformInfo(
   //   else                 → open Expo Go directly.
   if (runtime === 'default') {
     if (isDevClient) {
-      return { runtime: 'custom', url: urlCreator.constructDevClientUrl(), appId, host };
+      return { runtime: 'custom', url: urlCreator.constructDevClientUrl(), appId };
     }
     if (isRedirectPageEnabled) {
       // No `runtime` here — the URL is the disambiguation page and the actual runtime depends on
       // the device's choice. The field is intentionally omitted so JSON.stringify drops it.
-      return {
-        url: urlCreator.constructLoadingUrl({}, platform),
-        appId,
-        host,
-      };
+      return { url: urlCreator.constructLoadingUrl({}, platform), appId };
     }
-    return { runtime: 'expo', url: urlCreator.constructUrl({ scheme: 'exp' }), appId, host };
+    return { runtime: 'expo', url: urlCreator.constructUrl({ scheme: 'exp' }), appId };
   }
 
   return {
@@ -100,11 +93,12 @@ async function resolvePlatformInfo(
         ? urlCreator.constructDevClientUrl()
         : urlCreator.constructUrl({ scheme: 'exp' }),
     appId,
-    host,
   };
 }
 
 export interface CreateOpenMiddlewareOptionsDeps extends ResolveInfoDeps {
+  /** Whether the host can launch a given platform — used by POST to short-circuit with a 501. */
+  getHostSupport: (platform: OpenPlatform) => OpenHostSupportEntry;
   /** Same shape as `BundlerDevServer.openPlatformAsync`. */
   openPlatformAsync: (
     launchTarget: 'simulator' | 'emulator' | 'desktop',
