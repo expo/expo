@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Live Activity multiple evaluations. ([#45675](https://github.com/expo/expo/pull/45675) by [@nkopylov](https://github.com/nkopylov))
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-11

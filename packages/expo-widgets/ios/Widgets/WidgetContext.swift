@@ -19,6 +19,5 @@ func createWidgetContext(layout: String) -> JSContext? {
   // Inject layout
   let layoutValue = context.evaluateScript("(\(layout))")
   context.setObject(layoutValue, forKeyedSubscript: "__expoWidgetLayout" as NSString)
-
   return context
 }
