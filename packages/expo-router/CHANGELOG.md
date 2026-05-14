@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent route modules from being eagerly validated when they don't contribute to the current platform or are otherwise removed ([#45766](https://github.com/expo/expo/pull/45766) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.1.4 — 2026-05-13
