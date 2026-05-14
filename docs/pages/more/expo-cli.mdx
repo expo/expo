@@ -156,7 +156,7 @@ Both of these files have information that is specific to your local computer. Th
 
 ### Open endpoint
 
-The dev server exposes `/_expo/open` so external tools — cloud agents, distributed preview services like [Appetize](https://appetize.io/), CI scripts — can introspect the deep links the CLI would use, and optionally trigger the same action as pressing <kbd>I</kbd> / <kbd>A</kbd> / <kbd>W</kbd> in the **Terminal UI**. It supplements the legacy `/_expo/link` endpoint, which returns a `307` redirect to a deep link scheme that non-mobile clients can't follow.
+The dev server exposes `/_expo/open` so external tools — cloud agents, remote preview services, CI scripts — can introspect the deep links the CLI would use, and optionally trigger the same action as pressing <kbd>I</kbd> / <kbd>A</kbd> / <kbd>W</kbd> in the **Terminal UI**. It supplements the legacy `/_expo/link` endpoint, which returns a `307` redirect to a deep link scheme that non-mobile clients can't follow.
 
 | Method | Effect                                                                                                |
 | ------ | ----------------------------------------------------------------------------------------------------- |

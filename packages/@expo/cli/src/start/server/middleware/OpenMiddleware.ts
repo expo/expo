@@ -155,7 +155,7 @@ export class OpenMiddleware extends ExpoMiddleware {
           error: `Cannot open the project on ${platform} from this dev server host.`,
           details:
             (support.reason ? support.reason + ' ' : '') +
-            `Use GET /_expo/open?platform=${platform} to retrieve the deep link, then launch it from a host that supports ${platform} or hand it to a remote preview service such as Appetize.`,
+            `Use GET /_expo/open?platform=${platform} to retrieve the deep link, then launch it from a host that supports ${platform} or hand it to a remote preview service.`,
         });
         return;
       }

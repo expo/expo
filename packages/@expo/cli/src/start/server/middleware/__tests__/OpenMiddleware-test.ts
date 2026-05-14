@@ -323,7 +323,7 @@ describe('host platform support', () => {
     const body = JSON.parse((res.end as jest.Mock).mock.calls[0][0]);
     expect(body.code).toBe('HOST_CANNOT_OPEN_PLATFORM');
     expect(body.details).toMatch(/linux/);
-    expect(body.details).toMatch(/Appetize/);
+    expect(body.details).toMatch(/remote preview service/);
   });
 
   it('500s POST when open() throws, carrying the underlying code', async () => {
