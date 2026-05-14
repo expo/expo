@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `pod install` failing with `bad component (expected absolute path component)` for precompiled Expo modules when the project lives under a path containing non-ASCII characters (e.g. emoji). ([#45779](https://github.com/expo/expo/pull/45779) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-13
