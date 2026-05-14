@@ -1,4 +1,4 @@
-import type { FileHandle } from './ExpoFileSystem.types';
+import type { FileHandle } from '../File.types';
 export declare class FileSystemReadableStreamSource implements UnderlyingByteSource {
     handle: FileHandle;
     size: number;

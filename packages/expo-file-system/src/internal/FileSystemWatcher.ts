@@ -1,25 +1,17 @@
 import type { EventSubscription } from 'expo-modules-core';
 
-import ExpoFileSystem from './ExpoFileSystem';
+import type { Directory } from '../Directory';
+import ExpoFileSystem from '../ExpoFileSystem';
+import type { File } from '../File';
 import {
   DEFAULT_DEBOUNCE_MS,
   type WatchEvent,
-  type WatchEventType,
   type WatchOptions,
   type WatchSubscription,
-} from './ExpoFileSystem.types';
-import type { Directory, File } from './FileSystem';
+} from '../FileSystemWatcher.types';
+import type { NativeFileSystemWatcherEvent } from './NativeFileSystem.types';
 
 type TargetFactory<T> = (uri: string, isDirectory: boolean) => T;
-
-interface NativeWatchEvent {
-  type: WatchEventType;
-  path: string;
-  isDirectory: boolean;
-  nativeEventFlags?: number;
-  newPath?: string;
-  newPathIsDirectory?: boolean;
-}
 
 function normalizePath(path: string): string {
   return path.replace(/\/+$/, '');
@@ -47,18 +39,21 @@ export class FileSystemWatcher<T extends File | Directory> implements WatchSubsc
       events: options.events,
     });
 
-    this.subscription = this.nativeWatcher.addListener('change', (raw: NativeWatchEvent) => {
-      const event = this.mapEvent(raw);
-      const isWatchedTarget = normalizePath(raw.path) === this.normalizedWatchedPath;
+    this.subscription = this.nativeWatcher.addListener(
+      'change',
+      (raw: NativeFileSystemWatcherEvent) => {
+        const event = this.mapEvent(raw);
+        const isWatchedTarget = normalizePath(raw.path) === this.normalizedWatchedPath;
 
-      if (!options.events || options.events.includes(event.type)) {
-        callback(event);
-      }
+        if (!options.events || options.events.includes(event.type)) {
+          callback(event);
+        }
 
-      if ((event.type === 'deleted' || event.type === 'renamed') && isWatchedTarget) {
-        this.remove();
+        if ((event.type === 'deleted' || event.type === 'renamed') && isWatchedTarget) {
+          this.remove();
+        }
       }
-    });
+    );
 
     try {
       this.nativeWatcher.start();
@@ -70,7 +65,7 @@ export class FileSystemWatcher<T extends File | Directory> implements WatchSubsc
     }
   }
 
-  private mapEvent(raw: NativeWatchEvent): WatchEvent<T> {
+  private mapEvent(raw: NativeFileSystemWatcherEvent): WatchEvent<T> {
     return {
       type: raw.type,
       target: this.targetFactory(raw.path, raw.isDirectory),

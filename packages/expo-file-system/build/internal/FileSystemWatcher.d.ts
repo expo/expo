@@ -1,5 +1,6 @@
-import { type WatchEvent, type WatchOptions, type WatchSubscription } from './ExpoFileSystem.types';
-import type { Directory, File } from './FileSystem';
+import type { Directory } from '../Directory';
+import type { File } from '../File';
+import { type WatchEvent, type WatchOptions, type WatchSubscription } from '../FileSystemWatcher.types';
 type TargetFactory<T> = (uri: string, isDirectory: boolean) => T;
 /**
  * @hidden
