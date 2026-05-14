@@ -33,41 +33,27 @@ public func evaluateLayout(
   props: [String: Any],
   environment: [String: Any]
 ) -> [String: Any] {
-  guard let context = createWidgetContext(layout: layout) else {
-    return createRedBox(message: "Could not create context for layout evaluation.")
+  switch evaluateWidgetLayout(layout: layout, props: props, environment: environment) {
+  case .success(let result):
+    return result
+  case .failure(let error):
+    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
+    return createRedBox(message: error.message)
   }
-
-  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [props, environment]
-  )
-  if let exception = context.exception {
-    print("[ExpoWidgets] Layout evaluation failed: \(exception)")
-    return createRedBox(message: exception.toString())
-  }
-  return result?.toObject() as? [String: Any] ?? createRedBox(message: "Expo widget render did not produce any results.")
 }
 
 func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
   let propsData = props.data(using: .utf8)
   let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
-  guard let context = createWidgetContext(layout: layout) else {
-    return ["banner": createRedBox(message: "Could not create context for layout evaluation.")]
+
+  switch evaluateWidgetLayout(layout: layout, props: propsDict, environment: environment) {
+  case .success(let result):
+    return result
+  case .failure(let error):
+    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
+    return ["banner": createRedBox(message: error.message)]
   }
-
-  var widgetEnvironment = environment
-  widgetEnvironment["timestamp"] = Int(Date.now.timeIntervalSince1970 * 1000)
-
-  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [propsDict, environment]
-  )
-
-  if let exception = context.exception {
-    print("[ExpoWidgets] Layout evaluation failed: \(exception)")
-    return ["banner": createRedBox(message: exception.toString())]
-  }
-
-  return result?.toObject() as? [String: Any] ?? ["banner": createRedBox(message: "Expo widget render did not produce any results.")]
 }
 
 func getLiveActivityUrl(forName name: String) -> URL? {
