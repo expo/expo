@@ -62,7 +62,16 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
 
     const buffer = this.#packr.encode(value);
     await this.prepare();
-    await fs.promises.writeFile(this.#getFilePath(key), buffer);
+    const filePath = this.#getFilePath(key);
+    try {
+      await fs.promises.writeFile(filePath, buffer);
+    } catch (err: any) {
+      // The cache root can disappear underneath us if a parallel process clears the cache root
+      if (err?.code !== 'ENOENT') throw err;
+      this.#prepare = undefined;
+      await this.prepare();
+      await fs.promises.writeFile(filePath, buffer);
+    }
   }
 
   clear() {

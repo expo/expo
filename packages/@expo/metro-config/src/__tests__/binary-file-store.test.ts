@@ -70,4 +70,19 @@ describe(FileStore, () => {
 
     await expect(store.get(key)).resolves.toBeNull();
   });
+
+  it('recovers when the cache root disappears between writes', async () => {
+    const store = new FileStore<unknown>({ root: ROOT });
+    const key1 = makeKey(0x01);
+    const key2 = makeKey(0x02);
+
+    await store.set(key1, { first: true });
+    // Simulate a parallel `expo start --clear` (or any external removal)
+    // wiping the cache root while this process kept its store instance.
+    vol.rmSync(ROOT, { recursive: true, force: true });
+
+    await store.set(key2, { second: true });
+
+    await expect(store.get(key2)).resolves.toEqual({ second: true });
+  });
 });
