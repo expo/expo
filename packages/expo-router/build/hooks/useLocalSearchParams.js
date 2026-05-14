@@ -12,10 +12,11 @@ function useLocalSearchParams() {
     const params = react_1.default.use(Route_1.LocalRouteParamsContext) ?? {};
     const { params: previewParams } = (0, PreviewRouteContext_1.usePreviewInfo)();
     return Object.fromEntries(Object.entries(previewParams ?? params).map(([key, value]) => {
-        // React Navigation doesn't remove "undefined" values from the params object, and you cannot remove them via
-        // navigation.setParams as it shallow merges. Hence, we hide them here
-        if (value === undefined) {
-            return [key, undefined];
+        // React Navigation doesn't remove `undefined` values from the params object, and you cannot remove them via
+        // `navigation.setParams()` as it shallow merges. Hence, we hide them here. We also pass `null` through unchanged
+        // for the same reason; running it through `decodeURIComponent()` would otherwise stringify it to `null`.
+        if (value == null) {
+            return [key, value];
         }
         if (Array.isArray(value)) {
             return [
