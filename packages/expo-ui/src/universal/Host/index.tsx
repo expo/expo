@@ -1,15 +1,13 @@
 import { useCallback } from 'react';
-import {
-  StyleSheet,
-  useWindowDimensions,
-  View,
-  type LayoutChangeEvent,
-  type ViewProps,
-} from 'react-native';
+import { StyleSheet, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
 
 const styles = StyleSheet.create({
   matchContents: {
     alignSelf: 'flex-start',
+  },
+  matchViewport: {
+    height: '100dvh',
+    width: '100dvw',
   },
   safeAreaAll: {
     paddingLeft: 'env(safe-area-inset-left, 0px)',
@@ -47,8 +45,6 @@ export function Host({
   useViewportSizeMeasurement = false,
   ...rest
 }: ViewProps & HostProps) {
-  const windowDimensions = useWindowDimensions();
-
   const shouldMatchContents =
     typeof matchContents === 'object'
       ? matchContents.horizontal || matchContents.vertical
@@ -74,10 +70,7 @@ export function Host({
           (ignoreSafeArea === 'keyboard' ? styles.safeAreaKeyboard : styles.safeAreaAll),
         shouldMatchContents
           ? styles.matchContents
-          : useViewportSizeMeasurement && {
-              width: windowDimensions.width,
-              height: windowDimensions.height,
-            },
+          : useViewportSizeMeasurement && styles.matchViewport,
         style,
       ]}
       {...rest}>

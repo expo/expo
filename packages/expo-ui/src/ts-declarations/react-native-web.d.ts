@@ -102,6 +102,8 @@ declare module 'react-native' {
 
   export interface ImageStyle {
     display?: DisplayValue;
+    height?: WebDimensionValue;
+    width?: WebDimensionValue;
     paddingLeft?: WebDimensionValue;
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
@@ -110,6 +112,8 @@ declare module 'react-native' {
 
   export interface TextStyle {
     display?: DisplayValue;
+    height?: WebDimensionValue;
+    width?: WebDimensionValue;
     paddingLeft?: WebDimensionValue;
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
@@ -118,6 +122,8 @@ declare module 'react-native' {
 
   export interface ViewStyle {
     display?: DisplayValue;
+    height?: WebDimensionValue;
+    width?: WebDimensionValue;
     paddingLeft?: WebDimensionValue;
     paddingRight?: WebDimensionValue;
     paddingTop?: WebDimensionValue;
