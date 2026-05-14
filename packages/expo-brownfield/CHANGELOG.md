@@ -19,7 +19,7 @@
 
 ### 🐛 Bug fixes
 
-- Unwrap native event in addSharedStateListener ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
+- Fix `addSharedStateListener` callback type to match the native event shape ([#44401](https://github.com/expo/expo/pull/44401) by [@mberube09](https://github.com/mberube09))
 
 ### 💡 Others
 
