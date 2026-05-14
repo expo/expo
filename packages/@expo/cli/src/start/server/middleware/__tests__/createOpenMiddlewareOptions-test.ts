@@ -97,7 +97,7 @@ describe('resolveOpenInfo — tunnel', () => {
     );
   });
 
-  it('routes the disambiguation URL through the tunnel host when runtime defaults to "unknown"', async () => {
+  it('routes the disambiguation URL through the tunnel host and omits the runtime field', async () => {
     const info = (await resolveOpenInfo(
       { platform: 'ios', runtime: 'default' },
       { ...baseDeps, isRedirectPageEnabled: true }
@@ -151,7 +151,7 @@ describe('resolveOpenInfo — runtime: default resolution', () => {
     expect(info.availableRuntimes).toEqual(['custom']);
   });
 
-  it('project has both → runtime "unknown" with the disambiguation URL', async () => {
+  it('project has both → runtime omitted with the disambiguation URL', async () => {
     const info = (await resolveOpenInfo(
       { platform: 'android', runtime: 'default' },
       {
@@ -220,21 +220,31 @@ describe('resolveOpenInfo — appId', () => {
   });
 
   it('resolves appIds in parallel during discovery', async () => {
+    const order: string[] = [];
+    let resolveIos: () => void = () => {};
+    let resolveAndroid: () => void = () => {};
+    const iosStarted = new Promise<void>((r) => (resolveIos = r));
+    const androidStarted = new Promise<void>((r) => (resolveAndroid = r));
     const getAppId = jest.fn(async (platform: 'ios' | 'android' | 'web') => {
       if (platform === 'web') return null;
-      // small artificial delay
-      await new Promise((r) => setTimeout(r, 5));
+      order.push(platform);
+      // Mark this platform as started, then wait for the other to start too. If resolution is
+      // serial this deadlocks (the second never starts because the first never resolves).
+      if (platform === 'ios') {
+        resolveIos();
+        await androidStarted;
+      } else {
+        resolveAndroid();
+        await iosStarted;
+      }
       return `com.example.${platform}`;
     });
-    const start = Date.now();
     const info = (await resolveOpenInfo(
       { platform: null, runtime: 'default' },
       { ...baseDeps, getAppId }
     )) as OpenDiscoveryResult;
-    const elapsed = Date.now() - start;
     expect(getAppId).toHaveBeenCalledTimes(3);
-    // serial would be >= 10ms (two 5ms native lookups), parallel should be ~5ms
-    expect(elapsed).toBeLessThan(10);
+    expect(order).toEqual(['ios', 'android']); // both started before either completed
     expect(info.platforms.ios.appId).toBe('com.example.ios');
     expect(info.platforms.android.appId).toBe('com.example.android');
   });

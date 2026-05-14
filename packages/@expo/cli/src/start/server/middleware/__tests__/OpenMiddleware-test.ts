@@ -134,22 +134,19 @@ describe('GET /_expo/open with platform', () => {
     expect(getInfo).toHaveBeenCalledWith({ platform: 'ios', runtime: 'custom' });
   });
 
-  it('exposes interstitial as the resolved runtime when the project has both choices', async () => {
-    const interstitial: OpenPlatformInfo = {
-      runtime: 'unknown',
+  it('omits runtime when the URL is the disambiguation page', async () => {
+    const disambiguation: OpenPlatformInfo = {
       url: 'http://127.0.0.1:8081/_expo/loading?platform=ios',
       appId: 'com.example.app',
       host: fullSupport,
     };
     const { middleware } = createMiddleware({
-      getInfo: jest.fn(async () =>
-        singleResult({
-          ...interstitial,
-          platform: 'ios',
-          scheme: 'myapp',
-          availableRuntimes: ['expo', 'custom'],
-        })
-      ),
+      getInfo: jest.fn(async () => ({
+        platform: 'ios',
+        scheme: 'myapp',
+        availableRuntimes: ['expo', 'custom'],
+        ...disambiguation,
+      })),
     });
     const res = createMockResponse();
     await middleware.handleRequestAsync(
@@ -157,7 +154,8 @@ describe('GET /_expo/open with platform', () => {
       res
     );
     const body = JSON.parse((res.end as jest.Mock).mock.calls[0][0]);
-    expect(body.runtime).toBe('interstitial');
+    expect(body.runtime).toBeUndefined();
+    expect(Object.hasOwn(body, 'runtime')).toBe(false);
     expect(body.url).toMatch(/_expo\/loading/);
     expect(body.availableRuntimes).toEqual(['expo', 'custom']);
   });
@@ -210,8 +208,9 @@ describe('GET /_expo/open without platform (discovery)', () => {
         scheme: 'myapp',
         availableRuntimes: ['expo', 'custom'],
         platforms: {
-          ios: { runtime: 'unknown', url: 'http://127.0.0.1:8081/_expo/loading?platform=ios', appId: 'com.example.ios', host: iosBlocked },
-          android: { runtime: 'unknown', url: 'http://127.0.0.1:8081/_expo/loading?platform=android', appId: 'com.example.android', host: fullSupport },
+          // ios & android omit `runtime` because the URL is the disambiguation page
+          ios: { url: 'http://127.0.0.1:8081/_expo/loading?platform=ios', appId: 'com.example.ios', host: iosBlocked },
+          android: { url: 'http://127.0.0.1:8081/_expo/loading?platform=android', appId: 'com.example.android', host: fullSupport },
           web: { runtime: 'web', url: 'http://127.0.0.1:8081', appId: null, host: fullSupport },
         },
       })),
@@ -228,7 +227,7 @@ describe('GET /_expo/open without platform (discovery)', () => {
     expect(body.scheme).toBe('myapp');
     expect(body.availableRuntimes).toEqual(['expo', 'custom']);
     expect(Object.keys(body.platforms)).toEqual(['ios', 'android', 'web']);
-    expect(body.platforms.ios.runtime).toBe('interstitial');
+    expect(body.platforms.ios.runtime).toBeUndefined();
     expect(body.platforms.ios.host.canOpen).toBe(false);
     expect(body.platforms.web.runtime).toBe('web');
   });
