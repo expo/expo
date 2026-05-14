@@ -347,22 +347,26 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
-    let path: String? = {
-      // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
-      // It also crashes with EXC_BREAKPOINT when parsing data:image uris
-      // manually drop the leading slash below iOS 16
-      if let path = source.uri?.path {
-        return String(path.dropFirst())
-      }
-      return nil
-    }()
-
-    if let path, !path.isEmpty, let local = UIImage(named: path) {
+    if let local = localAssetImage(from: source) {
       renderSourceImage(local)
       return true
     }
 
     return false
+  }
+
+  private func localAssetImage(from source: ImageSource) -> UIImage? {
+    // .path() on iOS 16 would remove the leading slash, but it doesn't on tvOS 16 🙃
+    // It also crashes with EXC_BREAKPOINT when parsing data:image uris
+    // manually drop the leading slash below iOS 16
+    guard let path = source.uri?.path else {
+      return nil
+    }
+    let trimmed = String(path.dropFirst())
+    guard !trimmed.isEmpty else {
+      return nil
+    }
+    return UIImage(named: trimmed)
   }
 
   // MARK: - Placeholder
@@ -412,6 +416,14 @@ public final class ImageView: ExpoView {
     // Exit early if placeholder is not set or there is already an image attached to the view.
     // The placeholder is only used until the first image is loaded.
     guard canDisplayPlaceholder, let placeholder = bestPlaceholder else {
+      return
+    }
+
+    // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
+    // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
+    if let localImage = localAssetImage(from: placeholder) {
+      placeholderImage = localImage
+      displayPlaceholderIfNecessary()
       return
     }
 
