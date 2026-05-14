@@ -1395,10 +1395,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const openMiddleware = new OpenMiddleware(
         this.projectRoot,
         createOpenMiddlewareOptions({
+          // Read all dev-server state live — pressing `s` in the terminal toggles `isDevClient`
+          // and the scheme, and `expo-dev-client` can be installed mid-run (re-resolved by
+          // isRedirectPageEnabled on every call).
           urlCreator: this.getUrlCreator(),
-          scheme: options.location.scheme ?? null,
-          isDevClient: this.isDevClient,
-          isRedirectPageEnabled: this.isRedirectPageEnabled(),
+          getScheme: () => this.getUrlCreator().defaults?.scheme ?? null,
+          getIsDevClient: () => this.isDevClient,
+          getIsRedirectPageEnabled: () => this.isRedirectPageEnabled(),
           getHostSupport,
           openPlatformAsync: (target, resolver) => this.openPlatformAsync(target, resolver),
           getAppId: async (platform) => {

@@ -10,11 +10,18 @@ import type {
 import type { UrlCreator } from '../UrlCreator';
 
 interface ResolveInfoDeps {
+  /** Stable UrlCreator instance — its `defaults` mutate when `toggleRuntimeMode` runs, so the same instance keeps producing fresh URLs. */
   urlCreator: UrlCreator;
-  scheme: string | null;
-  isDevClient: boolean;
-  /** Result of `BundlerDevServer.isRedirectPageEnabled()` — true when the project supports both Expo Go and a dev build. */
-  isRedirectPageEnabled: boolean;
+  /**
+   * Read live values every call. The dev server's runtime mode can flip mid-run via the `s` key
+   * in the terminal, and `expo-dev-client` can be installed while the server is running — both
+   * change `isDevClient`, `isRedirectPageEnabled`, and `scheme`, and the endpoint should reflect
+   * the current state on every request.
+   */
+  getScheme: () => string | null;
+  getIsDevClient: () => boolean;
+  /** Live mirror of `BundlerDevServer.isRedirectPageEnabled()`. */
+  getIsRedirectPageEnabled: () => boolean;
   /**
    * Resolve the native application identifier for a platform (iOS bundle id / Android package
    * name). Implementations should return `null` instead of throwing when the project has no
@@ -32,7 +39,11 @@ export async function resolveOpenInfo(
   { platform, runtime }: { platform: OpenPlatform | null; runtime: OpenRequestedRuntime },
   deps: ResolveInfoDeps
 ): Promise<OpenInfoResult> {
-  const { scheme, isDevClient, isRedirectPageEnabled } = deps;
+  // Snapshot the live state once per request so the response is internally consistent even if a
+  // toggle happens between sub-resolutions.
+  const scheme = deps.getScheme();
+  const isDevClient = deps.getIsDevClient();
+  const isRedirectPageEnabled = deps.getIsRedirectPageEnabled();
   const availableRuntimes: OpenNativeRuntime[] = isDevClient
     ? ['custom']
     : isRedirectPageEnabled
@@ -43,14 +54,14 @@ export async function resolveOpenInfo(
     return {
       scheme,
       availableRuntimes,
-      ...(await resolvePlatformInfo(platform, runtime, deps)),
+      ...(await resolvePlatformInfo(platform, runtime, deps, { isDevClient, isRedirectPageEnabled })),
     };
   }
 
   const [ios, android, web] = await Promise.all([
-    resolvePlatformInfo('ios', runtime, deps),
-    resolvePlatformInfo('android', runtime, deps),
-    resolvePlatformInfo('web', runtime, deps),
+    resolvePlatformInfo('ios', runtime, deps, { isDevClient, isRedirectPageEnabled }),
+    resolvePlatformInfo('android', runtime, deps, { isDevClient, isRedirectPageEnabled }),
+    resolvePlatformInfo('web', runtime, deps, { isDevClient, isRedirectPageEnabled }),
   ]);
   return { scheme, availableRuntimes, platforms: { ios, android, web } };
 }
@@ -58,9 +69,11 @@ export async function resolveOpenInfo(
 async function resolvePlatformInfo(
   platform: OpenPlatform,
   runtime: OpenRequestedRuntime,
-  deps: ResolveInfoDeps
+  deps: ResolveInfoDeps,
+  state: { isDevClient: boolean; isRedirectPageEnabled: boolean }
 ): Promise<OpenPlatformInfo> {
-  const { urlCreator, isDevClient, isRedirectPageEnabled, getAppId } = deps;
+  const { urlCreator, getAppId } = deps;
+  const { isDevClient, isRedirectPageEnabled } = state;
   const appId = await getAppId(platform);
 
   if (platform === 'web') {
@@ -110,7 +123,7 @@ export interface CreateOpenMiddlewareOptionsDeps extends ResolveInfoDeps {
 export function createOpenMiddlewareOptions(
   deps: CreateOpenMiddlewareOptionsDeps
 ): OpenMiddlewareOptions {
-  const { openPlatformAsync, getHostSupport, isDevClient } = deps;
+  const { openPlatformAsync, getHostSupport, getIsDevClient } = deps;
   return {
     getHostSupport,
     getInfo: (params) => resolveOpenInfo(params, deps),
@@ -121,7 +134,8 @@ export function createOpenMiddlewareOptions(
       }
       const launchTarget = platform === 'ios' ? 'simulator' : 'emulator';
       const result = await openPlatformAsync(launchTarget, { shouldPrompt: false });
-      return { platform, runtime: isDevClient ? 'custom' : 'expo', url: result.url ?? '' };
+      // Read runtime mode live — `s` in the terminal can flip this between dispatch and response.
+      return { platform, runtime: getIsDevClient() ? 'custom' : 'expo', url: result.url ?? '' };
     },
   };
 }
