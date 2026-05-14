@@ -4,10 +4,6 @@ type AppearSymbolEffect = {
     scale?: 'down' | 'up';
     scope?: 'byLayer' | 'wholeSymbol';
 };
-type AutomaticSymbolEffect = {
-    effect: 'automatic';
-    scope?: 'byLayer' | 'wholeSymbol';
-};
 type BounceSymbolEffect = {
     effect: 'bounce';
     direction?: 'down' | 'up';
@@ -36,11 +32,6 @@ type PulseSymbolEffect = {
     effect: 'pulse';
     scope?: 'byLayer' | 'wholeSymbol';
 };
-type ReplaceSymbolEffect = {
-    effect: 'replace';
-    scale?: 'downUp' | 'offUp' | 'upUp';
-    scope?: 'byLayer' | 'wholeSymbol';
-};
 type RotateSymbolEffect = {
     effect: 'rotate';
     direction?: 'clockwise' | 'counterClockwise';
@@ -63,7 +54,7 @@ type WiggleSymbolEffect = {
     customAngle?: number;
     scope?: 'byLayer' | 'wholeSymbol';
 };
-export type SymbolEffect = AppearSymbolEffect | AutomaticSymbolEffect | BounceSymbolEffect | BreatheSymbolEffect | DisappearSymbolEffect | DrawOffSymbolEffect | DrawOnSymbolEffect | PulseSymbolEffect | ReplaceSymbolEffect | RotateSymbolEffect | ScaleSymbolEffect | VariableColorSymbolEffect | WiggleSymbolEffect;
+export type SymbolEffect = AppearSymbolEffect | BounceSymbolEffect | BreatheSymbolEffect | DisappearSymbolEffect | DrawOffSymbolEffect | DrawOnSymbolEffect | PulseSymbolEffect | RotateSymbolEffect | ScaleSymbolEffect | VariableColorSymbolEffect | WiggleSymbolEffect;
 /**
  * Animation options for a symbol effect.
  *

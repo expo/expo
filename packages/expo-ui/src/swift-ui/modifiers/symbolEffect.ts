@@ -9,12 +9,6 @@ type AppearSymbolEffect = {
   scope?: 'byLayer' | 'wholeSymbol';
 };
 
-// https://developer.apple.com/documentation/symbols/automaticsymboleffect
-type AutomaticSymbolEffect = {
-  effect: 'automatic';
-  scope?: 'byLayer' | 'wholeSymbol';
-};
-
 // https://developer.apple.com/documentation/symbols/bouncesymboleffect
 type BounceSymbolEffect = {
   effect: 'bounce';
@@ -52,13 +46,6 @@ type DrawOnSymbolEffect = {
 // https://developer.apple.com/documentation/symbols/pulsesymboleffect
 type PulseSymbolEffect = {
   effect: 'pulse';
-  scope?: 'byLayer' | 'wholeSymbol';
-};
-
-// https://developer.apple.com/documentation/symbols/replacesymboleffect
-type ReplaceSymbolEffect = {
-  effect: 'replace';
-  scale?: 'downUp' | 'offUp' | 'upUp';
   scope?: 'byLayer' | 'wholeSymbol';
 };
 
@@ -103,14 +90,12 @@ type WiggleSymbolEffect = {
 
 export type SymbolEffect =
   | AppearSymbolEffect
-  | AutomaticSymbolEffect
   | BounceSymbolEffect
   | BreatheSymbolEffect
   | DisappearSymbolEffect
   | DrawOffSymbolEffect
   | DrawOnSymbolEffect
   | PulseSymbolEffect
-  | ReplaceSymbolEffect
   | RotateSymbolEffect
   | ScaleSymbolEffect
   | VariableColorSymbolEffect
