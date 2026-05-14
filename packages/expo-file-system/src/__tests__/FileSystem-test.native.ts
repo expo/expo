@@ -56,6 +56,16 @@ describe('expo-file-system new API', () => {
     expect(typeof file.moveSync).toBe('function');
     expect(typeof file.text).toBe('function');
     expect(typeof file.write).toBe('function');
+    expect(typeof file.json).toBe('function');
+    expect(typeof file.formData).toBe('function');
+  });
+
+  it('File.json parses file text', async () => {
+    const file = new File(Paths.cache, 'test.json');
+
+    jest.spyOn(file, 'text').mockResolvedValue('{"hello":"world"}');
+
+    await expect(file.json()).resolves.toEqual({ hello: 'world' });
   });
 
   it('Directory has inherited methods from native mock', () => {
