@@ -4,17 +4,17 @@ import type { ListItemLeadingProps, ListItemSupportingProps, ListItemTrailingPro
 
 /** Leading-slot marker for [`ListItem`](#listitem). */
 export function Leading(props: ListItemLeadingProps) {
-  return <>{props.children}</>;
+  return props.children;
 }
 
 /** Trailing-slot marker for [`ListItem`](#listitem). */
 export function Trailing(props: ListItemTrailingProps) {
-  return <>{props.children}</>;
+  return props.children;
 }
 
 /** Supporting-text-slot marker for [`ListItem`](#listitem), rendered below the headline. */
 export function Supporting(props: ListItemSupportingProps) {
-  return <>{props.children}</>;
+  return props.children;
 }
 
 export type ExtractedListItemSlots = {

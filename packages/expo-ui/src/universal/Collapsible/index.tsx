@@ -1,6 +1,11 @@
-import { useId } from 'react';
+import { useId, type ComponentProps } from 'react';
+import { StyleSheet, Text, unstable_createElement, View, type ViewProps } from 'react-native';
 
 import type { CollapsibleProps } from './types';
+
+const SummaryButton = (
+  props: Omit<ComponentProps<'button'>, 'style' | 'type'> & { style?: ViewProps['style'] }
+) => unstable_createElement('button', { ...props, type: 'button' });
 
 /**
  * A primitive that toggles visibility of its content via a labelled tappable
@@ -10,82 +15,88 @@ export function Collapsible({ isOpen, onOpenChange, label = '', children }: Coll
   const contentId = useId();
 
   return (
-    <div style={containerStyle}>
-      <button
-        type="button"
+    <View style={styles.container}>
+      <SummaryButton
         aria-expanded={isOpen}
         aria-controls={contentId}
         onClick={() => onOpenChange(!isOpen)}
-        style={summaryStyle}>
-        <span>{label}</span>
-        <span
-          aria-hidden
-          style={{
-            ...chevronStyle,
-            transform: `rotate(${isOpen ? 180 : 0}deg)`,
-          }}>
+        style={styles.summary}>
+        <Text>{label}</Text>
+        <Text aria-hidden style={[styles.chevron, isOpen && styles.chevronOpen]}>
           ▾
-        </span>
-      </button>
-      <div
+        </Text>
+      </SummaryButton>
+      <View
         id={contentId}
         role="region"
         aria-hidden={!isOpen}
-        style={{
-          ...gridWrapperStyle,
-          gridTemplateRows: isOpen ? '1fr' : '0fr',
-        }}>
-        <div style={gridInnerStyle}>
-          <div style={contentStyle}>{children}</div>
-        </div>
-      </div>
-    </div>
+        style={[styles.gridWrapper, isOpen ? styles.gridOpen : styles.gridClosed]}>
+        <View style={styles.gridInner}>
+          <View style={styles.content}>{children}</View>
+        </View>
+      </View>
+    </View>
   );
 }
 
-const containerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-};
-
-const summaryStyle: React.CSSProperties = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  gap: 8,
-  width: '100%',
-  cursor: 'pointer',
-  padding: '12px 16px',
-  userSelect: 'none',
-  background: 'transparent',
-  border: 'none',
-  font: 'inherit',
-  color: 'inherit',
-  textAlign: 'left',
-};
-
-const chevronStyle: React.CSSProperties = {
-  display: 'inline-block',
-  transition: 'transform 200ms ease',
-  lineHeight: 1,
-};
-
-// Grid-row trick: animate `auto`-sized content height by transitioning the
-// implicit row from `0fr` to `1fr`. The inner element needs `overflow: hidden`
-// + `min-height: 0` so it actually collapses when the row is 0fr.
-const gridWrapperStyle: React.CSSProperties = {
-  display: 'grid',
-  transition: 'grid-template-rows 200ms ease',
-};
-
-const gridInnerStyle: React.CSSProperties = {
-  overflow: 'hidden',
-  minHeight: 0,
-};
-
-const contentStyle: React.CSSProperties = {
-  padding: '0 16px 12px',
-};
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    width: '100%',
+  },
+  summary: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 8,
+    width: '100%',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'transparent',
+    borderWidth: 0,
+    userSelect: 'none',
+    textAlign: 'left',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+    color: 'inherit',
+    // @ts-expect-error
+    fontSize: 'inherit',
+  },
+  chevron: {
+    // @ts-expect-error
+    display: 'inline-block',
+    fontSize: 24,
+    transform: [{ rotate: '0deg' }],
+    transition: 'transform 200ms ease',
+  },
+  chevronOpen: {
+    transform: [{ rotate: '180deg' }],
+  },
+  // Grid-row trick: animate `auto`-sized content height by transitioning the
+  // implicit row from `0fr` to `1fr`.
+  // The inner element needs `overflow: hidden` + `min-height: 0` so it actually collapses when the row is 0fr.
+  gridWrapper: {
+    // @ts-expect-error
+    display: 'grid',
+    transition: 'grid-template-rows 200ms ease',
+  },
+  gridClosed: {
+    // @ts-expect-error
+    gridTemplateRows: '0fr',
+  },
+  gridOpen: {
+    // @ts-expect-error
+    gridTemplateRows: '1fr',
+  },
+  gridInner: {
+    overflow: 'hidden',
+    minHeight: 0,
+  },
+  content: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
+});
 
 export * from './types';

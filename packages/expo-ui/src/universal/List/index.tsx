@@ -1,3 +1,5 @@
+import { StyleSheet, View } from 'react-native';
+
 import type { ListProps } from './types';
 
 /**
@@ -6,17 +8,19 @@ import type { ListProps } from './types';
  */
 export function List({ children, testID }: ListProps) {
   return (
-    <div style={containerStyle} data-testid={testID}>
+    <View style={styles.container} testID={testID}>
       {children}
-    </div>
+    </View>
   );
 }
 
-const containerStyle: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'column',
-  width: '100%',
-  overflow: 'auto',
-};
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'column',
+    width: '100%',
+    // @ts-expect-error
+    overflow: 'auto',
+  },
+});
 
 export * from './types';
