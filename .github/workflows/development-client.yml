@@ -56,18 +56,18 @@ jobs:
             const pkg = require('./package.json'); \
             pkg.resolutions = { \
               ...pkg.resolutions, \
-              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
-              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
-              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:${{ github.workspace }}/packages/expo-updates-interface', \
+              'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
+              'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
+              'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-android-test
-        run: pnpm add file:../expo/packages/expo-dev-client
+        run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
         run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
@@ -117,18 +117,18 @@ jobs:
             const pkg = require('./package.json'); \
             pkg.resolutions = { \
               ...pkg.resolutions, \
-              'expo-dev-menu': 'file:../expo/packages/expo-dev-menu', \
-              'expo-dev-menu-interface': 'file:../expo/packages/expo-dev-menu-interface', \
-              'expo-dev-launcher': 'file:../expo/packages/expo-dev-launcher', \
-              'expo-updates-interface': 'file:../expo/packages/expo-updates-interface', \
-              'expo-updates': 'file:../expo/packages/expo-updates', \
-              'expo-manifests': 'file:../expo/packages/expo-manifests', \
-              'expo-json-utils': 'file:../expo/packages/expo-json-utils', \
+              'expo-dev-menu': 'file:${{ github.workspace }}/packages/expo-dev-menu', \
+              'expo-dev-menu-interface': 'file:${{ github.workspace }}/packages/expo-dev-menu-interface', \
+              'expo-dev-launcher': 'file:${{ github.workspace }}/packages/expo-dev-launcher', \
+              'expo-updates-interface': 'file:${{ github.workspace }}/packages/expo-updates-interface', \
+              'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
+              'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
+              'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
         working-directory: ../development-client-ios-test
-        run: pnpm add file:../expo/packages/expo-dev-client
+        run: pnpm add file:${{ github.workspace }}/packages/expo-dev-client
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
         run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json

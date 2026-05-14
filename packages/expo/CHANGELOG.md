@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 56.0.0-preview.11 — 2026-05-13

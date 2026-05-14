@@ -174,6 +174,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
   private hmrServer: MetroHmrServer<MetroHmrClient> | null = null;
   private ssrHmrClients: Map<string, MetroHmrClient> = new Map();
+  private loaderGraphListeners: Map<string, () => void> = new Map();
+  private pendingLoaderInvalidationChangeIds: Set<string> = new Set();
   isReactServerComponentsEnabled?: boolean;
   isReactServerRoutesEnabled?: boolean;
 
@@ -1449,13 +1451,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
                 }
               }
             }
-
-            // Handle loader file changes for HMR
-            if (exp.extra?.router?.unstable_useServerDataLoaders) {
-              for (const change of changes.modifiedFiles) {
-                this.handleLoaderFileChange(change[0]);
-              }
-            }
           }
         );
       }
@@ -1559,6 +1554,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.metro = null;
         this.hmrServer = null;
         this.ssrHmrClients = new Map();
+        for (const unlisten of this.loaderGraphListeners.values()) {
+          unlisten();
+        }
+        this.loaderGraphListeners.clear();
+        this.pendingLoaderInvalidationChangeIds.clear();
         callback?.(err);
       });
     };
@@ -1867,9 +1867,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
       if (routeModule.loader) {
-        // Register this module for loader HMR
-        this.setupLoaderHmr(modulePath);
-
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
@@ -1968,31 +1965,62 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.registerSsrHmrAsync(url.toString(), onReload);
   }
 
-  private watchedLoaderFiles: Set<string> = new Set();
-
-  private setupLoaderHmr(modulePath: string) {
-    if (this.watchedLoaderFiles.has(modulePath)) {
+  // Subscribe to a loader bundle's Metro graph so we can broadcast `loader-invalidate` and
+  // drop the SSR module eval cache when the loader's dependency graph is dirtied. This avoids
+  // the full-page reload the old stub used and keeps client state across loader edits.
+  private setupLoaderGraphListener(
+    graphId: string,
+    resolvedEntryFilePath: string,
+    graph: GraphRevision['graph']
+  ) {
+    if (this.loaderGraphListeners.has(graphId) || !this.metro) {
       return;
     }
-    this.watchedLoaderFiles.add(modulePath);
 
-    debug('[Loader HMR] Registering loader file for HMR:', modulePath);
+    const deltaBundler = this.metro.getBundler().getDeltaBundler();
+    // Metro's public type for `listen()` declares the callback as `() => Promise<void>`, but at
+    // runtime DeltaCalculator emits `{ logger, changeId }`. Cast through a narrow local type so
+    // we can dedupe shared file-change events across multiple loader graphs.
+    type DeltaChangeEvent = { changeId?: string };
+    const onChange = async (changeEvent?: DeltaChangeEvent) => {
+      debug('[Loader HMR] Graph change detected for:', resolvedEntryFilePath);
+
+      if (!this.shouldBroadcastLoaderInvalidation(changeEvent?.changeId)) {
+        return;
+      }
+
+      if (typeof globalThis.__c === 'function') {
+        globalThis.__c();
+      }
+
+      this.broadcastMessage('sendDevCommand', {
+        name: 'loader-invalidate',
+        data: { scope: 'all' },
+      });
+    };
+
+    const unlisten = deltaBundler.listen(graph, onChange as () => Promise<void>);
+    this.loaderGraphListeners.set(graphId, unlisten);
   }
 
-  private handleLoaderFileChange(changedFilePath: string) {
-    for (const loaderPath of this.watchedLoaderFiles) {
-      const possibleExtensions = ['.tsx', '.ts', '.jsx', '.js'];
-      const isLoaderFile = possibleExtensions.some(
-        (ext) => changedFilePath === loaderPath + ext || changedFilePath === loaderPath
-      );
-
-      if (isLoaderFile) {
-        debug('[Loader HMR] Loader file changed, triggering reload:', changedFilePath);
-        this.broadcastMessage('sendDevCommand', {
-          name: 'reload',
-        });
-      }
+  private shouldBroadcastLoaderInvalidation(changeId?: string) {
+    if (!changeId) {
+      return true;
     }
+
+    if (this.pendingLoaderInvalidationChangeIds.has(changeId)) {
+      return false;
+    }
+
+    this.pendingLoaderInvalidationChangeIds.add(changeId);
+    // All listeners for a single filesystem change are dispatched synchronously from one
+    // DeltaCalculator EventEmitter.emit(), so dedupe collisions resolve within microseconds.
+    // The timeout exists only to bound memory: without it, this Set would accumulate one entry
+    // per change for the lifetime of the dev server.
+    setTimeout(() => {
+      this.pendingLoaderInvalidationChangeIds.delete(changeId);
+    }, 500);
+    return true;
   }
 
   // Direct Metro access
@@ -2115,6 +2143,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         attachImportStackToRootMessage(error);
         dropStackIfContainsCodeFrame(error);
         throw error;
+      }
+
+      if (
+        !this.instanceMetroOptions.isExporting &&
+        transformOptions.dev !== false &&
+        transformOptions.customTransformOptions?.isLoaderBundle === 'true'
+      ) {
+        this.setupLoaderGraphListener(revision.graphId, resolvedEntryFilePath, revision.graph);
       }
 
       bundlePerfLogger?.annotate({

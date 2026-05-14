@@ -32,6 +32,11 @@ const useScreens_1 = require("../useScreens");
 function useLoaderData() {
     const serverDataLoaderContext = (0, react_1.use)(ServerDataLoaderContext_1.ServerDataLoaderContext);
     const loaderCache = (0, react_1.use)(LoaderCache_1.LoaderCacheContext);
+    // Subscribe before any early returns so a later `loader-invalidate` re-renders this hook even
+    // when the initial render was satisfied by `ServerDataLoaderContext` or `__EXPO_ROUTER_LOADER_DATA__`.
+    // Returning early before subscribing would also change hook order on the next render once
+    // invalidation deletes the injected global.
+    (0, react_1.useSyncExternalStore)(loaderCache.subscribe, loaderCache.getSnapshot, loaderCache.getSnapshot);
     const stateForPath = (0, native_1.useStateForPath)();
     const contextKey = (0, Route_1.useContextKey)();
     const resolvedPath = (0, react_1.useMemo)(() => {
