@@ -377,6 +377,20 @@ describe(useLocalSearchParams, () => {
     expect(result.current).toEqual({});
   });
 
+  it('passes null search params through without stringifying them', () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=1',
+    });
+
+    expect(result.current).toEqual({
+      test: '1',
+    });
+
+    act(() => router.setParams({ test: null }));
+
+    expect(result.current).toEqual({ test: null });
+  });
+
   it(`handles encoded params`, () => {
     const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
       initialUrl: '/?test=%2Fhello%2Fworld%2F',
