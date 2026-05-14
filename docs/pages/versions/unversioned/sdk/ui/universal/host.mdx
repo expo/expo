@@ -71,7 +71,7 @@ export default function LayoutDirectionExample() {
 
 ### Reacting to content layout
 
-Use `onLayoutContent` to be notified of the current dimensions of the host's content. On Android and iOS this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web it is derived from the underlying `View`'s `onLayout` callback.
+Use `onLayoutContent` to be notified of the current dimensions of the host's content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is derived from the underlying `View`'s `onLayout` callback.
 
 ```tsx OnLayoutContentExample.tsx
 import { Host, Text } from '@expo/ui';
