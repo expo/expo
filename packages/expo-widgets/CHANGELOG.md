@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix module precompile.
+
 ### 💡 Others
 
 ## 56.0.8 — 2026-05-13
