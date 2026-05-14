@@ -10,10 +10,15 @@ import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import { resolveAllPackageVersionsAsync } from './resolvePackages';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import {
+  correctReactNativeTvVersion,
+  reactNativeTvPresentInPackageDependencies,
+  reactNativeTvVersionMatchesBundled,
+} from '../reactNativeTv';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
-type IncorrectDependency = {
+export type IncorrectDependency = {
   packageName: string;
   packageType: 'dependencies' | 'devDependencies';
   expectedVersionOrRange: string;
@@ -219,11 +224,34 @@ function findIncorrectDependencies(
   packageVersions: Record<string, string>,
   bundledNativeModules: BundledNativeModules
 ): IncorrectDependency[] {
+  // If the project aliases `react-native` to `react-native-tvos`, compare the
+  // installed `major.minor` against the bundled `react-native` `major.minor`
+  // — `react-native-tvos` follows the upstream minor lines via a `<major>.<minor>-stable`
+  // dist-tag, so a matching minor means the TV variant is up to date.
+  const isReactNativeTvProject = reactNativeTvPresentInPackageDependencies(pkg.dependencies);
+
   const packages = Object.keys(packageVersions);
   const incorrectDeps: IncorrectDependency[] = [];
   for (const packageName of packages) {
-    const expectedVersionOrRange = bundledNativeModules[packageName];
-    const actualVersion = packageVersions[packageName];
+    const actualVersion = packageVersions[packageName]!;
+
+    if (isReactNativeTvProject && packageName === 'react-native') {
+      const bundledReactNativeVersion = bundledNativeModules['react-native'];
+      if (
+        bundledReactNativeVersion &&
+        !reactNativeTvVersionMatchesBundled(actualVersion, bundledReactNativeVersion)
+      ) {
+        incorrectDeps.push({
+          packageName,
+          packageType: findDependencyType(pkg, packageName),
+          expectedVersionOrRange: correctReactNativeTvVersion(bundledReactNativeVersion),
+          actualVersion,
+        });
+      }
+      continue;
+    }
+
+    const expectedVersionOrRange = bundledNativeModules[packageName]!;
     if (isDependencyVersionIncorrect(packageName, actualVersion, expectedVersionOrRange)) {
       incorrectDeps.push({
         packageName,
