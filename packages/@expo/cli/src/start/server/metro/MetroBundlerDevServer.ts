@@ -83,7 +83,11 @@ import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddle
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { createOpenMiddlewareOptions } from '../middleware/createOpenMiddlewareOptions';
+import { OpenHostSupportEntry, OpenMiddleware, OpenPlatform } from '../middleware/OpenMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
+import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
+import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import type { ExpoMetroOptions } from '../middleware/metroOptions';
 import {
@@ -1377,6 +1381,44 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         },
       });
       middleware.use(deepLinkMiddleware.getHandler());
+
+      const getHostSupport = (platform: OpenPlatform): OpenHostSupportEntry => {
+        if (platform === 'ios' && process.platform !== 'darwin') {
+          return {
+            canOpen: false,
+            reason: `iOS simulators require macOS with Xcode installed; this dev server is running on ${process.platform}.`,
+          };
+        }
+        return { canOpen: true };
+      };
+
+      const openMiddleware = new OpenMiddleware(
+        this.projectRoot,
+        createOpenMiddlewareOptions({
+          urlCreator: this.getUrlCreator(),
+          scheme: options.location.scheme ?? null,
+          isDevClient: this.isDevClient,
+          isRedirectPageEnabled: this.isRedirectPageEnabled(),
+          getHostSupport,
+          openPlatformAsync: (target, resolver) => this.openPlatformAsync(target, resolver),
+          getAppId: async (platform) => {
+            if (platform === 'web') return null;
+            const resolver =
+              platform === 'ios'
+                ? new AppleAppIdResolver(this.projectRoot)
+                : new AndroidAppIdResolver(this.projectRoot);
+            try {
+              return await resolver.getAppIdAsync();
+            } catch {
+              // Surfacing the error would block the dry-run; consumers can detect the missing id
+              // from `appId: null` and prompt the user to configure ios.bundleIdentifier /
+              // android.package.
+              return null;
+            }
+          },
+        })
+      );
+      middleware.use(openMiddleware.getHandler());
 
       const domComponentRenderer = createDomComponentsMiddleware(
         { projectRoot: this.projectRoot },
