@@ -145,8 +145,9 @@ module Expo
         end
 
         target.pod_targets.each do |pod_target|
+          is_core = pod_target.name == 'ExpoModulesCore'
           has_core_dependency = pod_target.dependencies.find { |dependency| dependency == 'ExpoModulesCore' }
-          next unless has_core_dependency
+          next unless is_core || has_core_dependency
           pod_target.build_settings.each do |build_configuration_name, build_settings|
             xcconfig = build_settings.xcconfig
             swift_flags = xcconfig.attributes[SWIFT_FLAGS] || '$(inherited)'
