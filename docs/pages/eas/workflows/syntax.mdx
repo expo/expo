@@ -8,6 +8,7 @@ maxHeadingDepth: 5
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -311,13 +312,13 @@ on:
     # @end #
 ```
 
-| Property      | Type       | Required                 | Description                                                                 |
-| ------------- | ---------- | ------------------------ | --------------------------------------------------------------------------- |
-| `type`        | `string`   | Yes                      | The input type (`string`, `boolean`, `number`, `choice`, or `environment`). |
-| `description` | `string`   | No                       | Description for the input.                                                  |
-| `required`    | `boolean`  | No                       | Whether the input is required. Defaults to `false`.                         |
-| `default`     | varies     | No                       | Default value for the input. Must match the input type.                     |
-| `options`     | `string[]` | Yes (for `type: choice`) | Available options for choice inputs.                                        |
+| Property      | Type       | Required                         | Description                                                                 |
+| ------------- | ---------- | -------------------------------- | --------------------------------------------------------------------------- |
+| `type`        | `string`   | <YesIcon />                      | The input type (`string`, `boolean`, `number`, `choice`, or `environment`). |
+| `description` | `string`   | <NoIcon />                       | Description for the input.                                                  |
+| `required`    | `boolean`  | <NoIcon />                       | Whether the input is required. Defaults to `false`.                         |
+| `default`     | varies     | <NoIcon />                       | Default value for the input. Must match the input type.                     |
+| `options`     | `string[]` | <YesIcon /> (for `type: choice`) | Available options for choice inputs.                                        |
 
 #### Providing inputs
 
@@ -1622,10 +1623,10 @@ jobs:
           extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
 ```
 
-| Property     | Type     | Required | Default                        | Description                                                                |
-| ------------ | -------- | -------- | ------------------------------ | -------------------------------------------------------------------------- |
-| `build_id`   | string   | Yes      | –                              | The ID of the build to download. Must be a valid UUID.                     |
-| `extensions` | string[] | No       | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
+| Property     | Type     | Required    | Default                        | Description                                                                |
+| ------------ | -------- | ----------- | ------------------------------ | -------------------------------------------------------------------------- |
+| `build_id`   | string   | <YesIcon /> | –                              | The ID of the build to download. Must be a valid UUID.                     |
+| `extensions` | string[] | <NoIcon />  | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
 
 **Outputs:**
 
@@ -1738,11 +1739,11 @@ jobs:
       # @end #
 ```
 
-| Property       | Type     | Required | Description                                                                                                                                              |
-| -------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key`          | `string` | Yes      | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
-| `restore_keys` | `string` | No       | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
-| `path`         | `string` | Yes      | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
+| Property       | Type     | Required    | Description                                                                                                                                              |
+| -------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |
+| `restore_keys` | `string` | <NoIcon />  | A fallback key or prefix to use if the exact key is not found. If provided, the cache system will look for any cache entry that starts with this prefix. |
+| `path`         | `string` | <YesIcon /> | The path where the cache should be restored. This should match the path used when saving the cache.                                                      |
 
 <BoxLink
   title="eas/restore_cache source code"
@@ -1776,10 +1777,10 @@ jobs:
       # @end #
 ```
 
-| Property | Type     | Required | Description                                                                                                                                                                                                       |
-| -------- | -------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `key`    | `string` | Yes      | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
-| `path`   | `string` | Yes      | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
+| Property | Type     | Required    | Description                                                                                                                                                                                                       |
+| -------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `key`    | `string` | <YesIcon /> | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |
+| `path`   | `string` | <YesIcon /> | The path to the directory or files that should be cached. This should match the path used when restoring the cache.                                                                                               |
 
 <BoxLink
   title="eas/save_cache source code"
@@ -1863,10 +1864,10 @@ jobs:
 
 ##### Properties
 
-| Property      | Type   | Required | Description                                                                      |
-| ------------- | ------ | -------- | -------------------------------------------------------------------------------- |
-| `name`        | string | No       | The name of the artifact to download. Required if `artifact_id` is not provided. |
-| `artifact_id` | string | No       | The ID of the artifact to download. Required if `name` is not provided.          |
+| Property      | Type   | Required   | Description                                                                      |
+| ------------- | ------ | ---------- | -------------------------------------------------------------------------------- |
+| `name`        | string | <NoIcon /> | The name of the artifact to download. Required if `artifact_id` is not provided. |
+| `artifact_id` | string | <NoIcon /> | The ID of the artifact to download. Required if `name` is not provided.          |
 
 ##### Outputs
 
