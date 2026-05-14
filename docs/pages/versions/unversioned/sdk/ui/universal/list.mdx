@@ -9,7 +9,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. `List` provides the platform-native chrome (separators, inset styling, pull-to-refresh); `ListItem` is a tappable row with `leading` / `trailing` / `supportingText` slots.
+`List` provides a virtualized vertical container of rows, typically populated with [`ListItem`](#listitem) children. It provides the platform-native chrome (separators, inset styling, pull-to-refresh).`ListItem` is a tappable row with `leading`/`trailing`/`supportingText` slots.
 
 ## Installation
 
@@ -133,7 +133,7 @@ export default function ListRefreshExample() {
 }
 ```
 
-> Pull-to-refresh is not implemented on web in this release. The handler is accepted for API parity but the indicator only appears on Android and iOS.
+> Pull-to-refresh is not implemented on web yet. The handler is accepted for API parity but the indicator only appears on Android and iOS.
 
 ## API
 

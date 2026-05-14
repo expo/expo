@@ -9,7 +9,7 @@ platforms: ['android', 'ios', 'web', 'expo-go']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A single-selection input. Declare options as `<Picker.Item label value />` children; the parent `Picker` reads them and renders a platform-appropriate dropdown or rotor.
+`Picker` is a single-selection input. You can use `<Picker.Item label value />` children to declare options so that the parent `Picker` reads them and renders a platform-appropriate dropdown or rotor.
 
 The universal `Picker` is independent of [`@expo/ui/community/picker`](../drop-in-replacements/picker), which remains a compat shim for `@react-native-picker/picker`. Prefer this universal `Picker` for new code unless you specifically need the RN-Picker API surface.
 
