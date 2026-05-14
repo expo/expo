@@ -154,7 +154,10 @@ describe(appendStackTitlePropsToOptions, () => {
     });
 
     it('does not clear headerTitleAlign from options when style prop is omitted', () => {
-      const result = appendStackTitlePropsToOptions({ headerTitleAlign: 'center' }, { children: 'Title' });
+      const result = appendStackTitlePropsToOptions(
+        { headerTitleAlign: 'center' },
+        { children: 'Title' }
+      );
       expect(result.headerTitleAlign).toBe('center');
     });
 
