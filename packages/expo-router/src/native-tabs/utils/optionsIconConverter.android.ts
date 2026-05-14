@@ -13,8 +13,15 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
       );
     }
-    options.icon = { drawable: props.drawable };
-    options.selectedIcon = undefined;
+    if (typeof props.drawable === 'string') {
+      options.icon = { drawable: props.drawable };
+      options.selectedIcon = undefined;
+    } else {
+      options.icon = props.drawable.default ? { drawable: props.drawable.default } : undefined;
+      options.selectedIcon = props.drawable.selected
+        ? { drawable: props.drawable.selected }
+        : undefined;
+    }
   } else if ('md' in props && props.md) {
     if (process.env.NODE_ENV !== 'production') {
       if ('drawable' in props) {
@@ -23,7 +30,17 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         );
       }
     }
-    options.icon = convertMaterialIconNameToImageSource(props.md);
+    if (typeof props.md === 'string') {
+      options.icon = convertMaterialIconNameToImageSource(props.md);
+      options.selectedIcon = undefined;
+    } else {
+      options.icon = props.md.default
+        ? convertMaterialIconNameToImageSource(props.md.default)
+        : undefined;
+      options.selectedIcon = props.md.selected
+        ? convertMaterialIconNameToImageSource(props.md.selected)
+        : undefined;
+    }
   } else if ('src' in props && props.src) {
     applyIconSrcOptions(options, props);
   }

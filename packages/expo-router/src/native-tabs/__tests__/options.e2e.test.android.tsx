@@ -288,6 +288,105 @@ describe('Icons', () => {
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
+  it('when drawable={{default, selected}} is provided, both icons are passed', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              drawable={{ default: 'ic_home_outline', selected: 'ic_home_filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      android: {
+        icon: { type: 'drawableResource', name: 'ic_home_outline' },
+        selectedIcon: { type: 'drawableResource', name: 'ic_home_filled' },
+      },
+    } as TabsScreenProps);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+  });
+
+  it('when drawable={{selected}} only is provided, icon is undefined and selectedIcon is passed', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon drawable={{ selected: 'ic_home_filled' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].android?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+      type: 'drawableResource',
+      name: 'ic_home_filled',
+    });
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+  });
+
+  it('when src={{default, selected}} is provided, both icons are passed', () => {
+    const defaultSrc = { uri: 'default-icon' };
+    const selectedSrc = { uri: 'selected-icon' };
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon src={{ default: defaultSrc, selected: selectedSrc }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      android: {
+        icon: { type: 'imageSource', imageSource: defaultSrc },
+        selectedIcon: { type: 'imageSource', imageSource: selectedSrc },
+      },
+    } as TabsScreenProps);
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+  });
+
+  it('when md={{default, selected}} is provided, both icons are loaded asynchronously', async () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon md={{ default: 'home', selected: 'home_filled' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByTestId('index')).toBeVisible();
+    });
+    const lastCall = TabsScreen.mock.calls.at(-1)![0];
+    expect(lastCall.android?.icon).toEqual({
+      type: 'imageSource',
+      imageSource: { height: 0, uri: '', width: 0, scale: 1 },
+    });
+    expect(lastCall.android?.selectedIcon).toEqual({
+      type: 'imageSource',
+      imageSource: { height: 0, uri: '', width: 0, scale: 1 },
+    });
+    expect(consoleWarnMock).not.toHaveBeenCalled();
+  });
+
   it.each([
     { expectedIcon: undefined },
     { drawable: 'test', expectedIcon: { type: 'drawableResource', name: 'test' } },

@@ -121,9 +121,27 @@ export interface XcassetIcon {
 export interface DrawableIcon {
     /**
      * The name of the drawable resource to use as an icon.
+     *
+     * The value can be provided in two ways:
+     * - As a string with the drawable resource name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon drawable="ic_home" />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon drawable={{ default: 'ic_home_outline', selected: 'ic_home_filled' }} />
+     * ```
+     *
      * @platform android
      */
-    drawable?: string;
+    drawable?: string | {
+        default?: string;
+        selected: string;
+    };
 }
 /**
  * Material icon name for Android native tabs.
@@ -133,8 +151,25 @@ export interface DrawableIcon {
 export interface MaterialIcon {
     /**
      * Material icon glyph name. See the [Material icons for the complete catalog](https://fonts.google.com/icons).
+     *
+     * The value can be provided in two ways:
+     * - As a string with the Material icon name
+     * - As an object specifying the default and selected states
+     *
+     * @example
+     * ```tsx
+     * <Icon md="home" />
+     * ```
+     *
+     * @example
+     * ```tsx
+     * <Icon md={{ default: 'home', selected: 'home_filled' }} />
+     * ```
      */
-    md: AndroidSymbol;
+    md: AndroidSymbol | {
+        default?: AndroidSymbol;
+        selected: AndroidSymbol;
+    };
 }
 export type NativeTabsTriggerIconProps = {
     selectedColor?: ColorValue;
