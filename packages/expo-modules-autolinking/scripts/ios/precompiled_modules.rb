@@ -541,7 +541,7 @@ module Expo
 
         log_linking_status(spec.name, true, default_tarball)
 
-        spec.source = { :http => URI::File.build(path: default_tarball).to_s, :flatten => false }
+        spec.source = { :http => local_file_uri(default_tarball), :flatten => false }
         spec.vendored_frameworks = build_vendored_paths(product_name, pod_info, spec.name)
 
         extra_fw_paths = framework_search_paths_for_skipped_deps(spec.name, pod_info)
@@ -579,7 +579,7 @@ module Expo
         spec_json = JSON.parse(spec.to_pretty_json)
 
         # Override source to local tarball
-        spec_json['source'] = { 'http' => URI::File.build(path: default_tarball).to_s, 'flatten' => false }
+        spec_json['source'] = { 'http' => local_file_uri(default_tarball), 'flatten' => false }
         spec_json['vendored_frameworks'] = build_vendored_paths(product_name, pod_info, spec.name)
 
         # Clear source-build attributes
@@ -906,6 +906,14 @@ module Expo
       # Returns true when the prebuilt React.xcframework is in use.
       def prebuilt_react_active?
         ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
+      end
+
+      # Builds a `file://` URI for a local filesystem path, percent-encoding
+      # any non-ASCII characters so paths with Unicode segments (e.g. emoji or
+      # accented characters) don't trip URI::File.build's RFC 3986 path
+      # validation.
+      def local_file_uri(path)
+        URI::File.build(path: URI::DEFAULT_PARSER.escape(path)).to_s
       end
 
       # ──────────────────────────────────────────────────────────────────────
