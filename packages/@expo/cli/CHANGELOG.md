@@ -18,6 +18,7 @@
 - Forward the request HTTP method to the RSC renderer ([#45905](https://github.com/expo/expo/pull/45905) by [@kitten](https://github.com/kitten))
 - Add validation to check `EXPO_PUBLIC_FOLDER` is in project root ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
 - Fix launching Android activity when activity name is fully specified ([#45773](https://github.com/expo/expo/pull/45773) by [@sebryu](https://github.com/sebryu))
+- Prefer Expo config app IDs over native files in `expo start` when `EXPO_RUN_PREFER_APP_CONFIG_ID` is enabled. ([#45774](https://github.com/expo/expo/pull/45774) by [@sebryu](https://github.com/sebryu))
 
 ### 💡 Others
 
