@@ -154,6 +154,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           size.width.toDp().value.toDouble(),
           size.height.toDp().value.toDouble()
         )
+        flushPendingStateUpdates()
       }
     }
   }
