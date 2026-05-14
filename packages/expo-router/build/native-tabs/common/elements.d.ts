@@ -179,6 +179,9 @@ export type NativeTabsTriggerIconProps = {
  *
  * Accepts various icon sources such as SF Symbols, xcasset images, drawable resources, material icons, or image sources.
  *
+ * Each icon prop (`sf`, `xcasset`, `drawable`, `md`, `src`) can be either a single value, or an object
+ * with `{ default, selected }` to use a distinct icon when the tab is selected.
+ *
  * Acceptable props combinations:
  * - `sf` and `drawable` - `sf` will be used for iOS icon, `drawable` for Android icon
  * - `sf` and `src` - `sf` will be used for iOS icon, `src` for Android icon

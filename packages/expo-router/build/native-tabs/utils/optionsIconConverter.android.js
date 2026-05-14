@@ -15,7 +15,9 @@ function appendIconOptions(options, props) {
         }
         else {
             options.icon = props.drawable.default ? { drawable: props.drawable.default } : undefined;
-            options.selectedIcon = { drawable: props.drawable.selected };
+            options.selectedIcon = props.drawable.selected
+                ? { drawable: props.drawable.selected }
+                : undefined;
         }
     }
     else if ('md' in props && props.md) {
@@ -32,7 +34,9 @@ function appendIconOptions(options, props) {
             options.icon = props.md.default
                 ? (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md.default)
                 : undefined;
-            options.selectedIcon = (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md.selected);
+            options.selectedIcon = props.md.selected
+                ? (0, materialIconConverter_1.convertMaterialIconNameToImageSource)(props.md.selected)
+                : undefined;
         }
     }
     else if ('src' in props && props.src) {
