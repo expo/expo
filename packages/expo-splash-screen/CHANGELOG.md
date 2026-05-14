@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix `exports` field resolving to the web stubs on native, making functions like `preventAutoHideAsync` no-ops.
+- Fix `exports` field resolving to the web stubs on native, making functions like `preventAutoHideAsync` no-ops. ([#45798](https://github.com/expo/expo/pull/45798) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
