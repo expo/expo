@@ -7,6 +7,7 @@ declare module 'react-native' {
   ) => React.ReactElement<P>;
 
   type DisplayValue = ReactNative.FlexStyle['display'] | 'inline-flex';
+  type WebDimensionValue = ReactNative.DimensionValue | string;
 
   type WebRole =
     | ReactNative.Role
@@ -101,25 +102,25 @@ declare module 'react-native' {
 
   export interface ImageStyle {
     display?: DisplayValue;
-    paddingLeft?: number | string;
-    paddingRight?: number | string;
-    paddingTop?: number | string;
-    paddingBottom?: number | string;
+    paddingLeft?: WebDimensionValue;
+    paddingRight?: WebDimensionValue;
+    paddingTop?: WebDimensionValue;
+    paddingBottom?: WebDimensionValue;
   }
 
   export interface TextStyle {
     display?: DisplayValue;
-    paddingLeft?: number | string;
-    paddingRight?: number | string;
-    paddingTop?: number | string;
-    paddingBottom?: number | string;
+    paddingLeft?: WebDimensionValue;
+    paddingRight?: WebDimensionValue;
+    paddingTop?: WebDimensionValue;
+    paddingBottom?: WebDimensionValue;
   }
 
   export interface ViewStyle {
     display?: DisplayValue;
-    paddingLeft?: number | string;
-    paddingRight?: number | string;
-    paddingTop?: number | string;
-    paddingBottom?: number | string;
+    paddingLeft?: WebDimensionValue;
+    paddingRight?: WebDimensionValue;
+    paddingTop?: WebDimensionValue;
+    paddingBottom?: WebDimensionValue;
   }
 }
