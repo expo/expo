@@ -4,11 +4,14 @@ We format Swift sources with [swift-format](https://github.com/swiftlang/swift-f
 
 ## Scope
 
+> [!NOTE]
+> Adoption is experimental. We're piloting swift-format on a small set of packages before expanding. The configuration and rollout details below may change as we learn from the pilot, and the supported package list will grow over time.
+
 Formatting is opt-in per package and rolled out gradually. Packages currently formatted with swift-format:
 
 - `expo-modules-jsi`
 
-Other packages are not yet formatted. To opt a package in, add the `swift-format` and `swift-format:check` scripts (see below) and update the path filters in `.github/workflows/swift-format.yml`.
+Other packages are not yet formatted. To opt a package in, add the `swift:format` and `swift:lint` scripts (see below) and update the path filters in `.github/workflows/swift-format.yml`.
 
 ## Installing swift-format locally
 
@@ -72,15 +75,13 @@ The repo-root `.swift-format` is intentionally minimal:
 
 Everything else uses swift-format's defaults. If you have a strong opinion about a rule, raise it with the team before changing the config — the goal of using a formatter is to stop relitigating style on a per-PR basis.
 
-## Things swift-format does not enforce
+## Conventions not enforced by the formatter
 
-A formatter handles whitespace, line breaks, and a handful of stylistic rewrites. It does not enforce semantic conventions. The following are still reviewer expectations:
+A formatter handles whitespace, line breaks, and a handful of stylistic rewrites — it can't reason about meaning. The following are reviewer expectations:
 
 - Naming: prefer full words over abbreviations (`Prototype`, not `Proto`).
 - Use explicit `return` keywords in closures rather than relying on implicit returns.
-- Don't write `///` doc comments inline with a `/** */` block; the formatter rewrites blocks to `///`, but use `///` from the start in new files.
 - Place private helper methods at the end of the type, after public and internal API.
-- Prefer `nonisolated(unsafe) let` over `Unmanaged.passUnretained` for capturing non-`Sendable` references across isolation boundaries.
 
 ## Opting a new package in
 
