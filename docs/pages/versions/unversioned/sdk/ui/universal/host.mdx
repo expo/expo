@@ -109,7 +109,7 @@ export default function UseViewportSizeMeasurementExample() {
 
 ### Ignoring safe areas
 
-By default, `Host` respects the device safe area insets (notch, home indicator, etc.). Use `ignoreSafeArea="all"` to let content extend edge-to-edge. On Android and iOS this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web it is implemented via the CSS `env(safe-area-inset-*)` values applied as padding on the underlying `View`; `"keyboard"` is treated the same as the default since the browser's `env()` function does not expose keyboard insets.
+By default, `Host` respects the device safe area insets (notch, home indicator, an so on). Use `ignoreSafeArea="all"` to let content extend edge-to-edge. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is implemented via the CSS `env(safe-area-inset-*)` values applied as padding on the underlying `View`. `"keyboard"` is treated the same as the default since the browser's `env()` function does not expose keyboard insets.
 
 ```tsx IgnoreSafeAreaExample.tsx
 import { Host, Text } from '@expo/ui';
