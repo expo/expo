@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix module precompile.
+- Fix module precompile. ([#45715](https://github.com/expo/expo/pull/45715) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
