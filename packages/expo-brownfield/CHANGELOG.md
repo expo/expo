@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed brownfield POM rewriting so existing dependency versions are replaced instead of duplicated. ([#45785](https://github.com/expo/expo/pull/45785) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 ## 56.0.9 — 2026-05-13

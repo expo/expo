@@ -105,7 +105,12 @@ internal fun Node.artifactId(): String? {
  * @param version The version to set.
  */
 internal fun Node.setVersion(version: String) {
-  val versionNode = this.children().firstOrNull { it is Node && it.name() == "version" } as? Node
+  val versionNode =
+    when (val v = get("version")) {
+      is Node -> v
+      is NodeList -> v.firstOrNull() as? Node ?: null
+      else -> null
+    }
 
   if (versionNode != null) {
     versionNode.setValue(version)
