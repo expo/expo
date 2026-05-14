@@ -1860,9 +1860,6 @@ importers:
       arg:
         specifier: ^5.0.2
         version: 5.0.2
-      better-opn:
-        specifier: ~3.0.2
-        version: 3.0.2
       bplist-creator:
         specifier: 0.1.0
         version: 0.1.0
@@ -10132,10 +10129,6 @@ packages:
 
   before-after-hook@2.2.3:
     resolution: {integrity: sha512-NzUnlZexiaH/46WDhANlyR2bXRopNg4F/zuSA3OpZnllCUgRaOF2znDioDWrmbNVsuZk6l9pMquQB38cfBZwkQ==}
-
-  better-opn@3.0.2:
-    resolution: {integrity: sha512-aVNobHnJqLiUelTaHat9DZ1qM2w0C0Eym4LPI/3JxOnSokGVdsl1T1kN7TFvsEAD8G47A6VKQ0TVHqbBnYMJlQ==}
-    engines: {node: '>=12.0.0'}
 
   better-sqlite3@11.10.0:
     resolution: {integrity: sha512-EwhOpyXiOEL/lKzHz9AW1msWFNzGc/z+LzeB3/jnFJpxu+th2yqvzsSWas1v9jgs9+xiXJcD5A8CJxAG2TaghQ==}
@@ -20328,10 +20321,6 @@ snapshots:
       safe-buffer: 5.1.2
 
   before-after-hook@2.2.3: {}
-
-  better-opn@3.0.2:
-    dependencies:
-      open: 8.4.2
 
   better-sqlite3@11.10.0:
     dependencies:
