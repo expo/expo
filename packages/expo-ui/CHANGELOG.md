@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fix `useNativeState` recreating the `ObservableState` when initial value changes; the seed is now captured once via `useRef`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+- [Android] Fix layout shift in `Host` with `matchContents`. ([#45775](https://github.com/expo/expo/pull/45775) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ## 56.0.5 — 2026-05-11
 
