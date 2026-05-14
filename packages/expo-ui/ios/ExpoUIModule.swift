@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import SwiftUI
 
 public final class ExpoUIModule: Module {
   public func definition() -> ModuleDefinition {
@@ -29,6 +30,12 @@ public final class ExpoUIModule: Module {
 
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
         state.value = wrapper["value"]
+      }
+
+      Function("setValueAnimated") { (state: ObservableState, wrapper: [String: Any]) in
+        withAnimation {
+          state.value = wrapper["value"]
+        }
       }
     }
 

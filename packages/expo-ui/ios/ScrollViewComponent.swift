@@ -3,85 +3,66 @@
 import SwiftUI
 import ExpoModulesCore
 
-/// Bridges JS imperative writes to the `.scrollPosition(id:)` binding and
-/// surfaces SwiftUI's writeback when the leading id changes.
-final class ScrollPositionStore: ObservableObject {
-  @Published var scrolledID: String?
-
-  init(initialID: String? = nil) {
-    self.scrolledID = initialID
-  }
+/// Holds the SwiftUI `ScrollViewProxy` captured inside `ScrollViewReader`
+/// so the imperative `scrollToId` AsyncFunction can call `proxy.scrollTo(...)`
+/// from outside the view body.
+final class ScrollProxyHolder {
+  var proxy: ScrollViewProxy?
 }
 
 public final class ScrollViewComponentProps: UIBaseViewProps {
   @Field var axes: AxisOptions = .vertical
   @Field var showsIndicators: Bool = true
-  /// Initial scroll target id. Read once at first construction; later
-  /// changes are ignored. iOS 17+ — backed by SwiftUI's `.scrollPosition(id:)`.
-  @Field var initialScrollId: String?
   @Field var onScrollGeometryChangeSync: WorkletCallback?
   var onScrollPhaseChange = EventDispatcher()
   var onScrollGeometryChange = EventDispatcher()
-  var onScrolledIDChange = EventDispatcher()
-  /// Lazy so `initialScrollId` is captured at first access (after
-  /// expo-modules has populated `@Field`s) — avoids mutating an `@Published`
-  /// from inside the SwiftUI view's render pass.
-  lazy var positionStore: ScrollPositionStore = ScrollPositionStore(initialID: initialScrollId)
+  let proxyHolder = ScrollProxyHolder()
 }
 
 public struct ScrollViewComponent: ExpoSwiftUI.View {
   @ObservedObject public var props: ScrollViewComponentProps
-  @ObservedObject private var positionStore: ScrollPositionStore
 
   public init(props: ScrollViewComponentProps) {
     self.props = props
-    self.positionStore = props.positionStore
   }
 
-  /// Requires iOS 17+ — depends on SwiftUI's `.scrollPosition(id:)` modifier.
+  /// Imperatively scroll so the child with `id(targetId)` aligns with the
+  /// leading edge. Mirrors SwiftUI's `ScrollViewProxy.scrollTo(_:anchor:)`,
+  /// wrapped in `withAnimation` when `animated` is true.
   public func scrollToId(id: String, animated: Bool) {
-    let store = props.positionStore
+    let holder = props.proxyHolder
     DispatchQueue.main.async {
+      guard let proxy = holder.proxy else { return }
       if animated {
         withAnimation {
-          store.scrolledID = id
+          proxy.scrollTo(id, anchor: .leading)
         }
       } else {
-        store.scrolledID = id
+        proxy.scrollTo(id, anchor: .leading)
       }
     }
   }
 
   public var body: some View {
-    Group {
-      if #available(iOS 18.0, tvOS 18.0, *) {
-        modernScrollView
-      } else if #available(iOS 17.0, tvOS 17.0, *) {
-        midScrollView
-      } else {
-        legacyScrollView
+    ScrollViewReader { proxy in
+      Group {
+        if #available(iOS 18.0, tvOS 18.0, *) {
+          modernScrollView
+        } else {
+          legacyScrollView
+        }
+      }
+      .onAppear {
+        props.proxyHolder.proxy = proxy
       }
     }
   }
 
-  /// iOS < 17: no `.scrollPosition` or scroll-target callbacks. The view
-  /// still renders, but `initialScrollId` and `scrollToId` are no-ops.
+  /// iOS < 18: no scroll-phase / scroll-geometry callbacks. Imperative
+  /// `scrollToId` still works via `ScrollViewProxy` (iOS 14+).
   private var legacyScrollView: some View {
     ScrollView(props.axes.toAxis(), showsIndicators: props.showsIndicators) {
       Children()
-    }
-  }
-
-  @available(iOS 17.0, tvOS 17.0, *)
-  private var midScrollView: some View {
-    ScrollView(props.axes.toAxis(), showsIndicators: props.showsIndicators) {
-      Children()
-    }
-    .scrollPosition(id: $positionStore.scrolledID)
-    // Fires for both directions (imperative writes and SwiftUI's writeback
-    // on swipe-settle).
-    .onChange(of: positionStore.scrolledID) { _, newID in
-      props.onScrolledIDChange(["id": newID as Any])
     }
   }
 
@@ -89,10 +70,6 @@ public struct ScrollViewComponent: ExpoSwiftUI.View {
   private var modernScrollView: some View {
     ScrollView(props.axes.toAxis(), showsIndicators: props.showsIndicators) {
       Children()
-    }
-    .scrollPosition(id: $positionStore.scrolledID)
-    .onChange(of: positionStore.scrolledID) { _, newID in
-      props.onScrolledIDChange(["id": newID as Any])
     }
     .onScrollPhaseChange { _, newPhase, context in
       // Geometry is bundled into the phase event so consumers can read

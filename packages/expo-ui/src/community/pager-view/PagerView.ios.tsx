@@ -10,20 +10,21 @@ import { Platform } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
 import { worklets } from '../../State/optionalWorklets';
+import { useNativeState } from '../../State/useNativeState';
 import { Group } from '../../swift-ui/Group';
-import { HStack } from '../../swift-ui/HStack';
 import { Host } from '../../swift-ui/Host';
+import { LazyHStack } from '../../swift-ui/LazyHStack';
 import { RNHostView } from '../../swift-ui/RNHostView';
 import {
   ScrollView,
   type ScrollGeometry,
   type ScrollPhase,
-  type ScrollViewRef,
 } from '../../swift-ui/ScrollView';
 import {
   containerRelativeFrame,
   id,
   scrollDisabled,
+  scrollPosition,
   scrollTargetBehavior,
   scrollTargetLayout,
 } from '../../swift-ui/modifiers';
@@ -44,12 +45,14 @@ function phaseToPageState(phase: ScrollPhase): 'idle' | 'dragging' | 'settling' 
 /**
  * Drop-in replacement for `react-native-pager-view` on iOS.
  *
- * Renders a SwiftUI `ScrollView` with paging behavior. Initial placement,
- * imperative navigation, and `onPageSelected` are driven by SwiftUI's
- * `.scrollPosition(id:)` binding, which requires iOS 17+. Continuous
- * progress (`onPageScroll`) and scroll state (`onPageScrollStateChanged`)
- * additionally require iOS 18+ — on iOS 17 the pager still works but those
- * specific events do not fire.
+ * Renders a SwiftUI `ScrollView` with paging behavior. Scroll position is the
+ * single source of truth: an `ObservableState` bound through the
+ * `scrollPosition` modifier drives initial placement, user-swipe writeback,
+ * and imperative `setPage` / `setPageWithoutAnimation`. The animated path
+ * uses `state.setValueAnimated(...)` which wraps the write in SwiftUI's
+ * `withAnimation`. Requires iOS 17+. Continuous progress (`onPageScroll`) and
+ * scroll state (`onPageScrollStateChanged`) require iOS 18+ — on iOS 17 the
+ * pager still works but those specific events do not fire.
  */
 export function PagerView(props: PagerViewProps) {
   const {
@@ -67,15 +70,21 @@ export function PagerView(props: PagerViewProps) {
 
   const [scrollEnabledState, setScrollEnabledState] = useState(scrollEnabled);
 
-  const scrollViewRef = useRef<ScrollViewRef>(null);
+  // Single source of truth for the active page id — bound to SwiftUI's
+  // `.scrollPosition(id:)` via the `scrollPosition` modifier. JS writes drive
+  // imperative navigation; SwiftUI writebacks (user swipes) update us so
+  // `onPageSelected` fires uniformly for both directions.
+  const activePageState = useNativeState<string | null>(
+    initialPage > 0 ? String(initialPage) : null
+  );
 
-  // Dedup against the last fired page — scrollPosition's writeback fires
-  // for both user swipes and our own programmatic writes.
+  // Dedup against the last fired page — the writeback fires for both user
+  // swipes and our own imperative writes.
   const lastSelectedPageRef = useRef(initialPage);
 
-  const handleScrolledIDChange = (id: string | null) => {
-    if (id == null) return;
-    const page = parseInt(id, 10);
+  const handleScrolledIDChange = (newId: string | null) => {
+    if (newId == null) return;
+    const page = parseInt(newId, 10);
     if (!Number.isFinite(page)) return;
     if (page !== lastSelectedPageRef.current) {
       lastSelectedPageRef.current = page;
@@ -87,18 +96,18 @@ export function PagerView(props: PagerViewProps) {
     ref,
     () => ({
       setPage: (page: number) => {
-        scrollViewRef.current?.scrollToId(String(page), true);
+        activePageState.setValueAnimated(String(page));
       },
       setPageWithoutAnimation: (page: number) => {
-        scrollViewRef.current?.scrollToId(String(page), false);
+        activePageState.value = String(page);
       },
       setScrollEnabled: setScrollEnabledState,
     }),
-    []
+    [activePageState]
   );
 
   // Only wire onScrollGeometryChange when the consumer asks for continuous
-  // progress — onPageSelected is already covered by the scrollPosition writeback.
+  // progress — onPageSelected is covered by the scrollPosition writeback.
   const handleScrollGeometry = onPageScroll ? buildHandleScrollGeometry(onPageScroll) : undefined;
 
   const handleScrollPhase = onPageScrollStateChanged
@@ -120,22 +129,23 @@ export function PagerView(props: PagerViewProps) {
   // Toggle the value rather than splicing the modifier in/out — SwiftUI
   // diffs modifiers by position, and a shifting array shape resets the
   // ScrollView's content (the page goes blank on disable/enable).
-  const modifiers = [scrollTargetBehavior('paging'), scrollDisabled(!scrollEnabledState)];
+  const modifiers = [
+    scrollTargetBehavior('paging'),
+    scrollDisabled(!scrollEnabledState),
+    scrollPosition(activePageState, { onChange: handleScrolledIDChange }),
+  ];
 
   return (
     <Host style={style ?? { flex: 1 }}>
       <ScrollView
-        ref={scrollViewRef}
         axes="horizontal"
         showsIndicators={false}
-        initialScrollId={initialPage > 0 ? String(initialPage) : undefined}
         modifiers={modifiers}
-        onScrolledIDChange={handleScrolledIDChange}
         onScrollPhaseChange={handleScrollPhase}
         onScrollGeometryChange={handleScrollGeometry}>
-        <HStack spacing={0} modifiers={[scrollTargetLayout()]}>
+        <LazyHStack spacing={0} modifiers={[scrollTargetLayout()]}>
           {pages}
-        </HStack>
+        </LazyHStack>
       </ScrollView>
     </Host>
   );

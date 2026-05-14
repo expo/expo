@@ -36,8 +36,10 @@ export type PageScrollStateChangedEvent = NativeSyntheticEvent<PageScrollStateCh
  * only `event.nativeEvent.X`; the unset SyntheticEvent fields would never
  * be observed in practice.
  */
-export const wrapNativeEvent = <T,>(nativeEvent: T): NativeSyntheticEvent<T> =>
-  ({ nativeEvent }) as NativeSyntheticEvent<T>;
+export const wrapNativeEvent = <T,>(nativeEvent: T): NativeSyntheticEvent<T> => {
+  'worklet';
+  return { nativeEvent } as NativeSyntheticEvent<T>;
+};
 
 /**
  * Props for the `PagerView` component.

@@ -1,3 +1,3 @@
-import HorizontalPagerScreen from 'native-component-list/src/screens/UI/HorizontalPagerScreen';
+import CommunityPagerViewScreen from 'native-component-list/src/screens/UI/CommunityPagerViewScreen';
 
-export default HorizontalPagerScreen;
+export default CommunityPagerViewScreen;

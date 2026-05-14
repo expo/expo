@@ -10,6 +10,15 @@ export type ObservableState<T> = SharedObject & {
      * might show a development warning.
      */
     value: T;
+    /**
+     * Sets the value inside SwiftUI's `withAnimation` transaction so views that
+     * observe this state (for example, `.scrollPosition(id:)`) animate to the
+     * new value. On platforms where the underlying API has no equivalent, this
+     * is treated as an instant write.
+     *
+     * @platform ios
+     */
+    setValueAnimated(value: T): void;
 };
 /**
  * Creates an observable native state that is automatically cleaned up when the

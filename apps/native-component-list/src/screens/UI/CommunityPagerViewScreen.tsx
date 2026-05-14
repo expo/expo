@@ -185,7 +185,7 @@ function InitialPageSection() {
   return (
     <Section
       title="Initial page"
-      hint="initialPage is read once on mount; later changes are ignored.">
+      hint="initialPage={2} — pager should boot showing 'Page 3 (initial)'. Read once on mount; later changes are ignored.">
       <PagerView style={styles.pager} initialPage={2}>
         <ColorPage key="1" index={0} />
         <ColorPage key="2" index={1} />

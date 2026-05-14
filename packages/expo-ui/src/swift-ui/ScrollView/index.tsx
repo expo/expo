@@ -40,7 +40,11 @@ export type ScrollViewRef = {
   /**
    * Scrolls so the child carrying `id(targetId)` is aligned with the leading
    * edge of the scroll container. When `animated` is true the transition is
-   * wrapped in SwiftUI's `withAnimation`.
+   * wrapped in SwiftUI's `withAnimation`. Backed by `ScrollViewProxy.scrollTo`,
+   * available on iOS 14+.
+   *
+   * For declarative state-driven scrolling, use the `scrollPosition(...)`
+   * modifier with `useNativeState` instead.
    */
   scrollToId: (targetId: string, animated: boolean) => Promise<void>;
 };
@@ -59,23 +63,6 @@ export type ScrollViewProps = {
    * @default true
    */
   showsIndicators?: boolean;
-  /**
-   * Initial id of the leading visible target — backed by SwiftUI's
-   * `.scrollPosition(id:)`. Read once on first construction; later changes
-   * are ignored. To navigate after mount, use `ref.scrollToId(...)`.
-   *
-   * Requires iOS 17 or later. No-op on earlier iOS versions.
-   */
-  initialScrollId?: string;
-  /**
-   * Fires when the leading visible target id changes — e.g., after a
-   * user-driven swipe settles, or after an imperative `scrollToId` call
-   * applies. The argument is the new leading id, or `null` if the scroll
-   * view has no resolved target.
-   *
-   * Requires iOS 17 or later. No-op on earlier iOS versions.
-   */
-  onScrolledIDChange?: (id: string | null) => void;
   /**
    * Fires when SwiftUI's scroll phase changes (e.g., user begins dragging,
    * the scroll view starts decelerating, or scrolling settles to idle). The
@@ -102,11 +89,10 @@ export type ScrollViewProps = {
 
 type NativeScrollViewProps = Omit<
   ScrollViewProps,
-  'onScrollPhaseChange' | 'onScrollGeometryChange' | 'onScrolledIDChange'
+  'onScrollPhaseChange' | 'onScrollGeometryChange'
 > &
   ViewEvent<'onScrollPhaseChange', { phase: ScrollPhase; geometry: ScrollGeometry }> &
-  ViewEvent<'onScrollGeometryChange', ScrollGeometry> &
-  ViewEvent<'onScrolledIDChange', { id: string | null }> & {
+  ViewEvent<'onScrollGeometryChange', ScrollGeometry> & {
     onScrollGeometryChangeSync?: number | null;
   };
 
@@ -116,13 +102,7 @@ const ScrollViewNativeView: React.ComponentType<NativeScrollViewProps> = require
 );
 
 export function ScrollView(props: ScrollViewProps) {
-  const {
-    modifiers,
-    onScrollPhaseChange,
-    onScrollGeometryChange,
-    onScrolledIDChange,
-    ...restProps
-  } = props;
+  const { modifiers, onScrollPhaseChange, onScrollGeometryChange, ...restProps } = props;
 
   const isGeometryWorklet =
     !!onScrollGeometryChange && !!worklets?.isWorkletFunction?.(onScrollGeometryChange);
@@ -147,9 +127,6 @@ export function ScrollView(props: ScrollViewProps) {
           : undefined
       }
       onScrollGeometryChangeSync={getStateId(geometryWorkletCallback)}
-      onScrolledIDChange={
-        onScrolledIDChange ? ({ nativeEvent: { id } }) => onScrolledIDChange(id) : undefined
-      }
     />
   );
 }
