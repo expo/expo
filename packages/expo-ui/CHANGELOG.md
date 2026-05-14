@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed precompile xcframework warning. ([#45762](https://github.com/expo/expo/pull/45762) by [@kudo](https://github.com/kudo))
+
 ## 56.0.7 — 2026-05-13
 
 _This version does not introduce any user-facing changes._
@@ -22,7 +24,6 @@ _This version does not introduce any user-facing changes._
 - Make `ChartView` public. ([#45674](https://github.com/expo/expo/pull/45674) by [@jakex7](https://github.com/jakex7))
 - Added `@expo/ui/community/menu`, a drop-in replacement for `@react-native-menu/menu`. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
 - [android] Added Compose `combinedClickable` modifier. ([#45670](https://github.com/expo/expo/pull/45670) by [@vonovak](https://github.com/vonovak))
-
 
 ### 🐛 Bug fixes
 
