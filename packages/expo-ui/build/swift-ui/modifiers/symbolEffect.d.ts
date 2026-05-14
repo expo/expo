@@ -66,7 +66,8 @@ type WiggleSymbolEffect = {
 export type SymbolEffect = AppearSymbolEffect | AutomaticSymbolEffect | BounceSymbolEffect | BreatheSymbolEffect | DisappearSymbolEffect | DrawOffSymbolEffect | DrawOnSymbolEffect | PulseSymbolEffect | ReplaceSymbolEffect | RotateSymbolEffect | ScaleSymbolEffect | VariableColorSymbolEffect | WiggleSymbolEffect;
 /**
  * Animation options for a symbol effect.
- * https://developer.apple.com/documentation/symbols/symboleffectoptions
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffectoptions).
  */
 export type SymbolEffectOptions = {
     /**
@@ -89,7 +90,7 @@ export type DiscreteSymbolEffectValue = number | string | boolean;
  *
  * @platform ios 17.0+
  * @platform tvos 17.0+
- * @see https://developer.apple.com/documentation/SwiftUI/View/symbolEffect(_:options:value:)
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/symbolEffect(_:options:value:)).
  *
  * @example
  * ```tsx
