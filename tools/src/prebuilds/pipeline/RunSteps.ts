@@ -15,7 +15,7 @@ import path from 'path';
 import { PACKAGES_DIR } from '../../Constants';
 import { getPrecompileDir } from '../../Directories';
 import logger from '../../Logger';
-import { getPackageByName } from '../../Packages';
+import { getListOfPackagesAsync, getPackageByName } from '../../Packages';
 import { Artifacts } from '../Artifacts';
 import { Dependencies } from '../Dependencies';
 import type { SPMPackageSource } from '../ExternalPackage';
@@ -380,6 +380,8 @@ export const prepareInputsStep: Step<PrebuildContext> = {
   shouldRun: () => true,
 
   async run(ctx) {
+    await getListOfPackagesAsync();
+
     const { request } = ctx;
 
     // Verbose widens what gets logged but doesn't change interactive vs.
