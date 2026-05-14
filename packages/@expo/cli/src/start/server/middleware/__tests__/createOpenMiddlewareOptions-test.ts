@@ -184,6 +184,82 @@ describe('resolveOpenInfo — runtime: default resolution', () => {
   });
 });
 
+describe('resolveOpenInfo — runtime=unknown (explicit interstitial)', () => {
+  it('returns the disambiguation URL with no runtime field, even when the CLI would resolve directly', async () => {
+    // Expo Go-only project: default would return runtime=expo; runtime=unknown still hands back the interstitial.
+    const info = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'unknown' },
+      {
+        urlCreator: lanCreator('myapp'),
+        getScheme: () => 'myapp',
+        getIsDevClient: () => false,
+        getIsRedirectPageEnabled: () => false,
+        getAppId: noAppId,
+      }
+    )) as OpenSinglePlatformResult;
+    expect(info.runtime).toBeUndefined();
+    expect(info.url).toBe(`http://${LAN_ADDR}:8081/_expo/loading?platform=ios`);
+  });
+});
+
+describe('resolveOpenInfo — live state', () => {
+  it('reflects mid-run isDevClient changes (`s` in the terminal)', async () => {
+    let isDevClient = false;
+    const deps = {
+      urlCreator: lanCreator('myapp'),
+      getScheme: () => 'myapp',
+      getIsDevClient: () => isDevClient,
+      getIsRedirectPageEnabled: () => false,
+      getAppId: noAppId,
+    };
+    const before = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    expect(before.runtime).toBe('expo');
+    expect(before.availableRuntimes).toEqual(['expo']);
+
+    isDevClient = true;
+    const after = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    expect(after.runtime).toBe('custom');
+    expect(after.availableRuntimes).toEqual(['custom']);
+  });
+
+  it('reflects mid-run expo-dev-client installation (isRedirectPageEnabled flips)', async () => {
+    let redirectEnabled = false;
+    const deps = {
+      urlCreator: lanCreator('myapp'),
+      getScheme: () => 'myapp',
+      getIsDevClient: () => false,
+      getIsRedirectPageEnabled: () => redirectEnabled,
+      getAppId: noAppId,
+    };
+    const before = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    expect(before.availableRuntimes).toEqual(['expo']);
+    expect(before.runtime).toBe('expo');
+
+    redirectEnabled = true;
+    const after = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    expect(after.availableRuntimes).toEqual(['expo', 'custom']);
+    expect(after.runtime).toBeUndefined(); // falls through to the disambiguation page
+    expect(after.url).toMatch(/_expo\/loading/);
+  });
+
+  it('reflects mid-run scheme changes', async () => {
+    let scheme: string | null = 'oldscheme';
+    const deps = {
+      urlCreator: lanCreator('myapp'),
+      getScheme: () => scheme,
+      getIsDevClient: () => false,
+      getIsRedirectPageEnabled: () => false,
+      getAppId: noAppId,
+    };
+    const before = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    expect(before.scheme).toBe('oldscheme');
+
+    scheme = 'newscheme';
+    const after = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    expect(after.scheme).toBe('newscheme');
+  });
+});
+
 describe('resolveOpenInfo — appId', () => {
   const baseDeps = {
     urlCreator: lanCreator('myapp'),

@@ -166,7 +166,7 @@ describe('GET /_expo/open with platform', () => {
     );
     expect(res.statusCode).toBe(400);
     const body = JSON.parse((res.end as jest.Mock).mock.calls[0][0]);
-    expect(body.error).toMatch(/Must be "default", "expo", or "custom"/);
+    expect(body.error).toMatch(/Must be "default", "expo", "custom", or "unknown"/);
   });
 
   it('400s on unsupported platform', async () => {

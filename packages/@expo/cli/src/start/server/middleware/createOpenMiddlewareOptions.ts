@@ -82,6 +82,13 @@ async function resolvePlatformInfo(
     return { runtime: 'web', url: urlCreator.constructUrl({ scheme: 'http' }), appId };
   }
 
+  // Caller explicitly wants the disambiguation page — useful when they want the device (not the
+  // dev server) to pick between Expo Go and the dev build. No `runtime` field on the response
+  // since the actual runtime depends on the device's choice.
+  if (runtime === 'unknown') {
+    return { url: urlCreator.constructLoadingUrl({}, platform), appId };
+  }
+
   // `runtime: 'default'` mirrors what pressing `i` / `a` does in the terminal:
   //   --dev-client server  → open the dev client directly.
   //   project has both     → hand off to the disambiguation interstitial so the
@@ -92,8 +99,6 @@ async function resolvePlatformInfo(
       return { runtime: 'custom', url: urlCreator.constructDevClientUrl(), appId };
     }
     if (isRedirectPageEnabled) {
-      // No `runtime` here — the URL is the disambiguation page and the actual runtime depends on
-      // the device's choice. The field is intentionally omitted so JSON.stringify drops it.
       return { url: urlCreator.constructLoadingUrl({}, platform), appId };
     }
     return { runtime: 'expo', url: urlCreator.constructUrl({ scheme: 'exp' }), appId };

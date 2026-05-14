@@ -11,8 +11,14 @@ export const OpenEndpoint = '/_expo/open';
  */
 export type OpenRuntime = 'expo' | 'custom' | 'web';
 
-/** Runtime that a caller can request. `default` mirrors the CLI's `i`/`a` resolution. */
-export type OpenRequestedRuntime = 'expo' | 'custom' | 'default';
+/**
+ * Runtime that a caller can request.
+ * - `default` mirrors the CLI's `i`/`a` resolution.
+ * - `expo` / `custom` force a direct deep link, bypassing disambiguation.
+ * - `unknown` forces the disambiguation/interstitial page even when the CLI would resolve
+ *   directly. Useful when the caller wants the device (rather than the dev server) to decide.
+ */
+export type OpenRequestedRuntime = 'expo' | 'custom' | 'unknown' | 'default';
 
 /** Subset of {@link OpenRuntime} that represents native deep-link choices (not how to deliver them). */
 export type OpenNativeRuntime = 'expo' | 'custom';
@@ -120,7 +126,7 @@ export class OpenMiddleware extends ExpoMiddleware {
     if (runtimeParam && !normalizedRuntime) {
       sendError(res, 400, {
         code: 'INVALID_RUNTIME',
-        error: `Unsupported "runtime" value "${runtimeParam}". Must be "default", "expo", or "custom".`,
+        error: `Unsupported "runtime" value "${runtimeParam}". Must be "default", "expo", "custom", or "unknown".`,
       });
       return;
     }
@@ -191,7 +197,7 @@ function normalizePlatform(p: string | null): OpenPlatform | null {
 }
 
 function normalizeRequestedRuntime(r: string | undefined): OpenRequestedRuntime | null {
-  return r === 'default' || r === 'expo' || r === 'custom' ? r : null;
+  return r === 'default' || r === 'expo' || r === 'custom' || r === 'unknown' ? r : null;
 }
 
 interface ErrorBody {
