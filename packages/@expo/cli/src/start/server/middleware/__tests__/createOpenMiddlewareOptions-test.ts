@@ -1,9 +1,6 @@
-import {
-  createOpenMiddlewareOptions,
-  resolveOpenInfo,
-} from '../createOpenMiddlewareOptions';
-import { OpenDiscoveryResult, OpenSinglePlatformResult } from '../OpenMiddleware';
 import { UrlCreator } from '../../UrlCreator';
+import { OpenDiscoveryResult, OpenSinglePlatformResult } from '../OpenMiddleware';
+import { createOpenMiddlewareOptions, resolveOpenInfo } from '../createOpenMiddlewareOptions';
 
 jest.mock('../../../../log');
 
@@ -31,7 +28,7 @@ function tunnelCreator(scheme: string | null = 'myapp') {
   );
 }
 
-const allOk = () => ({ canOpen: true } as const);
+const allOk = () => ({ canOpen: true }) as const;
 const noAppId = async () => null;
 const sampleAppIds = async (platform: 'ios' | 'android' | 'web') => {
   if (platform === 'ios') return 'com.example.app.ios';
@@ -92,9 +89,7 @@ describe('resolveOpenInfo — tunnel', () => {
       { platform: 'android', runtime: 'custom' },
       baseDeps
     )) as OpenSinglePlatformResult;
-    expect(info.url).toBe(
-      'myapp://expo-development-client/?url=https%3A%2F%2Fabc.ngrok-free.app'
-    );
+    expect(info.url).toBe('myapp://expo-development-client/?url=https%3A%2F%2Fabc.ngrok-free.app');
   });
 
   it('routes the disambiguation URL through the tunnel host and omits the runtime field', async () => {
@@ -121,9 +116,7 @@ describe('resolveOpenInfo — tunnel', () => {
       { platform: null, runtime: 'default' },
       { ...baseDeps, getIsRedirectPageEnabled: () => true }
     )) as OpenDiscoveryResult;
-    expect(info.platforms.ios.url).toBe(
-      'http://abc.ngrok-free.app/_expo/loading?platform=ios'
-    );
+    expect(info.platforms.ios.url).toBe('http://abc.ngrok-free.app/_expo/loading?platform=ios');
     expect(info.platforms.android.url).toBe(
       'http://abc.ngrok-free.app/_expo/loading?platform=android'
     );
@@ -212,12 +205,18 @@ describe('resolveOpenInfo — live state', () => {
       getIsRedirectPageEnabled: () => false,
       getAppId: noAppId,
     };
-    const before = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    const before = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'default' },
+      deps
+    )) as OpenSinglePlatformResult;
     expect(before.runtime).toBe('expo');
     expect(before.availableRuntimes).toEqual(['expo']);
 
     isDevClient = true;
-    const after = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    const after = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'default' },
+      deps
+    )) as OpenSinglePlatformResult;
     expect(after.runtime).toBe('custom');
     expect(after.availableRuntimes).toEqual(['custom']);
   });
@@ -231,12 +230,18 @@ describe('resolveOpenInfo — live state', () => {
       getIsRedirectPageEnabled: () => redirectEnabled,
       getAppId: noAppId,
     };
-    const before = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    const before = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'default' },
+      deps
+    )) as OpenSinglePlatformResult;
     expect(before.availableRuntimes).toEqual(['expo']);
     expect(before.runtime).toBe('expo');
 
     redirectEnabled = true;
-    const after = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    const after = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'default' },
+      deps
+    )) as OpenSinglePlatformResult;
     expect(after.availableRuntimes).toEqual(['expo', 'custom']);
     expect(after.runtime).toBeUndefined(); // falls through to the disambiguation page
     expect(after.url).toMatch(/_expo\/loading/);
@@ -251,11 +256,17 @@ describe('resolveOpenInfo — live state', () => {
       getIsRedirectPageEnabled: () => false,
       getAppId: noAppId,
     };
-    const before = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    const before = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'default' },
+      deps
+    )) as OpenSinglePlatformResult;
     expect(before.scheme).toBe('oldscheme');
 
     scheme = 'newscheme';
-    const after = (await resolveOpenInfo({ platform: 'ios', runtime: 'default' }, deps)) as OpenSinglePlatformResult;
+    const after = (await resolveOpenInfo(
+      { platform: 'ios', runtime: 'default' },
+      deps
+    )) as OpenSinglePlatformResult;
     expect(after.scheme).toBe('newscheme');
   });
 });

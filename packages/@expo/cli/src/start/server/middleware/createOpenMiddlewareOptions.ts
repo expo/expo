@@ -54,7 +54,10 @@ export async function resolveOpenInfo(
     return {
       scheme,
       availableRuntimes,
-      ...(await resolvePlatformInfo(platform, runtime, deps, { isDevClient, isRedirectPageEnabled })),
+      ...(await resolvePlatformInfo(platform, runtime, deps, {
+        isDevClient,
+        isRedirectPageEnabled,
+      })),
     };
   }
 

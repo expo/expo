@@ -68,6 +68,8 @@ import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
 import { getFreePortAsync } from '../../../utils/port';
+import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
+import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
 import { evalMetroAndWrapFunctions, evalMetroNoHandling } from '../getStaticRenderFunctions';
@@ -83,12 +85,10 @@ import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddle
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { createOpenMiddlewareOptions } from '../middleware/createOpenMiddlewareOptions';
 import { OpenHostSupportEntry, OpenMiddleware, OpenPlatform } from '../middleware/OpenMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
-import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
-import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { createOpenMiddlewareOptions } from '../middleware/createOpenMiddlewareOptions';
 import type { ExpoMetroOptions } from '../middleware/metroOptions';
 import {
   convertPathToModuleSpecifier,

@@ -37,7 +37,10 @@ function singleResult(overrides: Partial<OpenSinglePlatformResult> = {}): OpenSi
   };
 }
 
-type GetInfoMock = jest.Mock<Promise<OpenInfoResult>, [{ platform: any; runtime: OpenRequestedRuntime }]>;
+type GetInfoMock = jest.Mock<
+  Promise<OpenInfoResult>,
+  [{ platform: any; runtime: OpenRequestedRuntime }]
+>;
 
 function createMiddleware(overrides: Partial<OpenMiddlewareOptions> = {}): {
   middleware: OpenMiddleware;
@@ -66,9 +69,13 @@ describe('shouldHandleRequest', () => {
   const { middleware } = createMiddleware();
 
   it('matches /_expo/open', () => {
-    expect(middleware.shouldHandleRequest(asReq({ url: 'http://localhost:8081/_expo/open' }))).toBe(true);
+    expect(middleware.shouldHandleRequest(asReq({ url: 'http://localhost:8081/_expo/open' }))).toBe(
+      true
+    );
     expect(
-      middleware.shouldHandleRequest(asReq({ url: 'http://localhost:8081/_expo/open?platform=ios' }))
+      middleware.shouldHandleRequest(
+        asReq({ url: 'http://localhost:8081/_expo/open?platform=ios' })
+      )
     ).toBe(true);
   });
 
@@ -188,8 +195,14 @@ describe('GET /_expo/open without platform (discovery)', () => {
         availableRuntimes: ['expo', 'custom'],
         platforms: {
           // ios & android omit `runtime` because the URL is the disambiguation page
-          ios: { url: 'http://127.0.0.1:8081/_expo/loading?platform=ios', appId: 'com.example.ios' },
-          android: { url: 'http://127.0.0.1:8081/_expo/loading?platform=android', appId: 'com.example.android' },
+          ios: {
+            url: 'http://127.0.0.1:8081/_expo/loading?platform=ios',
+            appId: 'com.example.ios',
+          },
+          android: {
+            url: 'http://127.0.0.1:8081/_expo/loading?platform=android',
+            appId: 'com.example.android',
+          },
           web: { runtime: 'web', url: 'http://127.0.0.1:8081', appId: null },
         },
       })),
