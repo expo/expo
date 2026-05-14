@@ -1,5 +1,9 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+// swift-format-ignore-file: AlwaysUseLowerCamelCase
+// `Kind` enum cases mirror the JavaScript TypedArray constructor names verbatim
+// (`Int8Array`, `Uint8ClampedArray`, etc.) and must not be lowercased.
+
 internal import jsi
 internal import ExpoModulesJSI_Cxx
 
