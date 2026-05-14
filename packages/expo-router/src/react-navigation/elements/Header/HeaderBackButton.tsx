@@ -10,13 +10,13 @@ import {
   View,
 } from 'react-native';
 
-import backIconMask from '../../../../assets/react-navigation/elements/back-icon-mask.png';
-import backIcon from '../../../../assets/react-navigation/elements/back-icon.png';
-import { MaskedView } from '../MaskedView';
-import type { HeaderBackButtonProps } from '../types';
 import { HeaderButton } from './HeaderButton';
 import { HeaderIcon, ICON_MARGIN } from './HeaderIcon';
+import backIconMask from '../../../../assets/react-navigation/elements/back-icon-mask.png';
+import backIcon from '../../../../assets/react-navigation/elements/back-icon.png';
 import { useLocale, useTheme } from '../../native';
+import { MaskedView } from '../MaskedView';
+import type { HeaderBackButtonProps } from '../types';
 
 export function HeaderBackButton({
   disabled,

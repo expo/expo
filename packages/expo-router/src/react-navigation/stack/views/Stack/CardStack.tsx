@@ -247,7 +247,7 @@ export class CardStack extends React.Component<Props, State> {
           state.gestures[curr.key] ||
           new Animated.Value(
             (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
-            props.state.preloadedRoutes.includes(curr)
+              props.state.preloadedRoutes.includes(curr)
               ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
               : 0
           );
@@ -672,13 +672,12 @@ export class CardStack extends React.Component<Props, State> {
             return (
               <MaybeScreen
                 key={route.key}
-                style={[StyleSheet.absoluteFill]}
+                style={[styles.boxNone, StyleSheet.absoluteFill]}
                 enabled={detachInactiveScreens}
                 active={activityState}
                 freezeOnBlur={freezeOnBlur}
                 shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}
-                homeIndicatorHidden={autoHideHomeIndicator}
-                pointerEvents="box-none">
+                homeIndicatorHidden={autoHideHomeIndicator}>
                 <CardContainer
                   index={index}
                   interpolationIndex={interpolationIndex}
@@ -734,4 +733,5 @@ const styles = StyleSheet.create({
   floating: {
     zIndex: 1,
   },
+  boxNone: { pointerEvents: 'box-none' },
 });

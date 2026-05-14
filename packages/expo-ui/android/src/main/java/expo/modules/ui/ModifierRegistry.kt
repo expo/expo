@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 
 package expo.modules.ui
 
@@ -7,9 +7,11 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -630,6 +632,22 @@ object ModifierRegistry {
         ) {
           eventDispatcher("clickable", emptyMap())
         }
+      }
+    }
+
+    register("combinedClickable") { map, _, _, eventDispatcher ->
+      val params = recordFromMap<ClickableParams>(map)
+      val onClick = { eventDispatcher("combinedClickable", mapOf("event" to "click")) }
+      val onLongClick = { eventDispatcher("combinedClickable", mapOf("event" to "longClick")) }
+      if (params.indication) {
+        Modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick)
+      } else {
+        Modifier.combinedClickable(
+          interactionSource = null,
+          indication = null,
+          onClick = onClick,
+          onLongClick = onLongClick
+        )
       }
     }
 

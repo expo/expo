@@ -2,7 +2,6 @@ package expo.modules.updates.procedures
 
 import android.app.Activity
 import android.content.Context
-import com.facebook.react.ReactApplication
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.DatabaseHolder
 import expo.modules.updates.db.Reaper
@@ -41,7 +40,7 @@ class RelaunchProcedure(
   override val loggerTimerLabel = "timer-relaunch"
 
   override suspend fun run(procedureContext: ProcedureContext) {
-    val reactApplication = context as? ReactApplication ?: run inner@{
+    val reactHost = resolveReactHostForRestart(context) ?: run inner@{
       callback.onFailure(Exception("Could not reload application. Ensure you have passed the correct instance of ReactApplication into UpdatesController.initialize()."))
       return
     }
@@ -74,7 +73,7 @@ class RelaunchProcedure(
     procedureScope.launch {
       withContext(Dispatchers.Main) {
         reloadScreenManager?.show(weakActivity?.get())
-        reactApplication.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
+        reactHost.restart(weakActivity?.get(), "Restart from RelaunchProcedure")
       }
     }
 

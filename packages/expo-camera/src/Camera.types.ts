@@ -1,4 +1,5 @@
-import { type PermissionResponse, NativeModule } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { NativeModule } from 'expo-modules-core';
 import type { Ref } from 'react';
 import type { ViewProps } from 'react-native';
 
@@ -590,8 +591,8 @@ export {
   PermissionStatus,
   type PermissionExpiration,
   type PermissionHookOptions,
-  type EventSubscription as Subscription,
-} from 'expo-modules-core';
+} from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
 
 export type PhotoResult = {
   /**

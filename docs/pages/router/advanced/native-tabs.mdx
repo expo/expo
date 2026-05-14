@@ -691,6 +691,48 @@ export default function TabLayout() {
 
 </Tabs>
 
+### Disabled tabs
+
+> **info** The `disabled` prop is available in SDK 56 and later.
+
+You can prevent native selection of a tab by setting the `disabled` prop on the `NativeTabs.Trigger` component. When `true`, tapping the tab in the tab bar does not change the focused tab. The tab remains visible - use `hidden` if you want to remove it from the tab bar entirely.
+
+> **Note:** `disabled` only suppresses the native tap interaction. It is not a "protected" or authorization gate - JavaScript navigation such as `router.push('/settings')` or `<Link href="/settings" />` still navigates to the tab.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs>
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings" disabled>
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+You can also toggle `disabled` dynamically from inside a screen.
+
+```tsx src/app/checkout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+import { View } from 'react-native';
+
+export default function CheckoutScreen() {
+  const isProcessing = useIsProcessing();
+  return (
+    <View>
+      <NativeTabs.Trigger disabled={isProcessing} />
+      {/* ... */}
+    </View>
+  );
+}
+```
+
 ### iOS 26 features
 
 > **info** To use features described in this section, compile your app with Xcode 26 or higher.
@@ -943,19 +985,24 @@ const styles = StyleSheet.create({
 });
 ```
 
-### Disabling keyboard avoidance on Android
+### Keyboard avoidance on Android
 
-By default, when the keyboard is displayed on Android, the native tabs automatically adjust to avoid being obscured. You can disable this behavior by changing the [`android.softwareKeyboardLayoutMode`](/versions/latest/config/app/#softwarekeyboardlayoutmode) property to `pan` in your app config file:
+By default on Android, the keyboard overlays the native tab bar. To have the tab bar lift above the keyboard instead, pass the `tabBarRespectsIMEInsets` prop on `NativeTabs`:
 
-```json app.json
-{
-  "expo": {
-    "android": {
-      "softwareKeyboardLayoutMode": "pan"
-    }
-  }
+```tsx app/_layout.tsx
+import { NativeTabs } from 'expo-router/unstable-native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs tabBarRespectsIMEInsets>
+      <NativeTabs.Trigger name="index" />
+      <NativeTabs.Trigger name="profile" />
+    </NativeTabs>
+  );
 }
 ```
+
+> **info** Requires Android 11 or later and the app config field [`android.softwareKeyboardLayoutMode`](/versions/latest/config/app/#softwarekeyboardlayoutmode) set to `"resize"` (the Expo default). Toggling this prop while the keyboard is open takes effect only after the keyboard closes.
 
 ### Safe area handling
 

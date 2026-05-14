@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
 import type { DialogEventResult, EntityTypes, Source } from '../Calendar';
 import type { AddEventWithFormOptions } from './ExpoCalendar.types';
 declare class ExpoCalendar {

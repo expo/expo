@@ -84,6 +84,8 @@ React Native LogBox needs to be presented less aggressively to develop with erro
 
 ## Loading states with Suspense fallback
 
+> **important** Custom suspense fallbacks are available in SDK 56 and later.
+
 Expo Router wraps each route in a [React Suspense](https://react.dev/reference/react/Suspense) boundary. You can export a [`SuspenseFallback`](/versions/unversioned/sdk/router/#suspensefallback) component from a layout file to customize the loading UI shown while any child route is suspended:
 
 ```tsx src/app/_layout.tsx

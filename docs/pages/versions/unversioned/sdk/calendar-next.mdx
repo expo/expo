@@ -64,6 +64,20 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
       description: 'A string to set the [`NSRemindersUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your reminders"',
     },
+    {
+      name: 'writeOnlyCalendarPermission',
+      platform: 'ios',
+      description:
+        'A string to set the [`NSCalendarsWriteOnlyAccessUsageDescription`](#ios) permission message, shown when requesting write-only calendar access (iOS 17+). Only used when `writeOnlyAccess` is `true`.',
+      default: '"Allow $(PRODUCT_NAME) to add events to your calendars"',
+    },
+    {
+      name: 'writeOnlyAccess',
+      platform: 'ios',
+      description:
+        'When `true`, requests write-only calendar access (iOS 17+). Sets `NSCalendarsWriteOnlyAccessUsageDescription` and omits `NSCalendarsFullAccessUsageDescription`.',
+      default: 'false',
+    },
   ]}
 />
 
@@ -71,13 +85,22 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **ios** project manually), then you need to configure following permissions in your native project:
 
-- For iOS, add `NSCalendarsUsageDescription` and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
+- For iOS, add `NSCalendarsUsageDescription`, `NSCalendarsFullAccessUsageDescription`, and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
 
   ```xml
   <key>NSCalendarsUsageDescription</key>
   <string>Allow $(PRODUCT_NAME) to access your calendar</string>
+  <key>NSCalendarsFullAccessUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your calendar</string>
   <key>NSRemindersUsageDescription</key>
   <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+  ```
+
+  When requesting write-only calendar access on iOS 17+, add `NSCalendarsWriteOnlyAccessUsageDescription` instead of `NSCalendarsFullAccessUsageDescription`:
+
+  ```xml
+  <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to add events to your calendars</string>
   ```
 
 </ConfigReactNative>
@@ -160,4 +183,19 @@ If you only intend to create events using system-provided calendar UI with [`cre
 
 The following usage description keys are used by this library:
 
-<IOSPermissions permissions={['NSCalendarsUsageDescription', 'NSRemindersUsageDescription']} />
+<IOSPermissions
+  permissions={[
+    'NSCalendarsUsageDescription',
+    {
+      name: 'NSCalendarsFullAccessUsageDescription',
+      description:
+        "A message that tells the user why the app is requesting full access to the user's calendar data.",
+    },
+    {
+      name: 'NSCalendarsWriteOnlyAccessUsageDescription',
+      description:
+        "A message that tells the user why the app is requesting write-only access to the user's calendar data.",
+    },
+    'NSRemindersUsageDescription',
+  ]}
+/>

@@ -1,1 +1,1 @@
-{"version":3,"file":"ObserveProvider.d.ts","sourceRoot":"","sources":["../src/ObserveProvider.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,iBAAiB,EAAE,MAAM,OAAO,CAAC;AAE/C,wBAAgB,eAAe,CAAC,EAAE,QAAQ,EAAE,EAAE,iBAAiB,2CAE9D"}
+{"version":3,"file":"ObserveProvider.d.ts","sourceRoot":"","sources":["../src/ObserveProvider.tsx"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,iBAAiB,EAAE,MAAM,OAAO,CAAC;AAI/C,wBAAgB,eAAe,CAAC,EAAE,QAAQ,EAAE,EAAE,iBAAiB,2CAE9D"}

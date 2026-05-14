@@ -1,4 +1,5 @@
-import { type PermissionResponse, type PermissionExpiration, PermissionStatus, type EventSubscription } from 'expo-modules-core';
+import { type PermissionResponse, type PermissionExpiration, PermissionStatus } from 'expo';
+import { type EventSubscription } from 'expo-modules-core';
 /**
  * @hidden
  */

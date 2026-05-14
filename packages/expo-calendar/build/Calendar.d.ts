@@ -1,5 +1,5 @@
-import type { PermissionResponse } from 'expo-modules-core';
-export type { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+export type { PermissionResponse, PermissionStatus, PermissionHookOptions, PermissionExpiration, } from 'expo';
 /**
  * Options for specifying a particular instance of a recurring event.
  * This type is used in various methods that operate on recurring events, such as updating or deleting a single occurrence or a set of future occurrences.

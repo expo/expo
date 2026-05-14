@@ -1,5 +1,6 @@
 package expo.modules.appmetrics.utils
 
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
@@ -56,4 +57,13 @@ object JsonAny {
       is JsonArray -> element.map { fromElement(it) }
     }
   }
+
+  // `Json.encodeToString(map)` would fail at runtime with "Serializer for class
+  // 'Any' is not found" — kotlinx.serialization has no built-in `Any`
+  // serializer, so we route every value through `toElement` first.
+  fun encodeMapToJsonString(map: Map<String, Any?>): String =
+    Json.encodeToString(
+      JsonObject.serializer(),
+      JsonObject(map.mapValues { (_, v) -> toElement(v) })
+    )
 }

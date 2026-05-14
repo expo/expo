@@ -60,7 +60,7 @@ function Screen(props) {
             systemItem: options.role,
             overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
             ...shared.nativeIosOverrides,
-        }, title: shared.title, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
+        }, title: shared.title, preventNativeSelection: options.disabled, ...shared.nativeRestOverrides, screenKey: shared.screenKey, children: wrappedContent }));
 }
 const supportedTabBarMinimizeBehaviorsSet = new Set(types_1.SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
 function TabsHostWrapper(props) {

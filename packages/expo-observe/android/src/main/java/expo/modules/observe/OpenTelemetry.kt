@@ -189,6 +189,11 @@ private val metricNameMap = mapOf(
 
   // Updates
   (MetricCategory.Updates.categoryName to "updateDownloadTime") to "expo.updates.download_time",
+
+  // Navigation
+  (MetricCategory.Navigation.categoryName to "cold_ttr") to "expo.navigation.cold_ttr",
+  (MetricCategory.Navigation.categoryName to "warm_ttr") to "expo.navigation.warm_ttr",
+  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti"
 )
 
 fun EASMetric.toOTMetric(): OTMetric {

@@ -41,12 +41,12 @@ exports.HeaderBackButton = HeaderBackButton;
 const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_native_1 = require("react-native");
-const back_icon_mask_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/back-icon-mask.png"));
-const back_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/back-icon.png"));
-const MaskedView_1 = require("../MaskedView");
 const HeaderButton_1 = require("./HeaderButton");
 const HeaderIcon_1 = require("./HeaderIcon");
+const back_icon_mask_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/back-icon-mask.png"));
+const back_icon_png_1 = __importDefault(require("../../../../assets/react-navigation/elements/back-icon.png"));
 const native_1 = require("../../native");
+const MaskedView_1 = require("../MaskedView");
 function HeaderBackButton({ disabled, allowFontScaling, backImage, label, labelStyle, displayMode = react_native_1.Platform.OS === 'ios' ? 'default' : 'minimal', onLabelLayout, onPress, pressColor, pressOpacity, screenLayout, tintColor, titleLayout, truncatedLabel = 'Back', accessibilityLabel = label && label !== 'Back' ? `${label}, back` : 'Go back', testID, style, href, }) {
     const { colors, fonts } = (0, native_1.useTheme)();
     const { direction } = (0, native_1.useLocale)();

@@ -1,1 +1,1 @@
-{"version":3,"file":"NativeTabsView.android.d.ts","sourceRoot":"","sources":["../../src/native-tabs/NativeTabsView.android.tsx"],"names":[],"mappings":"AAYA,OAAO,EAAiD,KAAK,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAGlG,wBAAgB,cAAc,CAAC,KAAK,EAAE,mBAAmB,kDAyDxD"}
+{"version":3,"file":"NativeTabsView.android.d.ts","sourceRoot":"","sources":["../../src/native-tabs/NativeTabsView.android.tsx"],"names":[],"mappings":"AAYA,OAAO,EAAiD,KAAK,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAGlG,wBAAgB,cAAc,CAAC,KAAK,EAAE,mBAAmB,kDA2DxD"}

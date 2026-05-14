@@ -12,7 +12,6 @@ import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import type { AddressInfo } from 'net';
 import type { WebSocketServer } from 'ws';
 
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
@@ -24,6 +23,13 @@ export interface SecureServerOptions {
   readonly cert: string | Buffer;
   readonly ca: string | Buffer;
   readonly requestCert: boolean;
+}
+
+export interface ServerAddressInfo {
+  protocol: 'http' | 'https';
+  address: string;
+  family: string;
+  port: number;
 }
 
 interface RunServerOptionsFork {
@@ -58,7 +64,7 @@ export const runServer = async (
     mockServer: boolean;
   }
 ): Promise<{
-  address: AddressInfo | null;
+  address: ServerAddressInfo | null;
   server: http.Server | https.Server;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
   metro: Server;
@@ -87,10 +93,13 @@ export const runServer = async (
   const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
+  let protocol: 'http' | 'https';
 
   if (secureServerOptions != null) {
+    protocol = 'https';
     httpServer = https.createServer(secureServerOptions, serverApp);
   } else {
+    protocol = 'http';
     httpServer = http.createServer(serverApp);
   }
 
@@ -181,9 +190,18 @@ export const runServer = async (
       });
 
       const address = httpServer.address();
+      assert(
+        address == null || typeof address === 'object',
+        'Expected httpServer.address() to be an object'
+      );
 
       resolve({
-        address: address && typeof address === 'object' ? address : null,
+        address: {
+          protocol,
+          address: address?.address ?? host ?? 'localhost',
+          family: address?.family ?? 'ipv4',
+          port: address?.port ?? config.server.port,
+        },
         server: httpServer,
         hmrServer,
         metro: metroServer,
