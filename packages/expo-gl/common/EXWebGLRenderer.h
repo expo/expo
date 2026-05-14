@@ -1,7 +1,7 @@
 #pragma once
 
-#include <jsi/jsi.h>
-#include <unordered_map>
+#include "pch.h"
+
 #include "EXGLNativeApi.h"
 
 namespace expo {
@@ -37,11 +37,14 @@ enum class EXWebGLClass {
 };
 
 void ensurePrototypes(jsi::Runtime &runtime);
-void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, glesContext, jsi::Object&& global);
+
+void createWebGLRenderer(jsi::Runtime &runtime, EXGLContext *, glesContext, jsi::Object &&global);
+
 jsi::Value createWebGLObject(
-    jsi::Runtime &runtime,
-    EXWebGLClass webglClass,
-    std::initializer_list<jsi::Value> &&args);
+  jsi::Runtime &runtime,
+  EXWebGLClass webglClass,
+  std::initializer_list<jsi::Value> &&args);
+
 std::string getConstructorName(EXWebGLClass value);
 
 } // namespace gl_cpp
