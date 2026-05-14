@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `placeholder` failing to load images from the asset catalog (xcassets).
+
 ### 💡 Others
 
 ## 56.0.8 — 2026-05-21

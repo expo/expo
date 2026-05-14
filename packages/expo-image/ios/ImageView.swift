@@ -352,14 +352,19 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
-    let path = localAssetName(from: source.uri)
-
-    if let path, let local = UIImage(named: path) {
+    if let local = localAssetImage(from: source) {
       renderSourceImage(local)
       return true
     }
 
     return false
+  }
+
+  private func localAssetImage(from source: ImageSource) -> UIImage? {
+    guard let path = localAssetName(from: source.uri) else {
+      return nil
+    }
+    return UIImage(named: path)
   }
 
   // MARK: - Placeholder
@@ -409,6 +414,14 @@ public final class ImageView: ExpoView {
     // Exit early if placeholder is not set or there is already an image attached to the view.
     // The placeholder is only used until the first image is loaded.
     guard canDisplayPlaceholder, let placeholder = bestPlaceholder else {
+      return
+    }
+
+    // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
+    // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
+    if let localImage = localAssetImage(from: placeholder) {
+      placeholderImage = localImage
+      displayPlaceholderIfNecessary()
       return
     }
 
