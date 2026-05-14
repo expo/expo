@@ -1,9 +1,9 @@
 import { NativeModule } from 'expo-modules-core';
 import type { Directory } from './Directory';
 import type { File } from './File';
+import type { PickMultipleFilesOptions, PickSingleFileOptions } from './File.types';
 import type { DownloadOptions, DownloadProgress } from './NetworkTasks.types';
 import type { PathInfo } from './Paths.types';
-import type { PickMultipleFilesOptions, PickSingleFileOptions } from './Picker.types';
 import type { FileSystemDownloadTask, FileSystemUploadTask, NativeFileSystemDirectory, NativeFileSystemFile, NativeFileSystemWatcher } from './internal/NativeFileSystem.types';
 type FileSystemEvents = {
     downloadProgress: (data: {

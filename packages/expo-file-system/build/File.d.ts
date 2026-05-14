@@ -1,9 +1,9 @@
 import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
+import { type PickMultipleFilesOptions, type PickMultipleFilesResult, type PickSingleFileOptions, type PickSingleFileResult } from './File.types';
 import { type WatchEvent, type WatchOptions, type WatchSubscription } from './FileSystemWatcher.types';
 import { DownloadTask, UploadTask } from './NetworkTasks';
 import { type DownloadOptions, type DownloadTaskOptions, type UploadOptions, type UploadResult } from './NetworkTasks.types';
-import { type PickMultipleFilesOptions, type PickMultipleFilesResult, type PickSingleFileOptions, type PickSingleFileResult } from './Picker.types';
 /**
  * Represents a file on the filesystem.
  *

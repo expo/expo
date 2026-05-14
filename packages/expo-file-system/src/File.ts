@@ -2,7 +2,14 @@ import { uuid, type EventSubscription } from 'expo-modules-core';
 
 import { Directory } from './Directory';
 import ExpoFileSystem from './ExpoFileSystem';
-import { FileMode } from './File.types';
+import {
+  FileMode,
+  type PickFileOptions,
+  type PickMultipleFilesOptions,
+  type PickMultipleFilesResult,
+  type PickSingleFileOptions,
+  type PickSingleFileResult,
+} from './File.types';
 import {
   type WatchEvent,
   type WatchOptions,
@@ -17,13 +24,6 @@ import {
   type UploadResult,
 } from './NetworkTasks.types';
 import { Paths } from './Paths';
-import {
-  type PickFileOptions,
-  type PickMultipleFilesOptions,
-  type PickMultipleFilesResult,
-  type PickSingleFileOptions,
-  type PickSingleFileResult,
-} from './Picker.types';
 import { FileSystemWatcher } from './internal/FileSystemWatcher';
 import { FileSystemReadableStreamSource, FileSystemWritableSink } from './internal/streams';
 

@@ -2,11 +2,10 @@ import type { SharedObject } from 'expo-modules-core';
 import type { Directory as PublicDirectory } from '../Directory';
 import type { DirectoryCreateOptions, DirectoryInfo } from '../Directory.types';
 import type { File as PublicFile } from '../File';
-import type { FileCreateOptions, FileHandle, FileInfo, FileMode, FileWriteOptions, InfoOptions, RelocationOptions } from '../File.types';
+import type { FileCreateOptions, FileHandle, FileInfo, FileMode, FileWriteOptions, InfoOptions, PickMultipleFilesOptions, PickMultipleFilesResult, PickSingleFileOptions, PickSingleFileResult, RelocationOptions } from '../File.types';
 import type { WatchEvent, WatchEventType, WatchOptions, WatchSubscription } from '../FileSystemWatcher.types';
 import type { DownloadTask, UploadTask } from '../NetworkTasks';
 import type { DownloadOptions, DownloadProgress, DownloadTaskOptions, UploadOptions, UploadProgress, UploadResult } from '../NetworkTasks.types';
-import type { PickMultipleFilesOptions, PickMultipleFilesResult, PickSingleFileOptions, PickSingleFileResult } from '../Picker.types';
 export declare class NativeFileSystemDirectory {
     /**
      * Creates an instance of a directory.

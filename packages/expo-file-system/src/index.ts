@@ -1,7 +1,7 @@
-export * from './Paths';
-export * from './File';
-export * from './Directory';
-export * from './NetworkTasks';
+export { Paths } from './Paths';
+export { File } from './File';
+export { Directory } from './Directory';
+export { UploadTask, DownloadTask } from './NetworkTasks';
 
 export {
   DEFAULT_DEBOUNCE_MS,

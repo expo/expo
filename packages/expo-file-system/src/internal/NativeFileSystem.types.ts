@@ -10,6 +10,10 @@ import type {
   FileMode,
   FileWriteOptions,
   InfoOptions,
+  PickMultipleFilesOptions,
+  PickMultipleFilesResult,
+  PickSingleFileOptions,
+  PickSingleFileResult,
   RelocationOptions,
 } from '../File.types';
 import type {
@@ -27,13 +31,6 @@ import type {
   UploadProgress,
   UploadResult,
 } from '../NetworkTasks.types';
-import type {
-  PickMultipleFilesOptions,
-  PickMultipleFilesResult,
-  PickSingleFileOptions,
-  PickSingleFileResult,
-} from '../Picker.types';
-
 export declare class NativeFileSystemDirectory {
   /**
    * Creates an instance of a directory.
