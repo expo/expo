@@ -14,6 +14,7 @@
 
 - Add general `eslint-disable` comment to Router's type-gen output ([#41637](https://github.com/expo/expo/pull/41637) by [@matinzd](https://github.com/matinzd))
 - Drop `better-opn` ([#45654](https://github.com/expo/expo/pull/45654) by [@kitten](https://github.com/kitten))
+- Remove redundant env-var parsing in CLI resolver hot paths ([#45658](https://github.com/expo/expo/pull/45658) by [@kitten](https://github.com/kitten))
 
 ## 56.1.4 — 2026-05-13
 
