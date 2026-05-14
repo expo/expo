@@ -37,7 +37,7 @@ module.exports = {
   dependency: {
     platforms: {
       // To make Expo CLI works on bare react-native projects without installing Expo Modules, we disable autolinking in this case.
-      ios: !isExpoModulesInstalledIos(projectRoot) ? null : {},
+      ios: null,//!isExpoModulesInstalledIos(projectRoot) ? null : {},
       android: !isExpoModulesInstalledAndroid(projectRoot)
         ? null
         : {

@@ -5,6 +5,7 @@ import PackageDescription
 import Foundation
 
 let packageDir = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+let appleDir = "\(packageDir)/apple"
 let podsRoot = resolvePodsRoot()
 
 // Header roots for ExpoModulesJSI and ExpoModulesJSI-Cxx. The
@@ -48,12 +49,12 @@ let headerSearchPaths = [
 ]
 
 // Path to the generated module map for the `jsi` Clang module. The
-// `scripts/generate-modulemap.sh` script writes this file at build time so
+// `apple/scripts/generate-modulemap.sh` script writes this file at build time so
 // the absolute header path can be resolved against the runtime PODS_ROOT.
 // Lives outside `.build/` so SwiftPM state can be wiped without losing this
 // file.
-let generatedModuleMap = "\(packageDir)/.generated/module.modulemap"
-let apiNotesPath = "\(packageDir)/APINotes"
+let generatedModuleMap = "\(appleDir)/.generated/module.modulemap"
+let apiNotesPath = "\(appleDir)/APINotes"
 
 let cxxIncludeFlags = headerSearchPaths.map({ "-I\($0)" })
 let swiftIncludeFlags = headerSearchPaths.flatMap({ ["-Xcc", "-I\($0)"] })
@@ -61,7 +62,7 @@ let swiftIncludeFlags = headerSearchPaths.flatMap({ ["-Xcc", "-I\($0)"] })
 let testFrameworks = resolveTestFrameworks()
 
 let package = Package(
-  name: "ExpoModulesJSI",
+  name: "expo-modules-jsi",
   platforms: [
     .iOS("16.4"),
     .tvOS("16.4"),
@@ -82,6 +83,7 @@ let package = Package(
       dependencies: [
         "ExpoModulesJSI-Cxx",
       ],
+      path: "apple/Sources/ExpoModulesJSI",
       swiftSettings: [
         .interoperabilityMode(.Cxx),
 
@@ -123,6 +125,7 @@ let package = Package(
     .target(
       name: "ExpoModulesJSI-Cxx",
       dependencies: [],
+      path: "apple/Sources/ExpoModulesJSI-Cxx",
       cxxSettings: [
         .unsafeFlags(cxxIncludeFlags),
       ],
@@ -132,6 +135,7 @@ let package = Package(
     .testTarget(
       name: "Tests",
       dependencies: testFrameworks.dependencies,
+      path: "apple/Tests",
     ),
   ] + testFrameworks.binaryTargets,
   swiftLanguageModes: [.v6],
@@ -148,7 +152,6 @@ func resolvePodsRoot() -> String {
     return explicit
   }
   let repoRoot = env["EXPO_ROOT_DIR"] ?? URL(fileURLWithPath: packageDir)
-    .deletingLastPathComponent() // expo-modules-jsi
     .deletingLastPathComponent() // packages
     .deletingLastPathComponent() // repo root
     .path
@@ -161,15 +164,15 @@ func resolvePodsRoot() -> String {
 // them — but a unit-test bundle has no such host.
 //
 // SwiftPM requires `binaryTarget` paths to be relative to the package root,
-// so the test wrapper script (`scripts/test.sh`) symlinks each xcframework
-// from $PODS_ROOT into `.test-frameworks/` before invoking xcodebuild.
+// so the test wrapper script (`apple/scripts/test.sh`) symlinks each xcframework
+// from $PODS_ROOT into `apple/.test-frameworks/` before invoking xcodebuild.
 func resolveTestFrameworks() -> (binaryTargets: [Target], dependencies: [Target.Dependency]) {
   let names = ["React", "hermesvm", "ReactNativeDependencies"]
   let available = names.filter({
-    FileManager.default.fileExists(atPath: "\(packageDir)/.test-frameworks/\($0).xcframework")
+    FileManager.default.fileExists(atPath: "\(appleDir)/.test-frameworks/\($0).xcframework")
   })
   let binaryTargets: [Target] = available.map({
-    .binaryTarget(name: $0, path: ".test-frameworks/\($0).xcframework")
+    .binaryTarget(name: $0, path: "apple/.test-frameworks/\($0).xcframework")
   })
   let dependencies: [Target.Dependency] = ["ExpoModulesJSI"]
     + available.map({ .target(name: $0) })
