@@ -22,14 +22,28 @@ export async function requestAgeRangeAsync(options) {
  * - Resolves with `false` when the OS confirms regulation does not apply.
  * - Resolves with `null` on iOS earlier than 26.2, and on Android and web.
  *   Treat `null` as "unknown" rather than a definitive `false`.
- * - Rejects with `AgeRangeNotAvailableException` when iOS 26.2+ reports the
- *   age-assurance feature is unavailable (for example, no signed-in account).
- *   Treat this as "unknown" and fall through to {@link requestAgeRangeAsync}
+ * - Rejects when the request fails — see [AgeRangeService.Error](https://developer.apple.com/documentation/declaredagerange/agerangeservice/error)
+ *   for more information. Treat rejection as "unknown" and fall through to [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions)
  *   or your own gating logic.
  *
- * Recommended pattern: call this first inside a try/catch and short-circuit
- * your age gate when the result is `false` before invoking
- * {@link requestAgeRangeAsync}.
+ * Recommended pattern: call this first and only prompt the user for their age
+ * range when the result is not `false`. When it is `false`, the user is outside
+ * a regulated jurisdiction and you can skip the age gate entirely.
+ *
+ * @example
+ * ```ts
+ * try {
+ *   const eligible = await isEligibleForAgeFeaturesAsync();
+ *   if (eligible === false) {
+ *     // Regulation does not apply — no age gate needed.
+ *     return;
+ *   }
+ * } catch {
+ *   // Treat errors as "unknown" and fall through to the prompt below or your own gating logic.
+ * }
+ *
+ * const ageRange = await requestAgeRangeAsync({ threshold1: 18 });
+ * ```
  *
  * @platform ios 26.2+
  */
