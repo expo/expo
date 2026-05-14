@@ -95,6 +95,7 @@ declare module 'react-native' {
   }
 
   export interface ViewProps extends WebAccessibilityProps {
+    dir?: string;
     role?: WebRole;
   }
 
@@ -108,5 +109,9 @@ declare module 'react-native' {
 
   export interface ViewStyle {
     display?: DisplayValue;
+    paddingLeft?: number | string;
+    paddingRight?: number | string;
+    paddingTop?: number | string;
+    paddingBottom?: number | string;
   }
 }
