@@ -5,7 +5,7 @@ export type {
   MenuAttributes,
   MenuComponentProps,
   MenuState,
-  MenuViewRef,
+  MenuComponentRef,
   NativeActionEvent,
 } from './types';
 

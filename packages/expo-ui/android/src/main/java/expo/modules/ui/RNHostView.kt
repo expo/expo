@@ -99,7 +99,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           .then(reportSizeToYogaNodeModifier())
       }
       val modifiers = sizingModifier
-        .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher)
+        .then(ModifierRegistry.applyModifiers(props.modifiers, appContext, scope, globalEventDispatcher))
 
       AndroidView(
         factory = {

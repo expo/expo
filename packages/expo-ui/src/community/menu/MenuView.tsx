@@ -1,7 +1,7 @@
 import { type Ref, useEffect, useImperativeHandle } from 'react';
 import { View } from 'react-native';
 
-import type { MenuComponentProps, MenuViewRef } from './types';
+import type { MenuComponentProps, MenuComponentRef } from './types';
 
 let warned = false;
 
@@ -18,7 +18,7 @@ let warned = false;
  * @platform android
  * @platform ios
  */
-export function MenuView(props: MenuComponentProps & { ref?: Ref<MenuViewRef> }) {
+export function MenuView(props: MenuComponentProps & { ref?: Ref<MenuComponentRef> }) {
   useEffect(() => {
     if (!warned) {
       warned = true;

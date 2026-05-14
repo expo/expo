@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import type { MenuAction, MenuComponentProps, MenuViewRef, NativeActionEvent } from './types';
+import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 import { Button } from '../../swift-ui/Button';
 import { ContextMenu } from '../../swift-ui/ContextMenu';
 import { Host } from '../../swift-ui/Host';
@@ -59,7 +59,11 @@ function renderAction(
 
   const fire = () => onPressAction?.(makeEvent(action));
 
+  const modifiers: ModifierConfig[] = [];
+  if (attributes?.disabled) modifiers.push(disabledModifier(true));
+
   if (state === 'on' || state === 'off') {
+    if (tintMod) modifiers.push(tintMod);
     return (
       <Toggle
         key={key}
@@ -67,13 +71,11 @@ function renderAction(
         systemImage={systemImage}
         isOn={state === 'on'}
         onIsOnChange={fire}
-        modifiers={tintMod ? [tintMod] : undefined}
+        modifiers={modifiers.length > 0 ? modifiers : undefined}
       />
     );
   }
 
-  const modifiers: ModifierConfig[] = [];
-  if (attributes?.disabled) modifiers.push(disabledModifier(true));
   // For a leaf `Button`, `foregroundColor` also tints the system image —
   // upstream uses this to color both the label and the icon. Skip when the
   // role is destructive so SwiftUI's red tint remains in effect.
@@ -99,7 +101,7 @@ let warnedShowNoop = false;
  * A drop-in replacement for `@react-native-menu/menu` on iOS.
  * Uses SwiftUI `Menu` for tap triggers and `ContextMenu` for long-press triggers.
  */
-export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuViewRef> }) {
+export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuComponentRef> }) {
   const { ref, actions, onPressAction, shouldOpenOnLongPress, title, style, children, testID } =
     props;
 

@@ -1,13 +1,15 @@
 import { Icon } from '@expo/ui';
-import { MenuView, type MenuAction, type NativeActionEvent } from '@expo/ui/community/menu';
+import {
+  MenuView,
+  type MenuAction,
+  type MenuComponentRef,
+  type NativeActionEvent,
+} from '@expo/ui/community/menu';
 import * as React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Button, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { ScrollPage, Section } from '../../components/Page';
 
-// Per-platform icon sources: SF Symbol on iOS, Material Symbols XML on Android.
-// `Icon.select` is rewritten by `@expo/ui/babel-plugin` so the unused side
-// tree-shakes out per platform.
 const EDIT = Icon.select({
   ios: 'pencil',
   android: import('@expo/material-symbols/edit.xml'),
@@ -57,6 +59,7 @@ export default function CommunityMenuScreen() {
   const [showCompleted, setShowCompleted] = React.useState(true);
   const [openCount, setOpenCount] = React.useState(0);
   const [closeCount, setCloseCount] = React.useState(0);
+  const menuRef = React.useRef<MenuComponentRef>(null);
 
   const basicActions: MenuAction[] = [
     { id: 'edit', title: 'Edit', image: EDIT },
@@ -87,6 +90,13 @@ export default function CommunityMenuScreen() {
       title: 'Show completed',
       image: CHECK_CIRCLE,
       state: showCompleted ? 'on' : 'off',
+    },
+    {
+      id: 'state-disabled',
+      title: 'Disabled toggle (must not fire)',
+      image: LOCK,
+      state: 'on',
+      attributes: { disabled: true },
     },
   ];
 
@@ -211,6 +221,13 @@ export default function CommunityMenuScreen() {
           onCloseMenu={() => setCloseCount((n) => n + 1)}>
           <TriggerView>Tap (watch counters)</TriggerView>
         </MenuView>
+      </Section>
+
+      <Section title="Imperative ref.show() (Android)">
+        <MenuView ref={menuRef} actions={basicActions} onPressAction={onPressAction}>
+          <TriggerView>Anchor for ref.show()</TriggerView>
+        </MenuView>
+        <Button title="Open via ref.show()" onPress={() => menuRef.current?.show()} />
       </Section>
       <View style={styles.bottomSpacer} />
     </ScrollPage>

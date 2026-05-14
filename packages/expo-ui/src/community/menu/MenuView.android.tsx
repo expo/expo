@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 
-import type { MenuAction, MenuComponentProps, MenuViewRef, NativeActionEvent } from './types';
+import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 import { HorizontalDivider } from '../../jetpack-compose/Divider';
 import { DropdownMenu } from '../../jetpack-compose/DropdownMenu';
 import {
@@ -12,6 +12,7 @@ import { Host } from '../../jetpack-compose/Host';
 import { Icon } from '../../jetpack-compose/Icon';
 import { RNHostView } from '../../jetpack-compose/RNHostView';
 import { Text as ComposeText } from '../../jetpack-compose/Text';
+import { useMaterialColors } from '../../jetpack-compose/colors';
 
 function actionId(action: MenuAction): string {
   return action.id ?? action.title;
@@ -21,29 +22,35 @@ function makeEvent(action: MenuAction): NativeActionEvent {
   return { nativeEvent: { event: actionId(action) } };
 }
 
-// Material 3 light-theme error color. Used as the destructive fallback because
-// the JS side can't read `MaterialTheme.colorScheme.error` at render time; an
-// explicit `titleColor` from the caller still takes precedence.
-const DESTRUCTIVE_FALLBACK_COLOR = '#B3261E';
-
-function buildElementColors(action: MenuAction): DropdownMenuItemElementColors | undefined {
-  // Icon color flows through the `Icon` component's own `tint` prop below, which
-  // gives finer control than threading it through `DropdownMenuItem.elementColors`.
-  const textColor =
-    action.titleColor ?? (action.attributes?.destructive ? DESTRUCTIVE_FALLBACK_COLOR : undefined);
-  if (textColor == null) {
+function buildElementColors(
+  action: MenuAction,
+  destructiveColor: string
+): DropdownMenuItemElementColors | undefined {
+  const isDestructive = action.attributes?.destructive === true;
+  const textColor = action.titleColor ?? (isDestructive ? destructiveColor : undefined);
+  // The leading icon picks up `leadingIconColor` via `LocalContentColor`, but only
+  // when the `Icon` itself doesn't set `tint` — so an explicit `imageColor` from
+  // the caller still wins.
+  const leadingIconColor = isDestructive ? destructiveColor : undefined;
+  if (textColor == null && leadingIconColor == null) {
     return undefined;
   }
-  return { textColor, disabledTextColor: textColor };
+  return {
+    textColor,
+    disabledTextColor: textColor,
+    leadingIconColor,
+    disabledLeadingIconColor: leadingIconColor,
+  };
 }
 
 type ItemProps = {
   action: MenuAction;
   onPressAction: MenuComponentProps['onPressAction'];
   dismissAll: () => void;
+  destructiveColor: string;
 };
 
-function MenuActionItem({ action, onPressAction, dismissAll }: ItemProps) {
+function MenuActionItem({ action, onPressAction, dismissAll, destructiveColor }: ItemProps) {
   const [submenuExpanded, setSubmenuExpanded] = React.useState(false);
 
   if (action.attributes?.hidden) {
@@ -54,7 +61,7 @@ function MenuActionItem({ action, onPressAction, dismissAll }: ItemProps) {
   // `image` is non-string only when caller passes an ImageSourcePropType
   // (number from `require()` or `{ uri }`). The string form is iOS-only (SF Symbol).
   const leadingIconSource = typeof image === 'string' || image == null ? null : image;
-  const elementColors = buildElementColors(action);
+  const elementColors = buildElementColors(action, destructiveColor);
 
   if (subactions && subactions.length > 0) {
     if (displayInline) {
@@ -67,6 +74,7 @@ function MenuActionItem({ action, onPressAction, dismissAll }: ItemProps) {
               action={sub}
               onPressAction={onPressAction}
               dismissAll={dismissAll}
+              destructiveColor={destructiveColor}
             />
           ))}
           <HorizontalDivider />
@@ -100,6 +108,7 @@ function MenuActionItem({ action, onPressAction, dismissAll }: ItemProps) {
                 setSubmenuExpanded(false);
                 dismissAll();
               }}
+              destructiveColor={destructiveColor}
             />
           ))}
         </DropdownMenu.Items>
@@ -142,7 +151,7 @@ function MenuActionItem({ action, onPressAction, dismissAll }: ItemProps) {
  * a leading icon. `MenuView.title` is also unused on Android since Material
  * `DropdownMenu` has no title slot.
  */
-export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuViewRef> }) {
+export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuComponentRef> }) {
   const {
     ref,
     actions,
@@ -176,6 +185,8 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuViewR
 
   React.useImperativeHandle(ref, () => ({ show: open }), [open]);
 
+  const destructiveColor = useMaterialColors().error;
+
   return (
     <View style={style} testID={testID}>
       <Host matchContents>
@@ -202,6 +213,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuViewR
                 action={action}
                 onPressAction={onPressAction}
                 dismissAll={dismissAll}
+                destructiveColor={destructiveColor}
               />
             ))}
           </DropdownMenu.Items>

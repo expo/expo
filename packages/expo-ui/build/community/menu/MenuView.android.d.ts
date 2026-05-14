@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { MenuComponentProps, MenuViewRef } from './types';
+import type { MenuComponentProps, MenuComponentRef } from './types';
 /**
  * A drop-in replacement for `@react-native-menu/menu` on Android.
  * Wraps the trigger in a `Pressable` (whose `onPress`/`onLongPress` opens the menu) and
@@ -11,6 +11,6 @@ import type { MenuComponentProps, MenuViewRef } from './types';
  * `DropdownMenu` has no title slot.
  */
 export declare function MenuView(props: MenuComponentProps & {
-    ref?: React.Ref<MenuViewRef>;
+    ref?: React.Ref<MenuComponentRef>;
 }): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=MenuView.android.d.ts.map

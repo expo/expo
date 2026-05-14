@@ -91,7 +91,7 @@ export type MenuAction = {
  * Imperative handle exposed by `MenuView` via `ref`.
  * Compatible with `@react-native-menu/menu`'s `ref.show()` API.
  */
-export type MenuViewRef = {
+export type MenuComponentRef = {
   /**
    * Programmatically open the menu.
    *

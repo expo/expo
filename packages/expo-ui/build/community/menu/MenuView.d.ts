@@ -1,5 +1,5 @@
 import { type Ref } from 'react';
-import type { MenuComponentProps, MenuViewRef } from './types';
+import type { MenuComponentProps, MenuComponentRef } from './types';
 /**
  * A drop-in replacement for `@react-native-menu/menu`'s `MenuView`. Wrap any trigger
  * view; long-pressing or tapping (per `shouldOpenOnLongPress`) shows a popup menu
@@ -14,6 +14,6 @@ import type { MenuComponentProps, MenuViewRef } from './types';
  * @platform ios
  */
 export declare function MenuView(props: MenuComponentProps & {
-    ref?: Ref<MenuViewRef>;
+    ref?: Ref<MenuComponentRef>;
 }): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=MenuView.d.ts.map
