@@ -22,6 +22,10 @@ export type BottomSheetProps = {
    */
   onIsPresentedChange: (isPresented: boolean) => void;
   /**
+   * Callback function that is called after the native sheet content disappears.
+   */
+  onDismissed?: () => void;
+  /**
    * When `true`, the sheet will automatically size itself to fit its content.
    * This sets the presentation detent to match the height of the children.
    * @default false
@@ -31,6 +35,7 @@ export type BottomSheetProps = {
 
 type NativeBottomSheetProps = Omit<BottomSheetProps, 'onIsPresentedChange'> & {
   onIsPresentedChange: (event: NativeSyntheticEvent<{ isPresented: boolean }>) => void;
+  onDismissed?: (event: NativeSyntheticEvent<Record<string, never>>) => void;
 };
 
 const BottomSheetNativeView: ComponentType<NativeBottomSheetProps> = requireNativeView(
@@ -46,6 +51,9 @@ function transformBottomSheetProps(props: BottomSheetProps): NativeBottomSheetPr
     ...restProps,
     onIsPresentedChange: ({ nativeEvent: { isPresented } }) => {
       props?.onIsPresentedChange?.(isPresented);
+    },
+    onDismissed: () => {
+      props?.onDismissed?.();
     },
   };
 }

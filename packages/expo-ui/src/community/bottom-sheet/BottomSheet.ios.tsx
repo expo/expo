@@ -92,6 +92,7 @@ export function BottomSheet(props: BottomSheetProps) {
   const [isMounted, setIsMounted] = useState(indexProp >= 0);
   const [isPresented, setIsPresented] = useState(indexProp >= 0);
   const [currentIndex, setCurrentIndex] = useState(Math.max(indexProp, 0));
+  const isPresentedRef = useRef(isPresented);
   // Ref mirrors currentIndex for use in handleDetentChange without adding it as a useCallback dep
   const currentIndexRef = useRef(currentIndex);
   // Guards fireCloseCallbacks against double-firing.
@@ -122,30 +123,53 @@ export function BottomSheet(props: BottomSheetProps) {
     onChangeRef.current?.(-1);
   }, []);
 
+  const setPresented = useCallback((presented: boolean) => {
+    isPresentedRef.current = presented;
+    setIsPresented(presented);
+  }, []);
+
   // Sync with external index prop changes
   useEffect(() => {
     if (indexProp === -1) {
-      setIsPresented(false);
+      setPresented(false);
       fireCloseCallbacks();
     } else if (indexProp >= 0) {
       closedRef.current = false;
       setIsMounted(true);
-      setIsPresented(true);
+      setPresented(true);
       const clampedIndex = Math.min(indexProp, detents.length - 1);
       setCurrentIndex(clampedIndex);
       currentIndexRef.current = clampedIndex;
     }
-  }, [indexProp, detents.length, fireCloseCallbacks]);
+  }, [indexProp, detents.length, fireCloseCallbacks, setPresented]);
 
   const handlePresentedChange = useCallback(
     (presented: boolean) => {
       if (!presented) {
-        setIsPresented(false);
-        setIsMounted(false);
+        setPresented(false);
         fireCloseCallbacks();
       }
     },
-    [fireCloseCallbacks]
+    [fireCloseCallbacks, setPresented]
+  );
+
+  const handleDismissed = useCallback(() => {
+    if (isPresentedRef.current) return;
+    setIsMounted(false);
+    fireCloseCallbacks();
+  }, [fireCloseCallbacks]);
+
+  const openAtIndex = useCallback(
+    (index: number) => {
+      const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
+      closedRef.current = false;
+      setIsMounted(true);
+      setPresented(true);
+      currentIndexRef.current = clampedIndex;
+      setCurrentIndex(clampedIndex);
+      onChangeRef.current?.(clampedIndex);
+    },
+    [detents.length, setPresented]
   );
 
   const handleDetentChange = useCallback(
@@ -163,17 +187,11 @@ export function BottomSheet(props: BottomSheetProps) {
   const methods: BottomSheetMethods = useMemo(() => {
     const snapToIndex = (index: number) => {
       if (index === -1) {
-        setIsPresented(false);
+        setPresented(false);
         fireCloseCallbacks();
         return;
       }
-      const clampedIndex = Math.min(Math.max(index, 0), detents.length - 1);
-      closedRef.current = false;
-      setIsMounted(true);
-      setIsPresented(true);
-      currentIndexRef.current = clampedIndex;
-      setCurrentIndex(clampedIndex);
-      onChangeRef.current?.(clampedIndex);
+      openAtIndex(index);
     };
 
     // Fire close callbacks immediately: the native `onIsPresentedChange` event is
@@ -181,8 +199,10 @@ export function BottomSheet(props: BottomSheetProps) {
     // the feedback loop), so we can't rely on handlePresentedChange here. The
     // closedRef guard inside fireCloseCallbacks prevents double-firing if a
     // native user-dismiss event also arrives during the animation.
+    // The native `onDismissed` event unmounts the native sheet host once SwiftUI
+    // has actually removed the sheet content.
     const close = () => {
-      setIsPresented(false);
+      setPresented(false);
       fireCloseCallbacks();
     };
 
@@ -194,10 +214,10 @@ export function BottomSheet(props: BottomSheetProps) {
       collapse: () => snapToIndex(0),
       close,
       forceClose: close,
-      present: () => snapToIndex(0),
+      present: () => openAtIndex(0),
       dismiss: close,
     };
-  }, [detents, fireCloseCallbacks]);
+  }, [detents, fireCloseCallbacks, openAtIndex, setPresented]);
 
   useImperativeHandle(ref, () => methods, [methods]);
 
@@ -239,6 +259,7 @@ export function BottomSheet(props: BottomSheetProps) {
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
+            onDismissed={handleDismissed}
             fitToContents={fitToContents}>
             <Group modifiers={modifiers}>
               <RNHostView matchContents={fitToContents}>
