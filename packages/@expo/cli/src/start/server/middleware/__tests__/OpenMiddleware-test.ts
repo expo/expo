@@ -10,7 +10,19 @@ import {
 } from '../OpenMiddleware';
 import type { ServerRequest, ServerResponse } from '../server.types';
 
-const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
+const localSocket = {
+  localAddress: '127.0.0.1',
+  remoteAddress: '127.0.0.1',
+  remoteFamily: 'IPv4',
+} as unknown as ServerRequest['socket'];
+
+const remoteSocket = {
+  localAddress: '192.168.1.10',
+  remoteAddress: '192.168.1.42',
+  remoteFamily: 'IPv4',
+} as unknown as ServerRequest['socket'];
+
+const asReq = (req: Partial<ServerRequest>) => ({ socket: localSocket, ...req }) as ServerRequest;
 
 const fullSupport: OpenHostSupportEntry = { canOpen: true };
 const iosBlocked: OpenHostSupportEntry = {
@@ -253,6 +265,62 @@ describe('POST /_expo/open', () => {
     );
     expect(open).not.toHaveBeenCalled();
     expect(res.statusCode).toBe(400);
+  });
+});
+
+describe('POST same-device enforcement', () => {
+  it('403s POST from a non-loopback socket', async () => {
+    const { middleware, open } = createMiddleware();
+    const res = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/open?platform=ios',
+        method: 'POST',
+        headers: { host: 'localhost:8081' },
+        socket: remoteSocket,
+      }),
+      res
+    );
+    expect(open).not.toHaveBeenCalled();
+    expect(res.statusCode).toBe(403);
+    const body = JSON.parse((res.end as jest.Mock).mock.calls[0][0]);
+    expect(body.code).toBe('REMOTE_DEVICE_FORBIDDEN');
+  });
+
+  it('allows POST from an IPv6 loopback socket', async () => {
+    const { middleware, open } = createMiddleware();
+    const res = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/open?platform=ios',
+        method: 'POST',
+        headers: { host: 'localhost:8081' },
+        socket: {
+          localAddress: '::1',
+          remoteAddress: '::1',
+          remoteFamily: 'IPv6',
+        } as unknown as ServerRequest['socket'],
+      }),
+      res
+    );
+    expect(open).toHaveBeenCalled();
+    expect(res.statusCode).toBe(200);
+  });
+
+  it('does not enforce same-device on GET (LAN devices need to fetch deep links)', async () => {
+    const { middleware, getInfo } = createMiddleware();
+    const res = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/open?platform=ios',
+        method: 'GET',
+        headers: { host: '192.168.1.10:8081' },
+        socket: remoteSocket,
+      }),
+      res
+    );
+    expect(getInfo).toHaveBeenCalled();
+    expect(res.statusCode).toBe(200);
   });
 });
 

@@ -1,6 +1,7 @@
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerRequest, ServerResponse } from './server.types';
+import { isLocalSocket } from '../../../utils/net';
 
 export const OpenEndpoint = '/_expo/open';
 
@@ -133,6 +134,12 @@ export class OpenMiddleware extends ExpoMiddleware {
     const runtime: OpenRequestedRuntime = normalizedRuntime ?? 'default';
 
     if (method === 'POST') {
+      const sameDeviceError = assertSameDevice(req);
+      if (sameDeviceError) {
+        sendError(res, 403, sameDeviceError);
+        return;
+      }
+
       const sameOriginError = assertSameOrigin(req);
       if (sameOriginError) {
         sendError(res, 403, sameOriginError);
@@ -210,6 +217,21 @@ interface ErrorBody {
 function sendError(res: ServerResponse, statusCode: number, body: ErrorBody) {
   res.statusCode = statusCode;
   res.end(JSON.stringify(body));
+}
+
+function assertSameDevice(req: ServerRequest): ErrorBody | null {
+  const socket = (req as { socket?: ServerRequest['socket'] }).socket;
+  if (socket && isLocalSocket(socket)) {
+    return null;
+  }
+  return {
+    code: 'REMOTE_DEVICE_FORBIDDEN',
+    error: 'POST /_expo/open is restricted to same-device requests.',
+    details:
+      `The dev server only opens the project for clients connected over the loopback interface ` +
+      `so a device on the LAN (or a tunnel client) can't launch the app on the developer's machine. ` +
+      `Issue the POST from the dev server's host, or use GET /_expo/open to retrieve the deep link and open it from the remote device.`,
+  };
 }
 
 function assertSameOrigin(req: ServerRequest): ErrorBody | null {
