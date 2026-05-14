@@ -15,11 +15,22 @@ jest.mock('../ExpoFetchModule', () => {
   class StubNativeResponse {
     private _bodyUsed = false;
 
-    readonly _rawHeaders: [string, string][] = [['content-type', 'text/plain']];
-    readonly status = 200;
-    readonly statusText = 'OK';
-    readonly url = 'https://example.test/';
-    readonly redirected = false;
+    // Getters on the prototype, like the real native binding, so super.x works.
+    get _rawHeaders(): [string, string][] {
+      return [['content-type', 'text/plain']];
+    }
+    get status(): number {
+      return 200;
+    }
+    get statusText(): string {
+      return 'OK';
+    }
+    get url(): string {
+      return 'https://example.test/';
+    }
+    get redirected(): boolean {
+      return false;
+    }
 
     get bodyUsed(): boolean {
       return this._bodyUsed;
