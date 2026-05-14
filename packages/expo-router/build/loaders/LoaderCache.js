@@ -13,6 +13,26 @@ class LoaderCache {
     data = new Map();
     errors = new Map();
     promises = new Map();
+    version = 0;
+    listeners = new Set();
+    // Arrow-bound so `loaderCache.subscribe` returns a stable reference across renders,
+    // which keeps `useSyncExternalStore()` from tearing down and re-attaching every render.
+    subscribe = (listener) => {
+        this.listeners.add(listener);
+        return () => {
+            this.listeners.delete(listener);
+        };
+    };
+    getSnapshot = () => {
+        return this.version;
+    };
+    invalidateAll() {
+        this.clear();
+        this.version++;
+        for (const listener of this.listeners) {
+            listener();
+        }
+    }
     getData(path) {
         return this.data.get(path);
     }
@@ -52,4 +72,16 @@ class LoaderCache {
 exports.LoaderCache = LoaderCache;
 exports.defaultLoaderCache = new LoaderCache();
 exports.LoaderCacheContext = (0, react_1.createContext)(exports.defaultLoaderCache);
+// On `loader-invalidate`, drop the server-injected initial data so `useLoaderData()` falls through
+// to a fresh fetch, then bump the cache version so subscribed hooks re-render.
+if (__DEV__ && typeof window !== 'undefined') {
+    globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__ ??= [];
+    if (!globalThis.__EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__) {
+        globalThis.__EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__ = true;
+        globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__.push(() => {
+            delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
+            exports.defaultLoaderCache.invalidateAll();
+        });
+    }
+}
 //# sourceMappingURL=LoaderCache.js.map
