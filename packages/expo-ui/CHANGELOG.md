@@ -93,6 +93,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Add `WorkletCallback` shared object for synchronous UI thread callbacks. ([#44216](https://github.com/expo/expo/pull/44216) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `scrollPosition` and `id` modifiers for tracking and scrolling to view-aligned targets in `ScrollView` and other scrollable containers (iOS 17+). ([#44652](https://github.com/expo/expo/pull/44652) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Added `@expo/ui/datetimepicker` — an Android and iOS `DateTimePicker` drop-in replacement for `@react-native-community/datetimepicker`. ([#44014](https://github.com/expo/expo/pull/44014) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `SwipeActions` component. ([#44689](https://github.com/expo/expo/pull/44689) by [@yousofabouhalawa](https://github.com/yousofabouhalawa))
 - [swift-ui] Added `LazyHStack` and `LazyVStack`. ([#44612](https://github.com/expo/expo/pull/44612) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Added `LazyRow` component and `onVisibilityChanged` modifier. ([#44615](https://github.com/expo/expo/pull/44615) by [@kudo](https://github.com/kudo))
 - Added universal components. ([#44601](https://github.com/expo/expo/pull/44601) by [@kudo](https://github.com/kudo))
@@ -121,6 +122,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Moved `DateTimePicker` to `@expo/ui/community/datetime-picker`. The old `@expo/ui/datetimepicker` export still works but logs a deprecation warning in development. ([@vonovak](https://github.com/vonovak)) ([#45211](https://github.com/expo/expo/pull/45211) by [@vonovak](https://github.com/vonovak))
+- [iOS] Added `extraProps` to `SlotView` for passing metadata to SwiftUI slot consumers. ([#44689](https://github.com/expo/expo/pull/45287) by [@yousofabouhalawa](https://github.com/yousofabouhalawa))
 - [jetpack-compose] Use view hash code as key for `Children`. ([#44521](https://github.com/expo/expo/pull/44521) by [@kudo](https://github.com/kudo))
 - Refactored `ComposableScope` and allow extensibility. ([#44698](https://github.com/expo/expo/pull/44698) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Reuse `HorizontalAlignment` converter in `LazyColumn`. ([#44755](https://github.com/expo/expo/pull/44755) by [@kudo](https://github.com/kudo))
