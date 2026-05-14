@@ -38,6 +38,8 @@ export default function HostExample() {
 
 Use `matchContents` to let `Host` size itself to fit its content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it applies `alignSelf: 'flex-start'` to the underlying `View` so the host shrinks to fit its children instead of being stretched by its parent.
 
+> **Note:** On web, the per-axis form (`{ horizontal: true }` / `{ vertical: true }`) behaves the same as the boolean form, since `alignSelf` only controls stretching on the parent's cross axis. Components that rely on independent per-axis sizing should expect the same shrink-to-fit behavior on web regardless of which axis is opted in.
+
 ```tsx MatchContentsExample.tsx
 import { Host, Button } from '@expo/ui';
 
@@ -109,7 +111,7 @@ export default function UseViewportSizeMeasurementExample() {
 
 ### Ignoring safe areas
 
-By default, `Host` respects the device safe area insets (notch, home indicator, an so on). Use `ignoreSafeArea="all"` to let content extend edge-to-edge. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is implemented via the CSS `env(safe-area-inset-*)` values applied as padding on the underlying `View`. `"keyboard"` is treated the same as the default since the browser's `env()` function does not expose keyboard insets.
+By default, `Host` respects the device safe area insets (notch, home indicator, on-screen keyboard, and so on). Use `ignoreSafeArea="all"` to let content extend edge-to-edge, or `ignoreSafeArea="keyboard"` to keep safe-area padding but ignore the keyboard inset. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is implemented via the CSS `env(safe-area-inset-*)` values applied as padding on the underlying `View`; the default also uses `max(env(safe-area-inset-*), env(keyboard-inset-*))` so content avoids the on-screen keyboard when the page opts in to the [VirtualKeyboard API](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API) (`navigator.virtualKeyboard.overlaysContent = true`). Without that opt-in, `env(keyboard-inset-*)` resolves to `0`, so behavior matches the safe-area-only fallback.
 
 ```tsx IgnoreSafeAreaExample.tsx
 import { Host, Text } from '@expo/ui';

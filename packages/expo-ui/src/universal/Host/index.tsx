@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent, type ViewProps } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -9,17 +8,17 @@ const styles = StyleSheet.create({
     height: '100dvh',
     width: '100dvw',
   },
-  safeAreaAll: {
-    paddingLeft: 'env(safe-area-inset-left, 0px)',
-    paddingRight: 'env(safe-area-inset-right, 0px)',
-    paddingTop: 'env(safe-area-inset-top, 0px)',
-    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-  },
-  safeAreaKeyboard: {
+  safeArea: {
     paddingLeft: 'max(env(safe-area-inset-left, 0px), env(keyboard-inset-left, 0px))',
     paddingRight: 'max(env(safe-area-inset-right, 0px), env(keyboard-inset-right, 0px))',
     paddingTop: 'max(env(safe-area-inset-top, 0px), env(keyboard-inset-top, 0px))',
     paddingBottom: 'max(env(safe-area-inset-bottom, 0px), env(keyboard-inset-bottom, 0px))',
+  },
+  safeAreaWithoutKeyboard: {
+    paddingLeft: 'env(safe-area-inset-left, 0px)',
+    paddingRight: 'env(safe-area-inset-right, 0px)',
+    paddingTop: 'env(safe-area-inset-top, 0px)',
+    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
   },
 });
 
@@ -37,7 +36,7 @@ type HostProps = {
 export function Host({
   children,
   ignoreSafeArea,
-  layoutDirection = 'leftToRight',
+  layoutDirection,
   matchContents = false,
   onLayout,
   onLayoutContent,
@@ -50,24 +49,28 @@ export function Host({
       ? matchContents.horizontal || matchContents.vertical
       : matchContents;
 
-  const handleOnLayout = useCallback((event: LayoutChangeEvent) => {
-    onLayout?.(event);
-
-    onLayoutContent?.({
-      nativeEvent: {
-        width: event.nativeEvent.layout.width,
-        height: event.nativeEvent.layout.height,
-      },
-    });
-  }, []);
-
   return (
     <View
-      dir={layoutDirection === 'leftToRight' ? 'ltr' : 'rtl'}
-      onLayout={handleOnLayout}
+      dir={
+        layoutDirection === 'leftToRight'
+          ? 'ltr'
+          : layoutDirection === 'rightToLeft'
+            ? 'rtl'
+            : undefined
+      }
+      onLayout={(event: LayoutChangeEvent) => {
+        onLayout?.(event);
+
+        onLayoutContent?.({
+          nativeEvent: {
+            width: event.nativeEvent.layout.width,
+            height: event.nativeEvent.layout.height,
+          },
+        });
+      }}
       style={[
-        ignoreSafeArea != null &&
-          (ignoreSafeArea === 'keyboard' ? styles.safeAreaKeyboard : styles.safeAreaAll),
+        ignoreSafeArea !== 'all' &&
+          (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
         shouldMatchContents
           ? styles.matchContents
           : useViewportSizeMeasurement && styles.matchViewport,
