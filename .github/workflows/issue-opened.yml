@@ -9,6 +9,7 @@ on:
 
 jobs:
   check-if-trusted:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - uses: ./.github/actions/slack-notify
@@ -16,7 +17,6 @@ jobs:
         with:
           webhook: ${{ secrets.slack_webhook_expo_support }}
           channel: '#support'
-          text: 'This issue should be triaged ASAP: ${{ github.event.issue.html_url }}'
           author_name: ${{ github.event.issue.user.login }}
           fields: repo
       - uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
@@ -32,6 +32,7 @@ jobs:
             })
 
   validate:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout

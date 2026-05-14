@@ -14,13 +14,15 @@ concurrency:
 
 jobs:
   code_review:
-    # Auto-run only on same-repo PRs. Fork PRs don't get EXPO_BOT_GITHUB_TOKEN
-    # under `pull_request`, so the review would fail anyway — skip cleanly
-    # instead of leaving a red check. Maintainers can review a fork PR
-    # manually via workflow_dispatch.
+    # Auto-run only on same-repo PRs to expo/expo. Fork PRs don't get
+    # EXPO_BOT_GITHUB_TOKEN under `pull_request`, so the review would fail
+    # anyway — skip cleanly instead of leaving a red check. Forks dispatching
+    # this workflow manually would also fail for the same reason; gate on
+    # `github.repository` to short-circuit.
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event.pull_request.head.repo.full_name == github.repository
+      github.repository == 'expo/expo' &&
+      (github.event_name == 'workflow_dispatch' ||
+       github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:

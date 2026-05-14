@@ -18,6 +18,7 @@ concurrency:
 
 jobs:
   detox_e2e:
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     strategy:
       matrix:
@@ -27,11 +28,6 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🍺 Install required tools
-        run: |
-          brew tap wix/brew
-          brew install applesimutils
-          brew install watchman
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
         with:
