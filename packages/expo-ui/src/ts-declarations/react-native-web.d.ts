@@ -101,10 +101,18 @@ declare module 'react-native' {
 
   export interface ImageStyle {
     display?: DisplayValue;
+    paddingLeft?: number | string;
+    paddingRight?: number | string;
+    paddingTop?: number | string;
+    paddingBottom?: number | string;
   }
 
   export interface TextStyle {
     display?: DisplayValue;
+    paddingLeft?: number | string;
+    paddingRight?: number | string;
+    paddingTop?: number | string;
+    paddingBottom?: number | string;
   }
 
   export interface ViewStyle {
