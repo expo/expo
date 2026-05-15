@@ -52,15 +52,15 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
 
     val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
 
-    val defaultStripPrefixes = setOf(
-      "expo.modules.video.",
-      "expo.modules.camera.",
-      "expo.modules.image.",
-      "expo.modules.imagepicker.",
-      "expo.modules.documentpicker.",
-      "expo.modules.maps.",
-      "expo.av.",
-    )
+    // Empty by default — heavy modules (expo-video, expo-camera, expo-image,
+    // expo-maps, ...) now fuse into the fat AAR via the transitive-AAR
+    // enumeration in the fused template, so their classes ARE present and the
+    // autolinking references in ExpoModulesPackageList.kt resolve cleanly. The
+    // strip hook stays in place as a safety net for any module the user
+    // explicitly skips via `-Pbrownfield.fused.skip=...` — pair that with
+    // `-Pbrownfield.fused.strip-packages=...` listing the package prefixes to
+    // strip so the runtime doesn't crash on a dangling reference.
+    val defaultStripPrefixes = emptySet<String>()
     val extraStrip =
       (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
         ?.split(',')
