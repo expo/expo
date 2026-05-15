@@ -47,6 +47,7 @@ public final class ImageModule: Module {
 
       Prop("placeholderContentFit") { (view, placeholderContentFit: ContentFit?) in
         view.placeholderContentFit = placeholderContentFit ?? .scaleDown
+        view.usesDefaultPlaceholderContentFit = placeholderContentFit == nil
       }
 
       Prop("contentPosition") { (view, contentPosition: ContentPosition?) in
