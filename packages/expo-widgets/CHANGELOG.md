@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.9 — 2026-05-15
+
+### 🎉 New features
+
 - Use shared JS runtime. ([#45781](https://github.com/expo/expo/pull/45781) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes

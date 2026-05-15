@@ -18,7 +18,7 @@ React Native is supported on Android TV and Apple TV through the [React Native T
 
 Using the React Native TV library as the `react-native` dependency in an Expo project, it becomes capable of targeting both mobile (Android, iOS) and TV (Android TV, Apple TV) devices.
 
-## Project changes required
+## Native project changes required
 
 The necessary changes to the native Android and iOS files are minimal and can be automated with a [config plugin](https://github.com/react-native-tvos/config-tv/tree/main/packages/config-tv) if you use [prebuild](/more/glossary-of-terms/#prebuild). Below is a list of changes made by the config plugins, which you can alternatively apply manually:
 
@@ -147,22 +147,24 @@ The following walkthrough describes the steps required to modify an Expo project
 
 In **package.json**, modify the `react-native` dependency to use the TV repo, and exclude this dependency from [`npx expo install` version validation](/more/expo-cli/#configuring-dependency-validation).
 
-> **Warning** The `react-native-tvos` version should match the Expo SDK you are using. For example, Expo SDK 54 uses React Native 0.81, so you should use `react-native-tvos@0.81-stable` (the latest 0.81 version) as shown below. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use for older SDKs.
+> **Warning** The `react-native-tvos` version must match the Expo SDK you are using. For example, Expo SDK 56 uses React Native 0.85, so you should use `react-native-tvos@0.85-stable` (the latest 0.85 version) as shown below. See the [SDK compatibility table](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version) for the correct version to use for older SDKs.
 
-{/* prettier-ignore */}
+> **Warning** When upgrading an Expo TV project to a new version of the SDK, the `react-native-tvos` version **must be upgraded manually**. It will not be automatically updated by `npx expo install expo@latest --fix`.
+
+> **Warning** If you have more than one Expo project in a monorepo, and one of them is modified for TV, then all of them should be modified to use the React Native TV package as described here, even if some of the projects are not configured to target TV. This avoids possible conflicts between the project dependencies, while still supporting mobile development fully on all the projects.
+> {/* prettier-ignore */}
+
 ```json package.json
 {
   /* @hide ... */ /* @end */
   "dependencies": {
     /* @hide ... */ /* @end */
-    "react-native": "npm:react-native-tvos@0.81-stable",
+    "react-native": "npm:react-native-tvos@0.85-stable"
     /* @hide ... */ /* @end */
   },
   "expo": {
     "install": {
-      "exclude": [
-        "react-native"
-      ]
+      "exclude": ["react-native"]
     }
   }
 }

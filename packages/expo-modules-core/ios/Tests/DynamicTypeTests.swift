@@ -717,11 +717,11 @@ struct DynamicTypeTests {
     }
   }
 
-  // MARK: - DynamicEncodableType
+  // MARK: - DynamicCodableType
 
-  @Suite("DynamicEncodableType")
+  @Suite("DynamicCodableType")
   @JavaScriptActor
-  struct DynamicEncodableTypeTests {
+  struct DynamicCodableTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
       get throws {
@@ -746,7 +746,7 @@ struct DynamicTypeTests {
 
     @Test
     func `is created`() {
-      #expect(~TestEncodable.self is DynamicEncodableType)
+      #expect(~TestEncodable.self is DynamicCodableType<TestEncodable>)
     }
 
     @Test

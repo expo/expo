@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.0-preview.12 — 2026-05-15
+
+### 🎉 New features
+
 - Implement `Response.clone()` on `expo/fetch`, and throw the spec's `TypeError` when a body is read twice. ([#45740](https://github.com/expo/expo/pull/45740) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes

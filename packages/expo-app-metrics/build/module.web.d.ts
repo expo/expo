@@ -6,7 +6,6 @@ declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetric
     markFirstRender(): Promise<void>;
     markInteractive(attributes?: MetricAttributes): Promise<void>;
     logEvent(name: string, options?: LogEventOptions): void;
-    getStoredEntries(): Promise<never[]>;
     clearStoredEntries(): Promise<void>;
     getAllSessions(): Promise<never[]>;
     simulateCrashReport(): void;

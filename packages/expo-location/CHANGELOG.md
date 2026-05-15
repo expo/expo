@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.8 — 2026-05-13
 
 _This version does not introduce any user-facing changes._
@@ -53,6 +57,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+- Added motion activity APIs: `getMotionActivityAsync`, `watchMotionActivityAsync`, and permission helpers. ([#44893](https://github.com/expo/expo/pull/44893) by [@Guccio163](https://github.com/Guccio163))
 
 ### 🐛 Bug fixes
 

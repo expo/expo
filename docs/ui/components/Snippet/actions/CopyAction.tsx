@@ -23,7 +23,7 @@ export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
       leftSlot={<ClipboardIcon className="icon-sm text-icon-secondary" />}
       onClick={onCopyClick}
       disabled={copyDone}
-      className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
+      className="max-sm:gap-0 [&_p]:max-sm:hidden"
       aria-label="Copy content"
       {...rest}>
       {copyDone ? 'Copied!' : 'Copy'}
