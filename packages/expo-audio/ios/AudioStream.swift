@@ -155,7 +155,7 @@ class AudioStream: SharedObject {
   }
 
   private func emitStatus() {
-    emit(event: AUDIO_STREAM_STATUS, arguments: [
+    emit(event: AUDIO_STREAM_STATUS, payload: [
       "isStreaming": isStreaming
     ])
   }
@@ -180,7 +180,7 @@ class AudioStream: SharedObject {
       return
     }
 
-    emit(event: AUDIO_STREAM_BUFFER, arguments: [
+    emit(event: AUDIO_STREAM_BUFFER, payload: [
       "data": data,
       "sampleRate": sampleRate,
       "channels": channels,

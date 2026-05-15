@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 - Drop `AppRegistry` development log when web app mounts ([#45788](https://github.com/expo/expo/pull/45788) by [@kitten](https://github.com/kitten))
 
 ## 56.0.0-preview.11 — 2026-05-13
