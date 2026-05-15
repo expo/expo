@@ -191,6 +191,58 @@ describe(addMcpCapabilities, () => {
     expect(registerTool).not.toHaveBeenCalled();
   });
 
+  it('blocks CLI-only command invocation through the handler even if the schema is bypassed', async () => {
+    // Restore the real executor for this test so we exercise the actual execute()/validate() path,
+    // not the mocked one. A bypassed-schema scenario (future MCP client variant, internal misuse,
+    // protocol-level smuggling) must still be rejected before any spawn occurs.
+    const { DevToolsPluginCliExtensionExecutor: ActualExecutor } = jest.requireActual<
+      typeof import('../DevToolsPluginCliExtensionExecutor')
+    >('../DevToolsPluginCliExtensionExecutor');
+    // Fake child that immediately fires `close(0)` so, if the executor IS reached without
+    // throwing at validate, the handler resolves and assertions run deterministically
+    // (instead of timing out the test).
+    const spawnSpy = jest.fn(() => ({
+      stdout: { on: jest.fn() },
+      stderr: { on: jest.fn() },
+      on: (event: string, cb: (code: number) => void) => {
+        if (event === 'close') setImmediate(() => cb(0));
+      },
+      kill: jest.fn(),
+    }));
+    MockedExecutor.mockImplementationOnce(
+      (plugin, projectRoot) =>
+        new ActualExecutor(plugin, projectRoot, spawnSpy as any) as InstanceType<
+          typeof DevToolsPluginCliExtensionExecutor
+        >
+    );
+
+    const mcpCommand = createCommand({ name: 'safe-read' });
+    const cliOnlyCommand: DevToolsPluginCommand = {
+      name: 'cli-only-mutate',
+      title: 'CLI-only mutate',
+      environments: ['cli'],
+      parameters: [{ name: 'target', type: 'text', description: 'Target' }],
+    };
+    const plugin = createPlugin('mixed-plugin', 'Mixed plugin', [mcpCommand, cliOnlyCommand]);
+
+    const { devServerManager } = createDevServerManager([plugin]);
+    const registerTool = jest.fn();
+    const mcpServer = { registerTool } as unknown as McpServer;
+
+    await addMcpCapabilities(mcpServer, devServerManager);
+    const [, , handler] = registerTool.mock.calls[0];
+
+    // Smuggle a CLI-only command name past the schema by invoking the handler directly.
+    const result = await handler({ parameters: { command: 'cli-only-mutate', target: 'value' } });
+
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toMatch(
+      /Command "cli-only-mutate" not found in plugin mixed-plugin/
+    );
+    // The real validate() must throw before the executor ever reaches spawnFunc.
+    expect(spawnSpy).not.toHaveBeenCalled();
+  });
+
   it('omits CLI-only commands from the MCP schema and executor for mixed plugins', async () => {
     const mcpCommand = createCommand({
       name: 'safe-read',
