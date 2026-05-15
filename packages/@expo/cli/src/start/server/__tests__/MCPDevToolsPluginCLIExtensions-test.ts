@@ -96,7 +96,18 @@ describe(addMcpCapabilities, () => {
     });
 
     expect(MockedExecutor).toHaveBeenCalledTimes(1);
-    expect(MockedExecutor).toHaveBeenLastCalledWith(plugin, PROJECT_ROOT);
+    expect(MockedExecutor).toHaveBeenLastCalledWith(
+      {
+        packageName: plugin.packageName,
+        packageRoot: plugin.packageRoot,
+        cliExtensions: {
+          description: plugin.cliExtensions!.description,
+          entryPoint: plugin.cliExtensions!.entryPoint,
+          commands: [command],
+        },
+      },
+      PROJECT_ROOT
+    );
     expect(executeMock).toHaveBeenCalledWith({
       command: 'run-analysis',
       args: { path: '/tmp/data' },
@@ -178,6 +189,44 @@ describe(addMcpCapabilities, () => {
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
     expect(registerTool).not.toHaveBeenCalled();
+  });
+
+  it('omits CLI-only commands from the MCP schema and executor for mixed plugins', async () => {
+    const mcpCommand = createCommand({
+      name: 'safe-read',
+      parameters: [{ name: 'id', type: 'text', description: 'Record id' }],
+    });
+    const cliOnlyCommand: DevToolsPluginCommand = {
+      name: 'cli-only-mutate',
+      title: 'CLI-only mutate',
+      environments: ['cli'],
+      parameters: [{ name: 'target', type: 'text', description: 'Target' }],
+    };
+    const plugin = createPlugin('mixed-plugin', 'Mixed plugin', [mcpCommand, cliOnlyCommand]);
+
+    const { devServerManager } = createDevServerManager([plugin]);
+    const registerTool = jest.fn();
+    const mcpServer = { registerTool } as unknown as McpServer;
+
+    await addMcpCapabilities(mcpServer, devServerManager);
+
+    expect(registerTool).toHaveBeenCalledTimes(1);
+    const [, toolDefinition, handler] = registerTool.mock.calls[0];
+
+    // The MCP schema enum must only accept MCP-enabled commands.
+    const schema = toolDefinition.inputSchema.parameters;
+    expect(schema.safeParse({ command: 'safe-read', id: 'abc' }).success).toBe(true);
+    expect(schema.safeParse({ command: 'cli-only-mutate', target: 'abc' }).success).toBe(false);
+
+    // The executor must also receive a descriptor that excludes CLI-only commands,
+    // so a request that bypasses the schema (e.g., a future client variant) still fails
+    // existence validation rather than running a CLI-only command.
+    executeMock.mockResolvedValue([]);
+    await handler({ parameters: { command: 'safe-read', id: 'abc' } });
+
+    expect(MockedExecutor).toHaveBeenCalledTimes(1);
+    const [executorPluginArg] = MockedExecutor.mock.calls[0];
+    expect(executorPluginArg.cliExtensions?.commands.map((c) => c.name)).toEqual(['safe-read']);
   });
 });
 
