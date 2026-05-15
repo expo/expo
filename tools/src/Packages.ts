@@ -92,6 +92,22 @@ export type ExpoModuleConfig = {
 };
 
 const SPMConfigFileName = 'spm.config.json';
+const PACKAGE_JSON_GLOB = '**/package.json';
+const PACKAGE_GLOB_IGNORE = [
+  '**/example/**',
+  '**/node_modules/**',
+  '**/static/**',
+  '**/__tests__/**',
+  '**/__mocks__/**',
+  '**/__fixtures__/**',
+  '**/e2e/**',
+];
+const TEMPLATE_GLOB_IGNORE = [
+  '**/node_modules/**',
+  '**/__tests__/**',
+  '**/__mocks__/**',
+  '**/__fixtures__/**',
+];
 
 /**
  * Represents a package in the monorepo.
@@ -429,7 +445,8 @@ export function getPackageByName(packageName: string): Package | null {
     const packageJson = require(packageJsonPath);
     return new Package(path.dirname(packageJsonPath), packageJson);
   } catch {
-    return cachedPackages?.find((pkg) => pkg.packageName === packageName) ?? null;
+    cachedPackages ??= getListOfPackagesSync();
+    return cachedPackages.find((pkg) => pkg.packageName === packageName) ?? null;
   }
 }
 
@@ -438,42 +455,45 @@ export function getPackageByName(packageName: string): Package | null {
  */
 export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
-    const paths = await glob('**/package.json', {
+    const paths = await glob(PACKAGE_JSON_GLOB, {
       cwd: PACKAGES_DIR,
-      ignore: [
-        '**/example/**',
-        '**/node_modules/**',
-        '**/static/**',
-        '**/__tests__/**',
-        '**/__mocks__/**',
-        '**/__fixtures__/**',
-        '**/e2e/**',
-      ],
+      ignore: PACKAGE_GLOB_IGNORE,
     });
-    const templatesPaths = await glob('**/package.json', {
+    const templatesPaths = await glob(PACKAGE_JSON_GLOB, {
       cwd: TEMPLATES_DIR,
-      ignore: ['**/node_modules/**', '**/__tests__/**', '**/__mocks__/**', '**/__fixtures__/**'],
+      ignore: TEMPLATE_GLOB_IGNORE,
     });
-    cachedPackages = paths
-      .map((packageJsonPath) => {
-        const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
-        const packagePath = path.dirname(fullPackageJsonPath);
-        const packageJson = require(fullPackageJsonPath);
-
-        return new Package(packagePath, packageJson);
-      })
-      .concat(
-        templatesPaths.map((packageJsonPath) => {
-          const fullPackageJsonPath = path.join(TEMPLATES_DIR, packageJsonPath);
-          const packagePath = path.dirname(fullPackageJsonPath);
-          const packageJson = require(fullPackageJsonPath);
-
-          return new Package(packagePath, packageJson);
-        })
-      )
-      .filter((pkg) => !!pkg.packageName);
+    cachedPackages = createPackagesFromPaths(PACKAGES_DIR, paths).concat(
+      createPackagesFromPaths(TEMPLATES_DIR, templatesPaths)
+    );
   }
   return cachedPackages;
+}
+
+function getListOfPackagesSync(): Package[] {
+  const paths = glob.sync(PACKAGE_JSON_GLOB, {
+    cwd: PACKAGES_DIR,
+    ignore: PACKAGE_GLOB_IGNORE,
+  });
+  const templatesPaths = glob.sync(PACKAGE_JSON_GLOB, {
+    cwd: TEMPLATES_DIR,
+    ignore: TEMPLATE_GLOB_IGNORE,
+  });
+  return createPackagesFromPaths(PACKAGES_DIR, paths).concat(
+    createPackagesFromPaths(TEMPLATES_DIR, templatesPaths)
+  );
+}
+
+function createPackagesFromPaths(rootDir: string, packageJsonPaths: string[]): Package[] {
+  return packageJsonPaths
+    .map((packageJsonPath) => {
+      const fullPackageJsonPath = path.join(rootDir, packageJsonPath);
+      const packagePath = path.dirname(fullPackageJsonPath);
+      const packageJson = require(fullPackageJsonPath);
+
+      return new Package(packagePath, packageJson);
+    })
+    .filter((pkg) => !!pkg.packageName);
 }
 
 function readExpoModuleConfigJson(expoModuleConfigJsonPath: string) {

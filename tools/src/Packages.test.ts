@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import Module from 'node:module';
 import { describe, it } from 'node:test';
 
 import { getPackageByName } from './Packages';
@@ -21,6 +22,24 @@ describe('getPackageByName', () => {
       const pkg = getPackageByName(name);
       assert.ok(pkg, `${name} should resolve`);
       assert.equal(pkg.packageName, name);
+    }
+  });
+
+  it('falls back to the workspace package list for scoped packages without a direct package path', () => {
+    const originalResolveFilename = Module._resolveFilename;
+    Module._resolveFilename = function (request, parent, isMain, options) {
+      if (request === '@expo/ui/package.json') {
+        throw new Error('Simulated missing direct package path');
+      }
+      return originalResolveFilename.call(this, request, parent, isMain, options);
+    };
+
+    try {
+      const pkg = getPackageByName('@expo/ui');
+      assert.ok(pkg);
+      assert.equal(pkg.packageName, '@expo/ui');
+    } finally {
+      Module._resolveFilename = originalResolveFilename;
     }
   });
 
