@@ -9,12 +9,12 @@ import chalk from 'chalk';
 import path from 'path';
 import * as stackTraceParser from 'stacktrace-parser';
 
+import { LogBoxLog } from './metro/log-box/LogBoxLog';
 import type { StackFrame } from './metro/log-box/LogBoxSymbolication';
 import { parseErrorStack } from './metro/log-box/LogBoxSymbolication';
+import { getStackAsFormattedLog } from './metro/metroErrorInterface';
 import { env } from '../../utils/env';
 import { memoize } from '../../utils/fn';
-import { LogBoxLog } from './metro/log-box/LogBoxLog';
-import { getStackAsFormattedLog } from './metro/metroErrorInterface';
 
 const debug = require('debug')('expo:metro:logger') as typeof console.log;
 

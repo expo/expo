@@ -11,11 +11,11 @@ import {
   View,
 } from 'react-native';
 
-import { getLabel, Label, PlatformPressable } from '../../elements';
-import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 import { TabBarIcon } from './TabBarIcon';
 import { Color } from '../../../utils/color';
+import { getLabel, Label, PlatformPressable } from '../../elements';
 import { type Route, useTheme } from '../../native';
+import type { BottomTabBarButtonProps, BottomTabDescriptor, LabelPosition } from '../types';
 
 type Props = {
   /**

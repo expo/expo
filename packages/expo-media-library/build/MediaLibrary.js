@@ -1,4 +1,5 @@
-import { createPermissionHook, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook } from 'expo';
+import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import MediaLibrary from './ExpoMediaLibrary';
 const isExpoGo = typeof expo !== 'undefined' && globalThis.expo?.modules?.ExpoGo;
@@ -8,7 +9,8 @@ if (isExpoGo && !loggedExpoGoWarning) {
     loggedExpoGoWarning = true;
 }
 // TODO(@kitten): Remove re-exports from EMC
-export { PermissionStatus, } from 'expo-modules-core';
+export { PermissionStatus, } from 'expo';
+export {} from 'expo-modules-core';
 function arrayize(item) {
     if (Array.isArray(item)) {
         return item;

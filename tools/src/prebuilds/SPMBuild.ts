@@ -1,5 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { execSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -626,8 +627,9 @@ export async function enrichFrameworkWithHeaders(
     // Copy .h files preserving subdirectory structure (e.g., avif/avif.h).
     // Use -L to follow symlinks (some packages symlink umbrella headers from other dirs).
     // --include='*/' keeps subdirectories, --include='*.h' keeps headers, --exclude='*' drops the rest.
-    execSync(
-      `rsync -aL --include='*/' --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`,
+    await spawnAsync(
+      'rsync',
+      ['-aL', '--include=*/', '--include=*.h', '--exclude=*', `${headersDir}/`, `${destHeaders}/`],
       { stdio: 'pipe' }
     );
   }
@@ -924,7 +926,7 @@ export async function buildSharedSPMDependencyAsync(
         const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
-        execSync(`rsync -a "${xcframeworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
+        await spawnAsync('rsync', ['-a', `${xcframeworkPath}/`, `${destPath}/`], { stdio: 'pipe' });
         logger.info(
           `✅ Copied binary SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`
         );
@@ -943,9 +945,9 @@ export async function buildSharedSPMDependencyAsync(
   //  - Force the library type to .dynamic (automatic defaults to static → no .framework)
   const cleanBuildDir = path.join(buildDir, '_pkg');
   await fs.remove(cleanBuildDir);
-  execSync(`rsync -a "${checkoutSource}/" "${cleanBuildDir}/"`, { stdio: 'pipe' });
+  await spawnAsync('rsync', ['-a', `${checkoutSource}/`, `${cleanBuildDir}/`], { stdio: 'pipe' });
   // Make the copy writable (git checkouts may be read-only)
-  execSync(`chmod -R u+w "${cleanBuildDir}"`, { stdio: 'pipe' });
+  await spawnAsync('chmod', ['-R', 'u+w', cleanBuildDir], { stdio: 'pipe' });
   for (const entry of await fs.readdir(cleanBuildDir)) {
     if (entry.endsWith('.xcodeproj') || entry.endsWith('.xcworkspace')) {
       await fs.remove(path.join(cleanBuildDir, entry));
@@ -1087,7 +1089,9 @@ export async function buildSharedSPMDependencyAsync(
         const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
-        execSync(`rsync -a "${artifactXCFrameworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
+        await spawnAsync('rsync', ['-a', `${artifactXCFrameworkPath}/`, `${destPath}/`], {
+          stdio: 'pipe',
+        });
         logger.info(`✅ Copied binary SPM dep ${chalk.cyan(productName)} to shared location`);
 
         // Clean up build directory

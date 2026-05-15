@@ -7,7 +7,7 @@ const Ipv4Regex =
 
 export async function test(t) {
   if (Platform.OS === 'android') {
-    t.describe(`Network.isAirplaneModeEnabledAsync()`, async () => {
+    t.describe(`Network.isAirplaneModeEnabledAsync()`, () => {
       t.it(`returns a boolean`, async () => {
         const isAirplaneModeOn = await Network.isAirplaneModeEnabledAsync();
         t.expect(isAirplaneModeOn).toBeDefined();

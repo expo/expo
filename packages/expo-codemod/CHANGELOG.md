@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fixed unit test failure on Windows. ([#45777](https://github.com/expo/expo/pull/45777) by [@kudo](https://github.com/kudo))
+
 ## 56.0.3 — 2026-05-11
 
 ### 🎉 New features

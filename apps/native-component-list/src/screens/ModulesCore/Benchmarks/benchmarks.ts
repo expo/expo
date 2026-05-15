@@ -63,6 +63,43 @@ async function timeAsync(
   return performance.now() - start;
 }
 
+const TICK_INTERVAL_MS = 16;
+
+// Wraps a benchmark to log JS-thread responsiveness during the run. Schedules a
+// `setInterval` tick and compares the actual tick count against the expected
+// count for the elapsed wall time. Ratio ≈ 1.0 means the JS thread stayed
+// responsive; lower means it was blocked.
+function withResponsiveness(
+  label: string,
+  run: (iterations: number) => Promise<number>
+): (iterations: number) => Promise<number> {
+  return async (iterations) => {
+    let ticks = 0;
+    const handle = setInterval(() => {
+      ticks++;
+    }, TICK_INTERVAL_MS);
+    const start = performance.now();
+    try {
+      const elapsed = await run(iterations);
+      const expectedTicks = (performance.now() - start) / TICK_INTERVAL_MS;
+
+      if (expectedTicks < 5) {
+        console.log(
+          `[benchmark: ${label}] JS responsiveness: skipped (run too short, ${expectedTicks.toFixed(1)} expected ticks)`
+        );
+      } else {
+        const ratio = ticks / expectedTicks;
+        console.log(
+          `[benchmark: ${label}] JS responsiveness: ${ratio.toFixed(2)} (${ticks}/${expectedTicks.toFixed(0)} ticks)`
+        );
+      }
+      return elapsed;
+    } finally {
+      clearInterval(handle);
+    }
+  };
+}
+
 export const GROUPS: Group[] = [
   {
     id: 'nothing',
@@ -402,6 +439,48 @@ export const GROUPS: Group[] = [
             BridgeModule.foldArray(numbers);
           });
         },
+      },
+    ],
+  },
+  {
+    id: 'runtimeExecute',
+    title: 'runtime.execute() — iOS',
+    iterations: DEFAULT_ASYNC_ITERATIONS,
+    description:
+      'Round-trips `runtime.execute(...)` from a non-JS caller, calling `runtime.global().hasProperty("Math")` inside the closure.\n' +
+      'The JS thread should stay responsive across all four overloads (ratio logged to the console).',
+    benchmarks: [
+      {
+        id: 'blocking-sync',
+        label: 'blocking caller, sync closure',
+        available: ExpoModule?.executeBlockingSync != null,
+        run: withResponsiveness('executeBlockingSync', (iterations) =>
+          ExpoModule.executeBlockingSync(iterations)
+        ),
+      },
+      {
+        id: 'blocking-async',
+        label: 'blocking caller, async closure',
+        available: ExpoModule?.executeBlockingAsync != null,
+        run: withResponsiveness('executeBlockingAsync', (iterations) =>
+          ExpoModule.executeBlockingAsync(iterations)
+        ),
+      },
+      {
+        id: 'async-sync',
+        label: 'async caller, sync closure',
+        available: ExpoModule?.executeAsyncSync != null,
+        run: withResponsiveness('executeAsyncSync', (iterations) =>
+          ExpoModule.executeAsyncSync(iterations)
+        ),
+      },
+      {
+        id: 'async-async',
+        label: 'async caller, async closure',
+        available: ExpoModule?.executeAsyncAsync != null,
+        run: withResponsiveness('executeAsyncAsync', (iterations) =>
+          ExpoModule.executeAsyncAsync(iterations)
+        ),
       },
     ],
   },

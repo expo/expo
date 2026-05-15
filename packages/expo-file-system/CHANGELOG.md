@@ -10,11 +10,14 @@
 
 ### 💡 Others
 
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
 ## 56.0.4 — 2026-05-08
 
 ### 💡 Others
 
 - Improved public API docs. ([#45530](https://github.com/expo/expo/pull/45530) by [@barthap](https://github.com/barthap))
+- Re-organized package TypeScript code. ([#45531](https://github.com/expo/expo/pull/45531) by [@barthap](https://github.com/barthap))
 
 ## 56.0.3 — 2026-05-06
 

@@ -8,7 +8,23 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed POM rewriter appending a duplicate `<version>` element instead of replacing the existing one, which caused `publish*PublicationToMavenLocal` to fail with `POM file is invalid` for dependencies declared with a placeholder version. ([#45783](https://github.com/expo/expo/pull/45783) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.9 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.6 — 2026-05-11
 

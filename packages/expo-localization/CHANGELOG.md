@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 56.0.4 — 2026-05-13
+
+### 💡 Others
+
+- Use ReactI18nUtil dependency for enabling RTL support. ([#40575](https://github.com/expo/expo/pull/40575) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

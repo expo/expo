@@ -17,7 +17,12 @@ type ManifestData = {
     $: {
         [key: string]: string | undefined;
         'android:host'?: string;
+        'android:port'?: string;
+        'android:mimeType'?: string;
+        'android:pathPattern'?: string;
         'android:pathPrefix'?: string;
+        'android:pathSuffix'?: string;
+        'android:pathAdvancedPattern'?: string;
         'android:scheme'?: string;
     };
 };

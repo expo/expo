@@ -43,9 +43,9 @@ export async function getWorkflowsAsync(): Promise<Workflow[]> {
   const workflows = await filterAsync(response.data.workflows, async (workflow) =>
     Boolean(
       workflow.name &&
-        workflow.path &&
-        workflow.state === 'active' &&
-        (await fs.pathExists(path.join(EXPO_DIR, workflow.path)))
+      workflow.path &&
+      workflow.state === 'active' &&
+      (await fs.pathExists(path.join(EXPO_DIR, workflow.path)))
     )
   );
   return workflows

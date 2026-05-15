@@ -279,15 +279,12 @@ export interface ExpoAppMetricsModuleType {
     triggerCrash(kind: CrashKind): void;
     /**
      * @private This API is unstable and may change without notice.
-     * @platform android
      */
     addCustomMetricToSession(metric: Metric): Promise<void>;
     /**
-     * Returns the current main session, including its metrics. Resolves to
-     * `null` if the session row hasn't been persisted yet.
+     * Returns the current main session, including its metrics.
      *
      * @private This API is unstable and may change without notice.
-     * @platform android
      */
     getMainSession(): Promise<MainSession | null>;
 }

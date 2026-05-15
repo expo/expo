@@ -45,8 +45,9 @@ describe('DiskCacheManager', () => {
   });
 
   test('creates valid cache file paths', () => {
-    expect(DiskCacheManager.getCacheFilePath(buildParameters, 'file-prefix', '/')).toMatch(
-      /^\/file-prefix-.*$/
+    const cacheDir = path.sep;
+    expect(DiskCacheManager.getCacheFilePath(buildParameters, 'file-prefix', cacheDir)).toMatch(
+      new RegExp(`^${cacheDir.replace(/\\/g, '\\\\')}file-prefix-.*$`)
     );
   });
 

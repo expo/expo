@@ -90,19 +90,9 @@ private:
   void invokeDoubleArray(jni::alias_ref<jni::JArrayDouble> result);
   void invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result);
 
-  template<class T>
-  using ArgsConverter = std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction, T arg)>;
-
-  template<class T>
-  inline void invokeJSFunction(
-    ArgsConverter<typename std::remove_const<T>::type> argsConverter,
-    T arg
-  );
+  void invokeWithResolver(std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction)> resolver);
 
   template<class T>
   void invokeJSFunctionForArray(T &arg);
-
-  template<class T>
-  inline void invokeJSFunction(T arg);
 };
 } // namespace expo

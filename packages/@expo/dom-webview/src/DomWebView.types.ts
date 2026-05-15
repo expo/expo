@@ -1,10 +1,7 @@
 import type { StyleProp, ViewProps, ViewStyle } from 'react-native';
 
 export interface DomWebViewProps
-  extends ViewProps,
-    AndroidProps,
-    IosScrollViewProps,
-    UnsupportedWebViewProps {
+  extends ViewProps, AndroidProps, IosScrollViewProps, UnsupportedWebViewProps {
   /**
    * Loads static html or a uri (with optional headers) in the WebView.
    */

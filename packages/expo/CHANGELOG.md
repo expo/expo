@@ -4,13 +4,32 @@
 
 ### 🛠 Breaking changes
 
-- Removed `@expo/vector-icons` from the `expo` package's dependencies. Apps that list `@expo/vector-icons` in their own `package.json` are unaffected; this is flagged as breaking only for apps that relied on `expo` transitively pulling it in. ([#45563](https://github.com/expo/expo/pull/45563) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
+
+- Implement `Response.clone()` on `expo/fetch`, and throw the spec's `TypeError` when a body is read twice. ([#45740](https://github.com/expo/expo/pull/45740) by [@zoontek](https://github.com/zoontek))
 
 ### 🐛 Bug fixes
 
+- Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+- Drop `AppRegistry` development log when web app mounts ([#45788](https://github.com/expo/expo/pull/45788) by [@kitten](https://github.com/kitten))
+
+## 56.0.0-preview.11 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0-preview.10 — 2026-05-13
+
+### 🛠 Breaking changes
+
+- Removed `@expo/vector-icons` from the `expo` package's dependencies. Apps that list `@expo/vector-icons` in their own `package.json` are unaffected; this is flagged as breaking only for apps that relied on `expo` transitively pulling it in. ([#45563](https://github.com/expo/expo/pull/45563) by [@vonovak](https://github.com/vonovak))
+
+### 💡 Others
+
+- Reexport permission hooks and permission types from `expo-modules-core` ([#45564](https://github.com/expo/expo/pull/45564) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.0-preview.9 — 2026-05-12
 

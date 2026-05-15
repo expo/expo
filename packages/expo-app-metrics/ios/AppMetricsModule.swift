@@ -68,23 +68,38 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     AsyncFunction("getStoredEntries") { () -> [Any] in
-      let entries = await AppMetrics.storage.getAllEntries()
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(entries)
-      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
+      return []
     }
 
     AsyncFunction("clearStoredEntries") {
-      return try await AppMetrics.storage.clear()
+      // no-op
     }
 
-    AsyncFunction("getAllSessions") { () -> [Any] in
-      let sessions = await AppMetrics.storage.getAllSessions()
-      let encoder = JSONEncoder()
-      encoder.dateEncodingStrategy = .iso8601
-      let data = try encoder.encode(sessions.map(SessionCoder.init))
-      return (try JSONSerialization.jsonObject(with: data) as? [Any]) ?? []
+    AsyncFunction("getAllSessions") { () -> [StoredSession] in
+      return try await AppMetricsActor.isolated {
+        return try AppMetrics.database?
+          .getAllSessionsWithChildren()
+          .map { StoredSession(from: $0) } ?? []
+      }.value
+    }
+
+    AsyncFunction("addCustomMetricToSession") { (jsMetric: JsMetric) in
+      try await AppMetricsActor.isolated {
+        let metric = jsMetric.toMetric()
+        try AppMetrics.database?.insert(metric: MetricRow.from(metric: metric, sessionId: jsMetric.sessionId))
+      }.value
+    }
+
+    AsyncFunction("getMainSession") { () -> StoredSession? in
+      return try await AppMetricsActor.isolated {
+        let mainSessionId = AppMetrics.mainSession.id
+        guard let row = try AppMetrics.database?
+          .getAllSessionsWithChildren()
+          .first(where: { $0.session.id == mainSessionId }) else {
+          return nil
+        }
+        return StoredSession(from: row)
+      }.value
     }
 
     Function("simulateCrashReport") {

@@ -194,7 +194,11 @@ function compileModule(code, filename, opts) {
     }
     if (mapPath) {
       inputCode = stripSourceMappingURL(code);
-      // NOTE This needs to be a plain absolute path because Node rejects file: URLs
+      // NOTE(@kitten): This needs to be a plain absolute path because Node rejects file: URLs
+      // On Windows, it additionally needs to be a URL.pathname-like format (POSIX with a leading slash)
+      if (_nodePath().default.sep !== '/') {
+        mapPath = `/${mapPath.replaceAll(_nodePath().default.sep, '/')}`;
+      }
       inputCode += `\n//# sourceMappingURL=${mapPath}`;
       priorSourceMapsState = getSourceMapsState();
       (0, _stacktrace().installSourceMapStackTrace)();

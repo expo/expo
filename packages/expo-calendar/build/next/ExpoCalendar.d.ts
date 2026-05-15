@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
 import { NativeModule } from 'expo-modules-core';
 import type { ProcessedColorValue } from 'react-native';
 import type { ExpoCalendar, ExpoCalendarAttendee, ExpoCalendarEvent, ExpoCalendarReminder } from './ExpoCalendar.types';

@@ -25,13 +25,12 @@ public struct WidgetsEntryView: View {
   }
 
   public var body: some View {
-    let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(entry.name)_layout") ?? ""
-    let node = evaluateLayout(layout: layout, props: entry.props ?? [:], environment: widgetEnvironment)
-
-    if let node {
+    if let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(entry.name)_layout"),
+       !layout.isEmpty {
+      let node = evaluateLayout(layout: layout, props: entry.props ?? [:], environment: widgetEnvironment)
       WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {
-      EmptyView()
+      WidgetsDynamicView(name: entry.name, kind: .widget, node: createRedBox(message: "No layout found for \(WidgetsStorage.appGroupIdentifier ?? "")::\(entry.name)"), entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     }
   }
 }

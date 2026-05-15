@@ -36,7 +36,9 @@ export default function HostExample() {
 
 ### Match contents sizing
 
-Use `matchContents` to let `Host` size itself to fit its content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, the same prop is accepted for API parity but sizing is ultimately determined by the `style` you pass, since the web `Host` renders a plain React Native `View`.
+Use `matchContents` to let `Host` size itself to fit its content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it applies `alignSelf: 'flex-start'` to the underlying `View` so the host shrinks to fit its children instead of being stretched by its parent.
+
+> **Note:** On web, the per-axis form (`{ horizontal: true }` / `{ vertical: true }`) behaves the same as the boolean form, since `alignSelf` only controls stretching on the parent's cross axis. Components that rely on independent per-axis sizing should expect the same shrink-to-fit behavior on web regardless of which axis is opted in.
 
 ```tsx MatchContentsExample.tsx
 import { Host, Button } from '@expo/ui';
@@ -45,6 +47,79 @@ export default function MatchContentsExample() {
   return (
     <Host matchContents>
       <Button label="Sized to content" onPress={() => {}} />
+    </Host>
+  );
+}
+```
+
+### Layout direction
+
+Use `layoutDirection` to render the subtree as left-to-right or right-to-left. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it sets the `dir` attribute on the underlying `View` so descendants inherit the chosen direction.
+
+```tsx LayoutDirectionExample.tsx
+import { Host, Row, Text } from '@expo/ui';
+
+export default function LayoutDirectionExample() {
+  return (
+    <Host layoutDirection="rightToLeft">
+      <Row spacing={8}>
+        <Text>First</Text>
+        <Text>Second</Text>
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Reacting to content layout
+
+Use `onLayoutContent` to be notified of the current dimensions of the host's content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is derived from the underlying `View`'s `onLayout` callback.
+
+```tsx OnLayoutContentExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function OnLayoutContentExample() {
+  return (
+    <Host
+      matchContents
+      onLayoutContent={({ nativeEvent: { width, height } }) =>
+        console.log(`content size: ${width}x${height}`)
+      }>
+      <Text>Hello, world!</Text>
+    </Host>
+  );
+}
+```
+
+### Filling the viewport
+
+Use `useViewportSizeMeasurement` for content that should size to the available viewport space. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, the host's underlying `View` is given the current window's width and height; any explicit `style` you pass still wins.
+
+```tsx UseViewportSizeMeasurementExample.tsx
+import { Host, Column, Text } from '@expo/ui';
+
+export default function UseViewportSizeMeasurementExample() {
+  return (
+    <Host useViewportSizeMeasurement>
+      <Column spacing={12} alignment="center">
+        <Text>Fills the viewport</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Ignoring safe areas
+
+By default, `Host` respects the device safe area insets (notch, home indicator, and so on). Use `ignoreSafeArea="all"` to let content extend edge-to-edge, or `ignoreSafeArea="keyboard"` to keep safe-area padding but ignore the keyboard inset. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it is implemented via the CSS `env(safe-area-inset-*)` values applied as padding on the underlying `View`; the default also folds in `env(keyboard-inset-*)` for pages that opt in to the [VirtualKeyboard API](https://developer.mozilla.org/en-US/docs/Web/API/VirtualKeyboard_API).
+
+```tsx IgnoreSafeAreaExample.tsx
+import { Host, Text } from '@expo/ui';
+
+export default function IgnoreSafeAreaExample() {
+  return (
+    <Host ignoreSafeArea="all">
+      <Text>Extends behind the notch and home indicator</Text>
     </Host>
   );
 }

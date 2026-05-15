@@ -1,5 +1,4 @@
-import { useEvent } from 'expo';
-import type { PermissionResponse } from 'expo-modules-core';
+import { useEvent, type PermissionResponse } from 'expo';
 import { useReleasingSharedObject } from 'expo-modules-core';
 import { useEffect, useMemo } from 'react';
 

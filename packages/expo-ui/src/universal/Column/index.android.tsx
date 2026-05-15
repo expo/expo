@@ -1,9 +1,9 @@
 import { Column as ComposeColumn } from '@expo/ui/jetpack-compose';
 
+import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
 import type { ColumnProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 const alignmentMap: Record<UniversalAlignment, 'start' | 'center' | 'end'> = {
   start: 'start',

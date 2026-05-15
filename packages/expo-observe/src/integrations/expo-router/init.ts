@@ -3,6 +3,11 @@ import AppMetrics from 'expo-app-metrics';
 import { optionalRouter } from './router';
 import { type RouterIntegrationStorage } from './storage';
 
+// TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
+// web bundle doesn't pull in `expo-app-metrics`' native bridge calls. The web
+// version should be an explicit no-op (return a noop cleanup) rather than
+// relying on the web stubs in `expo-app-metrics/module.web.ts`.
+
 let initialized = false;
 
 export const isInitialized = () => initialized;
@@ -22,7 +27,6 @@ export function initListeners(
   const cleanup = new Set<() => void>();
 
   const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
-    // TODO(@ubax): Handle screen preloading
     // PRELOAD comes from router.prefetch() — a route warm-up, not a user
     // navigation — so it must not seed dispatchTime.
     if (event.actionType === 'PRELOAD') return;
@@ -33,6 +37,13 @@ export function initListeners(
   });
   cleanup.add(unsubscribeAction);
 
+  const unsubscribePreload = navigationEvents.addListener('pagePreloaded', (e) => {
+    // The screen rendered as part of a preload. Mark it as already rendered so
+    // the eventual `pageFocused` resolves to `warm_ttr` rather than `cold_ttr`.
+    storage.renderedScreensIds.add(e.screenId);
+  });
+  cleanup.add(unsubscribePreload);
+
   const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
     // Snapshot both clocks once so every metric written below is stamped with
     // the moment the focus event fired, not the moment `addCustomMetricToSession`
@@ -41,9 +52,7 @@ export function initListeners(
     const timestamp = new Date().toISOString();
     const isInitial = !storage.renderedScreensIds.has(e.screenId);
     storage.renderedScreensIds.add(e.screenId);
-    if (process.env.EXPO_OS !== 'android') {
-      return;
-    }
+    const name = isInitial ? 'cold_ttr' : 'warm_ttr';
     const mainSessionId = (await AppMetrics.getMainSession())?.id;
     if (!mainSessionId) {
       return;
@@ -57,10 +66,10 @@ export function initListeners(
         sessionId: mainSessionId,
         timestamp,
         category: 'navigation',
-        name: 'ttr',
+        name,
         routeName: e.pathname,
         value: appLaunchTtrSeconds,
-        params: { isInitial, isAppLaunch: true, routeParams: e.params },
+        params: { isAppLaunch: true, routeParams: e.params },
       });
       return;
     }
@@ -79,10 +88,10 @@ export function initListeners(
         sessionId: mainSessionId,
         timestamp,
         category: 'navigation',
-        name: 'ttr',
+        name,
         routeName: e.pathname,
         value: (now - dispatchTime) / 1000,
-        params: { isInitial, isAppLaunch: false, routeParams: e.params },
+        params: { isAppLaunch: false, routeParams: e.params },
       });
     }
     storage.pendingActions.length = 0;

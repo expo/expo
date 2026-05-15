@@ -77,6 +77,93 @@ export default function ImageVariableExample() {
 }
 ```
 
+### With symbol effect
+
+Apply an SF Symbol effect to animate the symbol by passing a [`symbolEffect`](modifiers/#symboleffecteffect-args) modifier from `@expo/ui/swift-ui/modifiers`. This effect runs continuously by default. You can also pass `value` for a discrete trigger that fires once per change, or `isActive` for a boolean toggle that runs the effect while `true`. Requires iOS 17.0 and later.
+
+```tsx ImageSymbolEffectExample.tsx
+import { Host, Image } from '@expo/ui/swift-ui';
+import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
+
+export default function ImageSymbolEffectExample() {
+  return (
+    <Host matchContents>
+      <Image
+        systemName="wifi"
+        size={48}
+        color="blue"
+        modifiers={[
+          symbolEffect({
+            effect: 'variableColor',
+            fillStyle: 'iterative',
+            playbackStyle: 'reversing',
+          }),
+        ]}
+      />
+    </Host>
+  );
+}
+```
+
+The following example uses `value` to play `bounce` on each button press. Write to `state.value` from a worklet (or via [`scheduleOnUI`](https://docs.swmansion.com/react-native-worklets/docs/threading/scheduleOnUI)) to trigger the effect.
+
+```tsx ImageSymbolEffectValueExample.tsx
+import { Button, Host, Image, useNativeState, VStack } from '@expo/ui/swift-ui';
+import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
+import { scheduleOnUI } from 'react-native-worklets';
+
+export default function ImageSymbolEffectValueExample() {
+  const trigger = useNativeState(0);
+
+  return (
+    <Host matchContents>
+      <VStack spacing={16}>
+        <Image
+          systemName="bell.fill"
+          size={48}
+          color="orange"
+          modifiers={[symbolEffect({ effect: 'bounce', direction: 'up' }, { value: trigger })]}
+        />
+        <Button
+          label="Bounce"
+          onPress={() =>
+            scheduleOnUI(() => {
+              'worklet';
+              trigger.value = trigger.value + 1;
+            })
+          }
+        />
+      </VStack>
+    </Host>
+  );
+}
+```
+
+The following example uses `isActive` to toggle a continuous `breathe` animation.
+
+```tsx ImageSymbolEffectIsActiveExample.tsx
+import { Host, Image, SyncToggle, useNativeState, VStack } from '@expo/ui/swift-ui';
+import { symbolEffect } from '@expo/ui/swift-ui/modifiers';
+
+export default function ImageSymbolEffectIsActiveExample() {
+  const isActive = useNativeState(true);
+
+  return (
+    <Host matchContents>
+      <VStack spacing={16}>
+        <Image
+          systemName="cloud.fill"
+          size={48}
+          color="cyan"
+          modifiers={[symbolEffect({ effect: 'breathe' }, { isActive })]}
+        />
+        <SyncToggle label="Breathe" isOn={isActive} />
+      </VStack>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

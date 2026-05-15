@@ -280,6 +280,65 @@ export default function MenuWithControlGroupExample() {
 }
 ```
 
+### Disabled items
+
+Use the [`disabled(true)`](modifiers/#disableddisabled) modifier on a menu `Button` to render it greyed-out and non-interactive. The button still appears in the menu but won't fire `onPress`.
+
+```tsx DisabledMenuItemExample.tsx
+import { Host, Menu, Button } from '@expo/ui/swift-ui';
+import { disabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function DisabledMenuItemExample() {
+  return (
+    <Host matchContents>
+      <Menu label="Options">
+        <Button label="Available" onPress={() => console.log('Available')} />
+        <Button
+          label="Locked"
+          systemImage="lock"
+          modifiers={[disabled(true)]}
+          onPress={() => console.log('This never fires')}
+        />
+      </Menu>
+    </Host>
+  );
+}
+```
+
+### Selectable items (checkmarks)
+
+A SwiftUI [`Toggle`](toggle) placed inside a `Menu` automatically renders as a row with a leading SF Symbol (when `systemImage` is set) and a trailing checkmark when `isOn` is `true`. Use this pattern instead of inventing a custom checkmark item.
+
+```tsx CheckmarkMenuItemExample.tsx
+import { Host, Menu, Button, Toggle } from '@expo/ui/swift-ui';
+import { useState } from 'react';
+
+export default function CheckmarkMenuItemExample() {
+  const [showCompleted, setShowCompleted] = useState(true);
+  const [showArchived, setShowArchived] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Menu label="Filter" systemImage="line.3.horizontal.decrease.circle">
+        <Toggle
+          isOn={showCompleted}
+          label="Show completed"
+          systemImage="checkmark.circle"
+          onIsOnChange={setShowCompleted}
+        />
+        <Toggle
+          isOn={showArchived}
+          label="Show archived"
+          systemImage="archivebox"
+          onIsOnChange={setShowArchived}
+        />
+        <Button label="Clear filters" onPress={() => console.log('Clear')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
 ### Icon only menu button
 
 Use the `labelStyle('iconOnly')` modifier to display only the icon without the label text. The `label` prop should still be provided for accessibility purposes.

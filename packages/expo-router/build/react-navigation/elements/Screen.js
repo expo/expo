@@ -62,7 +62,7 @@ function Screen(props) {
     return ((0, jsx_runtime_1.jsxs)(Background_1.Background, { "aria-hidden": !focused, style: [styles.container, style], 
         // On Fabric we need to disable collapsing for the background to ensure
         // that we won't render unnecessary views due to the view flattening.
-        collapsable: false, children: [headerShown ? ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: route, navigation: navigation, children: (0, jsx_runtime_1.jsx)(react_native_1.View, { ref: headerRef, pointerEvents: "box-none", onLayout: (e) => {
+        collapsable: false, children: [headerShown ? ((0, jsx_runtime_1.jsx)(native_1.NavigationProvider, { route: route, navigation: navigation, children: (0, jsx_runtime_1.jsx)(react_native_1.View, { ref: headerRef, onLayout: (e) => {
                         const { height } = e.nativeEvent.layout;
                         setHeaderHeight(height);
                     }, style: [styles.header, headerTransparent ? styles.absolute : null], children: header }) })) : null, (0, jsx_runtime_1.jsx)(react_native_1.View, { style: styles.content, children: (0, jsx_runtime_1.jsx)(HeaderShownContext_1.HeaderShownContext.Provider, { value: isParentHeaderShown || headerShown !== false, children: (0, jsx_runtime_1.jsx)(HeaderHeightContext_1.HeaderHeightContext.Provider, { value: headerShown ? headerHeight : (parentHeaderHeight ?? 0), children: children }) }) })] }));
@@ -76,6 +76,7 @@ const styles = react_native_1.StyleSheet.create({
     },
     header: {
         zIndex: 1,
+        pointerEvents: 'box-none',
     },
     absolute: {
         position: 'absolute',
