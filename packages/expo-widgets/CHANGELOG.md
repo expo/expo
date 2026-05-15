@@ -6,10 +6,12 @@
 
 ### 🎉 New features
 
+- Use shared JS runtime. ([#45781](https://github.com/expo/expo/pull/45781) by [@jakex7](https://github.com/jakex7))
+
 ### 🐛 Bug fixes
 
 - Fix Live Activity multiple evaluations. ([#45675](https://github.com/expo/expo/pull/45675) by [@nkopylov](https://github.com/nkopylov))
-- Fix module precompile.
+- Fix module precompile. ([#45715](https://github.com/expo/expo/pull/45715) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 
