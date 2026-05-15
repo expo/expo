@@ -1,4 +1,5 @@
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry, ReloadScreenOptions } from './Updates.types';
+import type { LocalAssets, Manifest, UpdateCheckResult, UpdateFetchResult, UpdatesLogEntry, ReloadScreenOptions } from './Updates.types';
+import { UpdatesCheckAutomaticallyValue } from './Updates.types';
 /**
  * Whether `expo-updates` is enabled. This may be false in a variety of cases including:
  * - enabled set to false in configuration

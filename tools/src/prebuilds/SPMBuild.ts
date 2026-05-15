@@ -1,5 +1,6 @@
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { execSync, spawn } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -34,7 +35,7 @@ export const SPMBuild = {
     platform?: BuildPlatform,
     hermesIncludeDirs?: string[]
   ): Promise<void> => {
-    logger.info(
+    logger.verbose(
       `🏗  Build Package.swift for ${chalk.green(pkg.packageName)}/${chalk.green(product.name)} [${buildType.toLowerCase()}]`
     );
 
@@ -69,7 +70,7 @@ export const SPMBuild = {
       );
     }
 
-    logger.info(`🏗  Swift package successfully built.`);
+    logger.verbose(`🏗  Swift package successfully built.`);
   },
 
   /**
@@ -84,7 +85,7 @@ export const SPMBuild = {
     buildType: BuildFlavor
   ): Promise<void> => {
     const buildFolderToClean = SPMBuild.getPackageBuildPath(pkg, product, buildType);
-    logger.info(
+    logger.verbose(
       `🧹 Cleaning build folder ${chalk.green(path.relative(pkg.buildPath, buildFolderToClean))}...`
     );
     await fs.remove(buildFolderToClean);
@@ -414,7 +415,7 @@ async function resolveSPMDependenciesAndPatch(packageDir: string): Promise<void>
         'public typealias NetworkUnreachable = (_ReachabilityRef) -> ()'
       );
       fs.writeFileSync(reachabilitySource, content, 'utf8');
-      logger.info('🩹 Patched Reachability.swift (library evolution typealias fix)');
+      logger.verbose('🩹 Patched Reachability.swift (library evolution typealias fix)');
     }
   }
 }
@@ -427,6 +428,7 @@ export const getBuildPlatformsFromProductPlatform = (
 ): BuildPlatform[] => {
   switch (platform) {
     case 'iOS(.v15)':
+    case 'iOS(.v16)':
       return ['iOS', 'iOS Simulator'];
     case 'macOS(.v11)':
       return ['macOS'];
@@ -581,7 +583,7 @@ async function patchCheckoutWithSharedDeps(
  * are in the build intermediates. We need them for the xcframework to be usable as
  * a build dependency with `import Module`.
  */
-async function enrichFrameworkWithHeaders(
+export async function enrichFrameworkWithHeaders(
   frameworkPath: string,
   productName: string,
   checkoutDir: string,
@@ -625,8 +627,9 @@ async function enrichFrameworkWithHeaders(
     // Copy .h files preserving subdirectory structure (e.g., avif/avif.h).
     // Use -L to follow symlinks (some packages symlink umbrella headers from other dirs).
     // --include='*/' keeps subdirectories, --include='*.h' keeps headers, --exclude='*' drops the rest.
-    execSync(
-      `rsync -aL --include='*/' --include='*.h' --exclude='*' "${headersDir}/" "${destHeaders}/"`,
+    await spawnAsync(
+      'rsync',
+      ['-aL', '--include=*/', '--include=*.h', '--exclude=*', `${headersDir}/`, `${destHeaders}/`],
       { stdio: 'pipe' }
     );
   }
@@ -649,6 +652,10 @@ async function enrichFrameworkWithHeaders(
       `${productName}.build`,
       `${productName}.modulemap`
     ),
+    // Fallback: SPM-generated module map in the checkout's public headers directory.
+    // For ObjC packages built via SPM, the module map may only exist here when
+    // Xcode doesn't copy it to Build/Intermediates.noindex/.
+    ...(headersDir ? [path.join(headersDir, 'module.modulemap')] : []),
   ];
   const modulemapPath = await findFirstExisting(modulemapPaths);
   if (modulemapPath) {
@@ -666,11 +673,18 @@ async function enrichFrameworkWithHeaders(
     modulemapContent = modulemapContent.replace(/^module /m, 'framework module ');
 
     if (modulemapContent.includes('umbrella header')) {
-      // Single umbrella header — rewrite to just the filename
-      modulemapContent = modulemapContent.replace(
-        /umbrella header "[^"]*\/([^"\/]+)"/,
-        'umbrella header "$1"'
-      );
+      // Extract the umbrella header path to decide how to rewrite it.
+      const umbrellaPathMatch = modulemapContent.match(/umbrella header "([^"]+)"/);
+      if (umbrellaPathMatch && path.isAbsolute(umbrellaPathMatch[1])) {
+        // Absolute path (from xcodebuild-generated modulemaps) — strip to just the filename.
+        // Relative paths are preserved — they resolve correctly relative to the framework's Headers/ dir.
+        const filename = path.basename(umbrellaPathMatch[1]);
+        modulemapContent = modulemapContent.replace(
+          /umbrella header "[^"]+"/,
+          `umbrella header "${filename}"`
+        );
+      }
+
       // Copy the umbrella header if not already in Headers/
       const umbrellaMatch = modulemapContent.match(/umbrella header "([^"]+)"/);
       if (umbrellaMatch) {
@@ -785,7 +799,7 @@ let package = Package(
     name: "${dep.productName}-standalone",
 
     platforms: [
-        .iOS(.v15)
+        .iOS(.v16)
     ],
 
     products: [
@@ -842,7 +856,7 @@ export async function buildSharedSPMDependencyAsync(
     return;
   }
 
-  logger.info(
+  logger.verbose(
     `🔨 Building shared SPM dependency ${chalk.cyan(productName)} [${buildType.toLowerCase()}]...`
   );
 
@@ -878,7 +892,7 @@ export async function buildSharedSPMDependencyAsync(
     // Package.swift changed or first run — resolve from scratch
     await resolveSPMDependenciesAndPatch(buildDir);
   } else {
-    logger.info(`   ⏭️  SPM dependencies already resolved (Package.swift unchanged)`);
+    logger.verbose(`   ⏭️  SPM dependencies already resolved (Package.swift unchanged)`);
   }
 
   // Build from the dependency's own checkout so we get a framework with the correct
@@ -912,7 +926,7 @@ export async function buildSharedSPMDependencyAsync(
         const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
-        execSync(`rsync -a "${xcframeworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
+        await spawnAsync('rsync', ['-a', `${xcframeworkPath}/`, `${destPath}/`], { stdio: 'pipe' });
         logger.info(
           `✅ Copied binary SPM dep ${chalk.cyan(productName)} → ${path.relative(process.cwd(), destPath)}`
         );
@@ -931,9 +945,9 @@ export async function buildSharedSPMDependencyAsync(
   //  - Force the library type to .dynamic (automatic defaults to static → no .framework)
   const cleanBuildDir = path.join(buildDir, '_pkg');
   await fs.remove(cleanBuildDir);
-  execSync(`rsync -a "${checkoutSource}/" "${cleanBuildDir}/"`, { stdio: 'pipe' });
+  await spawnAsync('rsync', ['-a', `${checkoutSource}/`, `${cleanBuildDir}/`], { stdio: 'pipe' });
   // Make the copy writable (git checkouts may be read-only)
-  execSync(`chmod -R u+w "${cleanBuildDir}"`, { stdio: 'pipe' });
+  await spawnAsync('chmod', ['-R', 'u+w', cleanBuildDir], { stdio: 'pipe' });
   for (const entry of await fs.readdir(cleanBuildDir)) {
     if (entry.endsWith('.xcodeproj') || entry.endsWith('.xcworkspace')) {
       await fs.remove(path.join(cleanBuildDir, entry));
@@ -961,7 +975,7 @@ export async function buildSharedSPMDependencyAsync(
     const externalInterDeps = interDeps.filter((d) => d !== productName);
 
     if (externalInterDeps.length > 0) {
-      logger.info(
+      logger.verbose(
         `   🔗 ${productName} depends on shared deps: ${externalInterDeps.map((d) => chalk.cyan(d)).join(', ')}`
       );
 
@@ -969,7 +983,7 @@ export async function buildSharedSPMDependencyAsync(
       for (const interDepName of externalInterDeps) {
         const interDep = allSharedDeps.get(interDepName);
         if (interDep && !Frameworks.hasSharedSPMDepFramework(interDepName, buildType)) {
-          logger.info(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
+          logger.verbose(`   ↳ Building dependency ${chalk.cyan(interDepName)} first...`);
           await buildSharedSPMDependencyAsync(interDep, buildType, allSharedDeps, platforms);
         }
       }
@@ -1075,7 +1089,9 @@ export async function buildSharedSPMDependencyAsync(
         const destPath = Frameworks.getSharedSPMDepFrameworkPath(productName, buildType);
         await fs.mkdirp(path.dirname(destPath));
         await fs.remove(destPath);
-        execSync(`rsync -a "${artifactXCFrameworkPath}/" "${destPath}/"`, { stdio: 'pipe' });
+        await spawnAsync('rsync', ['-a', `${artifactXCFrameworkPath}/`, `${destPath}/`], {
+          stdio: 'pipe',
+        });
         logger.info(`✅ Copied binary SPM dep ${chalk.cyan(productName)} to shared location`);
 
         // Clean up build directory

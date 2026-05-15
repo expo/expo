@@ -86,6 +86,46 @@ class Asset: SharedObject {
     return MediaTypeNext.from(phAsset.mediaType)
   }
 
+  func getMediaSubtypes() async throws -> [String] {
+    let phAsset = try await requirePHAsset()
+    return MediaSubtype.stringify(phAsset.mediaSubtypes)
+  }
+
+  func getLivePhotoVideoUri() async throws -> String? {
+    let phAsset = try await requirePHAsset()
+    return try await LivePhotoVideoUriExtractor.extract(from: phAsset)?.absoluteString
+  }
+
+  func getIsInCloud() async throws -> Bool {
+    let phAsset = try await requirePHAsset()
+    switch phAsset.mediaType {
+    case .image:
+      let options = PHContentEditingInputRequestOptions()
+      options.isNetworkAccessAllowed = false
+      let result = try await phAsset.requestContentEditingInput(options: options)
+      return result.info?[PHContentEditingInputResultIsInCloudKey] as? Bool ?? false
+    case .video:
+      let options = PHVideoRequestOptions()
+      options.isNetworkAccessAllowed = false
+      let result = try await PHImageManager.default().requestAVAsset(forVideo: phAsset, options: options)
+      return result.info?[PHImageResultIsInCloudKey] as? Bool ?? false
+    default:
+      return false
+    }
+  }
+
+  func getOrientation() async throws -> Int? {
+    let phAsset = try await requirePHAsset()
+    guard
+      phAsset.mediaType == .image,
+      let contentEditingInput = try await phAsset.requestContentEditingInput().input
+    else {
+      return nil
+    }
+    let orientation = contentEditingInput.fullSizeImageOrientation
+    return orientation != 0 ? Int(orientation) : nil
+  }
+
   func getExif() async throws -> [String: Any?] {
     let phAsset = try await requirePHAsset()
     guard try await getMediaType() == MediaTypeNext.IMAGE else {
@@ -116,6 +156,12 @@ class Asset: SharedObject {
       modificationTime: try getModificationTime(),
       isFavorite: try getFavorite()
     )
+  }
+
+  func getAlbums() async throws -> [Album] {
+    let phAsset = try await requirePHAsset()
+    let collections = AssetCollectionRepository.shared.get(containing: phAsset)
+    return collections.map { Album(id: $0.localIdentifier) }
   }
 
   func delete() async throws {

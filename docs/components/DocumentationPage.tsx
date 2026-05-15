@@ -75,6 +75,7 @@ export default function DocumentationPage({
       : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';
+  const markdownPath = RoutesUtils.getMarkdownPath(currentPath);
   const isLatestSdkPage = currentPath.startsWith('/versions/latest/sdk/');
   const isLatestConfigPage = currentPath.startsWith('/versions/latest/config/');
   const isAskAIEligiblePage = isLatestSdkPage || isLatestConfigPage;
@@ -324,7 +325,11 @@ export default function DocumentationPage({
         isChatExpanded={isAskAIExpanded}>
         {breadcrumbSchema && <StructuredData id="breadcrumb-list" data={breadcrumbSchema} />}
         {techArticleSchema && <StructuredData id="tech-article" data={techArticleSchema} />}
-        <DocumentationHead title={title} description={description} canonicalUrl={canonicalUrl}>
+        <DocumentationHead
+          title={title}
+          description={description}
+          canonicalUrl={canonicalUrl}
+          markdownPath={markdownPath}>
           {hideFromSearch !== true && (
             <meta
               name="docsearch:version"
@@ -372,6 +377,12 @@ export default function DocumentationPage({
             />
           )}
           {title && <Separator />}
+          <blockquote className="sr-only">
+            <p>
+              For the complete documentation index, see <A href="/llms.txt">llms.txt</A>. Use this
+              file to discover all available pages.
+            </p>
+          </blockquote>
           {children}
         </main>
         <Footer

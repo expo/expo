@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <jsi/jsi.h>
+#include "IRuntimeCompat.h"
 
 namespace jsi = facebook::jsi;
 
@@ -26,24 +26,19 @@ enum class TypedArrayKind {
   BigUint64Array = 11,
 };
 
-class TypedArray : public jsi::Object {
- public:
-  TypedArray(jsi::Runtime &, const jsi::Object &);
-  TypedArray(TypedArray &&) noexcept = default;
-  TypedArray &operator=(TypedArray &&) noexcept = default;
+bool isTypedArray(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
-  TypedArrayKind getKind(jsi::Runtime &runtime) const;
+/**
+ * Returns the `TypedArrayKind` of the given typed-array object, derived from its
+ * `constructor.name` (e.g. `Uint8Array`, `Float32Array`).
+ */
+TypedArrayKind getTypedArrayKind(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
-  size_t byteOffset(jsi::Runtime &runtime) const;
-
-  size_t byteLength(jsi::Runtime &runtime) const;
-
-  jsi::ArrayBuffer getBuffer(jsi::Runtime &runtime) const;
-
-  void* getRawPointer(jsi::Runtime &runtime) const;
-};
-
-bool isTypedArray(jsi::Runtime &runtime, const jsi::Object &jsObj);
+/**
+ * Returns the underlying `ArrayBuffer` backing the given typed-array object.
+ * Throws if the object has no attached ArrayBuffer.
+ */
+jsi::ArrayBuffer getTypedArrayBuffer(jsi::IRuntime &runtime, const jsi::Object &jsObj);
 
 } // namespace expo
 

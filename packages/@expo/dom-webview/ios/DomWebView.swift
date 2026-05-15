@@ -4,65 +4,133 @@ internal import React
 import ExpoModulesCore
 import WebKit
 
-internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, WKScriptMessageHandler {
-  // swiftlint:disable implicitly_unwrapped_optional
-  private(set) var webView: WKWebView!
+internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, RCTAutoInsetsProtocol {
+  // Created on first prop sync — `WKWebViewConfiguration` is copied at init,
+  // so init-only props need to land before `WKWebView()` is called.
+  private(set) var webView: WKWebView?
+  // swiftlint:disable:next implicitly_unwrapped_optional
   private(set) var id: WebViewId!
-  // swiftlint:enable implicitly_unwrapped_optional
 
   private var source: DomWebViewSource?
+  private var injectedJS: WKUserScript?
   private var injectedJSBeforeContentLoaded: WKUserScript?
-  var webviewDebuggingEnabled = false
+  private var injectedObjectJsonScript: WKUserScript?
+  private var needsResetupScripts = false
+
+  // MARK: - WKWebViewConfiguration props (init-only)
+
+  var allowsInlineMediaPlayback: Bool = true
+  var mediaPlaybackRequiresUserAction: Bool = true
+  var allowsPictureInPictureMediaPlayback: Bool = true
+  var allowsAirPlayForMediaPlayback: Bool = true
+
+  // MARK: - Bridge props
+
+  var useExpoModulesBridge: Bool = false {
+    didSet { needsResetupScripts = true }
+  }
+
+  // MARK: - WKWebView / UIScrollView props (mutable post-creation)
+
+  var webviewDebuggingEnabled: Bool = false {
+    didSet {
+      if #available(iOS 16.4, *) {
+        webView?.isInspectable = webviewDebuggingEnabled
+      }
+    }
+  }
+
   var decelerationRate: UIScrollView.DecelerationRate = .normal
 
-  internal typealias SyncCompletionHandler = (String?) -> Void
+  var bounces: Bool = true {
+    didSet { webView?.scrollView.bounces = bounces }
+  }
+  var scrollEnabled: Bool = true {
+    didSet { webView?.scrollView.isScrollEnabled = scrollEnabled }
+  }
+  var pagingEnabled: Bool = false {
+    didSet { webView?.scrollView.isPagingEnabled = pagingEnabled }
+  }
+  var directionalLockEnabled: Bool = true {
+    didSet { webView?.scrollView.isDirectionalLockEnabled = directionalLockEnabled }
+  }
+  var showsHorizontalScrollIndicator: Bool = true {
+    didSet { webView?.scrollView.showsHorizontalScrollIndicator = showsHorizontalScrollIndicator }
+  }
+  var showsVerticalScrollIndicator: Bool = true {
+    didSet { webView?.scrollView.showsVerticalScrollIndicator = showsVerticalScrollIndicator }
+  }
+  var automaticallyAdjustsScrollIndicatorInsets: Bool = true {
+    didSet {
+      webView?.scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjustsScrollIndicatorInsets
+    }
+  }
+  var contentInsetAdjustmentBehavior: UIScrollView.ContentInsetAdjustmentBehavior = .automatic {
+    didSet {
+      // Preserve contentOffset so safe-area re-application doesn't jump the page.
+      guard let scrollView = webView?.scrollView else { return }
+      let contentOffset = scrollView.contentOffset
+      scrollView.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior
+      scrollView.contentOffset = contentOffset
+    }
+  }
 
-  private var needsResetupScripts = false
+  // MARK: - RCTAutoInsetsProtocol storage
+
+  @objc var contentInset: UIEdgeInsets = .zero {
+    didSet { refreshContentInset() }
+  }
+  @objc var automaticallyAdjustContentInsets: Bool = true {
+    didSet { refreshContentInset() }
+  }
+
+  internal typealias SyncCompletionHandler = (String?) -> Void
 
   private static let EVAL_PROMPT_HEADER = "__EXPO_DOM_WEBVIEW_JS_EVAL__"
   private static let POST_MESSAGE_HANDLER_NAME = "ReactNativeWebView"
 
   private let onMessage = EventDispatcher()
+  private let onContentProcessDidTerminate = EventDispatcher()
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     super.backgroundColor = .clear
     self.id = DomWebViewRegistry.shared.add(webView: self)
-    webView = createWebView()
-    resetupScripts()
-    addSubview(webView)
   }
 
   override func layoutSubviews() {
     super.layoutSubviews()
-    webView.frame = bounds
+    webView?.frame = bounds
   }
 
   override var backgroundColor: UIColor? {
-    get { webView.backgroundColor }
-    set {
-      let isOpaque = (newValue ?? UIColor.clear).cgColor.alpha == 1.0
-      self.isOpaque = isOpaque
-      webView.isOpaque = isOpaque
-      webView.scrollView.backgroundColor = newValue
-      webView.backgroundColor = newValue
-    }
+    didSet { applyBackgroundColor() }
   }
 
-  override func removeFromSuperview() {
-    webView.removeFromSuperview()
-    webView = nil
+  private func applyBackgroundColor() {
+    let color = backgroundColor
+    self.isOpaque = (color ?? UIColor.clear).cgColor.alpha == 1.0
+    webView?.isOpaque = self.isOpaque
+    webView?.scrollView.backgroundColor = color
+    webView?.backgroundColor = color
+  }
+
+  deinit {
+    webView?.uiDelegate = nil
+    webView?.navigationDelegate = nil
+    webView?.scrollView.delegate = nil
+    webView?.configuration.userContentController.removeAllScriptMessageHandlers()
     DomWebViewRegistry.shared.remove(webViewId: self.id)
-    super.removeFromSuperview()
   }
 
   // MARK: - Public methods
 
   func reload() {
-    if #available(iOS 16.4, *) {
-      webView.isInspectable = webviewDebuggingEnabled
+    if webView == nil {
+      setupWebView()
     }
 
+    let scriptsChanged = needsResetupScripts
     if needsResetupScripts {
       resetupScripts()
       needsResetupScripts = false
@@ -70,18 +138,45 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
 
     if let source,
       let request = RCTConvert.nsurlRequest(source.toDictionary(appContext: appContext)),
-      webView.url?.absoluteURL != request.url {
-      webView.load(request)
+      webView?.url?.absoluteURL != request.url {
+      load(request: request)
+    } else if scriptsChanged, webView?.url != nil {
+      // User scripts only run at .atDocumentStart; reload to pick up the new ones.
+      webView?.reload()
+    }
+  }
+
+  func forceReload() {
+    if webView?.url != nil {
+      webView?.reload()
+      return
+    }
+    guard let source,
+      let request = RCTConvert.nsurlRequest(source.toDictionary(appContext: appContext)) else {
+      return
+    }
+    if webView == nil {
+      setupWebView()
+    }
+    load(request: request)
+  }
+
+  private func load(request: URLRequest) {
+    if let url = request.url, url.isFileURL {
+      // Grant read access to the bundle so DOM components can load sibling assets.
+      webView?.loadFileURL(url, allowingReadAccessTo: URL(fileURLWithPath: "/"))
+    } else {
+      webView?.load(request)
     }
   }
 
   func scrollTo(offset: CGPoint, animated: Bool) {
-    webView.scrollView.setContentOffset(offset, animated: animated)
+    webView?.scrollView.setContentOffset(offset, animated: animated)
   }
 
   func injectJavaScript(_ script: String) {
     DispatchQueue.main.async { [weak self] in
-      self?.webView.evaluateJavaScript(script)
+      self?.webView?.evaluateJavaScript(script)
     }
   }
 
@@ -89,11 +184,36 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     self.source = source
   }
 
+  func setInjectedJS(_ script: String?) {
+    if let script, !script.isEmpty {
+      injectedJS = WKUserScript(source: script, injectionTime: .atDocumentEnd, forMainFrameOnly: false)
+    } else {
+      injectedJS = nil
+    }
+    needsResetupScripts = true
+  }
+
   func setInjectedJSBeforeContentLoaded(_ script: String?) {
     if let script, !script.isEmpty {
       injectedJSBeforeContentLoaded = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: false)
     } else {
       injectedJSBeforeContentLoaded = nil
+    }
+    needsResetupScripts = true
+  }
+
+  func setInjectedJavaScriptObject(_ source: String?) {
+    if let source, !source.isEmpty {
+      let script = """
+      window.ReactNativeWebView = window.ReactNativeWebView || {};
+      window.ReactNativeWebView.injectedObjectJson = function () {
+        return `\(source)`;
+      }
+      true;
+      """
+      injectedObjectJsonScript = WKUserScript(source: script, injectionTime: .atDocumentStart, forMainFrameOnly: true)
+    } else {
+      injectedObjectJsonScript = nil
     }
     needsResetupScripts = true
   }
@@ -113,7 +233,7 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     initiatedByFrame frame: WKFrameInfo,
     completionHandler: @escaping SyncCompletionHandler
   ) {
-    if !prompt.hasPrefix(Self.EVAL_PROMPT_HEADER) {
+    if !prompt.hasPrefix(Self.EVAL_PROMPT_HEADER) || !useExpoModulesBridge {
       completionHandler(nil)
       return
     }
@@ -126,6 +246,20 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     } else {
       completionHandler("Invalid parameters for nativeJsiEvalSync")
     }
+  }
+
+  // MARK: - RCTAutoInsetsProtocol implementations
+
+  @objc func refreshContentInset() {
+    guard let webView else { return }
+    RCTView.autoAdjustInsets(for: self, with: webView.scrollView, updateOffset: true)
+  }
+
+  // MARK: - WKNavigationDelegate implementations
+
+  func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+    log.warn("WebView content process terminated")
+    onContentProcessDidTerminate(createBaseEventPayload())
   }
 
   // MARK: - WKScriptMessageHandler implementations
@@ -141,43 +275,67 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
 
   // MARK: - Internals
 
-  private func createWebView() -> WKWebView {
+  private func setupWebView() {
     let config = WKWebViewConfiguration()
     config.userContentController = WKUserContentController()
-    let webView = WKWebView(frame: .zero, configuration: config)
+    config.allowsInlineMediaPlayback = allowsInlineMediaPlayback
+    config.allowsPictureInPictureMediaPlayback = allowsPictureInPictureMediaPlayback
+    config.allowsAirPlayForMediaPlayback = allowsAirPlayForMediaPlayback
+    config.mediaTypesRequiringUserActionForPlayback = mediaPlaybackRequiresUserAction ? .all : []
+
+    let webView = WKWebView(frame: bounds, configuration: config)
     webView.uiDelegate = self
-    webView.backgroundColor = .clear
-    webView.scrollView.delegate = self
-    return webView
+    webView.navigationDelegate = self
+
+    let scrollView = webView.scrollView
+    scrollView.delegate = self
+    scrollView.bounces = bounces
+    scrollView.isScrollEnabled = scrollEnabled
+    scrollView.isPagingEnabled = pagingEnabled
+    scrollView.isDirectionalLockEnabled = directionalLockEnabled
+    scrollView.showsHorizontalScrollIndicator = showsHorizontalScrollIndicator
+    scrollView.showsVerticalScrollIndicator = showsVerticalScrollIndicator
+    scrollView.automaticallyAdjustsScrollIndicatorInsets = automaticallyAdjustsScrollIndicatorInsets
+    scrollView.contentInsetAdjustmentBehavior = contentInsetAdjustmentBehavior
+
+    if #available(iOS 16.4, *) {
+      webView.isInspectable = webviewDebuggingEnabled
+    }
+
+    self.webView = webView
+    addSubview(webView)
+
+    applyBackgroundColor()
+    refreshContentInset()
+    resetupScripts()
+    needsResetupScripts = false
   }
 
   private func createBaseEventPayload() -> [String: Any] {
     return [
-      "url": webView.url?.absoluteString ?? "",
-      "title": webView.title ?? ""
+      "url": webView?.url?.absoluteString ?? "",
+      "title": webView?.title ?? ""
     ]
   }
 
   private func resetupScripts() {
-    let userContentController = webView.configuration.userContentController
+    guard let userContentController = webView?.configuration.userContentController else {
+      return
+    }
     userContentController.removeAllUserScripts()
     userContentController.removeAllScriptMessageHandlers()
 
-    userContentController.add(self, name: Self.POST_MESSAGE_HANDLER_NAME)
+    userContentController.add(WeakScriptMessageHandler(delegate: self), name: Self.POST_MESSAGE_HANDLER_NAME)
 
+    if let injectedJS {
+      userContentController.addUserScript(injectedJS)
+    }
     if let injectedJSBeforeContentLoaded {
       userContentController.addUserScript(injectedJSBeforeContentLoaded)
     }
-
-    let addDomWebViewBridgeScript = """
-    window.ExpoDomWebViewBridge = {
-      eval: function eval(params) {
-        return window.prompt('\(Self.EVAL_PROMPT_HEADER)' + params);
-      },
-    };
-    true;
-    """
-    userContentController.addUserScript(WKUserScript(source: addDomWebViewBridgeScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+    if let injectedObjectJsonScript {
+      userContentController.addUserScript(injectedObjectJsonScript)
+    }
 
     let addRNWObjectScript = """
     window.ReactNativeWebView ||= {};
@@ -188,13 +346,25 @@ internal final class DomWebView: ExpoView, UIScrollViewDelegate, WKUIDelegate, W
     """
     userContentController.addUserScript(WKUserScript(source: addRNWObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
 
-    guard let webViewId = self.id else {
-      return
-    }
+    if useExpoModulesBridge {
+      let addDomWebViewBridgeScript = """
+      window.ExpoDomWebViewBridge = {
+        eval: function eval(params) {
+          return window.prompt('\(Self.EVAL_PROMPT_HEADER)' + params);
+        },
+      };
+      true;
+      """
+      userContentController.addUserScript(WKUserScript(source: addDomWebViewBridgeScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
 
-    let addExpoDomWebViewObjectScript = "\(INSTALL_GLOBALS_SCRIPT);true;"
-      .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))
-    userContentController.addUserScript(WKUserScript(source: addExpoDomWebViewObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+      guard let webViewId = self.id else {
+        return
+      }
+
+      let addExpoDomWebViewObjectScript = "\(INSTALL_GLOBALS_SCRIPT);true;"
+        .replacingOccurrences(of: "\"%%WEBVIEW_ID%%\"", with: String(webViewId))
+      userContentController.addUserScript(WKUserScript(source: addExpoDomWebViewObjectScript, injectionTime: .atDocumentStart, forMainFrameOnly: false))
+    }
   }
 
   private func nativeJsiEvalSync(deferredId: Int, source: String, completionHandler: @escaping SyncCompletionHandler) {

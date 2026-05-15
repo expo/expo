@@ -1,4 +1,5 @@
-import { PermissionResponse, PermissionStatus, PermissionHookOptions, EventSubscription } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
+import { type EventSubscription } from 'expo-modules-core';
 /**
  * Returns whether the Screen Capture API is available on the current device.
  *
@@ -116,6 +117,7 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  * const [status, requestPermission] = ScreenCapture.usePermissions();
  * ```
  */
-export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
-export { EventSubscription as Subscription, PermissionResponse, PermissionStatus, PermissionHookOptions, };
+export declare const usePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
+export { type PermissionResponse, PermissionStatus, type PermissionHookOptions } from 'expo';
+export { type EventSubscription as Subscription } from 'expo-modules-core';
 //# sourceMappingURL=ScreenCapture.d.ts.map

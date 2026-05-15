@@ -1,36 +1,25 @@
+import { convertEntryPointToRelative } from '@expo/config/paths';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { createBundleUrlPath, ExpoMetroOptions } from './metroOptions';
+import { DOM_POLYFILLS_SCRIPT } from './domPolyfills';
+import type { ExpoMetroOptions } from './metroOptions';
+import { createBundleUrlPath } from './metroOptions';
 import type { ServerRequest, ServerResponse } from './server.types';
 import { toPosixPath } from '../../../utils/filePath';
-import { memoize } from '../../../utils/fn';
 import { fileURLToFilePath } from '../metro/createServerComponentsMiddleware';
 
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 
 export const DOM_COMPONENTS_BUNDLE_DIR = 'www.bundle';
 
-const checkWebViewInstalled = memoize((projectRoot: string) => {
-  const webViewInstalled =
-    resolveFrom.silent(projectRoot, 'react-native-webview') ||
-    resolveFrom.silent(projectRoot, '@expo/dom-webview');
-  if (!webViewInstalled) {
-    throw new Error(
-      `To use DOM Components, you must install the 'react-native-webview' package. Run 'npx expo install react-native-webview' to install it.`
-    );
-  }
-});
-
 type CreateDomComponentsMiddlewareOptions = {
-  /** The absolute metro or server root, used to calculate the relative dom entry path */
-  metroRoot: string;
   /** The absolute project root, used to resolve the `expo/dom/entry.js` path */
   projectRoot: string;
 };
 
 export function createDomComponentsMiddleware(
-  { metroRoot, projectRoot }: CreateDomComponentsMiddlewareOptions,
+  { projectRoot }: CreateDomComponentsMiddlewareOptions,
   instanceMetroOptions: PickPartial<ExpoMetroOptions, 'mainModuleName' | 'platform' | 'bytecode'>
 ) {
   return (req: ServerRequest, res: ServerResponse, next: (err?: Error) => void) => {
@@ -52,21 +41,24 @@ export function createDomComponentsMiddleware(
       return res.end();
     }
 
-    checkWebViewInstalled(projectRoot);
-
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     // Generate a unique entry file for the webview.
-    const generatedEntry = toPosixPath(file.startsWith('file://') ? fileURLToFilePath(file) : file);
-    const virtualEntry = toPosixPath(resolveFrom(projectRoot, 'expo/dom/entry.js'));
+    const virtualEntry = resolveFrom(projectRoot, 'expo/dom/entry.js');
+    const generatedEntryPath = path.resolve(
+      file.startsWith('file://') ? fileURLToFilePath(file) : file
+    );
     // The relative import path will be used like URI so it must be POSIX.
-    const relativeImport = './' + path.posix.relative(path.dirname(virtualEntry), generatedEntry);
+    const relativeImport =
+      './' + toPosixPath(path.relative(path.dirname(virtualEntry), generatedEntryPath));
     // Create the script URL
     const requestUrlBase = `http://${req.headers.host}`;
+    // NOTE(@kitten): Keep in sync with `src/export/exportDomComponents.ts`
     const metroUrl = new URL(
       createBundleUrlPath({
         ...instanceMetroOptions,
         domRoot: encodeURI(relativeImport),
         baseUrl: '/',
-        mainModuleName: path.relative(metroRoot, virtualEntry),
+        mainModuleName: convertEntryPointToRelative(projectRoot, virtualEntry),
         bytecode: false,
         platform: 'web',
         isExporting: false,
@@ -123,6 +115,17 @@ export function getDomComponentHtml(src?: string, { title }: { title?: string } 
     <noscript>DOM Components require <code>javaScriptEnabled</code></noscript>
         <!-- Root element for the DOM component. -->
         <div id="root"></div>
+        <script>${DOM_POLYFILLS_SCRIPT}</script>
+        <script>
+          var injectedObject = {};
+          try {
+            injectedObject = JSON.parse(window.ReactNativeWebView.injectedObjectJson());
+          } catch (e) {
+            throw new Error('Failed to parse injectedObjectJson: ' + e.message);
+          }
+          window.$$EXPO_DOM_HOST_OS = injectedObject.EXPO_DOM_HOST_OS;
+          window.$$EXPO_INITIAL_PROPS = injectedObject.initialProps;
+        </script>
         ${src ? `<script crossorigin src="${src.replace(/^https?:/, '')}"></script>` : ''}
     </body>
 </html>`;

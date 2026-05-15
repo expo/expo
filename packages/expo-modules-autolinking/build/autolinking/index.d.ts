@@ -1,5 +1,5 @@
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
-import { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExtraDependencies, ModuleDescriptor, SearchResults, SupportedPlatform } from '../types';
 export { getConfiguration } from './getConfiguration';
 /** @deprecated */
 export interface SearchOptions extends Partial<AutolinkingOptions> {

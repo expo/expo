@@ -148,7 +148,7 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.null())
+    promise.resolve(JavaScriptValue.null)
 
     let result = try await promise.await()
     #expect(result.isNull())
@@ -159,7 +159,7 @@ struct JavaScriptPromiseTests {
     let runtime = JavaScriptRuntime()
     let promise = JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.undefined())
+    promise.resolve(JavaScriptValue.undefined)
 
     let result = try await promise.await()
     #expect(result.isUndefined())

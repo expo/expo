@@ -20,9 +20,13 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.ui.convertibles.HorizontalAlignment
 import expo.modules.ui.convertibles.VerticalArrangement
 import expo.modules.ui.convertibles.toComposeArrangement
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class ContentPadding(
   @Field val start: Int = 0,
   @Field val top: Int = 0,
@@ -30,9 +34,10 @@ data class ContentPadding(
   @Field val bottom: Int = 0
 ) : Record
 
+@OptimizedComposeProps
 data class LazyColumnProps(
   val verticalArrangement: MutableState<VerticalArrangement?> = mutableStateOf(null),
-  val horizontalAlignment: MutableState<String?> = mutableStateOf(null),
+  val horizontalAlignment: MutableState<HorizontalAlignment?> = mutableStateOf(null),
   val contentPadding: MutableState<ContentPadding?> = mutableStateOf(null),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
@@ -59,12 +64,7 @@ class LazyColumnView(context: Context, appContext: AppContext) :
     recomposeScope = currentRecomposeScope
     val verticalArrangement = props.verticalArrangement.value?.toComposeArrangement() ?: Arrangement.Top
 
-    val horizontalAlignment = when (props.horizontalAlignment.value) {
-      "start" -> Alignment.Start
-      "end" -> Alignment.End
-      "center" -> Alignment.CenterHorizontally
-      else -> Alignment.Start
-    }
+    val horizontalAlignment = props.horizontalAlignment.value?.toComposeAlignment() ?: Alignment.Start
 
     val padding = props.contentPadding.value
 

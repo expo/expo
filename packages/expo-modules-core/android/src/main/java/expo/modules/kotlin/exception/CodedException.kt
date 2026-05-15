@@ -71,22 +71,39 @@ open class CodedException(
 inline fun <reified T : CodedException> errorCodeOf(): String =
   CodedException.inferCode(T::class.java)
 
-internal class IncompatibleArgTypeException(
-  argumentType: KClass<*>,
-  desiredType: KClass<*>,
-  cause: Throwable? = null
-) : CodedException(
-  message = "Argument type '$argumentType' is not compatible with expected type '$desiredType'.",
-  cause = cause
-)
+internal class IncompatibleArgTypeException : CodedException {
+  constructor(
+    argumentType: KClass<*>,
+    desiredType: KClass<*>,
+    cause: Throwable? = null
+  ) : super("Argument type '$argumentType' is not compatible with expected type '$desiredType'.", cause)
 
-internal class EnumNoSuchValueException(
-  enumType: KClass<Enum<*>>,
-  enumConstants: Array<out Enum<*>>,
-  value: Any?
-) : CodedException(
-  message = "'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}"
-)
+  constructor(
+    argumentType: KClass<*>,
+    desiredType: Class<*>,
+    cause: Throwable? = null
+  ) : super("Argument type '$argumentType' is not compatible with expected type '${desiredType.simpleName}'.", cause)
+
+  constructor(
+    argumentType: Class<*>,
+    desiredType: Class<*>,
+    cause: Throwable? = null
+  ) : super("Argument type '${argumentType.simpleName}' is not compatible with expected type '${desiredType.simpleName}'.", cause)
+}
+
+internal class EnumNoSuchValueException : CodedException {
+  constructor(
+    enumType: KClass<Enum<*>>,
+    enumConstants: Array<out Enum<*>>,
+    value: Any?
+  ) : super("'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}")
+
+  constructor(
+    enumType: Class<*>,
+    enumConstants: Array<out Enum<*>>,
+    value: Any?
+  ) : super("'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}")
+}
 
 internal class MissingTypeConverter(
   forType: TypeDescriptor
@@ -116,8 +133,10 @@ internal class MethodNotFoundException :
 internal class NullArgumentException :
   CodedException(message = "Cannot assigned null to not nullable type.")
 
-internal class FieldRequiredException(property: KProperty1<*, *>) :
-  CodedException(message = "Value for field '$property' is required, got nil")
+internal class FieldRequiredException(property: String) :
+  CodedException(message = "Value for field '$property' is required, got nil") {
+  constructor(property: KProperty1<*, *>) : this(property.toString())
+}
 
 @DoNotStrip
 class UnexpectedException(
@@ -222,6 +241,16 @@ internal class FieldCastException private constructor(
 
   constructor(
     fieldName: String,
+    fieldType: TypeDescriptor,
+    providedType: Any?,
+    cause: CodedException
+  ) : this(
+    message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$providedType'.",
+    cause = cause
+  )
+
+  constructor(
+    fieldName: String,
     fieldType: KType,
     recordType: TypeDescriptor,
     cause: CodedException
@@ -264,11 +293,10 @@ internal class CollectionElementCastException private constructor(
 }
 
 @DoNotStrip
-class DynamicCastException(
-  type: KClass<*>
-) : CodedException(
-  message = "Could not cast dynamic value to '${type.qualifiedName}'."
-)
+class DynamicCastException : CodedException {
+  constructor(type: KClass<*>) : super("Could not cast dynamic value to '${type.qualifiedName}'.")
+  constructor(type: Class<*>) : super("Could not cast dynamic value to '${type.canonicalName}'.")
+}
 
 @DoNotStrip
 class JavaScriptEvaluateException(

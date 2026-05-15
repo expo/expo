@@ -1,5 +1,6 @@
-import { ModConfig } from '@expo/config-plugins';
-import JsonFile, { JSONObject } from '@expo/json-file';
+import type { ModConfig } from '@expo/config-plugins';
+import type { JSONObject } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import { resolveFrom } from '@expo/require-utils';
 import deepMerge from 'deepmerge';
 import fs from 'fs';
@@ -8,7 +9,7 @@ import path from 'path';
 import semver from 'semver';
 import slugify from 'slugify';
 
-import {
+import type {
   AppJSONConfig,
   ConfigFilePaths,
   ExpoConfig,

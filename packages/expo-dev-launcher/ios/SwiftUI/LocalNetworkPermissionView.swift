@@ -21,7 +21,7 @@ struct LocalNetworkPermissionView: View {
       Color
         .expoSystemBackground
         .ignoresSafeArea(.all)
-      
+
       VStack(spacing: 24) {
         Image("radar-icon", bundle: getDevLauncherBundle())
           .resizable()
@@ -49,6 +49,9 @@ struct LocalNetworkPermissionView: View {
         }
       }
       .padding()
+      #if os(macOS)
+      .frame(maxHeight: 600)
+      #endif
     }
     .alert("Permission Not Granted", isPresented: $showTryAgainFailedAlert) {
       Button("Open Settings") {

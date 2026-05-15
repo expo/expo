@@ -3,10 +3,10 @@ import console from 'node:console';
 import process from 'node:process';
 import { stripVTControlCharacters } from 'node:util';
 
+import type { loadEnvFiles } from '../';
 import {
   getEnvFiles,
   LOADED_ENV_NAME,
-  loadEnvFiles,
   loadProjectEnv,
   logLoadedEnv,
   parseEnvFiles,

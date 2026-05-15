@@ -806,12 +806,9 @@ export type MaybeNotificationResponse = NotificationResponse | null | undefined;
  * */
 export type Subscription = EventSubscription;
 
-export {
-  PermissionExpiration,
-  PermissionResponse,
-  EventSubscription,
-  PermissionStatus,
-} from 'expo-modules-core';
+// TODO(@kitten): Remove re-exports from EMC
+export { type PermissionExpiration, type PermissionResponse, PermissionStatus } from 'expo';
+export { type EventSubscription } from 'expo-modules-core';
 
 /**
  * Payload for the background notification handler task.

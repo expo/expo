@@ -1,4 +1,4 @@
-import { Asset } from 'expo-asset';
+import type { Asset } from 'expo-asset';
 
 // @needsAudit
 /**
@@ -78,3 +78,17 @@ export enum FontDisplay {
 export type UnloadFontOptions = Pick<FontResource, 'display'>;
 
 export type UseFontHook = (map: string | Record<string, FontSource>) => [boolean, Error | null];
+
+export type ServerFontResourceDescriptor =
+  | {
+      type: 'style';
+      css: string;
+      id: string;
+    }
+  | {
+      type: 'link';
+      as: 'font';
+      crossOrigin?: 'anonymous' | 'use-credentials' | '' | undefined;
+      href: string;
+      rel: 'preload';
+    };

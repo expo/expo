@@ -229,6 +229,7 @@ function attemptLookup(moduleName) {
   }
 }
 
+// TODO(@kitten): This is an invalid dependency chain
 jest.doMock('expo-modules-core', () => {
   const ExpoModulesCore = jest.requireActual('expo-modules-core');
 
@@ -316,6 +317,22 @@ jest.doMock('expo-modules-core', () => {
 
 // Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
 require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
+
+// `expo/fetch` defines `class FetchResponse extends ExpoFetchModule.NativeResponse`
+// at module load — provide stub classes so tests that transitively import fetch
+// don't need to mock `ExpoFetchModule` themselves.
+globalThis.expo.modules.ExpoFetchModule = {
+  NativeRequest: class extends globalThis.expo.SharedObject {
+    start() {}
+    cancel() {}
+  },
+  NativeResponse: class extends globalThis.expo.SharedObject {
+    startStreaming() {}
+    cancelStreaming() {}
+    arrayBuffer() {}
+    text() {}
+  },
+};
 
 jest.doMock('expo/src/winter/FormData', () => ({
   // The `installFormDataPatch` function is for native runtime only,

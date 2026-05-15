@@ -6,7 +6,7 @@
             "podName": "RNWorklets",
             "codegenName": "rnworklets",
             "platforms": [
-                "iOS(.v15)"
+                "iOS(.v16)"
             ],
             "externalDependencies": [
                 "ReactNativeDependencies",
@@ -68,6 +68,7 @@
                         { "from": "AnimationFrameQueue/*.h", "to": "worklets/AnimationFrameQueue/{filename}", "type": "header" },
                         { "from": "NativeModules/*.h", "to": "worklets/NativeModules/{filename}", "type": "header" },
                         { "from": "Registries/*.h", "to": "worklets/Registries/{filename}", "type": "header" },
+                        { "from": "Compat/*.h", "to": "worklets/Compat/{filename}", "type": "header" },
                         { "from": "Resources/*.h", "to": "worklets/Resources/{filename}", "type": "header" },
                         { "from": "RunLoop/*.h", "to": "worklets/RunLoop/{filename}", "type": "header" },
                         { "from": "SharedItems/*.h", "to": "worklets/SharedItems/{filename}", "type": "header" },

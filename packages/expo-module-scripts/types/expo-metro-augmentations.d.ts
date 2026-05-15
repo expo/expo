@@ -12,8 +12,22 @@ declare module '@expo/metro/metro/DeltaBundler/types' {
   }
 }
 
+import * as __metroTransformWorker from '@expo/metro/metro-transform-worker';
+declare module '@expo/metro/metro-transform-worker' {
+  export interface JsTransformerConfig {
+    /** Normal path at which Babel config is found (must be relative to project root) */
+    readonly extendsBabelConfigPath?: string | undefined;
+  }
+}
+
 import * as __metroBabelTransformer from '@expo/metro/metro-babel-transformer';
 declare module '@expo/metro/metro-babel-transformer' {
+  // NOTE(@kitten): Custom modification to pass this custom Babel resolution option to `getCacheKey` for consistency
+  interface BabelTransformerCacheKeyOptions {
+    /** Normal path at which Babel config is found (must be relative to project root) */
+    readonly extendsBabelConfigPath?: string | undefined;
+  }
+
   interface BabelTransformerOptions {
     /** @privateRemarks Augmentation passed to the Expo Babel caller and used in `babel-preset-expo` to force `enableBabelRuntime` to `false` */
     type?: 'script' | 'module' | 'asset';
@@ -81,4 +95,12 @@ declare module '@expo/metro/metro-source-map/source-map' {
   export function toBabelSegments(sourceMap: BasicSourceMap): BabelSourceMapSegment[];
   /** @privateRemarks Augmented to switch argument type to `BabelSourceMapSegment` */
   export function toSegmentTuple(mapping: BabelSourceMapSegment): MetroSourceMapSegmentTuple;
+}
+
+import * as __metroConfigTypes from '@expo/metro/metro-config/types';
+
+declare module '@expo/metro/metro-config/types' {
+  export interface ResolverConfigT {
+    unstable_onDemandFilesystem?: unknown;
+  }
 }

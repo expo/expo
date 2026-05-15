@@ -20,7 +20,9 @@ import expo.modules.notifications.service.NotificationsService
 import expo.modules.notifications.service.NotificationsService.Companion.deleteCategory
 import expo.modules.notifications.service.NotificationsService.Companion.getCategories
 import expo.modules.notifications.service.NotificationsService.Companion.setCategory
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 class NotificationActionRecord : Record {
   @Field
   @Required
@@ -36,12 +38,14 @@ class NotificationActionRecord : Record {
   @Field
   val options = Options()
 
+  @OptimizedRecord
   class TextInput : Record {
     @Field
     @Required
     val placeholder: String = ""
   }
 
+  @OptimizedRecord
   class Options : Record {
     @Field
     val opensAppToForeground = true

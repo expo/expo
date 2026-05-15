@@ -22,7 +22,7 @@ swiftui_project_path = File.join(
   workspace_root,
   'apps',
   'brownfield-tester',
-  'ios-integrated',
+  'isolated/ios',
   "#{swiftui_target_name}.xcodeproj"
 )
 

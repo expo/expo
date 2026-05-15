@@ -115,6 +115,8 @@
       display: flex;
       flex-direction: row;
       justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
       margin-right: 8px;
       padding: 4px 8px;
       border-radius: 8px;
@@ -127,6 +129,36 @@
       font-size: 12px;
       font-weight: 400;
       line-height: 150%;
+    }
+
+    .info-box-details-record > p:first-child {
+      flex-shrink: 0;
+    }
+
+    .info-box-details-record > p:last-child {
+      min-width: 0;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .info-box-details-scroll {
+      min-width: 0;
+      flex: 1;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .info-box-details-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .info-box-details-scroll p {
+      white-space: nowrap;
+      padding-right: 8px;
     }
 
     .info-box-details-record:nth-child(odd) {
@@ -242,7 +274,9 @@
         </div> -->
         <div class="info-box-details-record">
           <p>Path</p>
-          <p>{{ Path }}</p>
+          <div class="info-box-details-scroll">
+            <p>{{ Path }}</p>
+          </div>
         </div>
         <!-- <div class="info-box-details-record">
           <p>Last commit</p>

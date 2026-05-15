@@ -9,30 +9,30 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public var wrappedValue: Type
 
-  private let fieldType: AnyDynamicType = ~Type.self
+  internal let fieldType: AnyDynamicType = ~Type.self
 
   /**
    Field's key in the dictionary, which by default is a label of the wrapped property.
    Sadly, property wrappers don't receive properties' label, so we must wait until it's assigned by `Record`.
    */
   internal var key: String? {
-    return options.first { $0.rawValue == FieldOption.keyed("").rawValue }?.key
+    return withOptions { options in
+      options.first { $0.rawValue == FieldOption.keyed("").rawValue }?.key
+    }
   }
 
   /**
    Additional options of the field, such is if providing the value is required (`FieldOption.required`).
+   Locked because `fieldsOf` lazily writes the keyed option while other threads may read. Access only via `withOptions`.
    */
-  internal var options: Set<FieldOption> = Set()
+  private let _options: Mutex<Set<FieldOption>>
 
-  /**
-   Whether the generic field type accepts `nil` values.
-   */
-  internal var isOptional: Bool {
-    return fieldType is DynamicOptionalType
+  internal func withOptions<T>(_ body: (inout Set<FieldOption>) -> T) -> T {
+    return _options.withLock { body(&$0) }
   }
 
   internal var isRequired: Bool {
-    options.contains(.required)
+    withOptions { $0.contains(.required) }
   }
 
   /**
@@ -40,7 +40,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public init(wrappedValue: Type, _ options: FieldOption...) {
     self.wrappedValue = wrappedValue
-    self.options = Set(options)
+    self._options = Mutex(Set(options))
   }
 
   /**
@@ -49,7 +49,7 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public init(wrappedValue: Type, _ options: [FieldOption]) {
     self.wrappedValue = wrappedValue
-    self.options = Set(options)
+    self._options = Mutex(Set(options))
   }
 
   /**
@@ -58,11 +58,12 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    */
   public init(wrappedValue: Type = nil) where Type: ExpressibleByNilLiteral {
     self.wrappedValue = wrappedValue
+    self._options = Mutex(Set())
   }
 
   public init(wrappedValue: Type = nil, _ options: FieldOption...) where Type: ExpressibleByNilLiteral {
     self.wrappedValue = wrappedValue
-    self.options = Set(options)
+    self._options = Mutex(Set(options))
   }
 
   /**
@@ -76,16 +77,49 @@ public final class Field<Type: AnyArgument>: AnyFieldInternal, @unchecked Sendab
    Sets the wrapped value with a value of `Any` type.
    */
   internal func set(_ newValue: Any?, appContext: AppContext) throws {
-    if newValue == nil && (!isOptional || isRequired) {
+    if newValue == nil && isRequired {
       throw FieldRequiredException(key!)
     }
     do {
-      if let value = try fieldType.cast(newValue, appContext: appContext) as? Type {
+      if let value = try castValue(newValue, appContext: appContext) {
         wrappedValue = value
+      } else if newValue == nil {
+        throw FieldRequiredException(key!)
       }
     } catch {
+      if newValue == nil {
+        throw FieldRequiredException(key!)
+      }
       throw FieldInvalidTypeException((fieldKey: key!, value: newValue, desiredType: Type.self)).causedBy(error)
     }
+  }
+
+  @JavaScriptActor
+  internal func set(jsValue: JavaScriptValue, appContext: AppContext) throws {
+    if jsValue.isNull() && isRequired {
+      throw FieldRequiredException(key!)
+    }
+    do {
+      if let value = try castValue(jsValue: jsValue, appContext: appContext) {
+        wrappedValue = value
+      } else if jsValue.isNull() {
+        throw FieldRequiredException(key!)
+      }
+    } catch {
+      if jsValue.isNull() {
+        throw FieldRequiredException(key!)
+      }
+      throw FieldInvalidTypeException((fieldKey: key!, value: jsValue, desiredType: Type.self)).causedBy(error)
+    }
+  }
+
+  internal func castValue(_ newValue: Any?, appContext: AppContext) throws -> Type? {
+    return try fieldType.cast(newValue, appContext: appContext) as? Type
+  }
+
+  @JavaScriptActor
+  internal func castValue(jsValue: JavaScriptValue, appContext: AppContext) throws -> Type? {
+    return try fieldType.cast(jsValue: jsValue, appContext: appContext) as? Type
   }
 }
 

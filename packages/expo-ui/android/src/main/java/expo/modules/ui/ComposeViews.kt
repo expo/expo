@@ -16,17 +16,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
-import expo.modules.kotlin.views.with
-import expo.modules.kotlin.views.withIf
 import expo.modules.ui.convertibles.HorizontalAlignment
 import expo.modules.ui.convertibles.HorizontalArrangement
 import expo.modules.ui.convertibles.VerticalAlignment
 import expo.modules.ui.convertibles.ContentAlignment
 import expo.modules.ui.convertibles.VerticalArrangement
 import expo.modules.ui.convertibles.toComposeArrangement
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class FloatingToolbarExitAlwaysScrollBehavior(val value: String) : Enumerable {
   TOP("top"),
@@ -44,6 +42,7 @@ enum class FloatingToolbarExitAlwaysScrollBehavior(val value: String) : Enumerab
   }
 }
 
+@OptimizedComposeProps
 data class LayoutProps(
   val horizontalArrangement: HorizontalArrangement? = null,
   val verticalArrangement: VerticalArrangement? = null,
@@ -68,12 +67,7 @@ internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
       .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
   ) {
-    val scope = ComposableScope()
-      .with(rowScope = this@Row)
-      .withIf(scrollBehavior != null) {
-        with(nestedScrollConnection = scrollBehavior)
-      }
-    Children(scope)
+    Children(UIComposableScope(rowScope = this@Row, nestedScrollConnection = scrollBehavior))
   }
 }
 
@@ -85,9 +79,7 @@ internal fun FunctionalComposableScope.FlowRowContent(props: LayoutProps) {
     modifier = ModifierRegistry
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    val scope = ComposableScope()
-      .with(rowScope = this@FlowRow)
-    Children(scope)
+    Children(UIComposableScope(rowScope = this@FlowRow))
   }
 }
 
@@ -105,12 +97,7 @@ internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
       .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
   ) {
-    val scope = ComposableScope()
-      .with(columnScope = this@Column)
-      .withIf(scrollBehavior != null) {
-        with(nestedScrollConnection = scrollBehavior)
-      }
-    Children(scope)
+    Children(UIComposableScope(columnScope = this@Column, nestedScrollConnection = scrollBehavior))
   }
 }
 
@@ -127,11 +114,6 @@ fun FunctionalComposableScope.BoxContent(props: LayoutProps) {
       .applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
       .then(if (scrollBehavior != null) Modifier.nestedScroll(scrollBehavior) else Modifier)
   ) {
-    val scope = ComposableScope()
-      .with(boxScope = this@Box)
-      .withIf(scrollBehavior != null) {
-        with(nestedScrollConnection = scrollBehavior)
-      }
-    Children(scope)
+    Children(UIComposableScope(boxScope = this@Box, nestedScrollConnection = scrollBehavior))
   }
 }

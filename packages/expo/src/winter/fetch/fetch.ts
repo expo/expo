@@ -1,7 +1,7 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
 import { FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
-import { NativeRequest, NativeRequestInit } from './NativeRequest';
+import type { NativeRequest, NativeRequestInit } from './NativeRequest';
 import {
   normalizeBodyInitAsync,
   normalizeHeadersInit,

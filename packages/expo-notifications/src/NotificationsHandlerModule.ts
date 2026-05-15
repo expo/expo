@@ -1,6 +1,6 @@
 import { Platform } from 'expo-modules-core';
 
-import { NotificationsHandlerModule } from './NotificationsHandlerModule.types';
+import type { NotificationsHandlerModule } from './NotificationsHandlerModule.types';
 
 let warningHasBeenShown = false;
 

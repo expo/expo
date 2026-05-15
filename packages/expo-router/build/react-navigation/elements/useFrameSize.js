@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useFrameSize = useFrameSize;
 exports.FrameSizeProvider = FrameSizeProvider;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
 const react_1 = require("react");
 const react_native_1 = require("react-native");
@@ -125,10 +126,7 @@ function FrameSizeProvider({ initialFrame, render }) {
         const { width, height } = event.nativeEvent.layout;
         onChange({ width, height });
     };
-    return (<FrameContext.Provider value={context}>
-      {react_native_1.Platform.OS === 'web' ? <FrameSizeListenerWeb onChange={onChange}/> : null}
-      {render({ ref: viewRef, onLayout })}
-    </FrameContext.Provider>);
+    return ((0, jsx_runtime_1.jsxs)(FrameContext.Provider, { value: context, children: [react_native_1.Platform.OS === 'web' ? (0, jsx_runtime_1.jsx)(FrameSizeListenerWeb, { onChange: onChange }) : null, render({ ref: viewRef, onLayout })] }));
 }
 // FIXME: On the Web, `onLayout` doesn't fire on resize
 // So we workaround this by using ResizeObserver
@@ -155,7 +153,7 @@ function FrameSizeListenerWeb({ onChange }) {
             observer.disconnect();
         };
     }, [onChange]);
-    return (<div ref={elementRef} style={{
+    return ((0, jsx_runtime_1.jsx)("div", { ref: elementRef, style: {
             position: 'absolute',
             left: 0,
             right: 0,
@@ -163,6 +161,6 @@ function FrameSizeListenerWeb({ onChange }) {
             bottom: 0,
             pointerEvents: 'none',
             visibility: 'hidden',
-        }}/>);
+        } }));
 }
 //# sourceMappingURL=useFrameSize.js.map

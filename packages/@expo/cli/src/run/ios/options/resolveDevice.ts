@@ -6,13 +6,13 @@ import {
   ensureSimulatorOpenAsync,
 } from '../../../start/platforms/ios/AppleDeviceManager';
 import { sortDefaultDeviceToBeginningAsync } from '../../../start/platforms/ios/promptAppleDevice';
-import { OSType } from '../../../start/platforms/ios/simctl';
+import type { OSType } from '../../../start/platforms/ios/simctl';
 import * as SimControl from '../../../start/platforms/ios/simctl';
 import { uniqBy } from '../../../utils/array';
 import { CommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { logDeviceArgument } from '../../hints';
-import { BuildProps } from '../XcodeBuild.types';
+import type { BuildProps } from '../XcodeBuild.types';
 import * as AppleDevice from '../appleDevice/AppleDevice';
 
 type AnyDevice = SimControl.Device | AppleDevice.ConnectedDevice;

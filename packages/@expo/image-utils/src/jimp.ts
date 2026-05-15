@@ -3,7 +3,7 @@ import fs from 'fs';
 import Jimp from 'jimp-compact';
 import * as path from 'path';
 
-import {
+import type {
   FlattenOptions,
   Position,
   ResizeOptions,

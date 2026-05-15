@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
 import ExpoModulesCore
 
 internal struct DynamicSerializableType: AnyDynamicType {
@@ -17,10 +18,16 @@ internal struct DynamicSerializableType: AnyDynamicType {
   }
 
   func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    guard let runtime = appContext._runtime else {
-      throw Exceptions.RuntimeLost()
+    let runtime = try appContext.runtime
+    let jsSerializable: JavaScriptSerializable? = runtime.withUnsafePointee { runtimePointee in
+      return jsValue.withUnsafePointee { valuePointee in
+        return SerializableExtractor.extractSerializable(
+          runtimePointer: runtimePointee,
+          valuePointer: valuePointee
+        )
+      }
     }
-    guard let jsSerializable = SerializableExtractor.extractSerializable(jsValue, runtime: runtime) else {
+    guard let jsSerializable else {
       throw NotSerializableException(innerType)
     }
     return Serializable(jsSerializable)

@@ -4,10 +4,10 @@ import ExpoModulesCore
 
 internal final class GLView: ExpoView, EXGLContextDelegate {
   lazy var glContext: EXGLContext = {
-    guard let runtime = try? appContext?.runtime, let fileSystem = appContext?.fileSystem else {
-      fatalError("[expo-gl] Unable to get the app context, JS runtime or file system manager")
+    guard let fileSystem = appContext?.fileSystem else {
+      fatalError("[expo-gl] Unable to get the file system manager")
     }
-    return EXGLContext(delegate: self, runtime: runtime, fileSystem: fileSystem)
+    return EXGLContext(delegate: self, fileSystem: fileSystem)
   }()
 
   lazy var eaglContext: EAGLContext = glContext.createSharedEAGLContext()
@@ -68,8 +68,20 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
     resizeViewBuffersToWidth(width: contentScaleFactor * frame.size.width, height: contentScaleFactor * frame.size.height)
 
     isAfterLayout = true
-    glContext.prepare(nil, andEnableExperimentalWorkletSupport: enableExperimentalWorkletSupport)
-    maybeCallSurfaceCreated()
+
+    guard let runtime = try? appContext?.runtime else {
+      log.error("[expo-gl] GLView.layoutSubviews: no JS runtime; GL context will not initialize")
+      return
+    }
+    runtime.schedule(priority: .immediate) { [self] in
+      runtime.withUnsafePointee { runtimePtr in
+        glContext.prepare(
+          withRuntimePointer: runtimePtr,
+          callback: { _ in self.maybeCallSurfaceCreated() },
+          enableExperimentalWorkletSupport: enableExperimentalWorkletSupport
+        )
+      }
+    }
   }
 
   override func removeFromSuperview() {

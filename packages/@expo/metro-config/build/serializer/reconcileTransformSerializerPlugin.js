@@ -43,14 +43,13 @@ const generator_1 = __importDefault(require("@babel/generator"));
 const JsFileWrapping = __importStar(require("@expo/metro/metro/ModuleGraph/worker/JsFileWrapping"));
 const importLocationsPlugin_1 = require("@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin");
 const isResolvedDependency_1 = require("@expo/metro/metro/lib/isResolvedDependency");
-const metro_source_map_1 = require("@expo/metro/metro-source-map");
 const metro_transform_plugins_1 = require("@expo/metro/metro-transform-plugins");
 const assert_1 = __importDefault(require("assert"));
 const node_util_1 = __importDefault(require("node:util"));
 const jsOutput_1 = require("./jsOutput");
+const packedMap_1 = require("./packedMap");
 const sideEffects_1 = require("./sideEffects");
 const collect_dependencies_1 = __importStar(require("../transform-worker/collect-dependencies"));
-const count_lines_1 = require("../transform-worker/count-lines");
 const metro_transform_worker_1 = require("../transform-worker/metro-transform-worker");
 const debug = require('debug')('expo:treeshaking');
 const FORCE_REQUIRE_NAME_HINTS = false;
@@ -229,31 +228,38 @@ async function reconcileTransformSerializerPlugin(entryPoint, preModules, graph,
             sourceFileName: value.path,
             sourceMaps: true,
         }, outputItem.data.code);
-        // @ts-expect-error: incorrectly typed upstream
-        let map = result.rawMappings ? result.rawMappings.map(metro_source_map_1.toSegmentTuple) : [];
+        // `rawMappings` is omitted from `@types/babel__generator`'s
+        // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
+        const rawMappings = result.rawMappings ?? [];
         let code = result.code;
+        let sourceMap;
         if (reconcile.minify) {
             const source = value.getSource().toString('utf-8');
-            ({ map, code } = await (0, metro_transform_worker_1.minifyCode)(reconcile.minify, value.path, result.code, source, map, reserved));
+            ({ sourceMap, code } = await (0, metro_transform_worker_1.minifyCode)(reconcile.minify, value.path, result.code, source, rawMappings, reserved));
+        }
+        else {
+            sourceMap = (0, packedMap_1.packRawMappings)(rawMappings);
         }
         let lineCount;
-        ({ lineCount, map } = (0, count_lines_1.countLinesAndTerminateMap)(code, map));
-        return {
-            ...outputItem,
-            data: {
-                ...outputItem.data,
-                code,
-                map,
-                lineCount,
-                functionMap: 
-                // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
-                ast.metadata?.metro?.functionMap ??
-                    // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
-                    ast.functionMap ??
-                    outputItem.data.functionMap ??
-                    null,
-            },
+        ({ lineCount, sourceMap } = (0, packedMap_1.countLinesAndTerminateSourceMap)(code, sourceMap));
+        const newData = {
+            ...outputItem.data,
+            code,
+            lineCount,
+            functionMap: 
+            // @ts-expect-error: https://github.com/facebook/metro/blob/6151e7eb241b15f3bb13b6302abeafc39d2ca3ad/packages/metro-transform-worker/src/index.js#L508-L512
+            ast.metadata?.metro?.functionMap ??
+                // @ts-expect-error: Fallback to deprecated explicitly-generated `functionMap`
+                ast.functionMap ??
+                outputItem.data.functionMap ??
+                null,
         };
+        // Reconcile runs post-graph-build, so it bypasses the
+        // `Bundler.transformFile` wrapper that normally installs the packed
+        // shape from worker output. Install it here directly so the encoder
+        // fast path stays live for reconciled modules.
+        (0, packedMap_1.installPackedMap)(newData, sourceMap);
+        return { ...outputItem, data: newData };
     }
 }
 //# sourceMappingURL=reconcileTransformSerializerPlugin.js.map

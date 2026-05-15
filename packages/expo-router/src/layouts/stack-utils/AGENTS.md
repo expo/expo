@@ -10,6 +10,7 @@
 ├── StackHeaderComponent.tsx # Stack.Header
 ├── StackScreen.tsx # Stack.Screen
 ├── StackSearchBar.tsx # Stack.SearchBar
+├── StackTitle.tsx # Stack.Title
 └── toolbar # Stack.Toolbar._ components
     ├── context.tsx # ToolbarPlacementContext
     ├── shared.ts # Shared header item conversion utilities

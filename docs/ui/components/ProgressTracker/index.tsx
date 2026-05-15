@@ -100,7 +100,7 @@ export function ProgressTracker({
           )}
         />
         <div className="flex flex-col items-center justify-center gap-2">
-          <p className="text-default heading-lg flex items-center text-center font-semibold">
+          <p className="text-default heading-lg flex items-center text-center">
             <BookOpen02Icon className="text-icon-secondary max-md-gutters:hidden mr-2 size-6!" />{' '}
             {currentChapter.title}
           </p>

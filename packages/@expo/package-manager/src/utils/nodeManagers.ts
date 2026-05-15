@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import { PackageManagerOptions } from '../PackageManager';
+import type { PackageManagerOptions } from '../PackageManager';
 import { BunPackageManager } from '../node/BunPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';

@@ -9,7 +9,7 @@ type Props = Omit<HeaderSearchBarOptions, 'ref'> & {
 };
 declare function HeaderSearchBarInternal({ ref, visible, inputType, autoFocus, autoCapitalize, placeholder, cancelButtonText, enterKeyHint, onChangeText, onClose, tintColor, style, ...rest }: Props & {
     ref?: React.Ref<HeaderSearchBarRef>;
-}): React.JSX.Element | null;
+}): import("react/jsx-runtime").JSX.Element | null;
 export declare const HeaderSearchBar: typeof HeaderSearchBarInternal;
 export {};
 //# sourceMappingURL=HeaderSearchBar.d.ts.map

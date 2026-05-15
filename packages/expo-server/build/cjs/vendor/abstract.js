@@ -73,7 +73,7 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                     continue;
                 }
                 // Replace URL and Request with rewrite target
-                url = (0, matchers_1.getRedirectRewriteLocation)(url, request, route);
+                url = new URL((0, matchers_1.getRedirectRewriteLocation)(url, request, route), url);
                 request = new Request(url, request);
             }
         }
@@ -202,6 +202,14 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
             // Only used for development errors
             return html;
         }
+        if (html != null) {
+            return createResponse('notFoundHtml', route, html, {
+                status: 404,
+                headers: new Headers({
+                    'Content-Type': 'text/html',
+                }),
+            });
+        }
         throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
     }
     async function respondAPI(mod, request, route) {
@@ -241,6 +249,14 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
             // Only used for development error responses
             return html;
         }
+        if (html != null) {
+            return createResponse('html', route, html, {
+                status: 200,
+                headers: new Headers({
+                    'Content-Type': 'text/html',
+                }),
+            });
+        }
         throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
     }
     function respondRedirect(url, request, route) {
@@ -254,7 +270,10 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
         else {
             status = route.permanent ? 308 : 307;
         }
-        return Response.redirect(target, status);
+        return new Response(null, {
+            status,
+            headers: { Location: target },
+        });
     }
 }
 //# sourceMappingURL=abstract.js.map

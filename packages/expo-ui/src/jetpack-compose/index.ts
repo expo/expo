@@ -1,3 +1,4 @@
+import '../State/index.fx';
 import './MaterialSymbolsAssetsTransformer.fx';
 
 export * from './AlertDialog';
@@ -8,12 +9,15 @@ export * from './Card';
 export * from './Checkbox';
 export * from './Chip';
 export * from './Button';
+export * from './colors';
 export * from './Icon';
 export * from './IconButton';
 export * from './DropdownMenu';
+export * from './ExposedDropdownMenuBox';
 export * from './Divider';
 export * from './Host';
 export * from './LazyColumn';
+export * from './LazyRow';
 export * from './ListItem';
 export * from './RNHostView';
 export * from './DatePicker';
@@ -22,11 +26,28 @@ export * from './Progress';
 export * from './Slider';
 export * from './Spacer';
 export * from './Switch';
-export * from './TextInput';
+export * from './SyncSwitch';
+export {
+  TextField,
+  OutlinedTextField,
+  type TextFieldProps,
+  type TextFieldRef,
+  type TextFieldCapitalization,
+  type TextFieldImeAction,
+  type TextFieldKeyboardOptions,
+  type TextFieldKeyboardType,
+  type TextFieldKeyboardActions,
+  type TextFieldColors,
+} from './TextField';
 export * from './ToggleButton';
 export * from './Shape';
 export * from './ModalBottomSheet';
 export * from './Carousel';
+export {
+  HorizontalPager,
+  type HorizontalPagerHandle,
+  type HorizontalPagerProps,
+} from './HorizontalPager';
 export * from './SearchBar';
 export * from './DockedSearchBar';
 export * from './HorizontalFloatingToolbar';
@@ -42,4 +63,6 @@ export * from './Box';
 export * from './Row';
 export * from './Column';
 export * from './FlowRow';
-export { ViewEvent } from '../types';
+export { useNativeState } from '../State/useNativeState';
+export type { ViewEvent } from '../types';
+export type { PrimitiveBaseProps } from './layout-types';

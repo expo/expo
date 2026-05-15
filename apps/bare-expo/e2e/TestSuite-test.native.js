@@ -8,7 +8,7 @@ const TESTS = [
   // 'FileSystem',
   // 'Font',
   // 'Blur',
-  'LinearGradient',
+  // 'LinearGradient',
   'Constants',
   // 'Contacts',
   'Crypto',

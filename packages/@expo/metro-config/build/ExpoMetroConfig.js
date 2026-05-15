@@ -10,14 +10,15 @@ exports.getDefaultConfig = getDefaultConfig;
 const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const metro_cache_1 = require("@expo/metro/metro-cache");
+const exclusionList_1 = __importDefault(require("@expo/metro/metro-config/defaults/exclusionList"));
 const chalk_1 = __importDefault(require("chalk"));
 const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
+const binary_file_store_1 = require("./binary-file-store");
 const customizeFrame_1 = require("./customizeFrame");
 Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", { enumerable: true, get: function () { return customizeFrame_1.INTERNAL_CALLSITES_REGEX; } });
 const env_1 = require("./env");
-const file_store_1 = require("./file-store");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
 const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
@@ -28,7 +29,6 @@ const filePath_1 = require("./utils/filePath");
 const getPkgVersion_1 = require("./utils/getPkgVersion");
 const setOnReadonly_1 = require("./utils/setOnReadonly");
 const debug = require('debug')('expo:metro:config');
-let hasWarnedAboutExotic = false;
 let hasWarnedAboutReactNative = false;
 // Patch Metro's graph to support always parsing certain modules. This enables
 // things like Tailwind CSS which update based on their own heuristics.
@@ -133,11 +133,6 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
     if (isCSSEnabled) {
         patchMetroGraphToSupportUncachedModules();
     }
-    const isExotic = mode === 'exotic' || env_1.env.EXPO_USE_EXOTIC;
-    if (isExotic && !hasWarnedAboutExotic) {
-        hasWarnedAboutExotic = true;
-        console.log(chalk_1.default.gray(`\u203A Feature ${chalk_1.default.bold `EXPO_USE_EXOTIC`} has been removed in favor of the default transformer.`));
-    }
     const reactNativePath = path_1.default.dirname(resolve_from_1.default.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json');
     if (reactNativePath === 'react-native' && !hasWarnedAboutReactNative) {
         hasWarnedAboutReactNative = true;
@@ -189,7 +184,7 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
         console.log();
     }
     const metroDefaultValues = getDefaultMetroConfig.getDefaultValues(projectRoot);
-    const cacheStore = new file_store_1.FileStore({
+    const cacheStore = new binary_file_store_1.FileStore({
         root: path_1.default.join(os_1.default.tmpdir(), 'metro-cache'),
     });
     const serverRoot = (0, paths_1.getMetroServerRoot)(projectRoot);
@@ -224,12 +219,15 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             blockList: [
                 // .expo/types contains generated declaration files which are not and should not be processed by Metro.
                 // This prevents unwanted fast refresh on the declaration files changes.
-                /\.expo[\\/]types/,
-            ].concat(metroDefaultValues.resolver.blockList ?? []),
+                // NOTE(@kitten): `exclusionList` automatically adds Metro's default values
+                (0, exclusionList_1.default)(['.expo/types', '.expo/web/cache']),
+                // NOTE(@kitten): @expo/metro-file-map allows us to exclude project-relative directories, since the
+                // pattern is reapplied to normal paths during the Node crawling phase
+                /^(?:android[\\/]app[\\/]build|android[\\/]\.gradle|ios[\\/]Pods)$/,
+            ],
         },
         cacheStores: [cacheStore],
         watcher: {
-            unstable_workerThreads: false,
             // strip starting dot from env files. We only support watching development variants of env files as production is inlined using a different system.
             additionalExts: ['env', 'local', 'development'],
         },
@@ -319,6 +317,8 @@ function getDefaultConfig(projectRoot, { mode, isCSSEnabled = true, unstable_bef
             assetRegistryPath: '@react-native/assets-registry/registry',
             // Determines the minimum version of `@babel/runtime`, so we default it to the project's installed version of `@babel/runtime`
             enableBabelRuntime: babelRuntimeVersion ?? undefined,
+            // Allows additional babelrc lookups (mostly unused). The default of `undefined` enables the project's custom Babel config without enabling babelrc/configFile discovery
+            enableBabelRCLookup: undefined,
             // hermesParser: true,
             getTransformOptions: async () => ({
                 transform: {

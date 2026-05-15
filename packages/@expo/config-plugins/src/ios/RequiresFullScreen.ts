@@ -1,6 +1,6 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
-import { InfoPlist } from './IosConfig.types';
+import type { InfoPlist } from './IosConfig.types';
 import { createInfoPlistPlugin } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
 

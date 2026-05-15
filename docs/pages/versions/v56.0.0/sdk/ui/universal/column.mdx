@@ -1,0 +1,63 @@
+---
+title: Column
+description: A vertical layout container for universal @expo/ui components.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A vertical layout container that arranges its children from top to bottom. Delegates to SwiftUI's [`VStack`](../swift-ui/vstack) on iOS, Jetpack Compose's [`Column`](../jetpack-compose/column) on Android, and a flex `View` on web.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic column
+
+```tsx ColumnExample.tsx
+import { Host, Column, Text } from '@expo/ui';
+
+export default function ColumnExample() {
+  return (
+    <Host matchContents>
+      <Column spacing={8}>
+        <Text>First</Text>
+        <Text>Second</Text>
+        <Text>Third</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Alignment
+
+Use [`alignment`](#alignment) to position children along the cross (horizontal) axis.
+
+```tsx ColumnAlignmentExample.tsx
+import { Host, Column, Text } from '@expo/ui';
+
+export default function ColumnAlignmentExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Column spacing={8} alignment="center">
+        <Text>Centered</Text>
+        <Text>Centered</Text>
+      </Column>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Column } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/column" apiName="Column" />

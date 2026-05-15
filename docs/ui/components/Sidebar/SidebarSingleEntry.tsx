@@ -33,11 +33,11 @@ export const SidebarSingleEntry = ({
         <LinkBase
           href={href}
           className={mergeClasses(
-            'text-secondary flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm leading-[100!%]',
+            'text-secondary flex min-h-[32px] items-center gap-3 rounded-md px-2 py-1 text-sm leading-[100%]!',
             'hocus:bg-element',
             'focus-visible:relative focus-visible:z-10',
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
-            secondary && 'text-xs',
+            secondary && 'text-sm',
             isActive &&
               'bg-palette-blue3! text-link hocus:bg-palette-blue4! hocus:text-link font-medium'
           )}
@@ -59,7 +59,7 @@ export const SidebarSingleEntry = ({
       <Tooltip.Content
         side="bottom"
         className={mergeClasses('z-50 hidden', allowCompactDisplay && 'compact-height:flex')}>
-        <span className="text-2xs text-secondary">{title}</span>
+        <span className="text-secondary text-xs">{title}</span>
       </Tooltip.Content>
     </Tooltip.Root>
   );

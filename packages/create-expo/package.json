@@ -1,6 +1,6 @@
 {
   "name": "create-expo",
-  "version": "3.6.6",
+  "version": "3.8.0",
   "bin": "./bin/create-expo.js",
   "main": "build",
   "description": "Create universal Expo apps",
@@ -56,9 +56,9 @@
     "glob": "^13.0.0",
     "nock": "^14.0.10",
     "ora": "3.4.0",
-    "picomatch": "^2.3.1",
+    "picomatch": "^2.3.2",
     "prompts": "^2.4.2",
-    "tar": "^7.5.12",
+    "multitars": "^1.0.0",
     "update-check": "^1.5.4"
   }
 }

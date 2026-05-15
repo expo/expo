@@ -59,6 +59,13 @@ export interface UnitStatus {
   unitId: string;
   stages: Record<ProductStage, StageStatus>;
   elapsedMs: number;
+  /**
+   * Set when a unit was skipped because of an upstream DAG failure. The value
+   * is a human-readable reason (e.g., `"dependency react-native-worklets failed"`).
+   * When present, the unit is rendered as a single-line skip in the summary
+   * and counted as a failure, independent of its per-stage statuses.
+   */
+  skipReason?: string;
 }
 
 export interface UnitError {

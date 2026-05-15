@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const metro_cache_key_1 = require("@expo/metro/metro-cache-key");
 const node_assert_1 = __importDefault(require("node:assert"));
+const node_path_1 = __importDefault(require("node:path"));
+const babel_core_1 = require("./babel-core");
 const loadBabelConfig_1 = require("./loadBabelConfig");
 const transformSync_1 = require("./transformSync");
-const getPkgVersion_1 = require("./utils/getPkgVersion");
-const transitiveResolveFrom_1 = require("./utils/transitiveResolveFrom");
 const debug = require('debug')('expo:metro-config:babel-transformer');
 function isCustomTruthy(value) {
     return String(value) === 'true';
@@ -27,19 +28,6 @@ function memoize(fn) {
 const memoizeWarning = memoize((message) => {
     debug(message);
 });
-function getIsHermesV1(projectRoot) {
-    const hermesCompilerPackageJsonPath = (0, transitiveResolveFrom_1.transitiveResolveFrom)(projectRoot, [
-        'react-native/package.json',
-        'hermes-compiler/package.json',
-    ]);
-    if (!hermesCompilerPackageJsonPath) {
-        return true;
-    }
-    const hermesVersion = (0, getPkgVersion_1.getPkgVersionFromPath)(hermesCompilerPackageJsonPath);
-    // hermes-compiler versions 250829098.x are Hermes V1, while 0.1.x are legacy Hermes.
-    const isLegacyHermes = typeof hermesVersion === 'string' && hermesVersion.startsWith('0.1');
-    return !isLegacyHermes;
-}
 function getBabelCaller({ filename, options, }) {
     const isNodeModule = filename.includes('node_modules');
     const isReactServer = options.customTransformOptions?.environment === 'react-server';
@@ -77,8 +65,6 @@ function getBabelCaller({ filename, options, }) {
         // Pass the engine to babel so we can automatically transpile for the correct
         // target environment.
         engine: stringOrUndefined(options.customTransformOptions?.engine),
-        // Indicate whether the project is using Hermes V1 (hermes-compiler version 250829098.x).
-        isHermesV1: getIsHermesV1(options.projectRoot),
         // Provide the project root for accurately reading the Expo config.
         projectRoot: options.projectRoot,
         isNodeModule,
@@ -103,6 +89,7 @@ function getBabelCaller({ filename, options, }) {
         isLoaderBundle: isCustomTruthy(options.customTransformOptions?.isLoaderBundle)
             ? true
             : undefined,
+        isDomComponent: options.customTransformOptions?.dom != null ? true : undefined,
         // This is picked up by `babel-preset-expo` if it's set, and overrides the minimum supported
         // `@babel/runtime` version that `@babel/plugin-transform-runtime` can assume is installed
         // This option should be set to the project's version of `@babel/runtime`, if it's installed directly
@@ -118,6 +105,8 @@ plugins, }) => {
     const OLD_BABEL_ENV = process.env.BABEL_ENV;
     process.env.BABEL_ENV = options.dev ? 'development' : process.env.BABEL_ENV || 'production';
     try {
+        const { enableBabelRCLookup } = options;
+        const { exts, presets } = (0, loadBabelConfig_1.loadBabelConfig)(options);
         const babelConfig = {
             // ES modules require sourceType='module' but OSS may not always want that
             sourceType: 'unambiguous',
@@ -133,9 +122,17 @@ plugins, }) => {
             cwd: options.projectRoot,
             filename,
             highlightCode: true,
-            // Load the project babel config file.
-            ...(0, loadBabelConfig_1.loadBabelConfig)(options),
-            babelrc: typeof options.enableBabelRCLookup === 'boolean' ? options.enableBabelRCLookup : true,
+            root: options.projectRoot, // Default value
+            babelrcRoots: enableBabelRCLookup ? options.projectRoot : false, // Default value
+            // NOTE(@kitten): This will and has always only searched `projectRoot`, excluding node_modules and other workspaces
+            // As such, we'll only enable it when `enableBabelRCLookup` is explicitly enabled for non-node_modules
+            babelrc: enableBabelRCLookup ? !filename.includes('node_modules') : false,
+            // NOTE(@kitten): This used to duplicate the config file, which is already piped into `extends`
+            // However, for deprecated/legacy behaviour, we'll still enable it when `enableBabelRCLookup` is explicitly enabled
+            configFile: !!enableBabelRCLookup, // Otherwise duplicates our search below
+            // Add the discovered config file
+            extends: exts,
+            presets,
             plugins,
             // NOTE(EvanBacon): We heavily leverage the caller functionality to mutate the babel config.
             // This compensates for the lack of a format plugin system in Metro. Users can modify the
@@ -159,7 +156,7 @@ plugins, }) => {
     }
     finally {
         // Restore the old process.env.BABEL_ENV
-        if (OLD_BABEL_ENV != null) {
+        if (OLD_BABEL_ENV == null) {
             // We have to treat this as a special case because writing undefined to
             // an environment variable coerces it to the string 'undefined'. To
             // unset it, we must delete it.
@@ -171,8 +168,41 @@ plugins, }) => {
         }
     }
 };
+/**
+ * Generates a cache key component based on the user's Babel configuration files.
+ * This uses Babel's loadPartialConfig to resolve which config files apply
+ * to the project, and includes their contents in the cache key so that changes
+ * to babel.config.js, .babelrc, or any file they reference will invalidate the
+ * transform cache.
+ *
+ * This is called once by the main thread (not on worker instances).
+ */
+function getCacheKey(options) {
+    if (options?.projectRoot == null || options.enableBabelRCLookup === false) {
+        return '';
+    }
+    // In Expo, we pass the `extendsBabelConfigPath` ourselves, but if we're not using this with the Expo CLI
+    // we re-resolve the Babel config, same as in `loadBabelConfig`
+    const configName = options.extendsBabelConfigPath ?? (0, loadBabelConfig_1.resolveBabelrcName)(options.projectRoot);
+    if (!configName) {
+        return '';
+    }
+    const partialConfig = (0, babel_core_1.loadPartialConfigSync)({
+        cwd: options.projectRoot,
+        root: options.projectRoot,
+        extends: node_path_1.default.resolve(options.projectRoot, configName),
+        configFile: false,
+        babelrc: false,
+    });
+    const files = partialConfig?.files;
+    if (files == null || files.size === 0) {
+        return '';
+    }
+    return (0, metro_cache_key_1.getCacheKey)([...files].sort());
+}
 const babelTransformer = {
     transform,
+    getCacheKey,
 };
 module.exports = babelTransformer;
 //# sourceMappingURL=babel-transformer.js.map

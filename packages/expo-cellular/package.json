@@ -1,6 +1,6 @@
 {
   "name": "expo-cellular",
-  "version": "55.0.8",
+  "version": "56.0.4",
   "description": "Provides information about the user’s cellular service provider",
   "main": "build/Cellular.js",
   "types": "build/Cellular.d.ts",
@@ -31,9 +31,10 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^22.14.0",
+    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
-    "expo": "workspace:*"
+    "expo": "*"
   }
 }

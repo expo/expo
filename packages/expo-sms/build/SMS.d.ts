@@ -1,5 +1,5 @@
-import { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
-export { SMSAttachment, SMSResponse, SMSOptions };
+import type { SMSResponse, SMSOptions } from './SMS.types';
+export type { SMSAttachment, SMSResponse, SMSOptions } from './SMS.types';
 /**
  * Opens the default UI/app for sending SMS messages with prefilled addresses and message.
  *

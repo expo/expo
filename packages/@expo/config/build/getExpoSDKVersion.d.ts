@@ -1,4 +1,4 @@
-import { ExpoConfig } from './Config.types';
+import type { ExpoConfig } from './Config.types';
 /**
  * Resolve the Expo SDK Version either from the input Expo config or from the installed
  * version of the `expo` package.

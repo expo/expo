@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import os from 'os';
 import path from 'path';
 

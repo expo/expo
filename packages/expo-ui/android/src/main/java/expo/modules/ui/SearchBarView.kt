@@ -9,10 +9,11 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class SearchBarProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -29,7 +30,7 @@ fun FunctionalComposableScope.SearchBarContent(props: SearchBarProps, onSearch: 
         textFieldState = textFieldState,
         onSearch = { value -> onSearch.invoke(GenericEventPayload1(value)) },
         placeholder = {
-          Children(ComposableScope(), filter = { isSlotWithName(it, "placeholder") })
+          Children(UIComposableScope(), filter = { isSlotWithName(it, "placeholder") })
         }
       )
     }
@@ -45,13 +46,13 @@ fun FunctionalComposableScope.SearchBarContent(props: SearchBarProps, onSearch: 
       state = searchBarState,
       inputField = inputField
     ) {
-      ExpandedFullScreenSearchBarView(ComposableScope(), slotView)
+      ExpandedFullScreenSearchBarView(UIComposableScope(), slotView)
     }
   }
 }
 
 @Composable
-private fun ExpandedFullScreenSearchBarView(composableScope: ComposableScope, view: SlotView) {
+private fun ExpandedFullScreenSearchBarView(composableScope: UIComposableScope, view: SlotView) {
   with(composableScope) {
     with(view) {
       Content()

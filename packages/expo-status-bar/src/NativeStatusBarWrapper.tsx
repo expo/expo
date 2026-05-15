@@ -6,7 +6,7 @@ import {
   type ColorSchemeName,
 } from 'react-native';
 
-import { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
+import type { StatusBarProps, StatusBarStyle, StatusBarAnimation } from './types';
 
 /**
  * A component that allows you to configure your status bar declaratively.

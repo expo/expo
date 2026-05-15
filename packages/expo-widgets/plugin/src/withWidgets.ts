@@ -26,7 +26,7 @@ export type ExpoWidgetsConfigPluginProps = {
 
 const withWidgets: ConfigPlugin<ExpoWidgetsConfigPluginProps | undefined> = (config, props) => {
   let plugins: (StaticPlugin | ConfigPlugin | string)[] = [];
-  const deploymentTarget = '16.2';
+  const deploymentTarget = '16.4';
   const targetName = 'ExpoWidgetsTarget';
 
   let bundleIdentifier = props?.bundleIdentifier;

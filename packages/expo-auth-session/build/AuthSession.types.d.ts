@@ -1,5 +1,5 @@
-import { AuthError } from './Errors';
-import { TokenResponse } from './TokenRequest';
+import type { AuthError } from './Errors';
+import type { TokenResponse } from './TokenRequest';
 /**
  * Object returned after an auth request has completed.
  * - If the user cancelled the authentication session by closing the browser, the result is `{ type: 'cancel' }`.

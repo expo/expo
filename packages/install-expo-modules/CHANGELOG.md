@@ -4,17 +4,69 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.14.21 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.20 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.19 — 2026-05-05
+
+### 🛠 Breaking changes
+
 - Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Skip pods install on non-darwin platforms. ([#44633](https://github.com/expo/expo/pull/44633) by [@radoslawrolka](https://github.com/radoslawrolka))
+
+## 0.14.18 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.17 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.16 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.15 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.14 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.13 - 2026-03-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.12 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.14.11 - 2026-03-11
 
 ### 🎉 New features
 
 - Added react-native 0.83 support. ([#43855](https://github.com/expo/expo/pull/43855) by [@alanjhughes](https://github.com/alanjhughes))
 
+## 0.14.10 - 2026-03-11
+
 ### 🐛 Bug fixes
 
 - Add version mapping for SDK 55 and react native 0.83 ([#43682](https://github.com/expo/expo/pull/43682) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
-### 💡 Others
 
 ## 0.14.9 — 2026-02-25
 

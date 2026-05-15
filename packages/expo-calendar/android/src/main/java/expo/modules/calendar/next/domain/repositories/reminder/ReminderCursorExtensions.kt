@@ -15,8 +15,9 @@ fun Cursor.toReminderEntity(eventId: EventId) = ReminderEntity(
       ?: throw IllegalStateException("reminder ID must not be null")
   ),
   eventId = eventId,
-  method = getOptionalInt(CalendarContract.Reminders.METHOD).let { value ->
+  method = getOptionalInt(CalendarContract.Reminders.METHOD)?.let { value ->
     Method.entries.find { it.value == value }
   },
   minutes = getOptionalInt(CalendarContract.Reminders.MINUTES)
+    ?: throw IllegalStateException("reminder minutes must not be null")
 )

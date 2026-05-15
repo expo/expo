@@ -22,4 +22,9 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
   }
+
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
+  end
 end

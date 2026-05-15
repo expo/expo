@@ -4,9 +4,13 @@ import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
+import { isInteractive } from '../interactive';
 import { selectAsync } from '../prompts';
 
 jest.mock('../../utils/prompts');
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
@@ -46,6 +50,9 @@ jest.mock('../../api/getExpoGoIntermediateCertificate', () => ({
 
 beforeEach(() => {
   vol.reset();
+
+  jest.mocked(isInteractive).mockReturnValue(true);
+  jest.mocked(selectAsync).mockReset();
 
   jest.mocked(getUserAsync).mockImplementation(async () => ({
     __typename: 'User',

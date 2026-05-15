@@ -8,13 +8,14 @@ import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
+import expo.modules.ui.UIComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
 import expo.modules.ui.findChildSlotView
+import expo.modules.kotlin.views.OptimizedComposeProps
 
 enum class FloatingActionButtonVariant(val value: String) : Enumerable {
   SMALL("small"),
@@ -23,6 +24,7 @@ enum class FloatingActionButtonVariant(val value: String) : Enumerable {
   EXTENDED("extended")
 }
 
+@OptimizedComposeProps
 data class FloatingActionButtonProps(
   val variant: FloatingActionButtonVariant = FloatingActionButtonVariant.MEDIUM,
   val expanded: Boolean = true,
@@ -41,7 +43,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
   val iconSlotView = findChildSlotView(view, "icon")
   val iconContent: (@Composable () -> Unit) = iconSlotView?.let {
     {
-      with(ComposableScope()) {
+      with(UIComposableScope()) {
         with(it) {
           Content()
         }
@@ -66,7 +68,7 @@ fun FunctionalComposableScope.FloatingActionButtonContent(
       val textSlotView = findChildSlotView(view, "text")
       val textContent: (@Composable () -> Unit) = textSlotView?.let {
         {
-          with(ComposableScope()) {
+          with(UIComposableScope()) {
             with(it) {
               Content()
             }

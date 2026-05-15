@@ -7,18 +7,17 @@
  */
 import Debug from 'debug';
 import * as fs from 'fs';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 import * as path from 'path';
 
 import { ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
+import type { AFCError, AFCResponse } from '../protocol/AFCProtocol';
 import {
   AFC_FILE_OPEN_FLAGS,
   AFC_OPS,
   AFC_STATUS,
-  AFCError,
   AFCProtocolClient,
-  AFCResponse,
 } from '../protocol/AFCProtocol';
 
 const debug = Debug('expo:apple-device:client:afc');

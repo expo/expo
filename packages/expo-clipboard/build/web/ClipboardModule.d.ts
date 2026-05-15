@@ -1,4 +1,4 @@
-import { ClipboardImage, GetImageOptions, GetStringOptions, SetStringOptions } from '../Clipboard.types';
+import type { ClipboardImage, GetImageOptions, GetStringOptions, SetStringOptions } from '../Clipboard.types';
 declare const _default: {
     getStringAsync(options: GetStringOptions): Promise<string>;
     setStringAsync(text: string, options: SetStringOptions): Promise<boolean>;

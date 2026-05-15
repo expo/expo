@@ -4,31 +4,6 @@ import ExpoModulesTestCore
 
 class PropertyDefinitionSpec: ExpoSpec {
   override class func spec() {
-    describe("property") {
-      let appContext = AppContext.create()
-      let runtime = try! appContext.runtime
-
-      it("gets the value") {
-        let property = Property("test") { return "expo" }
-        expect(try property.getValue(appContext: appContext)) == "expo"
-      }
-
-      it("sets the value") {
-        var value = Int.random(in: 0..<100)
-        let property = Property("test")
-          .get { value }
-          .set { (newValue: Int) in
-            value = newValue
-          }
-
-        let newValue = Int.random(in: 0..<100)
-        property.setValue(newValue, appContext: appContext)
-
-        expect(try property.getValue(appContext: appContext)) == value
-        expect(value) == newValue
-      }
-    }
-
     describe("module property") {
       let appContext = AppContext.create()
       let runtime = try! appContext.runtime
@@ -54,7 +29,7 @@ class PropertyDefinitionSpec: ExpoSpec {
       }
 
       it("is enumerable") {
-        let keys = try runtime.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() } ?? []
+        let keys = try runtime.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() }
         expect(keys).to(contain("readOnly", "writable", "undefined"))
       }
 

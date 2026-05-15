@@ -4,6 +4,7 @@ exports.disableZoomTransition = disableZoomTransition;
 exports.isZoomTransitionEnabled = isZoomTransitionEnabled;
 exports.ZoomTransitionEnabler = ZoomTransitionEnabler;
 exports.useShouldEnableZoomTransition = useShouldEnableZoomTransition;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const zoom_transition_context_1 = require("./zoom-transition-context");
 const descriptors_context_1 = require("../../fork/native-stack/descriptors-context");
@@ -41,7 +42,7 @@ function ZoomTransitionEnabler({ route }) {
         const descriptorsMap = (0, react_1.use)(descriptors_context_1.DescriptorsContext);
         const gestureEnabled = descriptorsMap[route.key]?.options?.gestureEnabled;
         const effectiveDismissalBoundsRect = dismissalBoundsRect ?? (gestureEnabled === false ? { maxX: 0, maxY: 0 } : null);
-        return (<native_1.LinkZoomTransitionEnabler zoomTransitionSourceIdentifier={zoomTransitionId} dismissalBoundsRect={effectiveDismissalBoundsRect}/>);
+        return ((0, jsx_runtime_1.jsx)(native_1.LinkZoomTransitionEnabler, { zoomTransitionSourceIdentifier: zoomTransitionId, dismissalBoundsRect: effectiveDismissalBoundsRect }));
     }
     return null;
 }

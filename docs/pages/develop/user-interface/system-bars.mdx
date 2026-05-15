@@ -17,7 +17,7 @@ System bars are fundamental to the mobile experience, and understanding how to w
 <ContentSpotlight
   alt="System bars and navigation bars on Android and iOS."
   src="/static/images/system-bars.png"
-  className="max-w-[480px]"
+  className="max-w-120"
 />
 
 ## Handling overlaps using safe areas
@@ -62,25 +62,21 @@ export default function RootLayout() {
 
 To control the `StatusBar` visibility, you can set the [`hidden`](/versions/latest/sdk/status-bar/#hidden) property to `true` or use the [`setStatusBarHidden`](/versions/latest/sdk/status-bar/#statusbarsetstatusbarhiddenhidden-animation) method.
 
-**With edge-to-edge enabled on Android, features from `expo-status-bar` that depend on an opaque status bar [are unavailable](https://developer.android.com/about/versions/15/behavior-changes-15#edge-to-edge)**. It's only possible to customize the style and visibility. Other properties will no-op and warn.
-
 ### Navigation bar configuration (Android only)
 
 On Android devices, the Navigation Bar appears at the bottom of the screen. You can customize it using the [`expo-navigation-bar`](/versions/latest/sdk/navigation-bar) library. It provides a `NavigationBar` component that you can use to set the style of the navigation bar using the [`setStyle`](/versions/latest/sdk/navigation-bar/#navigationbarsetstylestyle) method:
 
 ```tsx src/app/_layout.tsx
-import { Platform } from 'react-native';
-import * as NavigationBar from 'expo-navigation-bar';
-import { useEffect } from 'react';
+import { NavigationBar } from 'expo-navigation-bar';
 
-useEffect(() => {
-  if (Platform.OS === 'android') {
-    // Set the navigation bar style
-    NavigationBar.setStyle('dark');
-  }
-}, []);
+export default function RootLayout() {
+  return (
+    <>
+      {/* Set the navigation bar style */}
+      <NavigationBar style="dark" />
+    </>
+  );
+}
 ```
 
-To control the `NavigationBar` visibility, you can use the [`setVisibilityAsync`](/versions/latest/sdk/navigation-bar/#navigationbarsetvisibilityasyncvisibility) method.
-
-**With edge-to-edge enabled on Android, features from `expo-navigation-bar` that depend on an opaque navigation bar [are unavailable](https://developer.android.com/about/versions/15/behavior-changes-15#edge-to-edge)**. It's only possible to customize the style and visibility. Other properties will no-op and warn.
+To control the `NavigationBar` visibility, you can use the [`hidden`](/versions/unversioned/sdk/navigation-bar/#hidden) prop or the [`NavigationBar.setHidden`](/versions/unversioned/sdk/navigation-bar/#navigationbarsethiddenhidden) method.

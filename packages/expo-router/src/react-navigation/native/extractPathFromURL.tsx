@@ -16,7 +16,7 @@ export function extractPathFromURL(prefixes: string[], url: string) {
     );
 
     const [originAndPath, ...searchParams] = url.split('?');
-    const normalizedURL = originAndPath
+    const normalizedURL = originAndPath!
       .replace(/\/+/g, '/')
       .concat(searchParams.length ? `?${searchParams.join('?')}` : '');
 

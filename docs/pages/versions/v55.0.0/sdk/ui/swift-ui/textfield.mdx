@@ -8,10 +8,8 @@ platforms: ['ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A text field component that allows users to enter and edit text.
+Expo UI TextField matches the official SwiftUI [TextField API](https://developer.apple.com/documentation/swiftui/textfield) and supports single-line and multiline input, keyboard configuration, submit handling, and an imperative `ref` for programmatic control.
 
 ## Installation
 
@@ -19,27 +17,139 @@ A text field component that allows users to enter and edit text.
 
 ## Usage
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="TextField component on iOS."
-      src="/static/images/expo-ui/textinput/ios.png"
-      className="max-w-[320px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { Host, TextField } from '@expo/ui/swift-ui';
+### Basic text field
 
+```tsx BasicTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+
+export default function BasicTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
     <Host matchContents>
-      <TextField autocorrection={false} defaultValue="A single line text input" onChangeText={setValue} />
+      <TextField placeholder="Username" onValueChange={setValue} />
     </Host>
-    ```
+  );
+}
+```
 
-  </Tab>
-</Tabs>
+### Multiline text field
 
-> See [official SwiftUI documentation](https://developer.apple.com/documentation/swiftui/textfield) for more information.
+Set `axis="vertical"` to allow the text field to expand vertically. Use the [`lineLimit`](modifiers/#linelimit) modifier to control the visible line count. When using `Host matchContents`, add `fixedSize({ horizontal: false, vertical: true })` so the text field accepts the parent's width while using its ideal height.
+
+```tsx MultilineTextFieldExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { lineLimit, fixedSize } from '@expo/ui/swift-ui/modifiers';
+
+export default function MultilineTextFieldExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        axis="vertical"
+        placeholder="Tell us about yourself..."
+        onValueChange={setValue}
+        modifiers={[lineLimit(5), fixedSize({ horizontal: false, vertical: true })]}
+      />
+    </Host>
+  );
+}
+```
+
+### Keyboard type
+
+Use the [`keyboardType`](modifiers/#keyboardtypekeyboardtype) modifier to display a specific keyboard layout.
+
+```tsx KeyboardTypeExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { keyboardType, autocorrectionDisabled } from '@expo/ui/swift-ui/modifiers';
+
+export default function KeyboardTypeExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        placeholder="Email"
+        onValueChange={setValue}
+        modifiers={[keyboardType('email-address'), autocorrectionDisabled()]}
+      />
+    </Host>
+  );
+}
+```
+
+### Submit handling
+
+Use the [`submitLabel`](modifiers/#submitlabelsubmitlabel) modifier to customize the return key and [`onSubmit`](modifiers/#onsubmithandler) to handle the submit action.
+
+```tsx SubmitHandlingExample.tsx
+import { useState } from 'react';
+import { Host, TextField } from '@expo/ui/swift-ui';
+import { submitLabel, onSubmit } from '@expo/ui/swift-ui/modifiers';
+
+export default function SubmitHandlingExample() {
+  const [value, setValue] = useState('');
+
+  return (
+    <Host matchContents>
+      <TextField
+        placeholder="Search..."
+        onValueChange={setValue}
+        modifiers={[submitLabel('search'), onSubmit(() => console.log('Submitted:', value))]}
+      />
+    </Host>
+  );
+}
+```
+
+### Imperative ref
+
+Use a `ref` to imperatively set text, focus, blur, or select text.
+
+```tsx ImperativeRefExample.tsx
+import { useRef } from 'react';
+import { Host, TextField, TextFieldRef, Button, HStack, VStack } from '@expo/ui/swift-ui';
+import { buttonStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function ImperativeRefExample() {
+  const ref = useRef<TextFieldRef>(null);
+
+  return (
+    <Host matchContents>
+      <VStack>
+        <TextField ref={ref} defaultValue="Select me!" placeholder="Imperative field" />
+        <HStack spacing={12}>
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.focus()}
+            label="Focus"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.blur()}
+            label="Blur"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.setText('SwiftUI rocks!')}
+            label="Set Text"
+          />
+          <Button
+            modifiers={[buttonStyle('bordered')]}
+            onPress={() => ref.current?.setSelection(0, 7)}
+            label="Select"
+          />
+        </HStack>
+      </VStack>
+    </Host>
+  );
+}
+```
 
 ## API
 

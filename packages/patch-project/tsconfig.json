@@ -3,6 +3,7 @@
   "compilerOptions": {
     "lib": ["dom", "DOM.Iterable", "esnext"],
     "allowJs": true,
+    "rootDir": "./src",
     "outDir": "./build",
     "sourceMap": true
   },

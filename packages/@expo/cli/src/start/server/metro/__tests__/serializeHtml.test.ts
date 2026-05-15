@@ -1,4 +1,4 @@
-import { SerialAsset } from '@expo/metro-config/src/serializer/serializerAssets';
+import type { SerialAsset } from '@expo/metro-config/src/serializer/serializerAssets';
 
 import {
   serializeHtmlWithAssets,

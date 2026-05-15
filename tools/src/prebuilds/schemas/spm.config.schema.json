@@ -93,6 +93,7 @@
             "description": "Supported platform versions",
             "enum": [
                 "iOS(.v15)",
+                "iOS(.v16)",
                 "macOS(.v11)",
                 "tvOS(.v15)",
                 "macCatalyst(.v15)",
@@ -169,6 +170,26 @@
                     "items": {
                         "$ref": "#/definitions/target"
                     }
+                },
+                "customBuild": {
+                    "type": "object",
+                    "description": "Escape hatch for products whose xcframework is produced by a package-owned build script. When set, the prebuild pipeline skips source / Package.swift generation and runs the script instead.",
+                    "properties": {
+                        "script": {
+                            "type": "string",
+                            "description": "Path to the build script, relative to the package root."
+                        },
+                        "output": {
+                            "type": "string",
+                            "description": "Path to the xcframework the script produces, relative to the package root."
+                        }
+                    },
+                    "required": [ "script", "output" ],
+                    "additionalProperties": false
+                },
+                "sourceOnly": {
+                    "type": "boolean",
+                    "description": "When true, the product is never prebuilt as an xcframework. The prebuild flow skips it entirely — it does not generate sources, build, or resolve its externalDependencies. The product entry remains so autolinking (`autolinkWhen`) can still register the matching CocoaPods source pod. Use this for companion adapters that must always compile from source because they bridge to a peer pod that may not be present."
                 }
             },
             "required": [ "name", "podName", "targets" ],

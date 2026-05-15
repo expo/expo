@@ -432,8 +432,8 @@ describe('events', () => {
 
     stream.write('line\n');
 
-    const _drain = new Promise((resolve) => stream.on('drain', resolve));
-    await _drain;
+    const _flush = new Promise((resolve) => stream.flush(resolve));
+    await _flush;
 
     stream.end();
     await _close;

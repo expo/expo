@@ -1,24 +1,24 @@
 /**
- * Bitmask of values that can be used to skip certain parts of the sourcers when generating a fingerprint.
+ * Bitmask of values that can be used to skip certain parts of the sources when generating a fingerprint.
  */
 export declare enum SourceSkips {
-    /** Skip nothing */
+    /** Skip nothing. */
     None = 0,
-    /** Versions in app.json, including Android versionCode and iOS buildNumber */
+    /** Versions in app.json, including `version`, `android.versionCode`, and `ios.buildNumber`. */
     ExpoConfigVersions = 1,
-    /** runtimeVersion in app.json if it is a string */
+    /** `runtimeVersion` in app.json if it is a string. */
     ExpoConfigRuntimeVersionIfString = 2,
-    /** App names in app.json, including shortName and description */
+    /** App names in app.json, including `name`, `description`, `web.name`, `web.shortName`, and `web.description`. */
     ExpoConfigNames = 4,
-    /** Android package name in app.json */
+    /** Android package name in app.json. */
     ExpoConfigAndroidPackage = 8,
-    /** iOS bundle identifier in app.json */
+    /** iOS bundle identifier in app.json. */
     ExpoConfigIosBundleIdentifier = 16,
-    /** Schemes in app.json */
+    /** Schemes in app.json. */
     ExpoConfigSchemes = 32,
-    /** EAS project information in app.json */
+    /** EAS project information in app.json. */
     ExpoConfigEASProject = 64,
-    /** Assets in app.json, including icons and splash assets */
+    /** Assets in app.json, including icons and splash assets. */
     ExpoConfigAssets = 128,
     /**
      * Skip the whole ExpoConfig.

@@ -1,6 +1,6 @@
-import { InfoPlist } from '@expo/config-plugins';
+import type { InfoPlist } from '@expo/config-plugins';
 import { createInfoPlistPluginWithPropertyGuard } from '@expo/config-plugins/build/plugins/ios-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
 export const withIosUserInterfaceStyle = createInfoPlistPluginWithPropertyGuard(
   setUserInterfaceStyle,

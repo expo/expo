@@ -4,12 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCachedDependenciesLinker = makeCachedDependenciesLinker;
+exports.isNativeModuleAsync = isNativeModuleAsync;
 exports.scanDependencyResolutionsForPlatform = scanDependencyResolutionsForPlatform;
 exports.scanExpoModuleResolutionsForPlatform = scanExpoModuleResolutionsForPlatform;
 const fs_1 = __importDefault(require("fs"));
 const resolution_1 = require("./resolution");
 const rncliLocal_1 = require("./rncliLocal");
 const scanning_1 = require("./scanning");
+const types_1 = require("./types");
 const utils_1 = require("./utils");
 const findModules_1 = require("../autolinking/findModules");
 const autolinkingOptions_1 = require("../commands/autolinkingOptions");
@@ -64,6 +66,13 @@ function makeCachedDependenciesLinker(params) {
         },
     };
 }
+async function isNativeModuleAsync(resolution, reactNativeProjectConfig, platform, excludeNames) {
+    const [reactNativeModule, expoModule] = await Promise.all([
+        (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, excludeNames),
+        (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames),
+    ]);
+    return !!reactNativeModule || !!expoModule;
+}
 async function scanDependencyResolutionsForPlatform(linker, platform, extraInclude) {
     const opts = await linker.getOptionsForPlatform(platform, extraInclude);
     const reactNativeProjectConfig = await linker.loadReactNativeProjectConfig();
@@ -82,7 +91,7 @@ async function scanDependencyResolutionsForPlatform(linker, platform, extraInclu
             else if (opts.includeNames.has(resolution.name)) {
                 return resolution;
             }
-            else if (resolution.source === 2 /* DependencyResolutionSource.RN_CLI_LOCAL */) {
+            else if (resolution.source === types_1.DependencyResolutionSource.RN_CLI_LOCAL) {
                 // If the dependency was resolved frpom the React Native project config, we'll only
                 // attempt to resolve it as a React Native module
                 const reactNativeModuleDesc = await (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, opts.excludeNames);
@@ -91,11 +100,8 @@ async function scanDependencyResolutionsForPlatform(linker, platform, extraInclu
                 }
             }
             else {
-                const [reactNativeModule, expoModule] = await Promise.all([
-                    (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, opts.excludeNames),
-                    (0, findModules_1.resolveExpoModule)(resolution, platform, opts.excludeNames),
-                ]);
-                if (!reactNativeModule && !expoModule) {
+                const isNativeModule = await isNativeModuleAsync(resolution, reactNativeProjectConfig, platform, opts.excludeNames);
+                if (!isNativeModule) {
                     return null;
                 }
             }

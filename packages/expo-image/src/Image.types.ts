@@ -1,5 +1,5 @@
 import type { NativeModule, SharedRef, SharedRefType } from 'expo';
-import {
+import type {
   ImageStyle as RNImageStyle,
   TextStyle,
   StyleProp,
@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
-import ExpoImage from './ExpoImage';
+import type ExpoImage from './ExpoImage';
 
 export type ImageSource = {
   /**

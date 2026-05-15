@@ -69,8 +69,8 @@ internal class FilePickingDelegate: NSObject, UIDocumentPickerDelegate, UIAdapti
 }
 
 internal func createFilePicker(initialUri: URL?, mimeTypes: [String]) -> UIDocumentPickerViewController {
-  var utTypes: [UTType] = mimeTypes.map { mimeType in
-    UTType(mimeType: mimeType) ?? UTType.item
+  var utTypes: [UTType] = mimeTypes.compactMap { mimeType in
+    toUTType(mimeType: mimeType)
   }
   if utTypes.isEmpty {
     utTypes = [UTType.item]
@@ -102,7 +102,6 @@ internal func createDirectoryPicker(initialUri: URL?) -> UIDocumentPickerViewCon
   return picker
 }
 
-@available(iOS 14.0, *)
 private func toUTType(mimeType: String) -> UTType? {
   switch mimeType {
   case "*/*":
@@ -118,33 +117,5 @@ private func toUTType(mimeType: String) -> UTType? {
   default:
     return UTType(mimeType: mimeType)
   }
-}
-
-private func toUTI(mimeType: String) -> String {
-  var uti: CFString
-
-  switch mimeType {
-  case "*/*":
-    uti = kUTTypeItem
-  case "image/*":
-    uti = kUTTypeImage
-  case "video/*":
-    uti = kUTTypeVideo
-  case "audio/*":
-    uti = kUTTypeAudio
-  case "text/*":
-    uti = kUTTypeText
-  default:
-    if let ref = UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassMIMEType,
-      mimeType as CFString,
-      nil
-    )?.takeRetainedValue() {
-      uti = ref
-    } else {
-      uti = kUTTypeItem
-    }
-  }
-  return uti as String
 }
 #endif

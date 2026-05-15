@@ -1,13 +1,10 @@
 import chalk from 'chalk';
-import commander from 'commander';
+import type commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
-import {
-  AutolinkingCommonArguments,
-  createAutolinkingOptionsLoader,
-  registerAutolinkingArguments,
-} from './autolinkingOptions';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import {
   type BaseDependencyResolution,
   type DependencyResolution,

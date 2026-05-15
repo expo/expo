@@ -787,6 +787,10 @@ class FileDownloader(
       } else {
         removeHeader(A_IM_HEADER)
       }
+      val runtimeVersion = configuration.runtimeVersionRaw
+      if (!runtimeVersion.isNullOrEmpty()) {
+        header("Expo-Runtime-Version", runtimeVersion)
+      }
     }
     .apply {
       for ((key, value) in configuration.requestHeaders) {

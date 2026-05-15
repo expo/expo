@@ -37,6 +37,11 @@ export type PluginConfigOptions = {
    */
   launchMode?: 'most-recent' | 'launcher';
   /**
+   * Instead of navigating to launcher screen launch directly into this URL.
+   * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURL if launching previously opened project fails.
+   */
+  defaultLaunchURL?: string;
+  /**
    * @deprecated use the `launchMode` property instead
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
@@ -54,6 +59,21 @@ export type PluginConfigOptions = {
    * @default false
    */
   embeddedBundle?: boolean;
+  /**
+   * Skip the dev menu onboarding popup on first launch. Useful for E2E tests and CI
+   * builds where the onboarding overlay would block automated input.
+   *
+   * @default false
+   */
+  skipOnboarding?: boolean;
+  /**
+   * Automatically open the dev menu when the app launches. Set to `false` to suppress
+   * the auto-launch in development builds where the dev menu would interfere (E2E tests,
+   * automated UI runs).
+   *
+   * @default true
+   */
+  showMenuAtLaunch?: boolean;
 };
 
 const schema: JSONSchema<PluginConfigType> = {
@@ -63,6 +83,10 @@ const schema: JSONSchema<PluginConfigType> = {
     launchMode: {
       type: 'string',
       enum: ['most-recent', 'launcher'],
+      nullable: true,
+    },
+    defaultLaunchURL: {
+      type: ['string'],
       nullable: true,
     },
     launchModeExperimental: {
@@ -75,6 +99,14 @@ const schema: JSONSchema<PluginConfigType> = {
       nullable: true,
     },
     embeddedBundle: {
+      type: 'boolean',
+      nullable: true,
+    },
+    skipOnboarding: {
+      type: 'boolean',
+      nullable: true,
+    },
+    showMenuAtLaunch: {
       type: 'boolean',
       nullable: true,
     },
@@ -99,6 +131,18 @@ const schema: JSONSchema<PluginConfigType> = {
           type: 'boolean',
           nullable: true,
         },
+        defaultLaunchURL: {
+          type: 'string',
+          nullable: true,
+        },
+        skipOnboarding: {
+          type: 'boolean',
+          nullable: true,
+        },
+        showMenuAtLaunch: {
+          type: 'boolean',
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -120,6 +164,18 @@ const schema: JSONSchema<PluginConfigType> = {
           nullable: true,
         },
         embeddedBundle: {
+          type: 'boolean',
+          nullable: true,
+        },
+        defaultLaunchURL: {
+          type: 'string',
+          nullable: true,
+        },
+        skipOnboarding: {
+          type: 'boolean',
+          nullable: true,
+        },
+        showMenuAtLaunch: {
           type: 'boolean',
           nullable: true,
         },

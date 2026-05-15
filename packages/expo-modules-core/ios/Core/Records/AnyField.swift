@@ -1,3 +1,5 @@
+import ExpoModulesJSI
+
 /**
  Protocol for type-erased record fields.
  */
@@ -10,7 +12,7 @@ public protocol AnyField {
  */
 internal protocol AnyFieldInternal: AnyField {
   var key: String? { get }
-  var options: Set<FieldOption> { get set }
+  var fieldType: AnyDynamicType { get }
 
   /**
    Whether the value for this field must be explicitly provided.
@@ -19,5 +21,11 @@ internal protocol AnyFieldInternal: AnyField {
    */
   var isRequired: Bool { get }
 
+  // Read‑modify‑write inside `body` is atomic.
+  func withOptions<T>(_ body: (inout Set<FieldOption>) -> T) -> T
+
   func set(_ newValue: Any?, appContext: AppContext) throws
+
+  @JavaScriptActor
+  func set(jsValue: JavaScriptValue, appContext: AppContext) throws
 }

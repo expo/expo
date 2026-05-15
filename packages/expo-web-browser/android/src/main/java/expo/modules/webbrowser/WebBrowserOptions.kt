@@ -2,7 +2,9 @@ package expo.modules.webbrowser
 
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal data class OpenBrowserOptions(
   @Field val toolbarColor: Int? = null,
   @Field val secondaryToolbarColor: Int? = null,

@@ -1,12 +1,16 @@
 {
   "name": "@expo/ui",
-  "version": "55.0.1",
+  "version": "56.0.7",
   "description": "A collection of UI components",
   "sideEffects": [
     "*.fx.js"
   ],
   "exports": {
     "./package.json": "./package.json",
+    ".": {
+      "types": "./build/universal/index.d.ts",
+      "default": "./src/universal/index.ts"
+    },
     "./swift-ui": {
       "types": "./build/swift-ui/index.d.ts",
       "default": "./src/swift-ui/index.tsx"
@@ -23,9 +27,37 @@
       "types": "./build/jetpack-compose/modifiers/index.d.ts",
       "default": "./src/jetpack-compose/modifiers/index.ts"
     },
-    "./datetimepicker": {
-      "types": "./build/datetime-picker/index.d.ts",
-      "default": "./src/datetime-picker/index.tsx"
+    "./community/datetime-picker": {
+      "types": "./build/community/datetime-picker/index.d.ts",
+      "default": "./src/community/datetime-picker/index.tsx"
+    },
+    "./community/bottom-sheet": {
+      "types": "./build/community/bottom-sheet/index.d.ts",
+      "default": "./src/community/bottom-sheet/index.tsx"
+    },
+    "./community/segmented-control": {
+      "types": "./build/community/segmented-control/index.d.ts",
+      "default": "./src/community/segmented-control/index.tsx"
+    },
+    "./community/picker": {
+      "types": "./build/community/picker/index.d.ts",
+      "default": "./src/community/picker/index.tsx"
+    },
+    "./community/slider": {
+      "types": "./build/community/slider/index.d.ts",
+      "default": "./src/community/slider/index.tsx"
+    },
+    "./community/masked-view": {
+      "types": "./build/community/masked-view/index.d.ts",
+      "default": "./src/community/masked-view/index.tsx"
+    },
+    "./community/menu": {
+      "types": "./build/community/menu/index.d.ts",
+      "default": "./src/community/menu/index.tsx"
+    },
+    "./babel-plugin": {
+      "types": "./plugin/babel-plugin.d.ts",
+      "default": "./plugin/babel-plugin.js"
     }
   },
   "scripts": {
@@ -43,28 +75,57 @@
     "directory": "packages/expo-ui"
   },
   "keywords": [
+    "react",
     "react-native",
     "expo",
     "UI components",
     "SwiftUI",
-    "Jetpack Compose"
+    "Jetpack Compose",
+    "cross platform",
+    "web",
+    "universal"
   ],
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "dependencies": {
-    "sf-symbols-typescript": "^2.1.0"
+    "sf-symbols-typescript": "^2.1.0",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
     "@testing-library/react-native": "^13.3.0",
+    "@types/babel__core": "^7.20.5",
+    "@types/node": "^22.14.0",
     "@types/react": "~19.2.0",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*",
+    "react-native-reanimated": "4.3.1",
+    "react-native-worklets": "0.8.3"
   },
   "jest": {
     "preset": "expo-module-scripts"
   },
   "peerDependencies": {
-    "expo": "workspace:*",
+    "@babel/core": "*",
+    "expo": "*",
     "react": "*",
-    "react-native": "*"
+    "react-dom": "*",
+    "react-native": "*",
+    "react-native-reanimated": "*",
+    "react-native-worklets": "*"
+  },
+  "peerDependenciesMeta": {
+    "@babel/core": {
+      "optional": true
+    },
+    "react-dom": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    },
+    "react-native-worklets": {
+      "optional": true
+    }
   }
 }

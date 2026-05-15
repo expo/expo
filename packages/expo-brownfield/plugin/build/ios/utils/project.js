@@ -92,10 +92,12 @@ const getCommonBuildSettings = (targetName, currentProjectVersion, bundleIdentif
         SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
         CODE_SIGN_ENTITLEMENTS: `"${targetName}/${targetName}.entitlements"`,
         // DEVELOPMENT_TEAM: `""`,
+        DEFINES_MODULE: '"YES"',
         BUILD_LIBRARY_FOR_DISTRIBUTION: '"YES"',
         USER_SCRIPT_SANDBOXING: '"NO"',
         SKIP_INSTALL: '"NO"',
         ENABLE_MODULE_VERIFIER: '"NO"',
+        GCC_SYMBOLS_PRIVATE_EXTERN: '"YES"',
     };
 };
 const inferProjectName = (platformProjectRoot) => {

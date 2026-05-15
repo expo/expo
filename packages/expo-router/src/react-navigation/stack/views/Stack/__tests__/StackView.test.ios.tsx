@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler/jestSetup';
 
 import { describe, expect, test } from '@jest/globals';
-import * as React from 'react';
 
 import type { ParamListBase, Route, StackNavigationState } from '../../../../native';
 import type { StackDescriptorMap } from '../../../types';
@@ -194,7 +193,7 @@ describe('StackView.getDerivedStateFromProps', () => {
           openingRouteKeys: ['B'],
           descriptors: {
             ...oldDescriptors,
-            [routeA.key]: oldDescriptors[routeA.key],
+            [routeA.key]: oldDescriptors[routeA.key]!,
           },
         },
         [routeA, routeB]

@@ -19,6 +19,8 @@ const artworkUrl2 =
   'https://images.unsplash.com/photo-1549228167-511375f69159?q=80&w=3676&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 const remoteSource = 'https://expo-test-media.com/audio/por_una_cabeza.mp3';
 const localSource = require('../../../assets/sounds/polonez.mp3');
+const liveStreamSource =
+  'https://dai.google.com/linear/hls/event/Sid4xiTQTkCT1SLu6rjUSQ/master.m3u8';
 
 enum LockScreenButton {
   /**
@@ -55,6 +57,9 @@ export default function AudioControlsScreen(props: any) {
 
       <HeadingText>Remote Source</HeadingText>
       <AudioPlayer source={remoteSource} />
+
+      <HeadingText>Live Stream (HLS)</HeadingText>
+      <AudioPlayer source={liveStreamSource} />
     </ScrollView>
   );
 }
@@ -98,6 +103,8 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
     <View>
       <Player
         {...status}
+        isLive={status.isLive}
+        currentOffsetFromLive={status.currentOffsetFromLive}
         audioPan={0}
         volume={player.volume}
         play={() => player.play()}
@@ -144,6 +151,23 @@ function AudioPlayer({ source }: { source: AudioSource | string | number }) {
           />
           <Text style={styles.optionsText}>Seek backward</Text>
         </View>
+        <View style={styles.optionRow}>
+          <Checkbox
+            value={options?.isLiveStream ?? false}
+            onValueChange={() => setOptions((o) => ({ ...o, isLiveStream: !o?.isLiveStream }))}
+          />
+          <Text style={styles.optionsText}>Force live stream</Text>
+        </View>
+        <View style={styles.statusInfo}>
+          <Text style={styles.statusText}>isLive: {String(status.isLive)}</Text>
+          <Text style={styles.statusText}>
+            offsetFromLive:{' '}
+            {status.currentOffsetFromLive != null
+              ? `${status.currentOffsetFromLive.toFixed(1)}s`
+              : 'null'}
+          </Text>
+          <Text style={styles.statusText}>error: {status.error ?? 'null'}</Text>
+        </View>
         <Button
           title="Update Metadata"
           onPress={() => {
@@ -184,5 +208,14 @@ const styles = StyleSheet.create({
   optionsText: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  statusInfo: {
+    backgroundColor: '#f5f5f5',
+    padding: 8,
+    borderRadius: 4,
+  },
+  statusText: {
+    fontSize: 12,
+    fontFamily: 'Courier',
   },
 });

@@ -1,5 +1,5 @@
-import { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
-import { PendingSpawnPromise } from './utils/spawn';
+import type { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import type { PendingSpawnPromise } from './utils/spawn';
 export interface PackageManagerOptions extends SpawnOptions {
     /**
      * If the package manager should run in silent mode.

@@ -5,7 +5,8 @@ const { resolveWorkspaceRoot } = require('resolve-workspace-root');
 const projectRoot = process.cwd();
 const config = getDefaultConfig(projectRoot);
 
-const expoStubPath = path.resolve(__dirname, './bundle/expo-module-stub.ts');
+const expoStubPath = path.resolve(__dirname, './bundle/expo-stub.ts');
+const expoModulesCoreStubPath = path.resolve(__dirname, './bundle/expo-modules-core-stub.ts');
 const reactStubPath = path.resolve(__dirname, './bundle/react-stub.ts');
 const reactNativeStubPath = path.resolve(__dirname, './bundle/react-native-stub.ts');
 const jsxRuntimeStubPath = path.resolve(__dirname, './bundle/jsx-runtime-stub.ts');
@@ -42,6 +43,8 @@ const buildConfig = {
       switch (moduleName) {
         case 'expo':
           return { type: 'sourceFile', filePath: expoStubPath };
+        case 'expo-modules-core':
+          return { type: 'sourceFile', filePath: expoModulesCoreStubPath };
         case 'react':
           return { type: 'sourceFile', filePath: reactStubPath };
         case 'react/jsx-runtime':
@@ -49,6 +52,9 @@ const buildConfig = {
           return { type: 'sourceFile', filePath: jsxRuntimeStubPath };
         case 'react-native':
           return { type: 'sourceFile', filePath: reactNativeStubPath };
+        case 'react-native-worklets':
+        case 'react-native-reanimated':
+          return { type: 'empty' };
         default:
           return context.resolveRequest(context, moduleName, platform);
       }
@@ -56,6 +62,7 @@ const buildConfig = {
   },
   transformer: {
     ...config.transformer,
+    enableBabelRCLookup: false,
     getTransformOptions: async () => ({
       transform: { experimentalImportSupport: false, inlineRequires: false },
     }),
