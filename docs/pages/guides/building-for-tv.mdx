@@ -152,20 +152,19 @@ In **package.json**, modify the `react-native` dependency to use the TV repo, an
 > **Warning** When upgrading an Expo TV project to a new version of the SDK, the `react-native-tvos` version **must be upgraded manually**. It will not be automatically updated by `npx expo install expo@latest --fix`.
 
 > **Warning** If you have more than one Expo project in a monorepo, and one of them is modified for TV, then all of them should be modified to use the React Native TV package as described here, even if some of the projects are not configured to target TV. This avoids possible conflicts between the project dependencies, while still supporting mobile development fully on all the projects.
-{/* prettier-ignore */}
+> {/* prettier-ignore */}
+
 ```json package.json
 {
   /* @hide ... */ /* @end */
   "dependencies": {
     /* @hide ... */ /* @end */
-    "react-native": "npm:react-native-tvos@0.85-stable",
+    "react-native": "npm:react-native-tvos@0.85-stable"
     /* @hide ... */ /* @end */
   },
   "expo": {
     "install": {
-      "exclude": [
-        "react-native"
-      ]
+      "exclude": ["react-native"]
     }
   }
 }
