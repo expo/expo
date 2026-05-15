@@ -91,10 +91,12 @@ async function inlineModulesInterfaceCommand(cli) {
     return cli
         .command('inline-modules-interface')
         .summary('Creates ts interface for every Swift inline module in the project.')
-        .description('Creates ts interface for every Swift inline module in the project. The ts interface consists of two files Module.generated.ts and Module.tsx, the first one is regenerated with each run of the command and the second one will not be regenerated if user changes it.')
-        .requiredOption('-a --app-json <appJsonPath>', 'A path to the `app.json` where the inline.modules.watchedDirectories are defined.')
+        .description(`Creates a TypeScript interface for every Swift inline module in the project. The interface consists of two files:
+- **Module.generated.ts**: This is regenerated with each run of the command 
+- **Module.tsx**: This one is not regenerated if you change it`)
+        .requiredOption('-a --app-json <appJsonPath>', 'A path to the app config file where the `inline.modules.watchedDirectories` are defined.')
         .option('-w --watcher', 'Starts a watcher that checks for changes in inline modules files.')
-        .option('-t, --type-inference <typeInference>', 'Level of type inference: NO_INFERENCE, SIMPLE_INFERENCE, or PREPROCESS_AND_INFERENCE. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.', 'SIMPLE_INFERENCE')
+        .option('-t, --type-inference <typeInference>', 'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.', 'SIMPLE_INFERENCE')
         .action(async (options) => {
         const parsedArgs = (0, commandUtils_1.parseCommandArguments)(options);
         if (!parsedArgs) {
