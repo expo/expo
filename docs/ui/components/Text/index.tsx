@@ -73,7 +73,7 @@ export function createTextComponent(Element: TextElement, textClassName?: string
     return (
       <TextElementTag
         className={mergeClasses(
-          'text-default leading-[1.6154] text-inherit',
+          'leading-[1.6154] text-default text-inherit',
           textClassName,
           getTextWeightClassName(textWeight),
           getTextColorClassName(textTheme),
@@ -101,7 +101,7 @@ export const A = (props: LinkBaseProps & { isStyled?: boolean; shouldLeakReferre
         'cursor-pointer decoration-0',
         'hocus:opacity-80',
         !isStyled &&
-          'text-link visited:text-link hocus:underline [&_code]:hocus:underline font-normal',
+          'font-normal text-link visited:text-link hocus:underline [&_code]:hocus:underline',
         !isStyled &&
           '[&_b]:text-link [&_code]:text-link [&_em]:text-link [&_i]:text-link [&_span]:text-link [&_strong]:text-link',
         className
@@ -204,7 +204,7 @@ export const CODE = createTextComponent(
   TextElement.CODE,
   mergeClasses(
     'text-xs leading-[130%] font-normal',
-    'border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5'
+    'inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5'
   )
 );
 export const LI = createTextComponent(
@@ -242,8 +242,8 @@ export const OL = createTextComponent(
 export const KBD = createTextComponent(
   TextElement.KBD,
   mergeClasses(
-    'border-secondary bg-subtle shadow-kbd relative -top-px inline-block min-h-[20px] min-w-[22px] rounded-sm border px-1',
-    'text-secondary text-center text-xs leading-[20px] font-semibold',
+    'relative -top-px inline-block min-h-5 min-w-5.5 rounded-sm border border-secondary bg-subtle px-1 shadow-kbd',
+    'text-center text-xs leading-5 font-semibold text-secondary',
     'dark:bg-element'
   )
 );

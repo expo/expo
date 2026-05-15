@@ -346,7 +346,7 @@ export default function DocumentationPage({
         <div
           className={mergeClasses(
             'pointer-events-none absolute z-10 h-8 w-[calc(100%-6px)] max-w-screen-xl',
-            'from-default bg-linear-to-b to-transparent opacity-90'
+            'bg-linear-to-b from-default to-transparent opacity-90'
           )}
         />
         <main className={mergeClasses('mx-auto px-14 pt-10', 'max-lg:px-4 max-lg:pt-5')}>

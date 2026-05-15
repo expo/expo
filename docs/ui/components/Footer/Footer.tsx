@@ -72,10 +72,10 @@ export const Footer = ({
             <LinkBase
               href={previousPage.href}
               className={mergeClasses(
-                'border-default flex w-full items-center gap-3 rounded-md border border-solid px-4 py-3 transition',
+                'flex w-full items-center gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
-              <ArrowLeftIcon className="text-icon-secondary shrink-0" />
+              <ArrowLeftIcon className="shrink-0 text-icon-secondary" />
               <div>
                 <FOOTNOTE theme="secondary">
                   Previous{previousPage.section ? ` (${previousPage.section})` : ''}
@@ -90,7 +90,7 @@ export const Footer = ({
             <LinkBase
               href={nextPage.href}
               className={mergeClasses(
-                'border-default flex w-full items-center justify-between gap-3 rounded-md border border-solid px-4 py-3 transition',
+                'flex w-full items-center justify-between gap-3 rounded-md border border-solid border-default px-4 py-3 transition',
                 'hocus:bg-subtle hocus:shadow-xs'
               )}>
               <div>
@@ -99,7 +99,7 @@ export const Footer = ({
                 </FOOTNOTE>
                 <P weight="medium">{nextPage.sidebarTitle ?? nextPage.name}</P>
               </div>
-              <ArrowRightIcon className="text-icon-secondary shrink-0" />
+              <ArrowRightIcon className="shrink-0 text-icon-secondary" />
             </LinkBase>
           ) : (
             <div className="w-full" />
@@ -118,12 +118,12 @@ export const Footer = ({
             {title && router?.pathname && <EditPageLink pathname={router.pathname} />}
             <LlmsTxtLink fullVersionHref={llmsFullHref} fullVersionLabel={llmsFullLabel} />
             {!isDev && shouldShowModifiedDate && modificationDate && (
-              <LI className="text-quaternary! mt-4! text-xs!">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated on <time dateTime={modificationDate}>{modificationDate}</time>
               </LI>
             )}
             {isDev && shouldShowModifiedDate && (
-              <LI className="text-quaternary! mt-4! text-xs!">
+              <LI className="mt-4! text-xs! text-quaternary!">
                 Last updated data is not available in dev mode
               </LI>
             )}

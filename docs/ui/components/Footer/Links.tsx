@@ -83,7 +83,7 @@ export const ShareFeedbackLink = ({ pathname }: { pathname?: string }) => {
   return (
     <LI>
       <Dialog.Root>
-        <Dialog.Trigger className="h-[22px] focus-visible:outline-offset-4">
+        <Dialog.Trigger className="h-5.5 focus-visible:outline-offset-4">
           <A isStyled className={LINK_CLASSES}>
             <MessageTextSquare02Icon className={ICON_CLASSES} />
             <CALLOUT theme="secondary">Share your feedback</CALLOUT>

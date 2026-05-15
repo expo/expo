@@ -70,7 +70,7 @@ export function PageHeader({
             {iconUrl && (
               <img
                 src={iconUrl}
-                className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+                className="relative -top-0.5 float-left mr-3.5 size-10.5"
                 alt={`Expo ${title} icon`}
               />
             )}
@@ -93,7 +93,7 @@ export function PageHeader({
           <div
             className={mergeClasses(
               'flex flex-wrap items-center gap-2',
-              'max-md:border-default max-md:w-full max-md:items-center max-md:justify-between max-md:border-b max-md:py-3'
+              'max-md:w-full max-md:items-center max-md:justify-between max-md:border-b max-md:border-default max-md:py-3'
             )}>
             <div className="flex flex-wrap items-center">{renderAskAIButton()}</div>
             <div className="flex items-center gap-1.5">
@@ -128,7 +128,7 @@ export function PageHeader({
           {iconUrl && (
             <img
               src={iconUrl}
-              className="relative -top-0.5 float-left mr-3.5 size-[42px]"
+              className="relative -top-0.5 float-left mr-3.5 size-10.5"
               alt={`Expo ${title} icon`}
             />
           )}

@@ -14,7 +14,7 @@ export const PageVote = () => {
   return (
     <div
       className={mergeClasses(
-        'mb-4 flex min-h-[32px] items-center',
+        'mb-4 flex min-h-8 items-center',
         userVoted ? 'content-start' : 'content-center',
         'max-md:mx-auto max-md:mb-8 max-md:justify-center'
       )}>
@@ -30,11 +30,11 @@ export const PageVote = () => {
               theme="secondary"
               size="xs"
               aria-label="Vote up"
-              className="group mx-1 min-w-[40px] text-center"
+              className="group mx-1 min-w-10 text-center"
               leftSlot={
                 <>
                   <ThumbsUpIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsUpDuotoneIcon className="icon-sm text-icon-success hidden group-hover:flex group-focus-visible:flex" />
+                  <ThumbsUpDuotoneIcon className="hidden icon-sm text-icon-success group-hover:flex group-focus-visible:flex" />
                 </>
               }
               onClick={() => {
@@ -46,11 +46,11 @@ export const PageVote = () => {
               theme="secondary"
               size="xs"
               aria-label="Vote down"
-              className="group mx-1 min-w-[40px] text-center"
+              className="group mx-1 min-w-10 text-center"
               leftSlot={
                 <>
                   <ThumbsDownIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsDownDuotoneIcon className="icon-sm text-icon-danger hidden group-hover:flex group-focus-visible:flex" />
+                  <ThumbsDownDuotoneIcon className="hidden icon-sm text-icon-danger group-hover:flex group-focus-visible:flex" />
                 </>
               }
               onClick={() => {

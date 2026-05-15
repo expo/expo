@@ -60,16 +60,16 @@ function APIGridCell({ icon, title, link, className }: APIGridCellProps) {
     <A
       href={link}
       className={mergeClasses(
-        'group border-default bg-subtle relative block min-h-[200px] overflow-hidden rounded-lg border shadow-xs transition',
+        'group relative block min-h-50 overflow-hidden rounded-lg border border-default bg-subtle shadow-xs transition',
         '[&_h2]:my-0! [&_h3]:mt-0!',
         'hocus:shadow-sm',
         className
       )}
       isStyled>
-      <div className="flex min-h-[142px] items-center justify-center transition-transform group-hover:scale-105">
+      <div className="flex min-h-35.5 items-center justify-center transition-transform group-hover:scale-105">
         {icon}
       </div>
-      <LABEL className="bg-default flex min-h-[30px] items-center justify-between p-4">
+      <LABEL className="flex min-h-7.5 items-center justify-between bg-default p-4">
         {title}
         <ArrowRightIcon className="text-icon-secondary" />
       </LABEL>

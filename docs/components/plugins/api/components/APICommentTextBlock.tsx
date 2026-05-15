@@ -68,10 +68,10 @@ export const APICommentTextBlock = ({
         {inlineHeaders ? (
           <CALLOUT
             className={mergeClasses(
-              'text-tertiary my-1.5 flex flex-row items-center gap-1.5 font-medium',
+              'my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary',
               !isMultiline && 'my-0'
             )}>
-            <CodeSquare01Icon className="icon-sm text-icon-tertiary -mt-px" />
+            <CodeSquare01Icon className="-mt-px icon-sm text-icon-tertiary" />
             Example
           </CALLOUT>
         ) : (
