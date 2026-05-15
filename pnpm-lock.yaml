@@ -5131,9 +5131,6 @@ importers:
       expo-glass-effect:
         specifier: workspace:^56.0.4
         version: link:../expo-glass-effect
-      expo-image:
-        specifier: workspace:^56.0.4
-        version: link:../expo-image
       expo-linking:
         specifier: workspace:^56.0.8
         version: link:../expo-linking
@@ -5231,6 +5228,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
+      expo-image:
+        specifier: workspace:*
+        version: link:../expo-image
       immer:
         specifier: ^10.1.1
         version: 10.2.0

@@ -93,6 +93,7 @@
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
     "expo-constants": "workspace:^56.0.11",
+    "expo-image": "workspace:^56.0.4",
     "expo-linking": "workspace:^56.0.8",
     "react": "*",
     "react-dom": "*",
@@ -106,6 +107,9 @@
   },
   "peerDependenciesMeta": {
     "@testing-library/react-native": {
+      "optional": true
+    },
+    "expo-image": {
       "optional": true
     },
     "react-dom": {
@@ -139,6 +143,7 @@
     "@types/react-is": "^19.0.0",
     "@types/react-test-renderer": "^19.1.0",
     "expo": "workspace:*",
+    "expo-image": "workspace:*",
     "immer": "^10.1.1",
     "react-native-gesture-handler": "~2.30.0",
     "react-native-reanimated": "~4.3.1",
@@ -163,7 +168,6 @@
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
     "expo-glass-effect": "workspace:^56.0.4",
-    "expo-image": "workspace:^56.0.4",
     "expo-server": "workspace:^56.0.2",
     "expo-symbols": "workspace:^56.0.5",
     "fast-deep-equal": "^3.1.3",
