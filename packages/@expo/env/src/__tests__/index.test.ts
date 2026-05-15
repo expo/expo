@@ -611,6 +611,29 @@ describe(getOriginalEnvValue, () => {
       else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
     }
   });
+
+  it('shares backup state across multiple installations via globalThis', () => {
+    // Simulate two copies of @expo/env (e.g. hoisted + nested) by importing
+    // the module twice in isolated caches. Each gets its own module-level
+    // bindings; only the global backup store should be shared.
+    let modA: typeof import('../') | undefined;
+    let modB: typeof import('../') | undefined;
+    jest.isolateModules(() => {
+      modA = require('../');
+    });
+    jest.isolateModules(() => {
+      modB = require('../');
+    });
+
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    // Recorded by copy A's mutation path…
+    modA!.loadProjectEnv('/');
+    // …and observable through copy B's read path.
+    expect(modB!.getOriginalEnvValue('FOO')).toBeUndefined();
+    expect(modB!.getOriginalEnv().FOO).toBeUndefined();
+  });
 });
 
 describe(logLoadedEnv, () => {

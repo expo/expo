@@ -9,7 +9,12 @@ import { parse, expand, type EnvOutput } from './parse';
 
 const debug = require('debug')('expo:env') as typeof console.log;
 
-const originalEnvBackup = new WeakMap<EnvOutput, Map<string, string | undefined>>();
+type EnvBackupStore = WeakMap<EnvOutput, Map<string, string | undefined>>;
+
+const ORIGINAL_ENV_BACKUP_KEY = Symbol.for('@expo/env.originalEnvBackup.v1');
+const globalStore = globalThis as Record<symbol, EnvBackupStore | undefined>;
+const originalEnvBackup: EnvBackupStore =
+  globalStore[ORIGINAL_ENV_BACKUP_KEY] ?? (globalStore[ORIGINAL_ENV_BACKUP_KEY] = new WeakMap());
 
 function rememberOriginal(systemEnv: EnvOutput, key: string): void {
   if (isUnsafeAllowedEnvKey(key)) return;
