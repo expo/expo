@@ -194,6 +194,55 @@ export const Frameworks = {
   },
 
   /**
+   * Finds an xcframework at either a non-versioned or versioned output path.
+   * Versioned paths have the format:
+   * output/<packageVersion>/<rnVersion>/<hermesVersion>/<flavor>/xcframeworks/
+   */
+  findFrameworkAtAnyVersion: (
+    buildPath: string,
+    productName: string,
+    buildType: BuildFlavor
+  ): string | null => {
+    const nonVersionedPath = Frameworks.getFrameworkPath(buildPath, productName, buildType);
+    if (fs.existsSync(nonVersionedPath)) {
+      return nonVersionedPath;
+    }
+
+    const outputDir = path.join(buildPath, 'output');
+    if (!fs.existsSync(outputDir)) {
+      return null;
+    }
+
+    const flavor = buildType.toLowerCase();
+    const xcframeworkName = `${productName}.xcframework`;
+
+    try {
+      for (const entry of fs.readdirSync(outputDir)) {
+        if (entry === 'debug' || entry === 'release') continue;
+
+        const verDir = path.join(outputDir, entry);
+        if (!fs.statSync(verDir).isDirectory()) continue;
+
+        for (const rnVer of fs.readdirSync(verDir)) {
+          const rnDir = path.join(verDir, rnVer);
+          if (!fs.statSync(rnDir).isDirectory()) continue;
+
+          for (const hermesVer of fs.readdirSync(rnDir)) {
+            const candidate = path.join(rnDir, hermesVer, flavor, 'xcframeworks', xcframeworkName);
+            if (fs.existsSync(candidate)) {
+              return candidate;
+            }
+          }
+        }
+      }
+    } catch {
+      return null;
+    }
+
+    return null;
+  },
+
+  /**
    * Returns the full path to the tarball for the given product.
    * @param buildPath Package build path (centralized under packages/precompile/.build/<pkg>/)
    * @param productName SPM product name
