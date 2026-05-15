@@ -12,6 +12,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     project.evaluationDependsOn(":expo")
     setupDependencySubstitution(project)
+    setupFusedModeStripping(project)
 
     project.afterEvaluate { project ->
       setupSourceSets(project)
@@ -20,6 +21,80 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
       setupCopyingNativeLibsForType(project, "Debug")
       setupHostAppArtifactForwardingForRelease(project)
       wireDevLauncherTasks(project)
+    }
+  }
+
+  /**
+   * In `--fused` mode (CLI passes `-Pbrownfield.fused=true`), the fat AAR built by the
+   * `:<library>-fused` sibling deliberately excludes a handful of Expo modules whose
+   * classes reference resources from EXTERNAL Maven deps (ExoPlayer for `expo-video`,
+   * CameraX for `expo-camera`, etc.) — AGP Fused Library's `rewriteClasses` can't
+   * resolve those references and fails. The skip-list lives in
+   * `templates/android/fused/build.gradle.kts` (`externalResourceExpoProjects`).
+   *
+   * The autolinking-generated `ExpoModulesPackageList.kt` on the `:expo` project still
+   * references the skipped modules' Package / Module / Service classes by FQN. The fat
+   * AAR carries that file's compiled output, so when the host app loads it the static
+   * initializer hits a `NoClassDefFoundError` for the skipped classes.
+   *
+   * Workaround: hook the `:expo:generatePackagesList` task with a `doLast` that, when
+   * fused mode is active, strips every line in the generated file matching the skipped
+   * modules' package prefixes. Inert in default (non-fused) builds.
+   *
+   * MIRROR: the prefixes here correspond to the Gradle project names in
+   * `externalResourceExpoProjects` (in the fused template). Keep them aligned.
+   * Extend at invocation time via `-Pbrownfield.fused.strip-packages=foo.,bar.`.
+   *
+   * @param brownfieldProject The brownfield library project.
+   */
+  private fun setupFusedModeStripping(brownfieldProject: Project) {
+    if (brownfieldProject.findProperty("brownfield.fused") != "true") return
+
+    val expoProject = brownfieldProject.rootProject.findProject(":expo") ?: return
+
+    val defaultStripPrefixes = setOf(
+      "expo.modules.video.",
+      "expo.modules.camera.",
+      "expo.modules.image.",
+      "expo.modules.imagepicker.",
+      "expo.modules.documentpicker.",
+      "expo.modules.maps.",
+      "expo.av.",
+    )
+    val extraStrip =
+      (brownfieldProject.findProperty("brownfield.fused.strip-packages") as? String)
+        ?.split(',')
+        ?.map { it.trim() }
+        ?.filter { it.isNotEmpty() }
+        ?.toSet()
+        ?: emptySet()
+    val stripPrefixes = defaultStripPrefixes + extraStrip
+
+    // `:expo` is already evaluated (forced by `evaluationDependsOn(":expo")` at the
+    // top of `apply`), so we read the task directly — no afterEvaluate needed.
+    val task = expoProject.tasks.findByName("generatePackagesList") ?: return
+    task.doLast {
+      val outputFile =
+        expoProject.layout.buildDirectory
+          .file("generated/expo/src/main/java/expo/modules/ExpoModulesPackageList.kt")
+          .get()
+          .asFile
+      if (!outputFile.exists()) {
+        expoProject.logger.warn(
+          "brownfield.fused: ExpoModulesPackageList.kt not found at ${outputFile.path}; nothing to strip"
+        )
+        return@doLast
+      }
+      val original = outputFile.readText()
+      val stripped =
+        original
+          .lineSequence()
+          .filter { line -> stripPrefixes.none { prefix -> line.contains(prefix) } }
+          .joinToString("\n")
+      outputFile.writeText(stripped)
+      expoProject.logger.lifecycle(
+        "brownfield.fused: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"
+      )
     }
   }
 
