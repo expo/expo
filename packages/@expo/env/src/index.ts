@@ -4,6 +4,7 @@ import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { isIgnoredEnvKey } from './constants';
 import { parse, expand, type EnvOutput } from './parse';
 
 const debug = require('debug')('expo:env') as typeof console.log;
@@ -105,6 +106,10 @@ export function parseEnvFiles(
       debug(`Loaded environment variables from: ${envFile}`);
 
       for (const key of Object.keys(envFileParsed)) {
+        if (isIgnoredEnvKey(key)) {
+          debug(`"${key}" is blocked from dotenv files, skipping in: ${envFile}`);
+          continue;
+        }
         if (typeof loadedEnvVars[key] !== 'undefined') {
           debug(`"${key}" is already defined and overwritten by: ${envFile}`);
         }
@@ -312,6 +317,11 @@ export function getFiles(mode: string | undefined, { silent = false }: { silent?
 export function parseEnv(contents: string, sourceEnv?: EnvOutput): EnvOutput {
   try {
     const env = parse(contents);
+    for (const key in env) {
+      if (isIgnoredEnvKey(key)) {
+        delete env[key];
+      }
+    }
     return expand(env, sourceEnv || {});
   } catch {
     return {};
