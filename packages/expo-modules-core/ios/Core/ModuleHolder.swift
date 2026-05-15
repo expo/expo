@@ -46,8 +46,26 @@ public final class ModuleHolder {
     self.appContext = appContext
     self._name = name
     self.module = module
-    self.definition = module.definition()
+    self.definition = ModuleHolder.buildDefinition(for: module)
     post(event: .moduleCreate)
+  }
+
+  /// Combines the user-authored definition with the entries synthesized by the
+  /// `@ExpoModule` macro on this module's class (if any). The macro emits a
+  /// `_exposedDefinition()` method returning an `[AnyDefinition]` array of the
+  /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
+  /// members. Those entries are prepended to the user's definitions and the
+  /// whole list is fed back through `ModuleDefinition.init` so the merged
+  /// result is rebucketed (into `functions`, `properties`, etc.) just like a
+  /// hand-written definition. Modules that don't use the macro fall through
+  /// the empty-exposed fast path and return the user's definition unchanged.
+  private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
+    let userDefinition = module.definition()
+    let exposed = module._exposedDefinition()
+    if exposed.isEmpty {
+      return userDefinition
+    }
+    return ModuleDefinition(definitions: exposed + userDefinition.rawDefinitions)
   }
 
   // MARK: Constants
