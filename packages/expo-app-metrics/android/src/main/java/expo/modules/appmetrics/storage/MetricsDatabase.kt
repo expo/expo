@@ -24,7 +24,7 @@ object MetricsConstants {
 
 @Database(
   entities = [Metric::class, LogRecord::class, Session::class],
-  version = 15,
+  version = 16,
   exportSchema = false
 )
 abstract class MetricsDatabase : RoomDatabase() {
@@ -61,6 +61,12 @@ abstract class MetricsDatabase : RoomDatabase() {
 @Serializable
 data class Session(
   @PrimaryKey val id: String,
+  // One of: `main`, `foreground`, `screen`, `custom`, `unknown`. Mirrors the
+  // iOS `Session.SessionType` raw values. Defaults to `main` since the
+  // per-launch session opened in `AppMetricsModule.OnCreate` is the only one
+  // we track today; foreground/screen/custom sessions will use this column
+  // when they land.
+  val type: String = "main",
   val startTimestamp: String, // ISO 8601 date string
   val endTimestamp: String? = null, // ISO 8601 date string. `null` while the session is still active.
   val isActive: Boolean = true,
@@ -169,10 +175,13 @@ data class SessionWithLogs(
 @Dao
 interface MetricDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
-  suspend fun insert(metric: Metric)
-
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insertAll(metrics: List<Metric>)
+
+  // Default (ABORT) conflict strategy so a foreign-key violation propagates as
+  // `SQLiteConstraintException` instead of being silently dropped. Used by the
+  // JS-facing `Session.addMetric` path to surface stale-handle errors.
+  @Insert
+  suspend fun insertOrThrow(metric: Metric)
 
   @Delete
   suspend fun delete(metrics: List<Metric>)

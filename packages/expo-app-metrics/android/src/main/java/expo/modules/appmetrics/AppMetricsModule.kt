@@ -121,6 +121,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           sessionManager.startSessionWithIdAt(
             sessionId = appSessionId,
             timestamp = TimeUtils.getProcessStartTimestamp(),
+            type = "main",
             metadata = metadata
           )
         }
@@ -163,9 +164,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           SessionSharedObject(
             appContext = appContext,
             id = row.id,
-            // TODO: surface the real session type when foreground / screen /
-            // custom sessions land on Android.
-            type = "main",
+            type = row.type,
             startDate = row.startTimestamp,
             endDate = row.endTimestamp,
             sessionManager = sessionManager
@@ -184,7 +183,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           SessionSharedObject(
             appContext = appContext,
             id = row.id,
-            type = "main",
+            type = row.type,
             startDate = row.startTimestamp,
             endDate = row.endTimestamp,
             sessionManager = sessionManager
@@ -197,6 +196,15 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       // `SessionManager` are mapped to their JS-facing shapes here, at the
       // module boundary, so the storage layer doesn't depend on bridge types.
       Class("Session", SessionSharedObject::class) {
+        // The Android Expo Modules runtime requires every `SharedObject` class
+        // to declare a `Constructor`. `Session` instances are only ever handed
+        // out by `getMainSession` / `getAllSessions`, so this constructor
+        // throws to make a direct `new ExpoAppMetrics.Session()` from JS fail
+        // loudly instead of producing a half-initialized handle.
+        Constructor { ->
+          throw IllegalArgumentException("Session cannot be constructed directly. Use ExpoAppMetrics.getMainSession() or ExpoAppMetrics.getAllSessions() instead.")
+        }
+
         Property("id") { ref: SessionSharedObject -> ref.id }
         Property("type") { ref: SessionSharedObject -> ref.type }
         Property("startDate") { ref: SessionSharedObject -> ref.startDate }
@@ -209,10 +217,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           ref.sessionManager.getLogsForSession(ref.id).map(JsLogRecord::fromLogRecord)
         }
         AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: JsMetric ->
-          ref.sessionManager.addMetrics(
-            listOf(metric.toMetric(sessionId = ref.id)),
-            sessionId = ref.id
-          )
+          // Throws if the underlying session row has been pruned by retention
+          // cleanup — JS sees a rejected Promise instead of a silent drop. See
+          // the `Session` JSDoc for the lifetime contract.
+          ref.sessionManager.addMetricToSession(metric.toMetric(), sessionId = ref.id)
         }
         // TODO: surface the real crash report on the main session once Android
         // crash reporting lands. Until then this is always `null`, matching

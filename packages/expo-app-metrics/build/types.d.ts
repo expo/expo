@@ -1,4 +1,4 @@
-import type { Session } from './Session';
+import type { SharedObject } from 'expo';
 export type AppStartupTimes = {
     /**
      * Time from when the user taps the app to the moment the app starts executing the main code.
@@ -180,22 +180,40 @@ export type LogEventOptions = {
 };
 export type SessionType = 'main' | 'foreground' | 'screen' | 'custom' | 'unknown';
 /**
- * `Session` narrowed to the main, per-process-launch session. The narrower
- * `type` field lets `instanceof`-free discrimination still work in TypeScript,
- * matching the shape that used to be exposed before sessions became shared
- * objects.
+ * A session is a time frame during the app's lifetime that tracks metrics and
+ * log events. Returned as a shared object so metric and log history is fetched
+ * lazily on demand instead of being shipped eagerly on every read.
+ *
+ * The JS handle is decoupled from the underlying database row's lifetime: a
+ * retention sweep may delete the row while JS still holds a reference. Read
+ * methods (`getMetrics`, `getLogs`, `getCrashReport`) return empty results
+ * from a missing row; `addMetric` fails the foreign key check and rejects.
+ * Don't cache `Session` handles across long-lived background work — refetch
+ * via `getMainSession()` / `getAllSessions()` at the point of use.
+ *
+ * @private This API is unstable and may change without notice.
  */
-export type MainSession = Session & {
-    readonly type: 'main';
-};
-/**
- * `Session` narrowed to anything that isn't the main session. Matches the
- * previous union-typed shape so existing consumers that switched on `type`
- * keep their narrowing.
- */
-export type GenericSession = Session & {
-    readonly type: Exclude<SessionType, 'main'>;
-};
+export declare class Session extends SharedObject {
+    readonly id: string;
+    readonly type: SessionType;
+    readonly startDate: string;
+    readonly endDate: string | null;
+    getMetrics(): Promise<Metric[]>;
+    getLogs(): Promise<LogRecord[]>;
+    /**
+     * Adds a metric to this session. Rejects if the underlying session row has
+     * been pruned by retention cleanup — refetch a live session handle from
+     * `getMainSession()` / `getAllSessions()` and retry if needed.
+     */
+    addMetric(metric: Metric): Promise<void>;
+    /**
+     * Returns the crash report associated with this session, or `null` if the
+     * app didn't crash during it. Only the main session ever surfaces a report;
+     * every other session type returns `null`. Android always returns `null`
+     * until native crash reporting lands there.
+     */
+    getCrashReport(): Promise<CrashReport | null>;
+}
 export type CrashKind = 'badAccess' | 'fatalError' | 'divideByZero' | 'forceUnwrapNil' | 'arrayOutOfBounds' | 'objcException' | 'stackOverflow';
 export type CallStackFrame = {
     binaryName?: string | null;
@@ -282,7 +300,7 @@ export interface ExpoAppMetricsModuleType {
      *
      * @private This API is unstable and may change without notice.
      */
-    getMainSession(): Promise<MainSession | null>;
+    getMainSession(): Promise<Session | null>;
     Session: typeof Session;
 }
 //# sourceMappingURL=types.d.ts.map

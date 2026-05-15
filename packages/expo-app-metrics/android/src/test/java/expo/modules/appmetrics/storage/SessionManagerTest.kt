@@ -307,6 +307,36 @@ class SessionManagerTest {
       assertTrue(s2?.metrics?.all { it.sessionId == session2Id } ?: false)
     }
 
+  @Test
+  fun `addMetricToSession stamps the sessionId and inserts the metric`() =
+    runTest {
+      val sessionId = "session-1"
+      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
+
+      sessionManager.addMetricToSession(createMetric("metric-1", ""), sessionId)
+
+      val sessions = sessionManager.getAllSessions()
+      val session = sessions.first { it.session.id == sessionId }
+      assertEquals(1, session.metrics.size)
+      assertEquals(sessionId, session.metrics.first().sessionId)
+    }
+
+  @Test
+  fun `addMetricToSession throws when the parent session row has been pruned`() =
+    runTest {
+      // No session inserted — the FK target doesn't exist, so the INSERT must
+      // surface a SQLiteConstraintException instead of silently dropping.
+      try {
+        sessionManager.addMetricToSession(createMetric("metric-1", ""), "missing-session")
+        fail("Expected SQLiteConstraintException for missing parent session")
+      } catch (e: android.database.sqlite.SQLiteConstraintException) {
+        // expected
+      }
+
+      // The metric must not be visible under any session.
+      assertEquals(0, sessionManager.getAllSessions().size)
+    }
+
   // endregion
 
   // region MetricsInsertListener Tests

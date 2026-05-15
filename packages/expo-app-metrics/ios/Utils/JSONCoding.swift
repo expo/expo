@@ -58,3 +58,50 @@ func decodeFromJSONString<T: Decodable>(_ type: T.Type, from json: String?) -> T
     return nil
   }
 }
+
+/**
+ Maps a `MetricRow` straight into the `[String: Any]` shape the JS bridge consumes — same field set
+ as the TS `Metric` type. Cheaper than round-tripping through `JSONEncoder` + `JSONSerialization`
+ when the payload is a long list of metrics. The persisted `sessionId` is not included; JS receives
+ metrics under their owning `Session` shared object, so the foreign key is implicit.
+ */
+func metricRowAsJSObject(_ row: MetricRow) -> [String: Any] {
+  var dict: [String: Any] = [
+    "timestamp": row.timestamp,
+    "name": row.name,
+    "value": row.value
+  ]
+  if let category = row.category {
+    dict["category"] = category
+  }
+  if let routeName = row.routeName {
+    dict["routeName"] = routeName
+  }
+  if let updateId = row.updateId {
+    dict["updateId"] = updateId
+  }
+  if let params: [String: Any] = decodeJSONDictionary(row.params) {
+    dict["params"] = params
+  }
+  return dict
+}
+
+/**
+ Maps a `LogRow` straight into the `[String: Any]` shape the JS bridge consumes — same field set as
+ the TS `LogRecord` type. Storage- and dispatch-only fields (`sessionId`, `droppedAttributesCount`)
+ are not surfaced on the JS read path.
+ */
+func logRowAsJSObject(_ row: LogRow) -> [String: Any] {
+  var dict: [String: Any] = [
+    "timestamp": row.timestamp,
+    "name": row.name,
+    "severity": row.severity
+  ]
+  if let body = row.body {
+    dict["body"] = body
+  }
+  if let attributes: [String: Any] = decodeJSONDictionary(row.attributes) {
+    dict["attributes"] = attributes
+  }
+  return dict
+}

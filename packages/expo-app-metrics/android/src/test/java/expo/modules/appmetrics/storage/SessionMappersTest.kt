@@ -83,7 +83,7 @@ class SessionMappersTest {
   }
 
   @Test
-  fun `JsMetric_toMetric stamps the sessionId argument onto the Room entity`() {
+  fun `JsMetric_toMetric copies scalar fields and leaves sessionId empty for the caller to stamp`() {
     val input = JsMetric(
       category = "user",
       name = "tap",
@@ -92,10 +92,12 @@ class SessionMappersTest {
       timestamp = "2025-01-01T00:00:00.000Z"
     )
 
-    val entity = input.toMetric(sessionId = "session-xyz")
+    val entity = input.toMetric()
 
     assertEquals("m-input", entity.metricId)
-    assertEquals("session-xyz", entity.sessionId)
+    // SessionManager.addMetrics / addMetricToSession stamps the sessionId via
+    // `.copy()` at insert time — JS doesn't carry it on the wire.
+    assertEquals("", entity.sessionId)
     assertEquals("user", entity.category)
     assertEquals("tap", entity.name)
   }
@@ -109,8 +111,8 @@ class SessionMappersTest {
       timestamp = "2025-01-01T00:00:00.000Z"
     )
 
-    val first = input.toMetric(sessionId = "session-xyz")
-    val second = input.toMetric(sessionId = "session-xyz")
+    val first = input.toMetric()
+    val second = input.toMetric()
 
     assertNotNull(first.metricId)
     assertNotEquals("metric ids must be unique per call when caller omits one", first.metricId, second.metricId)

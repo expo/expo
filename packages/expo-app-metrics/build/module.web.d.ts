@@ -1,6 +1,5 @@
 import { NativeModule } from 'expo';
-import type { Session as SessionType } from './Session';
-import type { ExpoAppMetricsModuleType, LogEventOptions, MainSession, MetricAttributes } from './types';
+import type { ExpoAppMetricsModuleType, LogEventOptions, MetricAttributes, Session } from './types';
 export * from './types';
 declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {
     markFirstRender(): Promise<void>;
@@ -8,11 +7,11 @@ declare class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetric
     logEvent(_name: string, _options?: LogEventOptions): void;
     getStoredEntries(): Promise<never[]>;
     clearStoredEntries(): Promise<void>;
-    getAllSessions(): Promise<SessionType[]>;
+    getAllSessions(): Promise<Session[]>;
     simulateCrashReport(): void;
     triggerCrash(): void;
-    getMainSession(): Promise<MainSession | null>;
-    Session: typeof SessionType;
+    getMainSession(): Promise<Session | null>;
+    Session: typeof Session;
 }
 declare const _default: typeof ExpoAppMetricsModule;
 export default _default;

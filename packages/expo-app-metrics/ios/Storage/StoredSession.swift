@@ -66,8 +66,7 @@ public struct StoredSession: Codable, Sendable {
         timestamp: metric.timestamp,
         routeName: metric.routeName,
         updateId: metric.updateId,
-        params: decodeJSONDictionary(metric.params),
-        sessionId: metric.sessionId
+        params: decodeJSONDictionary(metric.params)
       )
     }
     self.logs = row.logs.map { log in

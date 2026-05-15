@@ -27,10 +27,12 @@ data class JsMetric(
   @Field val updateId: String? = null,
   @Field val params: Map<String, Any?>? = null
 ) : Record {
-  fun toMetric(sessionId: String): Metric =
+  // The persisted `sessionId` is stamped by `SessionManager.addMetrics` at insert
+  // time, so we leave it empty here — the JS bridge never carries it on the wire.
+  fun toMetric(): Metric =
     Metric(
       metricId = metricId ?: UUID.randomUUID().toString(),
-      sessionId = sessionId,
+      sessionId = "",
       timestamp = timestamp,
       category = category,
       name = name,

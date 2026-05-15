@@ -2,11 +2,10 @@
 
 import ExpoModulesCore
 
-/**
- JS-facing shape of a metric attached to a session.
- */
+/// JS-facing shape of a metric attached to a session. The owning session id is
+/// stamped natively at the receiving end (`Session.addMetric`) so JS callers
+/// don't carry it on the wire.
 struct JsMetric: Record {
-  @Field var sessionId: String = ""
   @Field var category: String = ""
   @Field var name: String = ""
   @Field var value: Double = 0
@@ -23,8 +22,7 @@ struct JsMetric: Record {
       timestamp: timestamp,
       routeName: routeName,
       updateId: updateId,
-      params: params,
-      sessionId: sessionId
+      params: params
     )
   }
 }

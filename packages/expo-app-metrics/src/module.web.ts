@@ -1,36 +1,18 @@
 import { NativeModule, registerWebModule, SharedObject } from 'expo';
 
-import type { Session as SessionType } from './Session';
 import type {
-  CrashReport,
   ExpoAppMetricsModuleType,
   LogEventOptions,
-  LogRecord,
-  MainSession,
-  Metric,
   MetricAttributes,
-  SessionType as SessionKind,
+  Session,
 } from './types';
 
 export * from './types';
 
-class WebSession extends SharedObject {
-  readonly id: string = '';
-  readonly type: SessionKind = 'unknown';
-  readonly startDate: string = new Date(0).toISOString();
-  readonly endDate: string | null = null;
-
-  async getMetrics(): Promise<Metric[]> {
-    return [];
-  }
-  async getLogs(): Promise<LogRecord[]> {
-    return [];
-  }
-  async addMetric(_metric: Metric): Promise<void> {}
-  async getCrashReport(): Promise<CrashReport | null> {
-    return null;
-  }
-}
+// `getMainSession()` returns `null` and `getAllSessions()` returns `[]` on web,
+// so the class is never instantiated — it only exists to satisfy the typed
+// `Session` slot on the module surface.
+class WebSession extends SharedObject {}
 
 class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleType {
   async markFirstRender() {}
@@ -40,15 +22,15 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
     return [];
   }
   async clearStoredEntries() {}
-  async getAllSessions(): Promise<SessionType[]> {
+  async getAllSessions(): Promise<Session[]> {
     return [];
   }
   simulateCrashReport() {}
   triggerCrash() {}
-  async getMainSession(): Promise<MainSession | null> {
+  async getMainSession(): Promise<Session | null> {
     return null;
   }
-  Session = WebSession as unknown as typeof SessionType;
+  Session = WebSession as unknown as typeof Session;
 }
 
 export default registerWebModule(ExpoAppMetricsModule, 'ExpoAppMetrics');

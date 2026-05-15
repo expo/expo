@@ -15,9 +15,12 @@ import {
 
 import { useTheme } from '@/utils/theme';
 
+type SessionExtras = { metricsCount: number; crashed: boolean };
+
 export default function SessionsList() {
   const theme = useTheme();
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [extras, setExtras] = useState<Record<string, SessionExtras>>({});
   const [loaded, setLoaded] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const currentMainStart = sessions.find((s) => s.type === 'main')?.startDate;
@@ -36,6 +39,17 @@ export default function SessionsList() {
     const sorted = [...result].sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
     setSessions(sorted);
     setLoaded(true);
+
+    const entries = await Promise.all(
+      sorted.map(async (session) => {
+        const [metrics, crashReport] = await Promise.all([
+          session.getMetrics(),
+          session.getCrashReport(),
+        ]);
+        return [session.id, { metricsCount: metrics.length, crashed: !!crashReport }] as const;
+      })
+    );
+    setExtras(Object.fromEntries(entries));
   }, []);
 
   const onRefresh = useCallback(async () => {
@@ -110,7 +124,9 @@ export default function SessionsList() {
             {section.title}
           </Text>
         )}
-        renderItem={({ item }) => <SessionRow session={item} isActive={isActive(item)} />}
+        renderItem={({ item }) => (
+          <SessionRow session={item} isActive={isActive(item)} extras={extras[item.id]} />
+        )}
       />
     </>
   );
@@ -148,12 +164,22 @@ function groupByDay(sessions: Session[]): { title: string; data: Session[] }[] {
   return Array.from(sectionsByKey.values());
 }
 
-function SessionRow({ session, isActive }: { session: Session; isActive: boolean }) {
+function SessionRow({
+  session,
+  isActive,
+  extras,
+}: {
+  session: Session;
+  isActive: boolean;
+  extras: SessionExtras | undefined;
+}) {
   const theme = useTheme();
   const startDate = new Date(session.startDate);
   const endDate = session.endDate ? new Date(session.endDate) : null;
   const duration = endDate ? formatDuration(endDate.getTime() - startDate.getTime()) : null;
   const shortId = session.id.slice(0, 8);
+  const metricsCount = extras?.metricsCount;
+  const crashed = extras?.crashed ?? false;
 
   return (
     <Pressable
@@ -178,7 +204,7 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
           {formatDate(startDate)}
         </Text>
         <View style={styles.badges}>
-          {session.type === 'main' && session.crashReport ? (
+          {crashed ? (
             <View style={[styles.badge, { backgroundColor: theme.background.danger }]}>
               <Text style={[styles.badgeText, { color: theme.text.danger }]}>Crashed</Text>
             </View>
@@ -195,8 +221,8 @@ function SessionRow({ session, isActive }: { session: Session; isActive: boolean
         numberOfLines={1}
         ellipsizeMode="tail">
         {shortId}
-        {duration ? ` · ${duration}` : isActive ? ' · active' : ''} · {session.metrics.length}{' '}
-        metric{session.metrics.length === 1 ? '' : 's'}
+        {duration ? ` · ${duration}` : isActive ? ' · active' : ''}
+        {metricsCount != null ? ` · ${metricsCount} metric${metricsCount === 1 ? '' : 's'}` : ''}
       </Text>
     </Pressable>
   );

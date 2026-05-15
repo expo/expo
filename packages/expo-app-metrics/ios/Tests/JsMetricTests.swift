@@ -7,7 +7,6 @@ struct JsMetricTests {
   @Test
   func `maps known categories to the enum case`() {
     var jsMetric = JsMetric()
-    jsMetric.sessionId = "s1"
     jsMetric.category = "navigation"
     jsMetric.name = "ttr"
     jsMetric.value = 1.5
@@ -18,7 +17,6 @@ struct JsMetricTests {
     #expect(metric.name == "ttr")
     #expect(metric.value == 1.5)
     #expect(metric.timestamp == "2026-01-01T00:00:00Z")
-    #expect(metric.sessionId == "s1")
   }
 
   @Test
@@ -26,7 +24,6 @@ struct JsMetricTests {
     // Until follow-up widens `Metric.Category` to free-form strings,
     // unknown categories are dropped to keep the Codable contract intact.
     var jsMetric = JsMetric()
-    jsMetric.sessionId = "s1"
     jsMetric.category = "not-a-real-category"
     jsMetric.name = "custom"
     jsMetric.value = 0
@@ -39,7 +36,6 @@ struct JsMetricTests {
   @Test
   func `carries routeName, updateId, and params through to the Metric`() {
     var jsMetric = JsMetric()
-    jsMetric.sessionId = "s1"
     jsMetric.category = "navigation"
     jsMetric.name = "ttr"
     jsMetric.value = 0.4

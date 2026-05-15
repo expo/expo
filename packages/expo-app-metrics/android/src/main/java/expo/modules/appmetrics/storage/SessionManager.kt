@@ -53,11 +53,13 @@ class SessionManager(
     sessionId: String,
     timestamp: String,
     metadata: AppMetadata? = null,
-    environment: String? = null
+    environment: String? = null,
+    type: String = "main"
   ) {
     val resolvedEnvironment = environment ?: AppMetricsPreferences.getEnvironment(context)
     val session = Session(
       id = sessionId,
+      type = type,
       startTimestamp = timestamp,
       isActive = true,
       environment = resolvedEnvironment,
@@ -100,6 +102,28 @@ class SessionManager(
     metricsInsertListeners.forEach { listener ->
       try {
         listener.onMetricsInserted(metricIds)
+      } catch (e: Exception) {
+        Log.e(TAG, "MetricsInsertListener failed", e)
+      }
+    }
+  }
+
+  /**
+   * Inserts a single metric, propagating the underlying
+   * `SQLiteConstraintException` if `sessionId` no longer references a live row
+   * (e.g. retention sweep deleted the session). The JS-facing
+   * `Session.addMetric` path uses this so a stale handle surfaces as a rejected
+   * Promise instead of a silent drop, matching the iOS contract.
+   */
+  suspend fun addMetricToSession(
+    metric: Metric,
+    sessionId: String
+  ) {
+    val metricWithSession = metric.copy(sessionId = sessionId)
+    database.metricDao().insertOrThrow(metricWithSession)
+    metricsInsertListeners.forEach { listener ->
+      try {
+        listener.onMetricsInserted(listOf(metricWithSession.metricId))
       } catch (e: Exception) {
         Log.e(TAG, "MetricsInsertListener failed", e)
       }

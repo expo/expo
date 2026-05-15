@@ -24,12 +24,6 @@ public struct Metric: Codable, Sendable {
   public var routeName: String? = nil
   public var updateId: String? = nil
   public var params: AnyCodable? = nil
-  /**
-   ID of the session this metric is attached to. `nil` until the metric is handed to a session
-   (`Session.receiveMetric`) or hydrated from the database — at every JS-observable read path the
-   field is populated, so consumers can rely on it.
-   */
-  public var sessionId: String? = nil
 
   init(
     category: Metric.Category?,
@@ -38,8 +32,7 @@ public struct Metric: Codable, Sendable {
     timestamp: String = Date.now.ISO8601Format(),
     routeName: String? = nil,
     updateId: String? = nil,
-    params: [String: Any]? = nil,
-    sessionId: String? = nil
+    params: [String: Any]? = nil
   ) {
     self.category = category
     self.name = name
@@ -48,7 +41,6 @@ public struct Metric: Codable, Sendable {
     self.routeName = routeName
     self.updateId = updateId
     self.params = params != nil ? AnyCodable(params) : nil
-    self.sessionId = sessionId
   }
 
   func getMetricKey() -> String {

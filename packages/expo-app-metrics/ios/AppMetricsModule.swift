@@ -3,18 +3,6 @@ import EXUpdatesInterface
 
 internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
-/// Encodes a `Codable` payload into a Foundation JSON object so it can flow
-/// across the JS bridge as `[String: Any]` / `[Any]`. The bridge can't accept
-/// arbitrary `Codable` Swift types directly, so we go through `JSONEncoder`
-/// once and `JSONSerialization` once. Dates are emitted as ISO-8601 strings
-/// to match the JS `Metric` / `LogRecord` / `CrashReport` shapes.
-private func encodeAsJSONObject<T: Encodable>(_ value: T) throws -> Any {
-  let encoder = JSONEncoder()
-  encoder.dateEncodingStrategy = .iso8601
-  let data = try encoder.encode(value)
-  return try JSONSerialization.jsonObject(with: data)
-}
-
 public final class AppMetricsModule: Module, UpdatesStateChangeListener {
   var subscription: UpdatesStateChangeSubscription?
 
@@ -110,42 +98,20 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       Property("startDate") { (ref: SessionSharedObject) in ref.startDate }
       Property("endDate") { (ref: SessionSharedObject) in ref.endDate }
 
-      AsyncFunction("getMetrics") { (ref: SessionSharedObject) -> [Any] in
+      AsyncFunction("getMetrics") { (ref: SessionSharedObject) -> [[String: Any]] in
         let sessionId = ref.id
         let rows: [MetricRow] = try await AppMetricsActor.isolated {
           try AppMetrics.database?.getMetrics(sessionId: sessionId) ?? []
         }.value
-        let metrics: [Metric] = rows.map { row in
-          Metric(
-            category: row.category.flatMap { Metric.Category(rawValue: $0) },
-            name: row.name,
-            value: row.value,
-            timestamp: row.timestamp,
-            routeName: row.routeName,
-            updateId: row.updateId,
-            params: decodeJSONDictionary(row.params),
-            sessionId: row.sessionId
-          )
-        }
-        return (try encodeAsJSONObject(metrics) as? [Any]) ?? []
+        return rows.map(metricRowAsJSObject)
       }
 
-      AsyncFunction("getLogs") { (ref: SessionSharedObject) -> [Any] in
+      AsyncFunction("getLogs") { (ref: SessionSharedObject) -> [[String: Any]] in
         let sessionId = ref.id
         let rows: [LogRow] = try await AppMetricsActor.isolated {
           try AppMetrics.database?.getLogs(sessionId: sessionId) ?? []
         }.value
-        let logs: [LogRecord] = rows.map { row in
-          LogRecord(
-            name: row.name,
-            body: row.body,
-            attributes: decodeJSONDictionary(row.attributes),
-            droppedAttributesCount: row.droppedAttributesCount,
-            severity: Severity(rawValue: row.severity) ?? .info,
-            timestamp: row.timestamp
-          )
-        }
-        return (try encodeAsJSONObject(logs) as? [Any]) ?? []
+        return rows.map(logRowAsJSObject)
       }
 
       AsyncFunction("addMetric") { (ref: SessionSharedObject, jsMetric: JsMetric) in

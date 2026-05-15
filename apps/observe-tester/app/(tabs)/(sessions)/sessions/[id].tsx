@@ -1,4 +1,9 @@
-import AppMetrics, { type Session } from 'expo-app-metrics';
+import AppMetrics, {
+  type CrashReport,
+  type LogRecord,
+  type Metric,
+  type Session,
+} from 'expo-app-metrics';
 import { useObserve } from 'expo-observe';
 import { Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -18,6 +23,9 @@ export default function SessionDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const theme = useTheme();
   const [session, setSession] = useState<Session | null>(null);
+  const [metrics, setMetrics] = useState<Metric[]>([]);
+  const [logs, setLogs] = useState<LogRecord[]>([]);
+  const [crashReport, setCrashReport] = useState<CrashReport | null>(null);
   const [loaded, setLoaded] = useState(false);
   const [showRawJson, setShowRawJson] = useState(false);
 
@@ -30,10 +38,28 @@ export default function SessionDetail() {
 
   useFocusEffect(
     useCallback(() => {
-      AppMetrics.getAllSessions().then((sessions) => {
-        setSession(sessions.find((s) => s.id === id) ?? null);
+      let cancelled = false;
+      (async () => {
+        const sessions = await AppMetrics.getAllSessions();
+        const found = sessions.find((s) => s.id === id) ?? null;
+        if (cancelled) return;
+        setSession(found);
+        if (found) {
+          const [m, l, c] = await Promise.all([
+            found.getMetrics(),
+            found.getLogs(),
+            found.getCrashReport(),
+          ]);
+          if (cancelled) return;
+          setMetrics(m);
+          setLogs(l);
+          setCrashReport(c);
+        }
         setLoaded(true);
-      });
+      })();
+      return () => {
+        cancelled = true;
+      };
     }, [id])
   );
 
@@ -44,29 +70,29 @@ export default function SessionDetail() {
       <Stack.Screen options={{ title: id?.slice(0, 8) ?? 'Session' }} />
       {!loaded ? null : session ? (
         <>
-          <SessionHeader session={session} />
+          <SessionHeader session={session} metrics={metrics} crashReport={crashReport} />
           <Divider style={styles.divider} />
-          {session.type === 'main' && session.crashReport ? (
+          {session.type === 'main' && crashReport ? (
             <>
               <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Crash report</Text>
-              <CrashReportPanel report={session.crashReport} />
-              {session.crashReport.callStackTree ? (
+              <CrashReportPanel report={crashReport} />
+              {crashReport.callStackTree ? (
                 <>
                   <Divider style={styles.divider} />
                   <Text style={[styles.sectionTitle, { color: theme.text.default }]}>
                     Call stacks
                   </Text>
-                  <CallStackTreeView tree={session.crashReport.callStackTree} />
+                  <CallStackTreeView tree={crashReport.callStackTree} />
                 </>
               ) : null}
               <Divider style={styles.divider} />
             </>
           ) : null}
           <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Metrics</Text>
-          <MetricsPanel metrics={session.metrics} />
+          <MetricsPanel metrics={metrics} />
           <Divider style={styles.divider} />
           <Text style={[styles.sectionTitle, { color: theme.text.default }]}>Log events</Text>
-          <LogsPanel logs={session.logs} />
+          <LogsPanel logs={logs} />
           <Divider style={styles.divider} />
           <Pressable
             onPress={() => setShowRawJson((v) => !v)}
@@ -80,7 +106,9 @@ export default function SessionDetail() {
             </Text>
             <Chevron expanded={showRawJson} />
           </Pressable>
-          {showRawJson ? <JSONView value={stripCallStackTree(session)} /> : null}
+          {showRawJson ? (
+            <JSONView value={buildRawJson(session, metrics, logs, crashReport)} />
+          ) : null}
         </>
       ) : (
         <Text style={[styles.notFound, { color: theme.text.default }]}>Session not found</Text>
@@ -92,16 +120,24 @@ export default function SessionDetail() {
 // The call stack tree balloons the raw JSON to the point where it can fail to render. It's
 // already shown visually in the "Call stacks" section above, so we omit it from the raw JSON
 // and replace it with a marker noting that.
-function stripCallStackTree(session: Session): Session {
-  if (session.type !== 'main' || !session.crashReport?.callStackTree) {
-    return session;
-  }
+function buildRawJson(
+  session: Session,
+  metrics: Metric[],
+  logs: LogRecord[],
+  crashReport: CrashReport | null
+) {
+  const trimmedCrashReport =
+    crashReport?.callStackTree != null
+      ? { ...crashReport, callStackTree: '<omitted, see Call stacks section>' }
+      : crashReport;
   return {
-    ...session,
-    crashReport: {
-      ...session.crashReport,
-      callStackTree: '<omitted, see Call stacks section>' as never,
-    },
+    id: session.id,
+    type: session.type,
+    startDate: session.startDate,
+    endDate: session.endDate,
+    metrics,
+    logs,
+    crashReport: trimmedCrashReport,
   };
 }
 
