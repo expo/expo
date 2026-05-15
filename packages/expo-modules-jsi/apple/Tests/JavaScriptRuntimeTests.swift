@@ -1,5 +1,6 @@
 import Testing
 import ExpoModulesJSI
+import Foundation
 
 @Suite
 @JavaScriptActor
@@ -122,28 +123,30 @@ struct JavaScriptRuntimeTests {
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
   // exercise the fast path. The next three hop off the JS thread first to cover the
-  // cross-thread scheduling + run-loop pump.
+  // cross-thread scheduling + run-loop pump. The sync overloads of `execute` are
+  // `@available(*, noasync)`, so the caller must be a real synchronous thread — wrapping
+  // in `Task.detached` would stay on the cooperative pool and trip the noasync diagnostic.
 
   @Test
   func `execute sync from off-thread caller`() async throws {
     let runtime = self.runtime
-    let result = try await Task.detached { @Sendable in
+    let result = try await onSyncOffThread {
       try runtime.execute { @JavaScriptActor in
-        runtime.global().hasProperty("Object") ? 1 : 0
+        return runtime.global().hasProperty("Object") ? 1 : 0
       }
-    }.value
+    }
     #expect(result == 1)
   }
 
   @Test
   func `execute blocking-async from off-thread caller`() async throws {
     let runtime = self.runtime
-    let result = try await Task.detached { @Sendable in
+    let result = try await onSyncOffThread {
       try runtime.execute { @JavaScriptActor () async in
         await Task.yield()
         return runtime.global().hasProperty("Object") ? 1 : 0
       }
-    }.value
+    }
     #expect(result == 1)
   }
 
@@ -151,11 +154,11 @@ struct JavaScriptRuntimeTests {
   func `execute sync rethrows from off-thread caller`() async throws {
     let runtime = self.runtime
     await #expect(throws: ScriptEvaluationError.self) {
-      try await Task.detached { @Sendable in
+      try await onSyncOffThread {
         try runtime.execute { @JavaScriptActor in
           try runtime.eval("invalid syntax +++")
         }
-      }.value
+      }
     }
   }
 
@@ -737,5 +740,21 @@ struct JavaScriptRuntimeTests {
     }
     let result = try newRuntime.eval("1 + 2")
     #expect(result.getInt() == 3)
+  }
+}
+
+/// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the
+/// async test. The thread has a real run loop, which the cross-thread `execute` path pumps.
+private func onSyncOffThread<R: Sendable>(
+  _ body: @escaping @Sendable () throws -> R
+) async throws -> R {
+  return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<R, any Error>) in
+    Thread.detachNewThread {
+      do {
+        continuation.resume(returning: try body())
+      } catch {
+        continuation.resume(throwing: error)
+      }
+    }
   }
 }
