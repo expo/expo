@@ -15,8 +15,6 @@ import androidx.room.RoomDatabase
 import androidx.room.Embedded
 import androidx.room.Relation
 import androidx.room.Transaction
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
 import kotlinx.serialization.Serializable
 import java.util.UUID
 
@@ -62,34 +60,34 @@ abstract class MetricsDatabase : RoomDatabase() {
 )
 @Serializable
 data class Session(
-  @PrimaryKey @Field val id: String,
-  @Field val startTimestamp: String, // ISO 8601 date string
-  @Field val endTimestamp: String? = null, // ISO 8601 date string. `null` while the session is still active.
-  @Field val isActive: Boolean = true,
+  @PrimaryKey val id: String,
+  val startTimestamp: String, // ISO 8601 date string
+  val endTimestamp: String? = null, // ISO 8601 date string. `null` while the session is still active.
+  val isActive: Boolean = true,
   // Environment
-  @Field val environment: String? = null,
+  val environment: String? = null,
   // App Info
-  @Field val appName: String? = null,
-  @Field val appIdentifier: String? = null,
-  @Field val appVersion: String? = null,
-  @Field val appBuildNumber: String? = null,
-  @Field val appUpdateId: String? = null,
-  @Field val appUpdateRuntimeVersion: String? = null,
+  val appName: String? = null,
+  val appIdentifier: String? = null,
+  val appVersion: String? = null,
+  val appBuildNumber: String? = null,
+  val appUpdateId: String? = null,
+  val appUpdateRuntimeVersion: String? = null,
   // JSON-encoded Map<String, String> of update request headers
-  @Field val appUpdateRequestHeaders: String? = null,
-  @Field val appEasBuildId: String? = null,
+  val appUpdateRequestHeaders: String? = null,
+  val appEasBuildId: String? = null,
   // Device Info
-  @Field val deviceOs: String? = null,
-  @Field val deviceOsVersion: String? = null,
-  @Field val deviceModel: String? = null,
-  @Field val deviceName: String? = null,
+  val deviceOs: String? = null,
+  val deviceOsVersion: String? = null,
+  val deviceModel: String? = null,
+  val deviceName: String? = null,
   // Versions
-  @Field val expoSdkVersion: String? = null,
-  @Field val reactNativeVersion: String? = null,
-  @Field val clientVersion: String? = null,
+  val expoSdkVersion: String? = null,
+  val reactNativeVersion: String? = null,
+  val clientVersion: String? = null,
   // Other
-  @Field val languageTag: String? = null
-) : Record
+  val languageTag: String? = null
+)
 
 @Entity(
   tableName = "metrics",
@@ -105,32 +103,32 @@ data class Session(
 )
 @Serializable
 data class Metric(
-  @PrimaryKey @Field val metricId: String = UUID.randomUUID().toString(),
-  @Field val sessionId: String,
+  @PrimaryKey val metricId: String = UUID.randomUUID().toString(),
+  val sessionId: String,
   // ISO 8601 date string
-  @Field val timestamp: String,
-  @Field val category: String,
-  @Field val name: String,
-  @Field val value: Double,
-  @Field val routeName: String? = null,
-  @Field val updateId: String? = null,
+  val timestamp: String,
+  val category: String,
+  val name: String,
+  val value: Double,
+  val routeName: String? = null,
+  val updateId: String? = null,
   // JSON string
-  @Field val params: String? = null
-) : Record
+  val params: String? = null
+)
 
 data class SessionWithMetrics(
-  @Field @Embedded val session: Session,
+  @Embedded val session: Session,
   @Relation(
     parentColumn = "id",
     entityColumn = "sessionId"
   )
-  @Field val metrics: List<Metric>,
+  val metrics: List<Metric>,
   @Relation(
     parentColumn = "id",
     entityColumn = "sessionId"
   )
-  @Field val logs: List<LogRecord> = emptyList()
-) : Record
+  val logs: List<LogRecord> = emptyList()
+)
 
 @Entity(
   tableName = "logs",
@@ -146,18 +144,18 @@ data class SessionWithMetrics(
 )
 @Serializable
 data class LogRecord(
-  @PrimaryKey @Field val logId: String = UUID.randomUUID().toString(),
-  @Field val sessionId: String,
+  @PrimaryKey val logId: String = UUID.randomUUID().toString(),
+  val sessionId: String,
   // ISO 8601 date string
-  @Field val timestamp: String,
-  @Field val name: String,
-  @Field val body: String? = null,
+  val timestamp: String,
+  val name: String,
+  val body: String? = null,
   // Lowercase severity case name (`trace`, `debug`, `info`, `warn`, `error`, `fatal`).
-  @Field val severity: String,
+  val severity: String,
   // JSON string. Typed encoding happens at OTel time, not at storage time.
-  @Field val attributes: String? = null,
-  @Field val droppedAttributesCount: Int = 0
-) : Record
+  val attributes: String? = null,
+  val droppedAttributesCount: Int = 0
+)
 
 data class SessionWithLogs(
   @Embedded val session: Session,
@@ -228,15 +226,8 @@ interface SessionDao {
   @Query("UPDATE sessions SET environment = :environment WHERE isActive = 1")
   suspend fun updateEnvironmentForActiveSessions(environment: String)
 
-  @Delete
-  suspend fun delete(session: List<Session>)
-
   @Query("DELETE FROM sessions")
   suspend fun deleteAll()
-
-  @Transaction
-  @Query("SELECT * FROM sessions WHERE isActive = 1")
-  suspend fun getAllActiveSessions(): List<SessionWithMetrics>
 
   @Transaction
   @Query("SELECT * FROM sessions")

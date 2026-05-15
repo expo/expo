@@ -2,7 +2,6 @@ package expo.modules.appmetrics.storage
 
 import android.content.Context
 import android.util.Log
-import androidx.room.withTransaction
 import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.SQLITE_MAX_BIND_VARIABLES
@@ -84,24 +83,6 @@ class SessionManager(
     database.sessionDao().insert(session)
   }
 
-  suspend fun startSessionWithIdAndMetricsAt(
-    id: String,
-    metrics: List<Metric>,
-    timestamp: String,
-    metadata: AppMetadata? = null,
-    environment: String? = null
-  ) {
-    database.withTransaction {
-      startSessionWithIdAt(
-        sessionId = id,
-        timestamp = timestamp,
-        metadata = metadata,
-        environment = environment
-      )
-      addMetrics(metrics, sessionId = id)
-    }
-  }
-
   suspend fun stopSession(sessionId: String) {
     database.sessionDao().stopSessionAt(
       sessionId,
@@ -128,12 +109,6 @@ class SessionManager(
   suspend fun getAllSessions(): List<SessionWithMetrics> = database.sessionDao().getAll()
 
   suspend fun getSessionById(id: String): SessionWithMetrics? = database.sessionDao().getSessionWithMetricsBySessionId(id)
-
-  suspend fun getAllActiveSessions(): List<SessionWithMetrics> = database.sessionDao().getAllActiveSessions()
-
-  suspend fun removeSessions(session: List<SessionWithMetrics>) {
-    database.sessionDao().delete(session.map { it.session })
-  }
 
   suspend fun clearAllData() {
     database.sessionDao().deleteAll()
