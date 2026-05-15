@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Enforce `routerRoot` to be within `projectRoot`
+
 ## 56.0.8 — 2026-05-13
 
 _This version does not introduce any user-facing changes._
