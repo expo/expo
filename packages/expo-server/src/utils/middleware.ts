@@ -70,6 +70,8 @@ function matchesPattern(pathname: string, pattern: string | RegExp): boolean {
       return namedParamToRegex(pattern).test(pathname);
     }
   } else if (pattern != null) {
+    // Prevent `g`/`y` flags from carrying `lastIndex` state across requests.
+    pattern.lastIndex = 0;
     return pattern.test(pathname);
   }
   return false;
