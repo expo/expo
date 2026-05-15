@@ -4,12 +4,16 @@ import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } fro
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
 import { parseRawMessage, serializeMessage } from './utils/socketMessages';
+import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 
 type MessageSocketOptions = {
   logger: {
     warn: (message: string) => any;
   };
+  serverBaseUrl: string;
 };
+
+const CLIENT_BROADCAST_ALLOWED_METHODS = new Set(['reload', 'devMenu']);
 
 /**
  * Client "command" server that dispatches basic commands to connected clients.
@@ -23,6 +27,7 @@ export function createMessagesSocket(options: MessageSocketOptions) {
 
   server.on('connection', (socket, req) => {
     const client = clients.registerSocket(socket);
+    const trusted = isLocalSocket(req.socket) && isMatchingOrigin(req, options.serverBaseUrl);
 
     // Assign the query parameters to the socket, used for `getpeers` requests
     // NOTE(cedric): this looks like a legacy feature, might be able to drop it
@@ -36,7 +41,10 @@ export function createMessagesSocket(options: MessageSocketOptions) {
     socket.on('close', client.terminate);
     socket.on('error', client.terminate);
     // Register message handler
-    socket.on('message', createClientMessageHandler(socket, client.id, clients, broadcast));
+    socket.on(
+      'message',
+      createClientMessageHandler(socket, client.id, clients, broadcast, trusted)
+    );
   });
 
   return {
@@ -58,7 +66,8 @@ function createClientMessageHandler(
   socket: WebSocket,
   clientId: SocketId,
   clients: ReturnType<typeof createSocketMap>,
-  broadcast: ReturnType<typeof createBroadcaster>
+  broadcast: ReturnType<typeof createBroadcaster>,
+  trusted: boolean
 ) {
   function handleServerRequest(message: RequestMessage) {
     // Ignore messages without identifiers, unable to link responses
@@ -80,11 +89,12 @@ function createClientMessageHandler(
   }
 
   return (data: WebSocketRawData, isBinary: boolean) => {
-    const message = parseRawMessage<IncomingMessage>(data, isBinary);
+    const message = parseRawMessage<IncomingClientMessage>(data, isBinary);
     if (!message) return;
 
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
+      if (!trusted || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) return;
       return broadcast(null, data.toString());
     }
 
@@ -126,7 +136,7 @@ type MessageId = {
   clientId: SocketId;
 };
 
-type IncomingMessage = BroadcastMessage | RequestMessage | ResponseMessage;
+type IncomingClientMessage = BroadcastMessage | RequestMessage | ResponseMessage;
 
 type BroadcastMessage = {
   method: string;
@@ -146,7 +156,7 @@ type ResponseMessage = {
   id: MessageId;
 };
 
-function messageIsBroadcast(message: IncomingMessage): message is BroadcastMessage {
+function messageIsBroadcast(message: IncomingClientMessage): message is BroadcastMessage {
   return (
     'method' in message &&
     typeof message.method === 'string' &&
@@ -155,7 +165,7 @@ function messageIsBroadcast(message: IncomingMessage): message is BroadcastMessa
   );
 }
 
-function messageIsRequest(message: IncomingMessage): message is RequestMessage {
+function messageIsRequest(message: IncomingClientMessage): message is RequestMessage {
   return (
     'method' in message &&
     typeof message.method === 'string' &&
@@ -164,7 +174,7 @@ function messageIsRequest(message: IncomingMessage): message is RequestMessage {
   );
 }
 
-function messageIsResponse(message: IncomingMessage): message is ResponseMessage {
+function messageIsResponse(message: IncomingClientMessage): message is ResponseMessage {
   return (
     'id' in message &&
     typeof message.id === 'object' &&
