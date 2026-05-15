@@ -350,7 +350,7 @@ export async function getMotionActivityAsync() {
 /**
  * Subscribes to motion activity updates from the device. The callback fires whenever the
  * platform's motion coprocessor detects a change in the user's activity. Only foreground use
- * is supported — updates pause when the app is backgrounded and resume when it returns to
+ * is supported - updates pause when the app is backgrounded and resume when it returns to
  * the foreground.
  *
  * @param callback This function is called on each motion activity update. It receives an object
