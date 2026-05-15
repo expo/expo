@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added single-payload overloads for `SharedObject.emit` on iOS and Android. The iOS API also accepts an already-converted `JavaScriptValue` payload to skip the native-to-JS conversion step. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.9 — 2026-05-15
+
+### 🎉 New features
+
+- Added single-payload overloads for `SharedObject.emit` on iOS and Android. The iOS API also accepts an already-converted `JavaScriptValue` payload to skip the native-to-JS conversion step. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.8 — 2026-05-13
 
