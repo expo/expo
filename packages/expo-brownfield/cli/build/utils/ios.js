@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.shipSwiftPackage = exports.shipFrameworks = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = exports.enumerateSourceBuiltDeps = void 0;
+const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
-const node_child_process_1 = require("node:child_process");
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const commands_1 = require("./commands");
@@ -25,14 +25,14 @@ const spinner_1 = require("./spinner");
  *
  * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
  */
-const enumerateSourceBuiltDeps = (config, alreadyCovered) => {
+const enumerateSourceBuiltDeps = async (config, alreadyCovered) => {
     const frameworkBinary = node_path_1.default.join(config.simulator, `${config.scheme}.framework`, config.scheme);
     if (!node_fs_1.default.existsSync(frameworkBinary)) {
         return [];
     }
     let stdout;
     try {
-        stdout = (0, node_child_process_1.execSync)(`otool -L "${frameworkBinary}"`, { encoding: 'utf8' });
+        ({ stdout } = await (0, spawn_async_1.default)('otool', ['-L', frameworkBinary]));
     }
     catch {
         // otool failure is non-fatal — degrade gracefully and let the user catch the missing dep
@@ -226,7 +226,7 @@ const copyXCFrameworks = async (config, dest) => {
     // (e.g. `ExpoModulesJSI` from a local podspec). Without this the host app crashes at
     // runtime with `dyld: Library not loaded: @rpath/<X>.framework/<X>`.
     const alreadyCovered = collectCoveredFrameworkNames(config);
-    const sourceBuiltDeps = (0, exports.enumerateSourceBuiltDeps)(config, alreadyCovered);
+    const sourceBuiltDeps = await (0, exports.enumerateSourceBuiltDeps)(config, alreadyCovered);
     for (const depName of sourceBuiltDeps) {
         await (0, spinner_1.withSpinner)({
             operation: () => bundleSourceBuiltFramework(config, depName, dest),
@@ -387,7 +387,7 @@ const generatePackageMetadataFile = async (config, packagePath) => {
     // Source-built dynamic deps the brownfield framework links against (e.g. ExpoModulesJSI).
     // `copyXCFrameworks` writes their xcframeworks to disk; we need to declare matching
     // `.binaryTarget`s here so SPM consumers actually link them.
-    const sourceBuiltDepNames = (0, exports.enumerateSourceBuiltDeps)(config, new Set([
+    const sourceBuiltDepNames = await (0, exports.enumerateSourceBuiltDeps)(config, new Set([
         config.scheme,
         ...baseFrameworks.map(({ name }) => name),
         ...precompiledModules.map(({ name }) => name),

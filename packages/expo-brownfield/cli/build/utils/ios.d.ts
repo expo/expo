@@ -11,7 +11,7 @@ import type { IosConfig } from './types';
  *
  * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
  */
-export declare const enumerateSourceBuiltDeps: (config: IosConfig, alreadyCovered: Set<string>) => string[];
+export declare const enumerateSourceBuiltDeps: (config: IosConfig, alreadyCovered: Set<string>) => Promise<string[]>;
 export declare const cleanUpArtifacts: (config: IosConfig) => Promise<void>;
 export declare const buildFramework: (config: IosConfig) => Promise<import("./types").RunCommandResult | undefined>;
 export declare const copyXCFrameworks: (config: IosConfig, dest: string) => Promise<void>;

@@ -6,20 +6,51 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getVersion = exports.getPublishing = exports.getProjectRoot = exports.getPackagePath = exports.getPluginConfig = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const node_path_1 = __importDefault(require("node:path"));
+const validation_1 = require("./validation");
 const getPluginConfig = (props, config) => {
-    const libraryName = props?.libraryName || 'brownfield';
-    const packageId = getPackage(config, props);
+    const libraryName = (0, validation_1.validateGradleField)('gradleProjectName', props?.libraryName || 'brownfield', 'android.libraryName');
+    const packageId = (0, validation_1.validateGradleField)('javaPackage', getPackage(config, props), 'android.package');
+    const group = (0, validation_1.validateGradleField)('javaPackage', getGroup(props, packageId), 'android.group');
+    const version = (0, validation_1.validateGradleField)('mavenVersion', (0, exports.getVersion)(props), 'android.version');
     return {
-        group: getGroup(props, packageId),
+        group,
         libraryName,
         package: packageId,
         packagePath: (0, exports.getPackagePath)(packageId),
         projectRoot: (0, exports.getProjectRoot)(config),
-        publishing: (0, exports.getPublishing)(props),
-        version: (0, exports.getVersion)(props),
+        publishing: validatePublishing((0, exports.getPublishing)(props)),
+        version,
     };
 };
 exports.getPluginConfig = getPluginConfig;
+const validatePublishing = (publications) => {
+    return publications.map((publication, index) => {
+        if (publication.type === 'localMaven') {
+            return publication;
+        }
+        if (publication.name !== undefined) {
+            (0, validation_1.validateGradleField)('groovyIdentifier', publication.name, `android.publishing[${index}].name`);
+        }
+        if (publication.type === 'localDirectory') {
+            return publication;
+        }
+        if (typeof publication.url !== 'string') {
+            (0, validation_1.validateGradleField)('envVarName', publication.url.variable, `android.publishing[${index}].url.variable`);
+        }
+        if (publication.type === 'remotePrivate') {
+            if (typeof publication.username !== 'string') {
+                (0, validation_1.validateGradleField)('envVarName', publication.username.variable, `android.publishing[${index}].username.variable`);
+            }
+            if (typeof publication.password !== 'string') {
+                (0, validation_1.validateGradleField)('envVarName', publication.password.variable, `android.publishing[${index}].password.variable`);
+            }
+        }
+        return {
+            ...publication,
+            allowInsecure: Boolean(publication.allowInsecure),
+        };
+    });
+};
 const getGroup = (props, packageId) => {
     if (props?.group) {
         return props.group;
