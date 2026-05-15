@@ -2,17 +2,17 @@ name: Development Client
 
 on:
   workflow_dispatch: {}
-  # This task will fail due to migration to `expo-modules-core`.
-  # We temporary disable it.
-  # pull_request:
-  #   paths:
-  #     - .github/workflows/development-client.yml
-  #     - packages/expo-dev-*/**
-  # push:
-  #   branches: [main]
-  #   paths:
-  #     - .github/workflows/development-client.yml
-  #     - packages/expo-dev-*/**
+  pull_request:
+    paths:
+      - .github/workflows/development-client.yml
+      - packages/expo-dev-*/**
+      - pnpm-lock.yaml
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/development-client.yml
+      - packages/expo-dev-*/**
+      - pnpm-lock.yaml
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -21,9 +21,6 @@ concurrency:
 jobs:
   android:
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        ndk-version: [21.4.7075529]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -41,14 +38,11 @@ jobs:
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          ndk: 'true'
-          ndk-version: ${{ matrix.ndk-version }}
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
       - name: Init new expo app
         working-directory: ../
-        run: pnpm create expo-app ./development-client-android-test --yes
+        run: pnpm create expo -t blank@next --yes development-client-android-test
       - name: Make Yarn resolve expo-dev-client dependencies locally
         working-directory: ../development-client-android-test
         run: |
@@ -63,6 +57,12 @@ jobs:
               'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
               'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
               'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
+              '@expo/schema-utils': 'file:${{ github.workspace }}/packages/@expo/schema-utils', \
+              '@expo/plist': 'file:${{ github.workspace }}/packages/@expo/plist', \
+              'expo-eas-client': 'file:${{ github.workspace }}/packages/expo-eas-client', \
+              'expo-structured-headers': 'file:${{ github.workspace }}/packages/expo-structured-headers', \
+              'expo-modules-core': 'file:${{ github.workspace }}/packages/expo-modules-core', \
+              'expo-modules-jsi': 'file:${{ github.workspace }}/packages/expo-modules-jsi', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
@@ -71,18 +71,10 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
         run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
-      - name: Prebuild Android
+      - name: 🛠 Prebuild Android
         working-directory: ../development-client-android-test
         run: pnpm expo prebuild --platform android
-      - name: Bump `build tools`
-        working-directory: ../development-client-android-test
-        run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
-      - name: Bump `android build tools`
-        working-directory: ../development-client-android-test
-        run: sed -i -e 's/com\.android\.tools\.build:gradle:3\..\../com\.android\.tools\.build:gradle:3\.5\.4/' ./android/build.gradle
       - name: 🏗️ Build debug version
-        env:
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/${{ matrix.ndk-version }}/
         working-directory: ../development-client-android-test/android
         run: ./gradlew assembleDebug
 
@@ -91,8 +83,17 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+      - name: 🔨 Switch to Xcode 26.2
+        run: sudo xcode-select --switch /Applications/Xcode_26.2.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 💎 Setup Ruby and install gems
+        uses: ruby/setup-ruby@6aaa311d81eba98ae12eaffbcb63296ace0efcde # v1
+        with:
+          bundler-cache: true
+          ruby-version: 3.2.2
+      - name: 💎 Install cocoapods
+        run: sudo gem install cocoapods
       - name: 🔨 Install pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
@@ -109,7 +110,7 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Init new expo app
         working-directory: ../
-        run: pnpm create expo-app ./development-client-ios-test --yes
+        run: pnpm create expo -t blank@next --yes development-client-ios-test
       - name: Make Yarn resolve expo-dev-client dependencies locally
         working-directory: ../development-client-ios-test
         run: |
@@ -124,6 +125,12 @@ jobs:
               'expo-updates': 'file:${{ github.workspace }}/packages/expo-updates', \
               'expo-manifests': 'file:${{ github.workspace }}/packages/expo-manifests', \
               'expo-json-utils': 'file:${{ github.workspace }}/packages/expo-json-utils', \
+              '@expo/schema-utils': 'file:${{ github.workspace }}/packages/@expo/schema-utils', \
+              '@expo/plist': 'file:${{ github.workspace }}/packages/@expo/plist', \
+              'expo-eas-client': 'file:${{ github.workspace }}/packages/expo-eas-client', \
+              'expo-structured-headers': 'file:${{ github.workspace }}/packages/expo-structured-headers', \
+              'expo-modules-core': 'file:${{ github.workspace }}/packages/expo-modules-core', \
+              'expo-modules-jsi': 'file:${{ github.workspace }}/packages/expo-modules-jsi', \
             }; \
             fs.writeFileSync('./package.json', JSON.stringify(pkg, null, 2) + '\n');"
       - name: Add dependencies
@@ -132,9 +139,12 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
         run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
-      - name: Prebuild iOS
+      - name: 🛠 Prebuild iOS
         working-directory: ../development-client-ios-test
-        run: pnpm expo prebuild --platform ios
+        run: pnpm expo prebuild --platform ios --no-install
+      - name: 🥥 Install pods in `development-client-ios-test/ios`
+        working-directory: ../development-client-ios-test/ios
+        run: pod install
       - name: 🏗️ Build debug version
         working-directory: ../development-client-ios-test
-        run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator -arch x86_64
+        run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator EXCLUDED_ARCHS=""

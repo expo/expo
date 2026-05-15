@@ -155,7 +155,7 @@ runs:
     - name: 🛠 Install NDK if cache not present
       if: inputs.ndk == 'true' && steps.cache-android-ndk.outputs.cache-hit != 'true'
       shell: bash
-      run: sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;${{ inputs.ndk-version }}"
+      run: sudo $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --install "ndk;${{ inputs.ndk-version }}"
 
     - name: 🔍️ Get Xcode version for iOS ccache key
       if: inputs.ccache == 'true' && runner.os == 'macOS'
