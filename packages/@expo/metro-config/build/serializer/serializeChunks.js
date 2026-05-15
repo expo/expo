@@ -131,7 +131,7 @@ class Chunk {
                 serverRoot: this.options.serverRoot,
             });
     }
-    getStableChunkSource(serializerConfig) {
+    getStableChunkSource(serializerConfig, chunks, visitedChunks = new Set()) {
         return this.options.dev
             ? ''
             : this.serializeToCodeWithTemplates(serializerConfig, {
@@ -142,10 +142,18 @@ class Chunk {
                 },
                 sourceMapUrl: undefined,
                 debugId: undefined,
+                computedAsyncModulePaths: chunks
+                    ? this.getComputedPathsForAsyncDependencies(serializerConfig, chunks, visitedChunks)
+                    : null,
             }).code;
     }
-    getFilenameForConfig(serializerConfig) {
-        return this.getFilename(this.getStableChunkSource(serializerConfig));
+    getFilenameForConfig(serializerConfig, chunks, visitedChunks = new Set()) {
+        if (!chunks || visitedChunks.has(this)) {
+            return this.getFilename(this.getStableChunkSource(serializerConfig));
+        }
+        const nextVisitedChunks = new Set(visitedChunks);
+        nextVisitedChunks.add(this);
+        return this.getFilename(this.getStableChunkSource(serializerConfig, chunks, nextVisitedChunks));
     }
     serializeToCodeWithTemplates(serializerConfig, options = {}) {
         const entryFile = this.name;
@@ -169,7 +177,7 @@ class Chunk {
     hasAbsolutePath(absolutePath) {
         return [...this.deps].some((module) => module.path === absolutePath);
     }
-    getComputedPathsForAsyncDependencies(serializerConfig, chunks) {
+    getComputedPathsForAsyncDependencies(serializerConfig, chunks, visitedChunks) {
         const baseUrl = getBaseUrlOption(this.graph, this.options);
         // Only calculate production paths when all chunks are being exported.
         if (this.options.includeAsyncPaths) {
@@ -186,7 +194,7 @@ class Chunk {
                     // at entrypoint (or vendor) chunks. We omit the path so that the async import
                     // helper doesn't reload and reevaluate the entrypoint.
                     if (chunkContainingModule.isAsync) {
-                        const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig);
+                        const moduleIdName = chunkContainingModule.getFilenameForConfig(serializerConfig, chunks, visitedChunks);
                         computedAsyncModulePaths[dependency.absolutePath] = (baseUrl ?? '/') + moduleIdName;
                     }
                 }
@@ -194,7 +202,7 @@ class Chunk {
         });
         return computedAsyncModulePaths;
     }
-    getAdjustedSourceMapUrl(serializerConfig) {
+    getAdjustedSourceMapUrl(serializerConfig, chunks) {
         // Metro really only accounts for development, so we'll use the defaults here.
         if (this.options.dev) {
             return this.options.sourceMapUrl ?? null;
@@ -208,7 +216,7 @@ class Chunk {
         const platform = this.getPlatform();
         const isAbsolute = platform !== 'web';
         const baseUrl = getBaseUrlOption(this.graph, this.options);
-        const filename = this.getFilenameForConfig(serializerConfig);
+        const filename = this.getFilenameForConfig(serializerConfig, chunks);
         const isAbsoluteBaseUrl = !!baseUrl?.match(/https?:\/\//);
         const pathname = (isAbsoluteBaseUrl ? '' : baseUrl.replace(/\/+$/, '')) +
             '/' +
@@ -238,7 +246,7 @@ class Chunk {
     serializeToCode(serializerConfig, { debugId, chunks, preModules }) {
         return this.serializeToCodeWithTemplates(serializerConfig, {
             skipWrapping: false,
-            sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig) ?? undefined,
+            sourceMapUrl: this.getAdjustedSourceMapUrl(serializerConfig, chunks) ?? undefined,
             computedAsyncModulePaths: this.getComputedPathsForAsyncDependencies(serializerConfig, chunks),
             debugId,
             preModules,
@@ -250,7 +258,7 @@ class Chunk {
     }
     async serializeToAssetsAsync(serializerConfig, chunks, { includeSourceMaps, unstable_beforeAssetSerializationPlugins }) {
         // Create hash without wrapping to prevent it changing when the wrapping changes.
-        const outputFile = this.getFilenameForConfig(serializerConfig);
+        const outputFile = this.getFilenameForConfig(serializerConfig, chunks);
         // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
         const debugId = (0, debugId_1.stringToUUID)(path_1.default.basename(outputFile, path_1.default.extname(outputFile)));
         let finalPreModules = [...this.preModules];
@@ -275,7 +283,7 @@ class Chunk {
             type: 'js',
             metadata: {
                 isAsync: this.isAsync,
-                requires: [...this.requiredChunks.values()].map((chunk) => chunk.getFilenameForConfig(serializerConfig)),
+                requires: [...this.requiredChunks.values()].map((chunk) => chunk.getFilenameForConfig(serializerConfig, chunks)),
                 // Provide a list of module paths that can be used for matching chunks to routes.
                 // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
                 modulePaths: [...this.deps].map((module) => module.path),

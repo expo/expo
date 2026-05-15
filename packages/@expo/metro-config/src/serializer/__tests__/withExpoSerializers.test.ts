@@ -758,7 +758,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
+        "_expo/static/js/web/index-84971d12edbb74b765659331467be329.js",
         "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
@@ -766,7 +766,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-0b3b05dfd72525874c3b666ed3231144.js",
+          "filename": "_expo/static/js/web/index-84971d12edbb74b765659331467be329.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -850,7 +850,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
+        "_expo/static/js/web/index-cdee5f2878f08c5f40c2769bb4034af4.js",
         "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
@@ -858,7 +858,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-8cc83f2e616cdd8e531ae27d9127c263.js",
+          "filename": "_expo/static/js/web/index-cdee5f2878f08c5f40c2769bb4034af4.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -951,7 +951,7 @@ describe('serializes', () => {
     });
 
     expect(artifacts.map((art) => art.filename)).toEqual([
-      '_expo/static/js/web/index-95c9198c40034f849b6c9f8b62d0bd22.js',
+      '_expo/static/js/web/index-cd3d269ea28e4485b582957daeeab7eb.js',
       '_expo/static/js/web/index-25b349d9df4cf37e2ce96f19a911e4eb.js',
       '_expo/static/js/web/[foo]-b99e2a64404cca4d65e32984620b7bf1.js',
       '_expo/static/js/web/{foo}-d032e4cf31d79b9563f18fce5c4d4da8.js',
@@ -1014,7 +1014,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
+        "_expo/static/js/web/index-b09a5d59b6c543726913700921d1017d.js",
         "_expo/static/js/web/foo-b41558b4adb6e8abc10fcd96d05def7b.js",
       ]
     `);
@@ -1022,7 +1022,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-2f681759ccdffed0c24df6bd62adc744.js",
+          "filename": "_expo/static/js/web/index-b09a5d59b6c543726913700921d1017d.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1144,7 +1144,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
+        "_expo/static/js/web/index-cea00921785c32656613ed575a0abf2c.js",
         "_expo/static/js/web/a-70528b7a0a1910d872803a9f7d408bcb.js",
         "_expo/static/js/web/b-fd5ce6f7800ab69b4ffe8359d27d268f.js",
         "_expo/static/js/web/c-c1ea5faaf03846340d18f64eb7fd10a5.js",
@@ -1156,7 +1156,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-ab51a54090935dbdd8a8f1ab4caa8eca.js",
+          "filename": "_expo/static/js/web/index-cea00921785c32656613ed575a0abf2c.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -1443,6 +1443,37 @@ describe('serializes', () => {
 
     expect(artifacts[0].filename).not.toEqual(artifacts2[0].filename);
     expect(artifacts[1].filename).toEqual(artifacts2[1].filename);
+  });
+
+  it(`invalidates entry chunk cache when async chunk filename changes`, async () => {
+    const artifacts = await serializeSplitAsync({
+      'index.js': `
+          import('./math');
+        `,
+      'math.js': `
+          export const add = 'add';
+        `,
+    });
+
+    const artifacts2 = await serializeSplitAsync({
+      'index.js': `
+          import('./math');
+        `,
+      'math.js': `
+          export const add = 'sub';
+        `,
+    });
+
+    const index = artifacts.find((artifact) => artifact.originFilename === 'index.js');
+    const index2 = artifacts2.find((artifact) => artifact.originFilename === 'index.js');
+    const math = artifacts.find((artifact) => artifact.originFilename === 'math.js');
+    const math2 = artifacts2.find((artifact) => artifact.originFilename === 'math.js');
+
+    expect(math?.filename).not.toEqual(math2?.filename);
+    expect(index?.source).not.toEqual(index2?.source);
+    expect(index?.filename).not.toEqual(index2?.filename);
+    expect(index?.source).toContain(math?.filename);
+    expect(index2?.source).toContain(math2?.filename);
   });
 
   it(`invalidates cache when shared chunk import name changes`, async () => {

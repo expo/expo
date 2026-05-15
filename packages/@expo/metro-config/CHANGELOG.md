@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix static web entry chunk filenames when async chunk filenames change. ([#45806](https://github.com/expo/expo/issues/45806) by [@mvincentong](https://github.com/mvincentong)) ([#45814](https://github.com/expo/expo/pull/45814) by [@mvincentong](https://github.com/mvincentong))
+
 ### 💡 Others
 
 - Switch to msgpackr-backed binary file store ([#45656](https://github.com/expo/expo/pull/45656) by [@kitten](https://github.com/kitten))
