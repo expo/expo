@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.8 — 2026-05-15
