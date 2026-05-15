@@ -12,6 +12,10 @@ import TreeFS from '../../../lib/TreeFS';
 import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../../types';
 import nodeCrawl from '../index';
 
+// memfs is POSIX-only; pin to POSIX path semantics
+// TODO(@kitten): Fork the test for posix v windows
+jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
+
 const rootDir = '/project';
 const processFile = async () => null;
 

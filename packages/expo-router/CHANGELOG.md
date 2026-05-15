@@ -6,11 +6,14 @@
 
 ### 🎉 New features
 
+- Expose `selectedIcon` in native tabs on Android. `NativeTabs.Trigger.Icon` now accepts `{ default, selected }` for the `drawable` and `md` props, matching the existing iOS `sf`/`xcasset` behaviour. ([#45780](https://github.com/expo/expo/pull/45780) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Prevent route modules from being eagerly validated when they don't contribute to the current platform or are otherwise removed ([#45766](https://github.com/expo/expo/pull/45766) by [@kitten](https://github.com/kitten))
 - Preserve `headerTitleAlign` set on parent navigator options when `Stack.Title` does not specify `style.textAlign` ([#42110](https://github.com/expo/expo/pull/42110) by [@Quaid5050](https://github.com/Quaid5050))
 - [web] Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
+- Pass `null` route params through `useLocalSearchParams` instead of stringifying them to `"null"` ([#34950](https://github.com/expo/expo/pull/34950) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 

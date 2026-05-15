@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added single-payload overloads for `SharedObject.emit` on iOS and Android. The iOS API also accepts an already-converted `JavaScriptValue` payload to skip the native-to-JS conversion step. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -28,6 +30,7 @@
 ### 💡 Others
 
 - [iOS] `AppContext.setRuntime` now takes the native React `RuntimeScheduler` pointer and a dispatch trampoline alongside the runtime pointer. ([#45636](https://github.com/expo/expo/pull/45636) by [@tsapeta](https://github.com/tsapeta))
+- Deprecated `SharedObject.emit(event:arguments:)` (iOS) and the `vararg` `emit` (Android) in favor of the new single-payload overloads. Existing single-argument call sites keep working unchanged. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.5 — 2026-05-08
 

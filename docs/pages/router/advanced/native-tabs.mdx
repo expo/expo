@@ -149,7 +149,9 @@ When you want to customize the tab bar item, we recommend using the components A
 
 You can use the `Icon` component to customize the icon displayed in the tab bar item. The `Icon` component accepts a `md` prop for Android material symbols, a `sf` prop for Apple's SF Symbols icons, or a `src` prop for custom images.
 
-Alternatively, you can pass `{default: ..., selected: ...}` to either the `sf` or `src` prop to specify different icons for the default and selected states (currently not supported on Android).
+Alternatively, you can pass `{default: ..., selected: ...}` to the `sf`, `xcasset`, `drawable`, `md`, or `src` prop to specify different icons for the default and selected states.
+
+> **info** On Android, distinct selected icons for `src`, `drawable` and `md` require SDK 56 or later (powered by `react-native-screens` 4.25+). On earlier SDKs the selected variant is ignored and the default icon is used in both states.
 
 <Tabs>
 
@@ -162,7 +164,10 @@ export default function TabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Icon sf={{ default: 'house', selected: 'house.fill' }} md="home" />
+        <NativeTabs.Trigger.Icon
+          sf={{ default: 'house', selected: 'house.fill' }}
+          md={{ default: 'home', selected: 'home_filled' }}
+        />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
         <NativeTabs.Trigger.Icon src={require('../../../assets/setting_icon.png')} />

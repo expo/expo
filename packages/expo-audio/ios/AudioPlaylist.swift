@@ -238,7 +238,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
   func updateStatus(with dict: [String: Any]) {
     var arguments = currentStatus()
     arguments.merge(dict) { _, new in new }
-    self.emit(event: PlaylistConstants.playlistStatusUpdate, arguments: arguments)
+    self.emit(event: PlaylistConstants.playlistStatusUpdate, payload: arguments)
   }
 
   private func validIndex(_ index: Int) -> Bool {
@@ -246,7 +246,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable {
   }
 
   private func emitTrackChanged(previousIndex: Int, currentIndex: Int) {
-    self.emit(event: PlaylistConstants.trackChanged, arguments: [
+    self.emit(event: PlaylistConstants.trackChanged, payload: [
       "previousIndex": previousIndex,
       "currentIndex": currentIndex
     ])

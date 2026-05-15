@@ -8,6 +8,7 @@ description: An overview of how you can integrate Expo tools into existing nativ
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 An existing native app that was built using another technology, whose main entry point is _not_ a React Native view, is commonly referred to as a "brownfield" app. For example, if your app was built using UIKit and Swift, and you want to use React Native for a single screen then that is considered an "existing native app" and "brownfield".
 
@@ -23,14 +24,14 @@ Expo is primarily built with greenfield apps in mind, but we are increasingly in
 
 | Tool/Service                                                                                         | Supports brownfield? |
 | ---------------------------------------------------------------------------------------------------- | -------------------- |
-| [Expo SDK](/versions/latest/) - an extended standard library for React Native                        | Yes                  |
-| [Expo Modules API](/modules/overview/) - build native extensions using an idiomatic Swift/Kotlin API | Yes                  |
-| [Expo Router](/router/introduction/) - file-based routing and navigation                             | Yes                  |
-| [Expo CLI](/more/expo-cli/) - tools to run and develop your app from your terminal                   | Yes                  |
-| [Expo Dev Client](/versions/latest/sdk/dev-client/) - adds in-app developer tooling to Debug builds  | No                   |
-| [EAS Build](/build/introduction/) - a CI/CD service built specifically for Expo/React Native         | Yes                  |
-| [EAS Submit](/submit/introduction/) - a hosted service that uploads your app to stores               | Yes                  |
-| [EAS Update](/eas-update/introduction/) - instant updates of your app JavaScript and assets          | Yes                  |
+| [Expo SDK](/versions/latest/) - an extended standard library for React Native                        | <YesIcon />          |
+| [Expo Modules API](/modules/overview/) - build native extensions using an idiomatic Swift/Kotlin API | <YesIcon />          |
+| [Expo Router](/router/introduction/) - file-based routing and navigation                             | <YesIcon />          |
+| [Expo CLI](/more/expo-cli/) - tools to run and develop your app from your terminal                   | <YesIcon />          |
+| [Expo Dev Client](/versions/latest/sdk/dev-client/) - adds in-app developer tooling to Debug builds  | <NoIcon />           |
+| [EAS Build](/build/introduction/) - a CI/CD service built specifically for Expo/React Native         | <YesIcon />          |
+| [EAS Submit](/submit/introduction/) - a hosted service that uploads your app to stores               | <YesIcon />          |
+| [EAS Update](/eas-update/introduction/) - instant updates of your app JavaScript and assets          | <YesIcon />          |
 
 ## Integrated vs Isolated approaches
 

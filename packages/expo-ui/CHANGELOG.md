@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
+- [universal] Added `matchContents`, `layoutDirection`, `onLayoutContent`, `useViewportSizeMeasurement`, and `ignoreSafeArea` support to the universal `Host`. ([#45776](https://github.com/expo/expo/pull/45776) by [@zoontek](https://github.com/zoontek))
 - [iOS] Added `symbolEffect` modifier. ([#45727](https://github.com/expo/expo/pull/45727) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added `Alert` component wrapping SwiftUI's `.alert(_:isPresented:actions:message:)` modifier, with `Alert.Trigger`, `Alert.Actions`, and optional `Alert.Message` slots. Mirrors the existing `ConfirmationDialog` shape so it composes the same way with `Button` actions and `isPresented` bindings. ([#45700](https://github.com/expo/expo/pull/45700) by [@ramonclaudio](https://github.com/ramonclaudio))
 

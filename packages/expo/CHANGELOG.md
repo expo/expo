@@ -6,11 +6,16 @@
 
 ### 🎉 New features
 
+- Implement `Response.clone()` on `expo/fetch`, and throw the spec's `TypeError` when a body is read twice. ([#45740](https://github.com/expo/expo/pull/45740) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 - Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
+
+- Migrated to the single-payload `SharedObject.emit` API. ([#45596](https://github.com/expo/expo/pull/45596) by [@tsapeta](https://github.com/tsapeta))
+- Drop `AppRegistry` development log when web app mounts ([#45788](https://github.com/expo/expo/pull/45788) by [@kitten](https://github.com/kitten))
 
 ## 56.0.0-preview.11 — 2026-05-13
 
