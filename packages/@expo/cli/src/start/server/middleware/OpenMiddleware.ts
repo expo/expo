@@ -1,7 +1,7 @@
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerRequest, ServerResponse } from './server.types';
-import { isLocalSocket } from '../../../utils/net';
+import { isLocalSocket, isMatchingOrigin } from '../../../utils/net';
 
 export const OpenEndpoint = '/_expo/open';
 
@@ -86,6 +86,11 @@ export interface OpenActionResult {
 }
 
 export interface OpenMiddlewareOptions {
+  /**
+   * Dev server base URL (e.g. `http://localhost:8081`). Used for the POST same-origin CSRF
+   * check — requests whose `Origin` header doesn't match this URL's host are rejected.
+   */
+  serverBaseUrl: string;
   /** Compute the dry-run information for the requested platform + runtime. */
   getInfo: (props: {
     platform: OpenPlatform | null;
@@ -140,7 +145,7 @@ export class OpenMiddleware extends ExpoMiddleware {
         return;
       }
 
-      const sameOriginError = assertSameOrigin(req);
+      const sameOriginError = assertSameOrigin(req, this.options.serverBaseUrl);
       if (sameOriginError) {
         sendError(res, 403, sameOriginError);
         return;
@@ -220,8 +225,7 @@ function sendError(res: ServerResponse, statusCode: number, body: ErrorBody) {
 }
 
 function assertSameDevice(req: ServerRequest): ErrorBody | null {
-  const socket = (req as { socket?: ServerRequest['socket'] }).socket;
-  if (socket && isLocalSocket(socket)) {
+  if (isLocalSocket(req.socket)) {
     return null;
   }
   return {
@@ -234,27 +238,16 @@ function assertSameDevice(req: ServerRequest): ErrorBody | null {
   };
 }
 
-function assertSameOrigin(req: ServerRequest): ErrorBody | null {
-  const headers = req.headers ?? {};
-  const origin = firstHeader(headers.origin);
-  if (!origin) {
+function assertSameOrigin(req: ServerRequest, serverBaseUrl: string): ErrorBody | null {
+  if (isMatchingOrigin(req, serverBaseUrl)) {
     return null;
   }
-  const host = firstHeader(headers.host);
-  let originHost: string | null = null;
-  try {
-    originHost = new URL(origin).host;
-  } catch {
-    // Malformed Origin — treat as untrusted.
-  }
-  if (!host || !originHost || originHost !== host) {
-    return {
-      code: 'CROSS_ORIGIN_FORBIDDEN',
-      error: 'POST /_expo/open is restricted to same-origin requests.',
-      details: `Request origin "${origin}" does not match the dev server host "${host ?? 'unknown'}". This protects the dev server from cross-origin scripts that might try to launch the app without the developer's consent. Issue POST requests from the dev server's origin (or from a non-browser client), or use GET /_expo/open to retrieve the deep link and open it yourself.`,
-    };
-  }
-  return null;
+  const origin = firstHeader(req.headers?.origin) ?? 'unknown';
+  return {
+    code: 'CROSS_ORIGIN_FORBIDDEN',
+    error: 'POST /_expo/open is restricted to same-origin requests.',
+    details: `Request origin "${origin}" does not match the dev server "${serverBaseUrl}". This protects the dev server from cross-origin scripts that might try to launch the app without the developer's consent. Issue POST requests from the dev server's origin (or from a non-browser client), or use GET /_expo/open to retrieve the deep link and open it yourself.`,
+  };
 }
 
 function firstHeader(value: string | string[] | undefined): string | undefined {

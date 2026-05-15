@@ -1,6 +1,6 @@
 import { UrlCreator } from '../../UrlCreator';
 import { OpenDiscoveryResult, OpenSinglePlatformResult } from '../OpenMiddleware';
-import { createOpenMiddlewareOptions, resolveOpenInfo } from '../createOpenMiddlewareOptions';
+import { createOpen, resolveOpenInfo } from '../openHandlers';
 
 jest.mock('../../../../log');
 
@@ -28,7 +28,6 @@ function tunnelCreator(scheme: string | null = 'myapp') {
   );
 }
 
-const allOk = () => ({ canOpen: true }) as const;
 const noAppId = async () => null;
 const sampleAppIds = async (platform: 'ios' | 'android' | 'web') => {
   if (platform === 'ios') return 'com.example.app.ios';
@@ -39,10 +38,8 @@ const sampleAppIds = async (platform: 'ios' | 'android' | 'web') => {
 describe('resolveOpenInfo — LAN (no tunnel)', () => {
   const deps = {
     urlCreator: lanCreator(),
-    getScheme: () => 'myapp',
     getIsDevClient: () => false,
     getIsRedirectPageEnabled: () => false,
-    getHostSupport: allOk,
     getAppId: noAppId,
   };
 
@@ -69,10 +66,8 @@ describe('resolveOpenInfo — LAN (no tunnel)', () => {
 describe('resolveOpenInfo — tunnel', () => {
   const baseDeps = {
     urlCreator: tunnelCreator('myapp'),
-    getScheme: () => 'myapp',
     getIsDevClient: () => false,
     getIsRedirectPageEnabled: () => false,
-    getHostSupport: allOk,
     getAppId: noAppId,
   };
 
@@ -132,10 +127,8 @@ describe('resolveOpenInfo — runtime: default resolution', () => {
       { platform: 'ios', runtime: 'default' },
       {
         urlCreator: lanCreator('myapp'),
-        getScheme: () => 'myapp',
         getIsDevClient: () => true,
         getIsRedirectPageEnabled: () => false,
-        getHostSupport: allOk,
         getAppId: noAppId,
       }
     )) as OpenSinglePlatformResult;
@@ -149,10 +142,8 @@ describe('resolveOpenInfo — runtime: default resolution', () => {
       { platform: 'android', runtime: 'default' },
       {
         urlCreator: lanCreator('myapp'),
-        getScheme: () => 'myapp',
         getIsDevClient: () => false,
         getIsRedirectPageEnabled: () => true,
-        getHostSupport: allOk,
         getAppId: noAppId,
       }
     )) as OpenSinglePlatformResult;
@@ -165,10 +156,8 @@ describe('resolveOpenInfo — runtime: default resolution', () => {
       { platform: 'ios', runtime: 'default' },
       {
         urlCreator: lanCreator('myapp'),
-        getScheme: () => 'myapp',
         getIsDevClient: () => false,
         getIsRedirectPageEnabled: () => false,
-        getHostSupport: allOk,
         getAppId: noAppId,
       }
     )) as OpenSinglePlatformResult;
@@ -184,7 +173,6 @@ describe('resolveOpenInfo — runtime=unknown (explicit interstitial)', () => {
       { platform: 'ios', runtime: 'unknown' },
       {
         urlCreator: lanCreator('myapp'),
-        getScheme: () => 'myapp',
         getIsDevClient: () => false,
         getIsRedirectPageEnabled: () => false,
         getAppId: noAppId,
@@ -200,7 +188,6 @@ describe('resolveOpenInfo — live state', () => {
     let isDevClient = false;
     const deps = {
       urlCreator: lanCreator('myapp'),
-      getScheme: () => 'myapp',
       getIsDevClient: () => isDevClient,
       getIsRedirectPageEnabled: () => false,
       getAppId: noAppId,
@@ -225,7 +212,6 @@ describe('resolveOpenInfo — live state', () => {
     let redirectEnabled = false;
     const deps = {
       urlCreator: lanCreator('myapp'),
-      getScheme: () => 'myapp',
       getIsDevClient: () => false,
       getIsRedirectPageEnabled: () => redirectEnabled,
       getAppId: noAppId,
@@ -247,11 +233,10 @@ describe('resolveOpenInfo — live state', () => {
     expect(after.url).toMatch(/_expo\/loading/);
   });
 
-  it('reflects mid-run scheme changes', async () => {
-    let scheme: string | null = 'oldscheme';
+  it('reflects mid-run scheme changes (UrlCreator.defaults is mutated by toggleRuntimeMode)', async () => {
+    const urlCreator = lanCreator('oldscheme');
     const deps = {
-      urlCreator: lanCreator('myapp'),
-      getScheme: () => scheme,
+      urlCreator,
       getIsDevClient: () => false,
       getIsRedirectPageEnabled: () => false,
       getAppId: noAppId,
@@ -262,7 +247,7 @@ describe('resolveOpenInfo — live state', () => {
     )) as OpenSinglePlatformResult;
     expect(before.scheme).toBe('oldscheme');
 
-    scheme = 'newscheme';
+    urlCreator.defaults.scheme = 'newscheme';
     const after = (await resolveOpenInfo(
       { platform: 'ios', runtime: 'default' },
       deps
@@ -274,10 +259,8 @@ describe('resolveOpenInfo — live state', () => {
 describe('resolveOpenInfo — appId', () => {
   const baseDeps = {
     urlCreator: lanCreator('myapp'),
-    getScheme: () => 'myapp',
     getIsDevClient: () => false,
     getIsRedirectPageEnabled: () => false,
-    getHostSupport: allOk,
   };
 
   it('includes the resolved appId on single-platform responses', async () => {
@@ -337,19 +320,11 @@ describe('resolveOpenInfo — appId', () => {
   });
 });
 
-describe('createOpenMiddlewareOptions.open', () => {
+describe('createOpen', () => {
   it('dispatches platform=ios to openPlatformAsync("simulator")', async () => {
     const openPlatformAsync = jest.fn(async () => ({ url: 'exp://opened-ios' }));
-    const opts = createOpenMiddlewareOptions({
-      urlCreator: lanCreator(),
-      getScheme: () => 'myapp',
-      getIsDevClient: () => false,
-      getIsRedirectPageEnabled: () => false,
-      getHostSupport: allOk,
-      getAppId: noAppId,
-      openPlatformAsync,
-    });
-    await expect(opts.open({ platform: 'ios' })).resolves.toEqual({
+    const open = createOpen({ getIsDevClient: () => false, openPlatformAsync });
+    await expect(open({ platform: 'ios' })).resolves.toEqual({
       platform: 'ios',
       runtime: 'expo',
       url: 'exp://opened-ios',
@@ -359,16 +334,8 @@ describe('createOpenMiddlewareOptions.open', () => {
 
   it('dispatches platform=android to openPlatformAsync("emulator")', async () => {
     const openPlatformAsync = jest.fn(async () => ({ url: 'exp://opened-android' }));
-    const opts = createOpenMiddlewareOptions({
-      urlCreator: lanCreator(),
-      getScheme: () => 'myapp',
-      getIsDevClient: () => true,
-      getIsRedirectPageEnabled: () => false,
-      getHostSupport: allOk,
-      getAppId: noAppId,
-      openPlatformAsync,
-    });
-    const result = await opts.open({ platform: 'android' });
+    const open = createOpen({ getIsDevClient: () => true, openPlatformAsync });
+    const result = await open({ platform: 'android' });
     expect(openPlatformAsync).toHaveBeenCalledWith('emulator', { shouldPrompt: false });
     // isDevClient → response runtime reflects 'custom'
     expect(result.runtime).toBe('custom');
@@ -376,16 +343,8 @@ describe('createOpenMiddlewareOptions.open', () => {
 
   it('dispatches platform=web to openPlatformAsync("desktop")', async () => {
     const openPlatformAsync = jest.fn(async () => ({ url: 'http://abc.ngrok-free.app' }));
-    const opts = createOpenMiddlewareOptions({
-      urlCreator: tunnelCreator(),
-      getScheme: () => 'myapp',
-      getIsDevClient: () => false,
-      getIsRedirectPageEnabled: () => false,
-      getHostSupport: allOk,
-      getAppId: noAppId,
-      openPlatformAsync,
-    });
-    const result = await opts.open({ platform: 'web' });
+    const open = createOpen({ getIsDevClient: () => false, openPlatformAsync });
+    const result = await open({ platform: 'web' });
     expect(openPlatformAsync).toHaveBeenCalledWith('desktop');
     expect(result).toEqual({
       platform: 'web',

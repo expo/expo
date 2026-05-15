@@ -88,7 +88,6 @@ import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddle
 import { OpenHostSupportEntry, OpenMiddleware, OpenPlatform } from '../middleware/OpenMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
-import { createOpenMiddlewareOptions } from '../middleware/createOpenMiddlewareOptions';
 import type { ExpoMetroOptions } from '../middleware/metroOptions';
 import {
   convertPathToModuleSpecifier,
@@ -99,6 +98,7 @@ import {
   getMetroDirectBundleOptions,
 } from '../middleware/metroOptions';
 import { prependMiddleware } from '../middleware/mutations';
+import { createInfoHandler, createOpen } from '../middleware/openHandlers';
 import type { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { startTypescriptTypeGenerationAsync } from '../type-generation/startTypescriptTypeGeneration';
 
@@ -1392,18 +1392,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return { canOpen: true };
       };
 
-      const openMiddleware = new OpenMiddleware(
-        this.projectRoot,
-        createOpenMiddlewareOptions({
-          // Read all dev-server state live — pressing `s` in the terminal toggles `isDevClient`
-          // and the scheme, and `expo-dev-client` can be installed mid-run (re-resolved by
-          // isRedirectPageEnabled on every call).
+      // Read all dev-server state live — pressing `s` in the terminal toggles `isDevClient`
+      // and the scheme, and `expo-dev-client` can be installed mid-run (re-resolved by
+      // isRedirectPageEnabled on every call).
+      const openMiddleware = new OpenMiddleware(this.projectRoot, {
+        serverBaseUrl,
+        getHostSupport,
+        getInfo: createInfoHandler({
           urlCreator: this.getUrlCreator(),
-          getScheme: () => this.getUrlCreator().defaults?.scheme ?? null,
           getIsDevClient: () => this.isDevClient,
           getIsRedirectPageEnabled: () => this.isRedirectPageEnabled(),
-          getHostSupport,
-          openPlatformAsync: (target, resolver) => this.openPlatformAsync(target, resolver),
           getAppId: async (platform) => {
             if (platform === 'web') return null;
             const resolver =
@@ -1419,8 +1417,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               return null;
             }
           },
-        })
-      );
+        }),
+        open: createOpen({
+          getIsDevClient: () => this.isDevClient,
+          openPlatformAsync: (target, resolver) => this.openPlatformAsync(target, resolver),
+        }),
+      });
       middleware.use(openMiddleware.getHandler());
 
       const domComponentRenderer = createDomComponentsMiddleware(

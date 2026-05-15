@@ -1,5 +1,5 @@
 import type {
-  OpenHostSupportEntry,
+  OpenActionResult,
   OpenInfoResult,
   OpenMiddlewareOptions,
   OpenNativeRuntime,
@@ -9,16 +9,15 @@ import type {
 } from './OpenMiddleware';
 import type { UrlCreator } from '../UrlCreator';
 
-interface ResolveInfoDeps {
-  /** Stable UrlCreator instance — its `defaults` mutate when `toggleRuntimeMode` runs, so the same instance keeps producing fresh URLs. */
+interface InfoHandlerDeps {
+  /** Stable UrlCreator instance — its `defaults` mutate when `toggleRuntimeMode` runs, so the same instance keeps producing fresh URLs and reflects the current scheme. */
   urlCreator: UrlCreator;
   /**
    * Read live values every call. The dev server's runtime mode can flip mid-run via the `s` key
    * in the terminal, and `expo-dev-client` can be installed while the server is running — both
-   * change `isDevClient`, `isRedirectPageEnabled`, and `scheme`, and the endpoint should reflect
-   * the current state on every request.
+   * change `isDevClient` and `isRedirectPageEnabled`, and the endpoint should reflect the
+   * current state on every request.
    */
-  getScheme: () => string | null;
   getIsDevClient: () => boolean;
   /** Live mirror of `BundlerDevServer.isRedirectPageEnabled()`. */
   getIsRedirectPageEnabled: () => boolean;
@@ -32,16 +31,21 @@ interface ResolveInfoDeps {
 }
 
 /**
- * Pure resolution of the GET response. Extracted from `MetroBundlerDevServer` so it can be
- * exercised with a real {@link UrlCreator} in tests (covers tunnel routing in particular).
+ * Build the GET handler for `/_expo/open`. Resolves dry-run info for a single platform, or for
+ * every platform in discovery mode. Extracted so it can be exercised with a real
+ * {@link UrlCreator} in tests (covers tunnel routing in particular).
  */
+export function createInfoHandler(deps: InfoHandlerDeps): OpenMiddlewareOptions['getInfo'] {
+  return ({ platform, runtime }) => resolveOpenInfo({ platform, runtime }, deps);
+}
+
 export async function resolveOpenInfo(
   { platform, runtime }: { platform: OpenPlatform | null; runtime: OpenRequestedRuntime },
-  deps: ResolveInfoDeps
+  deps: InfoHandlerDeps
 ): Promise<OpenInfoResult> {
   // Snapshot the live state once per request so the response is internally consistent even if a
   // toggle happens between sub-resolutions.
-  const scheme = deps.getScheme();
+  const scheme = deps.urlCreator.getScheme();
   const isDevClient = deps.getIsDevClient();
   const isRedirectPageEnabled = deps.getIsRedirectPageEnabled();
   const availableRuntimes: OpenNativeRuntime[] = isDevClient
@@ -72,7 +76,7 @@ export async function resolveOpenInfo(
 async function resolvePlatformInfo(
   platform: OpenPlatform,
   runtime: OpenRequestedRuntime,
-  deps: ResolveInfoDeps,
+  deps: InfoHandlerDeps,
   state: { isDevClient: boolean; isRedirectPageEnabled: boolean }
 ): Promise<OpenPlatformInfo> {
   const { urlCreator, getAppId } = deps;
@@ -117,9 +121,9 @@ async function resolvePlatformInfo(
   };
 }
 
-export interface CreateOpenMiddlewareOptionsDeps extends ResolveInfoDeps {
-  /** Whether the host can launch a given platform — used by POST to short-circuit with a 501. */
-  getHostSupport: (platform: OpenPlatform) => OpenHostSupportEntry;
+interface OpenHandlerDeps {
+  /** Live `BundlerDevServer.isDevClient` — `s` in the terminal can flip this between dispatch and response. */
+  getIsDevClient: () => boolean;
   /** Same shape as `BundlerDevServer.openPlatformAsync`. */
   openPlatformAsync: (
     launchTarget: 'simulator' | 'emulator' | 'desktop',
@@ -127,23 +131,19 @@ export interface CreateOpenMiddlewareOptionsDeps extends ResolveInfoDeps {
   ) => Promise<{ url: string | null }>;
 }
 
-/** Build the {@link OpenMiddlewareOptions} that wire the dev server into the `/_expo/open` middleware. */
-export function createOpenMiddlewareOptions(
-  deps: CreateOpenMiddlewareOptionsDeps
-): OpenMiddlewareOptions {
-  const { openPlatformAsync, getHostSupport, getIsDevClient } = deps;
-  return {
-    getHostSupport,
-    getInfo: (params) => resolveOpenInfo(params, deps),
-    open: async ({ platform }) => {
-      if (platform === 'web') {
-        const result = await openPlatformAsync('desktop');
-        return { platform, runtime: 'web', url: result.url ?? '' };
-      }
-      const launchTarget = platform === 'ios' ? 'simulator' : 'emulator';
-      const result = await openPlatformAsync(launchTarget, { shouldPrompt: false });
-      // Read runtime mode live — `s` in the terminal can flip this between dispatch and response.
-      return { platform, runtime: getIsDevClient() ? 'custom' : 'expo', url: result.url ?? '' };
-    },
+/** Build the POST handler for `/_expo/open` — dispatches to the dev server's platform launcher. */
+export function createOpen(deps: OpenHandlerDeps): OpenMiddlewareOptions['open'] {
+  return async ({ platform }): Promise<OpenActionResult> => {
+    if (platform === 'web') {
+      const result = await deps.openPlatformAsync('desktop');
+      return { platform, runtime: 'web', url: result.url ?? '' };
+    }
+    const launchTarget = platform === 'ios' ? 'simulator' : 'emulator';
+    const result = await deps.openPlatformAsync(launchTarget, { shouldPrompt: false });
+    return {
+      platform,
+      runtime: deps.getIsDevClient() ? 'custom' : 'expo',
+      url: result.url ?? '',
+    };
   };
 }

@@ -73,7 +73,12 @@ function createMiddleware(overrides: Partial<OpenMiddlewareOptions> = {}): {
   const getHostSupport =
     (overrides.getHostSupport as jest.Mock<OpenHostSupportEntry, [any]>) ??
     jest.fn(() => fullSupport);
-  const middleware = new OpenMiddleware('/', { getInfo, open, getHostSupport });
+  const middleware = new OpenMiddleware('/', {
+    serverBaseUrl: overrides.serverBaseUrl ?? 'http://localhost:8081',
+    getInfo,
+    open,
+    getHostSupport,
+  });
   return { middleware, getInfo, open, getHostSupport };
 }
 
