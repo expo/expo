@@ -1,11 +1,6 @@
 import { NativeModule, registerWebModule, SharedObject } from 'expo';
 
-import type {
-  ExpoAppMetricsModuleType,
-  LogEventOptions,
-  MetricAttributes,
-  Session,
-} from './types';
+import type { ExpoAppMetricsModuleType, LogEventOptions, MetricAttributes, Session } from './types';
 
 export * from './types';
 
