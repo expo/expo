@@ -145,7 +145,9 @@ export abstract class BundlerDevServer {
 
   /** Get the manifest middleware function. */
   protected async getManifestMiddlewareAsync(
-    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'privateKeyPath'> = {}
+    options: Pick<BundlerStartOptions, 'minify' | 'mode' | 'privateKeyPath'> & {
+      watchFolders?: readonly string[];
+    } = {}
   ) {
     const Middleware = require('./middleware/ExpoGoManifestHandlerMiddleware')
       .ExpoGoManifestHandlerMiddleware as typeof import('./middleware/ExpoGoManifestHandlerMiddleware').ExpoGoManifestHandlerMiddleware;
@@ -157,6 +159,7 @@ export abstract class BundlerDevServer {
       minify: options.minify,
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
       privateKeyPath: options.privateKeyPath,
+      watchFolders: options.watchFolders,
     });
     return middleware;
   }

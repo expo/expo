@@ -78,6 +78,7 @@ function createDevServerForStaticPageTests() {
     asyncRoutes: false,
   };
   devServer['getDevServerUrlOrAssert'] = jest.fn(() => 'http://localhost:8081');
+  devServer['metro'] = { _config: { watchFolders: [] } } as any;
   return devServer;
 }
 

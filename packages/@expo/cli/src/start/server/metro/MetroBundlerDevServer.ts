@@ -6,7 +6,7 @@
  */
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
-import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
+import { getMetroServerRoot } from '@expo/config/paths';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import type { DeltaResult, TransformInputOptions } from '@expo/metro/metro/DeltaBundler/types';
 import type {
@@ -83,6 +83,7 @@ import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddle
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { resolveRelativeEntryPoint } from '../middleware/ManifestMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import type { ExpoMetroOptions } from '../middleware/metroOptions';
@@ -577,7 +578,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     const resolvedMainModuleName =
-      mainModuleName ?? './' + resolveRelativeEntryPoint(this.projectRoot, { platform });
+      mainModuleName ??
+      './' +
+        resolveRelativeEntryPoint(this.projectRoot, { platform }, this.metro!._config.watchFolders);
     return await this.metroImportAsArtifactsAsync(resolvedMainModuleName, {
       splitChunks: isExporting && !env.EXPO_NO_BUNDLE_SPLITTING,
       platform,
@@ -689,7 +692,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       environment: 'client',
       reactCompiler,
-      mainModuleName: resolveRelativeEntryPoint(this.projectRoot, { platform }),
+      mainModuleName: resolveRelativeEntryPoint(
+        this.projectRoot,
+        { platform },
+        this.metro!._config.watchFolders
+      ),
       lazy: !env.EXPO_NO_METRO_LAZY,
       baseUrl,
       isExporting,
@@ -1342,7 +1349,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
-      const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
+      const manifestMiddleware = await this.getManifestMiddlewareAsync({
+        ...options,
+        watchFolders: metro._config.watchFolders,
+      });
 
       // Important that we noop source maps for context modules as soon as possible.
       prependMiddleware(middleware, new ContextModuleSourceMapsMiddleware().getHandler());
