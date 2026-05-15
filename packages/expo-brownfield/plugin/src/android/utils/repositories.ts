@@ -7,15 +7,19 @@ import type {
   RemotePrivatePublication,
   RemotePublicPublication,
 } from '../types';
+import { escapeGroovyDoubleQuotedString } from './validation';
 
 const repositoryTemplates = {
   localMaven: () => ['    localDefault {', '        type.set("localMaven")', '    }'],
   localDirectory: (count: number, publication: LocalDirectoryPublication, projectRoot: string) => {
     const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
+    const resolvedPath = escapeGroovyDoubleQuotedString(
+      standardizePath(publication.path, projectRoot)
+    );
     return [
       `    ${nameOrPlaceholder} {`,
       '        type.set("localDirectory")',
-      `        url.set("file://${standardizePath(publication.path, projectRoot)}")`,
+      `        url.set("file://${resolvedPath}")`,
       '    }',
     ];
   },
@@ -73,8 +77,9 @@ const standardizePath = (url: string, projectRoot: string) => {
 
 const setProperty = (property: string, value: string | EnvValue) => {
   if (typeof value === 'string') {
-    return `        ${property}.set("${value}")`;
+    return `        ${property}.set("${escapeGroovyDoubleQuotedString(value)}")`;
   }
 
+  // `value.variable` is validated as an env var identifier upstream, so no escaping needed.
   return `        ${property}.set(providers.environmentVariable("${value.variable}").orElse(""))`;
 };
