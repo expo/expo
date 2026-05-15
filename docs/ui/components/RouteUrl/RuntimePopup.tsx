@@ -33,7 +33,7 @@ export function RuntimePopup<T extends string>({
           'border-l-default bg-default text-default m-0 flex h-10 min-w-[100px] appearance-none items-center justify-center rounded-none border-l px-10 indent-0 text-sm shadow-xs',
           'hocus:bg-subtle hocus:shadow-none',
           'focus-visible:-outline-offset-2',
-          'max-md-gutters:min-w-[unset] max-md-gutters:max-w-[60px] max-md-gutters:px-6 max-md-gutters:indent-[-9999px]'
+          'max-md:max-w-[60px] max-md:min-w-[unset] max-md:px-6 max-md:indent-[-9999px]'
         )}
         value={selected}
         onChange={event => {

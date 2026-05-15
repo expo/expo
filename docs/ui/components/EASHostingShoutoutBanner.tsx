@@ -25,7 +25,7 @@ export function EASHostingShoutoutBanner() {
     <div
       className={mergeClasses(
         'border-success bg-palette-green2 relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg border px-6 py-4 shadow-xs',
-        'max-md-gutters:flex-wrap'
+        'max-md:flex-wrap'
       )}>
       <svg
         className="absolute left-[37.5%] -mt-1 rotate-45 opacity-35 dark:opacity-25"
@@ -64,7 +64,7 @@ export function EASHostingShoutoutBanner() {
         />
       </svg>
       <div className="flex items-center gap-4">
-        <div className="max-sm-gutters:hidden relative z-10 p-2">
+        <div className="relative z-10 p-2 max-sm:hidden">
           <div
             className={mergeClasses(
               'asset-sm-shadow bg-palette-green10 absolute inset-0 rounded-md',

@@ -20,7 +20,7 @@ export function DiscoverMore() {
           className={mergeClasses(
             'bg-subtle from-subtle to-palette-green3 selection:bg-palette-green5 relative z-0 min-h-[158px] bg-linear-to-br from-30%',
             'selection:bg-palette-green5',
-            'max-md-gutters:min-h-[200px]'
+            'max-md:min-h-[200px]'
           )}>
           <PlanEnterpriseIcon
             className={mergeClasses(
@@ -42,14 +42,14 @@ export function DiscoverMore() {
             href="/tutorial/eas/introduction/"
             size="sm"
             rightSlot={<ArrowRightIcon className="icon-md dark:text-palette-green2" />}>
-            <span className="max-sm-gutters:hidden">Start&nbsp;</span>EAS Tutorial
+            <span className="max-sm:hidden">Start&nbsp;</span>EAS Tutorial
           </HomeButton>
         </GridCell>
         <GridCell
           className={mergeClasses(
             'bg-subtle from-subtle to-palette-pink3 relative z-0 min-h-[158px] bg-linear-to-br from-30%',
             'selection:bg-palette-pink5',
-            'max-md-gutters:min-h-[200px]'
+            'max-md:min-h-[200px]'
           )}>
           <RouterLogo
             className={mergeClasses(

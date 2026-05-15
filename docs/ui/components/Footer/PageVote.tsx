@@ -16,12 +16,12 @@ export const PageVote = () => {
       className={mergeClasses(
         'mb-4 flex min-h-[32px] items-center',
         userVoted ? 'content-start' : 'content-center',
-        'max-md-gutters:mx-auto max-md-gutters:mb-8 max-md-gutters:justify-center'
+        'max-md:mx-auto max-md:mb-8 max-md:justify-center'
       )}>
       {userVoted ? (
         <CALLOUT theme="secondary">Thank you for your vote! 💙</CALLOUT>
       ) : (
-        <div className="max-md-gutters:flex-col flex flex-row items-center gap-2">
+        <div className="flex flex-row items-center gap-2 max-md:flex-col">
           <CALLOUT theme="secondary" weight="medium">
             Was this doc helpful?
           </CALLOUT>

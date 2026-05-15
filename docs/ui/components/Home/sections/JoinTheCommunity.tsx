@@ -24,9 +24,9 @@ export function JoinTheCommunity() {
         className={mergeClasses(
           'my-4 inline-grid w-full grid-cols-2 gap-x-8 gap-y-1.5',
           'border-default rounded-lg border p-3 shadow-xs',
-          'max-xl-gutters:grid-cols-1',
-          'max-lg-gutters:grid-cols-2',
-          'max-md-gutters:grid-cols-1'
+          'max-xl:grid-cols-1',
+          'max-lg:grid-cols-2',
+          'max-md:grid-cols-1'
         )}>
         <CommunityGridCell
           title="Discord and Forums"

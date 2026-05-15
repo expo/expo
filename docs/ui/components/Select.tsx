@@ -83,7 +83,7 @@ export function Select({
           // z-[605] to be above the dialogs (601)
           className={mergeClasses(
             'border-default bg-overlay relative z-[605] max-w-[87.5vw] overflow-hidden rounded-md border shadow-md',
-            'max-md-gutters:max-w-[unset]'
+            'max-md:max-w-[unset]'
           )}
           data-orientation="horizontal">
           <SelectPrimitive.ScrollUpButton className="bg-element flex h-7 items-center justify-center rounded-t-md">

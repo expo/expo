@@ -57,15 +57,15 @@ export const Footer = ({
       className={mergeClasses(
         'flex flex-col gap-10 px-14 pb-10',
         title ? 'pt-10' : 'pt-6',
-        'max-lg-gutters:px-4 max-lg-gutters:pb-12'
+        'max-lg:px-4 max-lg:pb-12'
       )}>
       {title && (previousPage || nextPage) && (
         <div
           className={mergeClasses(
             'flex gap-4',
-            'max-xl-gutters:flex-col-reverse',
-            'max-lg-gutters:flex-row',
-            'max-md-gutters:flex-col-reverse'
+            'max-xl:flex-col-reverse',
+            'max-lg:flex-row',
+            'max-md:flex-col-reverse'
           )}
           data-nosnippet>
           {previousPage ? (
@@ -106,8 +106,7 @@ export const Footer = ({
           )}
         </div>
       )}
-      <div
-        className={mergeClasses('flex flex-row justify-between gap-4', 'max-md-gutters:flex-col')}>
+      <div className={mergeClasses('flex flex-row justify-between gap-4', 'max-md:flex-col')}>
         <div>
           <PageVote />
           <UL className="mt-0! ml-0! flex-1 list-none!">

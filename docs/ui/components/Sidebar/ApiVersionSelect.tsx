@@ -20,7 +20,7 @@ export function ApiVersionSelect() {
     <div
       className={mergeClasses(
         'border-b-default bg-default flex flex-col gap-1 border-b px-4 pt-3 pb-4',
-        'max-lg-gutters:sticky max-lg-gutters:top-0 max-lg-gutters:z-10'
+        'max-lg:sticky max-lg:top-0 max-lg:z-10'
       )}>
       <FOOTNOTE theme="tertiary">Reference version</FOOTNOTE>
       <Select

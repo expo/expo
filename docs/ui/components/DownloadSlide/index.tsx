@@ -17,7 +17,7 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
       className={mergeClasses(
         'border-default bg-default relative flex items-stretch overflow-hidden rounded-lg border shadow-xs transition',
         'hocus:opacity-80 hocus:shadow-sm',
-        'max-sm-gutters:flex-col',
+        'max-sm:flex-col',
         '[&+hr]:mt-6!',
         className
       )}
@@ -25,7 +25,7 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
       <div
         className={mergeClasses(
           'border-secondary bg-element relative flex max-w-[200px] items-center justify-center border-r',
-          'max-sm-gutters:max-w-full max-sm-gutters:border-b max-sm-gutters:border-r-0'
+          'max-sm:max-w-full max-sm:border-r-0 max-sm:border-b'
         )}>
         <img
           src={imageUrl}
@@ -41,7 +41,7 @@ export function DownloadSlide({ title, description, imageUrl, className }: Props
         )}
       </div>
       <Download03Icon
-        className="icon-md text-icon-secondary max-sm-gutters:hidden my-auto mr-4 ml-auto shrink-0"
+        className="icon-md text-icon-secondary my-auto mr-4 ml-auto shrink-0 max-sm:hidden"
         aria-hidden="true"
       />
     </a>

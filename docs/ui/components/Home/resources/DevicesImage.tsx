@@ -5,8 +5,8 @@ export const DevicesImage = () => (
   <svg
     className={mergeClasses(
       'asset-shadow absolute right-0 bottom-0 z-1 max-w-[60%]',
-      'max-lg-gutters:-bottom-4',
-      'max-sm-gutters:-bottom-8'
+      'max-lg:-bottom-4',
+      'max-sm:-bottom-8'
     )}
     width="354"
     height="164"

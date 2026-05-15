@@ -159,8 +159,8 @@ export const H1 = createTextComponent(
   mergeClasses(
     'text-[31px] leading-[1.29] font-bold tracking-[-0.022rem]',
     'my-2 [&_code]:text-[90%]',
-    'max-md-gutters:text-[27px] max-md-gutters:leading-[1.3333]',
-    'max-sm-gutters:text-[23px] max-sm-gutters:leading-[1.3913]'
+    'max-md:text-[27px] max-md:leading-[1.3333]',
+    'max-sm:text-[23px] max-sm:leading-[1.3913]'
   )
 );
 export const RawH2 = createTextComponent(
@@ -168,8 +168,8 @@ export const RawH2 = createTextComponent(
   mergeClasses(
     'text-[25px] leading-[1.4] font-bold tracking-[-0.021rem]',
     'mt-8 mb-3.5 [&_code]:text-[90%]',
-    'max-md-gutters:text-[22px] max-md-gutters:leading-[1.409]',
-    'max-sm-gutters:text-[19px] max-sm-gutters:leading-[1.5263]'
+    'max-md:text-[22px] max-md:leading-[1.409]',
+    'max-sm:text-[19px] max-sm:leading-[1.5263]'
   )
 );
 export const RawH3 = createTextComponent(
@@ -177,8 +177,8 @@ export const RawH3 = createTextComponent(
   mergeClasses(
     'text-[20px] leading-normal font-semibold tracking-[-0.017rem]',
     'mt-7 mb-3 [&_code]:text-[90%]',
-    'max-md-gutters:text-[18px] max-md-gutters:leading-[1.5555]',
-    'max-sm-gutters:text-[16px] max-sm-gutters:leading-relaxed'
+    'max-md:text-[18px] max-md:leading-[1.5555]',
+    'max-sm:text-[16px] max-sm:leading-relaxed'
   )
 );
 export const RawH4 = createTextComponent(

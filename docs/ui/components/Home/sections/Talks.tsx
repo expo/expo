@@ -40,9 +40,9 @@ export function TalkGridWrapper({ children }: PropsWithChildren) {
     <div
       className={mergeClasses(
         'my-4 inline-grid w-full grid-cols-4 gap-8',
-        'max-2xl-gutters:grid-cols-3',
-        'max-xl-gutters:grid-cols-2',
-        'max-sm-gutters:grid-cols-1'
+        'max-2xl:grid-cols-3',
+        'max-xl:grid-cols-2',
+        'max-sm:grid-cols-1'
       )}>
       {children}
     </div>
@@ -82,7 +82,7 @@ export function TalkGridCell({
                 : `https://i3.ytimg.com/vi/${videoId}/maxresdefault.jpg`
             })`,
           }}
-          className="border-b-default max-sm-gutters:h-[168px] h-[138px] border-b bg-cover bg-center"
+          className="border-b-default h-[138px] border-b bg-cover bg-center max-sm:h-[168px]"
         />
         <div className="bg-default flex min-h-[30px] items-start justify-between gap-1 px-4 py-3">
           <LABEL className="block leading-normal">{title}</LABEL>
