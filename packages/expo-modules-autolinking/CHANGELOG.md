@@ -10,6 +10,7 @@
 
 - [iOS] Fixed `pod install` failing with `bad component (expected absolute path component)` for precompiled Expo modules when the project lives under a path containing non-ASCII characters (e.g. emoji). ([#45779](https://github.com/expo/expo/pull/45779) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Wire the macro plugin flag into `ExpoModulesCore`'s own xcconfig so SourceKit can resolve `#externalMacro` references in core source files. ([#45778](https://github.com/expo/expo/pull/45778) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
