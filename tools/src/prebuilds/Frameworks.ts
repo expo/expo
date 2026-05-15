@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
+import { glob } from 'glob';
 import path from 'path';
 
 import { getPrecompileDir } from '../Directories';
@@ -203,43 +204,16 @@ export const Frameworks = {
     productName: string,
     buildType: BuildFlavor
   ): string | null => {
-    const nonVersionedPath = Frameworks.getFrameworkPath(buildPath, productName, buildType);
-    if (fs.existsSync(nonVersionedPath)) {
-      return nonVersionedPath;
+    const nonVersioned = Frameworks.getFrameworkPath(buildPath, productName, buildType);
+    if (fs.existsSync(nonVersioned)) {
+      return nonVersioned;
     }
 
-    const outputDir = path.join(buildPath, 'output');
-    if (!fs.existsSync(outputDir)) {
-      return null;
-    }
-
-    const flavor = buildType.toLowerCase();
-    const xcframeworkName = `${productName}.xcframework`;
-
-    try {
-      for (const entry of fs.readdirSync(outputDir)) {
-        if (entry === 'debug' || entry === 'release') continue;
-
-        const verDir = path.join(outputDir, entry);
-        if (!fs.statSync(verDir).isDirectory()) continue;
-
-        for (const rnVer of fs.readdirSync(verDir)) {
-          const rnDir = path.join(verDir, rnVer);
-          if (!fs.statSync(rnDir).isDirectory()) continue;
-
-          for (const hermesVer of fs.readdirSync(rnDir)) {
-            const candidate = path.join(rnDir, hermesVer, flavor, 'xcframeworks', xcframeworkName);
-            if (fs.existsSync(candidate)) {
-              return candidate;
-            }
-          }
-        }
-      }
-    } catch {
-      return null;
-    }
-
-    return null;
+    const matches = glob.sync(
+      `output/*/*/*/${buildType.toLowerCase()}/xcframeworks/${productName}.xcframework`,
+      { cwd: buildPath, absolute: true }
+    );
+    return matches[0] ?? null;
   },
 
   /**

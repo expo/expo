@@ -477,6 +477,81 @@ describe('expandWithUnbuiltDependencies', () => {
       );
     });
   });
+
+  it('auto-adds a dependency when a bundled resource is newer than the framework', () => {
+    withTempDir((dir) => {
+      const old = new Date('2026-01-01T00:00:00Z');
+      const newer = new Date('2026-01-02T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        old
+      );
+      const depProduct: SPMProduct = {
+        ...makeProduct('DepProduct'),
+        targets: [
+          {
+            type: 'swift',
+            name: 'DepProduct',
+            path: 'ios',
+            pattern: '**/*.swift',
+            resources: [{ path: 'ios/Resources/**/*', rule: 'process' }],
+          },
+        ],
+      };
+      const dep = makeTempPackage(dir, 'dep', [depProduct], old);
+      writeFrameworkWithMtime(dep.buildPath, 'DepProduct', 'debug', old);
+      // A bundled resource was modified after the framework was last built.
+      writeFileWithMtime(path.join(dep.path, 'ios/Resources/icon.png'), 'x', newer);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
+  });
+
+  it('treats a framework with no Info.plist as stale', () => {
+    withTempDir((dir) => {
+      const mtime = new Date('2026-01-02T00:00:00Z');
+      const frameworkDirMtime = new Date('2026-01-03T00:00:00Z');
+      const consumer = makeTempPackage(
+        dir,
+        'consumer',
+        [makeSwiftProduct('Consumer', ['dep/DepProduct'])],
+        mtime
+      );
+      const dep = makeTempPackage(dir, 'dep', [makeSwiftProduct('DepProduct')], mtime);
+      // Create the xcframework directory but omit Info.plist — even though the
+      // directory mtime is newer than sources, freshness must not be inferred
+      // from the bundle dir mtime alone.
+      const frameworkPath = path.join(
+        dep.buildPath,
+        'output',
+        'debug',
+        'xcframeworks',
+        'DepProduct.xcframework'
+      );
+      fs.mkdirSync(frameworkPath, { recursive: true });
+      fs.utimesSync(frameworkPath, frameworkDirMtime, frameworkDirMtime);
+
+      const result = expandWithUnbuiltDependencies([consumer], {
+        buildFlavors: ['Debug'],
+        resolvePackageByName: (name) => (name === 'dep' ? dep : null),
+      });
+
+      assert.deepEqual(
+        result.map((pkg) => pkg.packageName),
+        ['consumer', 'dep']
+      );
+    });
+  });
 });
 
 // ---------------------------------------------------------------------------

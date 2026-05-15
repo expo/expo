@@ -224,13 +224,19 @@ function getPathMtimeMs(filePath: string): number {
   try {
     return fs.statSync(filePath).mtimeMs;
   } catch {
-    return 0;
+    // Unreadable input → force a rebuild rather than silently passing as fresh.
+    return Number.POSITIVE_INFINITY;
   }
 }
 
 function getFrameworkMtimeMs(frameworkPath: string): number {
+  // Info.plist is rewritten on each build; without it the bundle is stale.
   const infoPlistPath = path.join(frameworkPath, 'Info.plist');
-  return getPathMtimeMs(fs.existsSync(infoPlistPath) ? infoPlistPath : frameworkPath);
+  try {
+    return fs.statSync(infoPlistPath).mtimeMs;
+  } catch {
+    return 0;
+  }
 }
 
 function getSourceTargetPath(pkg: SPMPackageSource, target: SPMTarget): string | null {
@@ -282,7 +288,7 @@ function getNewestProductInputMtimeMs(pkg: SPMPackageSource, product: SPMProduct
     }
   }
 
-  return Math.max(0, ...inputPaths.map(getPathMtimeMs));
+  return Math.max(...inputPaths.map(getPathMtimeMs));
 }
 
 function getDependencyFrameworkStatus(
@@ -409,9 +415,7 @@ export function expandWithUnbuiltDependencies(
           }
 
           logger.info(
-            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}${
-              ', ' + reason
-            })`
+            `📎 Auto-adding ${chalk.cyan(depPackageName)} (required by ${chalk.green(pkg.packageName)}, ${reason})`
           );
           added.set(depPackageName, depPkg);
           changed = true;
