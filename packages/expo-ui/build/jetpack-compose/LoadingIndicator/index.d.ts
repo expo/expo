@@ -1,13 +1,15 @@
 import { type ColorValue } from 'react-native';
+import type { ObservableState } from '../../State/useNativeState';
 import { type ModifierConfig } from '../../types';
 /**
  * Common props shared by loading indicator variants.
  */
 export type LoadingIndicatorCommonConfig = {
     /**
-     * The current progress value between `0` and `1`. Omit for indeterminate.
+     * An observable state that holds the current progress value.
+     * Create one with `useNativeState(0)`. Omit for indeterminate loading.
      */
-    progress?: number | null;
+    progress?: ObservableState<number | null>;
     /**
      * Loading indicator color.
      */
@@ -35,4 +37,5 @@ export type ContainedLoadingIndicatorProps = LoadingIndicatorCommonConfig & {
  * Matches the Jetpack Compose `ContainedLoadingIndicator`.
  */
 export declare const ContainedLoadingIndicator: import("react").ComponentType<ContainedLoadingIndicatorProps>;
+export { type ObservableState };
 //# sourceMappingURL=index.d.ts.map

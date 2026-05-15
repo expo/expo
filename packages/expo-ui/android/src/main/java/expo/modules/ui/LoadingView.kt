@@ -11,12 +11,13 @@ import androidx.compose.runtime.Composable
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.OptimizedComposeProps
+import expo.modules.ui.state.ObservableState
 
 // region LoadingIndicator
 
 @OptimizedComposeProps
 data class LoadingIndicatorProps(
-  val progress: Float? = null,
+  val progress: ObservableState? = null,
   val color: Color? = null,
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -26,9 +27,10 @@ fun FunctionalComposableScope.LoadingIndicatorContent(props: LoadingIndicatorPro
   val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   val indicatorColor = props.color.composeOrNull ?: LoadingIndicatorDefaults.indicatorColor
 
-  if (props.progress != null) {
+  val progressState = props.progress
+  if (progressState != null) {
     LoadingIndicator(
-      progress = { props.progress },
+      progress = { (progressState.value as? Number)?.toFloat() ?: 0f },
       modifier = modifier,
       color = indicatorColor
     )
@@ -46,7 +48,7 @@ fun FunctionalComposableScope.LoadingIndicatorContent(props: LoadingIndicatorPro
 
 @OptimizedComposeProps
 data class ContainedLoadingIndicatorProps(
-  val progress: Float? = null,
+  val progress: ObservableState? = null,
   val color: Color? = null,
   val containerColor: Color? = null,
   val modifiers: ModifierList = emptyList()
@@ -58,9 +60,10 @@ fun FunctionalComposableScope.ContainedLoadingIndicatorContent(props: ContainedL
   val indicatorColor = props.color.composeOrNull ?: LoadingIndicatorDefaults.containedIndicatorColor
   val containerColor = props.containerColor.composeOrNull ?: LoadingIndicatorDefaults.containedContainerColor
 
-  if (props.progress != null) {
+  val progressState = props.progress
+  if (progressState != null) {
     ContainedLoadingIndicator(
-      progress = { props.progress },
+      progress = { (progressState.value as? Number)?.toFloat() ?: 0f },
       modifier = modifier,
       indicatorColor = indicatorColor,
       containerColor = containerColor

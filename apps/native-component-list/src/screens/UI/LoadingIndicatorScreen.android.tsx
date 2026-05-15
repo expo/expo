@@ -7,19 +7,20 @@ import {
   Column,
   Row,
   Text as ComposeText,
+  useNativeState,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 export default function LoadingIndicatorScreen() {
-  const [progress, setProgress] = React.useState(0);
+  const progress = useNativeState(0);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setProgress((p) => (p + 0.05) % 1);
+      progress.value = (progress.value + 0.05) % 1;
     }, 500);
     return () => clearInterval(interval);
-  }, []);
+  }, [progress]);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -37,7 +38,9 @@ export default function LoadingIndicatorScreen() {
         <Card modifiers={[fillMaxWidth()]}>
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText>Determinate</ComposeText>
-            <ComposeText>Provide a progress value between 0 and 1.</ComposeText>
+            <ComposeText>
+              Pass progress from useNativeState and update progress.value between 0 and 1.
+            </ComposeText>
             <Row horizontalArrangement={{ spacedBy: 16 }}>
               <LoadingIndicator progress={progress} />
               <ContainedLoadingIndicator progress={progress} />

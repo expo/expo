@@ -1,6 +1,8 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
+import type { ObservableState } from '../../State/useNativeState';
+import { getStateId } from '../../State/utils';
 import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -9,9 +11,10 @@ import { createViewModifierEventListener } from '../modifiers/utils';
  */
 export type LoadingIndicatorCommonConfig = {
   /**
-   * The current progress value between `0` and `1`. Omit for indeterminate.
+   * An observable state that holds the current progress value.
+   * Create one with `useNativeState(0)`. Omit for indeterminate loading.
    */
-  progress?: number | null;
+  progress?: ObservableState<number | null>;
   /**
    * Loading indicator color.
    */
@@ -22,19 +25,33 @@ export type LoadingIndicatorCommonConfig = {
   modifiers?: ModifierConfig[];
 };
 
-function transformProps<T extends LoadingIndicatorCommonConfig>(props: T): T {
-  const { modifiers, ...restProps } = props;
+type NativeLoadingIndicatorCommonConfig = Omit<
+  LoadingIndicatorCommonConfig,
+  'progress' | 'modifiers'
+> & {
+  progress?: number;
+  modifiers?: unknown;
+};
+
+function transformProps<T extends LoadingIndicatorCommonConfig>(
+  props: T
+): NativeLoadingIndicatorCommonConfig {
+  const { modifiers, progress, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
-  } as T;
+    progress: getStateId(progress),
+  };
 }
 
 function createLoadingIndicatorComponent<P extends LoadingIndicatorCommonConfig>(
   viewName: string
 ): React.ComponentType<P> {
-  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  const NativeView: React.ComponentType<NativeLoadingIndicatorCommonConfig> = requireNativeView(
+    'ExpoUI',
+    viewName
+  );
   function Component(props: P) {
     return <NativeView {...transformProps(props)} />;
   }
@@ -69,5 +86,7 @@ export type ContainedLoadingIndicatorProps = LoadingIndicatorCommonConfig & {
  */
 export const ContainedLoadingIndicator =
   createLoadingIndicatorComponent<ContainedLoadingIndicatorProps>('ContainedLoadingIndicatorView');
-
 // endregion
+
+// Exported for docs api data
+export { type ObservableState };
