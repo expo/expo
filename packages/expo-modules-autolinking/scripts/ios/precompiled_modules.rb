@@ -80,7 +80,7 @@ module Expo
     @warned_no_prebuilt_react = false
     @target_platform = nil
     @xcframework_slice_cache = nil
-    @status_cache = nil                 # Hash: pod_name -> resolve_prebuilt_status result
+    @status_cache = {}                  # Hash: pod_name -> resolve_prebuilt_status result
 
     class << self
       # Returns the build flavor (debug/release) for precompiled modules.
@@ -125,6 +125,7 @@ module Expo
 
       def build_from_source=(patterns)
         @build_from_source_patterns = (patterns || []).map { |p| Regexp.new("^#{p}$") }
+        @status_cache = {}
       end
 
       def target_platform=(platform)
@@ -136,6 +137,7 @@ module Expo
         @claimed_vendored_frameworks = nil
         @framework_owner_map = nil
         @xcframework_slice_cache = nil
+        @status_cache = {}
       end
 
       # Checks if a pod is configured to be built from source via buildFromSource.
@@ -1820,7 +1822,7 @@ module Expo
       # exists and every local Expo dependency also uses prebuilt.
       def resolve_prebuilt_status(pod_name, visiting = Set.new)
         return _resolve_prebuilt_status_uncached(pod_name, visiting) unless visiting.empty?
-        (@status_cache ||= {})[pod_name] ||= _resolve_prebuilt_status_uncached(pod_name, visiting)
+        @status_cache[pod_name] ||= _resolve_prebuilt_status_uncached(pod_name, visiting)
       end
 
       def _resolve_prebuilt_status_uncached(pod_name, visiting)
