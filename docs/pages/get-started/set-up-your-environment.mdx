@@ -1,32 +1,1573 @@
----
-title: Set up your environment
-description: Learn how to set up your development environment to start building with Expo.
-hideTOC: true
-searchRank: 3
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="PoaRide Admin Portal — Rides Made Poa" />
+  <title>PoaRide — Admin Portal</title>
 
-import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
-import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
-import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+  <!-- ── Fonts ── -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+  <!-- ── Icons ── -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+  />
 
-Let's set up a local development environment for running your project on Android and iOS.
+  <style>
+    /* ════════════════════════════════════════════════════════
+       POARIDE ADMIN PORTAL  ·  v1.0
+       Top-navigation layout  ·  Pure HTML / CSS / JS
+       ════════════════════════════════════════════════════════ */
 
-## Where would you like to develop?
+    /* ── Brand Tokens ── */
+    :root {
+      --pr:      #0A6B45;   /* PoaRide Green */
+      --pr2:     #085537;   /* Dark green */
+      --pr3:     #0D8A58;   /* Mid green */
+      --pr-l:    rgba(10,107,69,.10);
+      --pr-ll:   rgba(10,107,69,.05);
+      --am:      #F5A623;   /* Amber */
+      --am2:     #E8920D;
+      --am-l:    rgba(245,166,35,.12);
+      --bg:      #F4F7F5;   /* Page background */
+      --card:    #ffffff;
+      --text:    #1A1A1A;
+      --muted:   #6B7280;
+      --border:  rgba(10,107,69,.14);
+      --danger:  #E53E3E;
+      --danger-l:rgba(229,62,62,.10);
+      --safe:    #38A169;
+      --safe-l:  rgba(56,161,105,.10);
+      --info:    #3B82F6;
+      --info-l:  rgba(59,130,246,.10);
+      --ai:      #7C3AED;
+      --ai-l:    rgba(124,58,237,.10);
+      --font:    'Plus Jakarta Sans', sans-serif;
+      --topbar:  56px;
+      --navbar:  48px;
+    }
 
-We recommend using a real device to develop, since you'll get to see exactly what your users will see.
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); font-size: 14px; min-height: 100vh; }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-<PlatformAndDeviceForm />
+    /* ════════════════════════════════════════════════════════
+       TOP HEADER BAR
+       ════════════════════════════════════════════════════════ */
+    .topbar {
+      height: var(--topbar);
+      background: var(--pr);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 14px;
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      box-shadow: 0 2px 12px rgba(0,0,0,.18);
+    }
+    .tb-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+      text-decoration: none;
+    }
+    .tb-brand { color: #fff; font-weight: 800; font-size: 17px; letter-spacing: -.3px; }
+    .tb-brand span { color: var(--am); }
+    .tb-divider { width: 1px; height: 28px; background: rgba(255,255,255,.2); flex-shrink: 0; }
+    .tb-search {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 9px;
+      padding: 7px 12px;
+      flex: 1;
+      max-width: 320px;
+    }
+    .tb-search input {
+      background: none;
+      border: none;
+      outline: none;
+      font-size: 12.5px;
+      color: #fff;
+      font-family: var(--font);
+      flex: 1;
+      min-width: 0;
+    }
+    .tb-search input::placeholder { color: rgba(255,255,255,.45); }
+    .tb-search i { color: rgba(255,255,255,.55); font-size: 12px; flex-shrink: 0; }
+    .tb-spacer { flex: 1; }
+    .tb-actions { display: flex; align-items: center; gap: 8px; }
+    .tb-icon {
+      width: 34px; height: 34px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: rgba(255,255,255,.8);
+      font-size: 13px;
+      position: relative;
+      transition: background .15s;
+    }
+    .tb-icon:hover { background: rgba(255,255,255,.2); }
+    .tb-badge {
+      position: absolute; top: -3px; right: -3px;
+      min-width: 16px; height: 16px;
+      background: var(--danger);
+      border-radius: 8px;
+      font-size: 9px; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+      border: 1.5px solid var(--pr);
+    }
+    .tb-user {
+      display: flex; align-items: center; gap: 8px;
+      padding: 4px 10px;
+      background: rgba(255,255,255,.12);
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    .tb-av {
+      width: 28px; height: 28px;
+      background: var(--am);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--pr2);
+      flex-shrink: 0;
+    }
+    .tb-uname { font-size: 12px; font-weight: 600; color: #fff; }
+    .tb-urole { font-size: 10px; color: rgba(255,255,255,.55); }
 
-## How would you like to develop?
+    /* ════════════════════════════════════════════════════════
+       NAVIGATION BAR
+       ════════════════════════════════════════════════════════ */
+    .navbar {
+      height: var(--navbar);
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 8px;
+      position: sticky;
+      top: var(--topbar);
+      z-index: 150;
+      overflow-x: auto;
+      gap: 2px;
+    }
+    .navbar::-webkit-scrollbar { display: none; }
+    .nav-group {
+      display: flex;
+      align-items: center;
+      gap: 1px;
+      padding: 0 6px;
+      border-right: 1px solid var(--border);
+    }
+    .nav-group:last-child { border-right: none; }
+    .nav-label {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      padding: 0 6px;
+      white-space: nowrap;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+      transition: all .15s;
+      border: 1px solid transparent;
+      user-select: none;
+    }
+    .nav-item:hover { background: var(--pr-ll); color: var(--pr); }
+    .nav-item.active { background: var(--pr-l); color: var(--pr); font-weight: 700; border-color: var(--border); }
+    .nav-item i { font-size: 12px; }
+    .nav-badge {
+      min-width: 17px; height: 17px;
+      background: var(--am);
+      color: #fff;
+      font-size: 9px; font-weight: 700;
+      padding: 0 4px;
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-badge.red { background: var(--danger); }
+    .nav-badge.ai  { background: var(--ai); }
 
-Expo Go is a playground for students and learners to try Expo quickly. A development build is a build of your own app that includes Expo's developer tools.
+    /* ════════════════════════════════════════════════════════
+       PAGE TITLE BAR
+       ════════════════════════════════════════════════════════ */
+    .page-titlebar {
+      padding: 14px 22px 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .page-title { font-size: 18px; font-weight: 800; color: var(--pr); }
+    .page-title em { font-style: normal; font-size: 12px; color: var(--muted); font-weight: 400; margin-left: 8px; }
+    .page-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
-<DevelopmentModeForm />
+    /* ════════════════════════════════════════════════════════
+       CONTENT
+       ════════════════════════════════════════════════════════ */
+    .content { padding: 18px 22px; }
+    .page { display: none; }
+    .page.active { display: block; }
 
----
+    /* ════════════════════════════════════════════════════════
+       BUTTONS
+       ════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      padding: 8px 16px; border-radius: 9px;
+      font-size: 12.5px; font-weight: 600;
+      cursor: pointer; border: none;
+      font-family: var(--font);
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .btn-pr    { background: var(--pr);    color: #fff; }
+    .btn-pr:hover { background: var(--pr2); }
+    .btn-am    { background: var(--am);    color: #fff; }
+    .btn-am:hover { background: var(--am2); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+    .btn-danger{ background: var(--danger-l); color: var(--danger); border: 1px solid rgba(229,62,62,.2); }
+    .btn-safe  { background: var(--safe-l);  color: var(--safe);   border: 1px solid rgba(56,161,105,.2); }
+    .btn-ai    { background: var(--ai-l);    color: var(--ai);     border: 1px solid rgba(124,58,237,.2); }
+    .btn-sm  { padding: 5px 11px;  font-size: 11.5px; }
+    .btn-xs  { padding: 3px  9px;  font-size: 11px;   }
 
-<DevelopmentEnvironmentInstructions />
+    /* ════════════════════════════════════════════════════════
+       GRIDS
+       ════════════════════════════════════════════════════════ */
+    .g4    { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 18px; }
+    .g3    { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 18px; }
+    .g2    { display: grid; grid-template-columns: 1fr 1fr;       gap: 18px; margin-bottom: 18px; }
+    .g-wide{ display: grid; grid-template-columns: 3fr 2fr;       gap: 18px; margin-bottom: 18px; }
 
-## Next step
+    @media (max-width: 1100px) { .g4 { grid-template-columns: 1fr 1fr; } .g-wide { grid-template-columns: 1fr; } }
+    @media (max-width:  700px) { .g4, .g3, .g2, .g-wide { grid-template-columns: 1fr; } }
 
-You have a project and a development environment. Now it's time to start developing.
+    /* ════════════════════════════════════════════════════════
+       STAT CARD
+       ════════════════════════════════════════════════════════ */
+    .sc {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 16px 18px;
+    }
+    .sc-top  { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .sc-icon { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .sc-val  { font-size: 24px; font-weight: 800; line-height: 1; letter-spacing: -.5px; color: var(--pr); }
+    .sc-lbl  { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .sc-change { font-size: 11px; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+    .up { color: var(--safe); }
+    .dn { color: var(--danger); }
+
+    /* ════════════════════════════════════════════════════════
+       PANEL CARD
+       ════════════════════════════════════════════════════════ */
+    .panel-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .pc-head {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .pc-title { font-size: 14px; font-weight: 700; color: var(--text); }
+    .pc-sub   { font-size: 11px; color: var(--muted); }
+    .pc-body  { padding: 16px 18px; }
+
+    /* ════════════════════════════════════════════════════════
+       TABLE
+       ════════════════════════════════════════════════════════ */
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th {
+      padding: 9px 14px; text-align: left;
+      font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); font-weight: 600;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .tbl td {
+      padding: 11px 14px; font-size: 12.5px;
+      border-bottom: 1px solid rgba(10,107,69,.07);
+      vertical-align: middle;
+    }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl tr:hover td     { background: var(--pr-ll); }
+    .av-cell { display: flex; align-items: center; gap: 9px; }
+    .av {
+      width: 30px; height: 30px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 11px; flex-shrink: 0;
+    }
+    .av-name { font-weight: 600; font-size: 12.5px; }
+    .av-sub  { font-size: 10.5px; color: var(--muted); }
+    .mono    { font-family: monospace; font-size: 12px; }
+
+    /* ════════════════════════════════════════════════════════
+       BADGES
+       ════════════════════════════════════════════════════════ */
+    .badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 8px; border-radius: 20px;
+      font-size: 10.5px; font-weight: 600;
+    }
+    .badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+    .b-green  { background: var(--safe-l);  color: var(--safe);    } .b-green::before  { background: var(--safe);    }
+    .b-amber  { background: var(--am-l);    color: #a06b00;        } .b-amber::before  { background: var(--am);      }
+    .b-red    { background: var(--danger-l);color: var(--danger);  } .b-red::before    { background: var(--danger);  }
+    .b-grey   { background: rgba(107,114,128,.1); color: var(--muted); } .b-grey::before { background: var(--muted); }
+    .b-blue   { background: var(--info-l);  color: var(--info);    } .b-blue::before   { background: var(--info);    }
+    .b-ai     { background: var(--ai-l);    color: var(--ai);      } .b-ai::before     { background: var(--ai);      }
+
+    /* ════════════════════════════════════════════════════════
+       AI PANELS
+       ════════════════════════════════════════════════════════ */
+    .ai-review  { background: var(--am-l);    color: #a06b00;     border: 1px solid rgba(245,166,35,.25); }
+    .ai-approve { background: var(--safe-l);  color: var(--safe); border: 1px solid rgba(56,161,105,.2); }
+    .ai-reject  { background: var(--danger-l);color: var(--danger);border:1px solid rgba(229,62,62,.2); }
+    .ai-review, .ai-approve, .ai-reject {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px; border-radius: 9px;
+      font-size: 12px; font-weight: 600;
+    }
+    .ai-reason {
+      font-size: 11px; color: var(--muted);
+      margin-top: 8px; padding: 8px 10px;
+      background: rgba(255,255,255,.6); border-radius: 7px; line-height: 1.5;
+    }
+    .confidence-bar  { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .confidence-fill { height: 100%; border-radius: 4px; background: linear-gradient(to right, var(--ai), var(--info)); }
+
+    /* ════════════════════════════════════════════════════════
+       MAP BLOCK
+       ════════════════════════════════════════════════════════ */
+    .map-block {
+      background: linear-gradient(135deg, #c8e6c9, #81c784, #4CAF50);
+      border-radius: 11px; position: relative; overflow: hidden;
+    }
+    .map-block::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M0 20h40M20 0v40' stroke='%23fff' stroke-width='.4' opacity='.3'/%3E%3C/svg%3E");
+    }
+    .car-dot {
+      position: absolute;
+      width: 10px; height: 10px;
+      border-radius: 50%; border: 2px solid #fff;
+      animation: cpulse 2s ease-in-out infinite;
+    }
+    @keyframes cpulse {
+      0%,100% { box-shadow: 0 0 0 0   rgba(10,107,69,.5); }
+      60%     { box-shadow: 0 0 0 7px rgba(10,107,69,0);  }
+    }
+    .map-overlay {
+      position: absolute; bottom: 8px; left: 8px; right: 8px;
+      display: flex; justify-content: space-between;
+    }
+    .map-pill {
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(4px);
+      color: #fff; font-size: 10px;
+      padding: 3px 8px; border-radius: 20px;
+    }
+
+    /* ════════════════════════════════════════════════════════
+       SURGE PANEL
+       ════════════════════════════════════════════════════════ */
+    .surge-live {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 12px;
+      background: var(--danger-l); border-radius: 20px;
+      font-size: 11.5px; font-weight: 600; color: var(--danger);
+    }
+    .surge-live .pulse {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--danger);
+      animation: spulse 1.5s ease-in-out infinite;
+    }
+    @keyframes spulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)} }
+    .surge-card {
+      border: 1.5px solid var(--danger); border-radius: 11px; padding: 14px;
+      background: linear-gradient(135deg, rgba(229,62,62,.04), rgba(245,166,35,.04));
+    }
+    .surge-multi { font-size: 28px; font-weight: 800; color: var(--danger); }
+    .heat-map   { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; margin-top: 8px; }
+    .heat-cell  { height: 20px; border-radius: 4px; cursor: pointer; transition: all .15s; }
+    .heat-cell:hover { transform: scaleY(1.2); }
+
+    /* ════════════════════════════════════════════════════════
+       RECEIPT
+       ════════════════════════════════════════════════════════ */
+    .receipt {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 13px; padding: 20px;
+    }
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 16px; padding-bottom: 16px;
+      border-bottom: 1.5px dashed var(--border);
+    }
+    .receipt-logo { margin: 0 auto 10px; display: block; }
+    .receipt-row {
+      display: flex; justify-content: space-between;
+      font-size: 12.5px; padding: 5px 0;
+      border-bottom: .5px solid var(--border);
+    }
+    .receipt-row:last-child { border-bottom: none; }
+    .receipt-row.total {
+      font-weight: 700; font-size: 14px; color: var(--pr);
+      border-top: 1.5px solid var(--border);
+      margin-top: 4px; padding-top: 8px;
+    }
+    .receipt-actions { display: flex; gap: 8px; margin-top: 14px; }
+    .receipt-actions .btn { flex: 1; justify-content: center; }
+
+    /* ════════════════════════════════════════════════════════
+       SCORE BARS
+       ════════════════════════════════════════════════════════ */
+    .score-row   { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+    .score-label { width: 90px; color: var(--muted); }
+    .score-track { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .score-fill  { height: 100%; border-radius: 3px; }
+
+    /* ════════════════════════════════════════════════════════
+       FORMS
+       ════════════════════════════════════════════════════════ */
+    .field { margin-bottom: 12px; }
+    .field label {
+      display: block; font-size: 10.5px; font-weight: 600;
+      color: var(--muted); margin-bottom: 4px;
+      text-transform: uppercase; letter-spacing: .4px;
+    }
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 9px; padding: 9px 12px;
+      font-size: 12.5px; font-family: var(--font); color: var(--text);
+      outline: none; transition: border-color .15s;
+    }
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--pr); }
+    .form-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    /* ════════════════════════════════════════════════════════
+       TABS
+       ════════════════════════════════════════════════════════ */
+    .tabs { display: flex; gap: 3px; border-bottom: 1.5px solid var(--border); margin-bottom: 16px; flex-wrap: wrap; }
+    .tab {
+      padding: 8px 14px; font-size: 12px; cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid transparent; border-bottom: none;
+      color: var(--muted); background: transparent;
+      transition: all .15s; font-family: var(--font);
+    }
+    .tab.active {
+      background: var(--card); color: var(--pr);
+      border-color: var(--border); font-weight: 600;
+      border-bottom: 1.5px solid var(--card); margin-bottom: -1.5px;
+    }
+
+    /* ════════════════════════════════════════════════════════
+       MODAL
+       ════════════════════════════════════════════════════════ */
+    .modal-ov {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,.5); backdrop-filter: blur(4px);
+      z-index: 300;
+      display: none; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .modal-ov.open { display: flex; }
+    .modal {
+      background: var(--card); border-radius: 16px;
+      width: 540px; max-height: 86vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      border: 1px solid var(--border);
+    }
+    .modal-head {
+      padding: 18px 20px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-title { font-size: 15px; font-weight: 700; }
+    .modal-close {
+      width: 28px; height: 28px; border-radius: 7px;
+      background: var(--bg); border: 1px solid var(--border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 12px;
+    }
+    .modal-body { padding: 18px 20px; }
+    .modal-foot {
+      padding: 14px 20px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 9px;
+    }
+
+    /* ════════════════════════════════════════════════════════
+       TOAST NOTIFICATION
+       ════════════════════════════════════════════════════════ */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px;
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 11px 16px;
+      font-size: 12.5px; z-index: 999;
+      display: flex; align-items: center; gap: 9px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.15);
+      animation: tup .25s ease;
+      border-left: 3px solid var(--pr);
+    }
+    .toast.ok   { border-left-color: var(--safe);    }
+    .toast.warn { border-left-color: var(--am);      }
+    .toast.err  { border-left-color: var(--danger);  }
+    @keyframes tup { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* ════════════════════════════════════════════════════════
+       MISC HELPERS
+       ════════════════════════════════════════════════════════ */
+    .mpesa-tag {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: rgba(0,150,57,.12); border: 1px solid rgba(0,150,57,.25);
+      color: #006429; border-radius: 6px; padding: 3px 8px;
+      font-size: 10.5px; font-weight: 700;
+    }
+    .wait-fee {
+      background: var(--am-l); color: #a06b00;
+      border-radius: 6px; padding: 2px 7px;
+      font-size: 10.5px; font-weight: 600;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--safe);
+      display: inline-block; animation: ldot 1.5s ease-in-out infinite; margin-right: 4px;
+    }
+    @keyframes ldot { 0%,100%{opacity:1} 50%{opacity:.3} }
+    .dc    { padding: 2px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; cursor: pointer; }
+    .dc-ok { background: var(--safe-l);   color: var(--safe);    }
+    .dc-ms { background: var(--danger-l); color: var(--danger);  }
+    .dc-pd { background: var(--am-l);     color: #a06b00;        }
+    .fraud-row { display: flex; align-items: flex-start; gap: 11px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    .fraud-row:last-child { border-bottom: none; }
+    .fraud-icon { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .prog-bar  { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 4px 0; }
+    .prog-fill { height: 100%; border-radius: 3px; background: var(--pr); transition: width .5s; }
+    /* Entry animations */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)} }
+    .fu  { animation: fadeUp .3s ease both; }
+    .fu1 { animation-delay: .05s; }
+    .fu2 { animation-delay: .10s; }
+    .fu3 { animation-delay: .15s; }
+    .fu4 { animation-delay: .20s; }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════
+     TOP HEADER
+     ════════════════════════════════════════════════════════ -->
+<header class="topbar">
+  <!-- Logo -->
+  <div class="tb-logo">
+    <svg width="30" height="30" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="40" cy="40" r="38" fill="rgba(255,255,255,0.15)"/>
+      <rect x="33" y="16" width="14" height="38" rx="7" fill="rgba(255,255,255,0.18)"/>
+      <rect x="22" y="32" width="36" height="16" rx="6" fill="#fff"/>
+      <rect x="27" y="22" width="26" height="14" rx="5" fill="#fff"/>
+      <circle cx="30" cy="48" r="4" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="50" cy="48" r="4" fill="rgba(255,255,255,0.4)"/>
+      <circle cx="58" cy="20" r="8" fill="#F5A623"/>
+      <circle cx="58" cy="20" r="4" fill="#fff"/>
+    </svg>
+    <div class="tb-brand">Poa<span>Ride</span></div>
+  </div>
+
+  <div class="tb-divider"></div>
+
+  <!-- Search -->
+  <div class="tb-search">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input placeholder="Search drivers, trips, riders…" />
+  </div>
+
+  <div class="tb-spacer"></div>
+
+  <!-- Action icons -->
+  <div class="tb-actions">
+    <div class="tb-icon" onclick="showToast('2 active SOS alerts','err')" title="SOS Alerts">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <div class="tb-badge">2</div>
+    </div>
+    <div class="tb-icon" onclick="showToast('7 KYC reviews pending','warn')" title="Notifications">
+      <i class="fa-solid fa-bell"></i>
+      <div class="tb-badge">7</div>
+    </div>
+    <div class="tb-icon" title="Help">
+      <i class="fa-solid fa-circle-question"></i>
+    </div>
+    <div class="tb-divider"></div>
+    <div class="tb-user">
+      <div class="tb-av">SA</div>
+      <div>
+        <div class="tb-uname">Super Admin</div>
+        <div class="tb-urole">admin@poaride.co.ke</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ════════════════════════════════════════════════════════
+     NAVIGATION BAR
+     ════════════════════════════════════════════════════════ -->
+<nav class="navbar">
+  <div class="nav-group">
+    <span class="nav-label">Overview</span>
+    <div class="nav-item active" onclick="showPage('dashboard',this)">
+      <i class="fa-solid fa-gauge-high"></i>Dashboard
+    </div>
+    <div class="nav-item" onclick="showPage('live',this)">
+      <i class="fa-solid fa-satellite-dish"></i>Live Fleet
+      <span class="nav-badge">24</span>
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">AI Tools</span>
+    <div class="nav-item" onclick="showPage('ai-kyc',this)">
+      <i class="fa-solid fa-brain"></i>AI KYC
+      <span class="nav-badge ai">7</span>
+    </div>
+    <div class="nav-item" onclick="showPage('fraud',this)">
+      <i class="fa-solid fa-shield-halved"></i>Fraud
+      <span class="nav-badge red">5</span>
+    </div>
+    <div class="nav-item" onclick="showPage('surge',this)">
+      <i class="fa-solid fa-bolt"></i>Surge AI
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">People</span>
+    <div class="nav-item" onclick="showPage('drivers',this)">
+      <i class="fa-solid fa-id-card"></i>Drivers
+    </div>
+    <div class="nav-item" onclick="showPage('riders',this)">
+      <i class="fa-solid fa-users"></i>Riders
+    </div>
+    <div class="nav-item" onclick="showPage('trips',this)">
+      <i class="fa-solid fa-route"></i>Trips
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Finance</span>
+    <div class="nav-item" onclick="showPage('earnings',this)">
+      <i class="fa-solid fa-chart-line"></i>Revenue
+    </div>
+    <div class="nav-item" onclick="showPage('receipts',this)">
+      <i class="fa-solid fa-receipt"></i>Receipts
+    </div>
+    <div class="nav-item" onclick="showPage('payouts',this)">
+      <i class="fa-solid fa-money-bill-transfer"></i>Payouts
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Campaigns</span>
+    <div class="nav-item" onclick="showPage('promos',this)">
+      <i class="fa-solid fa-tag"></i>Promos
+    </div>
+    <div class="nav-item" onclick="showPage('notifications',this)">
+      <i class="fa-solid fa-paper-plane"></i>Notify
+    </div>
+  </div>
+
+  <div class="nav-group">
+    <span class="nav-label">Config</span>
+    <div class="nav-item" onclick="showPage('safety',this)">
+      <i class="fa-solid fa-person-shelter"></i>Safety
+      <span class="nav-badge red">2</span>
+    </div>
+    <div class="nav-item" onclick="showPage('fares',this)">
+      <i class="fa-solid fa-sliders"></i>Fares
+    </div>
+    <div class="nav-item" onclick="showPage('reports',this)">
+      <i class="fa-solid fa-chart-bar"></i>Reports
+    </div>
+    <div class="nav-item" onclick="showPage('settings',this)">
+      <i class="fa-solid fa-gear"></i>Settings
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGE TITLE BAR
+     ════════════════════════════════════════════════════════ -->
+<div class="page-titlebar">
+  <div class="page-title" id="pageTitle">Dashboard <em>Overview</em></div>
+  <div class="page-actions">
+    <button class="btn btn-ghost btn-sm" onclick="doExport()">
+      <i class="fa-solid fa-download"></i>Export CSV
+    </button>
+    <button class="btn btn-pr btn-sm" onclick="openModal('m-add-driver')">
+      <i class="fa-solid fa-plus"></i>Add Driver
+    </button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     PAGES
+     ════════════════════════════════════════════════════════ -->
+
+<!-- ─── DASHBOARD ─────────────────────────────────────────── -->
+<div class="content page active" id="page-dashboard">
+
+  <!-- Row 1: KPI cards -->
+  <div class="g4 fu">
+    <div class="sc fu1">
+      <div class="sc-top">
+        <div class="sc-icon" style="background:var(--pr-l);color:var(--pr);"><i class="fa-solid fa-car-side"></i></div>
+        <span class="badge b-green">+12%</span>
+      </div>
+      <div class="sc-val">1,247</div>
+      <div class="sc-lbl">Total Rides Today</div>
+    </div>
+    <div class="sc fu2">
+      <div class="sc-top">
+        <div class="sc-icon" style="background:var(--am-l);color:var(--am2);"><i class="fa-solid fa-coins"></i></div>
+        <span class="badge b-green">+8.1%</span>
+      </div>
+      <div class="sc-val" style="font-size:20px;color:var(--am2);">KSH 84,320</div>
+      <div class="sc-lbl">Revenue Today</div>
+    </div>
+    <div class="sc fu3">
+      <div class="sc-top">
+        <div class="sc-icon" style="background:var(--safe-l);color:var(--safe);"><i class="fa-solid fa-id-card"></i></div>
+        <span class="badge b-grey">342 online</span>
+      </div>
+      <div class="sc-val" style="color:var(--safe);">342</div>
+      <div class="sc-lbl">Drivers Online</div>
+    </div>
+    <div class="sc fu4">
+      <div class="sc-top">
+        <div class="sc-icon" style="background:var(--info-l);color:var(--info);"><i class="fa-solid fa-users"></i></div>
+        <span class="badge b-green">+47</span>
+      </div>
+      <div class="sc-val">50,247</div>
+      <div class="sc-lbl">Registered Riders</div>
+    </div>
+  </div>
+
+  <!-- Row 2: Secondary KPIs -->
+  <div class="g4">
+    <div class="sc">
+      <div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-hourglass-half"></i></div>
+      <div class="sc-val" style="font-size:18px;">KSH 3,240</div>
+      <div class="sc-lbl">Waiting Fee Revenue</div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px;">128 trips triggered &gt;3 min</div>
+    </div>
+    <div class="sc">
+      <div class="sc-icon" style="background:var(--danger-l);color:var(--danger);margin-bottom:8px;"><i class="fa-solid fa-bolt"></i></div>
+      <div class="sc-val" style="font-size:18px;color:var(--danger);">1.3×</div>
+      <div class="sc-lbl">Surge Multiplier (CBD)</div>
+      <div style="font-size:10.5px;color:var(--danger);margin-top:4px;"><span class="live-dot"></span>AI auto-activated 14:30</div>
+    </div>
+    <div class="sc">
+      <div class="sc-icon" style="background:var(--ai-l);color:var(--ai);margin-bottom:8px;"><i class="fa-solid fa-brain"></i></div>
+      <div class="sc-val" style="font-size:18px;color:var(--ai);">94.7%</div>
+      <div class="sc-lbl">AI KYC Accuracy</div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px;">7 pending review</div>
+    </div>
+    <div class="sc">
+      <div class="sc-icon" style="background:var(--safe-l);color:var(--safe);margin-bottom:8px;"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sc-val" style="font-size:18px;color:var(--safe);">99.2%</div>
+      <div class="sc-lbl">Safe Trip Rate</div>
+      <div style="font-size:10.5px;color:var(--muted);margin-top:4px;">5 fraud alerts active</div>
+    </div>
+  </div>
+
+  <!-- Row 3: Map + KPIs -->
+  <div class="g-wide fu2">
+    <!-- Live Fleet Map -->
+    <div class="panel-card">
+      <div class="pc-head">
+        <div>
+          <span class="pc-title">Live Fleet Map — Nairobi</span>
+          <div class="pc-sub">Real-time driver positions</div>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <div class="surge-live"><div class="pulse"></div>SURGE 1.3×</div>
+          <button class="btn btn-ghost btn-xs" onclick="showPage('live',document.querySelectorAll('.nav-item')[1])">Full Map</button>
+        </div>
+      </div>
+      <div class="map-block" style="height:260px;">
+        <div class="car-dot" style="top:28%;left:22%;background:var(--pr);"></div>
+        <div class="car-dot" style="top:45%;left:38%;background:var(--pr);animation-delay:.5s;"></div>
+        <div class="car-dot" style="top:58%;left:60%;background:var(--pr);animation-delay:1s;"></div>
+        <div class="car-dot" style="top:32%;left:70%;background:var(--pr);animation-delay:.3s;"></div>
+        <div class="car-dot" style="top:20%;left:55%;background:var(--am);"></div>
+        <div class="car-dot" style="top:65%;left:25%;background:var(--am);animation-delay:.8s;"></div>
+        <div class="car-dot" style="top:40%;left:48%;background:var(--danger);animation-delay:.2s;border-color:var(--danger);"></div>
+        <div class="map-overlay">
+          <div class="map-pill"><span style="width:8px;height:8px;background:var(--pr);border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>Driver</div>
+          <div class="map-pill"><span style="width:8px;height:8px;background:var(--am);border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>Trip Active</div>
+          <div class="map-pill"><span style="width:8px;height:8px;background:var(--danger);border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>SOS Alert</div>
+        </div>
+      </div>
+      <div style="padding:10px 14px;display:flex;gap:20px;">
+        <div style="font-size:11px;color:var(--muted);">Online: <b style="color:var(--pr);">342</b></div>
+        <div style="font-size:11px;color:var(--muted);">Active trips: <b style="color:var(--pr);">87</b></div>
+        <div style="font-size:11px;color:var(--muted);">SOS alerts: <b style="color:var(--danger);">2</b></div>
+        <div style="font-size:11px;color:var(--muted);">Avg wait: <b style="color:var(--pr);">2m 14s</b></div>
+      </div>
+    </div>
+
+    <!-- KPIs + AI Feed -->
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <!-- KPI bars -->
+      <div class="panel-card" style="margin-bottom:0;">
+        <div class="pc-head"><span class="pc-title">Today's Performance</span></div>
+        <div style="padding:8px 0;">
+          <div class="score-row" style="padding:7px 16px;border-bottom:1px solid var(--border);"><span class="score-label">Avg Rating</span><div class="score-track"><div class="score-fill" style="width:94%;background:var(--pr);"></div></div><b style="font-size:12px;min-width:36px;text-align:right;">4.72</b></div>
+          <div class="score-row" style="padding:7px 16px;border-bottom:1px solid var(--border);"><span class="score-label">Trip Distance</span><div class="score-track"><div class="score-fill" style="width:65%;background:var(--info);"></div></div><b style="font-size:12px;min-width:36px;text-align:right;">8.4km</b></div>
+          <div class="score-row" style="padding:7px 16px;border-bottom:1px solid var(--border);"><span class="score-label">Wait Time</span><div class="score-track"><div class="score-fill" style="width:44%;background:var(--am);"></div></div><b style="font-size:12px;min-width:36px;text-align:right;">2m14s</b></div>
+          <div class="score-row" style="padding:7px 16px;border-bottom:1px solid var(--border);"><span class="score-label">Cancellations</span><div class="score-track"><div class="score-fill" style="width:8%;background:var(--danger);"></div></div><b style="font-size:12px;min-width:36px;text-align:right;">4.2%</b></div>
+          <div class="score-row" style="padding:7px 16px;"><span class="score-label">AI Accuracy</span><div class="score-track"><div class="score-fill" style="width:95%;background:var(--ai);"></div></div><b style="font-size:12px;min-width:36px;text-align:right;">94.7%</b></div>
+        </div>
+      </div>
+      <!-- AI Activity -->
+      <div class="panel-card" style="margin-bottom:0;flex:1;">
+        <div class="pc-head"><span class="pc-title">AI Activity</span><span class="badge b-ai"><i class="fa-solid fa-brain"></i> Live</span></div>
+        <div style="padding:10px 14px;display:flex;flex-direction:column;gap:8px;">
+          <div style="background:var(--safe-l);border-radius:9px;padding:9px 12px;border:1px solid rgba(56,161,105,.2);"><div style="font-size:12px;font-weight:600;color:var(--safe);"><i class="fa-solid fa-brain"></i> KYC Auto-Approved</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Grace N. — 98% confidence</div><div style="font-size:10px;color:var(--muted);">2 min ago</div></div>
+          <div style="background:var(--danger-l);border-radius:9px;padding:9px 12px;border:1px solid rgba(229,62,62,.2);"><div style="font-size:12px;font-weight:600;color:var(--danger);"><i class="fa-solid fa-location-crosshairs"></i> Fraud Detected</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">GPS spoofing — Driver KDK-482</div><div style="font-size:10px;color:var(--muted);">8 min ago</div></div>
+          <div style="background:var(--am-l);border-radius:9px;padding:9px 12px;border:1px solid rgba(245,166,35,.25);"><div style="font-size:12px;font-weight:600;color:#a06b00;"><i class="fa-solid fa-eye"></i> Manual Review Flagged</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Samuel M. — NTSA badge unreadable</div><div style="font-size:10px;color:var(--muted);">22 min ago</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 4: Recent trips + AI Activity detail -->
+  <div class="g2 fu3">
+    <div class="panel-card">
+      <div class="pc-head">
+        <span class="pc-title">Recent Trips</span>
+        <button class="btn btn-ghost btn-xs" onclick="showPage('trips',null)">View All</button>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>Rider</th><th>Driver</th><th>Fare</th><th>Wait</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td><div class="av-cell"><div class="av" style="background:var(--pr-l);color:var(--pr);">AO</div><div><div class="av-name">Amina O.</div><div class="av-sub">Westlands→CBD</div></div></div></td><td>James K.</td><td>KSH 320</td><td>—</td><td><span class="badge b-green">Done</span></td></tr>
+          <tr><td><div class="av-cell"><div class="av" style="background:var(--am-l);color:var(--am2);">CN</div><div><div class="av-name">Carol N.</div><div class="av-sub">Kilimani→Karen</div></div></div></td><td>Peter O.</td><td>KSH 540</td><td>—</td><td><span class="badge b-blue">Live</span></td></tr>
+          <tr><td><div class="av-cell"><div class="av" style="background:var(--info-l);color:var(--info);">DK</div><div><div class="av-name">David K.</div><div class="av-sub">CBD→Upperhill</div></div></div></td><td>Lucy A.</td><td>KSH 260</td><td><span class="wait-fee">+KSH 50</span></td><td><span class="badge b-green">Done</span></td></tr>
+          <tr><td><div class="av-cell"><div class="av" style="background:var(--danger-l);color:var(--danger);">EW</div><div><div class="av-name">Esther W.</div><div class="av-sub">Thika Rd</div></div></div></td><td>—</td><td>—</td><td>—</td><td><span class="badge b-red">Cancelled</span></td></tr>
+          <tr><td><div class="av-cell"><div class="av" style="background:var(--safe-l);color:var(--safe);">MN</div><div><div class="av-name">Mary N.</div><div class="av-sub">Parklands→CBD</div></div></div></td><td>Faith W.</td><td>KSH 180</td><td>—</td><td><span class="badge b-green">Done</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Revenue breakdown -->
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Revenue Breakdown — Today</span></div>
+      <div class="pc-body" style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="background:var(--pr-l);border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--pr);">KSH 71,432</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px;">Driver earnings (85%)</div>
+          </div>
+          <div style="background:var(--am-l);border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--am2);">KSH 12,648</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px;">Platform commission (15%)</div>
+          </div>
+          <div style="background:var(--safe-l);border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--safe);">KSH 3,240</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px;">Waiting fee revenue</div>
+          </div>
+          <div style="background:var(--danger-l);border-radius:10px;padding:14px;text-align:center;">
+            <div style="font-size:18px;font-weight:800;color:var(--danger);">KSH 4,120</div>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:3px;">Surge revenue add-on</div>
+          </div>
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:13px;font-weight:700;color:var(--text);">TOTAL TODAY</span>
+          <span style="font-size:16px;font-weight:800;color:var(--pr);">KSH 84,320</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── LIVE FLEET ──────────────────────────────────────────── -->
+<div class="content page" id="page-live">
+  <div class="g4">
+    <div class="sc"><div class="sc-icon" style="background:var(--safe-l);color:var(--safe);margin-bottom:8px;"><i class="fa-solid fa-car-side"></i></div><div class="sc-val" style="color:var(--safe);">342</div><div class="sc-lbl">Drivers Online</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--info-l);color:var(--info);margin-bottom:8px;"><i class="fa-solid fa-route"></i></div><div class="sc-val">87</div><div class="sc-lbl">Trips In Progress</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--danger-l);color:var(--danger);margin-bottom:8px;"><i class="fa-solid fa-triangle-exclamation"></i></div><div class="sc-val" style="color:var(--danger);">2</div><div class="sc-lbl">Active SOS Alerts</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-bolt"></i></div><div class="sc-val" style="color:var(--am2);">1.3×</div><div class="sc-lbl">Surge Active (CBD)</div></div>
+  </div>
+  <div class="panel-card">
+    <div class="pc-head">
+      <div><span class="pc-title">Live Fleet Map — Nairobi</span><div class="pc-sub">Auto-refreshes every 5s via Socket.io</div></div>
+      <div style="display:flex;gap:8px;align-items:center;"><div class="surge-live"><div class="pulse"></div>LIVE</div><button class="btn btn-ghost btn-sm" onclick="showToast('Map refreshed','ok')"><i class="fa-solid fa-arrows-rotate"></i>Refresh</button></div>
+    </div>
+    <div class="map-block" style="height:420px;">
+      <div class="car-dot" style="top:25%;left:20%;background:var(--pr);"></div>
+      <div class="car-dot" style="top:40%;left:35%;background:var(--pr);animation-delay:.5s;"></div>
+      <div class="car-dot" style="top:60%;left:55%;background:var(--pr);animation-delay:1s;"></div>
+      <div class="car-dot" style="top:35%;left:65%;background:var(--pr);animation-delay:.3s;"></div>
+      <div class="car-dot" style="top:18%;left:50%;background:var(--am);"></div>
+      <div class="car-dot" style="top:70%;left:28%;background:var(--am);animation-delay:.8s;"></div>
+      <div class="car-dot" style="top:50%;left:75%;background:var(--am);animation-delay:.6s;"></div>
+      <div class="car-dot" style="top:42%;left:46%;background:var(--danger);animation-delay:.2s;border-color:var(--danger);"></div>
+      <div class="car-dot" style="top:80%;left:40%;background:var(--danger);animation-delay:.9s;border-color:var(--danger);"></div>
+      <div class="map-overlay">
+        <div class="map-pill"><span style="width:8px;height:8px;background:var(--pr);border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>Driver (342)</div>
+        <div class="map-pill"><span style="width:8px;height:8px;background:var(--am);border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>Active Trip (87)</div>
+        <div class="map-pill"><span style="width:8px;height:8px;background:var(--danger);border-radius:50%;display:inline-block;margin-right:4px;vertical-align:middle;"></span>SOS Alert (2)</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── AI KYC ──────────────────────────────────────────────── -->
+<div class="content page" id="page-ai-kyc">
+  <div class="g4 fu">
+    <div class="sc fu1"><div class="sc-icon" style="background:var(--ai-l);color:var(--ai);margin-bottom:8px;"><i class="fa-solid fa-brain"></i></div><div class="sc-val" style="color:var(--ai);">94.7%</div><div class="sc-lbl">AI Accuracy Rate</div></div>
+    <div class="sc fu2"><div class="sc-icon" style="background:var(--safe-l);color:var(--safe);margin-bottom:8px;"><i class="fa-solid fa-circle-check"></i></div><div class="sc-val">18</div><div class="sc-lbl">Auto-Approved Today</div></div>
+    <div class="sc fu3"><div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-hourglass-half"></i></div><div class="sc-val">7</div><div class="sc-lbl">Manual Review Needed</div></div>
+    <div class="sc fu4"><div class="sc-icon" style="background:var(--danger-l);color:var(--danger);margin-bottom:8px;"><i class="fa-solid fa-circle-xmark"></i></div><div class="sc-val">3</div><div class="sc-lbl">Auto-Rejected Today</div></div>
+  </div>
+  <div class="panel-card">
+    <div class="pc-head">
+      <div><span class="pc-title"><i class="fa-solid fa-brain" style="color:var(--ai);margin-right:8px;"></i>AI Document Review Engine</span><div class="pc-sub" style="margin-top:3px;">AI analyses every uploaded document and makes approve / reject / manual-review decisions</div></div>
+      <button class="btn btn-ai btn-sm" onclick="runAIBatch()"><i class="fa-solid fa-play"></i>Run Batch Review</button>
+    </div>
+    <!-- Driver: Samuel M — Manual Review -->
+    <div style="padding:16px 18px;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="av" style="width:40px;height:40px;font-size:14px;background:var(--am-l);color:var(--am2);">SM</div>
+        <div style="flex:1;"><div style="font-weight:700;font-size:13.5px;">Samuel Mwangi</div><div style="font-size:11.5px;color:var(--muted);">Nairobi · Submitted 2h ago · Toyota Fielder KBZ-789Y</div></div>
+        <div class="ai-review"><i class="fa-solid fa-eye"></i> Manual Review</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div style="background:var(--safe-l);border-radius:9px;padding:10px;"><div style="font-size:10.5px;color:var(--muted);margin-bottom:6px;">Driving Licence</div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:600;color:var(--safe);">✓ Valid</span><div style="font-size:10px;background:var(--safe-l);color:var(--safe);padding:2px 7px;border-radius:20px;">98%</div></div><div class="confidence-bar" style="margin-top:5px;"><div class="confidence-fill" style="width:98%;"></div></div></div>
+        <div style="background:var(--safe-l);border-radius:9px;padding:10px;"><div style="font-size:10.5px;color:var(--muted);margin-bottom:6px;">National ID</div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:600;color:var(--safe);">✓ Verified</span><div style="font-size:10px;background:var(--safe-l);color:var(--safe);padding:2px 7px;border-radius:20px;">100%</div></div><div class="confidence-bar" style="margin-top:5px;"><div class="confidence-fill" style="width:100%;"></div></div></div>
+        <div style="background:var(--am-l);border-radius:9px;padding:10px;"><div style="font-size:10.5px;color:var(--muted);margin-bottom:6px;">NTSA Badge</div><div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:12px;font-weight:600;color:#a06b00;">⚠ Low Conf.</span><div style="font-size:10px;background:var(--am-l);color:#a06b00;padding:2px 7px;border-radius:20px;">62%</div></div><div class="confidence-bar" style="margin-top:5px;"><div class="confidence-fill" style="width:62%;background:var(--am);"></div></div></div>
+      </div>
+      <div class="ai-reason"><i class="fa-solid fa-brain" style="color:var(--ai);margin-right:6px;"></i><strong>AI ASSESSMENT:</strong> Driving Licence and National ID verified at high confidence. NTSA badge image is partially obscured — recommend manual review before approval.</div>
+      <div style="display:flex;gap:10px;margin-top:12px;">
+        <button class="btn btn-safe btn-sm" onclick="showToast('Samuel Mwangi approved','ok')"><i class="fa-solid fa-check"></i>Approve</button>
+        <button class="btn btn-danger btn-sm" onclick="showToast('Samuel Mwangi rejected','err')"><i class="fa-solid fa-times"></i>Reject</button>
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Re-upload request sent','warn')"><i class="fa-solid fa-upload"></i>Request Re-upload</button>
+      </div>
+    </div>
+    <!-- Driver: Grace N — Auto-Approved -->
+    <div style="padding:16px 18px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div class="av" style="width:40px;height:40px;font-size:14px;background:var(--safe-l);color:var(--safe);">GN</div>
+        <div style="flex:1;"><div style="font-weight:700;font-size:13.5px;">Grace Njeri</div><div style="font-size:11.5px;color:var(--muted);">Nairobi · Submitted 30min ago · Honda Fit KDL-221P</div></div>
+        <div class="ai-approve"><i class="fa-solid fa-circle-check"></i> Auto-Approved</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+        <div style="background:var(--safe-l);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--muted);">DL</div><div style="font-size:12px;font-weight:700;color:var(--safe);margin-top:4px;">✓ 99%</div></div>
+        <div style="background:var(--safe-l);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--muted);">National ID</div><div style="font-size:12px;font-weight:700;color:var(--safe);margin-top:4px;">✓ 100%</div></div>
+        <div style="background:var(--safe-l);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--muted);">Police Clear.</div><div style="font-size:12px;font-weight:700;color:var(--safe);margin-top:4px;">✓ 97%</div></div>
+        <div style="background:var(--safe-l);border-radius:9px;padding:10px;text-align:center;"><div style="font-size:10px;color:var(--muted);">NTSA Badge</div><div style="font-size:12px;font-weight:700;color:var(--safe);margin-top:4px;">✓ 96%</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FRAUD DETECTION ────────────────────────────────────── -->
+<div class="content page" id="page-fraud">
+  <div class="g4">
+    <div class="sc"><div class="sc-icon" style="background:var(--danger-l);color:var(--danger);margin-bottom:8px;"><i class="fa-solid fa-location-crosshairs"></i></div><div class="sc-val" style="color:var(--danger);">5</div><div class="sc-lbl">Active Fraud Cases</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-clock"></i></div><div class="sc-val">&lt;3ms</div><div class="sc-lbl">Detection Speed</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--safe-l);color:var(--safe);margin-bottom:8px;"><i class="fa-solid fa-ban"></i></div><div class="sc-val">47</div><div class="sc-lbl">Blocked This Month</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--pr-l);color:var(--pr);margin-bottom:8px;"><i class="fa-solid fa-shield-halved"></i></div><div class="sc-val">99.2%</div><div class="sc-lbl">Safe Trip Rate</div></div>
+  </div>
+  <div class="panel-card">
+    <div class="pc-head"><span class="pc-title"><i class="fa-solid fa-shield-halved" style="color:var(--danger);margin-right:8px;"></i>Active Fraud Alerts</span><button class="btn btn-ghost btn-sm" onclick="showToast('Exporting fraud log','ok')"><i class="fa-solid fa-download"></i>Export Log</button></div>
+    <div class="fraud-row"><div class="fraud-icon" style="background:var(--danger-l);color:var(--danger);"><i class="fa-solid fa-location-crosshairs"></i></div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--danger);">GPS Spoofing Detected</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Driver KDK-482 · Fake location near CBD · 3 trips manipulated</div><div style="font-size:10.5px;color:var(--muted);margin-top:2px;">8 min ago</div></div><div style="display:flex;gap:8px;"><button class="btn btn-danger btn-xs" onclick="showToast('Driver KDK-482 suspended','err')">Suspend</button><button class="btn btn-ghost btn-xs">View</button></div></div>
+    <div class="fraud-row"><div class="fraud-icon" style="background:var(--am-l);color:var(--am2);"><i class="fa-solid fa-user-secret"></i></div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:#a06b00;">Account Sharing Suspected</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Driver KBA-991 · 3 different phones logging in to same account</div><div style="font-size:10.5px;color:var(--muted);margin-top:2px;">45 min ago</div></div><div style="display:flex;gap:8px;"><button class="btn btn-danger btn-xs" onclick="showToast('Driver KBA-991 flagged','warn')">Flag</button><button class="btn btn-ghost btn-xs">Investigate</button></div></div>
+    <div class="fraud-row"><div class="fraud-icon" style="background:var(--info-l);color:var(--info);"><i class="fa-solid fa-route"></i></div><div style="flex:1;"><div style="font-size:13px;font-weight:600;color:var(--info);">Route Deviation</div><div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Trip #TR-8901 · Deviated 4.2km from optimal route · Resolved</div><div style="font-size:10.5px;color:var(--muted);margin-top:2px;">1h ago</div></div><div><span class="badge b-grey">Resolved</span></div></div>
+  </div>
+</div>
+
+<!-- ─── SURGE AI ────────────────────────────────────────────── -->
+<div class="content page" id="page-surge">
+  <div class="g4">
+    <div class="sc"><div class="sc-icon" style="background:var(--danger-l);color:var(--danger);margin-bottom:8px;"><i class="fa-solid fa-bolt"></i></div><div class="sc-val" style="color:var(--danger);font-size:28px;">1.3×</div><div class="sc-lbl">Current Surge (CBD)</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-fire"></i></div><div class="sc-val">3</div><div class="sc-lbl">Active Surge Zones</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--safe-l);color:var(--safe);margin-bottom:8px;"><i class="fa-solid fa-arrow-trend-up"></i></div><div class="sc-val" style="font-size:18px;">KSH 4,120</div><div class="sc-lbl">Surge Revenue Today</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--ai-l);color:var(--ai);margin-bottom:8px;"><i class="fa-solid fa-brain"></i></div><div class="sc-val" style="color:var(--ai);">Auto</div><div class="sc-lbl">Surge Mode</div></div>
+  </div>
+  <div class="g2">
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title"><i class="fa-solid fa-bolt" style="color:var(--danger);margin-right:6px;"></i>Surge Zones Live</span><div class="surge-live"><div class="pulse"></div>LIVE</div></div>
+      <div class="pc-body">
+        <div class="surge-card" style="margin-bottom:12px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:13px;font-weight:700;">CBD / Nairobi Centre</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">High demand · 142 requests · 34 drivers</div></div>
+            <div class="surge-multi">1.3×</div>
+          </div>
+          <div class="heat-map" style="margin-top:10px;">
+            <div class="heat-cell" style="background:rgba(229,62,62,.2);"></div><div class="heat-cell" style="background:rgba(229,62,62,.4);"></div><div class="heat-cell" style="background:rgba(229,62,62,.7);"></div><div class="heat-cell" style="background:rgba(229,62,62,.9);"></div><div class="heat-cell" style="background:rgba(229,62,62,.7);"></div><div class="heat-cell" style="background:rgba(229,62,62,.5);"></div><div class="heat-cell" style="background:rgba(229,62,62,.3);"></div>
+          </div>
+        </div>
+        <div style="border:1.5px solid var(--am);border-radius:11px;padding:14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:13px;font-weight:700;">Westlands</div><div style="font-size:11px;color:var(--muted);margin-top:2px;">Moderate demand · 67 requests</div></div>
+            <div style="font-size:22px;font-weight:800;color:var(--am);">1.15×</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Manual Override</span><button class="btn btn-ghost btn-sm" onclick="showToast('AI surge mode re-enabled','ok')"><i class="fa-solid fa-brain"></i>AI Mode</button></div>
+      <div class="pc-body" style="display:flex;flex-direction:column;gap:12px;">
+        <div class="field"><label>Zone</label><select><option>CBD / Nairobi Centre</option><option>Westlands</option><option>Karen</option><option>Kilimani</option><option>Kasarani</option></select></div>
+        <div class="field"><label>Surge Multiplier</label><input type="number" value="1.3" step="0.05" min="1.0" max="2.0"/></div>
+        <div class="field"><label>Duration</label><select><option>30 minutes</option><option>1 hour</option><option>2 hours</option><option>Until manual stop</option></select></div>
+        <button class="btn btn-danger" onclick="showToast('Manual surge activated for CBD','warn')"><i class="fa-solid fa-bolt"></i>Activate Manual Surge</button>
+        <button class="btn btn-safe" onclick="showToast('All surges deactivated','ok')"><i class="fa-solid fa-stop"></i>Stop All Surges</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DRIVERS ─────────────────────────────────────────────── -->
+<div class="content page" id="page-drivers">
+  <div class="panel-card" style="margin:0;">
+    <div class="pc-head">
+      <span class="pc-title">Driver Management</span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost btn-sm" onclick="showToast('Exporting drivers CSV…','ok')"><i class="fa-solid fa-download"></i>Export CSV</button>
+        <button class="btn btn-pr btn-sm" onclick="openModal('m-add-driver')"><i class="fa-solid fa-plus"></i>Add Driver</button>
+      </div>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Driver</th><th>Phone</th><th>Vehicle</th><th>KYC Docs</th><th>Trust</th><th>Trips</th><th>Earnings</th><th>Status</th><th>Actions</th></tr></thead>
+      <tbody>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--pr-l);color:var(--pr);">JK</div><div><div class="av-name">James Kamau</div><div class="av-sub">Nairobi</div></div></div></td><td>+254 712 345 678</td><td>Toyota Fielder · KAB 123X</td><td><div style="display:flex;gap:3px;"><span class="dc dc-ok">ID</span><span class="dc dc-ok">DL</span><span class="dc dc-ok">PC</span></div></td><td><span class="badge b-ai">89/100</span></td><td>1,247</td><td style="color:var(--pr);font-weight:600;">KSH 284K</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs" onclick="openModal('m-driver')">View</button></td></tr>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--safe-l);color:var(--safe);">FW</div><div><div class="av-name">Faith Wanjiru</div><div class="av-sub">Nairobi · Female</div></div></div></td><td>+254 722 987 654</td><td>Honda Fit · KDL 221P</td><td><div style="display:flex;gap:3px;"><span class="dc dc-ok">ID</span><span class="dc dc-ok">DL</span><span class="dc dc-ok">PC</span></div></td><td><span class="badge b-ai">94/100</span></td><td>987</td><td style="color:var(--pr);font-weight:600;">KSH 198K</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--am-l);color:var(--am2);">SM</div><div><div class="av-name">Samuel Mwangi</div><div class="av-sub">Nairobi</div></div></div></td><td>+254 733 111 222</td><td>Toyota Fielder · KBZ 789Y</td><td><div style="display:flex;gap:3px;"><span class="dc dc-ok">ID</span><span class="dc dc-pd">DL</span><span class="dc dc-ms">PC</span></div></td><td><span class="badge b-amber">72/100</span></td><td>0</td><td style="color:var(--muted);">—</td><td><span class="badge b-amber">Pending KYC</span></td><td><button class="btn btn-ai btn-xs" onclick="showPage('ai-kyc',null)">Review KYC</button></td></tr>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--danger-l);color:var(--danger);">PO</div><div><div class="av-name">Peter Ochieng</div><div class="av-sub">Nairobi</div></div></div></td><td>+254 744 333 444</td><td>Nissan Note · KDB 445K</td><td><div style="display:flex;gap:3px;"><span class="dc dc-ok">ID</span><span class="dc dc-ok">DL</span><span class="dc dc-ok">PC</span></div></td><td><span class="badge b-grey">—</span></td><td>234</td><td style="color:var(--muted);">KSH 47K</td><td><span class="badge b-red">Suspended</span></td><td><button class="btn btn-safe btn-xs" onclick="showToast('Peter Ochieng reinstated','ok')">Reinstate</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── RIDERS ──────────────────────────────────────────────── -->
+<div class="content page" id="page-riders">
+  <div class="panel-card" style="margin:0;">
+    <div class="pc-head"><span class="pc-title">Rider Management</span><button class="btn btn-ghost btn-sm" onclick="showToast('Exporting riders CSV…','ok')"><i class="fa-solid fa-download"></i>Export CSV</button></div>
+    <table class="tbl">
+      <thead><tr><th>Rider</th><th>Phone</th><th>Trips</th><th>Total Spent</th><th>Joined</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--pr-l);color:var(--pr);">AO</div><div><div class="av-name">Amina Omar</div></div></div></td><td>+254 700 111 222</td><td>47</td><td>KSH 18,400</td><td>Jan 2025</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--safe-l);color:var(--safe);">GN</div><div><div class="av-name">Grace Njeri</div></div></div></td><td>+254 700 222 333</td><td>23</td><td>KSH 9,100</td><td>Feb 2025</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs">View</button></td></tr>
+        <tr><td><div class="av-cell"><div class="av" style="background:var(--danger-l);color:var(--danger);">EW</div><div><div class="av-name">Esther Waweru</div></div></div></td><td>+254 722 333 444</td><td>3</td><td>KSH 950</td><td>Mar 2025</td><td><span class="badge b-red">Blocked</span></td><td><button class="btn btn-pr btn-xs" onclick="showToast('Rider unblocked','ok')">Unblock</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── TRIPS ───────────────────────────────────────────────── -->
+<div class="content page" id="page-trips">
+  <div class="panel-card" style="margin:0;">
+    <div class="pc-head"><span class="pc-title">Trip Management</span><button class="btn btn-pr btn-sm" onclick="showToast('Exporting trips CSV…','ok')"><i class="fa-solid fa-download"></i>Export CSV</button></div>
+    <table class="tbl">
+      <thead><tr><th>Trip ID</th><th>Rider</th><th>Driver</th><th>Route</th><th>Fare</th><th>Wait Fee</th><th>Status</th><th>Receipt</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">#TR-8847</td><td>Amina O.</td><td>James K.</td><td>Westlands → CBD</td><td>KSH 320</td><td>—</td><td><span class="badge b-green">Completed</span></td><td><button class="btn btn-pr btn-xs" onclick="openModal('m-receipt')"><i class="fa-solid fa-receipt"></i></button></td></tr>
+        <tr><td class="mono">#TR-8846</td><td>Carol N.</td><td>Peter O.</td><td>Kilimani → Karen</td><td>KSH 540</td><td>—</td><td><span class="badge b-blue">In Progress</span></td><td>—</td></tr>
+        <tr><td class="mono">#TR-8845</td><td>David K.</td><td>Lucy A.</td><td>CBD → Upperhill</td><td>KSH 260</td><td><span class="wait-fee">+KSH 50</span></td><td><span class="badge b-green">Completed</span></td><td><button class="btn btn-pr btn-xs" onclick="openModal('m-receipt')"><i class="fa-solid fa-receipt"></i></button></td></tr>
+        <tr><td class="mono">#TR-8844</td><td>Esther W.</td><td>—</td><td>Thika Rd</td><td>—</td><td>—</td><td><span class="badge b-red">Cancelled</span></td><td>—</td></tr>
+        <tr><td class="mono">#TR-8843</td><td>Mary N.</td><td>Faith W.</td><td>Parklands → CBD</td><td>KSH 180</td><td>—</td><td><span class="badge b-green">Completed</span></td><td><button class="btn btn-pr btn-xs" onclick="openModal('m-receipt')"><i class="fa-solid fa-receipt"></i></button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── REVENUE ─────────────────────────────────────────────── -->
+<div class="content page" id="page-earnings">
+  <div class="g4">
+    <div class="sc"><div class="sc-icon" style="background:var(--pr-l);color:var(--pr);margin-bottom:8px;"><i class="fa-solid fa-coins"></i></div><div class="sc-val" style="font-size:20px;">KSH 2.1M</div><div class="sc-lbl">Monthly Revenue</div><div class="sc-change up"><i class="fa-solid fa-arrow-up"></i>+18% vs last month</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-percent"></i></div><div class="sc-val" style="font-size:20px;color:var(--am2);">KSH 315K</div><div class="sc-lbl">Platform Commission (15%)</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--safe-l);color:var(--safe);margin-bottom:8px;"><i class="fa-solid fa-money-bill-transfer"></i></div><div class="sc-val" style="font-size:20px;color:var(--safe);">KSH 1.79M</div><div class="sc-lbl">Driver Payouts Due</div></div>
+    <div class="sc"><div class="sc-icon" style="background:var(--am-l);color:var(--am2);margin-bottom:8px;"><i class="fa-solid fa-hourglass-half"></i></div><div class="sc-val" style="font-size:20px;color:var(--am2);">KSH 48.2K</div><div class="sc-lbl">Waiting Fee Revenue</div></div>
+  </div>
+</div>
+
+<!-- ─── RECEIPTS ────────────────────────────────────────────── -->
+<div class="content page" id="page-receipts">
+  <div class="g2">
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Recent Receipts</span></div>
+      <table class="tbl">
+        <thead><tr><th>Receipt ID</th><th>Rider</th><th>Driver</th><th>Amount</th><th>Date</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">#TR-8847</td><td>Amina Omar</td><td>James Kamau</td><td style="font-weight:700;">KSH 320</td><td>8 May 2025</td><td><button class="btn btn-pr btn-xs" onclick="openModal('m-receipt')"><i class="fa-solid fa-eye"></i>View</button></td></tr>
+          <tr><td class="mono">#TR-8845</td><td>David Kariuki</td><td>Lucy Auma</td><td style="font-weight:700;">KSH 310</td><td>8 May 2025</td><td><button class="btn btn-ghost btn-xs"><i class="fa-solid fa-eye"></i>View</button></td></tr>
+          <tr><td class="mono">#TR-8843</td><td>Mary Njeri</td><td>Faith Wanjiru</td><td style="font-weight:700;">KSH 180</td><td>8 May 2025</td><td><button class="btn btn-ghost btn-xs"><i class="fa-solid fa-eye"></i>View</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Receipt Preview</span></div>
+      <div class="pc-body">
+        <div class="receipt">
+          <div class="receipt-header">
+            <svg class="receipt-logo" width="130" height="44" viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="30" r="22" fill="#0A6B45"/><rect x="17" y="14" width="10" height="28" rx="5" fill="rgba(255,255,255,.25)"/><rect x="13" y="25" width="18" height="9" rx="3" fill="#fff"/><rect x="16" y="20" width="12" height="8" rx="2.5" fill="#fff"/><circle cx="17" cy="34" r="2.5" fill="#0A6B45"/><circle cx="27" cy="34" r="2.5" fill="#0A6B45"/><circle cx="34" cy="12" r="5" fill="#F5A623"/><circle cx="34" cy="12" r="2.5" fill="#fff"/><text x="52" y="26" font-family="sans-serif" font-size="20" font-weight="700" fill="#0A6B45">Poa</text><text x="83" y="26" font-family="sans-serif" font-size="20" font-weight="700" fill="#F5A623">Ride</text><text x="52" y="42" font-family="sans-serif" font-size="9" fill="#6B7280" letter-spacing="1">OFFICIAL RECEIPT</text></svg>
+            <div style="font-size:10.5px;color:var(--muted);margin-top:6px;">Receipt #TR-8847 · 8 May 2025, 14:22 EAT</div>
+          </div>
+          <div class="receipt-row"><span>Rider</span><span>Amina Omar</span></div>
+          <div class="receipt-row"><span>Driver</span><span>James Kamau · KAB 123X</span></div>
+          <div class="receipt-row"><span>Route</span><span>Westlands → CBD</span></div>
+          <div class="receipt-row"><span>Distance / Duration</span><span>6.4 km · 18 min</span></div>
+          <div style="height:8px;"></div>
+          <div class="receipt-row"><span style="color:var(--muted);">Base Fare</span><span>KSH 50</span></div>
+          <div class="receipt-row"><span style="color:var(--muted);">Distance (6.4km × KSH 35)</span><span>KSH 224</span></div>
+          <div class="receipt-row"><span style="color:var(--muted);">Time charge (18min × KSH 4 − 3 min free)</span><span>KSH 46</span></div>
+          <div class="receipt-row total"><span>TOTAL</span><span>KSH 320</span></div>
+          <div class="receipt-row"><span style="color:var(--muted);">Payment Method</span><span><span class="mpesa-tag">M-Pesa</span></span></div>
+          <div class="receipt-row"><span style="color:var(--muted);">Transaction Ref</span><span style="font-family:monospace;font-size:12px;">QK7H2XBNA1</span></div>
+          <div class="receipt-actions">
+            <button class="btn btn-pr btn-sm" onclick="showToast('PDF downloading…','ok')"><i class="fa-solid fa-file-pdf"></i>PDF</button>
+            <button class="btn btn-ghost btn-sm" onclick="showToast('Emailed to rider','ok')"><i class="fa-solid fa-envelope"></i>Email</button>
+            <button class="btn btn-ghost btn-sm" style="color:#25D366;" onclick="showToast('Sent via WhatsApp','ok')"><i class="fa-brands fa-whatsapp"></i>WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PAYOUTS ─────────────────────────────────────────────── -->
+<div class="content page" id="page-payouts">
+  <div class="panel-card" style="margin:0;">
+    <div class="pc-head">
+      <span class="pc-title">Driver Payouts</span>
+      <button class="btn btn-pr btn-sm" onclick="showToast('All pending payouts processing','ok')"><i class="fa-solid fa-bolt"></i>Process All Pending</button>
+    </div>
+    <table class="tbl">
+      <thead><tr><th>Driver</th><th>Amount Due</th><th>Method</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>James Kamau</td><td style="font-weight:700;color:var(--pr);">KSH 284,180</td><td><span class="mpesa-tag">M-Pesa</span></td><td><span class="badge b-amber">Pending</span></td><td><button class="btn btn-pr btn-xs" onclick="showToast('Payout sent to James via M-Pesa Daraja','ok')">Send Now</button></td></tr>
+        <tr><td>Faith Wanjiru</td><td style="font-weight:700;color:var(--pr);">KSH 198,120</td><td><span class="mpesa-tag">M-Pesa</span></td><td><span class="badge b-green">Completed</span></td><td>—</td></tr>
+        <tr><td>Peter Ochieng</td><td style="font-weight:700;color:var(--pr);">KSH 47,400</td><td><span class="mpesa-tag">M-Pesa</span></td><td><span class="badge b-amber">Pending</span></td><td><button class="btn btn-pr btn-xs" onclick="showToast('Payout sent to Peter','ok')">Send Now</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── PROMOS ──────────────────────────────────────────────── -->
+<div class="content page" id="page-promos">
+  <div class="panel-card" style="margin:0;">
+    <div class="pc-head"><span class="pc-title">Promos & Referral Codes</span><button class="btn btn-pr btn-sm" onclick="openModal('m-promo')"><i class="fa-solid fa-plus"></i>New Promo</button></div>
+    <table class="tbl">
+      <thead><tr><th>Code</th><th>Type</th><th>Value</th><th>Uses</th><th>Expiry</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><code style="background:var(--pr-l);padding:2px 6px;border-radius:4px;font-size:12px;">POAPOA20</code></td><td>Percentage</td><td>20% off</td><td>847</td><td>31 Dec 2025</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs" onclick="showToast('POAPOA20 deactivated','warn')">Deactivate</button></td></tr>
+        <tr><td><code style="background:var(--pr-l);padding:2px 6px;border-radius:4px;font-size:12px;">CAMPUS50</code></td><td>Percentage</td><td>50% off (first 3)</td><td>312</td><td>31 Dec 2025</td><td><span class="badge b-green">Active</span></td><td><button class="btn btn-ghost btn-xs">Edit</button></td></tr>
+        <tr><td><code style="background:var(--bg);padding:2px 6px;border-radius:4px;font-size:12px;">SAFARI50</code></td><td>Flat</td><td>KSH 50 off</td><td>198</td><td>30 Jun 2025</td><td><span class="badge b-grey">Expired</span></td><td><button class="btn btn-pr btn-xs" onclick="showToast('SAFARI50 re-activated','ok')">Reactivate</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── NOTIFICATIONS ──────────────────────────────────────── -->
+<div class="content page" id="page-notifications">
+  <div class="g2">
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Broadcast Notification</span></div>
+      <div class="pc-body" style="display:flex;flex-direction:column;gap:11px;">
+        <div class="field"><label>Title</label><input placeholder="e.g. New Promo Available!"/></div>
+        <div class="field"><label>Message</label><textarea rows="3" placeholder="Your message to users…" style="resize:vertical;"></textarea></div>
+        <div class="form-2col">
+          <div class="field"><label>Send To</label><select><option>All Users</option><option>Drivers Only</option><option>Riders Only</option><option>Female Drivers Only</option></select></div>
+          <div class="field"><label>Channel</label><select><option>Push Notification</option><option>SMS</option><option>WhatsApp</option><option>All Channels</option></select></div>
+        </div>
+        <button class="btn btn-pr" onclick="showToast('Notification queued for broadcast','ok')"><i class="fa-solid fa-paper-plane"></i>Send Notification</button>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Notification History</span></div>
+      <table class="tbl">
+        <thead><tr><th>Title</th><th>Audience</th><th>Opens</th><th>Date</th></tr></thead>
+        <tbody>
+          <tr><td>New Promo — CAMPUS50!</td><td>All Riders</td><td>4,231</td><td>5 May 2025</td></tr>
+          <tr><td>KYC Document Reminder</td><td>Drivers</td><td>187</td><td>3 May 2025</td></tr>
+          <tr><td>Referral Programme Launch</td><td>All Users</td><td>8,847</td><td>1 May 2025</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── SAFETY ──────────────────────────────────────────────── -->
+<div class="content page" id="page-safety">
+  <div class="g2">
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);margin-right:6px;"></i>Active SOS Alerts</span></div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+        <div style="background:var(--danger-l);border:1px solid rgba(229,62,62,.2);border-radius:10px;padding:12px;">
+          <div style="font-weight:700;color:var(--danger);font-size:13px;">🚨 ACTIVE SOS — Amina Omar</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:3px;">Trip #TR-8899 · Thika Road · 4 min ago</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Driver: James K. · Last GPS: -1.2841, 36.8172</div>
+          <button class="btn btn-danger btn-sm" style="margin-top:8px;" onclick="showToast('Emergency dispatch notified for Thika Road','err')"><i class="fa-solid fa-phone"></i>Dispatch Emergency</button>
+        </div>
+        <div style="background:var(--safe-l);border:1px solid rgba(56,161,105,.2);border-radius:10px;padding:12px;">
+          <div style="font-weight:600;color:var(--safe);">✓ Resolved — Carol Njeri</div>
+          <div style="font-size:11.5px;color:var(--muted);margin-top:2px;">Trip #TR-8890 · Resolved 1h ago · Rider marked safe</div>
+        </div>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title"><i class="fa-solid fa-venus" style="color:#D6336C;margin-right:6px;"></i>Women Safety Configuration</span></div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:9px;padding:11px;"><span style="font-size:12.5px;font-weight:500;">Women-only ride mode</span><div style="width:36px;height:20px;background:var(--pr);border-radius:10px;cursor:pointer;position:relative;"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%;"></div></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:9px;padding:11px;"><span style="font-size:12.5px;font-weight:500;">AI safety monitoring</span><div style="width:36px;height:20px;background:var(--pr);border-radius:10px;cursor:pointer;position:relative;"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%;"></div></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:9px;padding:11px;"><span style="font-size:12.5px;font-weight:500;">Automatic family alerts</span><div style="width:36px;height:20px;background:var(--pr);border-radius:10px;cursor:pointer;position:relative;"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%;"></div></div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;background:var(--bg);border-radius:9px;padding:11px;"><span style="font-size:12.5px;font-weight:500;">Night ride monitoring (10pm–5am)</span><div style="width:36px;height:20px;background:var(--pr);border-radius:10px;cursor:pointer;position:relative;"><div style="position:absolute;right:3px;top:3px;width:14px;height:14px;background:#fff;border-radius:50%;"></div></div></div>
+        <button class="btn btn-pr" onclick="showToast('Women safety config saved','ok')">Save Configuration</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FARES ───────────────────────────────────────────────── -->
+<div class="content page" id="page-fares">
+  <div class="g2">
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Fare Structure</span></div>
+      <div class="pc-body">
+        <div class="form-2col">
+          <div class="field"><label>Base Fare (KSH)</label><input value="50" type="number"/></div>
+          <div class="field"><label>Per Kilometre (KSH)</label><input value="35" type="number"/></div>
+        </div>
+        <div class="form-2col">
+          <div class="field"><label>Per Minute (KSH)</label><input value="4" type="number"/></div>
+          <div class="field"><label>Minimum Fare (KSH)</label><input value="100" type="number"/></div>
+        </div>
+        <div style="background:var(--am-l);border-radius:9px;padding:12px;border:1px solid rgba(245,166,35,.2);margin-bottom:12px;">
+          <div style="font-size:11.5px;font-weight:700;color:#a06b00;margin-bottom:8px;">⏱ Waiting Fee Policy</div>
+          <div class="form-2col">
+            <div class="field"><label>Free Window (min)</label><input value="3" type="number"/></div>
+            <div class="field"><label>Rate After Free Window (KSH/min)</label><input value="5" type="number"/></div>
+          </div>
+        </div>
+        <button class="btn btn-pr" onclick="showToast('Fare config saved successfully','ok')">Save Fare Configuration</button>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Defined Surge Periods</span><button class="btn btn-ghost btn-sm" onclick="showToast('Surge period added','ok')"><i class="fa-solid fa-plus"></i>Add Period</button></div>
+      <table class="tbl">
+        <thead><tr><th>Period Name</th><th>Time</th><th>Multiplier</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td>Morning Rush</td><td>07:00 – 09:30</td><td style="font-weight:700;color:var(--danger);">+30%</td><td><span class="badge b-grey">Manual</span></td></tr>
+          <tr><td>CBD Afternoon</td><td>14:30 – 16:00</td><td style="font-weight:700;color:var(--danger);">+30%</td><td><span class="badge b-ai">AI Auto</span></td></tr>
+          <tr><td>Evening Rush</td><td>17:00 – 20:00</td><td style="font-weight:700;color:var(--am2);">+25%</td><td><span class="badge b-grey">Manual</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ─── REPORTS ─────────────────────────────────────────────── -->
+<div class="content page" id="page-reports">
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="panel-card" style="margin:0;"><div class="pc-body" style="text-align:center;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Monthly Revenue</div><div style="font-size:28px;font-weight:800;color:var(--pr);">KSH 2.1M</div><div class="sc-change up" style="justify-content:center;">+18% vs last month</div></div></div>
+    <div class="panel-card" style="margin:0;"><div class="pc-body" style="text-align:center;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">AI KYC Accuracy</div><div style="font-size:28px;font-weight:800;color:var(--ai);">94.7%</div><div style="font-size:11.5px;color:var(--muted);">1,247 drivers verified</div></div></div>
+    <div class="panel-card" style="margin:0;"><div class="pc-body" style="text-align:center;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Waiting Fee Revenue</div><div style="font-size:28px;font-weight:800;color:var(--am2);">KSH 48.2K</div><div style="font-size:11.5px;color:var(--muted);">After 3-min threshold</div></div></div>
+  </div>
+  <div class="panel-card">
+    <div class="pc-head"><span class="pc-title">Download Reports</span><div style="display:flex;gap:8px;"><button class="btn btn-pr btn-sm" onclick="showToast('Exporting as CSV…','ok')"><i class="fa-solid fa-file-csv"></i>CSV</button><button class="btn btn-ghost btn-sm" onclick="showToast('Generating PDF…','warn')"><i class="fa-solid fa-file-pdf"></i>PDF</button></div></div>
+    <table class="tbl">
+      <thead><tr><th>Report Name</th><th>Records</th><th>Last Updated</th><th>Download</th></tr></thead>
+      <tbody>
+        <tr><td>Successful Trips</td><td>8,247</td><td>Today</td><td><button class="btn btn-ghost btn-xs" onclick="showToast('Downloading…','ok')"><i class="fa-solid fa-download"></i> Download</button></td></tr>
+        <tr><td>AI Fraud Detection Log</td><td>47</td><td>Today</td><td><button class="btn btn-ghost btn-xs" onclick="showToast('Downloading…','ok')"><i class="fa-solid fa-download"></i> Download</button></td></tr>
+        <tr><td>Surge Events Log</td><td>23</td><td>Today</td><td><button class="btn btn-ghost btn-xs" onclick="showToast('Downloading…','ok')"><i class="fa-solid fa-download"></i> Download</button></td></tr>
+        <tr><td>Waiting Fee Report</td><td>412</td><td>Today</td><td><button class="btn btn-ghost btn-xs" onclick="showToast('Downloading…','ok')"><i class="fa-solid fa-download"></i> Download</button></td></tr>
+        <tr><td>KYC Verification Report</td><td>1,247</td><td>Today</td><td><button class="btn btn-ghost btn-xs" onclick="showToast('Downloading…','ok')"><i class="fa-solid fa-download"></i> Download</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ─── SETTINGS ────────────────────────────────────────────── -->
+<div class="content page" id="page-settings">
+  <div class="g2">
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Platform Configuration</span></div>
+      <div class="pc-body" style="display:flex;flex-direction:column;gap:11px;">
+        <div class="form-2col">
+          <div class="field"><label>Platform Name</label><input value="PoaRide"/></div>
+          <div class="field"><label>Region / Country</label><input value="Kenya"/></div>
+        </div>
+        <div class="form-2col">
+          <div class="field"><label>Currency</label><input value="KSH"/></div>
+          <div class="field"><label>Default Booking Radius (km)</label><input value="10" type="number"/></div>
+        </div>
+        <div class="field"><label>WhatsApp Support Number</label><input value="+254 700 000 000"/></div>
+        <div class="field"><label>Support Email</label><input value="support@poaride.co.ke"/></div>
+        <div class="field"><label>Website</label><input value="https://poaride.co.ke"/></div>
+        <button class="btn btn-pr" onclick="showToast('Platform settings saved successfully','ok')">Save Platform Settings</button>
+      </div>
+    </div>
+    <div class="panel-card">
+      <div class="pc-head"><span class="pc-title">Admin Account</span></div>
+      <div class="pc-body" style="display:flex;flex-direction:column;gap:11px;">
+        <div class="form-2col">
+          <div class="field"><label>Full Name</label><input value="Super Admin"/></div>
+          <div class="field"><label>Email Address</label><input value="admin@poaride.co.ke"/></div>
+        </div>
+        <div class="form-2col">
+          <div class="field"><label>New Password</label><input type="password" placeholder="••••••••"/></div>
+          <div class="field"><label>Confirm Password</label><input type="password" placeholder="••••••••"/></div>
+        </div>
+        <div class="field"><label>Two-Factor Authentication</label><select><option>Enabled via SMS OTP</option><option>Disabled</option></select></div>
+        <button class="btn btn-pr" onclick="showToast('Admin account updated successfully','ok')">Update Account</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     MODALS
+     ════════════════════════════════════════════════════════ -->
+
+<!-- Add Driver Modal -->
+<div class="modal-ov" id="m-add-driver" onclick="if(event.target===this)closeModal('m-add-driver')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><i class="fa-solid fa-user-plus" style="color:var(--pr);margin-right:8px;"></i>Add New Driver</div>
+      <button class="modal-close" onclick="closeModal('m-add-driver')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-2col">
+        <div class="field"><label>Full Name</label><input placeholder="e.g. James Kamau"/></div>
+        <div class="field"><label>Phone Number</label><input placeholder="+254 7XX XXX XXX"/></div>
+      </div>
+      <div class="form-2col">
+        <div class="field"><label>Email</label><input placeholder="driver@email.com"/></div>
+        <div class="field"><label>Gender</label><select><option>Male</option><option>Female</option></select></div>
+      </div>
+      <div class="form-2col">
+        <div class="field"><label>Vehicle Type</label><select><option>Sedan</option><option>SUV / Crossover</option><option>Minivan</option><option>Hatchback</option></select></div>
+        <div class="field"><label>Number Plate</label><input placeholder="KAB 123X"/></div>
+      </div>
+      <div class="form-2col">
+        <div class="field"><label>City</label><select><option>Nairobi</option><option>Mombasa</option><option>Kisumu</option><option>Nakuru</option><option>Eldoret</option><option>Thika</option></select></div>
+        <div class="field"><label>Preferred Language</label><select><option>Swahili</option><option>English</option><option>Both</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('m-add-driver')">Cancel</button>
+      <button class="btn btn-pr" onclick="closeModal('m-add-driver');showToast('Driver added — KYC pending AI review','ok')"><i class="fa-solid fa-check"></i>Add Driver</button>
+    </div>
+  </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="modal-ov" id="m-receipt" onclick="if(event.target===this)closeModal('m-receipt')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Trip Receipt — #TR-8847</div>
+      <button class="modal-close" onclick="closeModal('m-receipt')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="receipt">
+        <div class="receipt-header">
+          <svg class="receipt-logo" width="130" height="44" viewBox="0 0 160 60" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="30" r="22" fill="#0A6B45"/><rect x="17" y="14" width="10" height="28" rx="5" fill="rgba(255,255,255,.25)"/><rect x="13" y="25" width="18" height="9" rx="3" fill="#fff"/><rect x="16" y="20" width="12" height="8" rx="2.5" fill="#fff"/><circle cx="17" cy="34" r="2.5" fill="#0A6B45"/><circle cx="27" cy="34" r="2.5" fill="#0A6B45"/><circle cx="34" cy="12" r="5" fill="#F5A623"/><circle cx="34" cy="12" r="2.5" fill="#fff"/><text x="52" y="26" font-family="sans-serif" font-size="20" font-weight="700" fill="#0A6B45">Poa</text><text x="83" y="26" font-family="sans-serif" font-size="20" font-weight="700" fill="#F5A623">Ride</text><text x="52" y="42" font-family="sans-serif" font-size="9" fill="#6B7280" letter-spacing="1">OFFICIAL RECEIPT</text></svg>
+          <div style="font-size:10.5px;color:var(--muted);margin-top:6px;">Receipt #TR-8847 · 8 May 2025, 14:22 EAT</div>
+        </div>
+        <div class="receipt-row"><span>Rider</span><span>Amina Omar</span></div>
+        <div class="receipt-row"><span>Driver</span><span>James Kamau · KAB 123X</span></div>
+        <div class="receipt-row"><span>Route</span><span>Westlands → CBD</span></div>
+        <div class="receipt-row"><span>Distance / Duration</span><span>6.4 km · 18 min</span></div>
+        <div style="height:8px;"></div>
+        <div class="receipt-row"><span style="color:var(--muted);">Base Fare</span><span>KSH 50</span></div>
+        <div class="receipt-row"><span style="color:var(--muted);">Distance (6.4km × KSH 35)</span><span>KSH 224</span></div>
+        <div class="receipt-row"><span style="color:var(--muted);">Time (18min × KSH 4 − 3min free)</span><span>KSH 46</span></div>
+        <div class="receipt-row total"><span>TOTAL</span><span>KSH 320</span></div>
+        <div class="receipt-row"><span style="color:var(--muted);">Payment</span><span><span class="mpesa-tag">M-Pesa</span></span></div>
+        <div class="receipt-row"><span style="color:var(--muted);">Transaction Ref</span><span style="font-family:monospace;font-size:12px;">QK7H2XBNA1</span></div>
+        <div class="receipt-actions">
+          <button class="btn btn-pr btn-sm" onclick="showToast('PDF downloading…','ok')"><i class="fa-solid fa-file-pdf"></i>PDF</button>
+          <button class="btn btn-ghost btn-sm" onclick="showToast('Emailed to rider','ok')"><i class="fa-solid fa-envelope"></i>Email</button>
+          <button class="btn btn-ghost btn-sm" style="color:#25D366;" onclick="showToast('Sent via WhatsApp','ok')"><i class="fa-brands fa-whatsapp"></i>WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Driver Profile Modal -->
+<div class="modal-ov" id="m-driver" onclick="if(event.target===this)closeModal('m-driver')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">Driver Profile — James Kamau</div>
+      <button class="modal-close" onclick="closeModal('m-driver')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:12px;background:var(--bg);border-radius:10px;padding:13px;margin-bottom:14px;">
+        <div class="av" style="width:46px;height:46px;font-size:16px;background:var(--pr-l);color:var(--pr);">JK</div>
+        <div style="flex:1;">
+          <div style="font-size:15px;font-weight:700;">James Kamau</div>
+          <div style="font-size:12px;color:var(--muted);">+254 712 345 678 · Nairobi</div>
+          <div style="margin-top:6px;display:flex;gap:6px;"><span class="badge b-green">Active</span><span class="badge b-ai">Trust: 89/100</span><span class="badge b-amber">⭐ 4.9</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
+        <div style="background:var(--bg);padding:10px;border-radius:8px;"><div style="font-size:10.5px;color:var(--muted);">Vehicle</div><div style="font-weight:600;margin-top:2px;">Toyota Fielder · KAB 123X</div></div>
+        <div style="background:var(--bg);padding:10px;border-radius:8px;"><div style="font-size:10.5px;color:var(--muted);">Total Earnings</div><div style="font-weight:600;margin-top:2px;color:var(--pr);">KSH 284,000</div></div>
+        <div style="background:var(--bg);padding:10px;border-radius:8px;"><div style="font-size:10.5px;color:var(--muted);">KYC Status</div><div style="font-weight:600;margin-top:2px;color:var(--safe);">Fully Approved</div></div>
+        <div style="background:var(--bg);padding:10px;border-radius:8px;"><div style="font-size:10.5px;color:var(--muted);">Last Active</div><div style="font-weight:600;margin-top:2px;">2 min ago</div></div>
+        <div style="background:var(--bg);padding:10px;border-radius:8px;"><div style="font-size:10.5px;color:var(--muted);">Total Trips</div><div style="font-weight:600;margin-top:2px;">1,247</div></div>
+        <div style="background:var(--bg);padding:10px;border-radius:8px;"><div style="font-size:10.5px;color:var(--muted);">Avg Rating</div><div style="font-weight:600;margin-top:2px;color:var(--am2);">4.9 ⭐</div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-danger btn-sm" onclick="closeModal('m-driver');showToast('Driver James Kamau suspended','warn')"><i class="fa-solid fa-ban"></i>Suspend</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('m-driver')">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Promo Modal -->
+<div class="modal-ov" id="m-promo" onclick="if(event.target===this)closeModal('m-promo')">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title"><i class="fa-solid fa-tag" style="color:var(--am);margin-right:8px;"></i>Create Promo Code</div>
+      <button class="modal-close" onclick="closeModal('m-promo')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-2col">
+        <div class="field"><label>Promo Code</label><input placeholder="e.g. POAPOA20"/></div>
+        <div class="field"><label>Discount Type</label><select><option>Percentage (%)</option><option>Flat Amount (KSH)</option></select></div>
+      </div>
+      <div class="form-2col">
+        <div class="field"><label>Discount Value</label><input type="number" placeholder="20"/></div>
+        <div class="field"><label>Expiry Date</label><input type="date"/></div>
+      </div>
+      <div class="form-2col">
+        <div class="field"><label>Max Uses</label><input type="number" placeholder="Unlimited"/></div>
+        <div class="field"><label>Applies To</label><select><option>All Rides</option><option>First Ride Only</option><option>First 3 Rides</option><option>Rides Under KSH 500</option></select></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('m-promo')">Cancel</button>
+      <button class="btn btn-pr" onclick="closeModal('m-promo');showToast('Promo code created successfully','ok')"><i class="fa-solid fa-check"></i>Create Promo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ════════════════════════════════════════════════════════ -->
+<script>
+  /* ── Page titles map ── */
+  const PAGE_TITLES = {
+    dashboard:     'Dashboard <em>Overview</em>',
+    live:          'Live Fleet <em>Real-time GPS</em>',
+    'ai-kyc':      'AI KYC Review <em>Document Intelligence</em>',
+    fraud:         'Fraud Detection <em>AI Monitoring</em>',
+    surge:         'Surge AI <em>Auto-Detection & Control</em>',
+    drivers:       'Drivers <em>Management</em>',
+    riders:        'Riders <em>Management</em>',
+    trips:         'Trips <em>All Trips</em>',
+    earnings:      'Revenue <em>Financial Overview</em>',
+    receipts:      'Receipts <em>View, PDF & Share</em>',
+    payouts:       'Payouts <em>Driver Settlements</em>',
+    promos:        'Promos & Referrals <em>Campaigns</em>',
+    notifications: 'Notifications <em>Broadcast</em>',
+    safety:        'Women Safety <em>SOS & Alerts</em>',
+    fares:         'Fare Configuration <em>Pricing & Surge Periods</em>',
+    reports:       'Reports <em>Analytics & Export</em>',
+    settings:      'Settings <em>Platform Config</em>',
+  };
+
+  /**
+   * Navigate to a page
+   * @param {string} id   - page key matching PAGE_TITLES & id="page-{id}"
+   * @param {Element|null} clickedEl - the nav-item that was clicked
+   */
+  function showPage(id, clickedEl) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // Show target page
+    const pg = document.getElementById('page-' + id);
+    if (pg) pg.classList.add('active');
+    // Update nav active state
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (clickedEl) clickedEl.classList.add('active');
+    // Update title
+    document.getElementById('pageTitle').innerHTML = PAGE_TITLES[id] || id;
+  }
+
+  /* ── Modal helpers ── */
+  function openModal(id)  { document.getElementById(id).classList.add('open');    }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  /* ── Toast notification ── */
+  let _toastTimer;
+  function showToast(msg, type = 'ok') {
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    clearTimeout(_toastTimer);
+
+    const t = document.createElement('div');
+    t.className = 'toast ' + type;
+
+    const icons = { ok: 'fa-circle-check', warn: 'fa-triangle-exclamation', err: 'fa-circle-xmark' };
+    const cols  = { ok: 'color:var(--safe)', warn: 'color:var(--am2)', err: 'color:var(--danger)' };
+    t.innerHTML = `<i class="fa-solid ${icons[type]}" style="${cols[type]}"></i>${msg}`;
+
+    document.body.appendChild(t);
+    _toastTimer = setTimeout(() => t.remove(), 3500);
+  }
+
+  /* ── Toolbar helpers ── */
+  function doExport()   { showToast('Exporting current view as CSV…', 'ok');              }
+  function runAIBatch() { showToast('AI batch review started — processing 7 documents…', 'ok'); }
+
+  /* ── Tab switching ── */
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', function () {
+      this.parentElement.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+</script>
+
+</body>
+</html>
