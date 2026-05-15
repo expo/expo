@@ -9,12 +9,18 @@ const android_1 = require("./android");
 const ios_1 = require("./ios");
 const precompiled_1 = require("./precompiled");
 const resolveBuildConfigAndroid = (options) => {
-    const variant = resolveVariant(options);
+    const fused = !!options.fused;
+    // The fused sibling subproject only registers a `brownfieldRelease` publication
+    // (single-variant by design — fused libraries can't carry multiple AGP variants),
+    // so `--debug` / `--all` alongside `--fused` falls through to Release.
+    const variant = fused ? 'Release' : resolveVariant(options);
+    const library = resolveLibrary(options);
     return {
         ...resolveCommonConfig(options),
-        library: resolveLibrary(options),
-        tasks: resolveTaskArray(options, variant),
+        library,
+        tasks: resolveTaskArray(options, variant, { fused, library }),
         variant,
+        fused,
     };
 };
 exports.resolveBuildConfigAndroid = resolveBuildConfigAndroid;
@@ -76,9 +82,9 @@ const resolveCommonConfig = (options) => {
 const resolveLibrary = (options) => {
     return options.library || (0, android_1.findBrownfieldLibrary)();
 };
-const resolveTaskArray = (options, variant) => {
+const resolveTaskArray = (options, variant, fusedOpts) => {
     const tasks = options.task ?? [];
-    const repoTasks = (options.repository ?? []).map((repo) => (0, android_1.buildPublishingTask)(variant, repo));
+    const repoTasks = (options.repository ?? []).map((repo) => (0, android_1.buildPublishingTask)(variant, repo, fusedOpts));
     return Array.from(new Set([...tasks, ...repoTasks]));
 };
 const resolveVariant = (options) => {

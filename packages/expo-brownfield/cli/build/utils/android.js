@@ -10,9 +10,18 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const error_1 = __importDefault(require("./error"));
 const spinner_1 = require("./spinner");
-const buildPublishingTask = (variant, repository) => {
+const buildPublishingTask = (variant, repository, fusedOpts = { fused: false, library: '' }) => {
     const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
-    return `publishBrownfield${variant}PublicationTo${repositoryName}`;
+    const task = `publishBrownfield${variant}PublicationTo${repositoryName}`;
+    // In `--fused` mode only the fused sibling subproject should publish — every other
+    // expo module subproject also has this publication on its own setup plugin and would
+    // publish redundant per-module AARs next to the fat AAR. The `:project:task` form
+    // restricts Gradle to that one subproject. `-Pbrownfield.fused=true` (passed in
+    // `runTask`) additionally short-circuits the publish plugin's prebuilts re-publish loop.
+    if (fusedOpts.fused) {
+        return `:${fusedOpts.library}-fused:${task}`;
+    }
+    return task;
 };
 exports.buildPublishingTask = buildPublishingTask;
 const findBrownfieldLibrary = () => {
@@ -87,13 +96,14 @@ const processTasks = (stdout) => {
         .filter((task) => !task.includes('MavenLocalRepository')));
 };
 exports.processTasks = processTasks;
-const runTask = async (task, verbose, dryRun) => {
+const runTask = async (task, verbose, dryRun, extraGradleArgs = []) => {
+    const args = [task, ...extraGradleArgs];
     if (dryRun) {
-        console.log(`./gradlew ${task}`);
+        console.log(`./gradlew ${args.join(' ')}`);
         return;
     }
     return (0, spinner_1.withSpinner)({
-        operation: () => (0, spawn_async_1.default)('./gradlew', [task], {
+        operation: () => (0, spawn_async_1.default)('./gradlew', args, {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
             stdio: verbose ? 'inherit' : 'pipe',
         }),

@@ -14,12 +14,18 @@ import type {
 } from './types';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
-  const variant = resolveVariant(options);
+  const fused = !!options.fused;
+  // The fused sibling subproject only registers a `brownfieldRelease` publication
+  // (single-variant by design — fused libraries can't carry multiple AGP variants),
+  // so `--debug` / `--all` alongside `--fused` falls through to Release.
+  const variant: BuildVariant = fused ? 'Release' : resolveVariant(options);
+  const library = resolveLibrary(options);
   return {
     ...resolveCommonConfig(options),
-    library: resolveLibrary(options),
-    tasks: resolveTaskArray(options, variant),
+    library,
+    tasks: resolveTaskArray(options, variant, { fused, library }),
     variant,
+    fused,
   };
 };
 
@@ -92,10 +98,14 @@ const resolveLibrary = (options: OptionValues): string => {
   return options.library || findBrownfieldLibrary();
 };
 
-const resolveTaskArray = (options: OptionValues, variant: BuildVariant): string[] => {
+const resolveTaskArray = (
+  options: OptionValues,
+  variant: BuildVariant,
+  fusedOpts: { fused: boolean; library: string }
+): string[] => {
   const tasks: string[] = options.task ?? [];
   const repoTasks = (options.repository ?? []).map((repo: string) =>
-    buildPublishingTask(variant, repo)
+    buildPublishingTask(variant, repo, fusedOpts)
   );
 
   return Array.from(new Set([...tasks, ...repoTasks]));

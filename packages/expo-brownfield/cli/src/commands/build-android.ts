@@ -17,8 +17,11 @@ const buildAndroid = async (command: Command) => {
   }
   printAndroidConfig(config);
 
+  // In `--fused` mode the publish plugin needs to short-circuit its per-module re-publish
+  // loop — otherwise every Expo module's AAR would publish redundantly next to the fat AAR.
+  const extraGradleArgs = config.fused ? ['-Pbrownfield.fused=true'] : [];
   for (const task of config.tasks) {
-    await runTask(task, config.verbose, config.dryRun);
+    await runTask(task, config.verbose, config.dryRun, extraGradleArgs);
   }
 };
 

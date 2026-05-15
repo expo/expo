@@ -21,6 +21,9 @@ Options:
   -d, --debug                           build debug variant
   -r, --release                         build release variant
   -a, --all                             build both debug and release variants
+  --fused                               publish a single fat AAR with every Expo
+                                        module merged in via AGP Fused Library
+                                        (forces release variant)
   --verbose                             forward all output to the terminal
   -l, --library <library>               name of the brownfield library
   -t, --task <task...>                  publishing task to be run (multiple can
@@ -41,6 +44,9 @@ Options:
   -d, --debug                           build debug variant
   -r, --release                         build release variant
   -a, --all                             build both debug and release variants
+  --fused                               publish a single fat AAR with every Expo
+                                        module merged in via AGP Fused Library
+                                        (forces release variant)
   --verbose                             forward all output to the terminal
   -l, --library <library>               name of the brownfield library
   -t, --task <task...>                  publishing task to be run (multiple can
@@ -61,6 +67,9 @@ Options:
   -d, --debug                           build debug variant
   -r, --release                         build release variant
   -a, --all                             build both debug and release variants
+  --fused                               publish a single fat AAR with every Expo
+                                        module merged in via AGP Fused Library
+                                        (forces release variant)
   --verbose                             forward all output to the terminal
   -l, --library <library>               name of the brownfield library
   -t, --task <task...>                  publishing task to be run (multiple can

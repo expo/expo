@@ -13,6 +13,15 @@ import org.gradle.api.tasks.TaskProvider
  */
 internal fun setupPrebuiltsCopying(rootProject: Project) {
   rootProject.afterEvaluate {
+    // In `--fused` mode the user is publishing a single fat AAR via Fused Library that
+    // already merges every Expo module's classes/resources/jni inside it — the
+    // per-module mavenLocal/remote re-publish loop below would emit redundant
+    // coordinates next to the fat AAR. Skip the whole setup when the CLI sets this
+    // property (`-Pbrownfield.fused=true`).
+    if (rootProject.findProperty("brownfield.fused") == "true") {
+      return@afterEvaluate
+    }
+
     val configExtension = getConfigExtension(rootProject)
 
     if (configExtension.publications.isEmpty) {

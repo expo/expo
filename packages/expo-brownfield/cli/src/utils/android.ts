@@ -7,9 +7,22 @@ import CLIError from './error';
 import { withSpinner } from './spinner';
 import type { AndroidConfig, BuildVariant } from './types';
 
-export const buildPublishingTask = (variant: BuildVariant, repository: string): string => {
+export const buildPublishingTask = (
+  variant: BuildVariant,
+  repository: string,
+  fusedOpts: { fused: boolean; library: string } = { fused: false, library: '' }
+): string => {
   const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
-  return `publishBrownfield${variant}PublicationTo${repositoryName}`;
+  const task = `publishBrownfield${variant}PublicationTo${repositoryName}`;
+  // In `--fused` mode only the fused sibling subproject should publish — every other
+  // expo module subproject also has this publication on its own setup plugin and would
+  // publish redundant per-module AARs next to the fat AAR. The `:project:task` form
+  // restricts Gradle to that one subproject. `-Pbrownfield.fused=true` (passed in
+  // `runTask`) additionally short-circuits the publish plugin's prebuilts re-publish loop.
+  if (fusedOpts.fused) {
+    return `:${fusedOpts.library}-fused:${task}`;
+  }
+  return task;
 };
 
 export const findBrownfieldLibrary = (): string | undefined => {
@@ -93,15 +106,21 @@ export const processTasks = (stdout: string): string[] => {
   );
 };
 
-export const runTask = async (task: string, verbose: boolean, dryRun: boolean) => {
+export const runTask = async (
+  task: string,
+  verbose: boolean,
+  dryRun: boolean,
+  extraGradleArgs: string[] = []
+) => {
+  const args = [task, ...extraGradleArgs];
   if (dryRun) {
-    console.log(`./gradlew ${task}`);
+    console.log(`./gradlew ${args.join(' ')}`);
     return;
   }
 
   return withSpinner({
     operation: () =>
-      spawnAsync('./gradlew', [task], {
+      spawnAsync('./gradlew', args, {
         cwd: path.join(process.cwd(), 'android'),
         stdio: verbose ? 'inherit' : 'pipe',
       }),
