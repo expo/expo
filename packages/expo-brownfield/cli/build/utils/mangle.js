@@ -72,6 +72,7 @@ const buildPodTargets = async (podsProjectPath, podTargetLabels, options) => {
         '-sdk',
         'iphonesimulator',
         'build',
+        'SYMROOT=build',
         'SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO',
         'OTHER_SWIFT_FLAGS=$(inherited) -no-verify-emitted-module-interface',
     ];
