@@ -4,7 +4,13 @@ package = JSON.parse(File.read(File.join(__dir__, "package.json")))
 
 reactNativeVersion = '0.0.0'
 begin
-  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+  absolute_react_native_path = ''
+  if !ENV['REACT_NATIVE_PATH'].nil?
+    absolute_react_native_path = File.expand_path(ENV['REACT_NATIVE_PATH'], Pod::Config.instance.project_root)
+  else
+    absolute_react_native_path = File.dirname(`node --print "require.resolve('react-native/package.json')"`)
+  end
+  reactNativeVersion = `node --print "require('#{absolute_react_native_path}/package.json').version"`
 rescue
   reactNativeVersion = '0.0.0'
 end
@@ -20,9 +26,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1',
-    :osx => '13.0'
+    :ios => '16.4',
+    :tvos => '16.4',
+    :osx => '13.4'
   }
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }

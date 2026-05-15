@@ -2,7 +2,7 @@
 import * as CapabilityUtils from './WebCapabilityUtils';
 import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';
-import {
+import type {
   CameraType,
   CameraCapturedPicture,
   ImageSize,
@@ -193,11 +193,13 @@ export function isWebKit(): boolean {
 }
 
 export function compareStreams(a: MediaStream | null, b: MediaStream | null): boolean {
-  if (!a || !b) {
+  const settingsA = a?.getTracks()[0]?.getSettings();
+  const settingsB = b?.getTracks()[0]?.getSettings();
+
+  if (!settingsA || !settingsB) {
     return false;
   }
-  const settingsA = a.getTracks()[0].getSettings();
-  const settingsB = b.getTracks()[0].getSettings();
+
   return settingsA.deviceId === settingsB.deviceId;
 }
 
@@ -332,8 +334,8 @@ export function isCapabilityAvailable(
   const stream = video.srcObject;
 
   if (stream instanceof MediaStream) {
-    const videoTrack = stream.getVideoTracks()[0];
-    return !!videoTrack.getCapabilities?.()?.[keyName];
+    const capability = stream.getVideoTracks()[0]?.getCapabilities()[keyName];
+    return !!capability;
   }
 
   return false;

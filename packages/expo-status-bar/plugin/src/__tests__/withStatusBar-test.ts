@@ -1,57 +1,36 @@
 import {
-  resolveAndroidLegacyProps,
-  setAndroidStrings,
+  resolveProps,
+  setAndroidStatusBarStyles,
   setIOSStatusBarInfoPlist,
-  withStatusBarExpoGoManifest,
 } from '../withStatusBar';
 
-describe(resolveAndroidLegacyProps, () => {
-  it(`resolves no legacy props`, () => {
-    expect(resolveAndroidLegacyProps({})).toStrictEqual({
-      hidden: undefined,
-      style: undefined,
-    });
-  });
-
-  it(`resolves legacy props`, () => {
-    expect(
-      resolveAndroidLegacyProps({
-        androidStatusBar: { hidden: true, barStyle: 'light-content' },
-      })
-    ).toStrictEqual({
-      hidden: true,
-      style: 'light',
-    });
-  });
-});
-
 describe(setIOSStatusBarInfoPlist, () => {
-  it(`sets hidden and style`, () => {
+  it('sets hidden and style', () => {
     expect(setIOSStatusBarInfoPlist({}, { hidden: true, style: 'light' })).toStrictEqual({
       UIStatusBarHidden: true,
       UIStatusBarStyle: 'UIStatusBarStyleLightContent',
     });
   });
 
-  it(`sets dark style`, () => {
+  it('sets dark style', () => {
     expect(setIOSStatusBarInfoPlist({}, { style: 'dark' })).toStrictEqual({
       UIStatusBarStyle: 'UIStatusBarStyleDarkContent',
     });
   });
 
-  it(`sets hidden only`, () => {
+  it('sets hidden only', () => {
     expect(setIOSStatusBarInfoPlist({}, { hidden: true })).toStrictEqual({
       UIStatusBarHidden: true,
     });
   });
 
-  it(`overrides existing UIStatusBarHidden`, () => {
+  it('overrides existing UIStatusBarHidden', () => {
     expect(setIOSStatusBarInfoPlist({ UIStatusBarHidden: false }, { hidden: true })).toStrictEqual({
       UIStatusBarHidden: true,
     });
   });
 
-  it(`overrides existing UIStatusBarStyle`, () => {
+  it('overrides existing UIStatusBarStyle', () => {
     expect(
       setIOSStatusBarInfoPlist({ UIStatusBarStyle: 'UIStatusBarStyleDefault' }, { style: 'light' })
     ).toStrictEqual({
@@ -59,11 +38,11 @@ describe(setIOSStatusBarInfoPlist, () => {
     });
   });
 
-  it(`does nothing with empty props`, () => {
+  it('does nothing with empty props', () => {
     expect(setIOSStatusBarInfoPlist({}, {})).toStrictEqual({});
   });
 
-  it(`preserves existing infoPlist entries`, () => {
+  it('preserves existing infoPlist entries', () => {
     expect(setIOSStatusBarInfoPlist({ CFBundleName: 'MyApp' }, { style: 'dark' })).toStrictEqual({
       CFBundleName: 'MyApp',
       UIStatusBarStyle: 'UIStatusBarStyleDarkContent',
@@ -71,128 +50,82 @@ describe(setIOSStatusBarInfoPlist, () => {
   });
 });
 
-describe(withStatusBarExpoGoManifest, () => {
-  it(`ensures manifest values (using plugin props)`, () => {
-    expect(
-      withStatusBarExpoGoManifest(
-        { name: '', slug: '' },
-        {
-          hidden: true,
-          style: 'dark',
-        }
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidStatusBar: {
-        barStyle: 'dark-content',
-        hidden: true,
-      },
-      extra: {
-        'expo-status-bar': {
-          hidden: true,
-          style: 'dark',
-        },
-      },
-    });
+describe(resolveProps, () => {
+  it('returns undefined for nullish or empty props', () => {
+    expect(resolveProps(undefined)).toBeUndefined();
+    expect(resolveProps({})).toBeUndefined();
+    expect(resolveProps({ style: undefined })).toBeUndefined();
   });
 
-  it(`ensures manifest values (using android legacy props)`, () => {
-    expect(
-      withStatusBarExpoGoManifest(
-        {
-          name: '',
-          slug: '',
-          androidStatusBar: {
-            barStyle: 'dark-content',
-            hidden: true,
-          },
-        },
-        undefined
-      )
-    ).toStrictEqual({
-      name: expect.any(String),
-      slug: expect.any(String),
-      androidStatusBar: {
-        barStyle: 'dark-content',
-        hidden: true,
-      },
-      extra: {
-        'expo-status-bar': {
-          hidden: true,
-          style: 'dark',
-        },
-      },
-    });
+  it('resolves props', () => {
+    expect(resolveProps({ style: 'dark' })).toStrictEqual({ style: 'dark' });
+    expect(resolveProps({ hidden: true })).toStrictEqual({ hidden: true });
   });
 });
 
-describe(setAndroidStrings, () => {
-  const getAllProps = () => ({ hidden: true, style: 'dark' }) as const;
+describe(setAndroidStatusBarStyles, () => {
+  const parent = 'Theme.AppCompat.DayNight.NoActionBar';
 
-  it(`sets all strings`, () => {
-    expect(setAndroidStrings({ resources: {} }, getAllProps())).toStrictEqual({
-      resources: {
-        string: [
-          {
-            $: {
-              name: 'expo_status_bar_visibility',
-              translatable: 'false',
-            },
-            _: 'hidden',
-          },
-        ],
-      },
-    });
+  const baseStyles = () => ({
+    resources: { style: [{ $: { name: 'AppTheme', parent }, item: [] }] },
   });
 
-  it(`sets no strings`, () => {
-    expect(
-      setAndroidStrings(
-        {
-          resources: {
-            string: [],
-          },
-        },
-        {}
-      )
-    ).toStrictEqual({
-      resources: {
-        string: [],
-      },
-    });
+  const appTheme = (items: { name: string; value: string }[]) => ({
+    $: { name: 'AppTheme', parent },
+    item: items.map(({ name, value }) => ({ $: { name }, _: value })),
   });
 
-  it(`unsets string`, () => {
-    // Set all strings
-    const strings = setAndroidStrings({ resources: {} }, getAllProps());
+  it('sets all styles', () => {
+    const result = setAndroidStatusBarStyles(baseStyles(), { hidden: true, style: 'dark' });
 
-    // Unset all strings
-    expect(setAndroidStrings(strings, {})).toStrictEqual({
-      resources: {
-        string: [],
-      },
-    });
+    expect(result.resources.style).toStrictEqual([
+      appTheme([
+        { name: 'expoStatusBarHidden', value: 'true' },
+        { name: 'android:windowLightStatusBar', value: 'true' },
+      ]),
+    ]);
   });
 
-  it(`redefines duplicates`, () => {
-    // Set all strings
-    const strings = setAndroidStrings({ resources: {} }, { hidden: true });
+  it('sets light style', () => {
+    const result = setAndroidStatusBarStyles(baseStyles(), { style: 'light' });
 
-    expect(strings.resources.string).toStrictEqual([
-      {
-        $: { name: 'expo_status_bar_visibility', translatable: 'false' },
-        // Test an initial value
-        _: 'hidden',
-      },
+    expect(result.resources.style).toStrictEqual([
+      appTheme([{ name: 'android:windowLightStatusBar', value: 'false' }]),
+    ]);
+  });
+
+  it('sets hidden only', () => {
+    const result = setAndroidStatusBarStyles(baseStyles(), { hidden: true });
+
+    expect(result.resources.style).toStrictEqual([
+      appTheme([{ name: 'expoStatusBarHidden', value: 'true' }]),
+    ]);
+  });
+
+  it('does nothing with empty props', () => {
+    const result = setAndroidStatusBarStyles(baseStyles(), {});
+
+    expect(result).toStrictEqual(baseStyles());
+  });
+
+  it('redefines duplicates', () => {
+    const styles = setAndroidStatusBarStyles(baseStyles(), { hidden: true });
+
+    expect(styles.resources.style).toStrictEqual([
+      appTheme([{ name: 'expoStatusBarHidden', value: 'true' }]),
     ]);
 
-    expect(setAndroidStrings(strings, { hidden: false }).resources.string).toStrictEqual([
-      {
-        $: { name: 'expo_status_bar_visibility', translatable: 'false' },
-        // Test a redefined value
-        _: 'visible',
-      },
+    const updated = setAndroidStatusBarStyles(styles, { hidden: false });
+
+    expect(updated.resources.style).toStrictEqual([
+      appTheme([{ name: 'expoStatusBarHidden', value: 'false' }]),
     ]);
+  });
+
+  it('removes style when prop is unset', () => {
+    const styles = setAndroidStatusBarStyles(baseStyles(), { hidden: true, style: 'dark' });
+    const result = setAndroidStatusBarStyles(styles, {});
+
+    expect(result.resources.style).toStrictEqual([appTheme([])]);
   });
 });

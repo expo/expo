@@ -13,10 +13,12 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.types.OptimizedRecord
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedRecord
 data class ToggleButtonColors(
   @Field val containerColor: Color? = null,
   @Field val contentColor: Color? = null,
@@ -26,6 +28,7 @@ data class ToggleButtonColors(
   @Field val disabledContentColor: Color? = null
 ) : Record
 
+@OptimizedComposeProps
 data class ToggleButtonProps(
   val checked: Boolean = false,
   val enabled: Boolean = true,
@@ -33,6 +36,7 @@ data class ToggleButtonProps(
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
+@OptimizedRecord
 data class ToggleButtonValueChangeEvent(
   @Field val checked: Boolean = false
 ) : Record
@@ -57,7 +61,7 @@ fun FunctionalComposableScope.ToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope(rowScope = this))
+    Children(UIComposableScope(rowScope = this))
   }
 }
 
@@ -81,7 +85,7 @@ fun FunctionalComposableScope.IconToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -105,7 +109,7 @@ fun FunctionalComposableScope.FilledIconToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -129,6 +133,6 @@ fun FunctionalComposableScope.OutlinedIconToggleButtonContent(
       disabledContentColor = props.colors.disabledContentColor.compose
     )
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }

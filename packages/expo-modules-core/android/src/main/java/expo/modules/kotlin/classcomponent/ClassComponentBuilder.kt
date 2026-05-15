@@ -69,7 +69,7 @@ class ClassComponentBuilder<SharedObjectType : Any>(
     val objectData = buildObject() + traits.map { t -> t.export(appContext) }.reduceOrNull { t1, t2 -> t1 + t2 }
 
     objectData.functions.forEach {
-      it.ownerType = ownerType.kType
+      it.ownerType = ownerType.typeDescriptor
       it.canTakeOwner = true
     }
 
@@ -84,7 +84,7 @@ class ClassComponentBuilder<SharedObjectType : Any>(
       toReturnType<Unit>()
     ) {}
     constructor.canTakeOwner = true
-    constructor.ownerType = ownerType.kType
+    constructor.ownerType = ownerType.typeDescriptor
 
     return ClassDefinitionData(
       name,
@@ -201,14 +201,14 @@ class ClassComponentBuilder<SharedObjectType : Any>(
    * Creates the read-only property whose getter takes the caller as an argument.
    */
   inline fun <reified T> Property(name: String, crossinline body: (owner: SharedObjectType) -> T): PropertyComponentBuilderWithThis<SharedObjectType> {
-    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.typeDescriptor, name).also {
       it.get(body)
       properties[name] = it
     }
   }
 
   override fun Property(name: String): PropertyComponentBuilderWithThis<SharedObjectType> {
-    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.kType, name).also {
+    return PropertyComponentBuilderWithThis<SharedObjectType>(ownerType.typeDescriptor, name).also {
       properties[name] = it
     }
   }

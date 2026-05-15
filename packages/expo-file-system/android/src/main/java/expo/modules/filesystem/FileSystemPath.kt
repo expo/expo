@@ -12,6 +12,8 @@ import expo.modules.filesystem.unifiedfile.JavaFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.exception.Exceptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import java.io.File
@@ -145,23 +147,27 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     }
   }
 
-  fun copy(to: FileSystemPath, options: RelocationOptions) {
+  suspend fun copy(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
     validatePermission(FilePermissionService.Permission.READ)
     to.validatePermission(FilePermissionService.Permission.WRITE)
 
-    file.copyTo(to.asCopyOrMoveDestination(options.overwrite))
+    withContext(Dispatchers.IO) {
+      file.copyTo(to.asCopyOrMoveDestination(options.overwrite))
+    }
   }
 
-  fun move(to: FileSystemPath, options: RelocationOptions) {
+  suspend fun move(to: FileSystemPath, options: RelocationOptions) {
     validateType()
     to.validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     to.validatePermission(FilePermissionService.Permission.WRITE)
 
     // moveTo returns the URI of where the file was actually moved to
-    val finalUri = file.moveTo(to.asCopyOrMoveDestination(options.overwrite))
+    val finalUri = withContext(Dispatchers.IO) {
+      file.moveTo(to.asCopyOrMoveDestination(options.overwrite))
+    }
 
     // Update URI to reflect the new location
     uri = finalUri

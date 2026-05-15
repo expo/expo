@@ -94,7 +94,12 @@ public:
  Emits an event with the given name and arguments to the emitter object.
  Does nothing if the given object is not an instance of the EventEmitter class.
  */
-void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments);
+
+/**
+ Same as above but takes a raw `jsi::Value` pointer and count.
+ */
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const jsi::Value *args, size_t count);
 
 /**
  Gets `expo.EventEmitter` class from the given runtime.

@@ -1,8 +1,8 @@
 import { Platform, UnavailabilityError } from 'expo-modules-core';
 import { Dimensions } from 'react-native';
 import ExpoScreenOrientation from './ExpoScreenOrientation';
-import { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, } from './ScreenOrientation.types';
-export { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, };
+import { Orientation, OrientationLock, WebOrientationLock, } from './ScreenOrientation.types';
+export { Orientation, OrientationLock, WebOrientationLock, WebOrientation, SizeClassIOS, } from './ScreenOrientation.types';
 let _orientationChangeSubscribers = [];
 let _lastOrientationLock = OrientationLock.UNKNOWN;
 // @needsAudit
@@ -190,7 +190,7 @@ export function removeOrientationChangeListeners() {
     let i = _orientationChangeSubscribers.length;
     while (i--) {
         const subscriber = _orientationChangeSubscribers[i];
-        subscriber.remove();
+        subscriber?.remove();
         // remove after a successful unsubscribe
         _orientationChangeSubscribers.pop();
     }

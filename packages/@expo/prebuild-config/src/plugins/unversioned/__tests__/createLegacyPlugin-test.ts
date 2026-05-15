@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import * as ConfigPlugins from '@expo/config-plugins';
 
 import { createLegacyPlugin } from '../createLegacyPlugin';

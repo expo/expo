@@ -8,6 +8,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
 enum class CameraType(val value: String) : Enumerable {
   FRONT("front"),
@@ -80,6 +81,7 @@ enum class VideoStabilizationMode(val value: String) : Enumerable {
   fun isEnabled() = this != OFF
 }
 
+@OptimizedRecord
 data class BarcodeSettings(
   @Field val barcodeTypes: List<BarcodeType>
 ) : Record

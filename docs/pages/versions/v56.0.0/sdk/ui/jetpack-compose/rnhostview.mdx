@@ -1,0 +1,221 @@
+---
+title: RNHostView
+description: A component that enables React Native views inside Jetpack Compose.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A component that enables proper layout behavior when React Native views are rendered inside Jetpack Compose components. It syncs layout information from Jetpack Compose back to React Native's Yoga layout system by updating the shadow node size.
+
+When React Native views are placed inside Jetpack Compose components like [`ModalBottomSheet`](bottomsheet), [`Card`](card), [`Row`](row), [`Column`](column) and so on, the layout systems need to communicate. `RNHostView` bridges this gap:
+
+- **With [`matchContents`](#matchcontents)**: The shadow node size is set to match the child React Native view's intrinsic size, allowing the Jetpack Compose parent to size itself based on the React Native content.
+- **Without `matchContents`**: The shadow node size is set to match the parent Jetpack Compose view's size, allowing the React Native content to fill the available space (useful for `flex: 1` layouts).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic usage with matchContents
+
+Use `matchContents` when you want the Jetpack Compose parent to size itself based on the React Native content.
+
+```tsx RNHostView with matchContents
+import { useState } from 'react';
+import { Pressable, Text as RNText, View } from 'react-native';
+import { Host, Card, Column, Row, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
+
+function Example() {
+  const [counter, setCounter] = useState(0);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Card modifiers={[fillMaxWidth()]}>
+        <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <Text>Mixing RN Components with Compose</Text>
+          <Row horizontalArrangement={{ spacedBy: 24 }} verticalAlignment="center">
+            <RNHostView matchContents>
+              <Pressable
+                onPress={() => setCounter(prev => prev - 1)}
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#9B59B6',
+                }}>
+                <RNText style={{ color: 'white', fontSize: 24 }}>-</RNText>
+              </Pressable>
+            </RNHostView>
+            <Text>{counter}</Text>
+            <RNHostView matchContents>
+              <Pressable
+                onPress={() => setCounter(prev => prev + 1)}
+                style={{
+                  height: 50,
+                  width: 50,
+                  borderRadius: 100,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#9B59B6',
+                }}>
+                <RNText style={{ color: 'white', fontSize: 24 }}>+</RNText>
+              </Pressable>
+            </RNHostView>
+          </Row>
+        </Column>
+      </Card>
+    </Host>
+  );
+}
+```
+
+### Flexible content without matchContents
+
+When using `flex: 1` in your React Native content, omit the `matchContents` prop so the content fills the available Jetpack Compose space.
+
+```tsx RNHostView with flex content
+import { Text as RNText, View } from 'react-native';
+import { Host, Card, Column, Row, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
+
+function Example() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Card modifiers={[fillMaxWidth()]}>
+        <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+          <Text>RN components with flex: 1 children</Text>
+          <Row horizontalArrangement={{ spacedBy: 20 }} modifiers={[size(100, 100)]}>
+            <RNHostView>
+              <View
+                style={{
+                  flex: 1,
+                  backgroundColor: '#9B59B6',
+                  borderRadius: 10,
+                }}
+              />
+            </RNHostView>
+          </Row>
+        </Column>
+      </Card>
+    </Host>
+  );
+}
+```
+
+### Usage with ModalBottomSheet
+
+`RNHostView` works well inside [`ModalBottomSheet`](/versions/latest/sdk/ui/jetpack-compose/bottomsheet) to display interactive React Native content.
+
+```tsx RNHostView in ModalBottomSheet
+import { useRef, useState } from 'react';
+import { Pressable, Text as RNText, View } from 'react-native';
+import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { padding } from '@expo/ui/jetpack-compose/modifiers';
+
+function Example() {
+  const [visible, setVisible] = useState(false);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+
+  const hideSheet = async () => {
+    await sheetRef.current?.hide();
+    setVisible(false);
+  };
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet ref={sheetRef} onDismissRequest={() => setVisible(false)}>
+          <Column verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <Text>Mixing Compose + RN in a Bottom Sheet</Text>
+            <RNHostView matchContents>
+              <View>
+                <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                  React Native Content
+                </RNText>
+                <Pressable
+                  style={{
+                    backgroundColor: '#007AFF',
+                    padding: 12,
+                    borderRadius: 8,
+                    alignItems: 'center',
+                  }}
+                  onPress={hideSheet}>
+                  <RNText style={{ color: 'white', fontWeight: '600' }}>Close</RNText>
+                </Pressable>
+              </View>
+            </RNHostView>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
+### Flexible React Native content in a bottom sheet
+
+Use `RNHostView` without `matchContents` to let the React Native view fill the remaining space inside the sheet. Combine with a `height` modifier on the parent `Column` to control the sheet size.
+
+```tsx RNHostView flex in ModalBottomSheet
+import { useRef, useState } from 'react';
+import { Text as RNText, View } from 'react-native';
+import { Host, ModalBottomSheet, Button, Column, RNHostView, Text } from '@expo/ui/jetpack-compose';
+import type { ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import { height, padding } from '@expo/ui/jetpack-compose/modifiers';
+
+function Example() {
+  const [visible, setVisible] = useState(false);
+  const sheetRef = useRef<ModalBottomSheetRef>(null);
+
+  return (
+    <Host matchContents>
+      <Button onClick={() => setVisible(true)}>
+        <Text>Open Flex Content Sheet</Text>
+      </Button>
+      {visible && (
+        <ModalBottomSheet
+          ref={sheetRef}
+          onDismissRequest={() => setVisible(false)}
+          skipPartiallyExpanded>
+          <Column modifiers={[height(400), padding(16, 16, 16, 16)]}>
+            <RNHostView>
+              <View style={{ flex: 1, backgroundColor: '#9B59B6', borderRadius: 10 }}>
+                <RNText
+                  style={{
+                    color: 'white',
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    padding: 16,
+                  }}>
+                  React Native Content (flex: 1)
+                </RNText>
+              </View>
+            </RNHostView>
+          </Column>
+        </ModalBottomSheet>
+      )}
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { RNHostView } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/rnhostview" apiName="RNHostView" />

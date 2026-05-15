@@ -32,7 +32,6 @@
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTReloadCommand.h>
 
-#import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
@@ -71,7 +70,6 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 // Legacy
 @property (nonatomic, strong) EXModuleRegistry *legacyModuleRegistry;
-@property (nonatomic, strong) EXNativeModulesProxy *legacyModulesProxy;
 
 @end
 

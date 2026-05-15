@@ -10,7 +10,7 @@ import java.util.Calendar
 typealias DateTimeInput = Either<String, Long>
 
 // Returns Unix timestamp in milliseconds.
-fun DateTimeInput.getTimeInMillis(): Long? {
+fun DateTimeInput.getTimeInMillis(): Long {
   if (this.`is`(Long::class)) {
     return this.second()
   }

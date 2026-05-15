@@ -1,6 +1,7 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
 
-import { EntityTypes, Source } from '../Calendar';
+import type { DialogEventResult, EntityTypes, Source } from '../Calendar';
+import type { AddEventWithFormOptions } from './ExpoCalendar.types';
 
 const noPermissionResponse: PermissionResponse = {
   status: PermissionStatus.UNDETERMINED,
@@ -11,6 +12,10 @@ const noPermissionResponse: PermissionResponse = {
 
 class ExpoCalendar {
   constructor(id: string) {
+    throw new Error('Calendar API is not available on web');
+  }
+
+  async addEventWithForm(options?: AddEventWithFormOptions): Promise<DialogEventResult> {
     throw new Error('Calendar API is not available on web');
   }
 }
@@ -56,6 +61,10 @@ export default {
   },
 
   async getCalendarById(calendarId: string): Promise<ExpoCalendar> {
+    throw new Error('Calendar API is not available on web');
+  },
+
+  async presentPicker(): Promise<ExpoCalendar | null> {
     throw new Error('Calendar API is not available on web');
   },
 

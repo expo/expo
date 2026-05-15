@@ -23,11 +23,23 @@ export const findBrownfieldLibrary = (): string | undefined => {
       .readdirSync(androidPath, { withFileTypes: true })
       .filter((item) => item.isDirectory());
     const brownfieldLibrary = subdirectories.find((directory) => {
-      const directoryPath = path.join(androidPath, directory.name);
-      const files = fs.readdirSync(directoryPath, { recursive: true });
-      return files.some(
-        (file) => typeof file === 'string' && file.endsWith('ReactNativeHostManager.kt')
-      );
+      const directoryPath = path.resolve(androidPath, directory.name);
+      const directories = [directoryPath];
+
+      let target: string | undefined;
+      while ((target = directories.shift()) != null) {
+        const entries = fs.readdirSync(target, { withFileTypes: true });
+        for (const entry of entries) {
+          const childPath = path.join(target, entry.name);
+          if (entry.isDirectory()) {
+            directories.push(childPath);
+          } else if (entry.isFile()) {
+            if (entry.name === 'ReactNativeHostManager.kt') return true;
+          }
+        }
+      }
+
+      return false;
     });
 
     if (brownfieldLibrary) {
@@ -39,6 +51,8 @@ export const findBrownfieldLibrary = (): string | undefined => {
     const errorMessage = error instanceof Error ? error.message : '';
     CLIError.handle('android-library-unknown-error', errorMessage);
   }
+
+  return;
 };
 
 export const printAndroidConfig = (config: AndroidConfig) => {

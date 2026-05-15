@@ -1,6 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import SDWebImage
+internal import SDWebImage
 import ExpoModulesCore
 
 internal final class ImageLoader {

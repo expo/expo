@@ -1,13 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NativeStackView = NativeStackView;
-const native_stack_1 = require("@react-navigation/native-stack");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const RootModal_1 = require("../../layouts/RootModal");
+const native_stack_1 = require("../../react-navigation/native-stack");
 function NativeStackView(props) {
-    return (<RootModal_1.RootModalProvider>
-      <NativeStackViewInner {...props}/>
-    </RootModal_1.RootModalProvider>);
+    return ((0, jsx_runtime_1.jsx)(RootModal_1.RootModalProvider, { children: (0, jsx_runtime_1.jsx)(NativeStackViewInner, { ...props }) }));
 }
 function NativeStackViewInner(props) {
     const rootModals = (0, react_1.use)(RootModal_1.RootModalContext);
@@ -21,6 +20,6 @@ function NativeStackViewInner(props) {
             routes: props.state.routes.concat(rootModals.routes),
         };
     }, [props.state, rootModals.routes]);
-    return <native_stack_1.NativeStackView {...props} state={state}/>;
+    return (0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { ...props, state: state });
 }
 //# sourceMappingURL=NativeStackView.js.map

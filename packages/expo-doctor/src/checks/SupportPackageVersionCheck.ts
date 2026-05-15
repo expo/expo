@@ -1,4 +1,4 @@
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../utils/getRemoteVersionsForSdkAsync';
 import { joinWithCommasAnd } from '../utils/strings';
@@ -40,13 +40,13 @@ export class SupportPackageVersionCheck implements DoctorCheck {
       'metro',
     ]
       .filter((packageName) => versionsForSdk[packageName])
-      .map((packageName) => ({ packageName, version: versionsForSdk[packageName] }));
+      .map((packageName) => ({ packageName, version: versionsForSdk[packageName] ?? '' }));
 
     // if metro is present in versions API, add check additional key metro packages, which should use some version
     if (supportPackagesToValidate.find((p) => p.packageName === 'metro')) {
       supportPackagesToValidate.push(
-        { packageName: 'metro-resolver', version: versionsForSdk['metro'] },
-        { packageName: 'metro-config', version: versionsForSdk['metro'] }
+        { packageName: 'metro-resolver', version: versionsForSdk['metro'] ?? '' },
+        { packageName: 'metro-config', version: versionsForSdk['metro'] ?? '' }
       );
     }
 

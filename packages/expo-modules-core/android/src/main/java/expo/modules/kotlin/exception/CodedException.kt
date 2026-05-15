@@ -2,6 +2,7 @@ package expo.modules.kotlin.exception
 
 import com.facebook.react.bridge.ReadableType
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -70,31 +71,48 @@ open class CodedException(
 inline fun <reified T : CodedException> errorCodeOf(): String =
   CodedException.inferCode(T::class.java)
 
-internal class IncompatibleArgTypeException(
-  argumentType: KClass<*>,
-  desiredType: KClass<*>,
-  cause: Throwable? = null
-) : CodedException(
-  message = "Argument type '$argumentType' is not compatible with expected type '$desiredType'.",
-  cause = cause
-)
+internal class IncompatibleArgTypeException : CodedException {
+  constructor(
+    argumentType: KClass<*>,
+    desiredType: KClass<*>,
+    cause: Throwable? = null
+  ) : super("Argument type '$argumentType' is not compatible with expected type '$desiredType'.", cause)
 
-internal class EnumNoSuchValueException(
-  enumType: KClass<Enum<*>>,
-  enumConstants: Array<out Enum<*>>,
-  value: Any?
-) : CodedException(
-  message = "'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}"
-)
+  constructor(
+    argumentType: KClass<*>,
+    desiredType: Class<*>,
+    cause: Throwable? = null
+  ) : super("Argument type '$argumentType' is not compatible with expected type '${desiredType.simpleName}'.", cause)
+
+  constructor(
+    argumentType: Class<*>,
+    desiredType: Class<*>,
+    cause: Throwable? = null
+  ) : super("Argument type '${argumentType.simpleName}' is not compatible with expected type '${desiredType.simpleName}'.", cause)
+}
+
+internal class EnumNoSuchValueException : CodedException {
+  constructor(
+    enumType: KClass<Enum<*>>,
+    enumConstants: Array<out Enum<*>>,
+    value: Any?
+  ) : super("'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}")
+
+  constructor(
+    enumType: Class<*>,
+    enumConstants: Array<out Enum<*>>,
+    value: Any?
+  ) : super("'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}")
+}
 
 internal class MissingTypeConverter(
-  forType: KType
+  forType: TypeDescriptor
 ) : CodedException(
   message = "Cannot find type converter for '$forType'. Make sure the class implements `expo.modules.kotlin.records.Record` (i.e. `class MyObj : Record`)."
 )
 
 internal class InvalidExpectedType(
-  forType: KType
+  forType: TypeDescriptor
 ) : CodedException(
   message = "Cannot obtain ExpectedType form '$forType'."
 )
@@ -115,8 +133,10 @@ internal class MethodNotFoundException :
 internal class NullArgumentException :
   CodedException(message = "Cannot assigned null to not nullable type.")
 
-internal class FieldRequiredException(property: KProperty1<*, *>) :
-  CodedException(message = "Value for field '$property' is required, got nil")
+internal class FieldRequiredException(property: String) :
+  CodedException(message = "Value for field '$property' is required, got nil") {
+  constructor(property: KProperty1<*, *>) : this(property.toString())
+}
 
 @DoNotStrip
 class UnexpectedException(
@@ -169,7 +189,7 @@ internal class OnViewDidUpdatePropsException(
 )
 
 internal class ArgumentCastException(
-  argDesiredType: KType,
+  argDesiredType: TypeDescriptor,
   argIndex: Int,
   providedType: String,
   cause: CodedException
@@ -199,7 +219,7 @@ internal class InvalidSharedObjectTypeException(
 )
 
 internal class IncorrectRefTypeException(
-  desiredType: KType,
+  desiredType: TypeDescriptor,
   receivedClass: Class<*>
 ) : CodedException(
   message = "Cannot convert received '$receivedClass' to the '$desiredType', because of the inner ref type mismatch"
@@ -211,7 +231,7 @@ internal class FieldCastException private constructor(
 ) : DecoratedException(message, cause) {
   constructor(
     fieldName: String,
-    fieldType: KType,
+    fieldType: TypeDescriptor,
     providedType: ReadableType,
     cause: CodedException
   ) : this(
@@ -221,8 +241,18 @@ internal class FieldCastException private constructor(
 
   constructor(
     fieldName: String,
+    fieldType: TypeDescriptor,
+    providedType: Any?,
+    cause: CodedException
+  ) : this(
+    message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$providedType'.",
+    cause = cause
+  )
+
+  constructor(
+    fieldName: String,
     fieldType: KType,
-    recordType: KType,
+    recordType: TypeDescriptor,
     cause: CodedException
   ) : this(
     message = "Cannot cast value for field '$fieldName' ('$fieldType') in record '$recordType'.",
@@ -231,7 +261,7 @@ internal class FieldCastException private constructor(
 }
 
 internal class RecordCastException(
-  recordType: KType,
+  recordType: TypeDescriptor,
   cause: CodedException
 ) : DecoratedException(
   message = "Cannot create a record of the type: '$recordType'.",
@@ -239,8 +269,8 @@ internal class RecordCastException(
 )
 
 internal class CollectionElementCastException private constructor(
-  collectionType: KType,
-  elementType: KType,
+  collectionType: TypeDescriptor,
+  elementType: TypeDescriptor,
   providedType: String,
   cause: CodedException
 ) : DecoratedException(
@@ -248,26 +278,25 @@ internal class CollectionElementCastException private constructor(
   cause
 ) {
   constructor(
-    collectionType: KType,
-    elementType: KType,
+    collectionType: TypeDescriptor,
+    elementType: TypeDescriptor,
     providedType: ReadableType,
     cause: CodedException
   ) : this(collectionType, elementType, providedType.name, cause)
 
   constructor(
-    collectionType: KType,
-    elementType: KType,
+    collectionType: TypeDescriptor,
+    elementType: TypeDescriptor,
     providedType: KClass<*>,
     cause: CodedException
   ) : this(collectionType, elementType, providedType.toString(), cause)
 }
 
 @DoNotStrip
-class DynamicCastException(
-  type: KClass<*>
-) : CodedException(
-  message = "Could not cast dynamic value to '${type.qualifiedName}'."
-)
+class DynamicCastException : CodedException {
+  constructor(type: KClass<*>) : super("Could not cast dynamic value to '${type.qualifiedName}'.")
+  constructor(type: Class<*>) : super("Could not cast dynamic value to '${type.canonicalName}'.")
+}
 
 @DoNotStrip
 class JavaScriptEvaluateException(

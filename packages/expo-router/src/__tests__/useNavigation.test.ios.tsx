@@ -1,7 +1,5 @@
-import { NavigationProp } from '@react-navigation/native';
-import React from 'react';
-
 import Stack from '../layouts/Stack';
+import type { NavigationProp } from '../react-navigation/native';
 import { renderRouter } from '../testing-library';
 import { useNavigation } from '../useNavigation';
 

@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '16.4'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -46,6 +46,8 @@ Pod::Spec.new do |s|
   end
 
   s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.{m,swift}'
   end
 end

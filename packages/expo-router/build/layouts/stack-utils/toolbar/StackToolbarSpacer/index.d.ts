@@ -1,11 +1,13 @@
-import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
 import type { StackToolbarSpacerProps } from './types';
+import type { NativeStackHeaderItemSpacing } from '../../../../react-navigation/native-stack';
 export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types';
 /**
  * A spacing helper used inside `Stack.Toolbar` to create empty space between toolbar items.
  *
  * In left/right placements, width is required.
  * In bottom placement, if width is not provided, creates a flexible spacer that expands to fill space.
+ *
+ * > **Note:** Flexible spacers are iOS-only. On Android, `width` is a required property
  *
  * @example
  * ```tsx
@@ -43,6 +45,7 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarSpacer: React.FC<StackToolbarSpacerProps>;

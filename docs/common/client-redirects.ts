@@ -36,6 +36,16 @@ export function getRedirectPath(redirectPath: string): string {
     }
   }
 
+  // Catch path-prefix renames that the static `_redirects` rules also handle
+  // at the Cloudflare edge. This branch backstops in-app Next.js client
+  // navigation (e.g. an MDX link to a stale path), which never round-trips
+  // through the edge and would otherwise hit the 404 page.
+  for (const { pattern, replacement } of WILDCARD_RENAMES) {
+    if (pattern.test(redirectPath)) {
+      return redirectPath.replace(pattern, replacement);
+    }
+  }
+
   // Check if the version is documented, replace it with latest if not
   if (!isVersionDocumented(redirectPath)) {
     redirectPath = replaceVersionWithLatest(redirectPath);
@@ -135,6 +145,13 @@ function endsInNull(path: string) {
   return path.endsWith('/null');
 }
 
+const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
+  { pattern: /^\/eas\/build\/(.*)$/, replacement: '/build/$1' },
+  { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },
+  { pattern: /^\/eas\/update\/(.*)$/, replacement: '/eas-update/$1' },
+  { pattern: /^\/eas\/insights\/(.*)$/, replacement: '/eas-insights/$1' },
+];
+
 // Simple remapping of renamed pages, similar to public/_redirects but in some cases,
 // for reasons I'm not totally clear on, those redirects do not work
 const RENAMED_PAGES: Record<string, string> = {
@@ -168,6 +185,14 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/unversioned/sdk/ui/jetpack-compose/segmentedbutton/',
   '/versions/v55.0.0/sdk/ui/jetpack-compose/picker/':
     '/versions/v55.0.0/sdk/ui/jetpack-compose/segmentedbutton/',
+
+  // TextInput renamed to TextField
+  '/versions/latest/sdk/ui/jetpack-compose/textinput/':
+    '/versions/latest/sdk/ui/jetpack-compose/textfield/',
+  '/versions/unversioned/sdk/ui/jetpack-compose/textinput/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/textfield/',
+  '/versions/v55.0.0/sdk/ui/jetpack-compose/textinput/':
+    '/versions/v55.0.0/sdk/ui/jetpack-compose/textfield/',
 
   // Old redirects
   '/versions/latest/sdk/': '/versions/latest/',
@@ -219,7 +244,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/routing/installation/': '/router/installation/',
   '/routing/create-pages/': '/router/create-pages/',
   '/routing/navigating-pages/': '/router/navigating-pages/',
-  '/routing/layouts/': '/router/basics/layout/',
+  '/routing/layouts/': '/router/basics/navigation-layouts/',
   '/routing/appearance/': '/router/introduction/',
   '/routing/error-handling/': '/router/error-handling/',
 
@@ -371,7 +396,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/eas-update/continuous-deployment/': '/eas/workflows/examples/',
 
   // Expo Router Advanced guides
-  '/router/advance/root-layout': '/router/basics/layout/#root-layout',
+  '/router/advance/root-layout': '/router/basics/navigation-layouts/#root-layout',
   '/router/advance/stack': '/router/advanced/stack/',
   '/router/advance/tabs': '/router/advanced/tabs/',
   '/router/advance/native-tabs': '/router/advanced/native-tabs/',
@@ -504,11 +529,12 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After Expo Router Getting Started Guide
   '/router/reference/authentication/': '/router/advanced/authentication/',
-  '/router/advanced/root-layout/': '/router/basics/layout/#root-layout/',
+  '/router/advanced/root-layout/': '/router/basics/navigation-layouts/#root-layout/',
   '/router/reference/not-found/': '/router/error-handling/',
   '/router/navigating-pages/': '/router/basics/navigation/',
   '/router/create-pages/': '/router/basics/core-concepts/',
-  '/router/layouts/': '/router/basics/layout/',
+  '/router/layouts/': '/router/basics/navigation-layouts/',
+  '/router/basics/layout/': '/router/basics/navigation-layouts/',
 
   // After updating config plugin section
   '/config-plugins/plugins-and-mods/': '/config-plugins/plugins/',
@@ -606,4 +632,10 @@ const RENAMED_PAGES: Record<string, string> = {
     '/versions/latest/sdk/ui/jetpack-compose/progress/',
   '/versions/latest/sdk/ui/jetpack-compose/circularprogress/':
     '/versions/latest/sdk/ui/jetpack-compose/progress/',
+
+  // Based on Algolia 404 report 2026-04-01
+  '/versions/latest/sdk/secure-store/': '/versions/latest/sdk/securestore/',
+  '/versions/latest/sdk/av/': '/versions/v54.0.0/sdk/av/',
+  '/versions/latest/sdk/ui/jetpack-compose/floatingactionbutton/':
+    '/versions/unversioned/sdk/ui/jetpack-compose/floatingactionbutton/',
 };

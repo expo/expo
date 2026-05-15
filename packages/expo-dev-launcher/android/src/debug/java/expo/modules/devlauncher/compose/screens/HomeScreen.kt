@@ -26,6 +26,7 @@ import expo.modules.devlauncher.compose.ui.AppLoadingErrorDialog
 import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionActions
 import expo.modules.devlauncher.compose.ui.DevelopmentSessionSection
+import expo.modules.devlauncher.compose.ui.EmbeddedBundleButton
 import expo.modules.devlauncher.compose.ui.PullToRefreshContainer
 import expo.modules.devlauncher.compose.ui.RunningAppCard
 import expo.modules.devlauncher.compose.ui.rememberAnimatedItemsState
@@ -128,6 +129,11 @@ fun HomeScreen(
             )
           } else {
             DevelopmentSessionSection(state.isRefreshing, onAction)
+          }
+
+          if (state.hasEmbeddedBundle) {
+            Spacer(NewAppTheme.spacing.`3`)
+            EmbeddedBundleButton(onAction)
           }
 
           Spacer(NewAppTheme.spacing.`6`)

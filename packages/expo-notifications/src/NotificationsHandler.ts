@@ -5,7 +5,7 @@ import {
   UnavailabilityError,
 } from 'expo-modules-core';
 
-import { Notification, NotificationBehavior } from './Notifications.types';
+import type { Notification, NotificationBehavior } from './Notifications.types';
 import NotificationsHandlerModule from './NotificationsHandlerModule';
 import { mapNotification } from './utils/mapNotificationResponse';
 

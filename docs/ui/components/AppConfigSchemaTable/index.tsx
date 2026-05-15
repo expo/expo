@@ -42,7 +42,7 @@ export default function AppConfigSchemaTable({ schema }: AppConfigSchemaProps) {
 
 type PropertyNameProps = { name: string; nestingLevel: number };
 
-const PROPERTY_HEADING_CLASSNAME = 'font-normal text-base [&_strong]:break-words';
+const PROPERTY_HEADING_CLASSNAME = 'font-normal text-base [&_strong]:wrap-break-word';
 const PropertyHeadingH3 = createTextComponent(TextElement.H3, PROPERTY_HEADING_CLASSNAME);
 const PropertyHeadingH4 = createTextComponent(TextElement.H4, PROPERTY_HEADING_CLASSNAME);
 const PropertyHeadingH5 = createTextComponent(TextElement.H5, PROPERTY_HEADING_CLASSNAME);
@@ -184,7 +184,7 @@ function AppConfigProperty({
         {!canHaveMultipleValues && nestingLevel > 0 && (
           <CALLOUT theme="secondary" tag="span">
             &emsp;&bull;&emsp;Path:{' '}
-            <code className="text-secondary px-1 break-words">
+            <code className="text-secondary px-1 wrap-break-word">
               {parent}.{name}
             </code>
           </CALLOUT>

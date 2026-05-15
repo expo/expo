@@ -1,13 +1,16 @@
 import chalk from 'chalk';
 
-import { BLT, printHelp, printItem, printUsage, StartOptions } from './commandsTable';
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printItem, printUsage } from './commandsTable';
 import { createDevToolsMenuItems } from './createDevToolsMenuItems';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
-import { ExpoChoice, selectAsync } from '../../utils/prompts';
+import type { ExpoChoice } from '../../utils/prompts';
+import { selectAsync } from '../../utils/prompts';
 import { printQRCode } from '../../utils/qr';
-import { DevServerManager } from '../server/DevServerManager';
+import { getDependencyCheckMessage } from '../checkDependenciesOnStart';
+import type { DevServerManager } from '../server/DevServerManager';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
@@ -28,7 +31,10 @@ export class DevServerManagerActions {
   ) {}
 
   printDevServerInfo(
-    options: Pick<StartOptions, 'devClient' | 'isWebSocketsEnabled' | 'platforms'>
+    options: Pick<
+      StartOptions,
+      'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'dependencyCheckRef'
+    >
   ) {
     // Keep track of approximately how much space we have to print our usage guide
     let rows = process.stdout.rows || Infinity;
@@ -98,9 +104,16 @@ export class DevServerManagerActions {
       }
     }
 
+    const dependencyCheckLines = getDependencyCheckMessage(options.dependencyCheckRef?.result);
+    rows -= dependencyCheckLines.length;
+
     printUsage(options, { verbose: false, rows });
     printHelp();
     Log.log();
+
+    for (const line of dependencyCheckLines) {
+      Log.log(line);
+    }
   }
 
   async openJsInspectorAsync() {

@@ -1,7 +1,7 @@
 import type { SharedRefType } from 'expo';
 import React, { useState } from 'react';
 
-import { ImageProps, ImageSource } from '../Image.types';
+import type { ImageProps, ImageSource } from '../Image.types';
 import { isImageRef } from '../utils';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 
@@ -10,7 +10,7 @@ function findBestSourceForSize(
   size: DOMRect | null
 ): ImageSource | null {
   if (sources?.length === 1) {
-    return sources[0];
+    return sources[0] ?? null;
   }
   return (
     [...(sources || [])]
@@ -60,7 +60,7 @@ function selectSource(
   }
 
   if (sources.length === 1) {
-    return sources[0];
+    return sources[0] ?? null;
   }
 
   if (responsivePolicy !== 'static') {
@@ -115,8 +115,11 @@ export default function useSourceSelection(
     }
     if (responsivePolicy === 'live') {
       const resizeObserver = new ResizeObserver((entries) => {
-        setSize(entries[0].contentRect);
-        measurementCallback?.(entries[0].target as any, entries[0].contentRect);
+        const entry = entries[0];
+        setSize(entry?.contentRect ?? null);
+        if (entry != null) {
+          measurementCallback?.(entry.target as HTMLElement, entry.contentRect);
+        }
       });
       resizeObserver.observe(containerRef.current);
       return () => {

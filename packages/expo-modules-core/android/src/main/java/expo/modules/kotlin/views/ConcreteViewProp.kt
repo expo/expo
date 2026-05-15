@@ -31,7 +31,7 @@ open class ConcreteViewProp<ViewType : View, PropType>(
     }
   }
 
-  override val isNullable: Boolean = propType.kType.isMarkedNullable
+  override val isNullable: Boolean = propType.typeDescriptor.isNullable
 
   override val isStateProp: Boolean
     get() = _isStateProp

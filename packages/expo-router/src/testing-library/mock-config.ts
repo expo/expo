@@ -1,11 +1,7 @@
 import path from 'path';
 
-import {
-  MemoryContext,
-  inMemoryContext,
-  requireContext,
-  requireContextWithOverrides,
-} from './context-stubs';
+import type { MemoryContext } from './context-stubs';
+import { inMemoryContext, requireContext, requireContextWithOverrides } from './context-stubs';
 import { getNavigationConfig } from '../getLinkingConfig';
 import { getExactRoutes } from '../getRoutes';
 

@@ -12,7 +12,9 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class SlotProps(
   val slotName: MutableState<String> = mutableStateOf("")
 ) : ComposeProps
@@ -39,7 +41,7 @@ class SlotView(context: Context, appContext: AppContext) :
  */
 @Composable
 fun SlotView.renderSlot() {
-  with(ComposableScope()) { with(this@renderSlot) { Content() } }
+  with(UIComposableScope()) { with(this@renderSlot) { Content() } }
 }
 
 fun isSlotWithName(view: ExpoComposeView<*>, slotName: String): Boolean {
@@ -56,6 +58,14 @@ fun findChildSlotView(viewGroup: ViewGroup, slotName: String): SlotView? {
     if (child != null && child.props.slotName.value == slotName) {
       return child
     }
+  }
+  return null
+}
+
+inline fun <reified T> findChildOfType(viewGroup: ViewGroup): T? {
+  for (index in 0..<viewGroup.size) {
+    val child = viewGroup.getChildAt(index)
+    if (child is T) return child
   }
   return null
 }

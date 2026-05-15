@@ -5,14 +5,13 @@ import Jimp from 'jimp-compact';
 import os from 'os';
 import path from 'path';
 import stream from 'stream';
-import type { ReadableStream } from 'stream/web';
 import util from 'util';
 
 // cache downloaded images into memory
 const cacheDownloadedKeys: Record<string, string> = {};
 
 function stripQueryParams(url: string): string {
-  return url.split('?')[0].split('#')[0];
+  return url.split('?')[0]?.split('#')[0] ?? '';
 }
 
 function temporaryDirectory() {
@@ -22,7 +21,7 @@ function temporaryDirectory() {
 }
 
 export async function downloadOrUseCachedImage(url: string): Promise<string> {
-  if (url in cacheDownloadedKeys) {
+  if (cacheDownloadedKeys[url] != null) {
     return cacheDownloadedKeys[url];
   }
   if (url.startsWith('http')) {
@@ -48,7 +47,7 @@ export async function downloadImage(url: string): Promise<string> {
   const streamPipeline = util.promisify(stream.pipeline);
   const localPath = path.join(outputPath, path.basename(stripQueryParams(url)));
   // Type casting is required, see: https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/65542
-  const readableBody = stream.Readable.fromWeb(response.body as ReadableStream<Uint8Array>);
+  const readableBody = stream.Readable.fromWeb(response.body);
   await streamPipeline(readableBody, fs.createWriteStream(localPath));
 
   // If an image URL doesn't have a name, get the mime type and move the file.

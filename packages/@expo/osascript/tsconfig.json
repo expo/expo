@@ -3,12 +3,8 @@
   "include": ["./src"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
-    "outDir": "build",
-    "rootDir": "src",
-    "sourceMap": true,
-    "typeRoots": [
-      "ts-declarations",
-      "../../expo-module-scripts/ts-declarations"
-    ]
+    "rootDir": "./src",
+    "outDir": "./build",
+    "sourceMap": true
   },
 }

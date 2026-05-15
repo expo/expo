@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarButton = void 0;
 exports.convertStackToolbarButtonPropsToRNHeaderItem = convertStackToolbarButtonPropsToRNHeaderItem;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const native_1 = require("./native");
 const children_1 = require("../../../../utils/children");
@@ -45,6 +46,7 @@ const toolbar_primitives_1 = require("../toolbar-primitives");
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarButton = (props) => {
@@ -65,7 +67,7 @@ const StackToolbarButton = (props) => {
             console.warn('Stack.Toolbar.Badge is not supported in bottom toolbar (iOS limitation). The badge will be ignored.');
         }
     }
-    if (placement !== 'bottom') {
+    if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
         throw new Error('Stack.Toolbar.Button must be used inside a Stack.Toolbar');
     }
     const sharedProps = (0, shared_1.convertStackHeaderSharedPropsToRNSharedHeaderItem)(props, true);
@@ -74,7 +76,7 @@ const StackToolbarButton = (props) => {
     const source = sharedProps?.icon?.type === 'image' ? sharedProps.icon.source : undefined;
     const xcassetName = (0, shared_1.extractXcassetName)(props);
     const imageRenderingMode = (0, shared_1.extractIconRenderingMode)(props) ?? props.iconRenderingMode;
-    return (<native_1.NativeToolbarButton {...sharedProps} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarButton, { ...sharedProps, icon: icon, source: source, xcassetName: xcassetName, image: props.image, imageRenderingMode: imageRenderingMode }));
 };
 exports.StackToolbarButton = StackToolbarButton;
 function convertStackToolbarButtonPropsToRNHeaderItem(props) {

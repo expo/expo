@@ -138,7 +138,7 @@ public class PersistentFileLog {
       try deleteFileSync()
       return
     }
-    try contents.joined(separator: "\n").write(toFile: filePath, atomically: true, encoding: .utf8)
+    try (contents.joined(separator: "\n") + "\n").write(toFile: filePath, atomically: true, encoding: .utf8)
   }
 
   private func deleteFileSync() throws {

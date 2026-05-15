@@ -10,27 +10,27 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-This page walks you through the process of creating your first EAS Workflow for building and submitting your app to the app stores.
+This page walks you through the process of creating your first EAS Workflows for building and submitting your app to the app stores.
 
 ## Get started
 
-<Prerequisites numberOfRequirements={4}>
-  <Requirement number={1} title="Sign up for an Expo account">
+<Prerequisites>
+  <Requirement title="Sign up for an Expo account">
     You'll need to [sign up](https://expo.dev/signup) for an Expo account.
   </Requirement>
-  <Requirement number={2} title="Create a project">
+  <Requirement title="Create a project">
     You'll need to create a project with the following command:
 
     <Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-55']} />
 
   </Requirement>
-  <Requirement number={3} title="Sync the project with EAS">
+  <Requirement title="Sync the project with EAS">
     You'll need to sync the project with EAS with the following command. This will create an EAS project and link it to your local project:
 
     <Terminal cmd={['$ npx eas-cli@latest init']} />
 
   </Requirement>
-  <Requirement number={4} title="Add eas.json">
+  <Requirement title="Add eas.json">
     You'll need to add an `eas.json` file to the root of your project if it doesn't already exist:
 
     <Terminal cmd={['$ touch eas.json && echo "{}" > eas.json']} />
@@ -103,15 +103,47 @@ on:
     branches: ['main']
   # @end #
 
-  jobs:
-    build_android:
-      type: build
-      params:
-        platform: android
-    build_ios:
-      type: build
-      params:
-        platform: ios
+jobs:
+  build_android:
+    type: build
+    params:
+      platform: android
+  build_ios:
+    type: build
+    params:
+      platform: ios
+```
+
+### Trigger workflows from App Store Connect events
+
+You can also trigger workflows from App Store Connect events using [`on.app_store_connect`](/eas/workflows/syntax/#onapp_store_connect).
+
+Before using App Store Connect triggers, configure your App Store Connect connection in EAS dashboard:
+
+- Open EAS dashboard and select your project.
+- Navigate to **[Project settings > General > Connections](https://expo.dev/accounts/[account]/projects/[project]/settings)**.
+- Connect your App Store Connect app.
+
+Example workflow:
+
+```yaml .eas/workflows/app-store-connect-events.yml
+name: React to App Store Connect events
+
+# @info #
+on:
+  app_store_connect:
+    app_version:
+      states:
+        - ready_for_review
+        - waiting_for_review
+  # @end #
+
+jobs:
+  send_slack_notification:
+    type: slack
+    params:
+      webhook_url: ${{ env.SLACK_WEBHOOK_URL }}
+      message: 'App version is ready for review or waiting for review.'
 ```
 
 ### VS Code extension

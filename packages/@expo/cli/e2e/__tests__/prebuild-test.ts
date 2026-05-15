@@ -228,8 +228,12 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
     { reuseExisting: false }
   );
 
-  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  const expoPackage = require(
+    require.resolve('expo/package.json', {
+      paths: [path.join(projectRoot, 'package.json')],
+    })
+  );
+  const expoSdkVersion = semver.minVersion(expoPackage.version)?.major;
   if (!expoSdkVersion) {
     throw new Error('Could not determine Expo SDK major version from template');
   }

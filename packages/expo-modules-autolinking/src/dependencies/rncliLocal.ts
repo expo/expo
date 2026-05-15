@@ -3,7 +3,7 @@ import path from 'path';
 import { DependencyResolutionSource, type ResolutionResult } from './types';
 import { defaultShouldIncludeDependency } from './utils';
 import { taskAll } from '../concurrency';
-import { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
+import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
 import { maybeRealpath } from '../utils';
 
 interface ResolutionOptions {

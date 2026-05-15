@@ -155,7 +155,7 @@ export function listMissingHashLinkTargets(apiName?: string) {
   };
 
   const logAsTable = () => {
-    /* eslint-disable no-console */
+    /* oxlint-disable no-console */
     console.group(`🚨 The following links targets are missing in the ${apiName} API reference:`);
     console.table(missingEntries);
     console.groupEnd();

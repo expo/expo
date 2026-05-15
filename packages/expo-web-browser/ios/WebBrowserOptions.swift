@@ -28,6 +28,9 @@ struct WebBrowserOptions: Record {
 struct AuthSessionOptions: Record {
   @Field
   var preferEphemeralSession: Bool = false
+
+  @Field
+  var preferUniversalLinks: Bool = false
 }
 
 enum DismissButtonStyle: String, Enumerable {

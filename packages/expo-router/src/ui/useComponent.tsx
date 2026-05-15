@@ -1,4 +1,5 @@
-import { useRef, forwardRef, useEffect, JSX } from 'react';
+import type { JSX } from 'react';
+import { useRef, forwardRef, useEffect } from 'react';
 
 /**
  * Copied from @react-navigation/core

@@ -2,6 +2,7 @@ package expo.modules.filesystem.unifiedfile
 
 import android.net.Uri
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
@@ -76,6 +77,18 @@ class JavaFile(override val uri: Uri) : UnifiedFileInterface, File(URI.create(ur
   override fun inputStream(): InputStream {
     return FileInputStream(this)
   }
+
+  override fun openFileDescriptor(mode: String): ParcelFileDescriptor? = runCatching {
+    val pfdMode = when (mode) {
+      "r" -> ParcelFileDescriptor.MODE_READ_ONLY
+      "w" ->
+        ParcelFileDescriptor.MODE_WRITE_ONLY or
+          ParcelFileDescriptor.MODE_CREATE or
+          ParcelFileDescriptor.MODE_TRUNCATE
+      else -> return null
+    }
+    ParcelFileDescriptor.open(this, pfdMode)
+  }.getOrNull()
 
   override fun walkTopDown(): Sequence<JavaFile> {
     return walk(direction = FileWalkDirection.TOP_DOWN).map { JavaFile(it.toUri()) }

@@ -4,9 +4,9 @@
 
 | Type | Location | Command | Description |
 |------|----------|---------|-------------|
-| Unit | `src/**/__tests__/` | `yarn test` | Fast, isolated tests with mocked dependencies |
-| E2E CLI | `e2e/__tests__/` | `yarn test:e2e` | Full CLI command tests in real projects |
-| Playwright | `e2e/playwright/` | `yarn test:playwright` | Browser-based Metro web/server tests |
+| Unit | `src/**/__tests__/` | `pnpm test` | Fast, isolated tests with mocked dependencies |
+| E2E CLI | `e2e/__tests__/` | `pnpm test:e2e` | Full CLI command tests in real projects |
+| Playwright | `e2e/playwright/` | `pnpm test:playwright` | Browser-based Metro web/server tests |
 | Router E2E | `apps/router-e2e/__e2e__/` | See router-e2e section | Expo Router integration tests |
 
 ## Unit Tests
@@ -155,13 +155,13 @@ describe(isNodeExternal, () => {
 
 ```bash
 # All unit tests
-yarn test
+pnpm test
 
 # Specific file
-yarn test src/start/server/metro/__tests__/externals.test.ts
+pnpm test src/start/server/metro/__tests__/externals.test.ts
 
 # Watch mode
-yarn test --watch
+pnpm test --watch
 ```
 
 ## E2E CLI Tests
@@ -248,7 +248,7 @@ beforeAll(async () => {
   process.env.CI = '1';
 });
 
-it('runs `npx expo export --help`', async () => {
+it('runs `pnpm expo export --help`', async () => {
   const results = await executeExpoAsync(projectRoot, ['export', '--help']);
   expect(results.stdout).toMatchInlineSnapshot(`...`);
 });
@@ -271,13 +271,13 @@ describe('server', () => {
 
 ```bash
 # All E2E tests
-yarn test:e2e
+pnpm test:e2e
 
 # Specific test file
-yarn test:e2e export.test.ts
+pnpm test:e2e export.test.ts
 
 # With pattern matching
-yarn test:e2e --testNamePattern="exports static"
+pnpm test:e2e --testNamePattern="exports static"
 ```
 
 ## Playwright Tests
@@ -343,13 +343,13 @@ test.describe('fast-refresh', () => {
 
 ```bash
 # All Playwright tests
-yarn test:playwright
+pnpm test:playwright
 
 # Specific test file
-yarn test:playwright dev/fast-refresh.test.ts
+pnpm test:playwright dev/fast-refresh.test.ts
 
 # With UI mode
-npx playwright test --ui
+pnpx playwright test --ui
 ```
 
 ## Router E2E (`apps/router-e2e`)
@@ -387,12 +387,12 @@ From `packages/@expo/cli`:
 
 ```bash
 # Run Playwright tests for a specific router project
-E2E_ROUTER_SRC=fast-refresh yarn test:playwright dev/fast-refresh.test.ts
+E2E_ROUTER_SRC=fast-refresh pnpm test:playwright dev/fast-refresh.test.ts
 
 # Or use the npm scripts in router-e2e
 cd apps/router-e2e
-yarn start:01-rsc        # Start specific project
-yarn export:static-rendering  # Export specific project
+pnpm start:01-rsc        # Start specific project
+pnpm export:static-rendering  # Export specific project
 ```
 
 ### Maestro Tests (Native)
@@ -400,7 +400,7 @@ yarn export:static-rendering  # Export specific project
 Native navigation tests use Maestro. From `apps/router-e2e`:
 
 ```bash
-yarn test:e2e  # Starts Expo and runs maestro tests
+pnpm test:e2e  # Starts Expo and runs maestro tests
 ```
 
 Maestro test files are in `apps/router-e2e/__e2e__/*/maestro/` or `apps/router-e2e/maestro/`.
@@ -437,23 +437,23 @@ Maestro test files are in `apps/router-e2e/__e2e__/*/maestro/` or `apps/router-e
 
 ```bash
 # E2E tests with verbose logging
-DEBUG=expo:* yarn test:e2e
+DEBUG=expo:* pnpm test:e2e
 
 # Or enable GitHub Actions debug mode
-RUNNER_DEBUG=1 yarn test:e2e
+RUNNER_DEBUG=1 pnpm test:e2e
 ```
 
 ### Playwright Debug Mode
 
 ```bash
 # Run with browser visible
-npx playwright test --headed
+pnpx playwright test --headed
 
 # Debug mode with inspector
-npx playwright test --debug
+pnpx playwright test --debug
 
 # Generate trace for failures
-npx playwright test --trace on
+pnpx playwright test --trace on
 ```
 
 ### Reusing Projects Locally

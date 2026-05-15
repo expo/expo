@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.5 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 - 2026-04-02
+
+### 💡 Others
+
+- [iOS] Added missing `Foundation.h` imports in header files. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+
 ## 55.0.2 — 2026-01-26
 
 _This version does not introduce any user-facing changes._

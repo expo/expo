@@ -1,9 +1,9 @@
-import type { NativeStackHeaderItemButton } from '@react-navigation/native-stack';
 import { Children, type ReactNode } from 'react';
-import { type ColorValue, type ImageSourcePropType, type StyleProp } from 'react-native';
+import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
+import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
 import { getFirstChildOfType } from '../../../utils/children';
 import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../../utils/font';
 
@@ -18,19 +18,23 @@ export interface StackHeaderItemSharedProps {
   tintColor?: ColorValue;
   icon?: SFSymbol | ImageSourcePropType;
   /**
-   * Controls how image-based icons are rendered on iOS.
+   * Controls how image-based icons are rendered.
    *
-   * - `'template'`: iOS applies tint color to the icon
-   * - `'original'`: Preserves original icon colors (useful for multi-color icons)
+   * - `'template'`: applies tint color to the icon
+   * - `'original'`: preserves original icon colors (useful for multi-color icons)
    *
-   * **Default behavior:**
+   * **Default behavior on iOS:**
    * - If `tintColor` is specified, defaults to `'template'`
    * - If no `tintColor`, defaults to `'original'`
+   *
+   * **On Android:** defaults to `'template'`. The icon is always rendered through
+   * Compose's `Icon` and tinted unless `'original'` is set explicitly.
    *
    * This prop only affects image-based icons (not SF Symbols).
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
    *
+   * @platform android
    * @platform ios
    */
   iconRenderingMode?: 'template' | 'original';
@@ -82,14 +86,28 @@ export function extractIconRenderingMode(
   return undefined;
 }
 
+const PRIMITIVE_TYPES = ['string', 'number'];
+
+export function areAllChildrenPrimitiveValues(children: ReactNode) {
+  const childrenArray = Children.toArray(children);
+  return (
+    childrenArray.filter((child) => PRIMITIVE_TYPES.includes(typeof child)).length ===
+    childrenArray.length
+  );
+}
+
+export function convertChildrenToString(children: ReactNode): string {
+  return Children.toArray(children)
+    .filter((child) => PRIMITIVE_TYPES.includes(typeof child))
+    .join('');
+}
+
 export function convertStackHeaderSharedPropsToRNSharedHeaderItem(
   props: StackHeaderItemSharedProps,
   isBottomPlacement: boolean = false
 ): RNSharedHeaderItem {
   const { children, style, separateBackground, icon, ...rest } = props;
-  const stringChildren = Children.toArray(children)
-    .filter((child) => typeof child === 'string')
-    .join('');
+  const stringChildren = convertChildrenToString(children);
   const label = getFirstChildOfType(children, StackToolbarLabel);
   const iconPropConvertedToIcon = props.icon
     ? typeof props.icon === 'string'

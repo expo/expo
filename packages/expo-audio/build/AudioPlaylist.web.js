@@ -22,7 +22,10 @@ export class AudioPlaylistWeb extends globalThis.expo.SharedObject {
             this._sourceInfos.push(getSourceInfo(source));
         }
         if (this._sources.length > 0) {
-            this._currentMedia = this._createMediaElement(this._sources[0]);
+            const source = this._sources[0];
+            if (source) {
+                this._currentMedia = this._createMediaElement(source);
+            }
             this._preloadNext();
         }
     }
@@ -214,9 +217,12 @@ export class AudioPlaylistWeb extends globalThis.expo.SharedObject {
                 this._currentIndex = this._sources.length - 1;
             }
             this._knownDuration = 0;
-            this._currentMedia = this._createMediaElement(this._sources[this._currentIndex]);
-            if (wasPlaying) {
-                this._currentMedia.play();
+            const source = this._sources[this._currentIndex];
+            if (source) {
+                this._currentMedia = this._createMediaElement(source);
+                if (wasPlaying) {
+                    this._currentMedia.play();
+                }
             }
             this._preloadNext();
         }
@@ -264,9 +270,12 @@ export class AudioPlaylistWeb extends globalThis.expo.SharedObject {
         else {
             this._cleanupMedia(this._nextMedia);
             this._nextMedia = null;
-            this._currentMedia = this._createMediaElement(this._sources[newIndex]);
+            const source = this._sources[newIndex];
+            if (source) {
+                this._currentMedia = this._createMediaElement(source);
+            }
         }
-        if (wasPlaying) {
+        if (this._currentMedia && wasPlaying) {
             this._currentMedia.play();
             this._isPlaying = true;
         }
@@ -292,16 +301,19 @@ export class AudioPlaylistWeb extends globalThis.expo.SharedObject {
                 return;
             }
         }
-        const uri = getSourceUri(this._sources[nextIndex]);
-        if (uri) {
-            this._nextMedia = new Audio(uri);
-            if (this._crossOrigin !== undefined) {
-                this._nextMedia.crossOrigin = this._crossOrigin;
+        const source = this._sources[nextIndex];
+        if (source) {
+            const uri = getSourceUri(source);
+            if (uri) {
+                this._nextMedia = new Audio(uri);
+                if (this._crossOrigin !== undefined) {
+                    this._nextMedia.crossOrigin = this._crossOrigin;
+                }
+                this._nextMedia.preload = 'auto';
+                this._nextMedia.volume = this._volume;
+                this._nextMedia.muted = this._muted;
+                this._nextMedia.playbackRate = this._playbackRate;
             }
-            this._nextMedia.preload = 'auto';
-            this._nextMedia.volume = this._volume;
-            this._nextMedia.muted = this._muted;
-            this._nextMedia.playbackRate = this._playbackRate;
         }
     }
     _cleanupMedia(media) {

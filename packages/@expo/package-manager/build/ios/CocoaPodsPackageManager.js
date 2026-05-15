@@ -28,7 +28,7 @@ exports.CocoaPodsError = CocoaPodsError;
 function extractMissingDependencyError(errorOutput) {
     // [!] Unable to find a specification for `expo-dev-menu-interface` depended upon by `expo-dev-launcher`
     const results = errorOutput.match(/Unable to find a specification for ['"`]([\w-_\d\s]+)['"`] depended upon by ['"`]([\w-_\d\s]+)['"`]/);
-    if (results) {
+    if (results != null && results[1] != null && results[2] != null) {
         return [results[1], results[2]];
     }
     return null;
@@ -264,16 +264,6 @@ class CocoaPodsPackageManager {
     }
     async uninstallAsync() {
         throw new Error('Unimplemented');
-    }
-    // Private
-    async podRepoUpdateAsync() {
-        try {
-            await this._runAsync(['repo', 'update']);
-        }
-        catch (error) {
-            error.message = error.message || (error.stderr ?? error.stdout);
-            throw new CocoaPodsError('The command `pod install --repo-update` failed', 'COMMAND_FAILED', error);
-        }
     }
     // Exposed for testing
     async _runAsync(args) {

@@ -5,10 +5,10 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.unwrap
 import java.lang.ref.WeakReference
 import kotlin.reflect.KClass
-import kotlin.reflect.KType
 
 sealed class DeferredValue
 
@@ -47,7 +47,7 @@ inline fun <reified T : Any> toKClass(): KClass<T> = T::class
 open class Either<FirstType : Any, SecondType : Any>(
   private val bareValue: Any,
   private val deferredValue: MutableList<DeferredValue>,
-  private val types: List<KType>
+  private val types: List<TypeDescriptor>
 
 ) {
   internal fun `is`(index: Int): Boolean {
@@ -108,7 +108,7 @@ open class Either<FirstType : Any, SecondType : Any>(
 open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,
-  types: List<KType>
+  types: List<TypeDescriptor>
 ) : Either<FirstType, SecondType>(bareValue, deferredValue, types) {
   @JvmName("isThirdType")
   fun `is`(@Suppress("UNUSED_PARAMETER") type: KClass<ThirdType>): Boolean = `is`(2)
@@ -123,7 +123,7 @@ open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
 class EitherOfFour<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   bareValue: Any,
   deferredValue: MutableList<DeferredValue>,
-  types: List<KType>
+  types: List<TypeDescriptor>
 ) : EitherOfThree<FirstType, SecondType, ThirdType>(bareValue, deferredValue, types) {
   @JvmName("isFourthType")
   fun `is`(@Suppress("UNUSED_PARAMETER") type: KClass<FourthType>): Boolean = `is`(3)

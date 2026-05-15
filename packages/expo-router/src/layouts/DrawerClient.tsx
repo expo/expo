@@ -1,13 +1,9 @@
 'use client';
 
-import {
-  createDrawerNavigator,
-  DrawerNavigationOptions,
-  DrawerNavigationEventMap,
-} from '@react-navigation/drawer';
-import { DrawerNavigationState, ParamListBase } from '@react-navigation/native';
-
 import { withLayoutContext } from './withLayoutContext';
+import type { DrawerNavigationOptions, DrawerNavigationEventMap } from '../react-navigation/drawer';
+import { createDrawerNavigator } from '../react-navigation/drawer';
+import type { DrawerNavigationState, ParamListBase } from '../react-navigation/native';
 
 const DrawerNavigator = createDrawerNavigator().Navigator;
 

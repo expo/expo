@@ -80,7 +80,7 @@ export type EntriesPrd = EntriesDev & {
   publicIndexHtml: string;
 };
 
-type RenderStore<> = {
+type RenderStore = {
   rerender: (input: string, params?: unknown) => void;
   context: Record<string, unknown>;
 };

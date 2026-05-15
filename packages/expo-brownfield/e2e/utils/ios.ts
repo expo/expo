@@ -20,7 +20,7 @@ import { PluginProps } from './types';
  * Validates that build properties are properly set
  */
 export const validateBuildProperties = (projectRoot: string) => {
-  validatePodfileProperty(projectRoot, 'ios.buildReactNativeFromSource', 'true');
+  validatePodfileProperty(projectRoot, 'ios.buildReactNativeFromSource', 'false');
 };
 
 /**

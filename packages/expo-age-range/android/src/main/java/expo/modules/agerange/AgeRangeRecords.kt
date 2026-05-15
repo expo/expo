@@ -9,7 +9,9 @@ import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.VER
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus.UNKNOWN
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class AgeRangeResult(
   @Field
   val lowerBound: Int?,

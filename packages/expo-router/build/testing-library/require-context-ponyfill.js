@@ -9,22 +9,30 @@ const node_fs_1 = __importDefault(require("node:fs"));
 // @ts-ignore: types node
 const node_path_1 = __importDefault(require("node:path"));
 function requireContext(base = '.', scanSubDirectories = true, regularExpression = /\.[tj]sx?$/, files = {}) {
-    function readDirectory(directory) {
-        node_fs_1.default.readdirSync(directory).forEach((file) => {
-            const fullPath = node_path_1.default.resolve(directory, file);
-            const relativePath = `./${node_path_1.default.relative(base, fullPath).split(node_path_1.default.sep).join('/')}`;
-            if (node_fs_1.default.statSync(fullPath).isDirectory()) {
-                if (scanSubDirectories)
-                    readDirectory(fullPath);
-                return;
+    const baseTarget = node_path_1.default.resolve(base);
+    function readDirectory(directory = '') {
+        const target = node_path_1.default.resolve(baseTarget, directory);
+        const entries = node_fs_1.default.readdirSync(target, { withFileTypes: true });
+        for (const entry of entries) {
+            const relativePath = directory ? node_path_1.default.join(directory, entry.name) : entry.name;
+            if (entry.isDirectory()) {
+                if (entry.name === 'node_modules') {
+                    continue;
+                }
+                else if (scanSubDirectories) {
+                    readDirectory(relativePath);
+                }
             }
-            if (!regularExpression.test(relativePath))
-                return;
-            files[relativePath] = true;
-        });
+            else if (entry.isFile()) {
+                const posixPath = `./${relativePath.split(node_path_1.default.sep).join('/')}`;
+                if (regularExpression.test(posixPath)) {
+                    files[posixPath] = true;
+                }
+            }
+        }
     }
-    if (node_fs_1.default.existsSync(base)) {
-        readDirectory(base);
+    if (node_fs_1.default.existsSync(baseTarget)) {
+        readDirectory();
     }
     const context = Object.assign(function Module(file) {
         return require(node_path_1.default.join(base, file));

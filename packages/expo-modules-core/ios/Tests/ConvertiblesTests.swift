@@ -247,6 +247,16 @@ struct ConvertiblesTests {
     }
 
     @Test
+    @JavaScriptActor
+    func `converts from JS array and object through the value converter`() throws {
+      let arrayValue = try appContext.runtime.eval("[4, 3]")
+      let objectValue = try appContext.runtime.eval("({ width: 4, height: 3 })")
+
+      #expect(try appContext.converter.toNative(arrayValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
+      #expect(try appContext.converter.toNative(objectValue, ~CGSize.self) as? CGSize == CGSize(width: 4, height: 3))
+    }
+
+    @Test
     func `throws when array size is unexpected`() {
       #expect(throws: Conversions.ConvertingException<CGSize>.self) {
         try CGSize.convert(from: [], appContext: appContext)
@@ -333,7 +343,8 @@ struct ConvertiblesTests {
         guard let missingKeysError = error as? Conversions.MissingKeysException<Double> else {
           return false
         }
-        return missingKeysError.description == Conversions.MissingKeysException<Double>(["dy"]).description
+        return missingKeysError.description
+          == Conversions.MissingKeysException<Double>(["dy"]).description
       }
     }
 
@@ -345,7 +356,8 @@ struct ConvertiblesTests {
         guard let castingError = error as? Conversions.CastingValuesException<Double> else {
           return false
         }
-        return castingError.description == Conversions.CastingValuesException<Double>(["dx"]).description
+        return castingError.description
+          == Conversions.CastingValuesException<Double>(["dx"]).description
       }
     }
   }
@@ -418,118 +430,6 @@ struct ConvertiblesTests {
           return false
         }
         return castingError.description == Conversions.CastingValuesException<Double>(["y", "height"]).description
-      }
-    }
-  }
-
-  // MARK: - UIColor/CGColor
-
-  @Suite("UIColor/CGColor")
-  struct ColorTests {
-    let appContext: AppContext
-
-    init() {
-      appContext = AppContext.create()
-    }
-
-    private func testColorComponents(_ color: CGColor, _ red: CGFloat, _ green: CGFloat, _ blue: CGFloat, _ alpha: CGFloat) {
-      #expect(color.components?[0] == red / 255.0)
-      #expect(color.components?[1] == green / 255.0)
-      #expect(color.components?[2] == blue / 255.0)
-      #expect(color.components?[3] == alpha / 255.0)
-    }
-
-    @Test
-    func `converts from ARGB int`() throws {
-      // NOTE: int representation has alpha channel at the beginning
-      let color = try CGColor.convert(from: 0x5147AC7F, appContext: appContext)
-      testColorComponents(color, 0x47, 0xAC, 0x7F, 0x51)
-    }
-
-    @Test
-    func `converts from RGBA hex string`() throws {
-      let color = try CGColor.convert(from: "47AC7F51", appContext: appContext)
-      testColorComponents(color, 0x47, 0xAC, 0x7F, 0x51)
-    }
-
-    @Test
-    func `converts from #RGBA hex string`() throws {
-      let color = try CGColor.convert(from: " #47AC7F51", appContext: appContext)
-      testColorComponents(color, 0x47, 0xAC, 0x7F, 0x51)
-    }
-
-    @Test
-    func `converts from 3-character shorthand hex string`() throws {
-      let color = try CGColor.convert(from: "C2B ", appContext: appContext)
-      testColorComponents(color, 0xCC, 0x22, 0xBB, 0xFF)
-    }
-
-    @Test
-    func `converts from 4-character shorthand hex string`() throws {
-      let color = try CGColor.convert(from: " #9EA5 ", appContext: appContext)
-      testColorComponents(color, 0x99, 0xEE, 0xAA, 0x55)
-    }
-
-    @Test
-    func `converts from CSS named color`() throws {
-      let papayawhip = try CGColor.convert(from: "papayawhip", appContext: appContext)
-      testColorComponents(papayawhip, 0xFF, 0xEF, 0xD5, 0xFF)
-    }
-
-    @Test
-    func `converts from transparent`() throws {
-      let transparent = try CGColor.convert(from: "transparent", appContext: appContext)
-      #expect(transparent.alpha == .zero)
-    }
-
-    @Test
-    func `converts from PlatformColor`() throws {
-      let color = try CGColor.convert(from: ["semantic": ["invalid_color", "systemRed", "systemBlue"]], appContext: appContext)
-      #expect(color == UIColor.systemRed.cgColor)
-    }
-
-    @Test
-    func `converts from DynamicColorIOS`() throws {
-      let color = try CGColor.convert(from: ["dynamic": ["light": "#000", "dark": ["semantic": "systemGray"]]], appContext: appContext)
-      #expect(color.components?[0] == 0x00 / 255.0)
-      #expect(color.components?[1] == 0x00 / 255.0)
-      #expect(color.components?[2] == 0x00 / 255.0)
-      #expect(color.components?[3] == 0xFF / 255.0)
-    }
-
-    @Test
-    func `converts from DynamicColorIOS with traits`() throws {
-      let color = try UIColor.convert(from: ["dynamic": ["light": "#000", "dark": ["semantic": "systemGray"]]], appContext: appContext)
-      let traits = UITraitCollection(userInterfaceStyle: .dark)
-      #expect(color.resolvedColor(with: traits) == UIColor.systemGray.resolvedColor(with: traits))
-    }
-
-    @Test
-    func `throws when string is invalid`() {
-      let invalidHexStrings = ["", "#21", "ABCDEFGH", "1122334455", "XYZ", "!@#$%"]
-
-      for hex in invalidHexStrings {
-        #expect {
-          try CGColor.convert(from: hex, appContext: appContext)
-        } throws: { error in
-          guard let hexError = error as? Conversions.InvalidHexColorException else {
-            return false
-          }
-          return hexError.description == Conversions.InvalidHexColorException(hex).description
-        }
-      }
-    }
-
-    @Test
-    func `throws when int overflows`() {
-      let hex = 0xBBAA88FF2
-      #expect {
-        try CGColor.convert(from: hex, appContext: appContext)
-      } throws: { error in
-        guard let overflowError = error as? Conversions.HexColorOverflowException else {
-          return false
-        }
-        return overflowError.description == Conversions.HexColorOverflowException(UInt64(hex)).description
       }
     }
   }

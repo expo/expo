@@ -1,5 +1,5 @@
-import { ExpoConfig } from '@expo/config-types';
-import { AndroidManifest } from './Manifest';
+import type { ExpoConfig } from '@expo/config-types';
+import type { AndroidManifest } from './Manifest';
 export declare const SCREEN_ORIENTATION_ATTRIBUTE = "android:screenOrientation";
 export declare const withOrientation: import("..").ConfigPlugin;
 export declare function getOrientation(config: Pick<ExpoConfig, 'orientation'>): "default" | "portrait" | "landscape" | null;

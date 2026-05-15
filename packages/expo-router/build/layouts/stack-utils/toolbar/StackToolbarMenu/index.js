@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.StackToolbarMenuAction = exports.StackToolbarMenu = void 0;
 exports.convertStackToolbarMenuPropsToRNHeaderItem = convertStackToolbarMenuPropsToRNHeaderItem;
 exports.convertStackToolbarMenuActionPropsToRNHeaderItem = convertStackToolbarMenuActionPropsToRNHeaderItem;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = require("react");
 const native_1 = require("./native");
 const children_1 = require("../../../../utils/children");
@@ -26,7 +27,7 @@ function computeMenuLabelAndTitle(children, title) {
     };
 }
 /**
- * Use as `Stack.Toolbar.Menu` to provide menus in iOS toolbar.
+ * Use as `Stack.Toolbar.Menu` to provide menus in the toolbar.
  * It accepts `Stack.Toolbar.MenuAction` and nested `Stack.Toolbar.Menu`
  * elements. Menu can be configured using both component props and child
  * elements.
@@ -52,14 +53,19 @@ function computeMenuLabelAndTitle(children, title) {
  * }
  * ```
  *
+ * > **Note (Android):** The root `icon` must be an `ImageSourcePropType` (use a
+ * > `require()` or `{ uri }` source, or `<Stack.Toolbar.Icon src={...} />`); SF Symbols
+ * > and `xcasset` icons are silently dropped.
+ *
  * @see [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/menus) for more information about menus on iOS.
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarMenu = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement !== 'bottom') {
-        // For placement other than bottom, this component will not render, and should be
+    if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
+        // On ios, for placement other than bottom, this component will not render, and should be
         // converted to RN header item using convertStackToolbarMenuPropsToRNHeaderItem.
         // So if we reach here, it means we're not inside a toolbar or something else is wrong.
         throw new Error('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
@@ -86,7 +92,7 @@ const StackToolbarMenu = (props) => {
         }
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
-    return (<native_1.NativeToolbarMenu {...props} icon={icon} source={source} xcassetName={xcassetName} image={props.image} imageRenderingMode={imageRenderingMode} label={computedLabel} title={computedMenuTitle} children={validChildren}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarMenu, { ...props, icon: icon, source: source, xcassetName: xcassetName, image: props.image, imageRenderingMode: imageRenderingMode, label: computedLabel, title: computedMenuTitle, children: validChildren }));
 };
 exports.StackToolbarMenu = StackToolbarMenu;
 function convertStackToolbarMenuPropsToRNHeaderItem(props, isBottomPlacement = false) {
@@ -189,17 +195,18 @@ function convertStackToolbarSubmenuMenuPropsToRNHeaderItem(props) {
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 const StackToolbarMenuAction = (props) => {
     const placement = (0, context_1.useToolbarPlacement)();
-    if (placement !== 'bottom') {
+    if (process.env.EXPO_OS === 'ios' && placement !== 'bottom') {
         throw new Error('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
     }
     // TODO(@ubax): Handle image loading using useImage in a follow-up PR.
     const icon = typeof props.icon === 'string' ? props.icon : undefined;
     const source = typeof props.icon !== 'string' ? props.icon : undefined;
-    return (<native_1.NativeToolbarMenuAction {...props} icon={icon} source={source} image={props.image} imageRenderingMode={props.iconRenderingMode}/>);
+    return ((0, jsx_runtime_1.jsx)(native_1.NativeToolbarMenuAction, { ...props, icon: icon, source: source, image: props.image, imageRenderingMode: props.iconRenderingMode }));
 };
 exports.StackToolbarMenuAction = StackToolbarMenuAction;
 function convertStackToolbarMenuActionPropsToRNHeaderItem(props) {

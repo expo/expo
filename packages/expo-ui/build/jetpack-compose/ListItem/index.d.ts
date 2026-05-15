@@ -1,81 +1,60 @@
 import { type ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 /**
- * Colors for list item's core elements.
+ * Colors for list item elements, matching `ListItemDefaults.colors()`.
  */
 export type ListItemColors = {
     containerColor?: ColorValue;
-    headlineColor?: ColorValue;
-    leadingIconColor?: ColorValue;
-    trailingIconColor?: ColorValue;
-    supportingColor?: ColorValue;
-    overlineColor?: ColorValue;
+    contentColor?: ColorValue;
+    leadingContentColor?: ColorValue;
+    trailingContentColor?: ColorValue;
+    supportingContentColor?: ColorValue;
+    overlineContentColor?: ColorValue;
 };
 export type ListItemProps = {
     /**
-     * The main text content of the list item.
-     */
-    headline: string;
-    /**
-     * Optional supporting text displayed below the headline.
-     */
-    supportingText?: string;
-    /**
-     * Optional overline text displayed above the headline.
-     */
-    overlineText?: string;
-    /**
-     * The background color of the list item.
-     */
-    color?: ColorValue;
-    /**
-     * Colors for list item's core elements.
+     * Colors for list item elements.
      */
     colors?: ListItemColors;
     /**
-     * Callback that is called when the list item is pressed.
+     * Tonal elevation in dp.
+     * @default ListItemDefaults.Elevation
      */
-    onPress?: () => void;
+    tonalElevation?: number;
+    /**
+     * Shadow elevation in dp.
+     * @default ListItemDefaults.Elevation
+     */
+    shadowElevation?: number;
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
     /**
-     * Children containing Leading and Trailing slots.
+     * Children containing slot sub-components.
      */
     children?: React.ReactNode;
 };
-type LeadingProps = {
-    children: React.ReactNode;
-};
-type TrailingProps = {
-    children: React.ReactNode;
-};
-type SupportingContentProps = {
-    children: React.ReactNode;
-};
 /**
- * Leading content slot for ListItem.
+ * A list item matching Compose's `ListItem`.
  */
-export declare function ListItemLeading(props: LeadingProps): import("react").JSX.Element;
-/**
- * Trailing content slot for ListItem.
- */
-export declare function ListItemTrailing(props: TrailingProps): import("react").JSX.Element;
-/**
- * Custom supporting content slot for ListItem.
- * When provided, this takes precedence over the `supportingText` prop.
- * @platform android
- */
-export declare function ListItemSupportingContent(props: SupportingContentProps): import("react").JSX.Element;
-/**
- * A list item component following Material 3 design guidelines.
- */
-declare function ListItemComponent(props: ListItemProps): import("react").JSX.Element;
+declare function ListItemComponent(props: ListItemProps): import("react/jsx-runtime").JSX.Element;
 declare namespace ListItemComponent {
-    var Leading: typeof ListItemLeading;
-    var Trailing: typeof ListItemTrailing;
-    var SupportingContent: typeof ListItemSupportingContent;
+    var HeadlineContent: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+    var OverlineContent: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+    var SupportingContent: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+    var LeadingContent: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
+    var TrailingContent: (props: {
+        children: React.ReactNode;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { ListItemComponent as ListItem };
 //# sourceMappingURL=index.d.ts.map

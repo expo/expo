@@ -1,0 +1,11 @@
+{
+  "extends": "expo-module-scripts/tsconfig.node",
+  "include": ["./src"],
+  "compilerOptions": {
+    "types": ["node"],
+    "lib": ["dom", "esnext"],
+    "outDir": "./build",
+    "rootDir": "./src",
+    "isolatedModules": true
+  }
+}

@@ -1,11 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
-#import <ExpoModulesCore/Swift.h>
+#import <ExpoModulesCore/EXReactDelegateProtocol.h>
 
 @interface EXReactDelegateWrapper()
 
-@property (nonatomic, weak) EXReactDelegate *expoReactDelegate;
+@property (nonatomic, weak) id<EXReactDelegateProtocol> expoReactDelegate;
 
 @end
 
@@ -14,7 +14,8 @@
 - (instancetype)initWithExpoReactDelegate:(EXReactDelegate *)expoReactDelegate
 {
   if (self = [super init]) {
-    _expoReactDelegate = expoReactDelegate;
+    // Cast to protocol - EXReactDelegate conforms to EXReactDelegateProtocol
+    _expoReactDelegate = (id<EXReactDelegateProtocol>)expoReactDelegate;
   }
   return self;
 }

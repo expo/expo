@@ -71,8 +71,9 @@ describe('header object', () => {
 function transform(tree, options = {}) {
   exportHeadings(options)(tree);
 
-  const data = tree.children.find(node => node.type === 'mdxjsEsm').data.estree.body[0].declaration
-    .declarations[0].init.elements;
+  // oxlint-disable-next-line no-confusing-void-expression
+  const esmNode = tree.children.find(node => node.type === 'mdxjsEsm');
+  const data = esmNode.data.estree.body[0].declaration.declarations[0].init.elements;
 
   return { data };
 }

@@ -9,7 +9,7 @@ import {
 
 import { PluginConfigType, validateConfig } from './pluginConfig';
 
-const pkg = require('expo-dev-launcher/package.json');
+const pkg = require('../../package.json');
 
 /**
  * Adds a build phase script that strips dev-launcher-specific local network permission keys
@@ -118,14 +118,52 @@ export default createRunOncePlugin<PluginConfigType>(
   (config, props = {}) => {
     validateConfig(props);
 
+    const androidDefaultLaunchURL = props.android?.defaultLaunchURL ?? props.defaultLaunchURL;
+    const iosDefaultLaunchURL = props.ios?.defaultLaunchURL ?? props.defaultLaunchURL;
     const iOSLaunchMode =
       props.ios?.launchMode ??
       props.launchMode ??
       props.ios?.launchModeExperimental ??
       props.launchModeExperimental;
-    if (iOSLaunchMode === 'launcher') {
-      config = withInfoPlist(config, (config) => {
+
+    config = withInfoPlist(config, (config) => {
+      if (iOSLaunchMode === 'launcher') {
         config.modResults['DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE'] = false;
+      }
+      if (iosDefaultLaunchURL) {
+        config.modResults['DEV_CLIENT_DEFAULT_LAUNCHER_URL'] = iosDefaultLaunchURL;
+      }
+      return config;
+    });
+
+    const iOSToolsButton = props.ios?.toolsButton ?? props.toolsButton;
+    if (iOSToolsButton !== undefined) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevMenuShowFloatingActionButton'] = iOSToolsButton;
+        return config;
+      });
+    }
+
+    const iOSEmbeddedBundle = props.ios?.embeddedBundle ?? props.embeddedBundle;
+    if (iOSEmbeddedBundle) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevClientEmbeddedBundle'] = true;
+        return config;
+      });
+    }
+
+    const iOSSkipOnboarding = props.ios?.skipOnboarding ?? props.skipOnboarding;
+    if (iOSSkipOnboarding !== undefined) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevMenuIsOnboardingFinished'] = iOSSkipOnboarding;
+        return config;
+      });
+    }
+
+    const iOSShowMenuAtLaunch = props.ios?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (iOSShowMenuAtLaunch !== undefined) {
+      config = withInfoPlist(config, (config) => {
+        config.modResults['EXDevMenuShowsAtLaunch'] = iOSShowMenuAtLaunch;
         return config;
       });
     }
@@ -135,14 +173,77 @@ export default createRunOncePlugin<PluginConfigType>(
       props.launchMode ??
       props.android?.launchModeExperimental ??
       props.launchModeExperimental;
-    if (androidLaunchMode === 'launcher') {
+
+    config = withAndroidManifest(config, (config) => {
+      const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+      if (androidLaunchMode === 'launcher') {
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE',
+          false?.toString()
+        );
+      }
+      if (androidDefaultLaunchURL) {
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'DEV_CLIENT_DEFAULT_LAUNCHER_URL',
+          androidDefaultLaunchURL
+        );
+      }
+      return config;
+    });
+
+    const androidToolsButton = props.android?.toolsButton ?? props.toolsButton;
+    if (androidToolsButton !== undefined) {
       config = withAndroidManifest(config, (config) => {
         const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
 
         AndroidConfig.Manifest.addMetaDataItemToMainApplication(
           mainApplication,
-          'DEV_CLIENT_TRY_TO_LAUNCH_LAST_BUNDLE',
-          false?.toString()
+          'EXDevMenuShowFloatingActionButton',
+          String(androidToolsButton)
+        );
+        return config;
+      });
+    }
+
+    const androidEmbeddedBundle = props.android?.embeddedBundle ?? props.embeddedBundle;
+    if (androidEmbeddedBundle) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevClientEmbeddedBundle',
+          String(true)
+        );
+        return config;
+      });
+    }
+
+    const androidSkipOnboarding = props.android?.skipOnboarding ?? props.skipOnboarding;
+    if (androidSkipOnboarding !== undefined) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevMenuIsOnboardingFinished',
+          String(androidSkipOnboarding)
+        );
+        return config;
+      });
+    }
+
+    const androidShowMenuAtLaunch = props.android?.showMenuAtLaunch ?? props.showMenuAtLaunch;
+    if (androidShowMenuAtLaunch !== undefined) {
+      config = withAndroidManifest(config, (config) => {
+        const mainApplication = AndroidConfig.Manifest.getMainApplicationOrThrow(config.modResults);
+
+        AndroidConfig.Manifest.addMetaDataItemToMainApplication(
+          mainApplication,
+          'EXDevMenuShowsAtLaunch',
+          String(androidShowMenuAtLaunch)
         );
         return config;
       });

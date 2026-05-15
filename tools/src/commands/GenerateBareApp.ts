@@ -39,7 +39,7 @@ export async function action(
   await createProjectDirectory({ workspaceDir, appName, template, useLocalTemplate });
   await modifyPackageJson({ packagesToSymlink, projectDir });
   await modifyAppJson({ projectDir, appName });
-  await yarnInstall({ projectDir });
+  await pnpmInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
   await runExpoPrebuild({ projectDir, useLocalTemplate });
   if (rnVersion != null) {
@@ -201,9 +201,9 @@ async function modifyPackageJson({
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
 }
 
-async function yarnInstall({ projectDir }: { projectDir: string }) {
+async function pnpmInstall({ projectDir }: { projectDir: string }) {
   console.log('Yarning');
-  return await spawnAsync('yarn', [], { cwd: projectDir, stdio: 'ignore' });
+  return await spawnAsync('pnpm', ['install'], { cwd: projectDir, stdio: 'ignore' });
 }
 
 export async function symlinkPackages({
@@ -239,7 +239,7 @@ async function updateRNVersion({
   pkg.dependencies['react-native'] = reactNativeVersion;
 
   await fs.outputJson(path.resolve(projectDir, 'package.json'), pkg, { spaces: 2 });
-  await spawnAsync('yarn', [], { cwd: projectDir });
+  await spawnAsync('pnpm', ['install'], { cwd: projectDir });
 }
 
 function getLocalReactNativeVersion() {
@@ -258,7 +258,7 @@ async function runExpoPrebuild({
   if (useLocalTemplate) {
     const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
     const templateVersion = require(path.join(pathToBareTemplate, 'package.json')).version;
-    await spawnAsync('npm', ['pack', '--pack-destination', projectDir], {
+    await spawnAsync('pnpm', ['pack', '--pack-destination', projectDir], {
       cwd: pathToBareTemplate,
       stdio: 'ignore',
     });

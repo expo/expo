@@ -4,17 +4,21 @@ description: Learn how to integrate Expo Modules API into an existing React Nati
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 
 There are cases where you may want to integrate the Expo Modules API into an existing React Native library. For example, it might be useful to incrementally rewrite your library or to take advantage of [Android lifecycle listeners](/modules/android-lifecycle-listeners/) and [iOS AppDelegate subscribers](/modules/appdelegate-subscribers/) to automatically set up the library.
 
 This guide will help you set up your existing React Native library to access Expo Modules API.
 
-## Prerequisites
+<Prerequisites>
+  <Requirement title="Create expo-module.config.json">
+    Create the [**expo-module.config.json**](/modules/module-config/) file at the root of your project and add an empty object `{}` inside it. You will update it later to enable specific features.
 
-Create the [**expo-module.config.json**](/modules/module-config/) file at the root of your project and add an empty object `{}` inside it. You will fill it in later to enable specific features.
+    This file is required for [Expo Autolinking](/modules/autolinking/) to recognize your library as an Expo module and automatically link your native code.
 
-Creating this file is necessary for [Expo Autolinking](/modules/autolinking/) to recognize your library as an Expo module and automatically link your native code.
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 

@@ -1,6 +1,7 @@
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 
-import { getCssSerialAssets, fileNameFromContents, JSModule } from '../getCssDeps';
+import type { JSModule } from '../getCssDeps';
+import { getCssSerialAssets, fileNameFromContents } from '../getCssDeps';
 
 describe(fileNameFromContents, () => {
   it('returns the filename from the filepath', () => {
@@ -12,6 +13,11 @@ describe(fileNameFromContents, () => {
     expect(
       fileNameFromContents({ filepath: 'node_modules%5Cexpo-router%5Centry.js', src: 'foo' })
     ).toBe('entry-acbd18db4cc2f85cedef654fccc4a4d8');
+  });
+  it('preserves catch-all route segment name', () => {
+    expect(fileNameFromContents({ filepath: 'app/[...post]', src: 'foo' })).toBe(
+      '[...post]-acbd18db4cc2f85cedef654fccc4a4d8'
+    );
   });
 });
 

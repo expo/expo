@@ -3,8 +3,10 @@ package expo.modules.maps
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.view.MotionEvent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +44,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.maps.GoogleMapOptions
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
@@ -79,8 +83,17 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private lateinit var cameraState: CameraPositionState
   private var manualCameraControl = false
 
+  private var lastTouchPoint: Point? = null
+
   // Selection state management
   private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
+
+  override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+    if (event.action == MotionEvent.ACTION_DOWN) {
+      lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
+    }
+    return super.dispatchTouchEvent(event)
+  }
 
   @Composable
   override fun ComposableScope.Content() {
@@ -168,7 +181,14 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 
       MapCircles(
         circleState = circleState,
-        onCircleClick = onCircleClick
+        onCircleClick = onCircleClick,
+        getClickCoordinates = {
+          lastTouchPoint?.let { point ->
+            cameraState.projection?.fromScreenLocation(point)?.let { latLng ->
+              Coordinates(latLng.latitude, latLng.longitude)
+            }
+          }
+        }
       )
 
       for ((marker, state) in markerState.value) {
@@ -219,19 +239,27 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       }
     }
 
-    LaunchedEffect(cameraState.position) {
+    LaunchedEffect(cameraState.position, wasLoaded.value) {
       // We don't want to send the event when the map is not loaded yet
       if (!wasLoaded.value) {
         return@LaunchedEffect
       }
 
       val position = cameraState.position
+      val bounds = cameraState.projection?.visibleRegion?.latLngBounds ?: return@LaunchedEffect
+      val latitudeDelta = bounds.northeast.latitude - bounds.southwest.latitude
+      val rawLongitudeDelta = bounds.northeast.longitude - bounds.southwest.longitude
+      // We need to subtract 360 from longitude delta when crossing the antimeridian to get the correct value
+      val longitudeDelta = if (rawLongitudeDelta < 0) rawLongitudeDelta + 360.0 else rawLongitudeDelta
+
       onCameraMove(
         CameraMoveEvent(
           Coordinates(position.target.latitude, position.target.longitude),
           position.zoom,
           position.tilt,
-          position.bearing
+          position.bearing,
+          latitudeDelta,
+          longitudeDelta
         )
       )
     }
@@ -399,7 +427,8 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 @Composable
 private fun MapCircles(
   circleState: List<Pair<CircleRecord, LatLng>>,
-  onCircleClick: ViewEventCallback<CircleRecord>
+  onCircleClick: ViewEventCallback<CircleRecord>,
+  getClickCoordinates: () -> Coordinates?
 ) {
   circleState.forEach { (circle, center) ->
     Circle(
@@ -417,7 +446,8 @@ private fun MapCircles(
             radius = circle.radius,
             color = circle.color,
             lineColor = circle.lineColor,
-            lineWidth = circle.lineWidth
+            lineWidth = circle.lineWidth,
+            clickCoordinates = getClickCoordinates()
           )
         )
       }

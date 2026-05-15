@@ -13,7 +13,9 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.ComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
+@OptimizedComposeProps
 data class GoogleStreetViewProps(
   val position: MutableState<CameraPositionStreetViewRecord> = mutableStateOf(CameraPositionStreetViewRecord()),
   val isPanningGesturesEnabled: MutableState<Boolean> = mutableStateOf(true),

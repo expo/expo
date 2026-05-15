@@ -173,7 +173,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('getCachePathAsync', async () => {
+    t.describe('getCachePathAsync', () => {
       t.it('returns path to cached image when it does exist in the cache', async () => {
         await mountAndWaitFor(
           <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
@@ -216,7 +216,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('prefetch', async () => {
+    t.describe('prefetch', () => {
       t.it('prefetches an image and resolves promise to true', async () => {
         await Image.clearDiskCache();
         const result = await Image.prefetch(REMOTE_SOURCE.uri);
@@ -256,7 +256,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     if (Platform.OS === 'ios') {
-      t.describe('generateBlurhashAsync', async () => {
+      t.describe('generateBlurhashAsync', () => {
         t.it('returns a correct blurhash for url', async () => {
           const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
           t.expect(result).toBe(REMOTE_SOURCE.blurhash);

@@ -1,5 +1,5 @@
-import type { NativeStackHeaderItemCustom } from '@react-navigation/native-stack';
 import type { StackToolbarViewProps } from './types';
+import type { NativeStackHeaderItemCustom } from '../../../../react-navigation/native-stack';
 export type { StackToolbarViewProps, NativeToolbarViewProps } from './types';
 /**
  * A wrapper to render custom content in the toolbar.
@@ -29,6 +29,7 @@ export type { StackToolbarViewProps, NativeToolbarViewProps } from './types';
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbarView: React.FC<StackToolbarViewProps>;

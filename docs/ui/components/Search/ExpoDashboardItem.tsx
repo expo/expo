@@ -27,7 +27,7 @@ export const ExpoDashboardItem = ({ item, onSelect, query }: Props) => {
         <div className="inline-flex items-center justify-between gap-3">
           <Icon className="text-icon-secondary" />
           <p
-            className="text-xs font-medium"
+            className="text-sm font-medium"
             dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}
           />
         </div>

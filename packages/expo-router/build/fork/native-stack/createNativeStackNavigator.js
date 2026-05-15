@@ -34,14 +34,15 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createNativeStackNavigator = createNativeStackNavigator;
-const native_1 = require("@react-navigation/native");
-const native_stack_1 = require("@react-navigation/native-stack");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const expo_glass_effect_1 = require("expo-glass-effect");
 const React = __importStar(require("react"));
 const composition_options_1 = require("./composition-options");
 const descriptors_context_1 = require("./descriptors-context");
 const usePreviewTransition_1 = require("./usePreviewTransition");
 const navigationParams_1 = require("../../navigationParams");
+const native_1 = require("../../react-navigation/native");
+const native_stack_1 = require("../../react-navigation/native-stack");
 const GLASS = (0, expo_glass_effect_1.isLiquidGlassAvailable)();
 function NativeStackNavigator({ id, initialRouteName, children, layout, screenListeners, screenOptions, screenLayout, UNSTABLE_router, ...rest }) {
     const { state, describe, descriptors, navigation, NavigationContent } = (0, native_1.useNavigationBuilder)(native_1.StackRouter, {
@@ -116,24 +117,14 @@ function NativeStackNavigator({ id, initialRouteName, children, layout, screenLi
     const { registry, contextValue } = (0, composition_options_1.useCompositionRegistry)();
     const mergedDescriptors = React.useMemo(() => (0, composition_options_1.mergeOptions)(finalDescriptors, registry, computedState), [finalDescriptors, computedState, registry]);
     // END FORK
-    return (
-    // START FORK
-    <descriptors_context_1.DescriptorsContext value={descriptors}>
-      {/* END FORK */}
-      <NavigationContent>
-        <composition_options_1.CompositionContext value={contextValue}>
-          <native_stack_1.NativeStackView {...rest} 
-    // START FORK
-    state={computedState} navigation={navigationWrapper} descriptors={mergedDescriptors} 
-    // state={state}
-    // navigation={navigation}
-    // descriptors={descriptors}
-    // END FORK
-    describe={describe}/>
-        </composition_options_1.CompositionContext>
-      </NavigationContent>
-      {/* START FORK */}
-    </descriptors_context_1.DescriptorsContext>
+    return ((0, jsx_runtime_1.jsx)(descriptors_context_1.DescriptorsContext, { value: descriptors, children: (0, jsx_runtime_1.jsx)(NavigationContent, { children: (0, jsx_runtime_1.jsx)(composition_options_1.CompositionContext, { value: contextValue, children: (0, jsx_runtime_1.jsx)(native_stack_1.NativeStackView, { ...rest, 
+                    // START FORK
+                    state: computedState, navigation: navigationWrapper, descriptors: mergedDescriptors, 
+                    // state={state}
+                    // navigation={navigation}
+                    // descriptors={descriptors}
+                    // END FORK
+                    describe: describe }) }) }) })
     // END FORK
     );
 }

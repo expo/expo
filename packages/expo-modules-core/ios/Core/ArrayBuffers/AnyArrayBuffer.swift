@@ -4,14 +4,23 @@
  A protocol for all array buffer types.
  Array buffers represent a fixed-length raw binary data buffer.
  */
-internal protocol AnyArrayBuffer: AnyArgument {
+public protocol AnyArrayBuffer: AnyArgument, ContiguousBytes {
   /**
-   Initializes an array buffer from the given underlying representation.
+   The length of the buffer in bytes.
    */
-   init(_ backingBuffer: RawArrayBuffer)
+  var byteLength: Int { get }
+
+  /**
+   Creates a copy of this buffer with its own allocated memory.
+   */
+  func copy() -> NativeArrayBuffer
+
+  /**
+   Wraps this buffer in a `Data` instance without performing a copy.
+   */
+  var data: Data { get }
 }
 
-// Extend the protocol to provide custom dynamic type
 extension AnyArrayBuffer {
   public static func getDynamicType() -> AnyDynamicType {
     return DynamicArrayBufferType(innerType: Self.self)

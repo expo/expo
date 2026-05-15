@@ -21,7 +21,7 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
         kotlinVersion: '1.6.10',
     },
     ios: {
-        deploymentTarget: '15.1',
+        deploymentTarget: '16.4',
     },
 };
 /**
@@ -211,6 +211,7 @@ const schema = {
                     nullable: true,
                 },
                 useHermesV1: { type: 'boolean', nullable: true },
+                usePrecompiledModules: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },

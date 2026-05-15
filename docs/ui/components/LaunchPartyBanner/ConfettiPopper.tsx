@@ -21,13 +21,17 @@ export function ConfettiPopper() {
       <div
         onClick={onEasterEggClick}
         onMouseDown={() => {
-          !confettiShown && setConfettiPressed(true);
+          if (!confettiShown) {
+            setConfettiPressed(true);
+          }
         }}
         onMouseUp={() => {
           setConfettiPressed(false);
         }}
         onTouchStart={() => {
-          !confettiShown && setConfettiPressed(true);
+          if (!confettiShown) {
+            setConfettiPressed(true);
+          }
         }}
         onTouchEnd={() => {
           setConfettiPressed(false);

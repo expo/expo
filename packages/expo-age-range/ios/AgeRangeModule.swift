@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import DeclaredAgeRange
 
-public class AgeRangeModule: Module {
+public class AgeRangeModule: Module, @unchecked Sendable {
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAgeRange")
@@ -33,6 +33,17 @@ public class AgeRangeModule: Module {
         throw AgeRangeNotAvailableException()
       } catch AgeRangeService.Error.invalidRequest {
         throw AgeRangeInvalidRequestException()
+      }
+    }
+
+    AsyncFunction("isEligibleForAgeFeaturesAsync") { () -> Bool? in
+      guard #available(iOS 26.2, *) else {
+        return nil
+      }
+      do {
+        return try await AgeRangeService.shared.isEligibleForAgeFeatures
+      } catch AgeRangeService.Error.notAvailable {
+        throw AgeRangeNotAvailableException()
       }
     }
   }

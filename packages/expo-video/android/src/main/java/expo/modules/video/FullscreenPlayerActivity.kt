@@ -14,6 +14,7 @@ import android.view.WindowInsetsController
 import android.widget.ImageButton
 import androidx.media3.ui.PlayerView
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.video.listeners.VideoManagerListener
 import expo.modules.video.player.VideoPlayer
 import expo.modules.video.records.FullscreenOptions
 import expo.modules.video.utils.FullscreenActivityOrientationHelper
@@ -25,7 +26,7 @@ import expo.modules.video.utils.calculateRectHint
 import expo.modules.video.managers.VideoManager
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-class FullscreenPlayerActivity : Activity() {
+class FullscreenPlayerActivity : Activity(), VideoManagerListener {
   private lateinit var mContentView: View
   private var videoViewId: String? = null
   private var videoPlayer: VideoPlayer? = null
@@ -33,6 +34,7 @@ class FullscreenPlayerActivity : Activity() {
   private lateinit var videoView: VideoView
   private var didFinish = false
   private var wasAutoPaused = false
+  private var isStopped = false
   private lateinit var options: FullscreenOptions
   private var orientationHelper: FullscreenActivityOrientationHelper? = null
   private var captioningChangeListener: CaptioningManager.CaptioningChangeListener? = null
@@ -84,7 +86,8 @@ class FullscreenPlayerActivity : Activity() {
       videoPlayer?.hasBeenDisconnectedFromVideoView() // The video player is disconnected. We are only using the ExoPlayer it contained
     }
 
-    VideoManager.registerFullscreenPlayerActivity(hashCode().toString(), this)
+    videoViewId?.let { VideoManager.registerFullscreenPlayerActivity(it, this) }
+    VideoManager.registerListener(this)
     playerView.player?.let {
       val aspectRatio = calculatePiPAspectRatio(it.videoSize, playerView.width, playerView.height, videoView.contentFit)
       applyPiPParams(this, videoView.autoEnterPiP, aspectRatio)
@@ -120,7 +123,13 @@ class FullscreenPlayerActivity : Activity() {
   override fun finish() {
     super.finish()
     didFinish = true
-    videoViewId?.let { VideoManager.getVideoView(it).attachPlayer() }
+    videoViewId?.let {
+      try {
+        VideoManager.getVideoView(it).attachPlayer()
+      } catch (e: VideoViewNotFoundException) {
+        Log.w("ExpoVideo", "VideoView $it already unmounted when finishing fullscreen — skipping attachPlayer")
+      }
+    }
 
     // Disable the exit transition
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -151,6 +160,16 @@ class FullscreenPlayerActivity : Activity() {
     super.onPause()
   }
 
+  override fun onStop() {
+    isStopped = true
+    super.onStop()
+  }
+
+  override fun onStart() {
+    isStopped = false
+    super.onStart()
+  }
+
   override fun onDestroy() {
     super.onDestroy()
 
@@ -161,9 +180,22 @@ class FullscreenPlayerActivity : Activity() {
       captioningChangeListener = null
     }
 
-    videoView.exitFullscreen()
-    VideoManager.unregisterFullscreenPlayerActivity(hashCode().toString())
+    if (::videoView.isInitialized) {
+      videoView.exitFullscreen()
+    }
+    VideoManager.unregisterListener(this)
+    videoViewId?.let { VideoManager.unregisterFullscreenPlayerActivity(it) }
     orientationHelper?.stopOrientationEventListener()
+  }
+
+  // When the app enters the foreground, we need to decide whether to close this activity.
+  // - If stopped: the user went home from fullscreen and came back via app icon -> close
+  // - If in PiP: the user went home while in PiP and came back via app icon -> close
+  // - If only paused (not stopped, not yet in PiP): we're mid-transition into PiP -> keep alive
+  override fun onAppForegrounded() {
+    if (isStopped || isInPictureInPictureMode) {
+      finish()
+    }
   }
 
   private fun setupFullscreenButton() {

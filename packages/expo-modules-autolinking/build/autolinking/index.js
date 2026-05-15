@@ -4,9 +4,9 @@ exports.getConfiguration = void 0;
 exports.findModulesAsync = apiFindModulesAsync;
 exports.resolveExtraBuildDependenciesAsync = apiResolveExtraBuildDependenciesAsync;
 exports.resolveModulesAsync = apiResolveModulesAsync;
-const autolinkingOptions_1 = require("../commands/autolinkingOptions");
 const findModules_1 = require("./findModules");
 const resolveModules_1 = require("./resolveModules");
+const autolinkingOptions_1 = require("../commands/autolinkingOptions");
 var getConfiguration_1 = require("./getConfiguration");
 Object.defineProperty(exports, "getConfiguration", { enumerable: true, get: function () { return getConfiguration_1.getConfiguration; } });
 /** @deprecated */

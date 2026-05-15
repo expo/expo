@@ -93,19 +93,19 @@ export type AssistChipProps = {
 /**
  * Label slot for AssistChip.
  */
-declare function AssistChipLabel(props: SlotChildProps): import("react").JSX.Element;
+declare function AssistChipLabel(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Leading icon slot for AssistChip.
  */
-declare function AssistChipLeadingIcon(props: SlotChildProps): import("react").JSX.Element;
+declare function AssistChipLeadingIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Trailing icon slot for AssistChip.
  */
-declare function AssistChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
+declare function AssistChipTrailingIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * An assist chip that helps users complete actions and primary tasks.
  */
-declare function AssistChipComponent(props: AssistChipProps): import("react").JSX.Element;
+declare function AssistChipComponent(props: AssistChipProps): import("react/jsx-runtime").JSX.Element;
 declare namespace AssistChipComponent {
     var Label: typeof AssistChipLabel;
     var LeadingIcon: typeof AssistChipLeadingIcon;
@@ -149,19 +149,19 @@ export type FilterChipProps = {
 /**
  * Label slot for FilterChip.
  */
-declare function FilterChipLabel(props: SlotChildProps): import("react").JSX.Element;
+declare function FilterChipLabel(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Leading icon slot for FilterChip.
  */
-declare function FilterChipLeadingIcon(props: SlotChildProps): import("react").JSX.Element;
+declare function FilterChipLeadingIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Trailing icon slot for FilterChip.
  */
-declare function FilterChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
+declare function FilterChipTrailingIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * A filter chip component for refining content with selection/deselection.
  */
-declare function FilterChipComponent(props: FilterChipProps): import("react").JSX.Element;
+declare function FilterChipComponent(props: FilterChipProps): import("react/jsx-runtime").JSX.Element;
 declare namespace FilterChipComponent {
     var Label: typeof FilterChipLabel;
     var LeadingIcon: typeof FilterChipLeadingIcon;
@@ -207,19 +207,19 @@ export type InputChipProps = {
 /**
  * Label slot for InputChip.
  */
-declare function InputChipLabel(props: SlotChildProps): import("react").JSX.Element;
+declare function InputChipLabel(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Avatar slot for InputChip.
  */
-declare function InputChipAvatar(props: SlotChildProps): import("react").JSX.Element;
+declare function InputChipAvatar(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Trailing icon slot for InputChip.
  */
-declare function InputChipTrailingIcon(props: SlotChildProps): import("react").JSX.Element;
+declare function InputChipTrailingIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * An input chip that represents user input and can be dismissed.
  */
-declare function InputChipComponent(props: InputChipProps): import("react").JSX.Element;
+declare function InputChipComponent(props: InputChipProps): import("react/jsx-runtime").JSX.Element;
 declare namespace InputChipComponent {
     var Label: typeof InputChipLabel;
     var Avatar: typeof InputChipAvatar;
@@ -260,15 +260,15 @@ export type SuggestionChipProps = {
 /**
  * Label slot for SuggestionChip.
  */
-declare function SuggestionChipLabel(props: SlotChildProps): import("react").JSX.Element;
+declare function SuggestionChipLabel(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * Icon slot for SuggestionChip.
  */
-declare function SuggestionChipIcon(props: SlotChildProps): import("react").JSX.Element;
+declare function SuggestionChipIcon(props: SlotChildProps): import("react/jsx-runtime").JSX.Element;
 /**
  * A suggestion chip that offers contextual suggestions and recommendations.
  */
-declare function SuggestionChipComponent(props: SuggestionChipProps): import("react").JSX.Element;
+declare function SuggestionChipComponent(props: SuggestionChipProps): import("react/jsx-runtime").JSX.Element;
 declare namespace SuggestionChipComponent {
     var Label: typeof SuggestionChipLabel;
     var Icon: typeof SuggestionChipIcon;

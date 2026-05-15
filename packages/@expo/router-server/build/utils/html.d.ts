@@ -9,4 +9,60 @@
  * embed data in an HTML context to prevent XSS.
  */
 export declare function escapeUnsafeCharacters(str: string): string;
+/**
+ * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
+ * CSS href.
+ *
+ * Used by both `renderStaticContent()` and `serializeHtml()` to inject CSS bundles into the HTML
+ * document's `<body>` element.
+ */
+export declare function createInjectedCssAsString(hrefs: string[]): string;
+/**
+ * Returns newline-separated `<script defer>` HTML strings for each JavaScript source URL.
+ *
+ * Used by both `renderStaticContent()` and `serializeHtml()` to inject JavaScript bundles into the
+ * HTML document's `<body>` element.
+ */
+export declare function createInjectedScriptsAsString(srcs: string[]): string;
+/**
+ * Returns the string content of the hydration flag script, which sets the
+ * `__EXPO_ROUTER_HYDRATE__` global flag to `true`.
+ *
+ * @see {@link getHydrationFlagScriptAsString} for the full `<script>` tag wrapper.
+ */
+export declare function getHydrationFlagScriptContents(): string;
+/**
+ * Returns a module script that sets the `__EXPO_ROUTER_HYDRATE__` global flag, which tells the
+ * client-side Expo Router entrypoint to hydrate the server-rendered markup instead of performing
+ * a full client render.
+ *
+ * @see packages/expo/src/launch/registerRootComponent.tsx
+ */
+export declare function getHydrationFlagScriptAsString(): string;
+/**
+ * Returns the string content of the loader data script, which sets
+ * `globalThis.__EXPO_ROUTER_LOADER_DATA__` to the given data using double-serialized JSON.
+ *
+ * @see {@link createLoaderDataScriptAsString} for the full `<script>` tag wrapper.
+ */
+export declare function getLoaderDataScriptContents(data: Record<string, unknown>): string;
+/**
+ * Returns a synchronous inline `<script>` that sets `globalThis.__EXPO_ROUTER_LOADER_DATA__`
+ * with the given data, safely embedded as JSON.
+ *
+ * Uses double-serialization so the client can fast-parse via native `JSON.parse()`.
+ * @see https://v8.dev/blog/cost-of-javascript-2019#json
+ */
+export declare function createLoaderDataScriptAsString(data: Record<string, unknown>): string;
+/**
+ * Extracts head tags and document attributes from a `react-helmet-async` helmet instance.
+ *
+ * `<head>` keys are serialized in document order: title, priority, meta, link, script, style.
+ * Returns empty strings when `helmet` is `null`/`undefined`.
+ */
+export declare function serializeHelmetToHtml(helmet: any): {
+    headTags: string;
+    htmlAttributes: string;
+    bodyAttributes: string;
+};
 //# sourceMappingURL=html.d.ts.map

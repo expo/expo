@@ -7,15 +7,19 @@ description: Learn how to automate and maintain your app store presence from the
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** **EAS Metadata** is in beta and subject to breaking changes.
+> **important** **EAS Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes.
 
 EAS Metadata enables you to automate and maintain your app store presence from the command line. It uses a [**store.config.json**](./config.mdx#static-store-config) file containing all required app information instead of going through multiple different forms. It also tries to find common pitfalls that could cause app rejections with built-in validation.
 
-## Prerequisites
-
-EAS Metadata currently **only supports the Apple App Store**.
+<Prerequisites>
+  <Requirement title="An app on the Apple App Store">
+    EAS Metadata currently only supports the Apple App Store. You need an app registered with Apple
+    to manage metadata for.
+  </Requirement>
+</Prerequisites>
 
 > Using VS Code? Install the [Expo Tools extension](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 
@@ -48,7 +52,7 @@ If you don't have an app in the stores yet, EAS Metadata can't generate the stor
 }
 ```
 
-> By default, EAS Metadata uses the **store.config.json** file at the root of your project. You can change the name and location of this file by setting the **eas.json** [`metadataPath`](../../submit/eas-json.mdx#metadatapath) property.
+> By default, EAS Metadata uses the **store.config.json** file at the root of your project. You can change the name and location of this file by setting the **eas.json** [`metadataPath`](/eas/json/#metadatapath) property.
 
 ## Update the store config
 

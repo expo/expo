@@ -1,4 +1,5 @@
 'use client';
+import { jsx as _jsx } from "react/jsx-runtime";
 import * as React from 'react';
 import { View } from 'react-native';
 import { normalizeColor } from './normalizeColor';
@@ -12,11 +13,11 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
     const linearGradientBackgroundImage = React.useMemo(() => {
         return getLinearGradientBackgroundImage(colors, locations, startPoint, endPoint, width, height);
     }, [colors, locations, startPoint, endPoint, width, height]);
-    return (<View {...props} style={[
+    return (_jsx(View, { ...props, style: [
             props.style,
             // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
             { backgroundImage: linearGradientBackgroundImage },
-        ]} onLayout={(event) => {
+        ], onLayout: (event) => {
             const { width, height } = event.nativeEvent.layout;
             setLayout((oldLayout) => {
                 // don't set new layout state unless the layout has actually changed
@@ -28,7 +29,7 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
             if (props.onLayout) {
                 props.onLayout(event);
             }
-        }}/>);
+        } }));
 }
 /**
  * Extracted to a separate function in order to be able to test logic independently.
@@ -56,7 +57,7 @@ function calculatePseudoAngle(width, height, startPoint, endPoint) {
         }
         return [correctedStartPoint, correctedEndPoint];
     };
-    const [start, end] = getControlPoints();
+    const [start = [0, 0], end = [0, 0]] = getControlPoints();
     start[0] *= width;
     end[0] *= width;
     start[1] *= height;

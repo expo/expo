@@ -33,7 +33,7 @@ export async function getDevToolsPluginClientAsync(
 ): Promise<DevToolsPluginClient> {
   const connectionInfo = getConnectionInfo();
 
-  let instance: DevToolsPluginClient | Promise<DevToolsPluginClient> | null =
+  let instance: DevToolsPluginClient | Promise<DevToolsPluginClient> | undefined =
     instanceMap[pluginName];
   if (instance != null) {
     if (instance instanceof Promise) {
@@ -45,7 +45,7 @@ export async function getDevToolsPluginClientAsync(
     ) {
       await instance.closeAsync();
       delete instanceMap[pluginName];
-      instance = null;
+      instance = undefined;
     }
   }
   if (instance == null) {
@@ -67,7 +67,7 @@ export function cleanupDevToolsPluginInstances() {
     if (instance instanceof Promise) {
       instance.then((instance) => instance.closeAsync());
     } else {
-      instance.closeAsync();
+      instance?.closeAsync();
     }
   }
 }

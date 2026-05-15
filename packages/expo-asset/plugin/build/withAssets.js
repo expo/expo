@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
 const withAssetsAndroid_1 = require("./withAssetsAndroid");
 const withAssetsIos_1 = require("./withAssetsIos");
-const pkg = require('expo-asset/package.json');
+const pkg = require('../../package.json');
 const withAssets = (config, props) => {
     if (!props) {
         return config;

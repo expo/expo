@@ -1,4 +1,4 @@
-import { NotificationChannel } from './NotificationChannelManager.types';
+import type { NotificationChannel } from './NotificationChannelManager.types';
 /**
  * Fetches information about a single notification channel.
  * @param channelId The channel's identifier.

@@ -1,4 +1,5 @@
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import { CommandError } from '../../../utils/errors';

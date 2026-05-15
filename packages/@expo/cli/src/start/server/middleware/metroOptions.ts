@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import Server from '@expo/metro/metro/Server';
 import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shared/types';
 
@@ -8,6 +8,14 @@ import { toPosixPath } from '../../../utils/filePath';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 
 const debug = require('debug')('expo:metro:options') as typeof console.log;
+
+/** Enforce conversion of `true` to `'true'` */
+function toBoolStr(x: true): 'true';
+function toBoolStr(x: false): 'false';
+function toBoolStr(x: boolean): 'true' | 'false';
+function toBoolStr(x: boolean): 'true' | 'false' {
+  return x ? 'true' : 'false';
+}
 
 export type MetroEnvironment = 'node' | 'react-server' | 'client';
 
@@ -44,6 +52,9 @@ export type ExpoMetroOptions = {
 
   modulesOnly?: boolean;
   runModule?: boolean;
+
+  /** When true, omits `sourcesContent` from generated source maps (saves ~80x memory for SSR). */
+  excludeSource?: boolean;
 
   /** Should assets be exported for hosting. Always true on web. Always false for embedded builds. Optional for native exports. */
   hosted?: boolean;
@@ -100,6 +111,7 @@ function withDefaults({
     lazy: !props.isExporting && lazy,
     environment: environment === 'client' ? undefined : environment,
     liveBindings: env.EXPO_UNSTABLE_LIVE_BINDINGS,
+    excludeSource: isServerEnvironment(environment),
     ...props,
   };
 }
@@ -167,6 +179,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     hosted,
     liveBindings,
     isLoaderBundle,
+    excludeSource,
   } = withDefaults(options);
 
   const dev = mode !== 'production';
@@ -198,17 +211,17 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
     clientBoundaries,
     preserveEnvVars: preserveEnvVars || undefined,
     // Use string to match the query param behavior.
-    asyncRoutes: asyncRoutes ? String(asyncRoutes) : undefined,
+    asyncRoutes: asyncRoutes ? toBoolStr(asyncRoutes) : undefined,
     environment,
     baseUrl: baseUrl || undefined,
     routerRoot,
     bytecode: bytecode ? '1' : undefined,
-    reactCompiler: reactCompiler ? String(reactCompiler) : undefined,
+    reactCompiler: reactCompiler ? toBoolStr(reactCompiler) : undefined,
     dom: domRoot,
     hosted: hosted ? '1' : undefined,
     useMd5Filename: useMd5Filename || undefined,
-    liveBindings: !liveBindings ? String(liveBindings) : undefined,
-    isLoaderBundle: isLoaderBundle ? String(isLoaderBundle) : undefined,
+    liveBindings: !liveBindings ? toBoolStr(!!liveBindings) : undefined,
+    isLoaderBundle: isLoaderBundle ? toBoolStr(isLoaderBundle) : undefined,
   };
 
   // Iterate and delete undefined values
@@ -242,7 +255,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
       output: serializerOutput,
       includeSourceMaps: serializerIncludeMaps,
       exporting: isExporting || undefined,
-      excludeSource: Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
+      excludeSource: excludeSource ?? Server.DEFAULT_BUNDLE_OPTIONS.excludeSource,
     },
     // TODO(@kitten): See comments in MetroBundlerDevServer.ts; should all defaults be added and the logic
     // from `src/start/server/middleware/metroOptions.ts` that adds default be moved here?

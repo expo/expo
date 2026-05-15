@@ -19,10 +19,11 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import { discoverExpoModuleConfigAsync, ExpoModuleConfig } from '../ExpoModuleConfig';
-import { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { DependencyResolution } from '../dependencies';
 import {
-  DependencyResolution,
   filterMapResolutionResult,
   mergeResolutionResults,
   scanDependenciesFromRNProjectConfig,
@@ -30,6 +31,25 @@ import {
   scanDependenciesRecursively,
 } from '../dependencies';
 import { checkDependencyWebAsync } from './webResolver';
+
+const deepObjectMerge = (target: any, source: any): any => {
+  if (
+    source !== undefined &&
+    typeof target === 'object' &&
+    target != null &&
+    !Array.isArray(target) &&
+    (!target.constructor || target.constructor === Object) &&
+    typeof source === 'object' &&
+    !Array.isArray(source)
+  ) {
+    target = { ...target };
+    for (const key in source) {
+      target[key] = deepObjectMerge(target[key], source[key]);
+    }
+    return target;
+  }
+  return source !== undefined ? source : target;
+};
 
 const isMissingFBReactNativeSpecCodegenOutput = async (reactNativePath: string) => {
   const generatedDir = path.resolve(reactNativePath, 'React/FBReactNativeSpec');
@@ -57,18 +77,25 @@ export async function resolveReactNativeModule(
     return null;
   }
 
-  const libraryConfig = (await loadConfigAsync(
-    resolution.path
-  )) as RNConfigReactNativeLibraryConfig;
-  const reactNativeConfig = {
-    ...libraryConfig?.dependency,
-    ...projectConfig?.dependencies?.[resolution.name],
-  };
+  // Workaround for Android Gradle/Prefab issue with special characters in paths.
+  // pnpm creates virtual store paths with '=' characters (e.g., _patch_hash=abc123),
+  // which cause build failures on Android due to Prefab not properly escaping them.
+  // See: https://github.com/google/prefab/issues/187
+  const shouldUseOriginPath =
+    platform === 'android' && resolution.path.includes('=') && resolution.path.includes('.pnpm');
+  const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
 
+  const libraryConfig = (await loadConfigAsync(modulePath)) as RNConfigReactNativeLibraryConfig;
   if (Object.keys(libraryConfig?.platforms ?? {}).length > 0) {
     // Package defines platforms would be a platform host package.
     // The rnc-cli will skip this package.
     return null;
+  }
+
+  let reactNativeConfig = libraryConfig?.dependency ?? {};
+  const projectDependencyOverride = projectConfig?.dependencies?.[resolution.name];
+  if (projectDependencyOverride != null) {
+    reactNativeConfig = deepObjectMerge(reactNativeConfig, projectDependencyOverride);
   }
 
   let maybeExpoModuleConfig: ExpoModuleConfig | null | undefined;
@@ -92,7 +119,7 @@ export async function resolveReactNativeModule(
     | null = null;
   if (platform === 'android') {
     platformData = await resolveDependencyConfigImplAndroidAsync(
-      resolution.path,
+      modulePath,
       reactNativeConfig.platforms?.android,
       maybeExpoModuleConfig
     );
@@ -111,7 +138,7 @@ export async function resolveReactNativeModule(
   }
   return (
     platformData && {
-      root: resolution.path,
+      root: modulePath,
       name: resolution.name,
       platforms: {
         [platform]: platformData,

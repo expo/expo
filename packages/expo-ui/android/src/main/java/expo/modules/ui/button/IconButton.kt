@@ -6,8 +6,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.OutlinedIconButton
 import androidx.compose.runtime.Composable
-import expo.modules.kotlin.views.ComposableScope
 import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.ui.UIComposableScope
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
 import expo.modules.ui.shapeFromShapeRecord
@@ -30,7 +30,7 @@ fun FunctionalComposableScope.IconButtonContent(
     shape = shape ?: IconButtonDefaults.standardShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -52,7 +52,7 @@ fun FunctionalComposableScope.FilledIconButtonContent(
     shape = shape ?: IconButtonDefaults.filledShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -74,7 +74,7 @@ fun FunctionalComposableScope.FilledTonalIconButtonContent(
     shape = shape ?: IconButtonDefaults.filledShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }
 
@@ -96,6 +96,6 @@ fun FunctionalComposableScope.OutlinedIconButtonContent(
     shape = shape ?: IconButtonDefaults.outlinedShape,
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
   ) {
-    Children(ComposableScope())
+    Children(UIComposableScope())
   }
 }

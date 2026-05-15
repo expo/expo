@@ -3,6 +3,7 @@ package expo.modules.audio
 import android.Manifest
 import android.content.ContentResolver
 import android.content.Context
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.AudioAttributes
 import android.media.AudioFocusRequest
@@ -43,7 +44,6 @@ import okhttp3.OkHttpClient
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
-@DelicateCoroutinesApi
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class AudioModule : Module() {
   private lateinit var audioManager: AudioManager
@@ -60,9 +60,21 @@ class AudioModule : Module() {
   private var focusAcquired = false
   private var interruptionMode: InterruptionMode? = null
   private var allowsBackgroundRecording = false
+  private var playsInSilentMode = true
 
   private val allPlayables: Sequence<Playable>
     get() = players.values.asSequence() + playlists.values.asSequence()
+
+  private val ringerModeReceiver = RingerModeReceiver {
+    if (playsInSilentMode) return@RingerModeReceiver
+    appContext.mainQueue.launch {
+      allPlayables.forEach { playable ->
+        if (playable.isPlaying) {
+          playable.pause()
+        }
+      }
+    }
+  }
 
   private var audioFocusRequest: AudioFocusRequest? = null
   private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { focusChange ->
@@ -103,6 +115,11 @@ class AudioModule : Module() {
 
         AudioManager.AUDIOFOCUS_GAIN -> {
           focusAcquired = true
+
+          if (!shouldPlayInSilentMode()) {
+            return@launch
+          }
+
           allPlayables.forEach { playable ->
             playable.setVolume(playable.previousVolume)
             if (playable.isPaused) {
@@ -117,6 +134,10 @@ class AudioModule : Module() {
 
   private fun shouldReleaseFocus(): Boolean {
     return allPlayables.none { it.isPlaying }
+  }
+
+  private fun shouldPlayInSilentMode(): Boolean {
+    return playsInSilentMode || audioManager.ringerMode == AudioManager.RINGER_MODE_NORMAL
   }
 
   private fun requestAudioFocus() {
@@ -178,21 +199,39 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
+  @OptIn(DelicateCoroutinesApi::class)
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
 
     OnCreate {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+      context.registerReceiver(ringerModeReceiver, IntentFilter(AudioManager.RINGER_MODE_CHANGED_ACTION))
     }
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       shouldPlayInBackground = mode.shouldPlayInBackground
       interruptionMode = mode.interruptionMode
+      playsInSilentMode = mode.playsInSilentMode
       updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
       allowsBackgroundRecording = mode.allowsBackgroundRecording
 
       recorders.values.forEach { recorder ->
         recorder.useForegroundService = allowsBackgroundRecording
+      }
+
+      players.values.forEach { player ->
+        player.serviceConnection.playsInSilentMode = playsInSilentMode
+        player.serviceConnection.playbackServiceBinder?.service?.playsInSilentMode = playsInSilentMode
+      }
+
+      if (!shouldPlayInSilentMode()) {
+        runOnMain {
+          allPlayables.forEach { playable ->
+            if (playable.isPlaying) {
+              playable.pause()
+            }
+          }
+        }
       }
     }
 
@@ -265,6 +304,10 @@ class AudioModule : Module() {
 
     OnActivityEntersForeground {
       if (!shouldPlayInBackground) {
+        if (!shouldPlayInSilentMode()) {
+          return@OnActivityEntersForeground
+        }
+
         if (allPlayables.any { it.isPaused }) {
           requestAudioFocus()
         }
@@ -289,6 +332,7 @@ class AudioModule : Module() {
     }
 
     OnDestroy {
+      context.unregisterReceiver(ringerModeReceiver)
       GlobalScope.launch(Dispatchers.Main) {
         releaseAudioFocus()
         players.values.forEach {
@@ -425,6 +469,9 @@ class AudioModule : Module() {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
           return@Function
         }
+        if (!shouldPlayInSilentMode()) {
+          return@Function
+        }
         runOnMain {
           if (!focusAcquired) {
             requestAudioFocus()
@@ -447,6 +494,9 @@ class AudioModule : Module() {
             mediaSource?.let {
               player.setMediaSource(it)
               if (wasPlaying) {
+                if (!shouldPlayInSilentMode()) {
+                  return@runOnMain
+                }
                 if (!focusAcquired) {
                   requestAudioFocus()
                 }
@@ -579,6 +629,37 @@ class AudioModule : Module() {
       }
     }
 
+    Class(AudioStream::class) {
+      Constructor { options: AudioStreamOptions ->
+        AudioStream(appContext, options)
+      }
+
+      Property("id") { stream: AudioStream ->
+        stream.id
+      }
+
+      Property("sampleRate") { stream: AudioStream ->
+        stream.sampleRate
+      }
+
+      Property("channels") { stream: AudioStream ->
+        stream.channels
+      }
+
+      Property("isStreaming") { stream: AudioStream ->
+        stream.isStreaming
+      }
+
+      AsyncFunction("start") Coroutine { stream: AudioStream ->
+        checkRecordingPermission()
+        stream.start()
+      }
+
+      Function("stop") { stream: AudioStream ->
+        stream.stop()
+      }
+    }
+
     Class(AudioPlaylist::class) {
       Constructor { sources: List<AudioSource>, updateInterval: Double, loop: LoopMode ->
         runOnMain {
@@ -706,6 +787,9 @@ class AudioModule : Module() {
       Function("play") { playlist: AudioPlaylist ->
         if (!audioEnabled) {
           Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+          return@Function
+        }
+        if (!shouldPlayInSilentMode()) {
           return@Function
         }
         runOnMain {

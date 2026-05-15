@@ -1,0 +1,129 @@
+---
+title: TextInput
+description: A text input backed by native SwiftUI and Jetpack Compose components, with a React Native-compatible API.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-56/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A text input that routes to [`TextField`](../jetpack-compose/textfield) from `@expo/ui/jetpack-compose` on Android, [`TextField`](../swift-ui/textfield) from `@expo/ui/swift-ui` on iOS, and React Native's [`TextInput`](https://reactnative.dev/docs/textinput) on web.
+
+The API mirrors React Native's [`TextInput`](https://reactnative.dev/docs/textinput), with two changes: [`value`](#value) and [`selection`](#selection) are observable state objects (created with `useNativeState`), and [`onChangeText`](#onchangetext) can be a worklet for synchronously updating the state on the UI thread.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Uncontrolled
+
+Omit [`value`](#value) and the field manages its own text internally. Use [`onChangeText`](#onchangetext) to observe edits, and use the [ref](#textinputref) for imperative actions like `focus`, `blur`, and `clear`.
+
+```tsx UncontrolledTextInputExample.tsx
+import { Button, Column, Host, TextInput, type TextInputRef } from '@expo/ui';
+import { useRef } from 'react';
+
+export default function UncontrolledTextInputExample() {
+  const inputRef = useRef<TextInputRef>(null);
+
+  return (
+    <Host matchContents={{ vertical: true }}>
+      <Column spacing={8}>
+        <TextInput
+          ref={inputRef}
+          defaultValue="hello"
+          placeholder="Type here"
+          onChangeText={value => console.log(value)}
+        />
+        <Button label="Clear" onPress={() => inputRef.current?.clear()} />
+      </Column>
+    </Host>
+  );
+}
+```
+
+### Controlled
+
+Pass [`value`](#value) to drive the field from a `useNativeState` observable. The example below replaces `Hello` with `World` as you type.
+
+```tsx ControlledTextInputExample.tsx
+import { Host, TextInput, useNativeState } from '@expo/ui';
+import { useEffectEvent } from 'react';
+
+export default function ControlledTextInputExample() {
+  const text = useNativeState('');
+
+  const handleChangeText = useEffectEvent((value: string) => {
+    'worklet';
+    text.value = value === 'Hello' ? 'World' : value;
+  });
+
+  return (
+    <Host matchContents={{ vertical: true }}>
+      <TextInput value={text} placeholder="Type here" onChangeText={handleChangeText} />
+    </Host>
+  );
+}
+```
+
+### Worklet masking
+
+Add the `'worklet'` directive to [`onChangeText`](#onchangetext) for synchronously updating the state on the UI thread. Writes to `value` land without the JS-thread round-trip that can cause cursor flicker.
+
+> **Note:** Worklets require installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
+```tsx PhoneMaskExample.tsx
+import { Host, TextInput, useNativeState } from '@expo/ui';
+import { useEffectEvent } from 'react';
+
+function formatPhone(input: string) {
+  'worklet';
+  const digits = input.replace(/\D/g, '').slice(0, 10);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+  return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+}
+
+export default function PhoneMaskExample() {
+  const phone = useNativeState('');
+  const selection = useNativeState({ start: 0, end: 0 });
+
+  const handleChangeText = useEffectEvent((value: string) => {
+    'worklet';
+    const formatted = formatPhone(value);
+    if (formatted !== value) {
+      phone.value = formatted;
+      // Snaps to end for demo. Real masks need smarter cursor handling.
+      selection.value = { start: formatted.length, end: formatted.length };
+    }
+  });
+
+  return (
+    <Host matchContents={{ vertical: true }}>
+      <TextInput
+        value={phone}
+        selection={selection}
+        keyboardType="phone-pad"
+        placeholder="(555) 123-4567"
+        onChangeText={handleChangeText}
+      />
+    </Host>
+  );
+}
+```
+
+## Unsupported React Native props
+
+Some React Native `TextInput` props are not supported, because Compose's `TextField` or SwiftUI's `TextField` does not expose an equivalent, or because the prop is replaced by a different mechanism. See the [API](#api) section below for the supported props. If a missing prop blocks your use case, [open an issue](https://github.com/expo/expo/issues/new/choose) so it can be prioritized.
+
+## API
+
+```tsx
+import { TextInput, useNativeState } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/textinput" apiName="TextInput" />

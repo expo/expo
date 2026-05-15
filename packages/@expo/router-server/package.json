@@ -1,6 +1,6 @@
 {
   "name": "@expo/router-server",
-  "version": "55.0.8",
+  "version": "56.0.8",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -34,14 +34,14 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/metro-runtime": "^55.0.6",
+    "@expo/metro-runtime": "workspace:^56.0.8",
+    "expo": "*",
+    "expo-constants": "workspace:^56.0.10",
+    "expo-font": "workspace:^56.0.3",
+    "expo-router": "*",
+    "expo-server": "workspace:^56.0.2",
     "react": "*",
     "react-dom": "*",
-    "expo": "*",
-    "expo-constants": "^55.0.7",
-    "expo-font": "^55.0.4",
-    "expo-router": "*",
-    "expo-server": "^55.0.5",
     "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
   },
   "peerDependenciesMeta": {
@@ -59,11 +59,18 @@
     }
   },
   "devDependencies": {
+    "@tsd/typescript": "^6.0.3",
     "@types/debug": "^4.1.7",
     "@types/jest": "^29.2.1",
-    "react-server-dom-webpack": "~19.0.1",
-    "tsd": "^0.28.1",
-    "tsd-lite": "^0.8.0"
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.2.0",
+    "@types/react-dom": "^19.1.7",
+    "expo": "workspace:*",
+    "expo-router": "workspace:*",
+    "jest-runner-tsd": "^6.0.0",
+    "react-server-dom-webpack": "~19.0.6",
+    "tsd": "^0.33.0",
+    "tsd-lite": "^0.9.0"
   },
   "dependencies": {
     "debug": "^4.3.4"

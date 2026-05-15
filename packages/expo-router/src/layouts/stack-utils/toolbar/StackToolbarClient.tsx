@@ -1,24 +1,34 @@
 'use client';
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { useMemo, type ReactNode } from 'react';
+import type { ColorValue } from 'react-native';
 
 import { StackToolbarButton } from './StackToolbarButton';
 import { StackToolbarMenu, StackToolbarMenuAction } from './StackToolbarMenu';
 import { StackToolbarSearchBarSlot } from './StackToolbarSearchBarSlot';
 import { StackToolbarSpacer } from './StackToolbarSpacer';
 import { StackToolbarView } from './StackToolbarView';
-import { ToolbarPlacementContext, useToolbarPlacement, type ToolbarPlacement } from './context';
+import {
+  ToolbarColorContext,
+  ToolbarPlacementContext,
+  useToolbarPlacement,
+  type ToolbarColors,
+  type ToolbarPlacement,
+} from './context';
 import { processHeaderItemsForPlatform } from './processHeaderItemsForPlatform';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
 import { useCompositionOption } from '../../../fork/native-stack/composition-options';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { RouterToolbarHost } from '../../../toolbar/native';
 
 export interface StackToolbarProps {
   /**
    * Child elements to compose the toolbar. Can include Stack.Toolbar.Button,
    * Stack.Toolbar.Menu, Stack.Toolbar.View, Stack.Toolbar.Spacer, and
-   * Stack.Toolbar.SearchBarSlot (bottom only) components.
+   * Stack.Toolbar.SearchBarSlot (bottom placement, iOS only) components.
+   *
+   * @platform android
+   * @platform ios
    */
   children?: ReactNode;
   /**
@@ -26,9 +36,12 @@ export interface StackToolbarProps {
    *
    * - `'left'`: Renders items in the left area of the header.
    * - `'right'`: Renders items in the right area of the header.
-   * - `'bottom'`: Renders items in the bottom toolbar (iOS only).
+   * - `'bottom'`: Renders items in the bottom toolbar.
    *
    * @default 'bottom'
+   *
+   * @platform android
+   * @platform ios
    */
   placement?: ToolbarPlacement;
   /**
@@ -38,6 +51,9 @@ export interface StackToolbarProps {
    * Only applies to `placement="left"` and `placement="right"`.
    *
    * @default false
+   *
+   * @platform android
+   * @platform ios
    */
   asChild?: boolean;
   /**
@@ -49,6 +65,19 @@ export interface StackToolbarProps {
    * @platform android
    */
   disableImePadding?: boolean;
+  /**
+   * Tint color applied to toolbar items (buttons, menu icons, text).
+   * Individual items can override this with their own `tintColor` prop.
+   *
+   * @platform android
+   */
+  tintColor?: ColorValue;
+  /**
+   * Background color for the toolbar and its menus.
+   *
+   * @platform android
+   */
+  backgroundColor?: ColorValue;
 }
 
 /**
@@ -56,7 +85,7 @@ export interface StackToolbarProps {
  *
  * - Use `placement="left"` to customize the left side of the header.
  * - Use `placement="right"` to customize the right side of the header.
- * - Use `placement="bottom"` (default) to show a bottom toolbar (iOS only).
+ * - Use `placement="bottom"` (default) to show a bottom toolbar.
  *
  * If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
@@ -111,6 +140,7 @@ export interface StackToolbarProps {
  * ```
  *
  * @experimental
+ * @platform android
  * @platform ios
  */
 export const StackToolbar = (props: StackToolbarProps) => {
@@ -126,12 +156,25 @@ export const StackToolbar = (props: StackToolbarProps) => {
   return <StackToolbarHeader {...props} key={props.placement} />;
 };
 
-const StackToolbarBottom = ({ children, disableImePadding }: StackToolbarProps) => {
+const StackToolbarBottom = ({
+  children,
+  disableImePadding,
+  tintColor,
+  backgroundColor,
+}: StackToolbarProps) => {
+  const colors = useMemo<ToolbarColors>(
+    () => ({ tintColor, backgroundColor }),
+    [tintColor, backgroundColor]
+  );
   return (
     <ToolbarPlacementContext.Provider value="bottom">
-      <NativeMenuContext value>
-        <RouterToolbarHost withImePadding={!disableImePadding}>{children}</RouterToolbarHost>
-      </NativeMenuContext>
+      <ToolbarColorContext.Provider value={colors}>
+        <NativeMenuContext value>
+          <RouterToolbarHost withImePadding={!disableImePadding} backgroundColor={backgroundColor}>
+            {children}
+          </RouterToolbarHost>
+        </NativeMenuContext>
+      </ToolbarColorContext.Provider>
     </ToolbarPlacementContext.Provider>
   );
 };
@@ -141,6 +184,8 @@ const StackToolbarHeader = ({
   placement,
   asChild,
   disableImePadding,
+  tintColor,
+  backgroundColor,
 }: StackToolbarProps) => {
   if (placement !== 'left' && placement !== 'right') {
     throw new Error(
@@ -153,12 +198,16 @@ const StackToolbarHeader = ({
       appendStackToolbarPropsToOptions(
         {},
         // satisfies ensures every prop is listed here
-        { children, placement, asChild, disableImePadding } satisfies Record<
-          keyof StackToolbarProps,
-          unknown
-        >
+        {
+          children,
+          placement,
+          asChild,
+          disableImePadding,
+          tintColor,
+          backgroundColor,
+        } satisfies Record<keyof StackToolbarProps, unknown>
       ),
-    [children, placement, asChild, disableImePadding]
+    [children, placement, asChild, disableImePadding, tintColor, backgroundColor]
   );
   useCompositionOption(options);
 
@@ -176,23 +225,31 @@ export function appendStackToolbarPropsToOptions(
     return options;
   }
 
+  const colors: ToolbarColors = {
+    tintColor: props.tintColor,
+    backgroundColor: props.backgroundColor,
+  };
+
   if (asChild) {
+    const wrappedChildren = (
+      <ToolbarColorContext.Provider value={colors}>{children}</ToolbarColorContext.Provider>
+    );
     if (placement === 'left') {
       return {
         ...options,
         headerShown: true,
-        headerLeft: () => children,
+        headerLeft: () => wrappedChildren,
       };
     } else {
       return {
         ...options,
         headerShown: true,
-        headerRight: () => children,
+        headerRight: () => wrappedChildren,
       };
     }
   }
 
-  return { ...options, ...(processHeaderItemsForPlatform(children, placement) ?? {}) };
+  return { ...options, ...(processHeaderItemsForPlatform(children, placement, colors) ?? {}) };
 }
 
 StackToolbar.Button = StackToolbarButton;

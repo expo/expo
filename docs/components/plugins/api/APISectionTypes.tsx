@@ -178,7 +178,7 @@ const renderType = (
   const defaultValueElement = defaultValue ? (
     <CALLOUT className="flex items-start gap-1">
       <span className={STYLES_SECONDARY}>Default:</span>
-      <CODE className="text-[90!%]">{defaultValue}</CODE>
+      <CODE className="text-[90%]!">{defaultValue}</CODE>
     </CALLOUT>
   ) : undefined;
 

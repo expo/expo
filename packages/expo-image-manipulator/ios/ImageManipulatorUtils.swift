@@ -1,4 +1,4 @@
-import SDWebImageWebPCoder
+internal import SDWebImageWebPCoder
 import Photos
 import ExpoModulesCore
 

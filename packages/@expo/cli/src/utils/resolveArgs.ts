@@ -1,4 +1,5 @@
-import arg, { Spec } from 'arg';
+import type { Spec } from 'arg';
+import type arg from 'arg';
 
 import { replaceAllValues } from './array';
 import { CommandError } from './errors';
@@ -50,7 +51,7 @@ function splitArgs(args: string[]): string[] {
   for (const arg of args) {
     if (arg.startsWith('-')) {
       const [key, ...props] = arg.split('=');
-      result.push(key);
+      result.push(key!);
       if (props.length) {
         result.push(props.join('='));
       }
@@ -160,7 +161,7 @@ export function _resolveStringOrBooleanArgs(
 
   // Loop over arguments in reverse order so we can resolve if a value belongs to a flag.
   for (let i = args.length - 1; i > -1; i--) {
-    const value = args[i];
+    const value = args[i]!;
     // At this point we should have converted all aliases to fully qualified arguments.
     if (value.startsWith('--')) {
       // If we ever find an argument then it must be a boolean because we are checking in reverse
@@ -242,10 +243,10 @@ function filterOutArrayArgs(args: string[], spec: Spec): string[] {
 
   const result: string[] = [];
   for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
+    const arg = args[i]!;
     if (arrayFlags.has(arg)) {
       // Skip this flag and its value if it has one
-      if (i + 1 < args.length && !args[i + 1].startsWith('-')) {
+      if (i + 1 < args.length && !args[i + 1]?.startsWith('-')) {
         i++;
       }
     } else {

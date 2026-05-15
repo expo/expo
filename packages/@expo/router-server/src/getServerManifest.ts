@@ -14,7 +14,7 @@ import {
   type RouteNode,
 } from 'expo-router/internal/routing';
 import { shouldLinkExternally } from 'expo-router/internal/utils';
-import { type RouteInfo, type RoutesManifest } from 'expo-server/private';
+import type { RouteInfo, RoutesManifest } from 'expo-server/private';
 
 export interface Group {
   pos: number;
@@ -27,8 +27,8 @@ export interface RouteRegex {
   re: RegExp;
 }
 
-function isNotFoundRoute(route: RouteNode) {
-  return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
+function isNotFoundRoute(route: RouteNode): boolean {
+  return route.dynamic != null && (route.dynamic[route.dynamic.length - 1]?.notFound ?? false);
 }
 
 function uniqueBy<T>(arr: T[], key: (item: T) => string): T[] {

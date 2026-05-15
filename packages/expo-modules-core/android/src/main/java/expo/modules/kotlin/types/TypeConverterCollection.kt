@@ -6,11 +6,10 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.ExpectedType
-import kotlin.reflect.KClass
-import kotlin.reflect.KType
-import kotlin.reflect.typeOf
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 
-class TypeConverterComponent<Type : Any>(val desireType: KType) {
+class TypeConverterComponent<Type : Any>(val desireType: TypeDescriptor) {
   val desireTypeConverter = lazy { TypeConverterCollection<Type>(desireType) }
 
   inline fun <reified P0 : Any> from(crossinline body: (p0: P0) -> Type): TypeConverterComponent<Type> {
@@ -18,7 +17,7 @@ class TypeConverterComponent<Type : Any>(val desireType: KType) {
     return this
   }
 
-  fun build(): Pair<KType, TypeConverter<*>>? {
+  fun build(): Pair<TypeDescriptor, TypeConverter<*>>? {
     if (desireTypeConverter.isInitialized()) {
       val typeConverter = TypeConverterCollection<Type>(desireType)
       typeConverter.converters = desireTypeConverter.value.converters
@@ -29,13 +28,13 @@ class TypeConverterComponent<Type : Any>(val desireType: KType) {
 }
 
 class TypeConverterCollection<Type : Any>(
-  val type: KType
+  val type: TypeDescriptor
 ) : NonNullableTypeConverter<Type>() {
   @PublishedApi
-  internal var converters: MutableMap<KType, (Any?) -> Type> = mutableMapOf()
+  internal var converters: MutableMap<TypeDescriptor, (Any?) -> Type> = mutableMapOf()
 
   inline fun <reified P0> from(crossinline body: (p0: P0) -> Type): TypeConverterCollection<Type> {
-    converters[typeOf<P0>()] = { value ->
+    converters[typeDescriptorOf<P0>()] = { value ->
       enforceType<P0>(value)
       body(value)
     }
@@ -46,10 +45,7 @@ class TypeConverterCollection<Type : Any>(
   override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Type {
     val possibleConverters = converters
       .map { (key, converter) -> key to converter }
-      .filter { (key, _) ->
-        val kClass = key.classifier as? KClass<*>
-        kClass?.isInstance(value) == true
-      }
+      .filter { (key, _) -> key.jClass.toBoxedIfPrimitive().isInstance(value) }
 
     if (possibleConverters.isEmpty()) {
       // We don't have a converter for Dynamic, but we can try to convert it to ExpoDynamic
@@ -93,7 +89,7 @@ class TypeConverterCollection<Type : Any>(
   override fun getCppRequiredTypes(): ExpectedType {
     return ExpectedType.merge(
       *converters.keys.map { key ->
-        ExpectedType.fromKType(key)
+        ExpectedType.fromTypeDescriptor(key)
       }.toTypedArray()
     )
   }

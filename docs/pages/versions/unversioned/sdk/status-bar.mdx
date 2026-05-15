@@ -18,7 +18,7 @@ import {
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
-`expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, background color, hide it, make it translucent or opaque, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
+`expo-status-bar` gives you a component and imperative interface to control the app status bar to change its text color, hide it, and apply animations to any of these changes. Exactly what you are able to do with the `StatusBar` component depends on the platform you're using.
 
 > **tvOS and web support**
 >
@@ -77,13 +77,13 @@ You can configure `expo-status-bar` using its built-in [config plugin](/config-p
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) or you're using a native project manually, then you need to add the following configuration to your native project:
 
-- To hide the status bar on **Android**, add `expo_status_bar_visibility` to **android/app/src/main/res/values/strings.xml**:
+- To hide the status bar on **Android**, add `expoStatusBarHidden` to **android/app/src/main/res/values/styles.xml**:
 
   ```xml
-  <resources>
+  <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
     <!-- ... -->
-    <string name="expo_status_bar_visibility" translatable="false">hidden</string>
-  </resources>
+    <item name="expoStatusBarHidden">true</item>
+  </style>
   ```
 
 - To hide the status bar on **iOS**, set the following keys in your **ios/&lt;project&gt;/Info.plist**:

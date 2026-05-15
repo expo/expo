@@ -1,5 +1,5 @@
-import { type ColorValue } from 'react-native';
-import { type ModifierConfig } from '../../types';
+import type { ColorValue } from 'react-native';
+import type { ModifierConfig } from '../../types';
 /**
  * Colors for switch core elements.
  */
@@ -56,11 +56,11 @@ type ThumbContentProps = {
  * Custom content to be displayed inside the switch thumb.
  * @platform android
  */
-export declare function SwitchThumbContent(props: ThumbContentProps): import("react").JSX.Element;
+export declare function SwitchThumbContent(props: ThumbContentProps): import("react/jsx-runtime").JSX.Element;
 /**
  * A switch component.
  */
-declare function SwitchComponent(props: SwitchProps): import("react").JSX.Element;
+declare function SwitchComponent(props: SwitchProps): import("react/jsx-runtime").JSX.Element;
 declare namespace SwitchComponent {
     var ThumbContent: typeof SwitchThumbContent;
     var DefaultIconSize: any;

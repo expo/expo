@@ -32,8 +32,11 @@ final internal class WebAuthSession {
       ])
     }
 
-    // iOS 17.4+/macOS 14.4+ supports HTTPS callbacks with host/path matching
-    if #available(iOS 17.4, macOS 14.4, *),
+    // iOS 17.4+/macOS 14.4+ supports HTTPS callbacks with host/path matching.
+    // Only used when preferUniversalLinks is true, as it requires the app to have
+    // the Associated Domains entitlement for the redirect host.
+    if options.preferUniversalLinks,
+       #available(iOS 17.4, macOS 14.4, *),
        let redirectUrl,
        redirectUrl.scheme == "https",
        let host = redirectUrl.host(percentEncoded: false),

@@ -89,10 +89,10 @@ function collectDependencies(ast, options) {
                     firstArg.callee.type === 'Identifier' &&
                     firstArg.callee.name === 'URL' &&
                     firstArg.arguments.length > 0 &&
-                    firstArg.arguments[0].type === 'StringLiteral') {
+                    firstArg.arguments[0]?.type === 'StringLiteral') {
                     const moduleName = firstArg.arguments[0].value;
                     // Get the NodePath of the first argument of `new Worker(new URL())`
-                    const urlArgPath = path.get('arguments')[0].get('arguments')[0];
+                    const urlArgPath = (path.get('arguments')[0]?.get('arguments'))[0];
                     processResolveWorkerCallWithName(moduleName, urlArgPath, state);
                     // Replace `new Worker` invocation with `asyncRequire.unstable_createWorker` helper call,
                     // creating an Object URL with a shim script that remaps `importScripts` and `fetch`, while calling the entrypoint with `importScripts`.
@@ -233,7 +233,7 @@ function getRequireContextArgs(path) {
         throw new InvalidRequireCallError(path);
     }
     else {
-        const result = args[0].evaluate();
+        const result = args[0]?.evaluate();
         if (result.confident && typeof result.value === 'string') {
             directory = result.value;
         }
@@ -244,7 +244,7 @@ function getRequireContextArgs(path) {
     // Default to requiring through all directories.
     let recursive = true;
     if (args.length > 1) {
-        const result = args[1].evaluate();
+        const result = args[1]?.evaluate();
         if (result.confident && typeof result.value === 'boolean') {
             recursive = result.value;
         }
@@ -257,23 +257,23 @@ function getRequireContextArgs(path) {
     if (args.length > 2) {
         // evaluate() to check for undefined (because it's technically a scope lookup)
         // but check the AST for the regex literal, since evaluate() doesn't do regex.
-        const result = args[2].evaluate();
-        const argNode = args[2].node;
-        if (argNode.type === 'RegExpLiteral') {
+        const result = args[2]?.evaluate();
+        const argNode = args[2]?.node;
+        if (argNode?.type === 'RegExpLiteral') {
             // TODO: Handle `new RegExp(...)` -- `argNode.type === 'NewExpression'`
             filter = {
                 pattern: argNode.pattern,
                 flags: argNode.flags || '',
             };
         }
-        else if (!(result.confident && typeof result.value === 'undefined')) {
-            throw new InvalidRequireCallError(args[2], `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode.type}.`);
+        else if (!(result?.confident && typeof result.value === 'undefined')) {
+            throw new InvalidRequireCallError(args[2], `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode?.type}.`);
         }
     }
     // Default to `sync`.
     let mode = 'sync';
     if (args.length > 3) {
-        const result = args[3].evaluate();
+        const result = args[3]?.evaluate();
         if (result.confident && typeof result.value === 'string') {
             mode = getContextMode(args[3], result.value);
         }
@@ -553,8 +553,8 @@ function getModuleNameFromCallArgs(path) {
     if (!Array.isArray(args) || args.length !== 1) {
         throw new InvalidRequireCallError(path);
     }
-    const result = args[0].evaluate();
-    if (result.confident && typeof result.value === 'string') {
+    const result = args[0]?.evaluate();
+    if (result?.confident && typeof result.value === 'string') {
         return result.value;
     }
     return null;

@@ -25,7 +25,7 @@ import * as Expo from 'expo';
 
 ### `expo/fetch` API
 
-`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.wintercg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
+`expo/fetch` provides a [WinterCG-compliant Fetch API](https://fetch.spec.whatwg.org/) that works consistently across web and mobile environments, ensuring a standardized and cross-platform fetch experience within Expo applications.
 
 ```ts Streaming fetch
 import { fetch } from 'expo/fetch';
@@ -45,6 +45,8 @@ while (true) {
 const buffer = new Uint8Array(chunks.reduce((acc, chunk) => acc + chunk.length, 0));
 console.log(buffer.length); // 512
 ```
+
+> **Note:** On Android and iOS, `expo/fetch` is also installed as the global `fetch`. This means any calls to `fetch(...)` without importing from `expo/fetch` use the same WinterCG-compliant implementation. To keep React Native's built-in `fetch` as the global, set `EXPO_PUBLIC_USE_RN_FETCH=1` in your [environment variables](/guides/environment-variables/). Named imports from `expo/fetch` continue to work regardless of this flag.
 
 ### Encoding APIs
 

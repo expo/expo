@@ -6,7 +6,7 @@ import {
   Image,
 } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import type { ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 export type IconProps = {
@@ -23,16 +23,22 @@ export type IconProps = {
   source: ImageSourcePropType;
 
   /**
-   * The tint color to apply to the icon.
-   * Accepts hex strings, named colors, or RGB arrays.
+   * The tint color to apply to the icon. Accepts hex strings, named colors,
+   * or RGB arrays.
+   *
+   * - When omitted, the icon inherits the color from the surrounding
+   *   `LocalContentColor` (e.g. the toolbar/FAB content color).
+   * - When set to `null`, no tint is applied — the icon is drawn with its
+   *   original colors (`Color.Unspecified`). Use this for multicolored icons.
    *
    * @example
    * ```tsx
-   * <Icon source={require('./assets/star.xml')} tintColor="#007AFF" />
-   * <Icon source={require('./assets/star.xml')} tintColor="blue" />
+   * <Icon source={require('./assets/star.xml')} tint="#007AFF" />
+   * <Icon source={require('./assets/star.xml')} tint="blue" />
+   * <Icon source={require('./assets/multicolor.xml')} tint={null} />
    * ```
    */
-  tintColor?: ColorValue;
+  tint?: ColorValue | null;
 
   /**
    * The size of the icon in density-independent pixels (dp).
@@ -74,14 +80,16 @@ export type IconProps = {
    * />
    * ```
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
 /**
  * @hidden
  */
-export type NativeIconProps = Omit<IconProps, 'source'> & {
+export type NativeIconProps = Omit<IconProps, 'source' | 'tint'> & {
   source: ImageResolvedAssetSource;
+  tint?: ColorValue;
+  inheritTint: boolean;
 };
 
 const IconNativeView: React.ComponentType<NativeIconProps> = requireNativeView(
@@ -90,12 +98,17 @@ const IconNativeView: React.ComponentType<NativeIconProps> = requireNativeView(
 );
 
 function transformIconProps(props: IconProps): NativeIconProps {
-  const { source, modifiers, ...restProps } = props;
+  const { source, modifiers, tint, ...restProps } = props;
+  // Differentiate "tint not provided" (inherit `LocalContentColor`) from
+  // "tint explicitly null" (no tint, draw original colors).
+  const tintIsExplicitlyNull = 'tint' in props && tint === null;
 
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    tint: tint ?? undefined,
+    inheritTint: !tintIsExplicitlyNull,
     source: Image.resolveAssetSource(source),
   };
 }
@@ -121,7 +134,7 @@ function transformIconProps(props: IconProps): NativeIconProps {
  * <Icon
  *   source={require('./assets/settings.xml')}
  *   size={24}
- *   tintColor="#007AFF"
+ *   tint="#007AFF"
  *   contentDescription="Settings icon"
  * />
  * ```

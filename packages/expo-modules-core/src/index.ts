@@ -1,3 +1,4 @@
+import './ts-declarations/global';
 import './sweet/setUpJsLogger.fx';
 import './polyfill';
 

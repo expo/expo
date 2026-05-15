@@ -11,7 +11,9 @@ export function parseParams(request: Request, route: Route): Record<string, stri
   if (match?.groups) {
     for (const [key, value] of Object.entries(match.groups)) {
       const namedKey = route.routeKeys[key];
-      params[namedKey] = value;
+      if (namedKey != null) {
+        params[namedKey] = value;
+      }
     }
   }
   return params;
@@ -55,7 +57,7 @@ export function resolveLoaderContextKey(
   return `/${resolved}`;
 }
 
-export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): URL {
+export function getRedirectRewriteLocation(url: URL, request: Request, route: Route): string {
   const originalQueryParams = url.searchParams.entries();
   const params = parseParams(request, route);
   const target = route.page
@@ -79,12 +81,16 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
       }
     })
     .join('/');
-  const targetUrl = new URL(target, url.origin);
+  const targetUrl = new URL(target, 'http://localhost');
 
   // NOTE: React Navigation doesn't differentiate between a path parameter
   // and a search parameter. We have to preserve leftover search parameters
   // to ensure we don't lose any intentional parameters with special meaning
-  for (const key in params) targetUrl.searchParams.append(key, params[key]);
+  for (const key in params) {
+    if (params[key] != null) {
+      targetUrl.searchParams.append(key, params[key]);
+    }
+  }
 
   // NOTE(@krystofwoldrich): Query matching is not supported at the moment.
   // Copy original query parameters to the target URL
@@ -95,7 +101,10 @@ export function getRedirectRewriteLocation(url: URL, request: Request, route: Ro
     }
   }
 
-  return targetUrl;
+  // When the hostname is the resolved `localhost` (see above on new URL) we just output the path
+  return targetUrl.hostname === 'localhost'
+    ? targetUrl.pathname + targetUrl.search
+    : targetUrl.toString();
 }
 
 /** Match `[page]` -> `page`

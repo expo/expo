@@ -21,7 +21,11 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
     <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
       <Host style={styles.host}>
         <Box modifiers={modifiers} contentAlignment="bottomCenter">
-          <HorizontalFloatingToolbar modifiers={[height(64)]}>
+          <HorizontalFloatingToolbar
+            colors={{
+              ...(props.backgroundColor ? { toolbarContainerColor: props.backgroundColor } : {}),
+            }}
+            modifiers={[height(64)]}>
             {props.children}
           </HorizontalFloatingToolbar>
         </Box>

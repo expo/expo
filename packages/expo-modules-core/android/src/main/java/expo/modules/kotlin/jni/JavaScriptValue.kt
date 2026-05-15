@@ -2,7 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
-import kotlin.reflect.typeOf
+import expo.modules.kotlin.types.descriptors.typeDescriptorOf
 
 /**
  * A Kotlin representation of jsi::Value.
@@ -39,14 +39,14 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
 
   inline fun <reified ReturnType : Any?> getFunction(): JavaScriptFunction<ReturnType> {
     return internalJniGetFunction<ReturnType>().apply {
-      returnType = typeOf<ReturnType>()
+      returnType = typeDescriptorOf<ReturnType>()
     }
   }
 
   @JvmName("getVoidFunction")
   fun getFunction(): JavaScriptFunction<Unit> {
     return internalJniGetFunction<Unit>().apply {
-      returnType = typeOf<Unit>()
+      returnType = typeDescriptorOf<Unit>()
     }
   }
 

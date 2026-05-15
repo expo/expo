@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { getBestSimulatorAsync } from './getBestSimulator';
-import { Device } from './simctl';
+import type { Device } from './simctl';
 import { createSelectionFilter, promptAsync } from '../../../utils/prompts';
 
 /**
@@ -17,7 +17,7 @@ export async function sortDefaultDeviceToBeginningAsync<T extends { udid: string
   const defaultId = await getBestSimulatorAsync({ osType });
   if (defaultId) {
     let iterations = 0;
-    while (devices[0].udid !== defaultId && iterations < devices.length) {
+    while (devices[0]?.udid !== defaultId && iterations < devices.length) {
       devices.push(devices.shift()!);
       iterations++;
     }

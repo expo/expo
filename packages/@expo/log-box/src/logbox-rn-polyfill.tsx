@@ -118,7 +118,7 @@ function LogBoxRNPolyfill(props: {
           // DOM props
           dom={{
             useExpoDOMWebView: true,
-            overrideUri: bundledLogBoxUrl,
+            overrideUri: bundledLogBoxUrl ?? undefined,
             contentInsetAdjustmentBehavior: 'never',
             containerStyle: {
               pointerEvents: 'box-none',

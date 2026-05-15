@@ -1,7 +1,7 @@
-import { BuildCacheProvider } from '@expo/config';
+import type { BuildCacheProvider } from '@expo/config';
 
-import { OSType } from '../../start/platforms/ios/simctl';
-import { BundlerProps } from '../resolveBundlerProps';
+import type { OSType } from '../../start/platforms/ios/simctl';
+import type { BundlerProps } from '../resolveBundlerProps';
 
 export type XcodeConfiguration = 'Debug' | 'Release';
 

@@ -10,6 +10,34 @@
 
 ### 💡 Others
 
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.1.6 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.5 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.1.4 - 2026-04-02
+
+### 🎉 New features
+
+- Native interface access to state machine context. ([#44361](https://github.com/expo/expo/pull/44361) by [@douglowder](https://github.com/douglowder))
+
 ## 55.1.3 — 2026-02-25
 
 ### ⚠️ Notices

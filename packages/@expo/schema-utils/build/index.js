@@ -3,12 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-Object.defineProperty(exports, "JSONSchema", {
-  enumerable: true,
-  get: function () {
-    return _JSONSchema().JSONSchema;
-  }
-});
 exports.ValidationError = void 0;
 exports.derefSchema = derefSchema;
 exports.validate = validate;
@@ -26,13 +20,6 @@ function _validate() {
   };
   return data;
 }
-function _JSONSchema() {
-  const data = require("./JSONSchema");
-  _JSONSchema = function () {
-    return data;
-  };
-  return data;
-}
 const CACHE_SYMBOL = Symbol('@expo/schema-utils');
 const flattenValidationResults = (input, output = []) => {
   output.push({
@@ -41,8 +28,8 @@ const flattenValidationResults = (input, output = []) => {
     keyword: input.keyword,
     value: input.value
   });
-  for (let idx = 0; input.cause && idx < input.cause.length; idx++) {
-    flattenValidationResults(input.cause[idx], output);
+  for (const cause of input.cause ?? []) {
+    flattenValidationResults(cause, output);
   }
   return output;
 };

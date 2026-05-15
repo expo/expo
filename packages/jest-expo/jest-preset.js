@@ -2,8 +2,26 @@
 
 const cloneDeep = require('lodash/cloneDeep');
 const isEqual = require('lodash/isEqual');
-// Derive the Expo Jest preset from the React Native one
-const jestPreset = cloneDeep(require('react-native/jest-preset'));
+
+let jestPreset;
+try {
+  jestPreset = require('@react-native/jest-preset');
+} catch (error) {
+  if (error.code === 'MODULE_NOT_FOUND') {
+    try {
+      // NOTE(@kitten): We can still try the old import to see if it
+      // works, in case there's some kind of version mismatch
+      jestPreset = require('react-native/jest-preset');
+    } catch {
+      throw new Error(
+        'The React Native Jest preset that jest-expo relies on has moved to a separate package.\n' +
+          'To migrate, please install "@react-native/jest-preset" to fulfill jest-expo\'s peer dependency.'
+      );
+    }
+  }
+}
+
+jestPreset = cloneDeep(jestPreset);
 
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 const { resolveBabelConfig } = require('./src/resolveBabelConfig');
@@ -81,9 +99,8 @@ const defaultExpoMetroAssetExts = [
 ];
 
 const assetNamePattern = `^.+\\.(${defaultExpoMetroAssetExts.join('|')})$`;
-jestPreset.transform[assetNamePattern] = require.resolve(
-  'jest-expo/src/preset/assetFileTransformer.js'
-);
+jestPreset.transform[assetNamePattern] =
+  require.resolve('jest-expo/src/preset/assetFileTransformer.js');
 
 // transformIgnorePatterns
 if (!Array.isArray(jestPreset.transformIgnorePatterns)) {
@@ -103,6 +120,8 @@ jestPreset.transformIgnorePatterns = [
   '/node_modules/(?!(.pnpm|react-native|@react-native|@react-native-community|expo|@expo|@expo-google-fonts|react-navigation|@react-navigation|@sentry/react-native|native-base))',
   // Disable transforming the reanimated plugin in multi-platform tests, causing "Reentrant plugin detected trying to load react-native-reanimated/plugin.."
   '/node_modules/react-native-reanimated/plugin/',
+  // Disable transforming the react-native babel preset, since it's part of the transformer itself
+  '/node_modules/@react-native/babel-preset/',
 ];
 
 // setupFiles

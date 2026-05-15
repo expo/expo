@@ -27,7 +27,7 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 export default function MatchContents() {
   return (
     <Host matchContents>
-      <Button onPress={() => console.log('Pressed')}>Sized to content</Button>
+      <Button onClick={() => console.log('Pressed')}>Sized to content</Button>
     </Host>
   );
 }
@@ -43,7 +43,7 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 export default function HostWithStyle() {
   return (
     <Host style={{ padding: 16, backgroundColor: '#f0f0f0', borderRadius: 8 }}>
-      <Button onPress={() => console.log('Pressed')}>Styled host</Button>
+      <Button onClick={() => console.log('Pressed')}>Styled host</Button>
     </Host>
   );
 }

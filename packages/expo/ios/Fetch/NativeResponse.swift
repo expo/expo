@@ -44,7 +44,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     if state == .responseReceived {
       state = .bodyStreamingStarted
       let queuedData = self.sink.finalize()
-      emit(event: "didReceiveResponseData", arguments: queuedData)
+      emit(event: "didReceiveResponseData", payload: queuedData)
     } else if state == .bodyCompleted {
       let queuedData = self.sink.finalize()
       return queuedData
@@ -63,7 +63,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     let error = FetchRequestCanceledException()
     self.error = error
     if state == .bodyStreamingStarted {
-      emit(event: "didFailWithError", arguments: error.localizedDescription)
+      emit(event: "didFailWithError", payload: error.localizedDescription)
     }
     state = .errorReceived
     emit(event: "readyForJSFinalization")
@@ -152,7 +152,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     if state == .responseReceived {
       self.sink.appendBufferBody(data: data)
     } else if state == .bodyStreamingStarted {
-      emit(event: "didReceiveResponseData", arguments: data)
+      emit(event: "didReceiveResponseData", payload: data)
     }
     // no-op in .bodyStreamingCanceled state
   }
@@ -172,7 +172,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
       let error = FetchRedirectException()
       self.error = error
       if state == .bodyStreamingStarted {
-        emit(event: "didFailWithError", arguments: error.localizedDescription)
+        emit(event: "didFailWithError", payload: error.localizedDescription)
       }
       state = .errorReceived
       emit(event: "readyForJSFinalization")
@@ -209,7 +209,7 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
 
     if state == .bodyStreamingStarted {
       if let error {
-        emit(event: "didFailWithError", arguments: error.localizedDescription)
+        emit(event: "didFailWithError", payload: error.localizedDescription)
       } else {
         emit(event: "didComplete")
       }

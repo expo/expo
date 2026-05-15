@@ -35,11 +35,11 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useLinking = useLinking;
 exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
-const native_1 = require("@react-navigation/native");
 const ExpoLinking = __importStar(require("expo-linking"));
-const React = __importStar(require("react"));
+const react_1 = require("react");
 const react_native_1 = require("react-native");
 const extractPathFromURL_1 = require("./extractPathFromURL");
+const native_1 = require("../react-navigation/native");
 const linkingHandlers = [];
 function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialURL = () => getInitialURLWithTimeout(), subscribe = (listener) => {
     const callback = ({ url }) => listener(url);
@@ -58,7 +58,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
     };
 }, getStateFromPath = native_1.getStateFromPath, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
     const independent = (0, native_1.useNavigationIndependentTree)();
-    React.useEffect(() => {
+    (0, react_1.useEffect)(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
         }
@@ -66,6 +66,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
             return undefined;
         }
         if (enabled !== false && linkingHandlers.length && process.env.EXPO_OS !== 'android') {
+            // TODO(@ubax): This check should be removed
             if (linkingHandlers.length > 1) {
                 console.error([
                     'Looks like you have configured linking in multiple places. This is likely an error since deep links should only be handled in one place to avoid conflicts. Make sure that:',
@@ -90,14 +91,14 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
     // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
     // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
     // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-    const enabledRef = React.useRef(enabled);
-    const prefixesRef = React.useRef(prefixes);
-    const filterRef = React.useRef(filter);
-    const configRef = React.useRef(config);
-    const getInitialURLRef = React.useRef(getInitialURL);
-    const getStateFromPathRef = React.useRef(getStateFromPath);
-    const getActionFromStateRef = React.useRef(getActionFromState);
-    React.useEffect(() => {
+    const enabledRef = (0, react_1.useRef)(enabled);
+    const prefixesRef = (0, react_1.useRef)(prefixes);
+    const filterRef = (0, react_1.useRef)(filter);
+    const configRef = (0, react_1.useRef)(config);
+    const getInitialURLRef = (0, react_1.useRef)(getInitialURL);
+    const getStateFromPathRef = (0, react_1.useRef)(getStateFromPath);
+    const getActionFromStateRef = (0, react_1.useRef)(getActionFromState);
+    (0, react_1.useEffect)(() => {
         enabledRef.current = enabled;
         prefixesRef.current = prefixes;
         filterRef.current = filter;
@@ -106,14 +107,14 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
         getStateFromPathRef.current = getStateFromPath;
         getActionFromStateRef.current = getActionFromState;
     });
-    const getStateFromURL = React.useCallback((url) => {
+    const getStateFromURL = (0, react_1.useCallback)((url) => {
         if (!url || (filterRef.current && !filterRef.current(url))) {
             return undefined;
         }
         const path = (0, extractPathFromURL_1.extractExpoPathFromURL)(prefixesRef.current, url);
         return path !== undefined ? getStateFromPathRef.current(path, configRef.current) : undefined;
     }, []);
-    const getInitialState = React.useCallback(() => {
+    const getInitialState = (0, react_1.useCallback)(() => {
         let state;
         if (enabledRef.current) {
             const url = getInitialURLRef.current();
@@ -144,7 +145,7 @@ function useLinking(ref, { enabled = true, prefixes, filter, config, getInitialU
         };
         return thenable;
     }, [getStateFromURL, onUnhandledLinking, prefixes]);
-    React.useEffect(() => {
+    (0, react_1.useEffect)(() => {
         const listener = (url) => {
             if (!enabled) {
                 return;

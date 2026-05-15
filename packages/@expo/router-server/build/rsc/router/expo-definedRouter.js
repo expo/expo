@@ -43,7 +43,9 @@ exports.default = (0, create_expo_pages_1.createExpoPages)(async ({ createPage, 
                         }
                     }
                     const first = Array.isArray(defined) ? defined[0] : defined;
-                    grouped.push(first);
+                    if (first != null) {
+                        grouped.push(first);
+                    }
                 }
                 return grouped;
             });

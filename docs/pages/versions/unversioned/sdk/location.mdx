@@ -96,7 +96,7 @@ You can configure `expo-location` using its built-in [config plugin](/config-plu
       name: 'androidForegroundServiceIcon',
       platform: 'android',
       description:
-        'Local path to an image to use as the icon for the foreground service started by `startLocationUpdatesAsync`. 96x96 all-white png with transparency. If not set, the app icon will be used.',
+        'Local path to an image to use as the icon for the foreground service started by `startLocationUpdatesAsync`. 96x96 all-white png with transparency. If not set, falls back to the `notification_icon` drawable (if configured via `expo-notifications` config plugin), then to the app launcher icon. The launcher icon is full-color and may render as a solid white square since Android requires notification icons to be monochrome.',
     },
   ]}
 />

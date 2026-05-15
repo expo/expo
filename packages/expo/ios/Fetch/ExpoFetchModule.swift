@@ -2,8 +2,11 @@
 
 @preconcurrency import ExpoModulesCore
 
+/// Typealias matching React Native's NSURLSessionConfigurationProvider block type
+public typealias URLSessionConfigurationProvider = @convention(block) () -> URLSessionConfiguration?
+
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
-nonisolated(unsafe) internal var urlSessionConfigurationProvider: NSURLSessionConfigurationProvider?
+nonisolated(unsafe) internal var urlSessionConfigurationProvider: URLSessionConfigurationProvider?
 
 public final class ExpoFetchModule: Module {
   private lazy var urlSession = createURLSession()
@@ -58,7 +61,7 @@ public final class ExpoFetchModule: Module {
       AsyncFunction("arrayBuffer") { (response: NativeResponse, promise: Promise) in
         response.waitFor(states: [.bodyCompleted]) { _ in
           let data = response.sink.finalize()
-          promise.resolve(ArrayBuffer.wrap(dataWithoutCopy: data))
+          promise.resolve(NativeArrayBuffer.wrap(dataWithoutCopy: data))
         }
       }.runOnQueue(fetchRequestQueue)
 

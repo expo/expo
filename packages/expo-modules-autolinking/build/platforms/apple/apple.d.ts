@@ -1,4 +1,9 @@
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import type { ExtraDependencies, ModuleDescriptorIos, ModuleIosPodspecInfo, PackageRevision } from '../../types';
+interface AppleConfigurationOutput {
+    buildFromSource: string[];
+}
+export declare function getConfiguration(options: AutolinkingOptions): AppleConfigurationOutput | undefined;
 export declare function getSwiftModuleNames(pods: ModuleIosPodspecInfo[], swiftModuleNames: string[] | undefined): string[];
 /** Resolves module search result with additional details required for iOS platform. */
 export declare function resolveModuleAsync(packageName: string, revision: PackageRevision, extraOutput: {

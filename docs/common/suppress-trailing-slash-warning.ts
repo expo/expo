@@ -25,10 +25,10 @@ if (isDev && typeof window !== 'undefined') {
   // Suppressing here prevents that handler from calling handleError -> overlay.
   // React 19 splits hydration warnings across multiple console.error args
   // (args[0] is the template, args[1+] contain the tree diff), so we join
-  // all string args before checking for the href diff pattern.
+  // all args (stringified) before checking for the href diff pattern.
   const wrappedConsoleError = console.error;
   console.error = (...args: unknown[]) => {
-    const fullMessage = args.filter((a): a is string => typeof a === 'string').join('\n');
+    const fullMessage = args.map(a => (typeof a === 'string' ? a : String(a))).join('\n');
     if (isTrailingSlashHydrationWarning(fullMessage)) {
       return;
     }

@@ -26,23 +26,27 @@ public class DevMenuPreferences: Module {
    and applying some preferences to static classes like interceptors.
    */
   static func setup() {
+    let fabDefault = Bundle.main.object(forInfoDictionaryKey: showFloatingActionButtonKey) as? Bool
+    let showsAtLaunchDefault = Bundle.main.object(forInfoDictionaryKey: showsAtLaunchKey) as? Bool
+    let isOnboardingFinishedDefault = Bundle.main.object(forInfoDictionaryKey: isOnboardingFinishedKey) as? Bool
+
     #if os(tvOS)
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: false,
       touchGestureEnabledKey: false,
       keyCommandsEnabledKey: true,
-      showsAtLaunchKey: false,
-      isOnboardingFinishedKey: true,
-      showFloatingActionButtonKey: false
+      showsAtLaunchKey: showsAtLaunchDefault ?? false,
+      isOnboardingFinishedKey: isOnboardingFinishedDefault ?? true,
+      showFloatingActionButtonKey: fabDefault ?? false
     ])
     #else
     UserDefaults.standard.register(defaults: [
       motionGestureEnabledKey: true,
       touchGestureEnabledKey: true,
       keyCommandsEnabledKey: true,
-      showsAtLaunchKey: false,
-      isOnboardingFinishedKey: false,
-      showFloatingActionButtonKey: true
+      showsAtLaunchKey: showsAtLaunchDefault ?? true,
+      isOnboardingFinishedKey: isOnboardingFinishedDefault ?? false,
+      showFloatingActionButtonKey: fabDefault ?? true
     ])
     #endif
 

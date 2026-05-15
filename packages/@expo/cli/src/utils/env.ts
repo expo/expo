@@ -241,11 +241,6 @@ class Env {
     return boolish('EXPO_UNSTABLE_SERVER_FUNCTIONS', false);
   }
 
-  /** Enable unstable/experimental mode where React Native Web isn't required to run Expo apps on web. */
-  get EXPO_NO_REACT_NATIVE_WEB(): boolean {
-    return boolish('EXPO_NO_REACT_NATIVE_WEB', false);
-  }
-
   /** Enable unstable/experimental support for deploying the native server in `npx expo run` commands. */
   get EXPO_UNSTABLE_DEPLOY_SERVER(): boolean {
     return boolish('EXPO_UNSTABLE_DEPLOY_SERVER', false);
@@ -274,6 +269,11 @@ class Env {
   /** Force Expo CLI to run in webcontainer mode, this has impact on which URL Expo is using by default */
   get EXPO_UNSTABLE_WEB_MODAL(): boolean {
     return boolish('EXPO_UNSTABLE_WEB_MODAL', false);
+  }
+
+  /** Disable @react-navigation checks for expo-router projects */
+  get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
+    return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
   }
 
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */

@@ -11,6 +11,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Badge component',
+    route: 'ui/badge',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BadgeScreen'));
+    },
+  },
+  {
     name: 'AlertDialog component',
     route: 'ui/alert-dialog',
     options: {},
@@ -83,6 +91,30 @@ export const UIScreens = [
     },
   },
   {
+    name: 'ExposedDropdownMenuBox component',
+    route: 'ui/exposed-dropdown-menu-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExposedDropdownMenuBoxScreen'));
+    },
+  },
+  {
+    name: 'Community BottomSheet replacement',
+    route: 'ui/community-bottomsheet',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityBottomSheetScreen'));
+    },
+  },
+  {
+    name: 'Community Picker replacement',
+    route: 'ui/community-picker',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityPickerScreen'));
+    },
+  },
+  {
     name: 'Community DateTimePicker replacement',
     route: 'ui/community-datetimepicker',
     options: {},
@@ -91,11 +123,51 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community SegmentedControl replacement',
+    route: 'ui/community-segmented-control',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySegmentedControlScreen'));
+    },
+  },
+  {
+    name: 'Community Slider replacement',
+    route: 'ui/community-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunitySliderScreen'));
+    },
+  },
+  {
+    name: 'Community MaskedView replacement',
+    route: 'ui/community-masked-view',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMaskedViewScreen'));
+    },
+  },
+  {
+    name: 'Community Menu replacement',
+    route: 'ui/community-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMenuScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./SwitchScreen'));
+    },
+  },
+  {
+    name: 'SyncSwitch component',
+    route: 'ui/sync-switch',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SyncSwitchScreen'));
     },
   },
   {
@@ -112,6 +184,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./FormScreen'));
+    },
+  },
+  {
+    name: 'Divider component',
+    route: 'ui/divider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./DividerScreen'));
     },
   },
   {
@@ -139,11 +219,27 @@ export const UIScreens = [
     },
   },
   {
-    name: 'TextInput component',
-    route: 'ui/textInput',
+    name: 'Material Colors',
+    route: 'ui/material-colors',
     options: {},
     getComponent() {
-      return optionalRequire(() => require('./TextInputScreen'));
+      return optionalRequire(() => require('./MaterialColorsScreen'));
+    },
+  },
+  {
+    name: 'Text component',
+    route: 'ui/text',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextScreen'));
+    },
+  },
+  {
+    name: 'TextField component',
+    route: 'ui/textField',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TextFieldScreen'));
     },
   },
   {
@@ -179,11 +275,27 @@ export const UIScreens = [
     },
   },
   {
+    name: 'HorizontalPager component',
+    route: 'ui/horizontal-pager',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HorizontalPagerScreen'));
+    },
+  },
+  {
     name: 'Carousel component',
     route: 'ui/carousel',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./CarouselScreen'));
+    },
+  },
+  {
+    name: 'LazyColumn / LazyRow',
+    route: 'ui/lazy-column-row',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./LazyColumnRowScreen'));
     },
   },
   {
@@ -240,6 +352,38 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ModifiersScreen'));
+    },
+  },
+  {
+    name: 'PullToRefreshBox component',
+    route: 'ui/pull-to-refresh-box',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./PullToRefreshBoxScreen'));
+    },
+  },
+  {
+    name: 'Surface component',
+    route: 'ui/surface',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SurfaceScreen'));
+    },
+  },
+  {
+    name: 'Tooltip component',
+    route: 'ui/tooltip',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TooltipScreen'));
+    },
+  },
+  {
+    name: 'Extending Expo UI',
+    route: 'ui/extending',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ExtendingExpoUIScreen'));
     },
   },
 ];

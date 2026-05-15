@@ -102,16 +102,16 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
 async function parsePackageNameAsync(manifestPath, gradlePath) {
     if (gradlePath) {
         const gradleContents = await promises_1.default.readFile(gradlePath, 'utf8');
-        const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/);
+        const match = gradleContents.match(/namespace\s*[=]*\s*["'](.+?)["']/)?.[1];
         if (match) {
-            return match[1];
+            return match;
         }
     }
     if (manifestPath) {
         const manifestContents = await promises_1.default.readFile(manifestPath, 'utf8');
-        const match = manifestContents.match(/package="(.+?)"/);
+        const match = manifestContents.match(/package="(.+?)"/)?.[1];
         if (match) {
-            return match[1];
+            return match;
         }
     }
     return null;
@@ -160,18 +160,18 @@ function matchNativePackageClassName(_filePath, contents) {
         lazyReactPackageRegex =
             /class\s+(\w+[^(\s]*)[\s\w():]*(\s+implements\s+|:)[\s\w():,]*[^{]*ReactPackage/;
     }
-    const matchReactPackage = fileContents.match(lazyReactPackageRegex);
+    const matchReactPackage = fileContents.match(lazyReactPackageRegex)?.[1];
     if (matchReactPackage) {
-        return matchReactPackage[1];
+        return matchReactPackage;
     }
     // [1] Match (Base|Turbo)ReactPackage
     if (!lazyTurboReactPackageRegex) {
         lazyTurboReactPackageRegex =
             /class\s+(\w+[^(\s]*)[\s\w():]*(\s+extends\s+|:)[\s\w():,]*[^{]*(Base|Turbo)ReactPackage/;
     }
-    const matchTurboReactPackage = fileContents.match(lazyTurboReactPackageRegex);
+    const matchTurboReactPackage = fileContents.match(lazyTurboReactPackageRegex)?.[1];
     if (matchTurboReactPackage) {
-        return matchTurboReactPackage[1];
+        return matchTurboReactPackage;
     }
     return null;
 }
@@ -185,18 +185,18 @@ async function parseLibraryNameAsync(androidDir, packageJson) {
     // [1] `libraryName` from build.gradle
     if (await (0, utils_1.fileExistsAsync)(gradlePath)) {
         const buildGradleContents = await promises_1.default.readFile(gradlePath, 'utf8');
-        const match = buildGradleContents.match(libraryNameRegExp);
+        const match = buildGradleContents.match(libraryNameRegExp)?.[1];
         if (match) {
-            return match[1];
+            return match;
         }
     }
     // [2] `libraryName` from build.gradle.kts
     const gradleKtsPath = path_1.default.join(androidDir, 'build.gradle.kts');
     if (await (0, utils_1.fileExistsAsync)(gradleKtsPath)) {
         const buildGradleContents = await promises_1.default.readFile(gradleKtsPath, 'utf8');
-        const match = buildGradleContents.match(libraryNameRegExp);
+        const match = buildGradleContents.match(libraryNameRegExp)?.[1];
         if (match) {
-            return match[1];
+            return match;
         }
     }
     return null;

@@ -16,17 +16,17 @@ export function parseVariadicArguments(
 
   let i = 0;
   while (i < argv.length) {
-    const arg = argv[i];
+    const arg = argv[i]!;
 
     if (!arg.startsWith('-')) {
       variadic.push(arg);
     } else if (arg === '--') {
       break;
     } else {
-      const flagIndex = strFlags.indexOf(arg.split('=')[0]);
+      const flagIndex = strFlags.indexOf(arg.split('=')[0]!);
       if (flagIndex !== -1) {
         // Handle flags that expect a value
-        const [flag, value] = arg.split('=');
+        const [flag, value] = arg.split('=') as [string, ...string[]];
         if (value !== undefined) {
           // If the flag has a value inline (e.g., --flag=value)
           if (parsedFlags[flag] === undefined) {

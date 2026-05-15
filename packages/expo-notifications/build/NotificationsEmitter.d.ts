@@ -1,5 +1,5 @@
 import { type EventSubscription } from 'expo-modules-core';
-import { Notification, NotificationResponse } from './Notifications.types';
+import type { Notification, NotificationResponse } from './Notifications.types';
 export declare const DEFAULT_ACTION_IDENTIFIER = "expo.modules.notifications.actions.DEFAULT";
 /**
  * Listeners registered by this method will be called whenever a notification is received while the app is running.

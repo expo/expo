@@ -6,27 +6,207 @@
 
 ### 🎉 New features
 
+- Expose `selectedIcon` in native tabs on Android. `NativeTabs.Trigger.Icon` now accepts `{ default, selected }` for the `drawable` and `md` props, matching the existing iOS `sf`/`xcasset` behaviour. ([#45780](https://github.com/expo/expo/pull/45780) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Prevent route modules from being eagerly validated when they don't contribute to the current platform or are otherwise removed ([#45766](https://github.com/expo/expo/pull/45766) by [@kitten](https://github.com/kitten))
+- Preserve `headerTitleAlign` set on parent navigator options when `Stack.Title` does not specify `style.textAlign` ([#42110](https://github.com/expo/expo/pull/42110) by [@Quaid5050](https://github.com/Quaid5050))
+- [web] Fix loader HMR when streaming SSR is enabled in dev mode ([#45702](https://github.com/expo/expo/pull/45702) by [@hassankhan](https://github.com/hassankhan))
+- Pass `null` route params through `useLocalSearchParams` instead of stringifying them to `"null"` ([#34950](https://github.com/expo/expo/pull/34950) by [@hassankhan](https://github.com/hassankhan))
+
+### 💡 Others
+
+## 56.2.0 — 2026-05-13
+
+### 🎉 New features
+
+- add `disabled` prop to native tab triggers ([#45671](https://github.com/expo/expo/pull/45671) by [@Ubax](https://github.com/Ubax))
+- Add `tabBarRespectsIMEInsets` Android property to `NativeTabs` ([#45679](https://github.com/expo/expo/pull/45679) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Emit `pageFocused` navigation event after the focused screen has committed, so consumers like expo-observe report accurate TTR for heavy screens. ([@Ubax](https://github.com/Ubax)) ([#45723](https://github.com/expo/expo/pull/45723) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- expose `pagePreloaded` listener ([#45725](https://github.com/expo/expo/pull/45725) by [@Ubax](https://github.com/Ubax))
+
+## 56.1.4 — 2026-05-13
+
+### 🎉 New features
+
+- Add a name to injected suspense boundaries for easier debugging ([#45501](https://github.com/expo/expo/pull/45501) by [@rubennorte](https://github.com/rubennorte))
+
+### 💡 Others
+
+- Bump to `react-server-dom-webpack@~19.0.6` ([#45645](https://github.com/expo/expo/pull/45645) by [@kitten](https://github.com/kitten))
+
+## 56.1.3 — 2026-05-12
+
+_This version does not introduce any user-facing changes._
+
+## 56.1.2 — 2026-05-11
+
+### 🎉 New features
+
+- export new useCurrentRouteInfo hook ([#45566](https://github.com/expo/expo/pull/45566) by [@Ubax](https://github.com/Ubax))
+- Upgrade react-native-screens to 4.25.0 ([#45644](https://github.com/expo/expo/pull/45644) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Fix drawer toggle asset path. ([#45170](https://github.com/expo/expo/pull/45170) by [@sleda](https://github.com/sleda))
+
+## 56.1.1 — 2026-05-08
+
+### 🎉 New features
+
+- export useRoute hook from expo-router ([#45557](https://github.com/expo/expo/pull/45557) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Remove pinned dependencies ([#45520](https://github.com/expo/expo/pull/45520) by [@kitten](https://githun.com/kitten))
+- Move `pointerEvents` from component prop to style property in react-navigation views. ([#45519](https://github.com/expo/expo/pull/45519) by [@EvanBacon](https://github.com/EvanBacon))
+## 56.1.0 — 2026-05-07
+
+### 🎉 New features
+
+- Upgrade react-native-screens version to 4.25.0-beta.3. ([#45482](https://github.com/expo/expo/pull/45482) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Move `@jest/globals` to `devDependencies` ([#45469](https://github.com/expo/expo/pull/45469) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+### 🎉 New features
+
+- Add unstable_nativeProps to NativeTabs host ([#45408](https://github.com/expo/expo/pull/45408) by [@Ubax](https://github.com/Ubax))
+- [android] forward `accessibilityLabel` on `Stack.Toolbar.Button` and `Stack.Toolbar.Menu` to the icon's `contentDescription`, so TalkBack reads the icon-only toolbar buttons. ([#45433](https://github.com/expo/expo/pull/45433) by [@Ubax](https://github.com/Ubax))
+
+## 56.0.2 — 2026-05-06
+
+### 🐛 Bug fixes
+
+- Pin `react-native-screens` to exact version ([#45421](https://github.com/expo/expo/pull/45421) by [@Ubax](https://github.com/Ubax))
+
+## 56.0.1 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+- Remove dependency on react-navigation and move the navigation code to expo-router ([#44176](https://github.com/expo/expo/pull/44176) by [@Ubax](https://github.com/Ubax))
+- rename Router type to ImperativeRouter ([#45207](https://github.com/expo/expo/pull/45207) by [@Ubax](https://github.com/Ubax)
+- rename Route to RoutePath ([#45208](https://github.com/expo/expo/pull/45208) by [@Ubax](https://github.com/Ubax))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 - [android] add toolbar support ([#43970](https://github.com/expo/expo/pull/43970) by [@Ubax](https://github.com/Ubax))
 - [android] add support for menus in toolbar ([#43979](https://github.com/expo/expo/pull/43979) by [@Ubax](https://github.com/Ubax))
+- Export JS navigators via `/js-tabs` and `/js-stack`. ([#44266](https://github.com/expo/expo/pull/44266) by [@jakex7](https://github.com/jakex7))
+- [android] add support for header toolbar ([#44052](https://github.com/expo/expo/pull/44052) by [@Ubax](https://github.com/Ubax))
+- Copy material top tabs as `/js-top-tabs`. ([#44268](https://github.com/expo/expo/pull/44268) by [@jakex7](https://github.com/jakex7))
+- Support `ColorValue`. ([#44301](https://github.com/expo/expo/pull/44301) by [@jakex7](https://github.com/jakex7))
+- Allow customizing route-level `<Suspense>` fallback ([#43885](https://github.com/expo/expo/pull/43885) by [@hassankhan](https://github.com/hassankhan))
+- Upgrade react-native-screens version to 4.25.0-beta.1 ([#45172](https://github.com/expo/expo/pull/45172) by [@Ubax](https://github.com/Ubax))
+- [web] Use stream rendering in SSR ([#43963](https://github.com/expo/expo/pull/43963) by [@hassankhan](https://github.com/hassankhan))
+- [web] Add support for metadata in streaming SSR ([#44731](https://github.com/expo/expo/pull/44731) by [@hassankhan](https://github.com/hassankhan))
+- [web] Support streaming SSR in development ([#45362](https://github.com/expo/expo/pull/45362) by [@hassankhan](https://github.com/hassankhan))
+- [web] Add `createStaticLoader()` and `createServerLoader()` helpers ([#45401](https://github.com/expo/expo/pull/45401) by [@hassankhan](https://github.com/hassankhan))
+- Add ExperimentalStack navigator ([#45259](https://github.com/expo/expo/pull/45259) by [@Ubax](https://github.com/Ubax))
+
+### 🐛 Bug fixes
+
+- Fix `Stack.Protected` guard not applying to index routes. ([#43769](https://github.com/expo/expo/pull/43769) by [@alanjhughes](https://github.com/alanjhughes))
+- [ios] fix tint color on VectorIcon ([#43904](https://github.com/expo/expo/pull/43904) by [@Ubax](https://github.com/Ubax))
+- [Android] Fix @expo/ui divider in toolbar. ([#44209](https://github.com/expo/expo/pull/44209) by [@jakex7](https://github.com/jakex7))
+- Fix `Stack.Screen.Title` string/number concatenation. ([#44213](https://github.com/expo/expo/pull/44213) by [@jakex7](https://github.com/jakex7))
+- [android] Use `tint` prop name instead of `tintColor` for Jetpack Compose icons ([#44427](https://github.com/expo/expo/pull/44427) by [@hassankhan](https://github.com/hassankhan))
+- Disable touch events on unfocused native tab screens ([#44778](https://github.com/expo/expo/pull/44778) by [@cortinico](https://github.com/cortinico))
+- fix RNScreensTabCompat to be compatible with new RNS version ([#45321](https://github.com/expo/expo/pull/45321) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Removed `react-native-is-edge-to-edge` dependency, `AutoStatusBar` component, and `canOverrideStatusBarBehavior` helper. ([#44196](https://github.com/expo/expo/pull/44196) by [@zoontek](https://github.com/zoontek))
+- Remove `expo-router/doctor` since this is covered by `expo-doctor`'s duplicates check now ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
+- add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
+- refactor global-state logic ([#44056](https://github.com/expo/expo/pull/44056) by [@Ubax](https://github.com/Ubax))
+- Replace `TransformStream`-based HTML injection with `ServerDocumentContext` for SSR metadata and assets ([#44827](https://github.com/expo/expo/pull/44827) by [@hassankhan](https://github.com/hassankhan))
+- Rename `Stack.Screen.Title` to `Stack.Title`. The old name is kept as a deprecated alias. ([#45334](https://github.com/expo/expo/pull/45334) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.14 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-10
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 - 2026-03-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 - 2026-03-18
+
+### 💡 Others
+
+- Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.6 - 2026-03-17
+
+### 🐛 Bug fixes
+
+- Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
+- Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
+- Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
+- fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
+
+### 💡 Others
+
+- Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.5 - 2026-03-11
+
+### 💡 Others
+
+- Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 - 2026-03-05
+
+### 💡 Others
+
+- use KVC to provide native API compatible with both react-native-screens 4.24.0 and 4.23.0 ([#43576](https://github.com/expo/expo/pull/43576) by [@Ubax](https://github.com/Ubax))
+
+## 55.0.3 - 2026-02-26
 
 ### 🐛 Bug fixes
 
 - Fix pinned `react-navigation` dependencies ([#43456](https://github.com/expo/expo/pull/43456) by [@kitten](https://github.com/kitten))
-- Fix zoom transition to prefetched routes ([#43852](https://github.com/expo/expo/pull/43852) by [@Ubax](https://github.com/Ubax))
-- Fix `Stack.Protected` guard not applying to index routes. ([#43769](https://github.com/expo/expo/pull/43769) by [@alanjhughes](https://github.com/alanjhughes))
-- Fix regex for routes with multiple spaces in file name ([#43935](https://github.com/expo/expo/pull/43935) by [@Ubax](https://github.com/Ubax))
-- Fix params mutation in getPathDataFromState ([#43934](https://github.com/expo/expo/pull/43934) by [@Ubax](https://github.com/Ubax))
-- fix hash order to be RFC compliant ([#43933](https://github.com/expo/expo/pull/43933) by [@Ubax](https://github.com/Ubax))
-- [ios] fix tint color on VectorIcon ([#43904](https://github.com/expo/expo/pull/43904) by [@Ubax](https://github.com/Ubax))
-
-### 💡 Others
-
-- Remove `expo-router/doctor` since this is covered by `expo-doctor`'s duplicates check now ([#43461](https://github.com/expo/expo/pull/43461) by [@kitten](https://github.com/kitten))
-- use KVC to provide native API compatible with both react-native-screens 4.24.0 and 4.23.0 ([#43576](https://github.com/expo/expo/pull/43576) by [@Ubax](https://github.com/Ubax))
-- Handle empty routes manifest gracefully ([#43606](https://github.com/expo/expo/pull/43606) by [@kitten](https://github.com/kitten))
-- Upgrade react-navigation to the latest version ([#43993](https://github.com/expo/expo/pull/43993) by [@Ubax](https://github.com/Ubax))
-- Split StackToolbar components into multiple files ([#43969](https://github.com/expo/expo/pull/43969) by [@Ubax](https://github.com/Ubax))
-- add processHeaderItemsForPlatform ([#44051](https://github.com/expo/expo/pull/44051) by [@Ubax](https://github.com/Ubax))
 
 ## 55.0.2 — 2026-02-25
 

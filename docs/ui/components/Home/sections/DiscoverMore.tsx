@@ -77,7 +77,7 @@ export function DiscoverMore() {
         <GridCell className="from-subtle to-palette-orange3 selection:bg-palette-orange4 dark:selection:bg-palette-orange6 bg-linear-to-br from-30%">
           <SnackImage />
           <RawH3 className="text-palette-orange11! font-bold!">Try Expo in your browser</RawH3>
-          <P className="text-palette-orange11! max-w-[24ch] text-xs!">
+          <P className="text-palette-orange11! max-w-[24ch] text-sm!">
             Expo's Snack lets you try Expo with zero local setup.
           </P>
           <HomeButton
@@ -96,7 +96,7 @@ export function DiscoverMore() {
             <DiscordIcon className="text-palette-blue9 dark:text-palette-blue9 size-12!" />
           </div>
           <RawH3 className="text-palette-blue11! font-bold!">Chat with the community</RawH3>
-          <P className="text-palette-blue11! max-w-[32ch] text-xs!">
+          <P className="text-palette-blue11! max-w-[32ch] text-sm!">
             Join over 60,000 other developers
             <br />
             on the Expo Community Discord.

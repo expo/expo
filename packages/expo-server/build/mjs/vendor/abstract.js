@@ -68,7 +68,7 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
                     continue;
                 }
                 // Replace URL and Request with rewrite target
-                url = getRedirectRewriteLocation(url, request, route);
+                url = new URL(getRedirectRewriteLocation(url, request, route), url);
                 request = new Request(url, request);
             }
         }
@@ -197,6 +197,14 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             // Only used for development errors
             return html;
         }
+        if (html != null) {
+            return createResponse('notFoundHtml', route, html, {
+                status: 404,
+                headers: new Headers({
+                    'Content-Type': 'text/html',
+                }),
+            });
+        }
         throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
     }
     async function respondAPI(mod, request, route) {
@@ -236,6 +244,14 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
             // Only used for development error responses
             return html;
         }
+        if (html != null) {
+            return createResponse('html', route, html, {
+                status: 200,
+                headers: new Headers({
+                    'Content-Type': 'text/html',
+                }),
+            });
+        }
         throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
     }
     function respondRedirect(url, request, route) {
@@ -249,7 +265,10 @@ export function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, 
         else {
             status = route.permanent ? 308 : 307;
         }
-        return Response.redirect(target, status);
+        return new Response(null, {
+            status,
+            headers: { Location: target },
+        });
     }
 }
 //# sourceMappingURL=abstract.js.map

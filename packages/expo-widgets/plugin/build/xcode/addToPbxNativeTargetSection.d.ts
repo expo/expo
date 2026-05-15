@@ -9,16 +9,6 @@ export declare function addToPbxNativeTargetSection(xcodeProject: XcodeProject, 
         uuid: string;
     };
 }): {
-    uuid: string;
-    pbxNativeTarget: {
-        isa: string;
-        name: string;
-        productName: string;
-        productReference: string;
-        productType: string;
-        buildConfigurationList: string;
-        buildPhases: never[];
-        buildRules: never[];
-        dependencies: never[];
-    };
+    uuid: any;
+    pbxNativeTarget: any;
 };

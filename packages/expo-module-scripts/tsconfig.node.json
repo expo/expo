@@ -1,16 +1,17 @@
 {
-  "extends": "@tsconfig/node18/tsconfig.json",
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "esModuleInterop": true,
-    "declaration": true,
-    "strict": true,
-    "useDefineForClassFields": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true,
-    "downlevelIteration": true
+    "rootDir": "${configDir}",
+
+    "lib": ["es2023"],
+    "target": "es2022",
+    "declarationMap": false,
+    "inlineSources": false,
+    "resolveJsonModule": true,
+
+    // TODO(@kitten): Update accordingly when tsc isn't used to build outputs anymore at all
+    "module": "nodenext",
+    "moduleResolution": "node16",
+    "verbatimModuleSyntax": false
   }
 }

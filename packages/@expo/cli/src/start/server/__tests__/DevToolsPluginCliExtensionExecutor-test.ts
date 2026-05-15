@@ -1,4 +1,4 @@
-import { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
+import type { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
 
 describe('DevToolsPluginCliExtensionExecutor', () => {

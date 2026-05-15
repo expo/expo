@@ -1,14 +1,10 @@
-import {
-  createPermissionHook,
-  PermissionStatus,
-  Platform,
-  UnavailabilityError,
-} from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus } from 'expo';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
 
-import { CellularGeneration, PermissionResponse } from './Cellular.types';
+import type { PermissionResponse, CellularGeneration } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
 
-export { CellularGeneration };
+export { CellularGeneration } from './Cellular.types';
 
 // @needsAudit
 /**
@@ -53,6 +49,7 @@ export async function getCellularGenerationAsync(): Promise<CellularGeneration> 
  * ```ts
  * await Cellular.allowsVoipAsync(); // true or false
  * ```
+ * @deprecated Voip technology is not widely used and Google is removing it from the Android platform. This method will be removed in a future release.
  */
 export async function allowsVoipAsync(): Promise<boolean | null> {
   if (Platform.OS === 'ios') {

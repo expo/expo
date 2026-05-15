@@ -39,12 +39,22 @@ describe('getImageInfoAsync', () => {
     ImageAssets.getImageInfoAsync('https://example.com/example.png');
     expect((Image as jest.Mock<HTMLImageElement>).mock.instances.length).toBe(1);
     const mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
+
+    if (mockImage == null) {
+      throw new Error('Expected Image mock instance to be defined');
+    }
+
     expect(mockImage.src).toBe('https://example.com/example.png');
   });
 
   it(`resolves the promise when the image loads`, async () => {
     const infoPromise = ImageAssets.getImageInfoAsync('https://example.com/example.png');
     const mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
+
+    if (mockImage == null) {
+      throw new Error('Expected Image mock instance to be defined');
+    }
+
     expect(mockImage.onload).toBeDefined();
 
     // @ts-ignore: naturalWidth is declared as read-only
@@ -65,6 +75,11 @@ describe('getImageInfoAsync', () => {
   it(`rejects the promise when the image fails to load`, async () => {
     const infoPromise = ImageAssets.getImageInfoAsync('https://example.com/example.png');
     const mockImage = (Image as jest.Mock<HTMLImageElement>).mock.instances[0];
+
+    if (mockImage == null) {
+      throw new Error('Expected Image mock instance to be defined');
+    }
+
     expect(mockImage.onerror).toBeDefined();
 
     const mockErrorEvent = { type: 'error' } as any;

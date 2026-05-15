@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-tracking-transparency/package.json');
+const pkg = require('../../package.json');
 const DEFAULT_NSUserTrackingUsageDescription = 'Allow this app to collect app-related data that can be used for tracking you or your device.';
 const withTrackingTransparency = (config, props) => {
     config_plugins_1.IOSConfig.Permissions.createPermissionsPlugin({

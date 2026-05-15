@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_plugins_1 = require("expo/config-plugins");
-const pkg = require('expo-audio/package.json');
+const pkg = require('../../package.json');
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const PLAYBACK_SERVICE_NAME = 'expo.modules.audio.service.AudioControlsService';
 const RECORDING_SERVICE_NAME = 'expo.modules.audio.service.AudioRecordingService';

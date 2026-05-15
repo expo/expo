@@ -1,6 +1,5 @@
-import type { NavigationProp } from '@react-navigation/native';
 import { screen } from '@testing-library/react-native';
-import React, { useEffect, type PropsWithChildren } from 'react';
+import { useEffect, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
@@ -13,6 +12,7 @@ import {
   useSegments,
 } from '../../../hooks';
 import { Stack } from '../../../layouts/Stack';
+import type { NavigationProp } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Redirect } from '../../Redirect';
@@ -408,7 +408,7 @@ describe('Stack Composition API', () => {
     // Only one ScreenStackItem call (initial render for the index screen)
     expect(ScreenStackItem).toHaveBeenCalledTimes(1);
     // Index screen title is unchanged — preview composition options did not leak
-    expect(ScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('index');
+    expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('index');
   });
 
   const cases = [
@@ -488,7 +488,7 @@ describe('Stack Composition API', () => {
       // Only one ScreenStackItem call (initial render for the index screen)
       expect(ScreenStackItem).toHaveBeenCalledTimes(1);
       // Index screen title is unchanged — preview composition options did not leak
-      expect(ScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('index');
+      expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('index');
     }
   );
 });

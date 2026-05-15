@@ -1,10 +1,10 @@
 'use client';
 
-import { useRoute } from '@react-navigation/native';
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { createContext, use, useCallback, useMemo, useReducer } from 'react';
 
 import type { CompositionContextValue, CompositionRegistry } from './types';
+import { useRoute } from '../../../react-navigation/native';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 import { useSafeLayoutEffect } from '../../../views/useSafeLayoutEffect';
 
 /** @internal */
@@ -38,7 +38,7 @@ export function registryReducer(
     if (!existing || filtered?.length === existing.length) {
       return state;
     }
-    if (filtered.length === 0) {
+    if (!filtered?.length) {
       const { [routeKey]: _, ...newState } = state;
       return newState;
     }

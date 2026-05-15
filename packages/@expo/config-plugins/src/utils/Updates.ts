@@ -1,4 +1,4 @@
-import { Android, ExpoConfig, IOS } from '@expo/config-types';
+import type { Android, ExpoConfig, IOS } from '@expo/config-types';
 import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import fs from 'fs';
 import { boolish } from 'getenv';

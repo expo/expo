@@ -20,6 +20,13 @@ function nodeModule() {
   };
   return data;
 }
+function _nodeOs() {
+  const data = _interopRequireDefault(require("node:os"));
+  _nodeOs = function () {
+    return data;
+  };
+  return data;
+}
 function _nodePath() {
   const data = _interopRequireDefault(require("node:path"));
   _nodePath = function () {
@@ -41,6 +48,13 @@ function _codeframe() {
   };
   return data;
 }
+function _stacktrace() {
+  const data = require("./stacktrace");
+  _stacktrace = function () {
+    return data;
+  };
+  return data;
+}
 function _transform() {
   const data = require("./transform");
   _transform = function () {
@@ -49,8 +63,7 @@ function _transform() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-function _getRequireWildcardCache(e) { if ("function" != typeof WeakMap) return null; var r = new WeakMap(), t = new WeakMap(); return (_getRequireWildcardCache = function (e) { return e ? t : r; })(e); }
-function _interopRequireWildcard(e, r) { if (!r && e && e.__esModule) return e; if (null === e || "object" != typeof e && "function" != typeof e) return { default: e }; var t = _getRequireWildcardCache(r); if (t && t.has(e)) return t.get(e); var n = { __proto__: null }, a = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var u in e) if ("default" !== u && {}.hasOwnProperty.call(e, u)) { var i = a ? Object.getOwnPropertyDescriptor(e, u) : null; i && (i.get || i.set) ? Object.defineProperty(n, u, i) : n[u] = e[u]; } return n.default = e, t && t.set(e, n), n; }
+function _interopRequireWildcard(e, t) { if ("function" == typeof WeakMap) var r = new WeakMap(), n = new WeakMap(); return (_interopRequireWildcard = function (e, t) { if (!t && e && e.__esModule) return e; var o, i, f = { __proto__: null, default: e }; if (null === e || "object" != typeof e && "function" != typeof e) return f; if (o = t ? n : r) { if (o.has(e)) return o.get(e); o.set(e, f); } for (const t in e) "default" !== t && {}.hasOwnProperty.call(e, t) && ((i = (o = Object.defineProperty) && Object.getOwnPropertyDescriptor(e, t)) && (i.get || i.set) ? o(f, t, i) : f[t] = e[t]); return f; })(e, t); }
 let _ts;
 function loadTypescript() {
   if (_ts === undefined) {
@@ -99,28 +112,146 @@ function toFormat(filename, isLegacy) {
     return null;
   }
 }
+function toRealDirname(filePath) {
+  let normalized = _nodePath().default.resolve(filePath);
+  // Try resolving the filename itself first
+  try {
+    normalized = _nodeFs().default.realpathSync(normalized);
+    return _nodePath().default.dirname(normalized);
+  } catch (error) {
+    normalized = _nodePath().default.dirname(normalized);
+    // If we're getting another error than an ENOENT, return the dirname unchanged
+    if (error?.code !== 'ENOENT') {
+      return normalized;
+    }
+  }
+  // Alternatively, if it's a fake path, resolve the directory directly instead
+  try {
+    return _nodeFs().default.realpathSync(normalized);
+  } catch {
+    return normalized;
+  }
+}
+const hasModuleSourceMapsSupport = typeof nodeModule().setSourceMapsSupport === 'function';
+function getSourceMapsState() {
+  return typeof nodeModule().getSourceMapsSupport === 'function' ? nodeModule().getSourceMapsSupport() : {
+    enabled: !!process.sourceMapsEnabled
+  };
+}
+function setSourceMapsState(state) {
+  if (hasModuleSourceMapsSupport) {
+    nodeModule().setSourceMapsSupport(state.enabled, {
+      nodeModules: state.nodeModules ?? false,
+      generatedCode: state.generatedCode ?? false
+    });
+  } else {
+    process.setSourceMapsEnabled(state.enabled);
+  }
+}
+function makeSourceMapTempPath(filename) {
+  let basename = _nodePath().default.basename(filename);
+  const queryIdx = basename.search(/[?#]/);
+  if (queryIdx >= 0) {
+    basename = basename.slice(0, queryIdx);
+  }
+  return _nodePath().default.join(_nodeOs().default.tmpdir(), `require-utils-${process.pid}-${basename}.map`);
+}
+function stripSourceMappingURL(code) {
+  return code.replace(/^[ \t]*\/\/[#@][ \t]+sourceMappingURL=.*$/gm, '');
+}
 function compileModule(code, filename, opts) {
   const format = toFormat(filename, false);
+  const shouldCache = opts.cache ?? true;
   const prependPaths = opts.paths ?? [];
-  const nodeModulePaths = nodeModule()._nodeModulePaths(_nodePath().default.dirname(filename));
+  // See: https://github.com/nodejs/node/blob/ff080948666f28fbd767548d26bea034d30bc277/lib/internal/modules/cjs/loader.js#L767
+  // If we get a symlinked path instead of the realpath, we assume the realpath is needed for Node module resolution
+  const basePath = toRealDirname(filename);
+  const nodeModulePaths = nodeModule()._nodeModulePaths(basePath);
   const paths = [...prependPaths, ...nodeModulePaths];
+  let inputCode = code;
+
+  // We may get a Metro SSR relative path here, which isn't a valid absolute path, and we need to normalize
+  // the filename before proceeding
+  let compileFilename = filename;
+  if (opts.sourceMap) {
+    const queryIdx = filename.search(/[?#]/);
+    const basePart = queryIdx >= 0 ? filename.slice(0, queryIdx) : filename;
+    const queryPart = queryIdx >= 0 ? filename.slice(queryIdx) : '';
+    if (!_nodePath().default.isAbsolute(basePart)) {
+      compileFilename = _nodePath().default.resolve(basePart) + queryPart;
+    }
+  }
+  let mapPath;
+  let priorSourceMapsState;
+  if (opts.sourceMap && !process.isBun) {
+    try {
+      mapPath = makeSourceMapTempPath(compileFilename);
+      _nodeFs().default.writeFileSync(mapPath, opts.sourceMap);
+    } catch (error) {
+      mapPath = undefined;
+      // If we fail to write the source map, we can still continue without it, but log a warning since it's likely a misconfiguration
+      console.warn(`Warning: Failed to write source map for ${filename} to ${mapPath}. Source maps will be unavailable for this module.\n${error?.message || error}`);
+    }
+    if (mapPath) {
+      inputCode = stripSourceMappingURL(code);
+      // NOTE(@kitten): This needs to be a plain absolute path because Node rejects file: URLs
+      // On Windows, it additionally needs to be a URL.pathname-like format (POSIX with a leading slash)
+      if (_nodePath().default.sep !== '/') {
+        mapPath = `/${mapPath.replaceAll(_nodePath().default.sep, '/')}`;
+      }
+      inputCode += `\n//# sourceMappingURL=${mapPath}`;
+      priorSourceMapsState = getSourceMapsState();
+      (0, _stacktrace().installSourceMapStackTrace)();
+      setSourceMapsState({
+        enabled: true,
+        nodeModules: true
+      });
+    }
+  }
+  const mod = Object.assign(new (nodeModule().Module)(compileFilename, parent), {
+    filename: compileFilename,
+    paths
+  });
+  const childIdx = parent?.children?.indexOf(mod) ?? -1;
+  if (childIdx >= 0) {
+    parent.children.splice(childIdx, 1);
+  }
   try {
-    const mod = Object.assign(new (nodeModule().Module)(filename, parent), {
-      filename,
-      paths
-    });
-    mod._compile(code, filename, format != null ? format : undefined);
+    mod._compile(inputCode, compileFilename, format != null ? format : undefined);
     mod.loaded = true;
-    require.cache[filename] = mod;
-    parent?.children?.splice(parent.children.indexOf(mod), 1);
+    if (shouldCache) {
+      require.cache[compileFilename] = mod;
+      if (compileFilename !== filename) {
+        require.cache[filename] = mod;
+      }
+    }
     return mod;
   } catch (error) {
-    delete require.cache[filename];
+    if (shouldCache) {
+      delete require.cache[compileFilename];
+      if (compileFilename !== filename) {
+        delete require.cache[filename];
+      }
+    }
     throw error;
+  } finally {
+    if (mapPath) {
+      // Restore, so subsequent requires of node_modules won't have their source-maps read
+      setSourceMapsState(priorSourceMapsState ?? {
+        enabled: false
+      });
+      // Node parses source maps eagerly during _compile, so the file can be removed now.
+      try {
+        _nodeFs().default.unlinkSync(mapPath);
+      } catch {
+        /* noop */
+      }
+    }
   }
 }
 const hasStripTypeScriptTypes = typeof nodeModule().stripTypeScriptTypes === 'function';
 function evalModule(code, filename, opts = {}, format = toFormat(filename, true)) {
+  const shouldCache = opts.cache ?? true;
   let inputCode = code;
   let inputFilename = filename;
   let diagnostic;
@@ -177,7 +308,7 @@ function evalModule(code, filename, opts = {}, format = toFormat(filename, true)
   }
   try {
     const mod = compileModule(inputCode, inputFilename, opts);
-    if (inputFilename !== filename) {
+    if (shouldCache && inputFilename !== filename) {
       require.cache[filename] = mod;
     }
     return mod.exports;

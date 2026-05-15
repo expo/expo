@@ -36,12 +36,12 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("File.create function does not work with SAF content:// uris, use `Directory.createFile` instead")
+    }
     validateType()
     validatePermission(FilePermissionService.Permission.WRITE)
     validateCanCreate(options)
-    if (uri.isContentUri) {
-      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
-    }
     if (options.overwrite && exists) {
       javaFile.delete()
     }
@@ -147,11 +147,17 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
   @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
+    val bufferSize = 65536
+
     validatePermission(FilePermissionService.Permission.READ)
     val md = MessageDigest.getInstance("MD5")
-    file.inputStream().use {
-      val digest = md.digest(it.readBytes())
-      return digest.toHexString()
+    file.inputStream().use { stream ->
+      val buffer = ByteArray(bufferSize)
+      var bytesRead: Int
+      while (stream.read(buffer).also { bytesRead = it } != -1) {
+        md.update(buffer, 0, bytesRead)
+      }
+      return md.digest().toHexString()
     }
   }
 

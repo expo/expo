@@ -1,14 +1,20 @@
-import type { NativeStackHeaderItemCustom } from '@react-navigation/native-stack';
 import type { ReactNode } from 'react';
+import type { NativeStackHeaderItemCustom } from '../../../../react-navigation/native-stack';
 export interface StackToolbarViewProps {
     /**
      * Can be any React node.
+     *
+     * @platform android
+     * @platform ios
      */
     children?: NativeStackHeaderItemCustom['element'];
     /**
      * Whether the view should be hidden.
      *
      * @default false
+     *
+     * @platform android
+     * @platform ios
      */
     hidden?: boolean;
     /**
@@ -25,6 +31,7 @@ export interface StackToolbarViewProps {
      * Only available in bottom placement.
      *
      * @default false
+     * @platform ios
      */
     separateBackground?: boolean;
 }

@@ -1,4 +1,4 @@
-/* eslint-disable no-console */
+/* oxlint-disable no-console */
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
 

@@ -18,5 +18,5 @@ export interface LinkAppleZoomProps extends PropsWithChildren {
  *
  * @platform ios 18+
  */
-export declare function LinkAppleZoom(props: LinkAppleZoomProps): import("react").JSX.Element;
+export declare function LinkAppleZoom(props: LinkAppleZoomProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=link-apple-zoom.d.ts.map

@@ -24,8 +24,6 @@ export default (program: Command) => {
 async function main() {
   const nightlyVersion = await queryNpmDistTagVersionAsync('react-native', 'nightly');
 
-  await removePostinstallPatchAsync();
-
   logger.info('Adding bare-expo optional packages:');
   await addBareExpoOptionalPackagesAsync();
 
@@ -50,7 +48,7 @@ async function main() {
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
-  logger.info('Yarning...');
+  logger.info('Installing...');
   await workspaceInstallAsync();
 
   const patches = [
@@ -75,17 +73,6 @@ async function main() {
 
   logger.info('Setting up project files for bare-expo.');
   await updateBareExpoAsync(nightlyVersion);
-}
-
-async function removePostinstallPatchAsync() {
-  const packageJsonPath = path.join(EXPO_DIR, 'package.json');
-  const packageJson = await JsonFile.readAsync(packageJsonPath);
-  packageJson.scripts = {
-    ...((packageJson.scripts as Record<string, string> | undefined) ?? {}),
-    postinstall:
-      'yarn-deduplicate && yarn workspace @expo/cli prepare && node ./tools/bin/expotools.js validate-workspace-dependencies',
-  };
-  await JsonFile.writeAsync(packageJsonPath, packageJson);
 }
 
 /**
@@ -113,7 +100,7 @@ async function addBareExpoOptionalPackagesAsync() {
     logger.log('  ', pkg);
   }
 
-  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
+  await spawnAsync('pnpm', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {

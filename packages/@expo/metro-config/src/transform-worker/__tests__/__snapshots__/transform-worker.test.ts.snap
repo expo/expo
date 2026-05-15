@@ -3,20 +3,20 @@
 exports[`CSS Modules web transforms for dev, minified 1`] = `
 {
   "input": "module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}},{});
-(() => {
+(function () {
 if (typeof window === 'undefined') {
-  return
+  return;
 }
-const head = document.head || document.getElementsByTagName('head')[0];
-const style = document.createElement('style');
+var head = document.head || document.getElementsByTagName('head')[0];
+var style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "acme_module_css");
-  const previousStyle = document.querySelector('[data-expo-css-hmr="acme_module_css"]');
+  var previousStyle = document.querySelector('[data-expo-css-hmr="acme_module_css"]');
   if (previousStyle) {
     previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
 if (!style.parentNode) head.appendChild(style);
-const css = \`._R_BGG_container{background:red}\`;
+var css = "._R_BGG_container{background:red}";
 if (style.styleSheet){
   style.styleSheet.cssText = css;
 } else {
@@ -49,23 +49,20 @@ if (module.hot) module.hot.accept();
 exports[`CSS Modules web transforms for dev, not minified 1`] = `
 {
   "input": "module.exports=Object.assign({"container":"_R_BGG_container"},{unstable_styles:{"container":{"$$css":true,"_":"_R_BGG_container"}}},{});
-(() => {
+(function () {
 if (typeof window === 'undefined') {
-  return
+  return;
 }
-const head = document.head || document.getElementsByTagName('head')[0];
-const style = document.createElement('style');
+var head = document.head || document.getElementsByTagName('head')[0];
+var style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "acme_module_css");
-  const previousStyle = document.querySelector('[data-expo-css-hmr="acme_module_css"]');
+  var previousStyle = document.querySelector('[data-expo-css-hmr="acme_module_css"]');
   if (previousStyle) {
     previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
 if (!style.parentNode) head.appendChild(style);
-const css = \`._R_BGG_container {
-  background: red;
-}
-\`;
+var css = "._R_BGG_container {\\n  background: red;\\n}\\n";
 if (style.styleSheet){
   style.styleSheet.cssText = css;
 } else {
@@ -104,23 +101,20 @@ exports[`CSS Modules web transforms for prod, not minified 1`] = `"module.export
 
 exports[`transforms a global CSS file in dev for web 1`] = `
 {
-  "input": "(() => {
+  "input": "(function () {
 if (typeof window === 'undefined') {
-  return
+  return;
 }
-const head = document.head || document.getElementsByTagName('head')[0];
-const style = document.createElement('style');
+var head = document.head || document.getElementsByTagName('head')[0];
+var style = document.createElement('style');
 style.setAttribute('data-expo-css-hmr', "acme_css");
-  const previousStyle = document.querySelector('[data-expo-css-hmr="acme_css"]');
+  var previousStyle = document.querySelector('[data-expo-css-hmr="acme_css"]');
   if (previousStyle) {
     previousStyle.parentNode.replaceChild(style, previousStyle);
   }
 style.setAttribute('data-expo-loader', 'css');
 if (!style.parentNode) head.appendChild(style);
-const css = \`body {
-  background: red;
-}
-\`;
+var css = "body {\\n  background: red;\\n}\\n";
 if (style.styleSheet){
   style.styleSheet.cssText = css;
 } else {

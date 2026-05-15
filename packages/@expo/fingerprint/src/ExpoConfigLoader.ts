@@ -12,7 +12,7 @@ import { DEFAULT_IGNORE_PATHS } from './Options';
 import { isIgnoredPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
-  if (args.length < 1) {
+  if (args[0] == null) {
     console.log(`Usage: ${programName} <projectRoot> [ignoredFile]`);
     return;
   }
@@ -51,8 +51,9 @@ async function runAsync(programName: string, args: string[] = []) {
 if (require.main?.filename === __filename) {
   (async () => {
     const programIndex = process.argv.findIndex((arg) => arg === __filename);
+    const programName = process.argv[programIndex] ?? __filename;
     try {
-      await runAsync(process.argv[programIndex], process.argv.slice(programIndex + 1));
+      await runAsync(programName, process.argv.slice(programIndex + 1));
     } catch (e) {
       console.error('Uncaught Error', e);
       process.exit(1);

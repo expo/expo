@@ -9,14 +9,14 @@ import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 class ListTypeConverter(
   converterProvider: TypeConverterProvider,
-  private val listType: KType
+  private val listType: TypeDescriptor
 ) : DynamicAwareTypeConverters<List<*>>() {
   private val elementConverter = converterProvider.obtainTypeConverter(
-    requireNotNull(listType.arguments.first().type) {
+    requireNotNull(listType.params.first()) {
       "The list type should contain the type of elements."
     }
   )
@@ -27,7 +27,7 @@ class ListTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(
             listType,
-            listType.arguments.first().type!!,
+            listType.params.first(),
             value::class,
             cause
           )
@@ -49,7 +49,7 @@ class ListTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(
             listType,
-            listType.arguments.first().type!!,
+            listType.params.first(),
             it!!::class,
             cause
           )
@@ -66,7 +66,7 @@ class ListTypeConverter(
         exceptionDecorator({ cause ->
           CollectionElementCastException(
             listType,
-            listType.arguments.first().type!!,
+            listType.params.first(),
             type,
             cause
           )

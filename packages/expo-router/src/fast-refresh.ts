@@ -1,3 +1,4 @@
+declare const global: any;
 declare let __METRO_GLOBAL_PREFIX__: string;
 
 /**
@@ -53,6 +54,9 @@ if (process.env.NODE_ENV === 'development') {
             }
             if ('ErrorBoundary' in value) {
               expoRouterExports.add(value.ErrorBoundary);
+            }
+            if ('SuspenseFallback' in value) {
+              expoRouterExports.add(value.SuspenseFallback);
             }
             if ('generateStaticParams' in value) {
               expoRouterExports.add(value.generateStaticParams);

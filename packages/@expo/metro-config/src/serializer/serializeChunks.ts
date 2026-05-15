@@ -21,8 +21,9 @@ import { stringToUUID } from './debugId';
 import { getExportPathForDependencyWithOptions } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
-import { SerialAsset } from './serializerAssets';
-import { SerializerConfigOptions } from './withExpoSerializers';
+import type { SerialAsset } from './serializerAssets';
+import { appendDebugIdToSourceMap, sourceMapString } from './sourceMap';
+import type { SerializerConfigOptions } from './withExpoSerializers';
 import getMetroAssets from '../transform-worker/getAssets';
 import { toPosixPath } from '../utils/filePath';
 
@@ -33,16 +34,6 @@ function getBuildHermesBundleAsync() {
     _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
   }
   return _buildHermesBundleAsync;
-}
-
-// Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
-let _sourceMapString: typeof import('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-function getSourceMapString() {
-  if (!_sourceMapString) {
-    _sourceMapString =
-      require('@expo/metro/metro/DeltaBundler/Serializers/sourceMapString').sourceMapString;
-  }
-  return _sourceMapString;
 }
 
 let _baseJSBundleWithDependencies: typeof import('./fork/baseJSBundle').baseJSBundleWithDependencies;
@@ -424,20 +415,13 @@ export class Chunk {
 
     const assets: SerialAsset[] = [jsAsset];
 
-    const mutateSourceMapWithDebugId = (sourceMap: string) => {
-      // TODO: Upstream this so we don't have to parse the source map back and forth.
-      if (!debugId) {
-        return sourceMap;
-      }
-      // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
-      // we don't need to disambiguate between multiple source maps.
-      const sourceMapObject = JSON.parse(sourceMap);
-      sourceMapObject.debugId = debugId;
-      // NOTE: Sentry does this, but bun does not.
-      // sourceMapObject.debug_id = debugId;
-      return JSON.stringify(sourceMapObject);
-    };
-
+    // debugId is passed into `sourceMapString` so the bundler-map path
+    // emits it inline rather than a JSON.parse + JSON.stringify
+    // roundtrip; the Hermes branch below has to splice into a finished
+    // JSON string because `buildHermesBundleAsync` is opaque.
+    // NOTE: skipped for inline source maps since they don't need
+    // disambiguation. We only emit `debugId` (Sentry also reads
+    // `debug_id`, but bun doesn't).
     if (
       // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
       includeSourceMaps &&
@@ -466,13 +450,13 @@ export class Chunk {
         return module;
       });
 
-      // TODO: We may not need to mutate the original source map with a `debugId` when hermes is enabled since we'll have different source maps.
-      const sourceMap = mutateSourceMapWithDebugId(
-        getSourceMapString()(modules, {
-          excludeSource: false,
-          ...this.options,
-        })
-      );
+      // TODO: We may not need to set `debugId` on the bundler sourcemap when
+      // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
+      const sourceMap = sourceMapString(modules, {
+        excludeSource: false,
+        ...this.options,
+        debugId,
+      });
 
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
@@ -528,7 +512,9 @@ export class Chunk {
         }
       }
       if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
+        assets[1].source = debugId
+          ? appendDebugIdToSourceMap(hermesBundleOutput.sourcemap, debugId)
+          : hermesBundleOutput.sourcemap;
         assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
       }
     }
@@ -588,8 +574,10 @@ function collectOutputReferences(modules: Iterable<Module>, key: string): string
       [...modules]
         .map((module) => {
           return module.output.map((output) => {
-            if (key in output.data && typeof output.data[key] === 'string') {
-              return output.data[key];
+            // TODO: This is a mess. This needs to be properly typed
+            const data = output.data as any;
+            if (key in data && typeof data[key] === 'string') {
+              return data[key];
             }
             return undefined;
           });
@@ -618,7 +606,7 @@ function gatherChunks(
   settings: ChunkSettings,
   preModules: readonly Module[],
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>,
+  options: SerializerOptions,
   isAsync: boolean = false,
   isEntry: boolean = false
 ): Set<Chunk> {
@@ -716,7 +704,7 @@ function removeEntryDepsFromAsyncChunks(entryChunk: Chunk, chunks: Set<Chunk>): 
 function extractCommonChunk(
   chunks: Set<Chunk>,
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>
+  options: SerializerOptions
 ): Chunk | undefined {
   const toCompare = [...chunks.values()];
 
@@ -777,7 +765,7 @@ function createRuntimeChunk(
   entryChunk: Chunk,
   chunks: Set<Chunk>,
   graph: ReadOnlyGraph,
-  options: SerializerOptions<MixedOutput>
+  options: SerializerOptions
 ): void {
   const runtimeChunk = new Chunk('/__expo-metro-runtime.js', [], graph, options, false, true);
 

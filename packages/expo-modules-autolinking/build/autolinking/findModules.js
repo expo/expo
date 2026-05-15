@@ -9,11 +9,17 @@ async function resolveExpoModule(resolution, platform, excludeNames) {
     if (excludeNames.has(resolution.name)) {
         return null;
     }
-    const expoModuleConfig = await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(resolution.path);
+    // Workaround for Android Gradle/Prefab issue with special characters in paths.
+    // pnpm creates virtual store paths with '=' characters (e.g., _patch_hash=abc123),
+    // which cause build failures on Android due to Prefab not properly escaping them.
+    // See: https://github.com/google/prefab/issues/187
+    const shouldUseOriginPath = platform === 'android' && resolution.path.includes('=') && resolution.path.includes('.pnpm');
+    const modulePath = shouldUseOriginPath ? resolution.originPath : resolution.path;
+    const expoModuleConfig = await (0, ExpoModuleConfig_1.discoverExpoModuleConfigAsync)(modulePath);
     if (expoModuleConfig && expoModuleConfig.supportsPlatform(platform)) {
         return {
             name: resolution.name,
-            path: resolution.path,
+            path: modulePath,
             version: resolution.version,
             config: expoModuleConfig,
             duplicates: resolution.duplicates?.map((duplicate) => ({

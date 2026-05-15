@@ -1,16 +1,22 @@
 import { requireNativeView } from 'expo';
-import { Ref } from 'react';
+import type { Ref } from 'react';
 
-import { type ViewEvent } from '../../types';
-import { TextFieldKeyboardType } from '../TextField';
+import { worklets } from '../../State/optionalWorklets';
+import type { ObservableState } from '../../State/useNativeState';
+import { useWorkletProp } from '../../State/useWorkletProp';
+import { getStateId } from '../../State/utils';
+import type { ViewEvent } from '../../types';
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
- * Can be used for imperatively setting text on the SecureField component.
+ * Can be used for imperatively setting text and focus on the `SecureField` component.
  */
 export type SecureFieldRef = {
   setText: (newText: string) => Promise<void>;
+  /** Clear the current text. */
+  clear: () => Promise<void>;
   focus: () => Promise<void>;
   blur: () => Promise<void>;
 };
@@ -18,67 +24,77 @@ export type SecureFieldRef = {
 export type SecureFieldProps = {
   ref?: Ref<SecureFieldRef>;
   /**
-   * Initial value that the SecureField displays when being mounted. As the SecureField is an uncontrolled component, change the key prop if you need to change the text value.
+   * An observable state that holds the current text.
+   * Create one with `useNativeState('')` or `useNativeState('initial value')`.
+   * If omitted, the field manages its own internal state.
    */
-  defaultValue?: string;
+  text?: ObservableState<string>;
+  /** Maximum number of characters allowed. Truncates natively as the user types. */
+  maxLength?: number;
+  /** If true, the secure field will be focused automatically when mounted. @default false */
+  autoFocus?: boolean;
   /**
    * A text that is displayed when the field is empty.
    */
   placeholder?: string;
   /**
-   * A callback triggered when user types in text into the SecureField.
+   * A callback triggered when the text value changes.
+   *
+   * If the callback is marked with the `'worklet'` directive, it runs synchronously
+   * on the UI thread; otherwise it is delivered asynchronously as a regular JS event.
    */
-  onChangeText?: (value: string) => void;
+  onTextChange?: (text: string) => void;
   /**
-   * A callback triggered when user submits the TextField by pressing the return key.
+   * A callback triggered when the field gains or loses focus.
    */
-  onSubmit?: (value: string) => void;
+  onFocusChange?: (focused: boolean) => void;
   /**
-   * A callback triggered when user focuses or blurs the SecureField.
+   * Slot children - supports `<SecureField.Placeholder>` with a `<Text>` child
    */
-  onChangeFocus?: (focused: boolean) => void;
-  keyboardType?: TextFieldKeyboardType;
-  /**
-   * If true, the text input will be focused automatically when the component is mounted.
-   * @default false
-   */
-  autoFocus?: boolean;
+  children?: React.ReactNode;
 } & CommonViewModifierProps;
 
-type NativeSecureFieldProps = Omit<SecureFieldProps, 'onChangeText' | 'onSubmit'> & {} & ViewEvent<
-    'onValueChanged',
-    { value: string }
-  > &
-  ViewEvent<'onFocusChanged', { value: boolean }> &
-  ViewEvent<'onSubmit', { value: string }>;
+export type NativeSecureFieldProps = Omit<
+  SecureFieldProps,
+  'text' | 'onTextChange' | 'onFocusChange'
+> &
+  ViewEvent<'onTextChange', { value: string }> &
+  ViewEvent<'onFocusChange', { value: boolean }> & {
+    text?: number | null;
+    onTextChangeSync?: number | null;
+  };
 
-// We have to work around the `role` and `onPress` props being reserved by React Native.
 const SecureFieldNativeView: React.ComponentType<NativeSecureFieldProps> = requireNativeView(
   'ExpoUI',
   'SecureFieldView'
 );
 
-function transformSecureFieldProps(props: SecureFieldProps): NativeSecureFieldProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-    onValueChanged: (event) => {
-      props.onChangeText?.(event.nativeEvent.value);
-    },
-    onFocusChanged: (event) => {
-      props.onChangeFocus?.(event.nativeEvent.value);
-    },
-    onSubmit: (event) => {
-      props.onSubmit?.(event.nativeEvent.value);
-    },
-  };
+function Placeholder({ children }: { children: React.ReactNode }) {
+  return <Slot name="placeholder">{children}</Slot>;
 }
 
 /**
- * Renders a `SecureField` component. Should mostly be used for embedding text inputs inside of SwiftUI lists and sections. Is an uncontrolled component.
+ * Renders a SwiftUI `SecureField` for password input.
  */
 export function SecureField(props: SecureFieldProps) {
-  return <SecureFieldNativeView {...transformSecureFieldProps(props)} />;
+  const { text, onTextChange, onFocusChange, modifiers, ...restProps } = props;
+
+  const isWorklet = !!onTextChange && !!worklets?.isWorkletFunction?.(onTextChange);
+  const workletCallback = useWorkletProp(isWorklet ? onTextChange : undefined, 'onTextChange');
+
+  return (
+    <SecureFieldNativeView
+      {...restProps}
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      text={getStateId(text)}
+      onTextChangeSync={getStateId(workletCallback)}
+      onTextChange={
+        !isWorklet && onTextChange ? (event) => onTextChange(event.nativeEvent.value) : undefined
+      }
+      onFocusChange={onFocusChange ? (event) => onFocusChange(event.nativeEvent.value) : undefined}
+    />
+  );
 }
+
+SecureField.Placeholder = Placeholder;

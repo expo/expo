@@ -48,7 +48,7 @@ function createHalfblockOutput(data: Uint8Array): string {
   for (let row = 0; row < extent; row += 2) {
     output += '\n' + CHAR_00;
     for (let col = 0; col < extent; col++) {
-      const value = (data[row * extent + col] << 1) | data[(row + 1) * extent + col];
+      const value = (data[row * extent + col]! << 1) | data[(row + 1) * extent + col]!;
       switch (value) {
         case 0b00:
           output += CHAR_00;
@@ -112,7 +112,7 @@ function createSextantOutput(data: Uint8Array): string {
             if (r === 0 || c === 0 || r === padded - 1 || c === padded - 1) {
               cell = 0; // border is filled
             } else if (r <= extent && c <= extent) {
-              cell = data[(r - 1) * extent + (c - 1)];
+              cell = data[(r - 1) * extent + (c - 1)]!;
             }
           }
           p |= (cell & 1) << bit;

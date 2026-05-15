@@ -2,12 +2,12 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getNavigationConfig = getNavigationConfig;
 exports.getLinkingConfig = getLinkingConfig;
-const native_1 = require("@react-navigation/native");
 const expo_modules_core_1 = require("expo-modules-core");
 const constants_1 = require("./constants");
 const getReactNavigationConfig_1 = require("./getReactNavigationConfig");
 const getRoutesRedirects_1 = require("./getRoutesRedirects");
 const linking_1 = require("./link/linking");
+const native_1 = require("./react-navigation/native");
 function getNavigationConfig(routes, metaOnly, { sitemap, notFound }) {
     const config = (0, getReactNavigationConfig_1.getReactNavigationConfig)(routes, metaOnly);
     const sitemapRoute = (() => {

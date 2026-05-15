@@ -1,8 +1,8 @@
 'use client';
-import type { NativeStackHeaderItemSpacing } from '@react-navigation/native-stack';
 
 import { NativeToolbarSpacer } from './native';
 import type { StackToolbarSpacerProps } from './types';
+import type { NativeStackHeaderItemSpacing } from '../../../../react-navigation/native-stack';
 import { useToolbarPlacement } from '../context';
 
 export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types';
@@ -12,6 +12,8 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  *
  * In left/right placements, width is required.
  * In bottom placement, if width is not provided, creates a flexible spacer that expands to fill space.
+ *
+ * > **Note:** Flexible spacers are iOS-only. On Android, `width` is a required property
  *
  * @example
  * ```tsx
@@ -49,12 +51,13 @@ export type { StackToolbarSpacerProps, NativeToolbarSpacerProps } from './types'
  * }
  * ```
  *
+ * @platform android
  * @platform ios
  */
 export const StackToolbarSpacer: React.FC<StackToolbarSpacerProps> = (props) => {
   const placement = useToolbarPlacement();
 
-  if (placement !== 'bottom') {
+  if ((process.env.EXPO_OS === 'ios' && placement !== 'bottom') || placement == null) {
     throw new Error('Stack.Toolbar.Spacer must be used inside a Stack.Toolbar');
   }
 

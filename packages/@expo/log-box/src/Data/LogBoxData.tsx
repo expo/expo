@@ -270,7 +270,7 @@ export function setSelectedLog(proposedNewIndex: number): void {
   let index = logArray.length - 1;
   while (index >= 0) {
     // The latest syntax error is selected and displayed before all other logs.
-    if (logArray[index].level === 'syntax' || logArray[index].level === 'resolution') {
+    if (logArray[index]?.level === 'syntax' || logArray[index]?.level === 'resolution') {
       newIndex = index;
       break;
     }

@@ -3,7 +3,7 @@ import * as React from 'react';
 
 import * as Utils from './WebCameraUtils';
 import { FacingModeToCameraType } from './WebConstants';
-import {
+import type {
   CameraReadyListener,
   CameraType,
   MountErrorListener,
@@ -63,7 +63,7 @@ export function useWebCameraStream(
   const [stream, setStream] = React.useState<MediaStream | null>(null);
 
   const mediaTrackSettings = React.useMemo(() => {
-    return stream ? stream.getTracks()[0].getSettings() : null;
+    return stream?.getTracks()[0]?.getSettings() ?? null;
   }, [stream]);
 
   // The actual camera type - this can be different from the incoming camera type.
@@ -73,7 +73,7 @@ export function useWebCameraStream(
     }
     // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
     const { facingMode = 'user' } = mediaTrackSettings;
-    return FacingModeToCameraType[facingMode];
+    return FacingModeToCameraType[facingMode] ?? null;
   }, [mediaTrackSettings]);
 
   const getStreamDeviceAsync = React.useCallback(async (): Promise<MediaStream | null> => {

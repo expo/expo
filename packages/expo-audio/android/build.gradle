@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'expo.modules.audio'
-version = '55.0.8'
+version = '56.0.6'
 
 android {
   namespace "expo.modules.audio"
   defaultConfig {
     versionCode 1
-    versionName "55.0.8"
+    versionName "56.0.6"
   }
 
   compileOptions {
@@ -26,7 +26,7 @@ dependencies {
   implementation 'androidx.appcompat:appcompat:1.7.1'
   implementation 'androidx.core:core-ktx:1.15.0'
 
-  def androidxMedia3Version = "1.8.0"
+  def androidxMedia3Version = "1.9.0"
   implementation "androidx.media3:media3-session:$androidxMedia3Version"
   implementation "androidx.media3:media3-ui:$androidxMedia3Version"
   implementation "androidx.media3:media3-exoplayer:$androidxMedia3Version"

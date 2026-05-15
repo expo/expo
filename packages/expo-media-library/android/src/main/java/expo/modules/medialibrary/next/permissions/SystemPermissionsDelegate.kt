@@ -43,6 +43,14 @@ class SystemPermissionsDelegate(private val appContext: AppContext) {
     )
   }
 
+  fun presentPermissionsPicker(permissions: List<GranularPermission>?, promise: Promise) {
+    if (Build.VERSION.SDK_INT < 34) {
+      throw PermissionException("presentPermissionsPicker is only available on Android 14+")
+    }
+    val pickerPermissions = permissions ?: listOf(GranularPermission.PHOTO, GranularPermission.VIDEO)
+    requestPermissions(writeOnly = false, permissions = pickerPermissions, promise = promise)
+  }
+
   fun requireReadPermissions() {
     val granted = appContext.permissions?.hasGrantedPermissions(READ_EXTERNAL_STORAGE)
     if (granted != true) {

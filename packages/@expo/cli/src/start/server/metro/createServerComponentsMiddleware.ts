@@ -169,14 +169,14 @@ export function createServerComponentsMiddleware(
 
       const reactClientReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+        ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
 
       if (reactClientReferences) {
         nestedClientBoundaries.push(...reactClientReferences!);
       }
       const reactServerReferences = contents.artifacts
         .filter((a) => a.type === 'js')[0]
-        .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+        ?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
 
       if (reactServerReferences) {
         nestedServerBoundaries.push(...reactServerReferences!);
@@ -264,7 +264,7 @@ export function createServerComponentsMiddleware(
 
     const reactServerReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
-      .metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
+      ?.metadata.reactServerReferences?.map((ref) => fileURLToFilePath(ref));
 
     if (!reactServerReferences) {
       throw new Error(
@@ -275,7 +275,7 @@ export function createServerComponentsMiddleware(
 
     const reactClientReferences = contents.artifacts
       .filter((a) => a.type === 'js')[0]
-      .metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
+      ?.metadata.reactClientReferences?.map((ref) => fileURLToFilePath(ref));
 
     if (!reactClientReferences) {
       throw new Error(

@@ -24,24 +24,12 @@ test.describe('router-e2e with spaces', () => {
       // NOTE(@kitten): This space is reflected in the project root:
       'with spaces',
       'with-router',
-      // We're installing the @expo/cli from our workspace source into the newly
-      // created project. This is required to be able to execute the SSR bundle
-      // outside the Expo monorepo module
       {
-        // TODO(@hassankhan, @krystofwoldrich, @HubertBer): remove linked packages after publishing
-        linkExpoPackages: [
-          '@expo/inline-modules',
-          '@expo/router-server',
-          'expo-router',
-          '@expo/log-box',
-        ],
-        linkExpoPackagesDev: ['@expo/cli', 'expo-server', '@expo/require-utils'],
+        linkExpoPackages: ['expo-router' ],
       }
     );
 
     expoStart = createExpoStart({
-      // Use linked version of @expo/cli via `bun expo-internal`:
-      command: (port) => ['bun', 'expo-internal', 'start', `--port=${port}`],
       cwd: projectRoot,
       env: {
         NODE_ENV: 'development',

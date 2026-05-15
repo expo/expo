@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+import ExpoModulesJSI
 
 internal struct DynamicWorkletType: AnyDynamicType {
   let serializableDynamicType = DynamicSerializableType(innerType: Worklet.self)

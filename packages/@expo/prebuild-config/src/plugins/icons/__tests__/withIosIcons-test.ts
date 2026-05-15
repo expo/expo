@@ -1,6 +1,6 @@
 import { WarningAggregator } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-import * as fs from 'fs';
+import type { ExpoConfig } from '@expo/config-types';
+import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
@@ -198,11 +198,6 @@ describe('e2e: iOS icons with fallback image', () => {
       value.startsWith('ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon')
     );
 
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(1);
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
-      'icon',
-      'No icon is defined in the Expo config.'
-    );
     expect(icons.length).toBe(1);
 
     // Test the Contents.json file

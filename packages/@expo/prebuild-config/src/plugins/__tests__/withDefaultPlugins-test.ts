@@ -1,7 +1,7 @@
+import type { ExportedConfig } from '@expo/config-plugins';
 import {
   compileModsAsync,
   evalModsAsync,
-  ExportedConfig,
   IOSConfig,
   withGradleProperties,
   XML,
@@ -48,9 +48,6 @@ function getLargeConfig(): ExportedConfig {
     // privacy?: 'public' | 'unlisted' | 'hidden';
     // sdkVersion?: string;
     runtimeVersion: '1.0',
-    splash: {
-      backgroundColor: '#ff00ff',
-    },
     version: '1.0.0',
     platforms: ['android', 'ios', 'web'],
     githubUrl: 'https://github.com/expo/expo',
@@ -59,18 +56,6 @@ function getLargeConfig(): ExportedConfig {
     backgroundColor: 'orange',
     primaryColor: '#fff000',
     // icon: './icons/icon.png',
-    androidStatusBar: {
-      barStyle: 'light-content',
-      backgroundColor: '#000FFF',
-      hidden: false,
-      translucent: true,
-    },
-    androidNavigationBar: {
-      visible: 'sticky-immersive',
-      barStyle: 'dark-content',
-
-      backgroundColor: '#ff0000',
-    },
     developmentClient: {
       silentLaunch: true,
     },
@@ -96,6 +81,7 @@ function getLargeConfig(): ExportedConfig {
     ios: {
       bundleIdentifier: 'com.bacon.tester.expoapp',
       buildNumber: '6.5.0',
+      deploymentTarget: '15.1',
       backgroundColor: '#ff0000',
       appStoreUrl: 'https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8',
       config: {
@@ -125,12 +111,6 @@ function getLargeConfig(): ExportedConfig {
       adaptiveIcon: {
         foregroundImage: './icons/foreground.png',
         backgroundImage: './icons/background.png',
-      },
-      splash: {
-        backgroundColor: '#ff00ff',
-        dark: {
-          backgroundColor: '#00ffff',
-        },
       },
       blockedPermissions: [
         'android.permission.RECORD_AUDIO',
@@ -340,7 +320,6 @@ describe('built-in plugins', () => {
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
         'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png',
         'ios/HelloWorld/Images.xcassets/Contents.json',
-        'ios/HelloWorld/Images.xcassets/SplashScreenBackground.colorset/Contents.json',
         'ios/HelloWorld/Info.plist',
         'ios/HelloWorld/SplashScreen.storyboard',
         'ios/HelloWorld/Supporting/Expo.plist',
@@ -381,7 +360,6 @@ describe('built-in plugins', () => {
         'android/app/src/main/res/values/colors.xml',
         'android/app/src/main/res/values/strings.xml',
         'android/app/src/main/res/values/styles.xml',
-        'android/app/src/main/res/values-night/colors.xml',
         'android/app/google-services.json',
         'android/build.gradle',
         'android/gitignore',
@@ -510,7 +488,6 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/HelloWorld-Bridging-Header.h',
       'ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json',
       'ios/HelloWorld/Images.xcassets/Contents.json',
-      'ios/HelloWorld/Images.xcassets/SplashScreenLegacy.imageset/Contents.json',
       'ios/HelloWorld/Info.plist',
       'ios/HelloWorld/SplashScreen.storyboard',
       'ios/HelloWorld/Supporting/Expo.plist',
@@ -659,21 +636,6 @@ describe('built-in plugins', () => {
       'config/google-services.json',
       'locales/en-US.json',
     ]);
-  });
-
-  it('create Podfile.properties.json file for backward compatible', async () => {
-    const { '/app/ios/Podfile.properties.json': _, ...volWithoutPodfileProperties } = vol.toJSON();
-    vol.reset();
-    vol.fromJSON(volWithoutPodfileProperties);
-
-    let config = getPrebuildConfig();
-    // change jsEngine to hermes
-    config.jsEngine = 'hermes';
-
-    config = await compileModsAsync(config, { projectRoot: '/app' });
-
-    const result = await JsonFile.readAsync('/app/ios/Podfile.properties.json');
-    expect(result).toMatchObject({ 'expo.jsEngine': 'hermes' });
   });
 });
 

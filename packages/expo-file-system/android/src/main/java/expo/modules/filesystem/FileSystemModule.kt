@@ -4,10 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.util.Base64
-import android.webkit.URLUtil
 import androidx.annotation.RequiresApi
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
-import expo.modules.kotlin.devtools.await
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -15,19 +13,21 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import kotlinx.coroutines.runBlocking
 import java.io.File
-import java.io.FileOutputStream
 import java.net.URI
 
 class FileSystemModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.AppContextLost()
 
+  private val downloadStore = DownloadTaskStore()
+
   @RequiresApi(Build.VERSION_CODES.O)
   override fun definition() = ModuleDefinition {
     Name("FileSystem")
+
+    Events("downloadProgress")
 
     Constant("documentDirectory") {
       Uri.fromFile(context.filesDir).toString() + "/"
@@ -49,43 +49,23 @@ class FileSystemModule : Module() {
       File(context.filesDir.path).freeSpace
     }
 
-    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions? ->
-      to.validatePermission(FilePermissionService.Permission.WRITE)
-      val requestBuilder = Request.Builder().url(url.toURL())
-
-      options?.headers?.forEach { (key, value) ->
-        requestBuilder.addHeader(key, value)
+    AsyncFunction("downloadFileAsync") Coroutine { url: URI, to: FileSystemPath, options: DownloadOptions?, downloadUUID: String? ->
+      downloadFileWithStore(url, to, options, downloadUUID, downloadStore) { uuid, bytesWritten, totalBytes ->
+        sendEvent(
+          "downloadProgress",
+          mapOf(
+            "uuid" to uuid,
+            "data" to mapOf(
+              "bytesWritten" to bytesWritten,
+              "totalBytes" to totalBytes
+            )
+          )
+        )
       }
+    }
 
-      val request = requestBuilder.build()
-      val client = OkHttpClient()
-      val response = request.await(client)
-
-      if (!response.isSuccessful) {
-        throw UnableToDownloadException("response has status: ${response.code}")
-      }
-
-      val contentDisposition = response.headers["content-disposition"]
-      val contentType = response.headers["content-type"]
-      val fileName = URLUtil.guessFileName(url.toString(), contentDisposition, contentType)
-
-      val destination = if (to is FileSystemDirectory) {
-        File(to.javaFile, fileName)
-      } else {
-        to.javaFile
-      }
-
-      if (options?.idempotent != true && destination.exists()) {
-        throw DestinationAlreadyExistsException()
-      }
-
-      val body = response.body ?: throw UnableToDownloadException("response body is null")
-      body.byteStream().use { input ->
-        FileOutputStream(destination).use { output ->
-          input.copyTo(output)
-        }
-      }
-      return@Coroutine destination.toURI()
+    Function("cancelDownloadAsync") { downloadUuid: String ->
+      downloadStore.cancel(downloadUuid)
     }
 
     lateinit var filePickerLauncher: AppContextActivityResultLauncher<FilePickerContractOptions, FilePickerContractResult>
@@ -214,12 +194,24 @@ class FileSystemModule : Module() {
         file.creationTime
       }
 
-      Function("copy") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+      AsyncFunction("copy") Coroutine { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
         file.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+      Function("copySync") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        runBlocking {
+          file.copy(destination, options ?: RelocationOptions())
+        }
+      }
+
+      AsyncFunction("move") Coroutine { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
         file.move(destination, options ?: RelocationOptions())
+      }
+
+      Function("moveSync") { file: FileSystemFile, destination: FileSystemPath, options: RelocationOptions? ->
+        runBlocking {
+          file.move(destination, options ?: RelocationOptions())
+        }
       }
 
       Function("rename") { file: FileSystemFile, newName: String ->
@@ -315,12 +307,24 @@ class FileSystemModule : Module() {
         directory.validatePath()
       }
 
-      Function("copy") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+      AsyncFunction("copy") Coroutine { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
         directory.copy(destination, options ?: RelocationOptions())
       }
 
-      Function("move") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+      Function("copySync") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        runBlocking {
+          directory.copy(destination, options ?: RelocationOptions())
+        }
+      }
+
+      AsyncFunction("move") Coroutine { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
         directory.move(destination, options ?: RelocationOptions())
+      }
+
+      Function("moveSync") { directory: FileSystemDirectory, destination: FileSystemPath, options: RelocationOptions? ->
+        runBlocking {
+          directory.move(destination, options ?: RelocationOptions())
+        }
       }
 
       Function("rename") { directory: FileSystemDirectory, newName: String ->
@@ -338,6 +342,64 @@ class FileSystemModule : Module() {
       // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
       Function("listAsRecords") { directory: FileSystemDirectory ->
         directory.listAsRecords()
+      }
+    }
+
+    Class(FileSystemUploadTask::class) {
+      Constructor {
+        FileSystemUploadTask()
+      }
+
+      Events("progress")
+
+      AsyncFunction("start") Coroutine { task: FileSystemUploadTask, url: String, file: FileSystemFile, options: UploadTaskOptions ->
+        task.start(url, file, options)
+      }
+
+      Function("cancel") { task: FileSystemUploadTask ->
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemDownloadTask::class) {
+      Constructor {
+        FileSystemDownloadTask()
+      }
+
+      Events("progress")
+
+      AsyncFunction("start") Coroutine { task: FileSystemDownloadTask, url: URI, to: FileSystemPath, options: DownloadTaskOptions? ->
+        to.validatePermission(FilePermissionService.Permission.WRITE)
+        task.start(url, to, options)
+      }
+
+      Function("pause") { task: FileSystemDownloadTask ->
+        task.pause()
+      }
+
+      AsyncFunction("resume") Coroutine { task: FileSystemDownloadTask, url: URI, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions? ->
+        to.validatePermission(FilePermissionService.Permission.WRITE)
+        task.resume(url, to, resumeData, options)
+      }
+
+      Function("cancel") { task: FileSystemDownloadTask ->
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemWatcher::class) {
+      Events("change")
+
+      Constructor { uri: Uri, options: WatchOptions? ->
+        FileSystemWatcher(appContext, uri, options)
+      }
+
+      Function("start") { watcher: FileSystemWatcher ->
+        watcher.start()
+      }
+
+      Function("stop") { watcher: FileSystemWatcher ->
+        watcher.stop()
       }
     }
   }

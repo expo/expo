@@ -1,5 +1,5 @@
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import type { NativeStackDescriptor, NativeStackDescriptorMap } from './descriptors-context';
+import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
 /** Mirrors the `describe` function returned by `useNavigationBuilder` */
 type DescribeFn = (route: StackNavigationState<ParamListBase>['preloadedRoutes'][number], placeholder: boolean) => NativeStackDescriptor;
 /**

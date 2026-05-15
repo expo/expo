@@ -1,8 +1,8 @@
-import commander from 'commander';
+import type commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
-import { SupportedPlatform } from '../types';
+import type { SupportedPlatform } from '../types';
 
 export interface AutolinkingOptions {
   /** Only scan direct "dependencies" of a project for React Native modules, rather than including transitive dependencies.
@@ -33,7 +33,8 @@ export interface AutolinkingOptions {
    * @defaultValue `[]`
    */
   include: string[];
-  /** A list of package names to opt out of prebuilt Expo modules (Android-only)
+  /** A list of package name patterns to opt out of prebuilt modules.
+   * Supports regex patterns (e.g., ".*" for all packages, "expo-audio" for exact match).
    * @defaultValue `[]`
    */
   buildFromSource?: string[];

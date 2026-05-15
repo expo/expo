@@ -9,19 +9,28 @@ import { Platform } from 'react-native';
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
 
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 export async function test({ describe, expect, it, ...t }) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
+  const watcherDirectory = new Directory(Paths.cache, 'watcher-tests');
   t.beforeEach(async () => {
     try {
       await FS.makeDirectoryAsync(testDirectory);
     } catch {}
+    watcherDirectory.create({ idempotent: true, intermediates: true });
   });
   t.afterEach(async () => {
     try {
       await FS.deleteAsync(testDirectory);
     } catch {}
+    if (watcherDirectory.exists) {
+      watcherDirectory.delete();
+    }
   });
   describe('FileSystem', () => {
     if (Constants.appOwnership === 'expo') {
@@ -34,7 +43,9 @@ export async function test({ describe, expect, it, ...t }) {
             new File(Paths.document, '..', 'file.txt').textSync();
           }).toThrow();
           expect(() => {
-            new File(Paths.document, '..', 'file.txt').copy(new File(Paths.document, 'file.txt'));
+            new File(Paths.document, '..', 'file.txt').copySync(
+              new File(Paths.document, 'file.txt')
+            );
           }).toThrow();
         });
       });
@@ -211,6 +222,111 @@ export async function test({ describe, expect, it, ...t }) {
         expect(dir.list().map((i) => i.name)).toContain('expo-root.pem');
         expect(new File(Paths.bundle, 'expo-root.pem').size > 1000).toBe(true);
       }
+    });
+
+    describe('watching files and directories', () => {
+      let originalTimeout;
+
+      t.beforeAll(() => {
+        originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 4;
+      });
+
+      t.afterAll(() => {
+        t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
+      });
+
+      it('returns an idempotent subscription', () => {
+        const file = new File(watcherDirectory, 'subscription.txt');
+        file.create();
+
+        const subscription = file.watch(() => {});
+        subscription.remove();
+
+        expect(() => subscription.remove()).not.toThrow();
+      });
+
+      it('emits a modified event when a watched file is written', async () => {
+        const file = new File(watcherDirectory, 'modified.txt');
+        file.create();
+        file.write('before');
+
+        const events: { type: string }[] = [];
+        const subscription = file.watch((event) => events.push(event));
+
+        try {
+          file.write('after');
+          await delay(300);
+
+          expect(events.some((event) => event.type === 'modified')).toBe(true);
+        } finally {
+          subscription.remove();
+        }
+      });
+
+      it('emits a deleted event when a watched file is deleted', async () => {
+        const file = new File(watcherDirectory, 'deleted.txt');
+        file.create();
+
+        const events: { type: string }[] = [];
+        const subscription = file.watch((event) => events.push(event));
+
+        try {
+          file.delete();
+          await delay(300);
+
+          expect(events.some((event) => event.type === 'deleted')).toBe(true);
+        } finally {
+          subscription.remove();
+        }
+      });
+
+      it('filters events by requested types', async () => {
+        const file = new File(watcherDirectory, 'filter.txt');
+        file.create();
+        file.write('before');
+
+        const events: { type: string }[] = [];
+        const subscription = file.watch((event) => events.push(event), {
+          events: ['deleted'],
+        });
+
+        try {
+          file.write('after');
+          await delay(300);
+
+          expect(events.length).toBe(0);
+        } finally {
+          subscription.remove();
+        }
+      });
+
+      it('emits an event when a child file is created in a watched directory', async () => {
+        const directory = new Directory(watcherDirectory, 'children');
+        directory.create();
+
+        const events: { type: string; target: File | Directory }[] = [];
+        const subscription = directory.watch((event) => events.push(event));
+
+        try {
+          const childFile = new File(directory, 'child.txt');
+          childFile.create();
+          await delay(300);
+
+          expect(events.length).toBeGreaterThan(0);
+
+          if (Platform.OS === 'ios') {
+            expect(events[0]?.type).toBe('modified');
+            expect(events[0]?.target instanceof Directory).toBe(true);
+            expect(events[0]?.target.uri).toBe(directory.uri);
+          } else {
+            expect(events.some((event) => event.type === 'created')).toBe(true);
+            expect(events.some((event) => event.target instanceof File)).toBe(true);
+          }
+        } finally {
+          subscription.remove();
+        }
+      });
     });
 
     if (Platform.OS === 'android') {
@@ -611,7 +727,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'file.txt');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        expect(() => src.copy(dstFolder)).toThrow();
+        expect(() => src.copySync(dstFolder)).toThrow();
       });
 
       it('Copies it to a folder', () => {
@@ -619,7 +735,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        src.copy(dstFolder);
+        src.copySync(dstFolder);
         expect(src.exists).toBe(true);
         expect(src.textSync()).toBe('Hello world');
         const dst = new File(testDirectory, '/destination/file.txt');
@@ -631,14 +747,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.write('Hello world');
         const folder = new Directory(testDirectory, 'destination');
-        expect(() => file.copy(folder)).toThrow();
+        expect(() => file.copySync(folder)).toThrow();
       });
 
       it('Copies it to a file', () => {
         const src = new File(testDirectory, 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory, 'file2.txt');
-        src.copy(dst);
+        src.copySync(dst);
         expect(dst.exists).toBe(true);
         expect(dst.textSync()).toBe('Hello world');
         expect(src.exists).toBe(true);
@@ -655,7 +771,7 @@ export async function test({ describe, expect, it, ...t }) {
           dst.delete();
         } catch {}
         src.write('Hello world');
-        src.copy(dst);
+        src.copySync(dst);
         expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
         expect(dst.exists).toBe(true);
         expect(dst.md5).toBe(src.md5);
@@ -666,7 +782,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        expect(() => src.copy(dst)).toThrow();
+        expect(() => src.copySync(dst)).toThrow();
       });
 
       it('overwrites destination file when overwrite is true', () => {
@@ -674,7 +790,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        src.copy(dst, { overwrite: true });
+        src.copySync(dst, { overwrite: true });
         expect(dst.textSync()).toBe('source');
         expect(src.exists).toBe(true);
       });
@@ -686,7 +802,7 @@ export async function test({ describe, expect, it, ...t }) {
         dstFolder.create();
         const existing = new File(dstFolder, 'file.txt');
         existing.write('old content');
-        src.copy(dstFolder, { overwrite: true });
+        src.copySync(dstFolder, { overwrite: true });
         expect(new File(dstFolder, 'file.txt').textSync()).toBe('new content');
       });
     });
@@ -697,7 +813,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        src.copy(dstFolder);
+        src.copySync(dstFolder);
         expect(src.exists).toBe(true);
         expect(new Directory(testDirectory, 'destination/directory').exists).toBe(true);
       });
@@ -706,14 +822,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new Directory(testDirectory, 'directory/');
         file.create();
         const folder = new Directory(testDirectory, 'some/nonexistent/directory/');
-        expect(() => file.copy(folder)).toThrow();
+        expect(() => file.copySync(folder)).toThrow();
       });
 
       it('Creates a copy of the directory if only the bottom level destination directory does not exist', () => {
         const file = new Directory(testDirectory, 'source/');
         file.create();
         const destination = new Directory(testDirectory, 'newDestination/');
-        file.copy(destination);
+        file.copySync(destination);
         expect(destination.uri).toBe(testDirectory + 'newDestination/');
         expect(file.uri).toBe(testDirectory + 'source/');
       });
@@ -724,7 +840,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
-        expect(() => src.copy(dst)).toThrow();
+        expect(() => src.copySync(dst)).toThrow();
       });
 
       it('overwrites destination directory when overwrite is true', () => {
@@ -736,7 +852,7 @@ export async function test({ describe, expect, it, ...t }) {
         dst.create();
         new File(dst, 'old.txt').write('old content');
 
-        src.copy(dst, { overwrite: true });
+        src.copySync(dst, { overwrite: true });
         expect(dst.exists).toBe(true);
       });
     });
@@ -746,7 +862,7 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'file.txt');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        expect(() => src.move(dstFolder)).toThrow();
+        expect(() => src.moveSync(dstFolder)).toThrow();
       });
 
       it('moves it to a folder', () => {
@@ -754,7 +870,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('Hello world');
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
-        src.move(dstFolder);
+        src.moveSync(dstFolder);
         expect(src.exists).toBe(true);
         const dst = new File(testDirectory, '/destination/file.txt');
         expect(src.uri).toBe(dst.uri);
@@ -766,14 +882,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.write('Hello world');
         const folder = new Directory(testDirectory, 'destination');
-        expect(() => file.move(folder)).toThrow();
+        expect(() => file.moveSync(folder)).toThrow();
       });
 
       it('moves it to a file', () => {
         const src = new File(testDirectory, 'file.txt');
         src.write('Hello world');
         const dst = new File(testDirectory, 'file2.txt');
-        src.move(dst);
+        src.moveSync(dst);
         expect(dst.exists).toBe(true);
         expect(dst.textSync()).toBe('Hello world');
         expect(src.exists).toBe(true);
@@ -785,7 +901,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        expect(() => src.move(dst)).toThrow();
+        expect(() => src.moveSync(dst)).toThrow();
       });
 
       it('overwrites destination file when overwrite is true', () => {
@@ -793,7 +909,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.write('source');
         const dst = new File(testDirectory, 'dst.txt');
         dst.write('destination');
-        src.move(dst, { overwrite: true });
+        src.moveSync(dst, { overwrite: true });
         expect(dst.textSync()).toBe('source');
         expect(src.uri).toBe(dst.uri);
       });
@@ -804,7 +920,7 @@ export async function test({ describe, expect, it, ...t }) {
         const dstFolder = new Directory(testDirectory, 'destination');
         dstFolder.create();
         new File(dstFolder, 'file.txt').write('old content');
-        src.move(dstFolder, { overwrite: true });
+        src.moveSync(dstFolder, { overwrite: true });
         expect(new File(dstFolder, 'file.txt').textSync()).toBe('new content');
         expect(src.uri).toBe(new File(dstFolder, 'file.txt').uri);
       });
@@ -896,7 +1012,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dstFolder = new Directory(testDirectory, 'destination/');
         dstFolder.create();
-        src.move(dstFolder);
+        src.moveSync(dstFolder);
         expect(src.exists).toBe(true);
         const dst = new Directory(testDirectory, 'destination/directory/');
         expect(src.uri).toBe(dst.uri);
@@ -907,14 +1023,14 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.write('Hello world');
         const folder = new Directory(testDirectory, 'some/nonexistent/directory/');
-        expect(() => file.move(folder)).toThrow();
+        expect(() => file.moveSync(folder)).toThrow();
       });
 
       it('Renames the directory if only the bottom level destination directory does not exist', () => {
         const file = new Directory(testDirectory, 'source/');
         file.create();
         const folder = new Directory(testDirectory, 'newDestination/');
-        file.move(folder);
+        file.moveSync(folder);
         expect(file.uri).toBe(testDirectory + 'newDestination/');
       });
 
@@ -924,7 +1040,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.create();
         const dst = new File(testDirectory, 'file2.txt');
         dst.create();
-        expect(() => src.move(dst)).toThrow();
+        expect(() => src.moveSync(dst)).toThrow();
       });
 
       it('overwrites destination directory when overwrite is true', () => {
@@ -938,7 +1054,7 @@ export async function test({ describe, expect, it, ...t }) {
         dst.create();
         new File(dst, 'old.txt').write('old content');
 
-        src.move(dstFolder, { overwrite: true });
+        src.moveSync(dstFolder, { overwrite: true });
         expect(src.exists).toBe(true);
         expect(src.uri).toBe(dst.uri);
         expect(new File(dst, 'file.txt').textSync()).toBe('from source');
@@ -996,7 +1112,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
 
             const dstDir = safDirectory.createDirectory('targetDir');
-            srcFile.copy(dstDir);
+            srcFile.copySync(dstDir);
 
             // Look for the file inside the destination directory
             const copiedFile = dstDir.list().find((item) => item.name === 'source.txt') as File;
@@ -1010,7 +1126,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
 
             const dstFile = new File(localDirectory, 'dest.txt');
-            srcFile.copy(dstFile);
+            srcFile.copySync(dstFile);
 
             expect(srcFile.exists).toBe(true);
             expect(dstFile.exists).toBe(true);
@@ -1021,7 +1137,7 @@ export async function test({ describe, expect, it, ...t }) {
             const srcFile = safDirectory.createFile('source.txt', 'text/plain');
             srcFile.write('test content');
 
-            srcFile.copy(localDirectory);
+            srcFile.copySync(localDirectory);
 
             const copiedFile = new File(localDirectory, 'source.txt');
             expect(copiedFile.exists).toBe(true);
@@ -1036,7 +1152,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('nested content');
 
             const dstDir = safDirectory.createDirectory('destDir');
-            srcDir.copy(dstDir);
+            srcDir.copySync(dstDir);
 
             // Find the copied directory inside destDir
             const copiedDir = dstDir.list().find((item) => item.name === 'sourceDir') as Directory;
@@ -1053,7 +1169,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('nested content');
 
             // Destination directory must exist for directory copy
-            srcDir.copy(localDirectory);
+            srcDir.copySync(localDirectory);
 
             const copiedDir = new Directory(localDirectory, 'sourceDir2');
             expect(copiedDir.exists).toBe(true);
@@ -1070,7 +1186,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
 
             const dstDir = safDirectory.createDirectory('localToSafDir');
-            srcFile.copy(dstDir);
+            srcFile.copySync(dstDir);
 
             const copiedFile = dstDir.list().find((item) => item.name === 'localfile.txt') as File;
             expect(copiedFile).toBeDefined();
@@ -1084,7 +1200,7 @@ export async function test({ describe, expect, it, ...t }) {
             const srcFile = new File(srcDir, 'nested.txt');
             srcFile.write('nested content');
 
-            srcDir.copy(safDirectory);
+            srcDir.copySync(safDirectory);
 
             const copiedDir = safDirectory
               .list()
@@ -1102,7 +1218,7 @@ export async function test({ describe, expect, it, ...t }) {
             const assetFile = new File(Paths.bundle, 'expo-root.pem');
             const dstFile = new File(localDirectory, 'asset-copy.txt');
 
-            assetFile.copy(dstFile);
+            assetFile.copySync(dstFile);
 
             expect(dstFile.exists).toBe(true);
             expect(dstFile.size).toBe(assetFile.size);
@@ -1113,7 +1229,7 @@ export async function test({ describe, expect, it, ...t }) {
             const localDir2 = new Directory(localDirectory, 'assetCopyDest');
             localDir2.create();
 
-            assetFile.copy(localDir2);
+            assetFile.copySync(localDir2);
 
             const copiedFile = new File(localDir2, 'expo-root.pem');
             expect(copiedFile.exists).toBe(true);
@@ -1124,7 +1240,7 @@ export async function test({ describe, expect, it, ...t }) {
             const assetFile = new File(Paths.bundle, 'expo-root.pem');
             const dstDir = safDirectory.createDirectory('assetsSaf');
 
-            assetFile.copy(dstDir);
+            assetFile.copySync(dstDir);
 
             const copiedFile = dstDir.list().find((item) => item.name === 'expo-root.pem') as File;
             expect(copiedFile).toBeDefined();
@@ -1139,7 +1255,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcFile.uri;
 
             const dstDir = safDirectory.createDirectory('moveTargetDir');
-            srcFile.move(dstDir);
+            srcFile.moveSync(dstDir);
 
             expect(srcFile.exists).toBe(true);
             expect(srcFile.textSync()).toBe('test content');
@@ -1157,7 +1273,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcFile.uri;
 
             const dstFile = new File(localDirectory, 'dest.txt');
-            srcFile.move(dstFile);
+            srcFile.moveSync(dstFile);
 
             expect(srcFile.uri).toBe(dstFile.uri);
             expect(dstFile.exists).toBe(true);
@@ -1170,7 +1286,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test content');
             const originalUri = srcFile.uri;
 
-            srcFile.move(localDirectory);
+            srcFile.moveSync(localDirectory);
 
             const movedFile = new File(localDirectory, 'source.txt');
             expect(movedFile.exists).toBe(true);
@@ -1188,7 +1304,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcDir.uri;
 
             const dstDir = safDirectory.createDirectory('moveDestDir');
-            srcDir.move(dstDir);
+            srcDir.moveSync(dstDir);
 
             expect(srcDir.exists).toBe(true);
             expect(new Directory(originalUri).exists).toBe(false);
@@ -1206,7 +1322,7 @@ export async function test({ describe, expect, it, ...t }) {
             const localDest = new Directory(localDirectory, 'safMoveTarget');
             localDest.create();
 
-            srcDir.move(localDest);
+            srcDir.moveSync(localDest);
 
             expect(srcDir.exists).toBe(true);
             expect(new Directory(originalUri).exists).toBe(false);
@@ -1223,7 +1339,7 @@ export async function test({ describe, expect, it, ...t }) {
             const originalUri = srcFile.uri;
 
             const dstDir = safDirectory.createDirectory('localMoveTarget');
-            srcFile.move(dstDir);
+            srcFile.moveSync(dstDir);
 
             expect(srcFile.exists).toBe(true);
             expect(srcFile.textSync()).toBe('test content');
@@ -1244,7 +1360,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('nested content');
             const originalUri = srcDir.uri;
 
-            srcDir.move(safDirectory);
+            srcDir.moveSync(safDirectory);
 
             expect(srcDir.exists).toBe(true);
             expect(new Directory(originalUri).exists).toBe(false);
@@ -1260,7 +1376,7 @@ export async function test({ describe, expect, it, ...t }) {
             const assetFile = new File(Paths.bundle, 'expo-root.pem');
             const dstFile = new File(localDirectory, 'dest.txt');
 
-            expect(() => assetFile.move(dstFile)).toThrow();
+            expect(() => assetFile.moveSync(dstFile)).toThrow();
           });
 
           it('throws when copying directory to file', () => {
@@ -1268,7 +1384,7 @@ export async function test({ describe, expect, it, ...t }) {
             const dstFile = new File(localDirectory, 'file.txt');
             dstFile.create();
 
-            expect(() => srcDir.copy(dstFile)).toThrow();
+            expect(() => srcDir.copySync(dstFile)).toThrow();
           });
 
           it('throws when moving directory to file', () => {
@@ -1276,7 +1392,7 @@ export async function test({ describe, expect, it, ...t }) {
             const dstFile = new File(localDirectory, 'file.txt');
             dstFile.create();
 
-            expect(() => srcDir.move(dstFile)).toThrow();
+            expect(() => srcDir.moveSync(dstFile)).toThrow();
           });
 
           it('throws when destination directory does not exist (file copy)', () => {
@@ -1284,7 +1400,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test');
             const nonExistentDir = new Directory(localDirectory, 'nonexistent');
 
-            expect(() => srcFile.copy(nonExistentDir)).toThrow();
+            expect(() => srcFile.copySync(nonExistentDir)).toThrow();
           });
 
           it('throws when destination directory does not exist (file move)', () => {
@@ -1292,7 +1408,7 @@ export async function test({ describe, expect, it, ...t }) {
             srcFile.write('test');
             const nonExistentDir = new Directory(localDirectory, 'nonexistent');
 
-            expect(() => srcFile.move(nonExistentDir)).toThrow();
+            expect(() => srcFile.moveSync(nonExistentDir)).toThrow();
           });
         });
       });
@@ -1453,6 +1569,192 @@ export async function test({ describe, expect, it, ...t }) {
         const src = new File(testDirectory, 'file.pdf');
         src.write(await response.bytes());
         expect(src.md5).toEqual(md5);
+      });
+
+      it('reports download progress via onProgress callback', async () => {
+        // Use a ~100KB file so progress events fire reliably
+        const url = 'https://httpbingo.org/bytes/102400';
+        const file = new File(testDirectory, 'progress_test.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        const output = await File.downloadFileAsync(url, file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+        // Should have received at least one progress update
+        expect(progressUpdates.length).toBeGreaterThan(0);
+        // Each update should have numeric fields
+        for (const update of progressUpdates) {
+          expect(typeof update.bytesWritten).toBe('number');
+          expect(typeof update.totalBytes).toBe('number');
+          expect(update.bytesWritten).toBeGreaterThan(0);
+        }
+        // The last update should have bytesWritten equal to file size
+        const lastUpdate = progressUpdates[progressUpdates.length - 1];
+        expect(lastUpdate.bytesWritten).toBe(file.size);
+      });
+
+      it('reports monotonically increasing bytesWritten in progress', async () => {
+        const url = 'https://httpbingo.org/bytes/102400';
+        const file = new File(testDirectory, 'progress_monotonic.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        await File.downloadFileAsync(url, file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(progressUpdates.length).toBeGreaterThan(0);
+        for (let i = 1; i < progressUpdates.length; i++) {
+          expect(progressUpdates[i].bytesWritten).toBeGreaterThanOrEqual(
+            progressUpdates[i - 1].bytesWritten
+          );
+        }
+      });
+
+      it('totalBytes matches content-length when server provides it', async () => {
+        const url = 'https://httpbingo.org/bytes/51200';
+        const file = new File(testDirectory, 'progress_total.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        await File.downloadFileAsync(url, file, {
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(progressUpdates.length).toBeGreaterThan(0);
+        // httpbingo sets content-length, so totalBytes should equal the requested size
+        for (const update of progressUpdates) {
+          expect(update.totalBytes).toBe(51200);
+        }
+      });
+
+      it('downloads with onProgress and custom headers together', async () => {
+        const url = 'https://httpbingo.org/bytes/10240';
+        const file = new File(testDirectory, 'progress_headers.bin');
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        const output = await File.downloadFileAsync(url, file, {
+          headers: { 'X-Custom-Header': 'test-value' },
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+        expect(progressUpdates.length).toBeGreaterThan(0);
+      });
+
+      it('can cancel a download with AbortSignal', async () => {
+        // Use a slow-streaming endpoint to ensure the download is still in-flight when we cancel.
+        // Note: httpbingo.org/bytes has a 524288 byte limit and returns 400 for larger values.
+        const url = 'https://httpbingo.org/drip?numbytes=51200&duration=5&delay=0';
+        const file = new File(testDirectory, 'cancel_test.bin');
+        const controller = new AbortController();
+
+        // Cancel after a short delay — the /drip endpoint streams over 5s so this is safe.
+        setTimeout(() => controller.abort(), 100);
+
+        let error: any;
+        try {
+          await File.downloadFileAsync(url, file, {
+            signal: controller.signal,
+          });
+        } catch (e) {
+          error = e;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.message).toBe('The operation was aborted.');
+      });
+
+      it('rejects immediately when signal is already aborted', async () => {
+        const url = 'https://httpbingo.org/bytes/1024';
+        const file = new File(testDirectory, 'already_aborted.bin');
+        const controller = new AbortController();
+        controller.abort();
+
+        let error: any;
+        try {
+          await File.downloadFileAsync(url, file, {
+            signal: controller.signal,
+          });
+        } catch (e) {
+          error = e;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.message).toBe('The operation was aborted.');
+        // File should not have been created
+        expect(file.exists).toBe(false);
+      });
+
+      it('can use onProgress and signal together', async () => {
+        // /drip streams data over 5s, so progress events fire before the download completes.
+        const url = 'https://httpbingo.org/drip?numbytes=51200&duration=5&delay=0';
+        const file = new File(testDirectory, 'progress_and_cancel.bin');
+        const controller = new AbortController();
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        // Cancel after we get the first progress event
+        const cancelAfterProgress = (data: { bytesWritten: number; totalBytes: number }) => {
+          progressUpdates.push({ ...data });
+          if (progressUpdates.length >= 1) {
+            controller.abort();
+          }
+        };
+
+        let error: any;
+        try {
+          await File.downloadFileAsync(url, file, {
+            signal: controller.signal,
+            onProgress: cancelAfterProgress,
+          });
+        } catch (e) {
+          error = e;
+        }
+
+        expect(error).toBeDefined();
+        expect(error.message).toBe('The operation was aborted.');
+        // Should have received at least one progress update before cancellation
+        expect(progressUpdates.length).toBeGreaterThanOrEqual(1);
+      });
+
+      it('downloads without progress when no onProgress is set', async () => {
+        // Ensure the basic path still works when no options are provided
+        const url = 'https://picsum.photos/id/237/200/300';
+        const file = new File(testDirectory, 'no_progress.jpeg');
+        const output = await File.downloadFileAsync(url, file);
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+      });
+
+      it('overwrites existing file with idempotent and onProgress', async () => {
+        const url = 'https://httpbingo.org/bytes/10240';
+        const file = new File(testDirectory, 'idempotent_progress.bin');
+        file.create();
+        file.write('existing content');
+
+        const progressUpdates: { bytesWritten: number; totalBytes: number }[] = [];
+
+        const output = await File.downloadFileAsync(url, file, {
+          idempotent: true,
+          onProgress: (data) => {
+            progressUpdates.push({ ...data });
+          },
+        });
+
+        expect(file.exists).toBe(true);
+        expect(output.uri).toBe(file.uri);
+        expect(file.size).toBe(10240);
+        expect(progressUpdates.length).toBeGreaterThan(0);
       });
     });
 
@@ -1800,72 +2102,70 @@ export async function test({ describe, expect, it, ...t }) {
       expect(src.textSync()).toBe(alphabet.repeat(4 * 10));
     });
 
-    if (Platform.OS === 'android') {
-      describe('FileMode (Android)', () => {
-        it('opens in ReadOnly mode and reads data', () => {
-          const src = new File(testDirectory, 'mode-read.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.ReadOnly);
-          expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
-          handle.close();
-        });
-
-        it('throws when writing to a ReadOnly handle', () => {
-          const src = new File(testDirectory, 'mode-read-only.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.ReadOnly);
-          expect(() => handle.writeBytes(new Uint8Array([65]))).toThrow();
-          handle.close();
-        });
-
-        it('opens in WriteOnly mode and writes data', () => {
-          const src = new File(testDirectory, 'mode-write.txt');
-          src.create();
-          const handle = src.open(FileMode.WriteOnly);
-          handle.writeBytes(new Uint8Array([72, 105])); // Hi
-          handle.close();
-          expect(src.textSync()).toBe('Hi');
-        });
-
-        it('throws when reading from a WriteOnly handle', () => {
-          const src = new File(testDirectory, 'mode-write-only.txt');
-          src.create();
-          const handle = src.open(FileMode.WriteOnly);
-          expect(() => handle.readBytes(1)).toThrow();
-          handle.close();
-        });
-
-        it('opens in ReadWrite mode and supports both reading and writing', () => {
-          const src = new File(testDirectory, 'mode-rw.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.ReadWrite);
-          expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
-          handle.offset = 0;
-          handle.writeBytes(new Uint8Array([87, 111, 114, 108, 100])); // World
-          handle.close();
-          expect(src.textSync()).toBe('World');
-        });
-
-        it('opens in Append mode and appends data', () => {
-          const src = new File(testDirectory, 'mode-append.txt');
-          src.write('Hello');
-          const handle = src.open(FileMode.Append);
-          handle.writeBytes(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
-          handle.close();
-          expect(src.textSync()).toBe('Hello World');
-        });
-
-        it('opens in Truncate mode and wipes existing content', () => {
-          const src = new File(testDirectory, 'mode-truncate.txt');
-          src.write('Old content');
-          const handle = src.open(FileMode.Truncate);
-          expect(handle.size).toBe(0);
-          handle.writeBytes(new Uint8Array([78, 101, 119])); // New
-          handle.close();
-          expect(src.textSync()).toBe('New');
-        });
+    describe('It supports different FileMode options', () => {
+      it('opens in ReadOnly mode and reads data', () => {
+        const src = new File(testDirectory, 'mode-read.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.ReadOnly);
+        expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+        handle.close();
       });
-    }
+
+      it('throws when writing to a ReadOnly handle', () => {
+        const src = new File(testDirectory, 'mode-read-only.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.ReadOnly);
+        expect(() => handle.writeBytes(new Uint8Array([65]))).toThrow();
+        handle.close();
+      });
+
+      it('opens in WriteOnly mode and writes data', () => {
+        const src = new File(testDirectory, 'mode-write.txt');
+        src.create();
+        const handle = src.open(FileMode.WriteOnly);
+        handle.writeBytes(new Uint8Array([72, 105])); // Hi
+        handle.close();
+        expect(src.textSync()).toBe('Hi');
+      });
+
+      it('throws when reading from a WriteOnly handle', () => {
+        const src = new File(testDirectory, 'mode-write-only.txt');
+        src.create();
+        const handle = src.open(FileMode.WriteOnly);
+        expect(() => handle.readBytes(1)).toThrow();
+        handle.close();
+      });
+
+      it('opens in ReadWrite mode and supports both reading and writing', () => {
+        const src = new File(testDirectory, 'mode-rw.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.ReadWrite);
+        expect(handle.readBytes(5)).toEqual(new Uint8Array([72, 101, 108, 108, 111]));
+        handle.offset = 0;
+        handle.writeBytes(new Uint8Array([87, 111, 114, 108, 100])); // World
+        handle.close();
+        expect(src.textSync()).toBe('World');
+      });
+
+      it('opens in Append mode and appends data', () => {
+        const src = new File(testDirectory, 'mode-append.txt');
+        src.write('Hello');
+        const handle = src.open(FileMode.Append);
+        handle.writeBytes(new Uint8Array([32, 87, 111, 114, 108, 100])); // ' World'
+        handle.close();
+        expect(src.textSync()).toBe('Hello World');
+      });
+
+      it('opens in Truncate mode and wipes existing content', () => {
+        const src = new File(testDirectory, 'mode-truncate.txt');
+        src.write('Old content');
+        const handle = src.open(FileMode.Truncate);
+        expect(handle.size).toBe(0);
+        handle.writeBytes(new Uint8Array([78, 101, 119])); // New
+        handle.close();
+        expect(src.textSync()).toBe('New');
+      });
+    });
 
     it('Provides a ReadableStream', async () => {
       const src = new File(testDirectory, 'abcs.txt');

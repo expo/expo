@@ -7,9 +7,11 @@ exports.NativeLinkPreviewContent = NativeLinkPreviewContent;
 exports.LinkZoomTransitionEnabler = LinkZoomTransitionEnabler;
 exports.LinkZoomTransitionSource = LinkZoomTransitionSource;
 exports.LinkZoomTransitionAlignmentRectDetector = LinkZoomTransitionAlignmentRectDetector;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const expo_1 = require("expo");
 const react_1 = require("react");
 const react_native_1 = require("react-native");
+// TODO(@kitten): Replace with `globalThis`, add typings in `expo`
 const areNativeViewsAvailable = process.env.EXPO_OS === 'ios' && !react_native_1.Platform.isTV && global.RN$Bridgeless === true;
 const LinkPreviewNativeActionView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkPreviewNativeActionView')
@@ -20,7 +22,7 @@ function NativeLinkPreviewAction(props) {
     }
     // Needed to pass shared object ID to native side
     const imageObjectId = props.image?.__expo_shared_object_id__;
-    return <LinkPreviewNativeActionView {...props} image={imageObjectId}/>;
+    return (0, jsx_runtime_1.jsx)(LinkPreviewNativeActionView, { ...props, image: imageObjectId });
 }
 const NativeLinkPreviewView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewView')
@@ -29,7 +31,7 @@ function NativeLinkPreview(props) {
     if (!NativeLinkPreviewView) {
         return null;
     }
-    return <NativeLinkPreviewView {...props}/>;
+    return (0, jsx_runtime_1.jsx)(NativeLinkPreviewView, { ...props });
 }
 const NativeLinkPreviewContentView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'NativeLinkPreviewContentView')
@@ -46,7 +48,7 @@ function NativeLinkPreviewContent(props) {
             left: 0,
         },
     ]);
-    return <NativeLinkPreviewContentView {...props} style={style}/>;
+    return (0, jsx_runtime_1.jsx)(NativeLinkPreviewContentView, { ...props, style: style });
 }
 const LinkZoomTransitionEnablerNativeView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionEnabler')
@@ -55,7 +57,7 @@ function LinkZoomTransitionEnabler(props) {
     if (!LinkZoomTransitionEnablerNativeView) {
         return null;
     }
-    return (<LinkZoomTransitionEnablerNativeView {...props} disableForceFlatten style={{ display: 'contents' }}/>);
+    return ((0, jsx_runtime_1.jsx)(LinkZoomTransitionEnablerNativeView, { ...props, disableForceFlatten: true, style: { display: 'contents' } }));
 }
 const LinkZoomTransitionSourceNativeView = areNativeViewsAvailable
     ? (0, expo_1.requireNativeView)('ExpoRouterNativeLinkPreview', 'LinkZoomTransitionSource')
@@ -64,7 +66,7 @@ function LinkZoomTransitionSource(props) {
     if (!LinkZoomTransitionSourceNativeView) {
         return null;
     }
-    return (<LinkZoomTransitionSourceNativeView {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
+    return ((0, jsx_runtime_1.jsx)(LinkZoomTransitionSourceNativeView, { ...props, disableForceFlatten: true, collapsable: false, collapsableChildren: false, style: { display: 'contents' } }));
 }
 // #endregion
 // #region Zoom transition rect detector
@@ -75,7 +77,6 @@ function LinkZoomTransitionAlignmentRectDetector(props) {
     if (!LinkZoomTransitionAlignmentRectDetectorNative) {
         return null;
     }
-    return (<LinkZoomTransitionAlignmentRectDetectorNative {...props} disableForceFlatten collapsable={false} collapsableChildren={false} style={{ display: 'contents' }}/>);
+    return ((0, jsx_runtime_1.jsx)(LinkZoomTransitionAlignmentRectDetectorNative, { ...props, disableForceFlatten: true, collapsable: false, collapsableChildren: false, style: { display: 'contents' } }));
 }
-// #endregion
 //# sourceMappingURL=native.js.map

@@ -1,4 +1,4 @@
-import {
+import type {
   RecorderState,
   RecordingInput,
   RecordingOptions,
@@ -6,7 +6,7 @@ import {
   RecordingStartOptions,
 } from './Audio.types';
 import { RECORDING_STATUS_UPDATE } from './AudioEventKeys';
-import { AudioRecorder, RecordingEvents } from './AudioModule.types';
+import type { AudioRecorder, RecordingEvents } from './AudioModule.types';
 import { getAudioContext, getUserMedia, nextId } from './AudioUtils.web';
 import { RecordingPresets } from './RecordingConstants';
 
@@ -290,8 +290,8 @@ export class AudioRecorderWeb
     }
     this.analyser.getFloatTimeDomainData(this.analyserBuffer);
     let sumSquares = 0;
-    for (let i = 0; i < this.analyserBuffer.length; i++) {
-      sumSquares += this.analyserBuffer[i] * this.analyserBuffer[i];
+    for (const sample of this.analyserBuffer) {
+      sumSquares += sample * sample;
     }
     const rms = Math.sqrt(sumSquares / this.analyserBuffer.length);
     if (rms === 0) {

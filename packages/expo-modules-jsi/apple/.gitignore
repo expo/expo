@@ -1,0 +1,16 @@
+.DS_Store
+.build
+.DerivedData
+.swiftpm
+
+# Generated module map for the `jsi` Clang module (written by build-xcframework.sh)
+.generated
+
+# Staged slices for incremental xcframework builds
+.xcframework-slices
+
+# Symlinks to host-app xcframeworks used by the test target (written by scripts/test.sh)
+.test-frameworks
+
+# Built xcframework output
+Products

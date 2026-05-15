@@ -1,0 +1,82 @@
+buildscript {
+    ext {
+        getKspVersion = {
+            if (rootProject.hasProperty("kspVersion")) {
+                return rootProject["kspVersion"]
+            }
+
+            def kotlinVersion = rootProject.hasProperty("kotlinVersion") ? rootProject["kotlinVersion"] : "2.0.21"
+            if (kotlinVersion == "2.1.20") {
+                return "2.1.20-2.0.1"
+            } else if (kotlinVersion == "2.0.21") {
+                return "2.0.21-1.0.28"
+            } else if (kotlinVersion == "1.9.25") {
+                return "1.9.25-1.0.20"
+            }
+            return "1.9.24-1.0.20"
+        }
+    }
+
+    repositories
+    {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlin.plugin.serialization:org.jetbrains.kotlin.plugin.serialization.gradle.plugin:${kotlinVersion}")
+        classpath "com.google.devtools.ksp:symbol-processing-gradle-plugin:${getKspVersion()}"
+    }
+}
+apply plugin: 'com.android.library'
+apply plugin: 'expo-module-gradle-plugin'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
+apply plugin: 'com.google.devtools.ksp'
+
+group = 'expo.modules.observe'
+
+def packageJson = new groovy.json.JsonSlurper().parseText(file('../package.json').text)
+version = packageJson.version
+
+android {
+    namespace "expo.modules.observe"
+
+    defaultConfig {
+        versionCode 1
+        versionName packageJson.version
+
+        buildConfigField "String", "EXPO_OBSERVE_VERSION", "\"${packageJson.version}\""
+    }
+}
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':expo-app-metrics')
+    implementation project(':expo-eas-client')
+    implementation project(':expo-updates-interface')
+    implementation "com.facebook.react:react-android"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0"
+    implementation "com.squareup.okhttp3:okhttp:4.9.2"
+    // This is a workaround for IDE warning - https://youtrack.jetbrains.com/issue/KTIJ-31549
+    implementation "androidx.annotation:annotation-experimental:1.5.1"
+
+    def room_version = "2.8.3"
+    implementation "androidx.room:room-runtime:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
+    ksp "androidx.room:room-compiler:$room_version"
+
+    implementation 'androidx.work:work-runtime-ktx:2.9.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.robolectric:robolectric:4.11.1'
+    testImplementation 'androidx.test:core:1.5.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.9.2'
+    testImplementation 'io.mockk:mockk:1.13.8'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
+}

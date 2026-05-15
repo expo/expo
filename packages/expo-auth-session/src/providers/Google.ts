@@ -2,19 +2,15 @@ import * as Application from 'expo-application';
 import { useEffect, useMemo, useState } from 'react';
 import { Platform } from 'react-native';
 
-import { ProviderAuthRequestConfig } from './Provider.types';
+import type { ProviderAuthRequestConfig } from './Provider.types';
 import { applyRequiredScopes, invariantClientId } from './ProviderUtils';
 import { AuthRequest } from '../AuthRequest';
-import {
-  AuthRequestConfig,
-  AuthRequestPromptOptions,
-  Prompt,
-  ResponseType,
-} from '../AuthRequest.types';
+import type { AuthRequestConfig, AuthRequestPromptOptions } from '../AuthRequest.types';
+import { Prompt, ResponseType } from '../AuthRequest.types';
 import { useAuthRequestResult, useLoadedAuthRequest } from '../AuthRequestHooks';
 import { makeRedirectUri } from '../AuthSession';
-import { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
-import { DiscoveryDocument } from '../Discovery';
+import type { AuthSessionRedirectUriOptions, AuthSessionResult } from '../AuthSession.types';
+import type { DiscoveryDocument } from '../Discovery';
 import { generateHexStringAsync } from '../PKCE';
 import { AccessTokenRequest } from '../TokenRequest';
 
@@ -234,10 +230,10 @@ export function useAuthRequest(
     const output = config.extraParams ? { ...config.extraParams } : {};
 
     if (config.language) {
-      output.hl = output.language;
+      output.hl = config.language;
     }
     if (config.loginHint) {
-      output.login_hint = output.loginHint;
+      output.login_hint = config.loginHint;
     }
     if (config.selectAccount) {
       output.prompt = Prompt.SelectAccount;
@@ -281,7 +277,7 @@ export function useAuthRequest(
         clientSecret: config.clientSecret,
         redirectUri,
         scopes: config.scopes,
-        code: result.params.code,
+        code: result.params.code ?? '',
         extraParams: {
           code_verifier: request?.codeVerifier || '',
         },

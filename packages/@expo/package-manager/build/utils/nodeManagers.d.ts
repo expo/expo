@@ -1,4 +1,4 @@
-import { PackageManagerOptions } from '../PackageManager';
+import type { PackageManagerOptions } from '../PackageManager';
 import { BunPackageManager } from '../node/BunPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';

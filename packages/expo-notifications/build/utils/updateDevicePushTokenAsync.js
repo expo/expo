@@ -3,6 +3,65 @@ import { CodedError, Platform, UnavailabilityError } from 'expo-modules-core';
 import { computeNextBackoffInterval } from './backoff';
 import ServerRegistrationModule from '../ServerRegistrationModule';
 const updateDevicePushTokenUrl = 'https://exp.host/--/api/v2/push/updateDeviceToken';
+const LAST_TOKEN_KEY = 'lastRegisteredDeviceToken';
+// Force re-registration after 7 days even if nothing changed, in case the
+// server lost the device record (cleanup, migration, etc.).
+const REGISTRATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+async function getLastRegisteredTokenDataAsync() {
+    try {
+        if (!ServerRegistrationModule.getRegistrationInfoAsync) {
+            return null;
+        }
+        const info = await ServerRegistrationModule.getRegistrationInfoAsync();
+        if (!info) {
+            return null;
+        }
+        const parsed = JSON.parse(info);
+        return parsed?.[LAST_TOKEN_KEY] ?? null;
+    }
+    catch {
+        return null;
+    }
+}
+async function setLastRegisteredTokenDataAsync(tokenData) {
+    try {
+        if (!ServerRegistrationModule.getRegistrationInfoAsync ||
+            !ServerRegistrationModule.setRegistrationInfoAsync) {
+            return;
+        }
+        const info = await ServerRegistrationModule.getRegistrationInfoAsync();
+        const existing = info ? JSON.parse(info) : {};
+        existing[LAST_TOKEN_KEY] = tokenData;
+        await ServerRegistrationModule.setRegistrationInfoAsync(JSON.stringify(existing));
+    }
+    catch {
+        // Best-effort — next app open will re-register
+    }
+}
+/**
+ * Returns `true` if the device token or metadata has changed since the last
+ * successful registration, or if the check cannot be performed (fail-open).
+ */
+export async function hasDeviceTokenChangedAsync(token) {
+    try {
+        const development = await shouldUseDevelopmentNotificationService();
+        const lastTokenData = await getLastRegisteredTokenDataAsync();
+        if (lastTokenData == null) {
+            return true;
+        }
+        const age = Date.now() - (lastTokenData.registeredAt ?? 0);
+        if (age < 0 || age >= REGISTRATION_TTL_MS) {
+            return true;
+        }
+        return (token.data !== lastTokenData.deviceToken ||
+            Application.applicationId !== lastTokenData.appId ||
+            development !== lastTokenData.development ||
+            getTypeOfToken(token) !== lastTokenData.type);
+    }
+    catch {
+        return true;
+    }
+}
 export async function updateDevicePushTokenAsync(signal, token) {
     const doUpdateDevicePushTokenAsync = async (retry) => {
         const [development, deviceId] = await Promise.all([
@@ -28,6 +87,15 @@ export async function updateDevicePushTokenAsync(signal, token) {
             // Help debug erroring servers
             if (!response.ok) {
                 console.debug('[expo-notifications] Error encountered while updating the device push token with the server:', await response.text());
+            }
+            if (response.ok) {
+                await setLastRegisteredTokenDataAsync({
+                    deviceToken: token.data,
+                    appId: Application.applicationId,
+                    development,
+                    type: getTypeOfToken(token),
+                    registeredAt: Date.now(),
+                });
             }
             // Retry if request failed
             if (!response.ok) {

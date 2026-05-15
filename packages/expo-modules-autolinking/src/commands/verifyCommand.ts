@@ -1,13 +1,10 @@
 import chalk from 'chalk';
-import commander from 'commander';
+import type commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
-import {
-  AutolinkingCommonArguments,
-  createAutolinkingOptionsLoader,
-  registerAutolinkingArguments,
-} from './autolinkingOptions';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import {
   type BaseDependencyResolution,
   type DependencyResolution,
@@ -173,7 +170,7 @@ export async function verifySearchResults(
       const revisions = [revision, ...(revision.duplicates ?? [])];
       for (let idx = 0; idx < revisions.length; idx++) {
         const prefix = idx !== revisions.length - 1 ? '├─' : '└─';
-        const duplicate = revisions[idx];
+        const duplicate = revisions[idx]!;
         console.log(`  ${prefix} ${await getHumanReadableDependency(duplicate)}`);
       }
     }

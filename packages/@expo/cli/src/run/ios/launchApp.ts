@@ -2,13 +2,13 @@ import chalk from 'chalk';
 import path from 'path';
 
 import * as XcodeBuild from './XcodeBuild';
-import { BuildProps } from './XcodeBuild.types';
+import type { BuildProps } from './XcodeBuild.types';
 import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 import { Log } from '../../log';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { launchBinaryOnMacAsync } from '../../start/platforms/ios/devicectl';
 import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
-import { DevServerManager } from '../../start/server/DevServerManager';
+import type { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
 
@@ -65,7 +65,7 @@ export async function launchAppAsync(
     {
       applicationId: appId,
     },
-    { device }
+    { device: device.device }
   );
 }
 

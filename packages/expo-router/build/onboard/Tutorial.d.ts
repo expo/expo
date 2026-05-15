@@ -1,3 +1,2 @@
-import React from 'react';
-export declare function Tutorial(): React.JSX.Element;
+export declare function Tutorial(): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=Tutorial.d.ts.map

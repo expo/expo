@@ -6,7 +6,7 @@ exports.processHeaderItemsForPlatform = processHeaderItemsForPlatform;
  * `unstable_headerLeftItems`/`unstable_headerRightItems`. On Android, the
  * `.android.tsx` variant renders native Compose components via `headerLeft`/`headerRight`.
  */
-function processHeaderItemsForPlatform(_children, _placement) {
+function processHeaderItemsForPlatform(_children, _placement, _colors) {
     return null;
 }
 //# sourceMappingURL=processHeaderItemsForPlatform.js.map

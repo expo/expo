@@ -83,7 +83,7 @@ For detailed, step-by-step instructions, see our [EAS Tutorial](/tutorial/eas/in
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
-<Collapsible summary="Are you using this library in a existing (bare) React Native apps?">
+<Collapsible summary="Are you using this library in an existing (bare) React Native app?">
 
 Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native app](/bare/install-dev-builds-in-bare/).
 
@@ -95,15 +95,15 @@ Apps that don't use [Continuous Native Generation](/workflow/continuous-native-g
 
 ### Build the native app (Android)
 
-<Prerequisites numberOfRequirements={3}>
-  <Requirement number={1} title="Expo account">
+<Prerequisites>
+  <Requirement title="Expo account">
     Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
   </Requirement>
-  <Requirement number={2} title="EAS CLI">
+  <Requirement title="EAS CLI">
     The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
   </Requirement>
-  <Requirement number={3} title="An Android Emulator (optional)">
+  <Requirement title="An Android Emulator (optional)">
     An [Android Emulator](/workflow/android-studio-emulator/) is optional if you want to test your
     app on an emulator.
   </Requirement>
@@ -119,15 +119,15 @@ Read more about [Android builds on EAS](/tutorial/eas/android-development-build)
 
 ### Build the native app (iOS Simulator)
 
-<Prerequisites numberOfRequirements={3}>
-  <Requirement number={1} title="Expo account">
+<Prerequisites>
+  <Requirement title="Expo account">
     Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
   </Requirement>
-  <Requirement number={2} title="EAS CLI">
+  <Requirement title="EAS CLI">
     The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
   </Requirement>
-  <Requirement number={3} title="macOS with iOS Simulator installed">
+  <Requirement title="macOS with iOS Simulator installed">
     iOS Simulators are available only on macOS. Make sure you have the [iOS
     Simulator](/workflow/ios-simulator/) installed.
   </Requirement>
@@ -158,15 +158,15 @@ Read more about [iOS Simulator builds on EAS](/tutorial/eas/ios-development-buil
 <Step label="2">
 ### Build the native app (iOS device)
 
-<Prerequisites numberOfRequirements={3}>
-  <Requirement number={1} title="Expo account">
+<Prerequisites>
+  <Requirement title="Expo account">
     Sign up for an [Expo](https://expo.dev/signup) account, if you haven't already.
   </Requirement>
-  <Requirement number={2} title="EAS CLI">
+  <Requirement title="EAS CLI">
     The [EAS CLI](/build/setup/#install-the-latest-eas-cli) installed and logged in.
     <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
   </Requirement>
-  <Requirement number={3} title="Apple Developer account">
+  <Requirement title="Apple Developer account">
     A paid [Apple Developer](https://developer.apple.com/) account for creating [signing
     credentials](/app-signing/managed-credentials/#generating-app-signing-credentials) so the app
     could be installed on an iOS device.

@@ -4,8 +4,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { Readable } from 'node:stream';
 
-import { ensureDirectoryAsync } from './dir';
-
 const debug = require('debug')('expo:utils:tar') as typeof console.log;
 
 class ChecksumStream extends TransformStream {
@@ -40,7 +38,7 @@ export async function extractStream(
   options: ExtractOptions = {}
 ): Promise<string> {
   output = path.resolve(output);
-  await ensureDirectoryAsync(output);
+  await fs.promises.mkdir(output, { recursive: true });
 
   const { checksumAlgorithm, strip = 0, rename, filter } = options;
 

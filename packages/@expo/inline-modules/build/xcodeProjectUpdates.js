@@ -65,3 +65,4 @@ async function updateXcodeProject(projectRoot, inlineModulesXcodeParams) {
         await fs_1.default.promises.writeFile(pbxProject.filepath, pbxProject.writeSync());
     }
 }
+//# sourceMappingURL=xcodeProjectUpdates.js.map
