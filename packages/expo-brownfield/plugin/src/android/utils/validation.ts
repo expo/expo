@@ -47,9 +47,7 @@ export const validateGradleField = (
   const { pattern, shape } = PATTERNS[kind];
   if (typeof value !== 'string' || !pattern.test(value)) {
     throw new Error(
-      `Invalid value for "${fieldName}" in the expo-brownfield plugin config: ${JSON.stringify(value)}. ` +
-        `This value is emitted into generated Gradle and Android source files, so it must be ${shape}. ` +
-        `Update the value in your app config (or plugin props) and re-run prebuild.`
+      `Invalid ${fieldName} ${JSON.stringify(value)}: must be ${shape}. Update your app config and re-run prebuild.`
     );
   }
   return value;
