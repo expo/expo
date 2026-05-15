@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed `pod install` failing with `bad component (expected absolute path component)` for precompiled Expo modules when the project lives under a path containing non-ASCII characters (e.g. emoji). ([#45779](https://github.com/expo/expo/pull/45779) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
@@ -20,7 +21,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [iOS] Cache prebuilt module status lookups to reduce repeated `File.exist?` calls during `pod install`. ([#45742](https://github.com/expo/expo/pull/45742) by [@chrfalch](https://github.com/chrfalch))
+[iOS] Added fallback to source for missing framework slice. ([#45664](https://github.com/expo/expo/pull/45664) by [@chrfalch](https://github.com/chrfalch))
 
 ## 56.0.4 — 2026-05-11
 
