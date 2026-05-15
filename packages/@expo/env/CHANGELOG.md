@@ -15,6 +15,7 @@
 ### 💡 Others
 
 - Differentiate between personal environment variables for .local env files and system environment variables, which are both now blocked respectively when they're misused ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+- Add `REACT_NATIVE_OVERRIDE_HERMES_DIR` to local-only env vars ([#45847](https://github.com/expo/expo/pull/45847) by [@kitten](https://github.com/kitten))
 
 ## 2.2.1 — 2026-05-06
 
