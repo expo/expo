@@ -49,8 +49,16 @@ function wrapWithConsumption(
           reader.releaseLock();
         }
       },
-      async cancel(reason) {
-        await reader.cancel(reason);
+      cancel(reason) {
+        if (!markedConsumed) {
+          markedConsumed = true;
+          body.consumed = true;
+        }
+
+        // ReadableStreamTee uses a single shared cancelPromise that only
+        // resolves once both branches are canceled, so awaiting here would
+        // hang whenever the user cancels just one side.
+        reader.cancel(reason).catch(() => {});
       },
     },
     {
@@ -88,7 +96,7 @@ class Body {
     }
 
     const reader = this.stream.getReader();
-    const chunks: Uint8Array[] = [];
+    const chunks: Uint8Array<ArrayBuffer>[] = [];
     let length = 0;
 
     try {
@@ -174,55 +182,63 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       // we cannot simply rely on the native code to stop sending `didReceiveResponseData`.
       let isControllerClosed = false;
 
-      body.stream = new ReadableStream({
-        start: (controller) => {
-          if (body.streamingState === 'completed') {
-            return;
-          }
-
-          this.addListener('didReceiveResponseData', (data: Uint8Array<ArrayBuffer>) => {
-            if (!isControllerClosed) {
-              controller.enqueue(data);
+      body.stream = new ReadableStream(
+        {
+          start: (controller) => {
+            if (body.streamingState === 'completed') {
+              return;
             }
-          });
 
-          this.addListener('didComplete', () => {
-            controller.close();
-            isControllerClosed = true;
-          });
-
-          this.addListener('didFailWithError', (error: string) => {
-            controller.error(new Error(error));
-            isControllerClosed = true;
-          });
-        },
-
-        pull: async (controller) => {
-          if (body.streamingState === 'none') {
-            const completedData = await this.startStreaming();
-
-            if (completedData != null) {
+            this.addListener('didReceiveResponseData', (data: Uint8Array<ArrayBuffer>) => {
               if (!isControllerClosed) {
-                controller.enqueue(completedData);
-                controller.close();
-                isControllerClosed = true;
+                controller.enqueue(data);
               }
+            });
 
-              body.streamingState = 'completed';
-            } else {
-              body.streamingState = 'started';
+            this.addListener('didComplete', () => {
+              controller.close();
+              isControllerClosed = true;
+            });
+
+            this.addListener('didFailWithError', (error: string) => {
+              controller.error(new Error(error));
+              isControllerClosed = true;
+            });
+          },
+
+          pull: async (controller) => {
+            if (body.streamingState === 'none') {
+              const completedData = await this.startStreaming();
+
+              if (completedData != null) {
+                if (!isControllerClosed) {
+                  controller.enqueue(completedData);
+                  controller.close();
+                  isControllerClosed = true;
+                }
+
+                body.streamingState = 'completed';
+              } else {
+                body.streamingState = 'started';
+              }
+            } else if (body.streamingState === 'completed') {
+              controller.close();
+              isControllerClosed = true;
             }
-          } else if (body.streamingState === 'completed') {
-            controller.close();
-            isControllerClosed = true;
-          }
-        },
+          },
 
-        cancel: (reason) => {
-          this.cancelStreaming(String(reason));
-          isControllerClosed = true;
+          cancel: (reason) => {
+            this.cancelStreaming(String(reason));
+            isControllerClosed = true;
+          },
         },
-      });
+        {
+          // Keep pull lazy. The default highWaterMark of 1 would fire pull at
+          // construction and flip streamingState before anything had actually
+          // been read, making bodyUsed return true after merely touching .body.
+          highWaterMark: 0,
+        }
+      );
     }
     return body.stream;
   }
@@ -325,7 +341,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     const cloneState: State = {
       body: new Body({ cloned: true }),
       metadata: {
-        rawHeaders: this._rawHeaders,
+        rawHeaders: this._rawHeaders.slice(),
         status: this.status,
         statusText: this.statusText,
         url: this.url,

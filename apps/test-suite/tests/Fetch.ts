@@ -87,6 +87,16 @@ export function test({ describe, expect, it, ...t }) {
       expect(clonedBuffer.byteLength).toBe(64);
     });
 
+    it('should clone a response and read both bodies as text independently', async () => {
+      const resp = await fetch('https://httpbin.io/get');
+      const cloned = resp.clone();
+      const [originalText, clonedText] = await Promise.all([resp.text(), cloned.text()]);
+      expect(originalText).toBe(clonedText);
+      expect(originalText).not.toBe('');
+      expect(resp.bodyUsed).toBe(true);
+      expect(cloned.bodyUsed).toBe(true);
+    });
+
     it('should preserve response metadata on the clone', async () => {
       const resp = await fetch('https://httpbin.io/get');
       const cloned = resp.clone();

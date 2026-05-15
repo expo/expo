@@ -4,9 +4,9 @@
 
 import { FetchResponse } from '../FetchResponse';
 
-if (typeof globalThis.ReadableStream === 'undefined') {
-  globalThis.ReadableStream = require('node:stream/web').ReadableStream;
-}
+globalThis.ReadableStream = require('node:stream/web').ReadableStream;
+globalThis.TextDecoder = require('node:util').TextDecoder;
+globalThis.TextEncoder = require('node:util').TextEncoder;
 
 jest.mock('../ExpoFetchModule', () => {
   const { TextEncoder, TextDecoder } = require('node:util');
@@ -127,6 +127,54 @@ describe('FetchResponse', () => {
       response.body!.getReader();
       expect(() => response.clone()).toThrow(TypeError);
     });
+
+    it('throws a TypeError if the body has been partially read and released', async () => {
+      const response = makeResponse();
+      const reader = response.body!.getReader();
+      await reader.read();
+      reader.releaseLock();
+      expect(() => response.clone()).toThrow(TypeError);
+    });
+
+    it('keeps the original readable after the clone body is cancelled', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      await cloned.body!.cancel();
+      expect((await response.arrayBuffer()).byteLength).toBe(11);
+    });
+
+    it('keeps the clone readable after the original body is cancelled', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      await response.body!.cancel();
+      expect((await cloned.arrayBuffer()).byteLength).toBe(11);
+    });
+
+    it('reads the body of a clone via text()', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      expect(await cloned.text()).toBe('hello world');
+    });
+
+    it('reads the body of a clone via blob()', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      const blob = await cloned.blob();
+      expect(blob.size).toBe(11);
+    });
+
+    it('routes json() through the cloned body', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      await expect(cloned.json()).rejects.toThrow(SyntaxError);
+    });
+
+    it('routes formData() through the cloned body', async () => {
+      const response = makeResponse();
+      const cloned = response.clone();
+      const formData = await cloned.formData();
+      expect(formData.get('hello world')).toBe('');
+    });
   });
 
   describe('body methods', () => {
@@ -180,6 +228,33 @@ describe('FetchResponse', () => {
       const cloned = response.clone();
       await cloned.arrayBuffer();
       expect(response.bodyUsed).toBe(false);
+    });
+
+    it('lets both tee() branches read the body and flips bodyUsed', async () => {
+      const response = makeResponse();
+      const [branchA, branchB] = response.body!.tee();
+
+      const drain = async (stream: ReadableStream<Uint8Array<ArrayBuffer>>) => {
+        const reader = stream.getReader();
+        let length = 0;
+
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (!done) {
+            length += value.byteLength;
+          } else {
+            break;
+          }
+        }
+
+        return length;
+      };
+
+      const [aLength, bLength] = await Promise.all([drain(branchA), drain(branchB)]);
+      expect(aLength).toBe(11);
+      expect(bLength).toBe(11);
+      expect(response.bodyUsed).toBe(true);
     });
   });
 });
