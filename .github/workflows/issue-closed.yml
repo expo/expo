@@ -7,7 +7,7 @@ on:
 jobs:
   run-on-issue-accepted:
     runs-on: ubuntu-24.04
-    if: contains(github.event.issue.labels.*.name, 'Issue accepted')
+    if: github.repository == 'expo/expo' && contains(github.event.issue.labels.*.name, 'Issue accepted')
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4

@@ -14,8 +14,9 @@ concurrency:
 
 jobs:
   docs-pr-destroy:
-    if: (github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
-        (github.event.action == 'unlabeled' && github.event.label.name == 'preview')
+    if: github.repository == 'expo/expo' &&
+        ((github.event.action == 'closed' && contains(github.event.pull_request.labels.*.name, 'preview')) ||
+         (github.event.action == 'unlabeled' && github.event.label.name == 'preview'))
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
