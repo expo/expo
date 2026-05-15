@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing HTML sanitization when serializing log-box error data ([#45885](https://github.com/expo/expo/pull/45885) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.1.6 — 2026-05-19
