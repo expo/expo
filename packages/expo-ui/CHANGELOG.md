@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [iOS] Unmount `BottomSheet` when it is dismissed. ([#45846](https://github.com/expo/expo/pull/45846) by [@nishan](https://github.com/intergalacticspacehighway))
