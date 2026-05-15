@@ -246,6 +246,10 @@ From **SDK 54**, you can set `experiments.autolinkingModuleResolution` to `true`
 
 From **SDK 55**, this is enabled automatically for apps in monorepos.
 
+#### Monorepos with TV projects
+
+See the [Building for TV](/guides/building-for-tv/#modify-dependencies-for-tv) dependencies section for the special `react-native` dependency requirements when a TV project is contained in a monorepo with other Expo projects.
+
 ### Script '...' does not exist
 
 React Native uses packages to ship both JavaScript and native files. These native files also need to be linked, like the [**react-native/react.Gradle**](https://github.com/facebook/react-native/blob/v0.70.6/react.gradle) file from **android/app/build.Gradle**. Usually, this path is hardcoded to something like:
