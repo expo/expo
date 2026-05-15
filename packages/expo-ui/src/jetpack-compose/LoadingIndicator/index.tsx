@@ -1,61 +1,73 @@
 import { requireNativeView } from 'expo';
-import { ColorValue } from 'react-native';
+import { type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
+import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type LoadingIndicatorVariant = 'default' | 'contained';
-
-export type LoadingIndicatorProps = {
+/**
+ * Common props shared by loading indicator variants.
+ */
+export type LoadingIndicatorCommonConfig = {
   /**
-   * The variant of the loading indicator.
-   * - `default`: A standard loading indicator with morphing shapes.
-   * - `contained`: A loading indicator inside a circular colored background.
-   *
-   * @default 'default'
-   * @platform android
-   */
-  variant?: LoadingIndicatorVariant;
-  /**
-   * The progress value of the indicator.
-   * - If provided: Determinate mode, which morphs shapes according to the progress value.
-   * - If `null` or `undefined`: Indeterminate mode, which uses continuous morphing animation.
-   *
-   * This is a number between `0` and `1`.
+   * The current progress value between `0` and `1`. Omit for indeterminate.
    */
   progress?: number | null;
   /**
-   * The color of the loading indicator shapes.
-   *
-   * - Default variant: Color of the morphing shapes
-   * - Contained variant: Color of the indicator (defaults to white)
+   * Loading indicator color.
    */
   color?: ColorValue;
   /**
-   * The color of the circular background container.
-   * Only applies when `variant` is `contained`.
-   */
-  containerColor?: ColorValue;
-  /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
-const NativeLoadingIndicatorView: React.ComponentType<LoadingIndicatorProps> = requireNativeView(
-  'ExpoUI',
-  'LoadingView'
-);
+function transformProps<T extends LoadingIndicatorCommonConfig>(props: T): T {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  } as T;
+}
+
+function createLoadingIndicatorComponent<P extends LoadingIndicatorCommonConfig>(
+  viewName: string
+): React.ComponentType<P> {
+  const NativeView: React.ComponentType<P> = requireNativeView('ExpoUI', viewName);
+  function Component(props: P) {
+    return <NativeView {...transformProps(props)} />;
+  }
+  Component.displayName = viewName;
+  return Component;
+}
+
+// region LoadingIndicator
 
 /**
- * Renders a `LoadingIndicator` component.
+ * A loading indicator that displays loading using morphing shapes.
+ *
+ * Matches the Jetpack Compose `LoadingIndicator`.
  */
-export function LoadingIndicator(props: LoadingIndicatorProps) {
-  return (
-    <NativeLoadingIndicatorView
-      {...props}
-      variant={props.variant ?? 'default'}
-      // @ts-expect-error: modifiers conversion
-      modifiers={props.modifiers?.map((m) => m.__expo_shared_object_id__)}
-    />
-  );
-}
+export const LoadingIndicator = createLoadingIndicatorComponent('LoadingIndicatorView');
+
+// endregion
+
+// region ContainedLoadingIndicator
+
+export type ContainedLoadingIndicatorProps = LoadingIndicatorCommonConfig & {
+  /**
+   * Loading indicator's container color
+   */
+  containerColor?: ColorValue;
+};
+
+/**
+ * A loading indicator that displays loading using morphing shapes inside a container.
+ *
+ * Matches the Jetpack Compose `ContainedLoadingIndicator`.
+ */
+export const ContainedLoadingIndicator =
+  createLoadingIndicatorComponent<ContainedLoadingIndicatorProps>('ContainedLoadingIndicatorView');
+
+// endregion

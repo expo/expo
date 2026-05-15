@@ -1,6 +1,6 @@
 ---
 title: LoadingIndicator
-description: A Jetpack Compose LoadingIndicator component for displaying loading state.
+description: Jetpack Compose loading indicator components for displaying loading state.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android']
@@ -11,13 +11,15 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-A loading indicator component based on Material 3 design for displaying loading state.
+Expo UI Loading Indicators match the official Jetpack Compose [Loading Indicator API](https://m3.material.io/components/loading-indicator/overview).
 
 ## Installation
 
 <APIInstallSection />
 
 ## Usage
+
+### Default loading indicator
 
 <Tabs>
   <Tab label="Preview">
@@ -30,25 +32,34 @@ A loading indicator component based on Material 3 design for displaying loading 
   <Tab label="Code">
     ```tsx
     import { LoadingIndicator } from '@expo/ui/jetpack-compose';
-     {/* Indeterminate (continuous animation) */}
-     <LoadingIndicator />
 
-     {/* Determinate with progress value */}
-     <LoadingIndicator progress={0.5} color="#6200EE" />
+    {/* Indeterminate (continuous animation) */}
+    <LoadingIndicator />
 
-     {/* Contained variant with background */}
-     <LoadingIndicator
-       variant="contained"
-       containerColor="#E8DEF8"
-       color="#6200EE"
-     />
-     ```
+    {/* Determinate with progress value */}
+    <LoadingIndicator progress={0.5} color="#6200EE" />
+    ```
 
-   </Tab>
- </Tabs>
+  </Tab>
+</Tabs>
 
- > See [official Jetpack Compose documentation](https://m3.material.io/components/loading-indicator/overview) for more information.
+### Contained loading indicator
 
- ## API
+A loading indicator inside a circular colored background.
 
- <APISection packageName="expo-ui/jetpack-compose/loadingindicator" apiName="LoadingIndicator" />
+```tsx
+import { ContainedLoadingIndicator } from '@expo/ui/jetpack-compose';
+
+<ContainedLoadingIndicator
+  containerColor="#E8DEF8"
+  color="#6200EE"
+/>
+```
+
+## API
+
+```tsx
+import { LoadingIndicator, ContainedLoadingIndicator } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/loadingindicator" />

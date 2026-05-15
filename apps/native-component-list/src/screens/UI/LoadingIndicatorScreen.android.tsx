@@ -1,57 +1,71 @@
-import { Host, LoadingIndicator } from '@expo/ui/jetpack-compose';
+import {
+  ContainedLoadingIndicator,
+  Host,
+  LoadingIndicator,
+  LazyColumn,
+  Card,
+  Column,
+  Row,
+  Text as ComposeText,
+} from '@expo/ui/jetpack-compose';
+import { fillMaxWidth, padding } from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
-
-import { Page, Section } from '../../components/Page';
 
 export default function LoadingIndicatorScreen() {
   const [progress, setProgress] = React.useState(0);
 
   React.useEffect(() => {
     const interval = setInterval(() => {
-      setProgress((progress) => (progress + 0.02) % 1);
-    }, 50);
-    return () => {
-      clearInterval(interval);
-    };
+      setProgress((p) => (p + 0.05) % 1);
+    }, 500);
+    return () => clearInterval(interval);
   }, []);
 
   return (
-    <Page>
-      <Section title="Indeterminate loading" gap={16}>
-        <Host matchContents>
-          <LoadingIndicator />
-        </Host>
-      </Section>
-      <Section title="Indeterminate contained loading" gap={16}>
-        <Host matchContents>
-          <LoadingIndicator variant="contained" />
-        </Host>
-      </Section>
-      <Section title="Determinate loading" gap={16} row>
-        <Host matchContents>
-          <LoadingIndicator variant="contained" progress={progress} />
-        </Host>
-        <Host matchContents>
-          <LoadingIndicator progress={progress} />
-        </Host>
-      </Section>
-      <Section title="Indicator color" gap={16} row>
-        <Host matchContents>
-          <LoadingIndicator progress={progress} color="red" />
-        </Host>
-        <Host matchContents>
-          <LoadingIndicator variant="contained" progress={progress} color="blue" />
-        </Host>
-      </Section>
-      <Section title="Container color" gap={16} row>
-        <Host matchContents>
-          <LoadingIndicator variant="contained" containerColor="#cccccc" />
-        </Host>
-        <Host matchContents>
-          <LoadingIndicator variant="contained" containerColor="#ff4500" />
-        </Host>
-      </Section>
-    </Page>
+    <Host style={{ flex: 1 }}>
+      <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Indeterminate</ComposeText>
+            <ComposeText>Omit progress to animate continuously.</ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <LoadingIndicator />
+              <ContainedLoadingIndicator />
+            </Row>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Determinate</ComposeText>
+            <ComposeText>Provide a progress value between 0 and 1.</ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <LoadingIndicator progress={progress} />
+              <ContainedLoadingIndicator progress={progress} />
+            </Row>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Custom colors</ComposeText>
+            <ComposeText>Override indicator color.</ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <LoadingIndicator color="red" />
+              <ContainedLoadingIndicator color="blue" />
+            </Row>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Container color</ComposeText>
+            <ComposeText>Customize the circular background on contained indicators.</ComposeText>
+            <Row horizontalArrangement={{ spacedBy: 16 }}>
+              <ContainedLoadingIndicator containerColor="#cccccc" />
+              <ContainedLoadingIndicator containerColor="#ff4500" />
+            </Row>
+          </Column>
+        </Card>
+      </LazyColumn>
+    </Host>
   );
 }
 

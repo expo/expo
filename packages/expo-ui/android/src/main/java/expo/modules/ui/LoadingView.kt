@@ -2,82 +2,76 @@
 
 package expo.modules.ui
 
-import android.content.Context
+import android.graphics.Color
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.LoadingIndicatorDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.views.ComposeProps
-import expo.modules.kotlin.views.ComposableScope
-import expo.modules.kotlin.views.ExpoComposeView
-import android.graphics.Color
+import expo.modules.kotlin.views.FunctionalComposableScope
+import expo.modules.kotlin.views.OptimizedComposeProps
 
-enum class LoadingIndicatorVariant(val value: String) : Enumerable {
-  DEFAULT("default"),
-  CONTAINED("contained")
-}
+// region LoadingIndicator
 
-data class LoadingProps(
-  val variant: MutableState<LoadingIndicatorVariant> = mutableStateOf(LoadingIndicatorVariant.DEFAULT),
-  val progress: MutableState<Float?> = mutableStateOf(null),
-  val color: MutableState<Color?> = mutableStateOf(null),
-  val containerColor: MutableState<Color?> = mutableStateOf(null),
-  val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
+@OptimizedComposeProps
+data class LoadingIndicatorProps(
+  val progress: Float? = null,
+  val color: Color? = null,
+  val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
-class LoadingView(context: Context, appContext: AppContext) :
-  ExpoComposeView<LoadingProps>(context, appContext) {
-  override val props = LoadingProps()
+@Composable
+fun FunctionalComposableScope.LoadingIndicatorContent(props: LoadingIndicatorProps) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  val indicatorColor = props.color.composeOrNull ?: LoadingIndicatorDefaults.indicatorColor
 
-  @Composable
-  override fun ComposableScope.Content() {
-    val (variant) = props.variant
-    val (progress) = props.progress
-    val (color) = props.color
-    val (containerColor) = props.containerColor
-    val modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
-
-      when (variant) {
-        LoadingIndicatorVariant.CONTAINED -> {
-          val indicatorColor = color.composeOrNull ?: LoadingIndicatorDefaults.containedIndicatorColor
-          val containerColor = containerColor.composeOrNull ?: LoadingIndicatorDefaults.containedContainerColor
-
-          if (progress != null) {
-            ContainedLoadingIndicator(
-              progress = { progress },
-              modifier = modifier,
-              indicatorColor = indicatorColor,
-              containerColor = containerColor
-            )
-          } else {
-            ContainedLoadingIndicator(
-              modifier = modifier,
-              indicatorColor = indicatorColor,
-              containerColor = containerColor
-            )
-          }
-        }
-        LoadingIndicatorVariant.DEFAULT -> {
-          val indicatorColor = color.composeOrNull ?: LoadingIndicatorDefaults.indicatorColor
-
-          if (progress != null) {
-            LoadingIndicator(
-              progress = { progress },
-              modifier = modifier,
-              color = indicatorColor
-            )
-          } else {
-            LoadingIndicator(
-              modifier = modifier,
-              color = indicatorColor
-            )
-          }
-        }
-      }
-    }
+  if (props.progress != null) {
+    LoadingIndicator(
+      progress = { props.progress },
+      modifier = modifier,
+      color = indicatorColor
+    )
+  } else {
+    LoadingIndicator(
+      modifier = modifier,
+      color = indicatorColor
+    )
   }
+}
+
+// endregion
+
+// region ContainedLoadingIndicator
+
+@OptimizedComposeProps
+data class ContainedLoadingIndicatorProps(
+  val progress: Float? = null,
+  val color: Color? = null,
+  val containerColor: Color? = null,
+  val modifiers: ModifierList = emptyList()
+) : ComposeProps
+
+@Composable
+fun FunctionalComposableScope.ContainedLoadingIndicatorContent(props: ContainedLoadingIndicatorProps) {
+  val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
+  val indicatorColor = props.color.composeOrNull ?: LoadingIndicatorDefaults.containedIndicatorColor
+  val containerColor = props.containerColor.composeOrNull ?: LoadingIndicatorDefaults.containedContainerColor
+
+  if (props.progress != null) {
+    ContainedLoadingIndicator(
+      progress = { props.progress },
+      modifier = modifier,
+      indicatorColor = indicatorColor,
+      containerColor = containerColor
+    )
+  } else {
+    ContainedLoadingIndicator(
+      modifier = modifier,
+      indicatorColor = indicatorColor,
+      containerColor = containerColor
+    )
+  }
+}
+
+// endregion

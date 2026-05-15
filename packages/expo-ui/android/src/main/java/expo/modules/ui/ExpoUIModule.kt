@@ -129,8 +129,6 @@ class ExpoUIModule : Module() {
       Events("onExpoUISyncFlush")
     }
 
-    View(LoadingView::class)
-
     View(SlotView::class) {
       Events("onSlotEvent")
     }
@@ -341,6 +339,18 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DropdownMenuItemContent(props) { onItemPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<LoadingIndicatorProps>("LoadingIndicatorView") {
+      Content { props ->
+        LoadingIndicatorContent(props)
+      }
+    }
+
+    ExpoUIView<ContainedLoadingIndicatorProps>("ContainedLoadingIndicatorView") {
+      Content { props ->
+        ContainedLoadingIndicatorContent(props)
       }
     }
 

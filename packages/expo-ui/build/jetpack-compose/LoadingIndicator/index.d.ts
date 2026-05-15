@@ -1,43 +1,38 @@
-import { ColorValue } from 'react-native';
-import { ExpoModifier } from '../../types';
-export type LoadingIndicatorVariant = 'default' | 'contained';
-export type LoadingIndicatorProps = {
+import { type ColorValue } from 'react-native';
+import { type ModifierConfig } from '../../types';
+/**
+ * Common props shared by loading indicator variants.
+ */
+export type LoadingIndicatorCommonConfig = {
     /**
-     * The variant of the loading indicator.
-     * - `default`: A standard loading indicator with morphing shapes.
-     * - `contained`: A loading indicator inside a circular colored background.
-     *
-     * @default 'default'
-     * @platform android
-     */
-    variant?: LoadingIndicatorVariant;
-    /**
-     * The progress value of the indicator.
-     * - If provided: Determinate mode, which morphs shapes according to the progress value.
-     * - If `null` or `undefined`: Indeterminate mode, which uses continuous morphing animation.
-     *
-     * This is a number between `0` and `1`.
+     * The current progress value between `0` and `1`. Omit for indeterminate.
      */
     progress?: number | null;
     /**
-     * The color of the loading indicator shapes.
-     *
-     * - Default variant: Color of the morphing shapes
-     * - Contained variant: Color of the indicator (defaults to white)
+     * Loading indicator color.
      */
     color?: ColorValue;
     /**
-     * The color of the circular background container.
-     * Only applies when `variant` is `contained`.
-     */
-    containerColor?: ColorValue;
-    /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
- * Renders a `LoadingIndicator` component.
+ * A loading indicator that displays loading using morphing shapes.
+ *
+ * Matches the Jetpack Compose `LoadingIndicator`.
  */
-export declare function LoadingIndicator(props: LoadingIndicatorProps): import("react").JSX.Element;
+export declare const LoadingIndicator: import("react").ComponentType<LoadingIndicatorCommonConfig>;
+export type ContainedLoadingIndicatorProps = LoadingIndicatorCommonConfig & {
+    /**
+     * Loading indicator's container color
+     */
+    containerColor?: ColorValue;
+};
+/**
+ * A loading indicator that displays loading using morphing shapes inside a container.
+ *
+ * Matches the Jetpack Compose `ContainedLoadingIndicator`.
+ */
+export declare const ContainedLoadingIndicator: import("react").ComponentType<ContainedLoadingIndicatorProps>;
 //# sourceMappingURL=index.d.ts.map
