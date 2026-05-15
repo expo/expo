@@ -233,7 +233,7 @@ class Env {
 
   /** Internal key used to pass eager bundle data from the CLI to the native run scripts during `npx expo run` commands. */
   get __EXPO_EAGER_BUNDLE_OPTIONS() {
-    return string('__EXPO_EAGER_BUNDLE_OPTIONS', '');
+    return getOriginalEnvValue('__EXPO_EAGER_BUNDLE_OPTIONS') || '';
   }
 
   /** Disable server deployment during production builds (during `expo export:embed`). This is useful for testing API routes and server components against a local server. */
