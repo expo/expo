@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.2.2 — 2026-05-19
