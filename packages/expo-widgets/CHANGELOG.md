@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix Live Activity multiple evaluations. ([#45675](https://github.com/expo/expo/pull/45675) by [@nkopylov](https://github.com/nkopylov))
 - Fix module precompile.
 
 ### 💡 Others
