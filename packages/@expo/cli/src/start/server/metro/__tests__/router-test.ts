@@ -4,6 +4,7 @@ import {
   getAppRouterRelativeEntryPath,
   getApiRoutesForDirectory,
   getMiddlewareForDirectory,
+  getRouterDirectoryModuleIdWithManifest,
 } from '../router';
 
 jest.mock('resolve-from');
@@ -42,6 +43,39 @@ describe(getAppRouterRelativeEntryPath, () => {
       '/'
     );
     expect(getAppRouterRelativeEntryPath('/apps/demo/')).toBe('../../app');
+  });
+});
+
+describe(getRouterDirectoryModuleIdWithManifest, () => {
+  const exp = (root?: string): any => ({ extra: root != null ? { router: { root } } : undefined });
+
+  it('returns the configured relative root', () => {
+    expect(getRouterDirectoryModuleIdWithManifest('/project', exp('./src/routes'))).toBe(
+      './src/routes'
+    );
+  });
+
+  it('returns an absolute root that is inside the project', () => {
+    expect(getRouterDirectoryModuleIdWithManifest('/project', exp('/project/routes'))).toBe(
+      '/project/routes'
+    );
+  });
+
+  it('falls back to autodetection when no root is configured', () => {
+    vol.fromJSON({ 'app/index.tsx': '' }, '/project');
+    expect(getRouterDirectoryModuleIdWithManifest('/project', exp())).toBe('app');
+  });
+
+  it('throws when the configured root traverses out of the project', () => {
+    expect(() => getRouterDirectoryModuleIdWithManifest('/project', exp('../sibling/app'))).toThrow(
+      /outside the project root/
+    );
+  });
+
+  it('throws when the configured root is an absolute path outside the project', () => {
+    expect(() => getRouterDirectoryModuleIdWithManifest('/project', exp('/random/value'))).toThrow(
+      /outside the project root/
+    );
   });
 });
 
