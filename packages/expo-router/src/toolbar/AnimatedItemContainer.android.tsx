@@ -1,5 +1,6 @@
-import { AnimatedVisibility, EnterTransition, ExitTransition } from '@expo/ui/jetpack-compose';
 import type { ReactNode } from 'react';
+
+import { getExpoUiJetpackCompose } from '../optional-dependencies/expo-ui';
 
 /**
  * Shared animated container for Android toolbar items.
@@ -11,6 +12,9 @@ export function AnimatedItemContainer({
   visible: boolean;
   children: ReactNode;
 }) {
+  const { AnimatedVisibility, EnterTransition, ExitTransition } = getExpoUiJetpackCompose(
+    'Animated Android toolbar items'
+  );
   return (
     <AnimatedVisibility
       // As mentioned in the docs, `scaleIn` does not animate layout, so we need to combine it with `expandIn` to get the layout animation as well. The same applies to `scaleOut` and `shrinkOut`.

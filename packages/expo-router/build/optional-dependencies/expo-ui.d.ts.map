@@ -1,0 +1,1 @@
+{"version":3,"file":"expo-ui.d.ts","sourceRoot":"","sources":["../../src/optional-dependencies/expo-ui.ts"],"names":[],"mappings":"AAAA;;;;;;;;;;;;GAYG;AAUH,KAAK,cAAc,GAAG,cAAc,0BAA0B,CAAC,CAAC;AAChE,KAAK,uBAAuB,GAAG,cAAc,oCAAoC,CAAC,CAAC;AAQnF;;;GAGG;AACH,wBAAgB,uBAAuB,CAAC,OAAO,EAAE,MAAM,GAAG,cAAc,CAYvE;AAED;;;GAGG;AACH,wBAAgB,gCAAgC,CAAC,OAAO,EAAE,MAAM,GAAG,uBAAuB,CAYzF"}

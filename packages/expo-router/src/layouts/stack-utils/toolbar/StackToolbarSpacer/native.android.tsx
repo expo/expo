@@ -1,8 +1,9 @@
 'use client';
-import { Box } from '@expo/ui/jetpack-compose';
-import { width } from '@expo/ui/jetpack-compose/modifiers';
-
 import type { NativeToolbarSpacerProps } from './types';
+import {
+  getExpoUiJetpackCompose,
+  getExpoUiJetpackComposeModifiers,
+} from '../../../../optional-dependencies/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 
 /**
@@ -13,6 +14,8 @@ export const NativeToolbarSpacer: React.FC<NativeToolbarSpacerProps> = (props) =
   if (!props.width) {
     return null;
   }
+  const { Box } = getExpoUiJetpackCompose('`Stack.Toolbar.Spacer` on Android');
+  const { width } = getExpoUiJetpackComposeModifiers('`Stack.Toolbar.Spacer` on Android');
 
   return (
     <AnimatedItemContainer visible={!props.hidden}>

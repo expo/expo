@@ -3,10 +3,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.processHeaderItemsForPlatform = processHeaderItemsForPlatform;
 const jsx_runtime_1 = require("react/jsx-runtime");
-const jetpack_compose_1 = require("@expo/ui/jetpack-compose");
 const react_1 = require("react");
 const context_1 = require("./context");
 const NativeMenuContext_1 = require("../../../link/NativeMenuContext");
+const expo_ui_1 = require("../../../optional-dependencies/expo-ui");
 /**
  * On Android, renders toolbar children as native Compose components inside `headerLeft`/`headerRight`.
  * This bridges the gap since Android's react-native-screens doesn't support
@@ -38,6 +38,7 @@ function HeaderToolbarHostBase({ children, placement, colors, headerProps, }) {
         headerProps?.tintColor,
         headerProps?.backgroundColor,
     ]);
-    return ((0, jsx_runtime_1.jsx)(context_1.ToolbarPlacementContext.Provider, { value: placement, children: (0, jsx_runtime_1.jsx)(context_1.ToolbarColorContext.Provider, { value: stableColors, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Host, { matchContents: true, children: (0, jsx_runtime_1.jsx)(jetpack_compose_1.Row, { verticalAlignment: "center", children: children }) }) }) }) }));
+    const { Host, Row } = (0, expo_ui_1.getExpoUiJetpackCompose)('`Stack.Toolbar` header items on Android');
+    return ((0, jsx_runtime_1.jsx)(context_1.ToolbarPlacementContext.Provider, { value: placement, children: (0, jsx_runtime_1.jsx)(context_1.ToolbarColorContext.Provider, { value: stableColors, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsx)(Host, { matchContents: true, children: (0, jsx_runtime_1.jsx)(Row, { verticalAlignment: "center", children: children }) }) }) }) }));
 }
 //# sourceMappingURL=processHeaderItemsForPlatform.android.js.map

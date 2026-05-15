@@ -1,7 +1,6 @@
 'use client';
-import { IconButton, Icon } from '@expo/ui/jetpack-compose';
-
 import type { NativeToolbarButtonProps } from './types';
+import { getExpoUiJetpackCompose } from '../../../../optional-dependencies/expo-ui';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
 import { useToolbarColors } from '../context';
 import { DEFAULT_TOOLBAR_TINT_COLOR } from '../defaults';
@@ -22,6 +21,7 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
     return null;
   }
 
+  const { IconButton, Icon } = getExpoUiJetpackCompose('`Stack.Toolbar.Button` on Android');
   const tintColor =
     props.imageRenderingMode === 'original'
       ? undefined

@@ -1,5 +1,4 @@
 'use client';
-import { Host, Row } from '@expo/ui/jetpack-compose';
 import { type ReactNode, useMemo } from 'react';
 
 import {
@@ -9,6 +8,7 @@ import {
   type ToolbarPlacement,
 } from './context';
 import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import { getExpoUiJetpackCompose } from '../../../optional-dependencies/expo-ui';
 import type {
   NativeStackHeaderItemProps,
   NativeStackNavigationOptions,
@@ -71,6 +71,7 @@ function HeaderToolbarHostBase({
     ]
   );
 
+  const { Host, Row } = getExpoUiJetpackCompose('`Stack.Toolbar` header items on Android');
   return (
     <ToolbarPlacementContext.Provider value={placement}>
       <ToolbarColorContext.Provider value={stableColors}>
