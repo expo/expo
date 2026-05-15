@@ -102,7 +102,7 @@ export function parseEnvFiles(
 ) {
   if (!isEnabled()) {
     debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
-    return { env: {}, files: [] };
+    return { env: {}, files: [], sensitiveLoadedKeys: [] as string[] };
   }
 
   // Load environment variables from .env* files. Suppress warnings using silent
@@ -113,6 +113,9 @@ export function parseEnvFiles(
   // https://github.com/motdotla/dotenv-expand
   const loadedEnvVars: EnvOutput = {};
   const loadedEnvFiles: string[] = [];
+  const blockedByFile: Record<string, string[]> = {};
+  const localOnlyByFile: Record<string, string[]> = {};
+  const sensitive = new Set<string>();
 
   // Iterate over each dotenv file in lowest prio to highest prio order.
   // This step won't write to the process.env, but will overwrite the parsed envs.
@@ -127,12 +130,17 @@ export function parseEnvFiles(
 
       for (const key of Object.keys(envFileParsed)) {
         if (isIgnoredEnvKey(key)) {
+          (blockedByFile[envFile] ||= []).push(key);
           debug(`"${key}" is blocked from dotenv files, skipping in: ${envFile}`);
           continue;
         }
         if (!isLocalFile && isLocalEnvKey(key)) {
+          (localOnlyByFile[envFile] ||= []).push(key);
           debug(`"${key}" is only allowed in .local env files, skipping in: ${envFile}`);
           continue;
+        }
+        if (isLocalFile && isLocalEnvKey(key)) {
+          sensitive.add(key);
         }
         if (typeof loadedEnvVars[key] !== 'undefined') {
           debug(`"${key}" is already defined and overwritten by: ${envFile}`);
@@ -155,6 +163,17 @@ export function parseEnvFiles(
     }
   });
 
+  const violations: string[] = [];
+  if (Object.keys(blockedByFile).length > 0) {
+    violations.push(formatBlockedViolation(blockedByFile));
+  }
+  if (Object.keys(localOnlyByFile).length > 0) {
+    violations.push(formatLocalOnlyViolation(localOnlyByFile));
+  }
+  if (violations.length > 0) {
+    throw new Error(violations.join('\n\n'));
+  }
+
   const env = expand(loadedEnvVars, systemEnv);
   for (const key in env) {
     rememberOriginal(systemEnv, key);
@@ -163,7 +182,32 @@ export function parseEnvFiles(
   return {
     env,
     files: loadedEnvFiles.reverse(),
+    sensitiveLoadedKeys: [...sensitive],
   };
+}
+
+function formatViolationFiles(byFile: Record<string, string[]>): string {
+  return Object.entries(byFile)
+    .map(([file, keys]) => `  ${path.basename(file)}: ${keys.join(', ')}`)
+    .join('\n');
+}
+
+function formatBlockedViolation(byFile: Record<string, string[]>): string {
+  return [
+    'Refused to load dangerous environment variables from .env files.',
+    'Opt in via EXPO_UNSAFE_DOTENV_KEYS in your shell environment if you truly need them.',
+    '',
+    formatViolationFiles(byFile),
+  ].join('\n');
+}
+
+function formatLocalOnlyViolation(byFile: Record<string, string[]>): string {
+  return [
+    'Refused to load personal environment variables from a non-.local env file.',
+    'Move them to a .local env file.',
+    '',
+    formatViolationFiles(byFile),
+  ].join('\n');
 }
 
 /**
@@ -308,6 +352,13 @@ export function logLoadedEnv(
   // Log the loaded environment variables
   console.log(chalk.gray('env: export', envInfo.loaded.join(' ')));
 
+  // Highlight developer-tool roots / secrets that were loaded from a .local file —
+  // the same keys would be refused from any non-.local file. Surfacing them here
+  // tells the user which "sensitive" values are influencing the build.
+  if (envInfo.result === 'loaded' && envInfo.sensitiveLoadedKeys?.length) {
+    console.log(chalk.yellow('env: export (sensitive)', envInfo.sensitiveLoadedKeys.join(' ')));
+  }
+
   return envInfo;
 }
 
@@ -333,7 +384,7 @@ export function get(
 ) {
   if (!isEnabled()) {
     debug(`Skipping .env files because EXPO_NO_DOTENV is defined`);
-    return { env: {}, files: [] };
+    return { env: {}, files: [], sensitiveLoadedKeys: [] as string[] };
   }
   if (force || !memo) {
     memo = parseProjectEnv(projectRoot, { silent });
