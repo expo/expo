@@ -33,7 +33,7 @@ internal final class MotionActivityStreamer {
           self.activityStream = nil
           self.continuation = nil
         }
-        // nil update with .notDetermined or .authorized is a transient gap — skip it.
+        // nil update with .notDetermined or .authorized is a transient gap - skip it.
       }
     }
     activityStream = stream

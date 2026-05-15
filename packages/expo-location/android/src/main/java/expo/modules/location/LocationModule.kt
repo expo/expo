@@ -98,7 +98,7 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
       val result = ActivityRecognitionResult.extractResult(intent) ?: return
 
       // When multiple Android types map to the same unified type
-      // (e.g. WALKING + ON_FOOT → walking), take the highest confidence.
+      // (e.g. WALKING + ON_FOOT -> walking), take the highest confidence.
       val confidenceByType = result.probableActivities
         .groupBy { it.toMotionActivityType() }
         .mapValues { (_, activities) -> activities.maxOf { it.confidence } }
