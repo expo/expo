@@ -26,10 +26,10 @@ enum class NetworkTransport {
 }
 
 /**
- * A snapshot of the device's power, thermal, and battery state. Fields are
- * nullable so missing OS data (no service, pre-API-29 thermal API, no
- * battery sticky broadcast yet) can be expressed as `null` rather than a
- * sentinel.
+ * A snapshot of the device's power, thermal, and battery state.
+ *
+ * Fields may be `null` when Android does not provide the data,
+ * such as on older OS versions or before battery info is available.
  */
 data class DeviceState(
   val lowPowerMode: Boolean? = null,
