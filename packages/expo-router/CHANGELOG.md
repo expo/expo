@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support disabling NativeTabs Material Symbols (`md`) icons on Android via the `EXPO_ROUTER_DISABLE_NATIVE_TABS_MD` environment variable ([#45857](https://github.com/expo/expo/pull/45857) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 - Prevent leading `//` allowing unintentional host redirection ([#45866](https://github.com/expo/expo/pull/45866) by [@kitten](https://github.com/kitten))
