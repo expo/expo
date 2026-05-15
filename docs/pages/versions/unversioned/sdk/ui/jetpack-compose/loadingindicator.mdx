@@ -3,15 +3,21 @@ title: LoadingIndicator
 description: Jetpack Compose loading indicator components for displaying loading state.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { ComponentDiagram } from '~/ui/components/Diagram';
 
 Expo UI Loading Indicators match the official Jetpack Compose [Loading Indicator API](https://m3.material.io/components/loading-indicator/overview).
+
+<ComponentDiagram
+  mode="landscape"
+  source="/static/images/expo-ui/loadingindicator/android-light.webp"
+  darkSource="/static/images/expo-ui/loadingindicator/android-dark.webp"
+  alt="Default and contained loading indicators in indeterminate mode"
+/>
 
 ## Installation
 
@@ -19,41 +25,95 @@ Expo UI Loading Indicators match the official Jetpack Compose [Loading Indicator
 
 ## Usage
 
-### Default loading indicator
+### Loading indicator
 
-<Tabs>
-  <Tab label="Preview">
-    <ContentSpotlight
-      alt="LoadingIndicator component on Android."
-      src="/static/images/expo-ui/loadingindicator/android.png"
-      className="max-w-[380px]"
-    />
-  </Tab>
-  <Tab label="Code">
-    ```tsx
-    import { LoadingIndicator } from '@expo/ui/jetpack-compose';
+A morphing-shape loading animation from Material 3 Expressive.
 
-    {/* Indeterminate (continuous animation) */}
-    <LoadingIndicator />
+```tsx LoadingIndicatorExample.tsx
+import { Host, LoadingIndicator } from '@expo/ui/jetpack-compose';
 
-    {/* Determinate with progress value */}
-    <LoadingIndicator progress={0.5} color="#6200EE" />
-    ```
-
-  </Tab>
-</Tabs>
+export default function LoadingIndicatorExample() {
+  return (
+    <Host matchContents>
+      <LoadingIndicator />
+    </Host>
+  );
+}
+```
 
 ### Contained loading indicator
 
-A loading indicator inside a circular colored background.
+A loading indicator inside a colored background.
 
-```tsx
-import { ContainedLoadingIndicator } from '@expo/ui/jetpack-compose';
+```tsx ContainedLoadingIndicatorExample.tsx
+import { Host, ContainedLoadingIndicator } from '@expo/ui/jetpack-compose';
 
-<ContainedLoadingIndicator
-  containerColor="#E8DEF8"
-  color="#6200EE"
-/>
+export default function ContainedLoadingIndicatorExample() {
+  return (
+    <Host matchContents>
+      <ContainedLoadingIndicator />
+    </Host>
+  );
+}
+```
+
+### Indeterminate
+
+Omit the `progress` prop to animate continuously without indicating a specific completion level.
+
+```tsx IndeterminateExample.tsx
+import {
+  ContainedLoadingIndicator,
+  Host,
+  LoadingIndicator,
+  Row,
+} from '@expo/ui/jetpack-compose';
+
+export default function IndeterminateExample() {
+  return (
+    <Host matchContents>
+      <Row horizontalArrangement={{ spacedBy: 16 }}>
+        <LoadingIndicator />
+        <ContainedLoadingIndicator />
+      </Row>
+    </Host>
+  );
+}
+```
+
+### Determinate
+
+Pass an observable state from `useNativeState` as `progress`. Update `progress.value` between `0` and `1`.
+
+```tsx DeterminateExample.tsx
+import {
+  ContainedLoadingIndicator,
+  Host,
+  LoadingIndicator,
+  Row,
+  useNativeState,
+} from '@expo/ui/jetpack-compose';
+import { useEffect } from 'react';
+
+export default function DeterminateExample() {
+  const progress = useNativeState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      progress.value = (progress.value + 0.05) % 1;
+    }, 500);
+    return () => clearInterval(interval);
+  }, [progress]);
+
+  return (
+    <Host matchContents>
+      <Row horizontalArrangement={{ spacedBy: 16 }}>
+        <LoadingIndicator progress={progress} />
+        <ContainedLoadingIndicator progress={progress} />
+      </Row>
+    </Host>
+  );
+}
 ```
 
 ## API
