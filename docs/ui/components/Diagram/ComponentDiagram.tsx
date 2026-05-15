@@ -31,7 +31,7 @@ export const ComponentDiagram = ({ source, darkSource, alt, mode }: Props) => {
 
   return (
     <div
-      className={`border-default bg-default relative mx-auto my-6 max-w-full overflow-hidden rounded-md border ${ASPECT_CLASS[mode]}`}>
+      className={`relative mx-auto my-6 max-w-full overflow-hidden rounded-md border border-default bg-default ${ASPECT_CLASS[mode]}`}>
       <DotGrid />
       <picture className="relative block size-full">
         {isDark && darkSource && <source srcSet={darkSource} />}

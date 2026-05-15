@@ -25,7 +25,7 @@ export const APISectionDeprecationNote = ({ comment, className, sticky = false }
   return (
     <div
       className={mergeClasses(
-        `[table_&]:mt-0 [table_&]:${ELEMENT_SPACING} [table_&]:last:mb-0`,
+        `[table_&]: [table_&]:mt-0 ${ELEMENT_SPACING} [table_&]:last:mb-0`,
         sticky && '-mx-px -mt-px'
       )}>
       <InlineHelp

@@ -29,7 +29,7 @@ export const SdkPackageButton = ({ label, Icon, tooltip, href }: SdkPackageButto
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px]">
+      <Tooltip.Content sideOffset={8} className="max-w-75">
         <FOOTNOTE>{tooltip}</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>

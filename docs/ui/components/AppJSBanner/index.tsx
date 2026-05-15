@@ -43,7 +43,7 @@ export function AppJSBanner() {
       className={mergeClasses(
         'grid motion-reduce:transition-none',
         isOpen
-          ? 'grid-rows-[1fr] opacity-100 [transition:grid-template-rows_350ms_ease-out_250ms,opacity_250ms_ease-out_600ms]'
+          ? '[transition:grid-template-rows_350ms_ease-out_250ms,opacity_250ms_ease-out_600ms] grid-rows-[1fr] opacity-100'
           : 'grid-rows-[0fr] opacity-0 transition-[grid-template-rows,opacity] duration-400 ease-out'
       )}
       onTransitionEnd={event => {
@@ -61,14 +61,14 @@ export function AppJSBanner() {
           )}>
           <div className="flex items-center gap-4">
             <div className="relative z-10 p-2 max-sm:hidden">
-              <div className="asset-sm-shadow absolute inset-0 rounded-md bg-[#494CFC]" />
-              <AppJSIcon className="icon-lg text-palette-white relative z-10" />
+              <div className="absolute inset-0 rounded-md bg-[#494CFC] asset-sm-shadow" />
+              <AppJSIcon className="relative z-10 icon-lg text-palette-white" />
             </div>
             <div className="relative grid grid-cols-1">
-              <p className="text-base font-medium text-[#494CFC] dark:text-[#a0b9ff]">
+              <p className="text-[#494CFC] text-base font-medium dark:text-[#a0b9ff]">
                 App.js Conf 2026
               </p>
-              <p className="text-sm text-[#494CFC] dark:text-[#a0b9ff]">
+              <p className="text-[#494CFC] text-sm dark:text-[#a0b9ff]">
                 Join us at the biggest React Native & Expo-focused conference.
               </p>
             </div>
@@ -80,7 +80,7 @@ export function AppJSBanner() {
               openInNewTab
               rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
               className={mergeClasses(
-                'text-palette-white gap-1.5 border-[#494CFC] bg-[#494CFC] shadow-none',
+                'gap-1.5 border-[#494CFC] bg-[#494CFC] text-palette-white shadow-none',
                 'dark:hocus:border-[#23257b] dark:hocus:bg-[#23257b]',
                 'hocus:border-[#7189ff] hocus:bg-[#7189ff]'
               )}>
@@ -93,7 +93,7 @@ export function AppJSBanner() {
               onClick={() => {
                 setIsOpen(false);
               }}
-              className="text-palette-white hocus:bg-[#ccd8ff] dark:hocus:bg-[#23257b] bg-transparent shadow-none"
+              className="bg-transparent text-palette-white shadow-none dark:hocus:bg-[#23257b] hocus:bg-[#ccd8ff]"
               leftSlot={<XIcon className="text-[#494CFC]" />}
             />
           </div>

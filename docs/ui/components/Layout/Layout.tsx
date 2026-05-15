@@ -42,8 +42,8 @@ export function Layout({
 }: LayoutProps) {
   return (
     <>
-      <header className="fixed top-0 z-[100] h-[60px] w-full">{header}</header>
-      <main className={mergeClasses('mt-[60px] flex items-stretch', 'max-md:max-h-[unset]')}>
+      <header className="fixed top-0 z-100 h-[60px] w-full">{header}</header>
+      <main className={mergeClasses('mt-15 flex items-stretch', 'max-md:max-h-[unset]')}>
         {navigation && <nav className="basis-[256px] max-md:hidden">{navigation}</nav>}
         <LayoutScroll>
           <article

@@ -5,6 +5,7 @@ import { Server03Icon } from '@expo/styleguide-icons/outline/Server03Icon';
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react';
 import tippy, { roundArrow } from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
+
 import {
   cleanCopyValue,
   getCodeData,
@@ -96,7 +97,7 @@ export function Code({ className, children, title }: CodeProps) {
 
   const commonClasses = mergeClasses(
     wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
-    showExpand && !isExpanded && `[&::-webkit-scrollbar-track]:bg-default! overflow-y-hidden!`
+    showExpand && !isExpanded && `overflow-y-hidden! [&::-webkit-scrollbar-track]:bg-default!`
   );
 
   return codeBlockTitle ? (
@@ -116,7 +117,7 @@ export function Code({ className, children, title }: CodeProps) {
           {...attributes}>
           <div className="w-fit p-4">
             <code
-              className="text-default text-xs"
+              className="text-xs text-default"
               dangerouslySetInnerHTML={{ __html: highlightedHtml.replace(/^@@@.+@@@/g, '') }}
             />
           </div>
@@ -132,7 +133,7 @@ export function Code({ className, children, title }: CodeProps) {
         maxHeight: collapseBound,
       }}
       className={mergeClasses(
-        'border-secondary bg-subtle relative my-4 overflow-x-auto rounded-md border whitespace-pre',
+        'relative my-4 overflow-x-auto rounded-md border border-secondary bg-subtle whitespace-pre',
         preferredTheme === Themes.DARK && 'dark-theme',
         commonClasses,
         '[p+&]:mt-0'
@@ -140,7 +141,7 @@ export function Code({ className, children, title }: CodeProps) {
       {...attributes}>
       <div className="w-fit p-4">
         <code
-          className="text-default text-xs"
+          className="text-xs text-default"
           dangerouslySetInnerHTML={{ __html: highlightedHtml }}
         />
       </div>
@@ -163,7 +164,7 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
       {...attributes}>
       <CODE
         className={mergeClasses(
-          'text-default text-xs!',
+          'text-xs! text-default',
           inline && 'block w-full p-1.5!',
           className
         )}

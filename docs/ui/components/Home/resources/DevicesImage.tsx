@@ -4,7 +4,7 @@ import { palette } from '@expo/styleguide-base';
 export const DevicesImage = () => (
   <svg
     className={mergeClasses(
-      'asset-shadow absolute right-0 bottom-0 z-1 max-w-[60%]',
+      'absolute right-0 bottom-0 z-1 max-w-[60%] asset-shadow',
       'max-lg:-bottom-4',
       'max-sm:-bottom-8'
     )}

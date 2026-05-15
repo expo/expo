@@ -37,7 +37,7 @@ export function APIBoxHeader({
           weight="medium"
           className={mergeClasses(
             'text-base! leading-snug! wrap-anywhere!',
-            deprecated && 'text-secondary decoration-quaternary line-through decoration-[0.5px]'
+            deprecated && 'text-secondary line-through decoration-quaternary decoration-[0.5px]'
           )}>
           {name}
         </MONOSPACE>

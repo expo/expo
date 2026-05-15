@@ -46,7 +46,7 @@ export function TabButton({
           className={mergeClasses(
             'absolute inset-0 rounded-md border',
             theme === 'default' && 'border-secondary bg-screen dark:bg-hover dark:drop-shadow-none',
-            theme === 'secondary' && 'border-button-secondary bg-default dark:bg-subtle shadow-xs'
+            theme === 'secondary' && 'border-button-secondary bg-default shadow-xs dark:bg-subtle'
           )}
         />
       )}
@@ -54,8 +54,8 @@ export function TabButton({
         disabled={disabled}
         className={mergeClasses(
           'relative z-10 rounded-md transition-colors',
-          !active && theme === 'default' && 'hocus:bg-selected dark:hocus:bg-element',
-          !active && theme === 'secondary' && 'hocus:bg-element dark:hocus:bg-subtle',
+          !active && theme === 'default' && 'dark:hocus:bg-element hocus:bg-selected',
+          !active && theme === 'secondary' && 'dark:hocus:bg-subtle hocus:bg-element',
           className
         )}>
         <div
