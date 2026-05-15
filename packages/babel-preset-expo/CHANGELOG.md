@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Enforce `routerRoot` to be within `projectRoot`
+- Enforce `routerRoot` to be within `projectRoot` ([#45892](https://github.com/expo/expo/pull/45892) by [@kitten](https://github.com/kitten))
 
 ## 56.0.8 — 2026-05-13
 
