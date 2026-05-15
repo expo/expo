@@ -61,6 +61,10 @@ function resolveLoaderContextKey(contextKey, params) {
 function getRedirectRewriteLocation(url, request, route) {
     const originalQueryParams = url.searchParams.entries();
     const params = parseParams(request, route);
+    // Externality is determined from the *unsubstituted* `route.page` so a
+    // substituted catch-all that happens to contain `//host/...` cannot turn an
+    // internal redirect into an absolute external one.
+    const routePageIsExternal = isAbsoluteHttpUrl(route.page);
     const target = route.page
         .split('/')
         .map((segment) => {
@@ -68,14 +72,16 @@ function getRedirectRewriteLocation(url, request, route) {
         if ((match = matchDynamicName(segment))) {
             const value = params[match];
             delete params[match];
-            return typeof value === 'string'
+            const resolved = typeof value === 'string'
                 ? value.split('/')[0] /* If we are redirecting from a catch-all route, we need to remove the extra segments */
                 : (value ?? segment);
+            return routePageIsExternal ? resolved : stripLeadingSlashes(resolved);
         }
         else if ((match = matchDeepDynamicRouteName(segment))) {
             const value = params[match];
             delete params[match];
-            return value ?? segment;
+            const resolved = value ?? segment;
+            return routePageIsExternal ? resolved : stripLeadingSlashes(resolved);
         }
         else {
             return segment;
@@ -99,10 +105,26 @@ function getRedirectRewriteLocation(url, request, route) {
             targetUrl.searchParams.append(key, value);
         }
     }
-    // When the hostname is the resolved `localhost` (see above on new URL) we just output the path
+    // Internal routes must never escape to an external host, even if some
+    // substitution path slipped through the sanitization above.
+    if (!routePageIsExternal) {
+        return targetUrl.pathname.replace(/^\/+/, '/') + targetUrl.search;
+    }
     return targetUrl.hostname === 'localhost'
         ? targetUrl.pathname + targetUrl.search
         : targetUrl.toString();
+}
+function isAbsoluteHttpUrl(value) {
+    try {
+        const parsed = new URL(value);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    }
+    catch {
+        return false;
+    }
+}
+function stripLeadingSlashes(value) {
+    return typeof value === 'string' ? value.replace(/^\/+/, '') : value;
 }
 /** Match `[page]` -> `page`
  * @privateRemarks Ported from `expo-router/src/matchers.tsx`
