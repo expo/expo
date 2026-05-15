@@ -1,3 +1,4 @@
+import { getOriginalEnvValue } from '@expo/env';
 import { boolish, int, string } from 'getenv';
 import process from 'node:process';
 
@@ -293,7 +294,8 @@ class Env {
     if (value === '1' || value.toLowerCase() === 'true') {
       return this.EXPO_STAGING ? 'staging-mcp.expo.dev' : 'mcp.expo.dev';
     }
-    return value;
+    // Re-read from the pre-dotenv env — overrides dev server URL served to clients.
+    return getOriginalEnvValue('EXPO_UNSTABLE_MCP_SERVER') || '';
   }
 
   /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
