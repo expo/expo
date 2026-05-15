@@ -1043,7 +1043,7 @@ export async function generateViewTypesFileContent(
 }
 
 /**
- * Generates the TypeScript string content for a native View's type declaration file which mounts the View props on the global JSXIntrinsics.
+ * Generates the TypeScript string content for a native View's type declaration file which mounts the View props on the global `JSXIntrinsics`.
  * @param fileTypeInformation The abstracted type information of an Expo module.
  * @returns A promise that resolves to a string containing the TypeScript declaration file content or `null` if the generation has failed.
  * @header TypescriptGeneration

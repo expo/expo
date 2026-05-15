@@ -80,7 +80,7 @@ var BasicType;
     BasicType[BasicType["UNRESOLVED"] = 6] = "UNRESOLVED";
 })(BasicType || (exports.BasicType = BasicType = {}));
 /**
- * Used for testing purposes, maps Sets and Maps to Arrays and returns FileTypeInformationSerialized object which can be written to a JSON.
+ * Used for testing purposes, maps Sets and Maps to Arrays and returns `FileTypeInformationSerialized` object which can be written to a JSON.
  * @param fileTypeinformation `FileTypeInformation` object to serialize.
  * @returns a `FileTypeInformationSerialized` object.
  * @header TypeInformationAbstraction
@@ -97,7 +97,7 @@ function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers
     };
 }
 /**
- *  * Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns FileTypeInformation object.
+ *  Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns `FileTypeInformation` object.
  * @param fileTypeinformationSerialized `FileTypeInformationSerialized` object to deserialize.
  * @returns `FileTypeInformation` object.
  * @header TypeInformationAbstraction

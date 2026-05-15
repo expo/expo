@@ -210,7 +210,7 @@ export type FileTypeInformationSerialized = {
     enums: EnumType[];
 };
 /**
- * FileTypeInformation object abstracts over type related information in a file.
+ * `FileTypeInformation` object abstracts over type related information in a file.
  * The abstraction is closely related to Typescript and expo NativeModules (both to be independent of the actual native side
  * and to give accurate information about what and how we can use the given module).
  * @header TypeInfoTypes
@@ -251,14 +251,14 @@ export type FileTypeInformation = {
     enums: EnumType[];
 };
 /**
- * Used for testing purposes, maps Sets and Maps to Arrays and returns FileTypeInformationSerialized object which can be written to a JSON.
+ * Used for testing purposes, maps Sets and Maps to Arrays and returns `FileTypeInformationSerialized` object which can be written to a JSON.
  * @param fileTypeinformation `FileTypeInformation` object to serialize.
  * @returns a `FileTypeInformationSerialized` object.
  * @header TypeInformationAbstraction
  */
 export declare function serializeTypeInformation({ usedTypeIdentifiers, declaredTypeIdentifiers, inferredTypeParametersCount, typeIdentifierDefinitionMap, moduleClasses, records, enums, }: FileTypeInformation): FileTypeInformationSerialized;
 /**
- *  * Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns FileTypeInformation object.
+ *  Used for testing purposes, maps Arrays to Sets and Maps depending on the field and returns `FileTypeInformation` object.
  * @param fileTypeinformationSerialized `FileTypeInformationSerialized` object to deserialize.
  * @returns `FileTypeInformation` object.
  * @header TypeInformationAbstraction

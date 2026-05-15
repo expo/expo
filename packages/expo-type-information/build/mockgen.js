@@ -189,9 +189,9 @@ function generateTSMockForModule(module, fileTypeInformation, includeTypes) {
 const directoryPath = process.cwd();
 const swiftFilesGlob = `${directoryPath}/**/*.swift`;
 /**
- * This function generates JavaScript/TypeScript mocks for each provided FileTypeInformation object.
+ * This function generates JavaScript/TypeScript mocks for each provided `FileTypeInformation` object.
  *
- * @param files a list of FileTypeInformation objects with generated type information for multiple modules
+ * @param files A list of `FileTypeInformation` objects with generated type information for multiple modules
  * @param outputLanguage the language to emit the mocks in
  * @returns nothing
  * @header Mocks
