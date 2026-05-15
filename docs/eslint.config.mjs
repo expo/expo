@@ -1,18 +1,11 @@
 import universeNodeConfig from 'eslint-config-universe/flat/node.js';
 import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
 import universeWebConfig from 'eslint-config-universe/flat/web.js';
-import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
 import oxlint from 'eslint-plugin-oxlint';
 import unicorn from 'eslint-plugin-unicorn';
 import { defineConfig, globalIgnores } from 'eslint/config';
-
-const TAILWIND_SETTINGS = {
-  entryPoint: 'styles/global.css',
-  callees: ['mergeClasses'],
-  attributes: ['^(container|icon|text)?(c|C)lass(Name)?$'],
-};
 
 // Rules that are still active in ESLint (not migrated to oxlint or oxfmt)
 const ACTIVE_RULES = {
@@ -105,36 +98,12 @@ export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     plugins: {
-      'better-tailwindcss': betterTailwindcss,
       lodash,
       unicorn,
-    },
-    settings: {
-      'better-tailwindcss': TAILWIND_SETTINGS,
     },
     rules: {
       ...ACTIVE_RULES,
       '@typescript-eslint/explicit-function-return-type': 'off',
-      'better-tailwindcss/enforce-shorthand-classes': 'error',
-      'better-tailwindcss/no-unknown-classes': [
-        'error',
-        {
-          ignore: [
-            'diff-.+',
-            'react-player',
-            'dark-theme',
-            'dialog-.+',
-            'terminal-snippet',
-            'table-wrapper',
-            'tutorial-code-annotation',
-            'max-sm:.+',
-            'max-medium:.+',
-            'max-md-gutters:.+',
-            '\\[table_&\\]:.+',
-            '\\[table_&\\]',
-          ],
-        },
-      ],
       '@typescript-eslint/naming-convention': [
         'warn',
         { selector: 'typeLike', format: ['PascalCase'] },

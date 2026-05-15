@@ -431,17 +431,17 @@ struct JSValueEncoderTests {
     #expect(result.getProperty("age").getInt() == 30)
   }
 
-  // MARK: - Routing through DynamicEncodableType
+  // MARK: - Routing through DynamicCodableType
 
   @Test
-  func `DynamicEncodableType castToJS encodes a struct end-to-end`() throws {
+  func `DynamicCodableType castToJS encodes a struct end-to-end`() throws {
     struct User: Encodable {
       let name: String
       let age: Int
     }
 
     let dynamicType = ~User.self
-    #expect(dynamicType is DynamicEncodableType)
+    #expect(dynamicType is DynamicCodableType<User>)
 
     let result = try dynamicType.castToJS(
       User(name: "Anna", age: 30),

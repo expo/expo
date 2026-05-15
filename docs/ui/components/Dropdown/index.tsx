@@ -29,8 +29,8 @@ export function Dropdown({
         <div className="bg-danger">
           <Content
             className={mergeClasses(
-              'border-default bg-default flex min-w-[180px] flex-col gap-0.5 rounded-md border p-1 shadow-md',
-              'data-[side=bottom]:animate-slideUpAndFadeIn will-change-[opacity,transform]',
+              'flex min-w-45 flex-col gap-0.5 rounded-md border border-default bg-default p-1 shadow-md',
+              'will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFadeIn',
               className
             )}
             side={side}
@@ -38,7 +38,7 @@ export function Dropdown({
             collisionPadding={collisionPadding}
             {...rest}>
             <Arrow asChild>
-              <div className="border-default bg-default relative -top-1 size-2.5 rotate-45 border-r border-b" />
+              <div className="relative -top-1 size-2.5 rotate-45 border-r border-b border-default bg-default" />
             </Arrow>
             {children}
           </Content>

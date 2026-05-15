@@ -4,7 +4,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
         class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -17,7 +17,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           name
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
           href="#name"
         >
           <span
@@ -60,7 +60,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             string
@@ -74,15 +74,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Name of your app.
       </p>
       <details
-        class="border-default bg-default mb-3 scroll-m-4 rounded-md border p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         data-md="collapsible"
         id="existing-react-native-app"
       >
         <summary
-          class="group bg-subtle m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:bg-element [&_code]:mt-px [&_code]:inline [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] mr-2 ml-1.5 self-baseline"
+            class="mt-1.25 mr-2 ml-1.5 self-baseline"
           >
             <svg
               class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
@@ -109,12 +109,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
           <a
             aria-label="Permalink"
-            class="hocus:bg-element ml-auto inline rounded-md p-1"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#existing-react-native-app"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -157,7 +157,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
     </div>
     <div
-      class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
         class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -170,7 +170,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           splash
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
           href="#splash"
         >
           <span
@@ -213,7 +213,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             object
@@ -227,15 +227,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for loading and splash screen for standalone apps.
       </p>
       <details
-        class="border-default bg-default mb-3 scroll-m-4 rounded-md border p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         data-md="collapsible"
         id="existing-react-native-app-1"
       >
         <summary
-          class="group bg-subtle m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:bg-element [&_code]:mt-px [&_code]:inline [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] mr-2 ml-1.5 self-baseline"
+            class="mt-1.25 mr-2 ml-1.5 self-baseline"
           >
             <svg
               class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
@@ -262,12 +262,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
           <a
             aria-label="Permalink"
-            class="hocus:bg-element ml-auto inline rounded-md p-1"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#existing-react-native-app-1"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -309,7 +309,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </details>
       <div
-        class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -322,7 +322,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             resizeMode
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
             href="#resizemode"
           >
             <span
@@ -365,7 +365,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
               enum
@@ -374,7 +374,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             One of: 
             <span>
               <code
-                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
                 data-text="true"
               >
                 cover
@@ -383,7 +383,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             <span>
               , 
               <code
-                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
                 data-text="true"
               >
                 contain
@@ -397,7 +397,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 wrap-break-word"
+              class="px-1 wrap-break-word text-secondary"
             >
               splash
               .
@@ -412,7 +412,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how the image will be displayed in the splash loading screen.
         </p>
         <div
-          class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
             class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -425,7 +425,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               always
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
               href="#always"
             >
               <span
@@ -468,7 +468,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
                 data-text="true"
               >
                 boolean
@@ -481,7 +481,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                • Path:
                
               <code
-                class="text-secondary px-1 wrap-break-word"
+                class="px-1 wrap-break-word text-secondary"
               >
                 splash.resizeMode
                 .
@@ -498,7 +498,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -511,7 +511,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             backgroundColor
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
             href="#backgroundcolor"
           >
             <span
@@ -554,7 +554,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
               string
@@ -567,7 +567,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 wrap-break-word"
+              class="px-1 wrap-break-word text-secondary"
             >
               splash
               .
@@ -589,7 +589,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 inline! py-0 wrap-break-word"
+            class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
             data-text="true"
           >
             '#000000'
@@ -598,7 +598,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+      class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
     >
       <h3
         class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -611,7 +611,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           intentFilters
         </code>
         <a
-          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+          class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
           href="#intentfilters"
         >
           <span
@@ -654,7 +654,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+            class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
             data-text="true"
           >
             array
@@ -668,15 +668,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
       <details
-        class="border-default bg-default mb-3 scroll-m-4 rounded-md border p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
+        class="mb-3 scroll-m-4 rounded-md border border-default bg-default p-0 [&[open]]:shadow-xs [h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3"
         data-md="collapsible"
         id="existing-react-native-app-2"
       >
         <summary
-          class="group bg-subtle m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:bg-element [&_code]:mt-px [&_code]:inline [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
+          class="group m-0 grid cursor-pointer grid-cols-[min-content_auto_min-content_1fr] items-center rounded-md bg-subtle p-1.5 pr-3 [details[open]>&]:rounded-b-none [&_h4]:my-0 [&_code]:mt-px [&_code]:inline [&_code]:bg-element [&_code]:pb-px [&_code]:text-[85%] [&_code]:leading-snug"
         >
           <div
-            class="mt-[5px] mr-2 ml-1.5 self-baseline"
+            class="mt-1.25 mr-2 ml-1.5 self-baseline"
           >
             <svg
               class="translate-z shrink-0 icon-sm text-icon-default -rotate-90 transition-transform duration-200 [details[open]>summary_&]:rotate-0"
@@ -703,12 +703,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
           <a
             aria-label="Permalink"
-            class="hocus:bg-element ml-auto inline rounded-md p-1"
+            class="ml-auto inline rounded-md p-1 hocus:bg-element"
             href="#existing-react-native-app-2"
           >
             <svg
               aria-label="permalink"
-              class="icon-sm invisible inline-flex group-hover:visible group-focus-visible:visible"
+              class="invisible inline-flex icon-sm group-hover:visible group-focus-visible:visible"
               fill="none"
               height="24"
               viewBox="0 0 24 24"
@@ -763,7 +763,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           data-text="true"
         >
           <code
-            class="text-xs leading-[130%] font-normal border-secondary bg-subtle rounded-md border px-1 py-0.5 text-default text-xs! block w-full p-1.5!"
+            class="text-xs leading-[130%] font-normal rounded-md border border-secondary bg-subtle px-1 py-0.5 text-xs! text-default block w-full p-1.5!"
             data-text="true"
           >
             [
@@ -778,7 +778,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </span>
       </span>
       <div
-        class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -791,7 +791,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             autoVerify
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
             href="#autoverify"
           >
             <span
@@ -834,7 +834,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
               boolean
@@ -847,7 +847,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 wrap-break-word"
+              class="px-1 wrap-break-word text-secondary"
             >
               intentFilters
               .
@@ -863,7 +863,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
       </div>
       <div
-        class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+        class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
       >
         <h4
           class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -876,7 +876,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data
           </code>
           <a
-            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+            class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
             href="#data"
           >
             <span
@@ -919,7 +919,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             Type: 
             <code
-              class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+              class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
               data-text="true"
             >
               array || object
@@ -932,7 +932,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="text-secondary px-1 wrap-break-word"
+              class="px-1 wrap-break-word text-secondary"
             >
               intentFilters
               .
@@ -941,7 +941,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </span>
         </div>
         <div
-          class="border-palette-gray4 overflow-hidden rounded-lg border shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:text-tertiary [&_th]:px-4 [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:border-default! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
+          class="overflow-hidden rounded-lg border border-palette-gray4 shadow-xs [&_h2]:mt-0 [&_h3]:mt-0 [&_h4]:mt-0 [&_h3]:mb-1.5 [&_h4]:mb-0 [&_li]:mb-0 [&_thead]:border-palette-gray4 [&_th]:px-4 [&_th]:text-tertiary [&_td]:border-palette-gray4 [&_td]:py-3 [&_.table-wrapper]:mb-0 [&_.table-wrapper]:border-palette-gray4 [&_.table-wrapper]:shadow-none mb-3.5 [&_.table-wrapper]:last:mb-4 mb-0! rounded-none! border-b-0! shadow-none! [&]:first-of-type:rounded-t-md! [&]:last-of-type:rounded-b-md! [&]:last-of-type:border-b! [&]:last-of-type:border-default! px-4 py-3 pb-4! [&>*:last-child]:mb-1!"
         >
           <h5
             class="text-inherit font-normal text-base [&_strong]:wrap-break-word group flex gap-1 scroll-m-8"
@@ -954,7 +954,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               host
             </code>
             <a
-              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 duration-default relative my-auto inline-flex justify-center p-0 transition-all invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-[22px] min-w-[22px]"
+              class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
               href="#host"
             >
               <span
@@ -997,7 +997,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="text-inherit text-xs leading-[130%] font-normal border-secondary bg-subtle inline-block rounded-md border px-1 py-0.5"
+                class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
                 data-text="true"
               >
                 string
@@ -1010,7 +1010,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                • Path:
                
               <code
-                class="text-secondary px-1 wrap-break-word"
+                class="px-1 wrap-break-word text-secondary"
               >
                 intentFilters.data
                 .

@@ -95,4 +95,57 @@ export var LocationGeofencingRegionState;
      */
     LocationGeofencingRegionState[LocationGeofencingRegionState["Outside"] = 2] = "Outside";
 })(LocationGeofencingRegionState || (LocationGeofencingRegionState = {}));
+/**
+ * Confidence level for motion activity detection. On Android, the raw `DetectedActivity` confidence (0-
+ * 100) is bucketed into these three levels. On iOS, maps directly to `CMMotionActivityConfidence`.
+ */
+export var MotionActivityConfidence;
+(function (MotionActivityConfidence) {
+    /**
+     * The activity determination has low confidence.
+     */
+    MotionActivityConfidence[MotionActivityConfidence["Low"] = 0] = "Low";
+    /**
+     * The activity determination has medium confidence.
+     */
+    MotionActivityConfidence[MotionActivityConfidence["Medium"] = 1] = "Medium";
+    /**
+     * The activity determination has high confidence.
+     */
+    MotionActivityConfidence[MotionActivityConfidence["High"] = 2] = "High";
+})(MotionActivityConfidence || (MotionActivityConfidence = {}));
+/**
+ * The type of physical activity the user is currently performing.
+ *
+ * On Android it maps to `DetectedActivity` constants from Google Play Services.
+ * On iOS this maps to the boolean properties of `CMMotionActivity` (the highest-priority
+ * truthy property wins).
+ */
+export var MotionActivityType;
+(function (MotionActivityType) {
+    /**
+     * The device is in a motorized vehicle (car, bus, train, and so on).
+     */
+    MotionActivityType["Automotive"] = "automotive";
+    /**
+     * The user is riding a bicycle.
+     */
+    MotionActivityType["Cycling"] = "cycling";
+    /**
+     * The user is running.
+     */
+    MotionActivityType["Running"] = "running";
+    /**
+     * The user is walking.
+     */
+    MotionActivityType["Walking"] = "walking";
+    /**
+     * The device is not moving.
+     */
+    MotionActivityType["Stationary"] = "stationary";
+    /**
+     * The activity cannot be determined.
+     */
+    MotionActivityType["Unknown"] = "unknown";
+})(MotionActivityType || (MotionActivityType = {}));
 //# sourceMappingURL=Location.types.js.map

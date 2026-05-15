@@ -66,39 +66,6 @@ class SessionManagerTest {
       assertTrue(sessionIds.contains(session2Id))
     }
 
-  @Test
-  fun `getAllActiveSessions returns each active session only once`() =
-    runTest {
-      // Arrange
-      val activeSession1 = "active-1"
-      val activeSession2 = "active-2"
-      val inactiveSession = "inactive-1"
-
-      sessionManager.startSessionWithIdAt(activeSession1, "2025-01-01T00:00:00.000Z")
-      sessionManager.startSessionWithIdAt(activeSession2, "2025-01-01T01:00:00.000Z")
-      sessionManager.startSessionWithIdAt(inactiveSession, "2025-01-01T02:00:00.000Z")
-      // Add multiple metrics to each session
-      val metrics = listOf(
-        createMetric("metric-1", activeSession1),
-        createMetric("metric-2", activeSession1),
-        createMetric("metric-3", activeSession2),
-        createMetric("inactive-metric", inactiveSession)
-      )
-      database.metricDao().insertAll(metrics)
-      sessionManager.stopSession(inactiveSession)
-
-      // Act
-      val result = sessionManager.getAllActiveSessions()
-
-      // Assert
-      assertEquals(2, result.size)
-      val sessionIds = result.map { it.session.id }
-      assertEquals(sessionIds.distinct().size, sessionIds.size)
-      assertTrue(sessionIds.contains(activeSession1))
-      assertTrue(sessionIds.contains(activeSession2))
-      assertFalse(sessionIds.contains(inactiveSession))
-    }
-
   // endregion
 
   // region Session Lifecycle Tests
@@ -193,14 +160,14 @@ class SessionManagerTest {
       sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
 
       // Verify it starts as active
-      var sessions = sessionManager.getAllActiveSessions()
+      var sessions = sessionManager.getAllSessions().filter { it.session.isActive }
       assertEquals(1, sessions.size)
 
       // Act
       sessionManager.stopSession(sessionId)
 
       // Assert
-      sessions = sessionManager.getAllActiveSessions()
+      sessions = sessionManager.getAllSessions().filter { it.session.isActive }
       assertEquals(0, sessions.size)
 
       val allSessions = sessionManager.getAllSessions()
@@ -236,7 +203,7 @@ class SessionManagerTest {
       sessionManager.deactivateAllSessionsBefore("2025-01-10T00:00:00.000Z")
 
       // Assert
-      val activeSessions = sessionManager.getAllActiveSessions()
+      val activeSessions = sessionManager.getAllSessions().filter { it.session.isActive }
       assertEquals(1, activeSessions.size)
       assertEquals(newSession, activeSessions[0].session.id)
     }
@@ -417,33 +384,6 @@ class SessionManagerTest {
       // Assert - only the first metric should have been received
       assertEquals(1, receivedIds.size)
       assertTrue(receivedIds.contains("metric-1"))
-    }
-
-  @Test
-  fun `startSessionWithIdAndMetricsAt notifies listeners`() =
-    runTest {
-      // Arrange
-      val receivedIds = mutableListOf<String>()
-      sessionManager.addMetricsInsertListener { metricIds ->
-        receivedIds.addAll(metricIds)
-      }
-
-      val metrics = listOf(
-        createMetric("metric-1", ""),
-        createMetric("metric-2", "")
-      )
-
-      // Act
-      sessionManager.startSessionWithIdAndMetricsAt(
-        id = "session-1",
-        metrics = metrics,
-        timestamp = "2025-01-01T00:00:00.000Z"
-      )
-
-      // Assert
-      assertEquals(2, receivedIds.size)
-      assertTrue(receivedIds.contains("metric-1"))
-      assertTrue(receivedIds.contains("metric-2"))
     }
 
   // endregion
@@ -628,31 +568,6 @@ class SessionManagerTest {
   // endregion
 
   // region Data Cleanup Tests
-
-  @Test
-  fun `removeSessions deletes sessions and cascades to metrics`() =
-    runTest {
-      // Arrange
-      val sessionId = "session-to-delete"
-      sessionManager.startSessionWithIdAt(sessionId, "2025-01-01T00:00:00.000Z")
-
-      val metrics = listOf(
-        createMetric("metric-1", sessionId),
-        createMetric("metric-2", sessionId)
-      )
-      database.metricDao().insertAll(metrics)
-
-      val sessionsBeforeDelete = sessionManager.getAllSessions()
-      assertEquals(1, sessionsBeforeDelete.size)
-      assertEquals(2, sessionsBeforeDelete[0].metrics.size)
-
-      // Act
-      sessionManager.removeSessions(sessionsBeforeDelete)
-
-      // Assert
-      val sessionsAfterDelete = sessionManager.getAllSessions()
-      assertEquals(0, sessionsAfterDelete.size)
-    }
 
   @Test
   fun `clearAllData removes all sessions and metrics`() =

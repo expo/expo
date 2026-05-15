@@ -9,6 +9,9 @@ import android.app.Activity
  * and retrieve the accumulated metrics.
  */
 class FrameMetricsRecorder {
+  // Reassigned from JS thread in stop() while dispatchFrame mutates it on the
+  // main thread. @Volatile gives stop() a stable visible reference to swap.
+  @Volatile
   private var record = FrameMetricsRecord()
 
   /** Starts recording frame metrics for the given activity's window. */

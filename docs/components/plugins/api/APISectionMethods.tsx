@@ -141,7 +141,7 @@ export const renderMethod = (
         className={mergeClasses(
           !nested && STYLES_APIBOX,
           !nested && STYLES_APIBOX_NESTED,
-          nested && 'border-palette-gray4 border-b last:border-b-0'
+          nested && 'border-b border-palette-gray4 last:border-b-0'
         )}>
         <APISectionDeprecationNote comment={comment} sticky className="rounded-t-none!" />
         <APIBoxHeader
@@ -160,8 +160,8 @@ export const renderMethod = (
           tags={hasOverloads ? ['overload'] : undefined}
         />
         {hasOverloads && (
-          <div className="text-tertiary px-4 pb-2">
-            <BracketsEllipsesDuotoneIcon className="icon-xs mr-1 inline shrink-0" />
+          <div className="px-4 pb-2 text-tertiary">
+            <BracketsEllipsesDuotoneIcon className="mr-1 inline icon-xs shrink-0" />
             <span className="text-xs">Overload #{overloadIndex + 1}</span>
           </div>
         )}
@@ -184,7 +184,7 @@ export const renderMethod = (
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="icon-sm text-icon-tertiary relative -mt-0.5 inline-block" />
+                    <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
                     <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
                   <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />

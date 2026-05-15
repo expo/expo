@@ -13,6 +13,7 @@ import expo.modules.appmetrics.frames.FrameMetricsRecord
 import expo.modules.appmetrics.frames.FrameMetricsRecorder
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.utils.DeviceConditions
+import expo.modules.appmetrics.utils.MetricParamsBuilder
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
 import expo.modules.appmetrics.utils.TimeUtils.getProcessStartTimeInMillis
@@ -225,16 +226,12 @@ object AppStartupManager {
     frameMetrics: FrameMetricsRecord,
     userParams: Map<String, Any>?
   ): Map<String, Any> {
-    val merged = mutableMapOf<String, Any>()
-    userParams?.let { merged.putAll(it) }
-    if (frameMetrics.expectedFrames > 0) {
-      merged["expo.frameRate.slowFrames"] = frameMetrics.slowFrames
-      merged["expo.frameRate.frozenFrames"] = frameMetrics.frozenFrames
-      merged["expo.frameRate.totalDelay"] = frameMetrics.freezeTimeMs.toDouble() / 1000.0
-    }
-    merged.putAll(DeviceConditions.deviceParams(context))
-    merged.putAll(DeviceConditions.networkParams(context))
-    return merged
+    return MetricParamsBuilder.build(
+      userParams = userParams,
+      frameMetrics = frameMetrics,
+      deviceState = DeviceConditions.deviceState(context),
+      networkState = DeviceConditions.networkState(context)
+    )
   }
 
   fun markFirstRender() {

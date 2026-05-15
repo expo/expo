@@ -220,7 +220,7 @@ const PackageTabs = ({ managers, activeManager, onSelect, className }: PackageTa
 const PackageSelect = ({ managers, activeManager, onSelect, className }: PackageTabsProps) => (
   <Select
     className={mergeClasses(
-      'h-6! min-h-[16px]! min-w-[76px] gap-1! px-2! py-0! text-sm [&_svg]:size-3!',
+      'h-6! min-h-4! min-w-19 gap-1! px-2! py-0! text-sm [&_svg]:size-3!',
       className
     )}
     ariaLabel="Select package manager"
@@ -237,8 +237,8 @@ const PackageSelect = ({ managers, activeManager, onSelect, className }: Package
 const BrowserAction = ({ href, label }: BrowserActionProps) => (
   <SnippetAction
     alwaysDark
-    className="max-sm-gutters:gap-0 [&_p]:max-sm-gutters:hidden"
-    rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary shrink-0" />}
+    className="max-sm:gap-0 [&_p]:max-sm:hidden"
+    rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
     onClick={() => {
       if (typeof window !== 'undefined') {
         window.open(href, '_blank', 'noopener,noreferrer');
@@ -268,7 +268,7 @@ function cmdMapper(line: string, index: number) {
       <CODE
         key={key}
         data-md="skip"
-        className="text-palette-gray10! border-none! bg-transparent! whitespace-pre select-none">
+        className="border-none! bg-transparent! whitespace-pre text-palette-gray10! select-none">
         {line}
       </CODE>
     );
@@ -279,11 +279,11 @@ function cmdMapper(line: string, index: number) {
       <div key={key} className="w-fit">
         <CODE
           data-md="skip"
-          className="text-secondary! border-none! bg-transparent! whitespace-pre select-none">
+          className="border-none! bg-transparent! whitespace-pre text-secondary! select-none">
           -&nbsp;
         </CODE>
         <CODE
-          className="text-default border-none! bg-transparent! whitespace-pre"
+          className="border-none! bg-transparent! whitespace-pre text-default"
           dangerouslySetInnerHTML={{
             __html: Prism.highlight(
               line.slice(1).trim(),
@@ -297,7 +297,7 @@ function cmdMapper(line: string, index: number) {
   }
 
   return (
-    <CODE key={key} className="text-default border-none! bg-transparent! whitespace-pre">
+    <CODE key={key} className="border-none! bg-transparent! whitespace-pre text-default">
       {line}
     </CODE>
   );

@@ -25,7 +25,7 @@ export const APISectionDeprecationNote = ({ comment, className, sticky = false }
   return (
     <div
       className={mergeClasses(
-        `[table_&]:mt-0 [table_&]:${ELEMENT_SPACING} [table_&]:last:mb-0`,
+        `[table_&]: [table_&]:mt-0 ${ELEMENT_SPACING} [table_&]:last:mb-0`,
         sticky && '-mx-px -mt-px'
       )}>
       <InlineHelp
@@ -35,7 +35,7 @@ export const APISectionDeprecationNote = ({ comment, className, sticky = false }
         className={mergeClasses(
           'border-palette-yellow5',
           '[table_&]:last-of-type:mb-2.5',
-          sticky && 'max-md-gutters:px-4 mb-0 rounded-t-lg rounded-b-none px-4 shadow-none',
+          sticky && 'mb-0 rounded-t-lg rounded-b-none px-4 shadow-none max-md:px-4',
           className
         )}>
         {content.length > 0 ? (
