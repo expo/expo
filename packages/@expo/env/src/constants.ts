@@ -236,6 +236,16 @@ export function isLocalEnvKey(name: string): boolean {
     case 'NDK_ROOT':
       return true;
 
+    // Per-developer preferences and per-machine setup
+    case 'BROWSER':
+    case 'BROWSER_ARGS':
+    case 'HTTP_PROXY':
+    case 'http_proxy':
+    case 'SSL_CRT_FILE':
+    case 'SSL_KEY_FILE':
+    case 'REACT_NATIVE_PACKAGER_HOSTNAME':
+      return true;
+
     default:
       return false;
   }
