@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-import type { DevToolsPlugin } from './DevToolsPlugin';
+import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 
 /**
  * Creates an MCP-compatible JSON schema for a DevTools plugin's CLI extensions.
@@ -34,7 +34,7 @@ import type { DevToolsPlugin } from './DevToolsPlugin';
  * }
  * ```
  */
-export function createMCPDevToolsExtensionSchema(plugin: DevToolsPlugin) {
+export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
   if (plugin.cliExtensions == null || plugin.cliExtensions?.commands.length === 0) {
     throw new Error(
       `Plugin ${plugin.packageName} has no commands defined. Please define at least one command.`
