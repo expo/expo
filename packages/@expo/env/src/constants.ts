@@ -2,7 +2,12 @@ import os from 'node:os';
 
 const platform = os.platform();
 
+// WARN(@kitten): We don't read this dynamically to ignore later modifications to this env var
 const safeKeys = new Set(process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',').filter((x) => !!x));
+
+export function isUnsafeAllowedEnvKey(name: string): boolean {
+  return safeKeys.has(name);
+}
 
 export function isIgnoredEnvKey(name: string) {
   if (platform === 'darwin' && name.startsWith('DYLD_')) {

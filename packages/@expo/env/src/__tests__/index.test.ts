@@ -6,6 +6,8 @@ import { stripVTControlCharacters } from 'node:util';
 import type { loadEnvFiles } from '../';
 import {
   getEnvFiles,
+  getOriginalEnv,
+  getOriginalEnvValue,
   LOADED_ENV_NAME,
   loadProjectEnv,
   logLoadedEnv,
@@ -404,6 +406,210 @@ describe(loadProjectEnv, () => {
       files: ['/.env.local'],
       env: { FOO: 'bar' },
     });
+  });
+});
+
+describe(getOriginalEnv, () => {
+  it('returns a clone of process.env when nothing has been loaded', () => {
+    delete process.env.FOO;
+    process.env.PRE_EXISTING = 'original';
+
+    const original = getOriginalEnv();
+
+    expect(original).toEqual(process.env);
+    expect(original).not.toBe(process.env);
+  });
+
+  it('mutating the result does not affect process.env', () => {
+    process.env.PRE_EXISTING = 'original';
+
+    const original = getOriginalEnv();
+    original.PRE_EXISTING = 'mutated';
+    original.NEW_KEY = 'added';
+
+    expect(process.env.PRE_EXISTING).toBe('original');
+    expect(process.env.NEW_KEY).toBeUndefined();
+  });
+
+  it('strips keys added by loadProjectEnv', () => {
+    delete process.env.FOO;
+    delete process.env.BAR;
+    process.env.PRE_EXISTING = 'original';
+    vol.fromJSON({ '.env': 'FOO=from-env\nBAR=also-from-env' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.FOO).toBe('from-env');
+    expect(process.env.BAR).toBe('also-from-env');
+
+    const original = getOriginalEnv();
+    expect(original.FOO).toBeUndefined();
+    expect(original.BAR).toBeUndefined();
+    expect(original.PRE_EXISTING).toBe('original');
+  });
+
+  it('strips the LOADED_ENV_NAME marker', () => {
+    delete process.env[LOADED_ENV_NAME];
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env[LOADED_ENV_NAME]).toBeDefined();
+
+    expect(getOriginalEnv()[LOADED_ENV_NAME]).toBeUndefined();
+  });
+
+  it('preserves the pre-load value when loadProjectEnv skipped the assignment', () => {
+    process.env.FOO = 'shell-provided';
+    vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
+
+    loadProjectEnv('/');
+    // `loadProjectEnv` does not overwrite a key already defined in the system env
+    expect(process.env.FOO).toBe('shell-provided');
+
+    expect(getOriginalEnv().FOO).toBe('shell-provided');
+  });
+
+  it('reverts mutations made after parseProjectEnv (the reloadEnvFiles pattern)', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
+
+    // parseProjectEnv does not mutate, but it does record originals so that
+    // an external mutator (e.g. @expo/cli's reloadEnvFiles) is covered.
+    parseProjectEnv('/');
+    expect(process.env.FOO).toBeUndefined();
+
+    process.env.FOO = 'manually-set';
+    expect(getOriginalEnv().FOO).toBeUndefined();
+  });
+
+  it('keeps the first-observed original across reloads', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=first' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.FOO).toBe('first');
+
+    vol.fromJSON({ '.env': 'FOO=second' }, '/');
+    loadProjectEnv('/', { force: true });
+
+    expect(getOriginalEnv().FOO).toBeUndefined();
+  });
+
+  it('keeps the backup per target env object', () => {
+    const customEnv: NodeJS.ProcessEnv = {};
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    parseProjectEnv('/', { systemEnv: customEnv });
+    customEnv.FOO = 'bar';
+
+    // Reverting against the custom env strips FOO
+    expect(getOriginalEnv(customEnv).FOO).toBeUndefined();
+    // The default (process.env) backup is untouched
+    expect(getOriginalEnv()).not.toHaveProperty('FOO');
+  });
+
+  it('passes through keys never touched by .env files', () => {
+    process.env.UNRELATED = 'unrelated-value';
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+
+    expect(getOriginalEnv().UNRELATED).toBe('unrelated-value');
+  });
+
+  it('honors EXPO_UNSAFE_DOTENV_KEYS by not reverting opted-in keys', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'JAVA_HOME';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        delete process.env.JAVA_HOME;
+        vol.fromJSON({ '.env': 'JAVA_HOME=/opt/jdk-17' }, '/');
+
+        mod.loadProjectEnv('/');
+        expect(process.env.JAVA_HOME).toBe('/opt/jdk-17');
+
+        expect(mod.getOriginalEnv().JAVA_HOME).toBe('/opt/jdk-17');
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+});
+
+describe(getOriginalEnvValue, () => {
+  it('returns the systemEnv value when no load has happened', () => {
+    process.env.UNTOUCHED = 'value';
+    expect(getOriginalEnvValue('UNTOUCHED')).toBe('value');
+  });
+
+  it('returns undefined for a key added by loadProjectEnv', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.FOO).toBe('bar');
+
+    expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('falls through to systemEnv for keys @expo/env never touched', () => {
+    process.env.UNRELATED = 'unrelated-value';
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    loadProjectEnv('/');
+
+    expect(getOriginalEnvValue('UNRELATED')).toBe('unrelated-value');
+  });
+
+  it('returns the first-observed original across reloads', () => {
+    delete process.env.FOO;
+    vol.fromJSON({ '.env': 'FOO=first' }, '/');
+
+    loadProjectEnv('/');
+    vol.fromJSON({ '.env': 'FOO=second' }, '/');
+    loadProjectEnv('/', { force: true });
+
+    expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('returns the pre-load value when loadProjectEnv skipped the assignment', () => {
+    process.env.FOO = 'shell-provided';
+    vol.fromJSON({ '.env': 'FOO=from-env' }, '/');
+
+    loadProjectEnv('/');
+    expect(getOriginalEnvValue('FOO')).toBe('shell-provided');
+  });
+
+  it('reads against a custom systemEnv', () => {
+    const customEnv: NodeJS.ProcessEnv = {};
+    vol.fromJSON({ '.env': 'FOO=bar' }, '/');
+
+    parseProjectEnv('/', { systemEnv: customEnv });
+    customEnv.FOO = 'manually-set';
+
+    expect(getOriginalEnvValue('FOO', customEnv)).toBeUndefined();
+    expect(getOriginalEnvValue('FOO')).toBeUndefined();
+  });
+
+  it('honors EXPO_UNSAFE_DOTENV_KEYS by returning the loaded value', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'JAVA_HOME';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        delete process.env.JAVA_HOME;
+        vol.fromJSON({ '.env': 'JAVA_HOME=/opt/jdk-17' }, '/');
+
+        mod.loadProjectEnv('/');
+        expect(mod.getOriginalEnvValue('JAVA_HOME')).toBe('/opt/jdk-17');
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
   });
 });
 

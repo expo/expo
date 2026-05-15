@@ -4,10 +4,24 @@ import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { isIgnoredEnvKey } from './constants';
+import { isIgnoredEnvKey, isUnsafeAllowedEnvKey } from './constants';
 import { parse, expand, type EnvOutput } from './parse';
 
 const debug = require('debug')('expo:env') as typeof console.log;
+
+const originalEnvBackup = new WeakMap<EnvOutput, Map<string, string | undefined>>();
+
+function rememberOriginal(systemEnv: EnvOutput, key: string): void {
+  if (isUnsafeAllowedEnvKey(key)) return;
+  let backup = originalEnvBackup.get(systemEnv);
+  if (!backup) {
+    backup = new Map();
+    originalEnvBackup.set(systemEnv, backup);
+  }
+  if (!backup.has(key)) {
+    backup.set(key, systemEnv[key]);
+  }
+}
 
 /** Determine if the `.env` files are enabled or not, through `EXPO_NO_DOTENV` */
 export function isEnabled() {
@@ -131,8 +145,13 @@ export function parseEnvFiles(
     }
   });
 
+  const env = expand(loadedEnvVars, systemEnv);
+  for (const key in env) {
+    rememberOriginal(systemEnv, key);
+  }
+
   return {
-    env: expand(loadedEnvVars, systemEnv),
+    env,
     files: loadedEnvFiles.reverse(),
   };
 }
@@ -167,12 +186,14 @@ export function loadEnvFiles(
     if (typeof systemEnv[key] !== 'undefined') {
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
+      rememberOriginal(systemEnv, key);
       systemEnv[key] = parsed.env[key];
       loadedEnvKeys.push(key);
     }
   }
 
   // Mark the environment as loaded
+  rememberOriginal(systemEnv, LOADED_ENV_NAME);
   systemEnv[LOADED_ENV_NAME] = JSON.stringify(loadedEnvKeys);
 
   return { result: 'loaded' as const, ...parsed, loaded: loadedEnvKeys };
@@ -206,6 +227,57 @@ export function loadProjectEnv(
     getEnvFiles(options).map((envFile) => path.join(projectRoot, envFile)),
     options
   );
+}
+
+/**
+ * Get a fresh clone of the system environment with all `@expo/env`-applied
+ * mutations reverted to their pre-load values. The result is intended to be
+ * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
+ * when a subprocess should observe the environment as it was before any
+ * `.env*` files were loaded — for example, when resolving SDK tooling paths
+ * that should not be influenced by project-controlled `.env` values.
+ *
+ * Allocates lazily: nothing is held until this function is called, and each
+ * call returns a new object so callers may mutate it freely.
+ *
+ * @param systemEnv The env to revert against; defaults to `process.env`.
+ */
+export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
+  const result: EnvOutput = { ...systemEnv };
+  const backup = originalEnvBackup.get(systemEnv);
+  if (backup) {
+    for (const [key, original] of backup) {
+      if (original === undefined) {
+        delete result[key];
+      } else {
+        result[key] = original;
+      }
+    }
+  }
+  return result;
+}
+
+/**
+ * Get the pre-load value of a single environment variable as recorded by
+ * `@expo/env`. Falls through to the value in `systemEnv` for keys that
+ * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
+ * that resolve filesystem paths or executables from a single env var.
+ *
+ * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
+ * via the escape hatch return their currently loaded value, not the original.
+ *
+ * @param key The environment variable to read.
+ * @param systemEnv The env to read against; defaults to `process.env`.
+ */
+export function getOriginalEnvValue(
+  key: string,
+  systemEnv: EnvOutput = process.env
+): string | undefined {
+  const backup = originalEnvBackup.get(systemEnv);
+  if (backup && backup.has(key)) {
+    return backup.get(key);
+  }
+  return systemEnv[key];
 }
 
 /** Log the loaded environment info from the loaded results */
@@ -284,6 +356,7 @@ export function load(
       debug(`"${key}" is already defined and IS NOT overwritten`);
     } else {
       // Avoid creating a new object, mutate it instead as this causes problems in Bun
+      rememberOriginal(process.env, key);
       process.env[key] = envInfo.env[key];
       loadedEnvKeys.push(key);
     }
