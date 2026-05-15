@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.ViewGroup
 import expo.modules.core.interfaces.SingletonModule
 import host.exp.exponent.experience.splashscreen.legacy.NativeResourcesBasedSplashScreenViewProvider
-import host.exp.exponent.experience.splashscreen.legacy.SplashScreenImageResizeMode
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenViewController
 import host.exp.exponent.experience.splashscreen.legacy.SplashScreenViewProvider
 import java.util.*
@@ -64,9 +63,8 @@ object SplashScreen : SingletonModule {
   @JvmOverloads
   fun show(
     activity: Activity,
-    resizeMode: SplashScreenImageResizeMode,
     rootViewClass: Class<out ViewGroup>,
-    splashScreenViewProvider: SplashScreenViewProvider = NativeResourcesBasedSplashScreenViewProvider(resizeMode),
+    splashScreenViewProvider: SplashScreenViewProvider = NativeResourcesBasedSplashScreenViewProvider(),
     successCallback: () -> Unit = {},
     failureCallback: (reason: String) -> Unit = { Log.w(TAG, it) }
   ) {
@@ -152,12 +150,11 @@ object SplashScreen : SingletonModule {
    */
   internal fun ensureShown(
     activity: Activity,
-    resizeMode: SplashScreenImageResizeMode,
     rootViewClass: Class<out ViewGroup>
   ) {
     val controller = controllers[activity]
     if (controller == null) {
-      show(activity, resizeMode, rootViewClass)
+      show(activity, rootViewClass)
     } else {
       controller.showSplashScreen { }
     }

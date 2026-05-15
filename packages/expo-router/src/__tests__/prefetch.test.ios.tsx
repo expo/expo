@@ -1,12 +1,16 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { Link } from '../link';
+import {
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+} from '../navigationParams';
+import type { StackNavigationState } from '../react-navigation/native';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { renderRouter } from '../testing-library';
 
 type HeaderTitleFunction = Extract<
@@ -790,4 +794,100 @@ it('can still use <Screen /> while prefetching in tabs', () => {
     'Should only change after focus',
     'index',
   ]);
+});
+
+it('stamps zoom transition screen ID on preloaded route', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    target: () => null,
+  });
+
+  act(() => {
+    router.prefetch({
+      pathname: '/target',
+      params: {
+        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'test-source-id',
+      },
+    });
+  });
+
+  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const innerState = state?.routes[0]!.state;
+  if (innerState?.type !== 'stack') {
+    throw new Error('Expected a stack navigator');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0]!;
+
+  expect(preloadedRoute.name).toBe('target');
+  expect(preloadedRoute.params).toHaveProperty(
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+    preloadedRoute.key
+  );
+});
+
+it('does not stamp zoom transition screen ID without zoom source param', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    target: () => null,
+  });
+
+  act(() => {
+    router.prefetch('/target');
+  });
+
+  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const innerState = state?.routes[0]!.state;
+  if (innerState?.type !== 'stack') {
+    throw new Error('Expected a stack navigator');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  const preloadedRoute = (innerState as StackNavigationState<{}>).preloadedRoutes[0]!;
+
+  expect(preloadedRoute.name).toBe('target');
+  expect(preloadedRoute.params).not.toHaveProperty(
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME
+  );
+});
+
+it('stamps zoom transition screen ID on preloaded route that is navigated to', () => {
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => null,
+    target: () => <Text testID="target">Target</Text>,
+  });
+
+  act(() => {
+    router.prefetch({
+      pathname: '/target',
+      params: {
+        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'test-source-id',
+      },
+    });
+  });
+
+  // Navigate to the preloaded route (with zoom params so it goes through the NAVIGATE/PUSH stamping)
+  act(() => {
+    router.push({
+      pathname: '/target',
+      params: {
+        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'test-source-id',
+      },
+    });
+  });
+
+  const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const innerState = state?.routes[0]!.state;
+  if (innerState?.type !== 'stack') {
+    throw new Error('Expected a stack navigator');
+  }
+  const navigatedRoute = innerState.routes[innerState.routes.length - 1]!;
+
+  expect(navigatedRoute.name).toBe('target');
+  expect(navigatedRoute.params).toHaveProperty(
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+    navigatedRoute.key
+  );
 });

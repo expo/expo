@@ -1,7 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import { execSync } from 'node:child_process';
 
-export type PackageManagerName = 'npm' | 'pnpm' | 'yarn' | 'bun';
+export const PACKAGE_MANAGERS = ['npm', 'pnpm', 'yarn', 'bun'] as const;
+export type PackageManagerName = (typeof PACKAGE_MANAGERS)[number];
+
+export function isPackageManagerName(value: string | undefined): value is PackageManagerName {
+  return !!value && (PACKAGE_MANAGERS as readonly string[]).includes(value);
+}
 
 /** Determine which package manager to use for installing dependencies based on how the process was started. */
 export function resolvePackageManager(): PackageManagerName {

@@ -19,7 +19,8 @@ import { LoaderCache, LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../loaders/utils';
 import { renderRouter } from '../testing-library';
-import { inMemoryContext, MemoryContext } from '../testing-library/context-stubs';
+import type { MemoryContext } from '../testing-library/context-stubs';
+import { inMemoryContext } from '../testing-library/context-stubs';
 
 jest.mock('../loaders/utils', () => ({
   fetchLoader: jest.fn(),
@@ -260,17 +261,12 @@ describe(useGlobalSearchParams, () => {
 
     expect(results1).toEqual([{ id: '1' }]);
     act(() => router.push('/2'));
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
 
     act(() => router.push('/3/apple'));
     // The first screen has not rerendered
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results2).toEqual([
-      { id: '3', fruit: 'apple' },
-      { id: '3', fruit: 'apple' },
-    ]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+    expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
   it(`handles encoded params`, () => {
@@ -348,17 +344,12 @@ describe(useLocalSearchParams, () => {
 
     expect(results1).toEqual([{ id: '1' }]);
     act(() => router.push('/2'));
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
 
     act(() => router.push('/3/apple'));
     // The first screen has not rerendered
-    expect(results1).toEqual([{ id: '1' }, { id: '2' }, { id: '2' }]);
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-    expect(results2).toEqual([
-      { id: '3', fruit: 'apple' },
-      { id: '3', fruit: 'apple' },
-    ]);
+    expect(results1).toEqual([{ id: '1' }, { id: '2' }]);
+    expect(results2).toEqual([{ id: '3', fruit: 'apple' }]);
   });
 
   it(`defaults abstract types`, () => {
@@ -384,6 +375,20 @@ describe(useLocalSearchParams, () => {
     act(() => router.setParams({ test: undefined }));
 
     expect(result.current).toEqual({});
+  });
+
+  it('passes null search params through without stringifying them', () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/?test=1',
+    });
+
+    expect(result.current).toEqual({
+      test: '1',
+    });
+
+    act(() => router.setParams({ test: null }));
+
+    expect(result.current).toEqual({ test: null });
   });
 
   it(`handles encoded params`, () => {
@@ -503,10 +508,8 @@ describe(useSearchParams, () => {
 
     expect(results1).toEqual([['id', '1']]);
     act(() => router.push('/2'));
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
     expect(results1).toEqual([
       ['id', '1'],
-      ['id', '2'],
       ['id', '2'],
     ]);
 
@@ -515,12 +518,8 @@ describe(useSearchParams, () => {
     expect(results1).toEqual([
       ['id', '1'],
       ['id', '2'],
-      ['id', '2'],
     ]);
-    // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
     expect(results2).toEqual([
-      ['id', '3'],
-      ['fruit', 'apple'],
       ['id', '3'],
       ['fruit', 'apple'],
     ]);
@@ -841,7 +840,7 @@ describe(useLoaderData, () => {
     expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
 
     await act(async () => {
-      await fetchLoaderMock.mock.results[0].value;
+      await fetchLoaderMock.mock.results[0]!.value;
     });
 
     expect(cache.getData('/users/123')).toEqual({ fromFetch: true });

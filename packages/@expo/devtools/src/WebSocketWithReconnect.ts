@@ -69,7 +69,7 @@ export class WebSocketWithReconnect implements WebSocket {
   private retries = 0;
   private connectTimeoutHandle: ReturnType<typeof setTimeout> | null = null;
   private isClosed = false;
-  private sendQueue: (string | ArrayBufferView | Blob | ArrayBufferLike)[] = [];
+  private sendQueue: (string | ArrayBufferView<ArrayBuffer> | Blob | ArrayBuffer)[] = [];
   private lastCloseEvent: { code?: number; reason?: string; message?: string } | null = null;
   private eventListeners: InternalEventListeners;
 
@@ -147,7 +147,7 @@ export class WebSocketWithReconnect implements WebSocket {
     this.ws.addEventListener('close', this.handleClose);
   }
 
-  public send(data: string | ArrayBufferView | Blob | ArrayBufferLike): void {
+  public send(data: string | ArrayBufferView<ArrayBuffer> | Blob | ArrayBuffer): void {
     if (this.isClosed) {
       this.onError(new Error('Unable to send data: WebSocket is closed'));
       return;

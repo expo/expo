@@ -106,7 +106,7 @@ describe(Terminal, () => {
   });
 
   it('adds data-md-commands only for package-manager command maps', () => {
-    const { container } = render(
+    render(
       <>
         <Terminal
           cmd={{
@@ -118,7 +118,7 @@ describe(Terminal, () => {
       </>
     );
 
-    const terminals = container.querySelectorAll('[data-md="terminal"]');
+    const terminals = screen.getAllByRole('generic').filter(el => el.dataset.md === 'terminal');
     expect(terminals.length).toBe(2);
     expect(terminals[0].getAttribute('data-md-commands')).not.toBeNull();
     expect(terminals[1].getAttribute('data-md-commands')).toBeNull();

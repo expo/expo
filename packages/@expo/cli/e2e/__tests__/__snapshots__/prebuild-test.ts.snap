@@ -24,7 +24,6 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
   "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
   "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
-  "android/app/src/main/res/values-night/colors.xml",
   "android/app/src/main/res/values/colors.xml",
   "android/app/src/main/res/values/strings.xml",
   "android/app/src/main/res/values/styles.xml",
@@ -36,7 +35,7 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "android/gradlew.bat",
   "android/settings.gradle",
   "app.json",
-  "bun.lock",
+  "index.js",
   "ios/.gitignore",
   "ios/.xcode.env",
   "ios/Podfile",
@@ -52,7 +51,6 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "ios/basicprebuild/Images.xcassets/Contents.json",
   "ios/basicprebuild/Images.xcassets/SplashScreen.imageset/Contents.json",
   "ios/basicprebuild/Images.xcassets/SplashScreen.imageset/splashscreen.png",
-  "ios/basicprebuild/Images.xcassets/SplashScreenBackground.colorset/Contents.json",
   "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
   "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/background.png",
   "ios/basicprebuild/Info.plist",
@@ -62,6 +60,7 @@ exports[`runs \`npx expo prebuild --template expo-template-bare-minimum@50.0.43\
   "ios/basicprebuild/main.m",
   "metro.config.js",
   "package.json",
+  "pnpm-lock.yaml",
 ]
 `;
 
@@ -94,7 +93,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp",
   "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp",
   "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp",
-  "android/app/src/main/res/values-night/colors.xml",
   "android/app/src/main/res/values/colors.xml",
   "android/app/src/main/res/values/strings.xml",
   "android/app/src/main/res/values/styles.xml",
@@ -106,7 +104,7 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "android/gradlew.bat",
   "android/settings.gradle",
   "app.json",
-  "bun.lock",
+  "index.js",
   "ios/.gitignore",
   "ios/.xcode.env",
   "ios/Podfile",
@@ -119,7 +117,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
   "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
   "ios/basicprebuild/Images.xcassets/Contents.json",
-  "ios/basicprebuild/Images.xcassets/SplashScreenBackground.colorset/Contents.json",
   "ios/basicprebuild/Info.plist",
   "ios/basicprebuild/SplashScreen.storyboard",
   "ios/basicprebuild/Supporting/Expo.plist",
@@ -127,5 +124,6 @@ exports[`runs \`npx expo prebuild\` 1`] = `
   "ios/basicprebuild/basicprebuild.entitlements",
   "metro.config.js",
   "package.json",
+  "pnpm-lock.yaml",
 ]
 `;

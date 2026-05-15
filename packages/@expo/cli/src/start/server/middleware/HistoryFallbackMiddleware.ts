@@ -1,5 +1,5 @@
 import { parsePlatformHeader } from './resolvePlatform';
-import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /**
  * Create a web-only middleware which redirects to the index middleware without losing the path component.

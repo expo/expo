@@ -1,6 +1,28 @@
 import AppIntents
 import WidgetKit
 
+struct WidgetReload: AppIntent {
+  // title is not used for non-discoverable intents, but it is required
+  static var title: LocalizedStringResource = "Reload widget"
+  static var isDiscoverable: Bool = false
+  @Parameter(title: "source")
+  var source: String?
+
+  init() {}
+  init(source: String?) {
+    self.source = source
+  }
+
+  func perform() async throws -> some IntentResult {
+    guard let source else {
+      return .result()
+    }
+
+    WidgetCenter.shared.reloadTimelines(ofKind: source)
+    return .result()
+  }
+}
+
 @available(iOS 16.0, *)
 struct WidgetUserInteraction: AppIntent {
   // title is not used for non-discoverable intents, but it is required
@@ -15,11 +37,15 @@ struct WidgetUserInteraction: AppIntent {
   @Parameter(title: "entryIndex")
   var entryIndex: Int?
 
+  @Parameter(title: "environmentString")
+  var environmentString: String?
+
   init() {}
-  init(source: String?, target: String?, entryIndex: Int?) {
+  init(source: String?, target: String?, entryIndex: Int?, environmentString: String?) {
     self.source = source
     self.target = target
     self.entryIndex = entryIndex
+    self.environmentString = environmentString
   }
 
   func perform() async throws -> some IntentResult {
@@ -32,16 +58,25 @@ struct WidgetUserInteraction: AppIntent {
 
     guard let timeline,
           let entryIndex,
+          timeline.indices.contains(entryIndex),
           let entry = timeline[entryIndex] as? [String: Any],
           let props = entry["props"] as? [String: Any],
-          let context = createWidgetContext(layout: layout, props: props) else {
+          let environmentData = environmentString?.data(using: .utf8),
+          var environment = try? JSONSerialization.jsonObject(with: environmentData) as? [String: Any] else {
       return .result()
     }
-    let familyKey: String? = "systemSmall"
-    let result = context.objectForKeyedSubscript("__expoWidgetHandlePress")?.call(
-      withArguments: [Int(Date.now.timeIntervalSince1970 * 1000), familyKey as Any, target as Any]
-    )
-    if let newProps = result?.toObject() as? [String: Any] {
+    environment["target"] = target
+
+    let newProps: [String: Any]?
+    switch evaluateWidgetButtonPress(layout: layout, props: props, environment: environment) {
+    case .success(let result):
+      newProps = result
+    case .failure(let error):
+      print("[ExpoWidgets] Button press evaluation failed: \(error.message)")
+      newProps = nil
+    }
+
+    if let newProps {
       var newEntry = entry
       if let originalProps = entry["props"] as? [String: Any] {
         newEntry["props"] = originalProps.merging(newProps) { _, new in new }

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NoSSR = NoSSR;
+const jsx_runtime_1 = require("react/jsx-runtime");
 const react_1 = __importDefault(require("react"));
 function NoSSR({ children }) {
     const [mounted, setMounted] = react_1.default.useState(false);
@@ -17,6 +18,6 @@ function NoSSR({ children }) {
     // This component is used to prevent server-side rendering of its children.
     // It can be useful for components that rely on browser-specific APIs or
     // need to be rendered only on the client side.
-    return <>{children}</>;
+    return (0, jsx_runtime_1.jsx)(jsx_runtime_1.Fragment, { children: children });
 }
 //# sourceMappingURL=NoSSR.js.map

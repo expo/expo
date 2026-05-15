@@ -4,10 +4,17 @@ package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 reactNativeVersion = '0.0.0'
 begin
-  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+  absolute_react_native_path = ''
+  if !ENV['REACT_NATIVE_PATH'].nil?
+    absolute_react_native_path = File.expand_path(ENV['REACT_NATIVE_PATH'], Pod::Config.instance.project_root)
+  else
+    absolute_react_native_path = File.dirname(`node --print "require.resolve('react-native/package.json')"`)
+  end
+  reactNativeVersion = `node --print "require('#{absolute_react_native_path}/package.json').version"`
 rescue
   reactNativeVersion = '0.0.0'
 end
+
 reactNativeTargetVersion = reactNativeVersion.split('.')[1].to_i
 
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -Wno-comma -Wno-shorten-64-to-32'
@@ -25,9 +32,9 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1',
-    :tvos => '15.1',
-    :osx => '13.0'
+    :ios => '16.4',
+    :tvos => '16.4',
+    :osx => '13.4'
   }
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -108,7 +115,7 @@ Pod::Spec.new do |s|
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
-      :ios => '15.1'
+      :ios => '16.4'
     }
   end
 
@@ -118,8 +125,10 @@ Pod::Spec.new do |s|
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'ReactAppDependencyProvider'
     test_spec.dependency 'React'
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platforms = {
-      :ios => '15.1'
+      :ios => '16.4'
     }
   end
 

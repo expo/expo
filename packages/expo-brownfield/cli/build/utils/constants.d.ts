@@ -1,2 +1,17 @@
-import type { XCFrameworkSpec } from './types';
-export declare const XCFramework: Record<string, XCFrameworkSpec>;
+export declare const XCFramework: {
+    Hermes: {
+        path: string;
+        name: string;
+        targets: string[];
+    };
+    React: {
+        path: string;
+        name: string;
+        targets: string[];
+    };
+    ReactDependencies: {
+        path: string;
+        name: string;
+        targets: string[];
+    };
+};

@@ -12,9 +12,9 @@ installEventLogger();
 
 // Check Node.js version and issue a loud warning if it's too outdated
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
-const NODE_MIN = [20, 19, 4];
+const NODE_MIN = [20, 19, 4] as const;
 const nodeVersion = process.version?.slice(1).split('.', 3).map(Number);
-if (nodeVersion[0] < NODE_MIN[0] || (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1] < NODE_MIN[1])) {
+if (nodeVersion[0]! < NODE_MIN[0] || (nodeVersion[0] === NODE_MIN[0] && nodeVersion[1]! < NODE_MIN[1])) {
   console.error(
     chalk.red`{bold Node.js (${process.version}) is outdated and unsupported.}`
       + chalk.red` Please update to a newer Node.js LTS version (required: >=${NODE_MIN.join('.')})\n`
@@ -90,7 +90,7 @@ if (args['--non-interactive']) {
 }
 
 // Check if we are running `npx expo <subcommand>` or `npx expo`
-const isSubcommand = Boolean(commands[args._[0]]);
+const isSubcommand = !!(args._[0] && commands[args._[0]]);
 
 // Handle `--help` flag
 if (!isSubcommand && args['--help']) {
@@ -191,7 +191,7 @@ if (!isSubcommand) {
 
   // TODO: Log telemetry about invalid command used.
   const subcommand = args._[0];
-  if (subcommand in migrationMap) {
+  if (subcommand && subcommand in migrationMap) {
     const replacement = migrationMap[subcommand];
     console.log();
     const instruction = subcommand === 'upgrade' ? 'follow this guide' : 'use';
@@ -202,7 +202,7 @@ if (!isSubcommand) {
     process.exit(1);
   }
   const deprecated = ['send', 'client:ios'];
-  if (deprecated.includes(subcommand)) {
+  if (subcommand && deprecated.includes(subcommand)) {
     console.log();
     console.log(chalk.yellow`  {gray $} {bold expo ${subcommand}} is deprecated`);
     console.log();
@@ -210,7 +210,7 @@ if (!isSubcommand) {
   }
 }
 
-const command = isSubcommand ? args._[0] : defaultCmd;
+const command = isSubcommand ? args._[0]! : defaultCmd;
 const commandArgs = isSubcommand ? args._.slice(1) : args._;
 
 // Push the help flag to the subcommand args.
@@ -222,7 +222,7 @@ if (args['--help']) {
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
-commands[command]().then((exec) => {
+commands[command]!().then((exec) => {
   exec(commandArgs);
 
   // NOTE(EvanBacon): Track some basic telemetry events indicating the command

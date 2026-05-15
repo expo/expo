@@ -7,8 +7,8 @@ import { SwitchHorizontal01Icon } from '@expo/styleguide-icons/outline/SwitchHor
 import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import { useMemo, type CSSProperties } from 'react';
 
-import type { ContextScope } from './AskPageAIChat.types';
 import { FOOTNOTE } from '../Text';
+import type { ContextScope } from './AskPageAIChat.types';
 
 type AskPageAIChatHeaderProps = {
   displayContextLabel: string;

@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-import SDWebImage
-import SDWebImageWebPCoder
+internal import SDWebImage
+internal import SDWebImageWebPCoder
 
 internal let imageCoderOptionUseAppleWebpCodec = SDImageCoderOption(rawValue: "useAppleWebpCodec")
 

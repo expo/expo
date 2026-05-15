@@ -10,15 +10,17 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.services.FilePermissionService
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.async
 import java.io.File
-import java.io.FileInputStream
+import java.io.InputStream
 import java.net.URI
-import java.security.DigestInputStream
 import java.security.MessageDigest
 
-internal class UnableToDownloadAssetException(url: String) :
-  CodedException("Unable to download asset from url: $url")
+internal class UnableToDownloadAssetException(url: String, cause: Throwable? = null) :
+  CodedException("Unable to download asset from url: $url", cause)
+
+internal class FailedToDownloadAssetException(url: String) :
+  CodedException("Failed to download asset from url: $url")
 
 class AssetModule : Module() {
   private val context: Context
@@ -27,22 +29,6 @@ class AssetModule : Module() {
   private fun getMD5HashOfFilePath(uri: URI): String {
     val md = MessageDigest.getInstance("MD5")
     return md.digest(uri.toString().toByteArray()).joinToString("") { "%02x".format(it) }
-  }
-
-  private fun getMD5HashOfFileContent(file: File): String? {
-    return try {
-      FileInputStream(file).use { inputStream ->
-        DigestInputStream(
-          inputStream,
-          MessageDigest.getInstance("MD5")
-        ).use { digestInputStream ->
-          digestInputStream.messageDigest.digest().joinToString(separator = "") { "%02x".format(it) }
-        }
-      }
-    } catch (e: Exception) {
-      e.printStackTrace()
-      null
-    }
   }
 
   private suspend fun downloadAsset(appContext: AppContext, uri: URI, localUrl: File): Uri {
@@ -56,25 +42,40 @@ class AssetModule : Module() {
       throw UnableToDownloadAssetException(uri.toString())
     }
 
-    return withContext(appContext.backgroundCoroutineScope.coroutineContext) {
-      try {
-        val inputStream = when {
-          uri.toString().contains(":").not() -> openAssetResourceStream(context, uri.toString())
-          uri.toString().startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE) -> openAndroidResStream(context, uri.toString())
-          else -> uri.toURL().openStream()
-        }
-        inputStream.use { input ->
-          localUrl.outputStream().use { output ->
-            val bytesCopied = input.copyTo(output)
-            if (bytesCopied == 0L) {
-              Log.w("ExpoAsset", "Asset downloaded to $localUrl is empty. It might be conflicting with another asset, or corrupted.")
-            }
+    return appContext
+      .backgroundCoroutineScope
+      .async {
+        try {
+          val bytesCopied = uri
+            .toInputStream()
+            .use { input -> input.copyTo(localUrl) }
+          if (bytesCopied == 0L) {
+            Log.w("ExpoAsset", "Asset downloaded to $localUrl is empty. It might be conflicting with another asset, or corrupted.")
           }
+          Uri.fromFile(localUrl)
+        } catch (e: Exception) {
+          throw UnableToDownloadAssetException(uri.toString(), e)
         }
-        Uri.fromFile(localUrl)
-      } catch (e: Exception) {
-        throw UnableToDownloadAssetException(uri.toString())
-      }
+      }.await()
+  }
+
+  private suspend fun URI.toInputStream(): InputStream {
+    val uriString = this.toString()
+    if (!uriString.contains(":")) {
+      return openAssetResourceStream(context, uriString)
+    }
+
+    if (uriString.startsWith(ANDROID_EMBEDDED_URL_BASE_RESOURCE)) {
+      return openAndroidResStream(context, uriString)
+    }
+
+    return openRemoteStream(uriString)
+      ?: throw FailedToDownloadAssetException(uriString)
+  }
+
+  private fun InputStream.copyTo(file: File): Long {
+    return file.outputStream().use { output ->
+      this.copyTo(output)
     }
   }
 

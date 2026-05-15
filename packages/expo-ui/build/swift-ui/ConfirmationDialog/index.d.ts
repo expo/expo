@@ -31,17 +31,17 @@ export type ConfirmationDialogProps = {
  *
  * @see https://developer.apple.com/documentation/swiftui/view/confirmationdialog(_:ispresented:titlevisibility:actions:message:)
  */
-declare function ConfirmationDialog(props: ConfirmationDialogProps): import("react").JSX.Element;
+declare function ConfirmationDialog(props: ConfirmationDialogProps): import("react/jsx-runtime").JSX.Element;
 declare namespace ConfirmationDialog {
     var Trigger: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Actions: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
     var Message: (props: {
         children: React.ReactNode;
-    }) => import("react").JSX.Element;
+    }) => import("react/jsx-runtime").JSX.Element;
 }
 export { ConfirmationDialog };
 //# sourceMappingURL=index.d.ts.map

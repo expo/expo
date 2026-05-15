@@ -5,6 +5,7 @@ import Testing
 @testable import ExpoModulesCore
 
 @Suite("ClassDefinition")
+@JavaScriptActor
 struct ClassDefinitionTests {
   // MARK: - Basic
 
@@ -45,7 +46,7 @@ struct ClassDefinitionTests {
     func `builds a class`() throws {
       try JavaScriptActor.assumeIsolated {
         let appContext = AppContext.create()
-        let klass = Class("") {}
+        let klass = Class("TestClass") {}
         let object = try klass.build(appContext: appContext)
 
         #expect(object.hasProperty("prototype") == true)
@@ -57,6 +58,7 @@ struct ClassDefinitionTests {
   // MARK: - Module
 
   @Suite("module")
+  @JavaScriptActor
   struct ModuleTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -138,6 +140,7 @@ struct ClassDefinitionTests {
   // MARK: - Class with associated type
 
   @Suite("class with associated type")
+  @JavaScriptActor
   struct ClassWithAssociatedTypeTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -264,6 +267,23 @@ struct ClassDefinitionTests {
       #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
     }
 
+    @Test
+    func `initializes the shared object from static concurrent function`() async throws {
+      let initialValue = Int.random(in: 1..<100)
+      try runtime
+        .eval(
+          "expo.modules.TestModule.Counter.createConcurrently(\(initialValue)).then((result) => { globalThis.result = result; })"
+        )
+
+      try await waitUntil(timeout: 4.0) {
+        safeBoolEval("globalThis.result != null")
+      }
+      let object = try runtime.eval("object = globalThis.result")
+
+      #expect(object.kind == .object)
+      #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
+    }
+
     private func safeBoolEval(_ js: String) -> Bool {
       var result = false
       do {
@@ -293,6 +313,7 @@ struct ClassDefinitionTests {
   // MARK: - Constructor error handling
 
   @Suite("constructor error handling")
+  @JavaScriptActor
   struct ConstructorErrorHandlingTests {
     let appContext: AppContext
     var runtime: ExpoRuntime {
@@ -330,13 +351,11 @@ struct ClassDefinitionTests {
       #expect {
         try runtime.eval("new expo.modules.ErrorTest.FailingClass(true)")
       } throws: { error in
-        guard let evalError = error as? JavaScriptEvalException else {
+        guard let evalError = error as? ScriptEvaluationError else {
           return false
         }
-        let reason = evalError.param.userInfo["message"] as? String ?? ""
-        return reason.contains("Calling the 'constructor' function has failed") &&
-               reason.contains("→ Caused by:") &&
-               reason.contains("This is a test Exception with a code")
+        return evalError.message.contains("Calling the 'constructor' function has failed") &&
+               evalError.message.contains("→ Caused by: TestException:")
       }
     }
 
@@ -392,6 +411,10 @@ fileprivate final class ModuleWithCounterClass: Module {
 
       StaticAsyncFunction("createAsync") { (initialValue: Int, p: Promise) in
         p.resolve(Counter(initialValue: initialValue))
+      }
+
+      StaticAsyncFunction("createConcurrently") { (initialValue: Int) async throws in
+        Counter(initialValue: initialValue)
       }
 
       Function("increment") { (counter, value: Int) in

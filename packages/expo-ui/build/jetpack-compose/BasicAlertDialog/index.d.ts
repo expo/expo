@@ -1,4 +1,4 @@
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig, type DialogProperties } from '../../types';
 export type BasicAlertDialogProps = {
     /**
      * The content to display inside the dialog.
@@ -10,13 +10,18 @@ export type BasicAlertDialogProps = {
      */
     onDismissRequest?: () => void;
     /**
+     * Properties for the dialog window.
+     */
+    properties?: DialogProperties;
+    /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * A basic alert dialog that provides a blank container for custom content.
  * Unlike `AlertDialog`, this component does not have structured title/text/buttons slots.
  */
-export declare function BasicAlertDialog(props: BasicAlertDialogProps): import("react").JSX.Element;
+export declare function BasicAlertDialog(props: BasicAlertDialogProps): import("react/jsx-runtime").JSX.Element;
+export type { DialogProperties };
 //# sourceMappingURL=index.d.ts.map

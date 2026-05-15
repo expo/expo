@@ -7,6 +7,8 @@ import android.media.audiofx.Visualizer
 import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
@@ -64,6 +66,15 @@ class AudioPlayer(
   internal var lockScreenOptions: AudioLockScreenOptions? = null
   internal var mediaSession: MediaSession = buildBasicMediaSession(context, ref)
   val serviceConnection = AudioPlaybackServiceConnection(WeakReference(this), appContext)
+
+  val isLive: Boolean
+    get() = ref.isCurrentMediaItemLive
+
+  val currentOffsetFromLive: Double?
+    get() {
+      val offset = ref.currentLiveOffset
+      return if (offset == C.TIME_UNSET) null else offset / 1000.0
+    }
 
   private var samplingEnabled = false
   private var visualizer: Visualizer? = null
@@ -144,6 +155,14 @@ class AudioPlayer(
     sendStatusUpdate(updateMap)
   }
 
+  override fun onPlayerError(error: PlaybackException) {
+    sendStatusUpdate(
+      mapOf(
+        "error" to error.message
+      )
+    )
+  }
+
   fun setSamplingEnabled(enabled: Boolean) {
     appContext?.reactContext?.let {
       if (ContextCompat.checkSelfPermission(it, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
@@ -193,7 +212,10 @@ class AudioPlayer(
       "isLoaded" to if (ref.playbackState == Player.STATE_ENDED) true else isLoaded,
       "playbackRate" to ref.playbackParameters.speed,
       "shouldCorrectPitch" to preservesPitch,
-      "isBuffering" to isBuffering
+      "isBuffering" to isBuffering,
+      "isLive" to isLive,
+      "currentOffsetFromLive" to currentOffsetFromLive,
+      "error" to null
     )
   }
 

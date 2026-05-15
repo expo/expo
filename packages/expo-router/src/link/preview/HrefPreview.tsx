@@ -1,22 +1,22 @@
 'use client';
 
-import {
-  NavigationContext,
-  type NavigationProp,
-  type ParamListBase,
-} from '@react-navigation/native';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import { PreviewRouteContext } from './PreviewRouteContext';
-import { RouteNode } from '../../Route';
+import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
-import { type ResultState } from '../../exports';
+import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
 import { store } from '../../global-state/router-store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
-import { Href, UnknownOutputParams } from '../../types';
+import {
+  NavigationContext,
+  type NavigationProp,
+  type ParamListBase,
+} from '../../react-navigation/native';
+import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { getPathFromState } from '../linking';
@@ -30,7 +30,7 @@ export function HrefPreview({ href }: { href: Href }) {
     let routerState: typeof hrefState | undefined = hrefState;
     let rnState = store.state;
     while (routerState && rnState) {
-      const routerRoute: ResultState['routes'][number] = routerState.routes[0];
+      const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
       // When the route we want to show is not present in react-navigation state
       // Then most likely it is a protected route
       if (rnState.stale === false && !rnState.routeNames?.includes(routerRoute.name)) {
@@ -143,7 +143,8 @@ function getParamsAndNodeFromHref(hrefState: ResultState) {
   const params: UnknownOutputParams = {};
 
   while (state && routeNode) {
-    const route = state.routes[state.index || state.routes.length - 1];
+    // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
+    const route = state.routes[state.index || state.routes.length - 1]!;
     Object.assign(params, route.params);
     state = route.state;
     routeNode = routeNode.children.find((child) => child.route === route.name);

@@ -23,6 +23,8 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             'Messaging.swift',
             // State proxy
             'State.swift',
+            // State wrapper
+            'StateWrapper.swift',
             //SwiftUI brownfield entrypoint
             'ReactNativeView.swift',
             // UIKit brownfield view controller
@@ -32,8 +34,15 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
             // ReactNativeDelegate
             'ReactNativeDelegate.swift',
         ];
-        // Create files from templates
-        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath));
+        // Per-target prefix is interpolated into `@objc(...)` annotations so the
+        // ObjC runtime sees a unique class name per inner-app framework.
+        // Swift type names themselves stay unprefixed: each brownfield framework
+        // has a unique Swift module name, which is enough namespace isolation, and
+        // typealias-based unprefixing breaks linking under library-evolution mode
+        // (clients reference symbols by the typealias path, but the framework
+        // exports symbols under the underlying class name → undefined symbol).
+        const templateVars = { prefix: pluginConfig.targetName };
+        templateFiles.forEach((templateFile) => (0, utils_1.createFileFromTemplate)(templateFile, groupPath, templateVars));
         // Apply patch to ExpoAppDelegate.swift to make it compatible with the brownfield framework
         (0, utils_1.applyPatchToFile)('ExpoAppDelegate.patch', node_path_1.default.join(groupPath, 'ExpoAppDelegate.swift'));
         // Create and properly add a new group for the framework
@@ -51,6 +60,11 @@ const withXcodeProjectPlugin = (config, pluginConfig) => {
         (0, utils_1.configureBuildPhases)(xcodeProject, target, pluginConfig.targetName, projectName, templateFiles.map((file) => `${pluginConfig.targetName}/${file}`));
         // Add the required build settings
         (0, utils_1.configureBuildSettings)(xcodeProject, pluginConfig.targetName, config.ios?.buildNumber || '1', pluginConfig.bundleIdentifier, config.ios?.version || config.version);
+        // Add Expo.plist to the framework target's resources so expo-updates
+        // can read its configuration from the framework bundle at runtime.
+        // Uses addBuildPhase to create a PBXResourcesBuildPhase for the framework target
+        // since addResourceFile requires an existing Resources phase which framework targets lack.
+        xcodeProject.addBuildPhase([`${projectName}/Supporting/Expo.plist`], 'PBXResourcesBuildPhase', 'Resources', target.uuid, 'framework', '""');
         return config;
     });
 };

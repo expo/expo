@@ -1,22 +1,25 @@
 import { requireNativeView } from 'expo';
+import { type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
-export type DividerProps = {
+export type DividerCommonConfig = {
+  /**
+   * Thickness of the divider line. Accepts dp values; use `StyleSheet.hairlineWidth` for a single-pixel line.
+   */
+  thickness?: number;
+  /**
+   * Color of the divider line.
+   */
+  color?: ColorValue;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
 };
 
-type NativeDividerProps = DividerProps;
-const DividerNativeView: React.ComponentType<NativeDividerProps> = requireNativeView(
-  'ExpoUI',
-  'DividerView'
-);
-
-function transformProps(props: DividerProps): NativeDividerProps {
+function transformProps(props: DividerCommonConfig): DividerCommonConfig {
   const { modifiers, ...restProps } = props;
   return {
     modifiers,
@@ -25,9 +28,26 @@ function transformProps(props: DividerProps): NativeDividerProps {
   };
 }
 
-/**
- * A visual element that can be used to separate other content.
- */
-export function Divider(props: DividerProps) {
-  return <DividerNativeView {...transformProps(props)} />;
+function createDividerComponent(viewName: string): React.ComponentType<DividerCommonConfig> {
+  const NativeView: React.ComponentType<DividerCommonConfig> = requireNativeView(
+    'ExpoUI',
+    viewName
+  );
+  function Component(props: DividerCommonConfig) {
+    return <NativeView {...transformProps(props)} />;
+  }
+  Component.displayName = viewName;
+  return Component;
 }
+
+/**
+ * A horizontal divider line that groups content in lists and layouts,
+ * matching Compose's `HorizontalDivider`.
+ */
+export const HorizontalDivider = createDividerComponent('HorizontalDividerView');
+
+/**
+ * A vertical divider line that groups content in layouts,
+ * matching Compose's `VerticalDivider`.
+ */
+export const VerticalDivider = createDividerComponent('VerticalDividerView');

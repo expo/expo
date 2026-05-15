@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.unstable_navigationEvents = void 0;
 exports.emit = emit;
 const availableEvents = [
-    'pageWillRender',
+    'pagePreloaded',
     'pageFocused',
     'pageBlurred',
     'pageRemoved',
+    'actionDispatched',
 ];
 const subscribers = {};
 function addListener(eventType, callback) {
@@ -33,9 +34,6 @@ function emit(type, event) {
     }
 }
 let enabled = false;
-let currentPathname = undefined;
-let currentParams = undefined;
-let currentPathnameListener = undefined;
 exports.unstable_navigationEvents = {
     addListener,
     emit,
@@ -45,44 +43,5 @@ exports.unstable_navigationEvents = {
     isEnabled: () => {
         return enabled;
     },
-    saveCurrentPathname: () => {
-        if (!enabled || currentPathnameListener)
-            return;
-        currentPathnameListener = addListener('pageFocused', (event) => {
-            currentPathname = event.pathname;
-            currentParams = event.params;
-        });
-    },
-    get currentPathname() {
-        return currentPathname;
-    },
-    get currentParams() {
-        return currentParams;
-    },
 };
-if (globalThis.expo) {
-    globalThis.expo.router = globalThis.expo.router || {};
-    if (!('navigationEvents' in globalThis.expo.router)) {
-        Object.defineProperties(globalThis.expo.router, {
-            navigationEvents: {
-                get() {
-                    return exports.unstable_navigationEvents;
-                },
-                enumerable: true,
-            },
-            currentPathname: {
-                get() {
-                    return currentPathname;
-                },
-                enumerable: true,
-            },
-            currentParams: {
-                get() {
-                    return currentParams;
-                },
-                enumerable: true,
-            },
-        });
-    }
-}
 //# sourceMappingURL=index.js.map

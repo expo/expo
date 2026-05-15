@@ -64,11 +64,14 @@ class HomeViewModel: ObservableObject {
   }
 
   func onViewWillAppear() {
-    serverService.startDiscovery()
     serverService.setSessionSecret(authService.sessionSecret)
 
     if isAuthenticated, let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
+    }
+
+    if serverService.hasGrantedNetworkPermission || DevelopmentServerService.isSimulator {
+      serverService.startDiscovery()
     }
 
     Task {
@@ -122,10 +125,9 @@ class HomeViewModel: ObservableObject {
     guard let account = selectedAccount else { return }
 
     async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
-    async let discoveryTask: Void = serverService.discoverDevelopmentServers()
     async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    _ = await (fetchTask, discoveryTask, remoteTask)
+    _ = await (fetchTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {

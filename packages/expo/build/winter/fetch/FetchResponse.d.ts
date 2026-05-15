@@ -1,20 +1,26 @@
-import type { NativeResponse } from './NativeRequest';
+import type { NativeHeadersType, NativeResponse } from './NativeRequest';
 declare const ConcreteNativeResponse: typeof NativeResponse;
 export type AbortSubscriptionCleanupFunction = () => void;
 type RNFormData = Awaited<ReturnType<globalThis.Response['formData']>>;
 type UniversalFormData = globalThis.FormData & RNFormData;
+declare const stateKey: unique symbol;
 /**
  * A response implementation for the `fetch.Response` API.
  */
 export declare class FetchResponse extends ConcreteNativeResponse implements Response {
     private readonly abortCleanupFunction;
-    private streamingState;
-    private bodyStream;
+    private [stateKey];
     constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
+    get _rawHeaders(): NativeHeadersType;
+    get status(): number;
+    get statusText(): string;
+    get url(): string;
+    get redirected(): boolean;
+    get type(): 'default';
     get body(): ReadableStream<Uint8Array<ArrayBuffer>> | null;
+    get bodyUsed(): boolean;
     get headers(): Headers;
     get ok(): boolean;
-    readonly type = "default";
     /**
      * This method is not currently supported by react-native's Blob constructor.
      */
@@ -22,9 +28,12 @@ export declare class FetchResponse extends ConcreteNativeResponse implements Res
     formData(): Promise<UniversalFormData>;
     json(): Promise<any>;
     bytes(): Promise<Uint8Array<ArrayBuffer>>;
+    arrayBuffer(): Promise<ArrayBuffer>;
+    text(): Promise<string>;
     toString(): string;
     toJSON(): object;
-    clone(): Response;
+    clone(): FetchResponse;
+    private checkBodyUsedError;
     private finalize;
 }
 export {};

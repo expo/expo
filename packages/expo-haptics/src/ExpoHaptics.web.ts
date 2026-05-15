@@ -24,23 +24,68 @@ function isVibrationAvailable(): boolean {
   return typeof window !== 'undefined' && 'navigator' in window && 'vibrate' in navigator;
 }
 
+/**
+ * On iOS Safari, `navigator.vibrate` is not supported. Instead, we can trigger
+ * haptic feedback by creating a hidden `<input type="checkbox" switch>` element
+ * and programmatically clicking it. This exploits the native haptic feedback that
+ * iOS provides for switch toggle interactions.
+ *
+ * @see https://github.com/tijnjh/ios-haptics
+ */
+function iOSSwitchHaptic(): void {
+  try {
+    const labelEl = document.createElement('label');
+    labelEl.ariaHidden = 'true';
+    labelEl.style.display = 'none';
+
+    const inputEl = document.createElement('input');
+    inputEl.type = 'checkbox';
+    inputEl.setAttribute('switch', '');
+    labelEl.appendChild(inputEl);
+
+    document.head.appendChild(labelEl);
+    labelEl.click();
+    document.head.removeChild(labelEl);
+  } catch {}
+}
+
+/**
+ * Whether the device likely supports touch haptics (coarse pointer = touchscreen).
+ */
+const supportsCoarsePointer =
+  typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches;
+
+function hapticWithVibrateFallback(pattern: VibratePattern): void {
+  if (isVibrationAvailable()) {
+    navigator.vibrate(pattern);
+    return;
+  }
+  if (supportsCoarsePointer) {
+    iOSSwitchHaptic();
+  }
+}
+
 export default {
   async notificationAsync(type: NotificationFeedbackType): Promise<void> {
-    if (!isVibrationAvailable()) {
+    if (isVibrationAvailable()) {
+      navigator.vibrate(vibrationPatterns[type]);
       return;
     }
-    navigator.vibrate(vibrationPatterns[type]);
+    if (!supportsCoarsePointer) return;
+
+    // Map notification types to repeated haptic pulses
+    const count = type === NotificationFeedbackType.Error ? 3 : 2;
+    for (let i = 0; i < count; i++) {
+      if (i > 0) {
+        await new Promise((resolve) => setTimeout(resolve, 120));
+      }
+      iOSSwitchHaptic();
+    }
   },
   async impactAsync(style: ImpactFeedbackStyle): Promise<void> {
-    if (!isVibrationAvailable()) {
-      return;
-    }
-    navigator.vibrate(vibrationPatterns[style]);
+    hapticWithVibrateFallback(vibrationPatterns[style]);
   },
   async selectionAsync(): Promise<void> {
-    if (!isVibrationAvailable()) {
-      return;
-    }
-    navigator.vibrate(vibrationPatterns.selection);
+    hapticWithVibrateFallback(vibrationPatterns.selection);
   },
 };

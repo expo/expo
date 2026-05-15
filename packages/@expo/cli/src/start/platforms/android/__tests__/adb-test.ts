@@ -1,6 +1,6 @@
 import { CommandError } from '../../../../utils/errors';
+import type { Device } from '../adb';
 import {
-  Device,
   getAdbNameForDeviceIdAsync,
   getAttachedDevicesAsync,
   getDeviceABIsAsync,

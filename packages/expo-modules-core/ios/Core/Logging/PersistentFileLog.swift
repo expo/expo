@@ -43,10 +43,12 @@ public class PersistentFileLog {
    Read entries from log file
    */
   public func readEntries() -> [String] {
-    if getFileSize() == 0 {
-      return []
+    return PersistentFileLog.serialQueue.sync {
+      if getFileSize() == 0 {
+        return []
+      }
+      return (try? self.readFileSync()) ?? []
     }
-    return (try? self.readFileSync()) ?? []
   }
 
   /**
@@ -136,7 +138,7 @@ public class PersistentFileLog {
       try deleteFileSync()
       return
     }
-    try contents.joined(separator: "\n").write(toFile: filePath, atomically: true, encoding: .utf8)
+    try (contents.joined(separator: "\n") + "\n").write(toFile: filePath, atomically: true, encoding: .utf8)
   }
 
   private func deleteFileSync() throws {

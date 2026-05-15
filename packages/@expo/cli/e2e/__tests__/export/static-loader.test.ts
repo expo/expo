@@ -55,6 +55,8 @@ describe.each(
     expect(files).toContain('posts/[postId].html');
     expect(files).toContain('posts/static-post-1.html');
     expect(files).toContain('posts/static-post-2.html');
+    expect(files).toContain('static-helper.html');
+    expect(files).toContain('server-helper.html');
 
     // Loader outputs are pre-generated JSON files
     expect(files).toContain('_expo/loaders/index');
@@ -71,6 +73,7 @@ describe.each(
     expect(files).toContain('_expo/loaders/posts/static-post-1');
     expect(files).toContain('_expo/loaders/posts/static-post-2');
     expect(files).toContain('_expo/loaders/(group)/index');
+    expect(files).toContain('_expo/loaders/static-helper');
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
@@ -232,4 +235,15 @@ describe.each(
     );
     expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
+
+  it.each(getPageAndLoaderData('/static-helper'))(
+    'can access data from `createStaticLoader()` for $url ($name)',
+    async ({ getData, url }) => {
+      const response = await server.fetchAsync(url);
+      expect(response.status).toBe(200);
+      const data = await getData(response);
+
+      expect(data).toEqual({ source: 'static-helper' });
+    }
+  );
 });

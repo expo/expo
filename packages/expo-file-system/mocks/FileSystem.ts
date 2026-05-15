@@ -21,13 +21,15 @@ export function info(url: URL): any {}
 export async function downloadFileAsync(
   url: URL,
   to: FileSystemPath,
-  options: DownloadOptions | undefined
+  options: DownloadOptions | undefined,
+  uuid: string | undefined
 ): Promise<any> {}
 
 export async function pickDirectoryAsync(initialUri?: string): Promise<any> {}
 
 export async function pickFileAsync(initialUri?: string, mimeType?: string): Promise<any> {}
 
+export function cancelDownloadAsync(uuid: string): void {}
 export class FileSystemFile {
   uri: string;
   exists: boolean = false;
@@ -43,12 +45,17 @@ export class FileSystemFile {
   write(content: string | TypedArray): any {}
   delete(): any {}
   create(options: CreateOptions | undefined): any {}
-  copy(to: FileSystemPath): any {}
-  move(to: FileSystemPath): any {}
+  async copy(to: FileSystemPath): Promise<any> {}
+  copySync(to: FileSystemPath): any {}
+  async move(to: FileSystemPath): Promise<any> {}
+  moveSync(to: FileSystemPath): any {}
   rename(newName: string): any {}
   async text(): Promise<any> {}
   async base64(): Promise<any> {}
   async bytes(): Promise<any> {}
+  watch(_callback: any, _options?: any): { remove: () => void } {
+    return { remove: () => {} };
+  }
 }
 
 export class FileSystemFileHandle {
@@ -67,10 +74,64 @@ export class FileSystemDirectory {
   validatePath(): any {}
   delete(): any {}
   create(options: CreateOptions | undefined): any {}
-  copy(to: FileSystemPath): any {}
-  move(to: FileSystemPath): any {}
+  async copy(to: FileSystemPath): Promise<any> {}
+  copySync(to: FileSystemPath): any {}
+  async move(to: FileSystemPath): Promise<any> {}
+  moveSync(to: FileSystemPath): any {}
   rename(newName: string): any {}
   listAsRecords(): any {}
   createFile(name: string, mimeType: string | null): any {}
   createDirectory(name: string): any {}
+  watch(_callback: any, _options?: any): { remove: () => void } {
+    return { remove: () => {} };
+  }
+}
+
+export class FileSystemWatcher {
+  constructor(_path: string, _options?: { debounce?: number; events?: string[] }) {}
+  addListener(_event: string, _callback: (data: any) => void): { remove: () => void } {
+    return { remove: () => {} };
+  }
+  start(): void {}
+  stop(): void {}
+}
+
+// Native task handle mocks.
+// In the test environment the polyfill `SharedObject` is installed on
+// `globalThis.expo` by jest-expo's setup before mock modules are loaded.
+// Public `UploadTask` / `DownloadTask` instances compose these native handles,
+// so the handles provide SharedObject APIs while the public tasks expose only
+// their explicit facade methods.
+
+const { SharedObject } = globalThis.expo;
+
+export class FileSystemUploadTask extends SharedObject {
+  start(_url: string, _file: any, _options: any): Promise<any> {
+    return Promise.resolve({ body: '', status: 200, headers: {} });
+  }
+  release(): void {
+    super.release();
+  }
+  cancel(): void {}
+}
+
+export class FileSystemDownloadTask extends SharedObject {
+  start(_url: string, _to: any, _options?: any): Promise<string | null> {
+    return Promise.resolve('file:///mock/downloaded-file');
+  }
+  pause(): { resumeData: string } {
+    return { resumeData: 'mock-resume-data' };
+  }
+  resume(
+    _url: string,
+    _to: any,
+    _resumeData: string,
+    _options?: any
+  ): Promise<string | null> {
+    return Promise.resolve('file:///mock/downloaded-file');
+  }
+  release(): void {
+    super.release();
+  }
+  cancel(): void {}
 }

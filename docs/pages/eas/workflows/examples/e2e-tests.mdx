@@ -1,5 +1,5 @@
 ---
-title: Run E2E tests on EAS Workflows and Maestro
+title: Run E2E tests on EAS Workflows with Maestro
 sidebar_title: Run E2E tests
 description: Learn how to set up and run E2E tests on EAS Workflows with Maestro.
 ---
@@ -61,7 +61,7 @@ appId: dev.expo.eastestsexample # This is an example app id. Replace it with you
 <Step label="3">
 ## Run Maestro tests locally (optional)
 
-To run Maestro tests locally, install the Maestro CLI by following the instructions in [Installing Maestro](https://docs.maestro.dev/getting-started/installing-maestro).
+To run Maestro tests locally, install the Maestro CLI by following the instructions in [Installing Maestro](https://docs.maestro.dev/maestro-cli/how-to-install-maestro-cli).
 
 [Install your app on a local Android Emulator or iOS Simulator](/more/expo-cli/#compiling). Open a terminal, navigate to the Maestro directory, and run the following commands to start the tests with the Maestro CLI:
 
@@ -169,7 +169,7 @@ You can run the E2E test workflow in two ways:
 
 2. **Automatically when you open a pull request**
 
-The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [EAS Workflow triggers](/eas/workflows/syntax/#on).
+The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [EAS Workflows triggers](/eas/workflows/syntax/#on).
 
 After the workflow starts, you can track its progress and view the results in the EAS dashboard. Here's a screenshot of a completed workflow run:
 
@@ -189,7 +189,7 @@ After the workflow starts, you can track its progress and view the results in th
 <BoxLink
   title="Example CI/CD workflows"
   description="Learn more about example CI/CD workflows for EAS Workflows."
-  href="/eas/workflows/examples/"
+  href="/eas/workflows/examples/introduction/"
   Icon={Dataflow03Icon}
 />
 

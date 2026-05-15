@@ -12,7 +12,7 @@ export function joinWithCommasAnd(items: string[], limit: number | undefined = 1
   const uniqueItems = items.filter((value, index, array) => array.indexOf(value) === index);
 
   if (uniqueItems.length === 1) {
-    return uniqueItems[0];
+    return uniqueItems[0]!;
   }
 
   if (limit && uniqueItems.length > limit) {

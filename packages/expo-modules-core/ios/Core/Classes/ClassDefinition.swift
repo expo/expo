@@ -1,5 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
+
 /**
  Represents a JavaScript class.
  */
@@ -24,15 +26,11 @@ public final class ClassDefinition: ObjectDefinition {
    */
   let isSharedRef: Bool
 
-  init<AssociatedObject: ClassAssociatedObject>(
-    name: String,
-    associatedType: AssociatedObject.Type,
-    elements: [AnyClassDefinitionElement] = []
-  ) {
+  private init(_ name: String, associatedType: AnyDynamicType, isSharedRef: Bool, elements: [AnyClassDefinitionElement] = []) {
     self.name = name
     self.constructor = elements.first(where: isConstructor) as? AnySyncFunctionDefinition
-    self.associatedType = ~AssociatedObject.self
-    self.isSharedRef = AssociatedObject.self is AnySharedRef.Type
+    self.associatedType = associatedType
+    self.isSharedRef = isSharedRef
 
     // Constructors can't be passed down to the object definition
     // as we shouldn't override the default `<Class>.prototype.constructor`.
@@ -41,49 +39,39 @@ public final class ClassDefinition: ObjectDefinition {
     super.init(definitions: elementsWithoutConstructors)
   }
 
+  convenience init<AssociatedObject: ClassAssociatedObject>(name: String, associatedType: AssociatedObject.Type, elements: [AnyClassDefinitionElement] = []) {
+    self.init(name, associatedType: ~AssociatedObject.self, isSharedRef: AssociatedObject.self is AnySharedRef.Type, elements: elements)
+  }
+
+  convenience init(name: String, elements: [AnyClassDefinitionElement] = []) {
+    self.init(name, associatedType: DynamicJavaScriptType.shared, isSharedRef: false, elements: elements)
+  }
+
   // MARK: - JavaScriptObjectBuilder
 
   @JavaScriptActor
   public override func build(appContext: AppContext) throws -> JavaScriptObject {
-    let constructorBlock: ClassConstructorBlock = { [weak self, weak appContext] this, arguments in
+    let constructorClosure: JavaScriptRuntime.SyncFunctionClosure = { [weak self, weak appContext] this, arguments in
       guard let self, let appContext else {
-        let exception = NSException(
-          name: NSExceptionName("ExpoClassConstructorException"),
-          reason: "Call to function '\(String(describing: self?.name)).constructor' has been rejected.\n→ Caused by: App context was lost",
-          userInfo: nil
-        )
-        exception.raise()
-        return
+        throw Exceptions.AppContextLost()
       }
+      // Call the native constructor when defined. Any thrown `Exception` (which
+      // conforms to `JavaScriptThrowable`) propagates to the host function closure,
+      // which converts it to a JS `Error` preserving `message` and `code`.
+      if let constructor {
+        // Run the body natively so we can pair a returned `SharedObject` with `this`
+        // directly. `this` was created by `new` with the correct class prototype; returning
+        // a different JS object would replace `this` and drop that prototype chain.
+        let result = try constructor.runBody(appContext, in: appContext.runtime, this: this, arguments: arguments)
 
-      // Call the native constructor when defined.
-      do {
-        if let constructor {
-          let result = try constructor.call(by: this, withArguments: arguments, appContext: appContext)
-
-          // Register the shared object if returned by the constructor.
-          if let result = result as? SharedObject {
-            appContext.sharedObjectRegistry.add(native: result, javaScript: this)
-          }
+        if let sharedObject = result as? SharedObject {
+          appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject())
         }
-      } catch let error as Exception {
-        let exception = NSException(
-          name: NSExceptionName("ExpoClassConstructorException"),
-          reason: error.description,
-          userInfo: ["code": error.code]
-        )
-        exception.raise()
-      } catch {
-        let exception = NSException(
-          name: NSExceptionName("ExpoClassConstructorException"),
-          reason: error.localizedDescription,
-          userInfo: nil
-        )
-        exception.raise()
       }
+      return this
     }
 
-    let klass = try createClass(appContext: appContext, name: name, consturctor: constructorBlock)
+    let klass = try createClass(appContext: appContext, name: name, constructorClosure).asObject()
 
     try decorate(object: klass, appContext: appContext)
 
@@ -96,7 +84,7 @@ public final class ClassDefinition: ObjectDefinition {
   }
 
   @JavaScriptActor
-  public override func decorate(object: JavaScriptObject, appContext: AppContext) throws {
+  public override func decorate(object: borrowing JavaScriptObject, appContext: AppContext) throws {
     try decorateWithStaticFunctions(object: object, appContext: appContext)
 
     // Here we actually don't decorate the input object (constructor) but its prototype.
@@ -110,12 +98,31 @@ public final class ClassDefinition: ObjectDefinition {
   }
 
   @JavaScriptActor
-  private func createClass(appContext: AppContext, name: String, consturctor: @escaping ClassConstructorBlock) throws -> JavaScriptObject {
+  private func createClass(appContext: AppContext, name: String, _ constructor: @escaping JavaScriptRuntime.SyncFunctionClosure) throws -> JavaScriptFunction {
     if isSharedRef {
-      return try appContext.runtime.createSharedRefClass(name, constructor: consturctor)
+      return try appContext.runtime.createSharedRefClass(name, constructor)
     }
+    return try appContext.runtime.createSharedObjectClass(name, constructor)
+  }
 
-    return try appContext.runtime.createSharedObjectClass(name, constructor: consturctor)
+  /**
+   Builds a prototype object for this class in the given runtime, inheriting from the provided base prototype.
+   Installs property getter/setters that route to the same native SharedObjects via the shared registry.
+   Used to make SharedObject properties accessible in alternate runtimes (e.g. the worklet runtime).
+   */
+  @JavaScriptActor
+  func buildPrototype(in runtime: JavaScriptRuntime, appContext: AppContext, basePrototype: consuming JavaScriptObject) throws -> JavaScriptObject {
+    let proto = runtime.createObject(prototype: basePrototype)
+    for property in properties.values {
+      let descriptor = try property.buildDescriptor(appContext: appContext, in: runtime)
+      proto.defineProperty(property.name, descriptor: descriptor)
+    }
+    for fn in functions.values {
+      if let syncFn = fn as? AnySyncFunctionDefinition {
+        proto.setProperty(fn.name, value: try syncFn.build(appContext: appContext, in: runtime))
+      }
+    }
+    return proto
   }
 }
 
@@ -124,15 +131,19 @@ public final class ClassDefinition: ObjectDefinition {
 /**
  A protocol for types that can be used an associated type of the ``ClassDefinition``.
  */
-internal protocol ClassAssociatedObject {}
+internal protocol ClassAssociatedObject: ~Copyable {}
 
 // Basically we only need these two
-extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptValue {
+extension JavaScriptObject: ClassAssociatedObject, AnyArgument {
+  public static func getDynamicType() -> any AnyDynamicType {
+    return DynamicJavaScriptType.shared
+  }
+
   public static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .object else {
-      throw Conversions.ConvertingException<JavaScriptObject>(value)
+      throw Conversions.UnexpectedValueType((received: value.kind, expected: .object))
     }
-    return value.getObject() as! Self
+    return value.getObject()
   }
 }
 extension SharedObject: ClassAssociatedObject {}

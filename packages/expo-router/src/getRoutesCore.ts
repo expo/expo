@@ -94,6 +94,15 @@ export function getRoutes(contextModule: RequireContext, options: Options): Rout
 
   const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
 
+  const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
+  if (
+    process.env.NODE_ENV === 'development' &&
+    importMode === 'sync' &&
+    !options.ignoreRequireErrors
+  ) {
+    validateRouteTreeExports(rootNode);
+  }
+
   if (middleware) {
     rootNode.middleware = middleware;
   }
@@ -156,7 +165,7 @@ function getMiddleware(contextModule: RequireContext, options: Options): Middlew
     }
   }
 
-  const middlewareFilePath = rootMiddlewareFiles[0];
+  const middlewareFilePath = rootMiddlewareFiles[0]!;
 
   const middleware: MiddlewareNode = {
     loadRoute() {
@@ -391,6 +400,11 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           if (loaderExport && typeof loaderExport !== 'function') {
             throw new Error(`Route "${filePath}" exports a loader that is not a function.`);
           }
+
+          const metadataExport = routeModule?.generateMetadata;
+          if (metadataExport && typeof metadataExport !== 'function') {
+            throw new Error(`Route "${filePath}" exports generateMetadata that is not a function.`);
+          }
         }
 
         return routeModule;
@@ -406,7 +420,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         continue;
       }
 
-      const redirect = redirects[meta.route];
+      const redirect = redirects[meta.route]!;
       node.destinationContextKey = redirect.destinationContextKey;
       node.permanent = redirect.permanent;
       node.generated = true;
@@ -418,7 +432,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           redirectConfig: redirect,
         });
       }
-      if (redirect.methods) {
+      if (redirect!.methods) {
         node.methods = redirect.methods;
       }
       node.type = 'redirect';
@@ -430,7 +444,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
         continue;
       }
 
-      const rewrite = rewrites[meta.route];
+      const rewrite = rewrites[meta.route]!;
       node.destinationContextKey = rewrite.destinationContextKey;
       node.generated = true;
       if (node.type === 'route') {
@@ -446,28 +460,6 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
       }
       node.type = 'rewrite';
       processedRedirectsRewrites.add(meta.route);
-    }
-
-    if (process.env.NODE_ENV === 'development') {
-      // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
-      // filter the missing routes.
-      if (node.type !== 'api' && importMode === 'sync') {
-        const routeItem = node.loadRoute();
-        // Have a warning for nullish ex
-        const route = routeItem?.default;
-        if (route == null) {
-          // Do not throw an error since a user may just be creating a new route.
-          console.warn(
-            `Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`
-          );
-          continue;
-        }
-        if (['boolean', 'number', 'string'].includes(typeof route)) {
-          throw new Error(
-            `The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
-          );
-        }
-      }
     }
 
     /**
@@ -677,6 +669,34 @@ function flattenDirectoryTreeToRoutes(
   return layout;
 }
 
+function validateRouteTreeExports(node: RouteNode) {
+  if (process.env.NODE_ENV !== 'development' || node.type === 'api') {
+    return;
+  }
+
+  function runtimeValidateRouteNode(node: RouteNode) {
+    const routeItem = node.loadRoute();
+    // Have a warning for nullish ex
+    const route = routeItem?.default;
+    if (route == null) {
+      // Do not throw an error since a user may just be creating a new route.
+      console.warn(
+        `Route "${node.contextKey}" is missing the required default export. Ensure a React component is exported as default.`
+      );
+    }
+    if (['boolean', 'number', 'string'].includes(typeof route)) {
+      throw new Error(
+        `The default export from route "${node.contextKey}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`
+      );
+    }
+  }
+
+  runtimeValidateRouteNode(node);
+  for (const child of node.children) {
+    validateRouteTreeExports(child);
+  }
+}
+
 function getFileMeta(
   originalKey: string,
   options: Options,
@@ -688,9 +708,10 @@ function getFileMeta(
   let route = key;
 
   const parts = removeFileSystemDots(originalKey).split('/');
-  const filename = parts[parts.length - 1];
-  const [filenameWithoutExtensions, platformExtension] =
-    removeSupportedExtensions(filename).split('.');
+  const filename = parts[parts.length - 1]!;
+  const filenameParts = removeSupportedExtensions(filename).split('.');
+  const filenameWithoutExtensions = filenameParts[0]!;
+  const platformExtension = filenameParts[1];
 
   const isLayout = filenameWithoutExtensions === '_layout';
   const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
@@ -708,7 +729,7 @@ function getFileMeta(
   }
   let specificity = 0;
 
-  const hasPlatformExtension = validPlatforms.has(platformExtension);
+  const hasPlatformExtension = validPlatforms.has(platformExtension!);
   const usePlatformRoutes = options.platformRoutes ?? true;
 
   if (hasPlatformExtension) {
@@ -950,7 +971,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
 }
 
 function getMostSpecific(routes: RouteNode[]) {
-  const route = routes[routes.length - 1];
+  const route = routes[routes.length - 1]!;
 
   if (!routes[0]) {
     throw new Error(
@@ -960,5 +981,5 @@ function getMostSpecific(routes: RouteNode[]) {
 
   // This works even tho routes is holey array (e.g it might have index 0 and 2 but not 1)
   // `.length` includes the holes in its count
-  return routes[routes.length - 1];
+  return route;
 }

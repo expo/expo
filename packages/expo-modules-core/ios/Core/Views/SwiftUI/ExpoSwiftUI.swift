@@ -18,4 +18,12 @@ extension ExpoSwiftUI {
   public protocol FocusableView {
     func forceResignFirstResponder()
   }
+
+  /**
+   Protocol for wrapper views (e.g., UIBaseView) that wrap an inner view.
+   Used by DynamicSwiftUIViewType to resolve the underlying view through wrapper layers.
+   */
+  public protocol ViewWrapper {
+    func getWrappedView() -> Any
+  }
 }

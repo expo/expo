@@ -7,14 +7,17 @@ searchRank: 6
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 Follow the steps below if you have an existing project and want to add Expo Router. For new projects, see the [Quick start](/router/introduction/#quick-start) in the introduction guide.
 
-### Prerequisites
-
-Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+<Prerequisites>
+  <Requirement title="Set up your development environment">
+    Make sure your computer is [set up for running an Expo app](/get-started/create-a-project/).
+  </Requirement>
+</Prerequisites>
 
 <Step label="1">
 
@@ -36,7 +39,7 @@ The above command will install versions of these libraries that are compatible w
 
 ### Setup entry point
 
-For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**src/app/\_layout.tsx**](/router/reference/src-directory/) (or [**app/\_layout.tsx**](/router/basics/layout/#root-layout) if not using the **src** directory).
+For the property `main`, use the `expo-router/entry` as its value in the **package.json**. The initial client file is [**src/app/\_layout.tsx**](/router/reference/src-directory/) (or [**app/\_layout.tsx**](/router/basics/navigation-layouts/#root-layout) if not using the **src** directory).
 
 ```json package.json
 {
@@ -87,9 +90,11 @@ Add a deep linking `scheme` and enable [typed routes](/router/reference/typed-ro
 
 ```json app.json
 {
-  "scheme": "your-app-scheme",
-  "experiments": {
-    "typedRoutes": true
+  "expo": {
+    "scheme": "your-app-scheme",
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }
 ```
@@ -102,8 +107,10 @@ Then, enable [Metro web](/guides/customizing-metro/#adding-web-support-to-metro)
 
 ```json app.json
 {
-  "web": {
-    "bundler": "metro"
+  "expo": {
+    "web": {
+      "bundler": "metro"
+    }
   }
 }
 ```

@@ -11,6 +11,7 @@
 #import "EXAppViewController.h"
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
+#import <ReactCommon/RCTHost.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 
 // When `use_frameworks!` is used, the generated Swift header is inside modules.
@@ -23,18 +24,12 @@
 
 #import <React/RCTBridge.h>
 #import <React/RCTBridge+Private.h>
+#import <React/RCTDevSettings.h>
 #import <React/RCTRootView.h>
 
 #if __has_include(<ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore-Swift.h>
 #endif
-
-#if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
-#import <EXDevMenu/EXDevMenu-Swift.h>
-#else
-#import "EXDevMenu-Swift.h"
-#endif
-
 
 #import "Expo_Go-Swift.h"
 
@@ -82,6 +77,10 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
 
 - (id)reactHost {
   return _expoAppInstance.reactNativeFactory.rootViewFactory.reactHost;
+}
+
+- (RCTModuleRegistry *)reactModuleRegistry {
+  return ((RCTHost *)self.reactHost).moduleRegistry;
 }
 
 - (void)setAppRecord:(EXKernelAppRecord *)appRecord
@@ -135,12 +134,6 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     
     if (!_isHeadless) {
       _reactRootView = [self.expoAppInstance.reactNativeFactory.rootViewFactory viewWithModuleName:[self applicationKeyForRootView] initialProperties:[self initialPropertiesForRootView]];
-    }
-
-    RCTHost *host = (RCTHost *)self.reactHost;
-    if (host) {
-      [DevMenuManager.shared updateCurrentManifest:_appRecord.appLoader.manifest
-                                       manifestURL:_appRecord.appLoader.manifestUrl];
     }
 
     [self setupWebSocketControls];
@@ -339,10 +332,9 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
     _hasHostEverLoaded = YES;
     [_versionManager hostFinishedLoading:self.reactHost];
 
-    // Update expo-dev-menu with the manifest
+    // Notify the dev menu that the manifest has changed
     if ([self enablesDeveloperTools]) {
-      [[DevMenuManager shared] updateCurrentManifest:_appRecord.appLoader.manifest
-                                         manifestURL:_appRecord.appLoader.manifestUrl];
+      [[DevMenuManager shared] notifyManifestChanged];
     }
 
     // TODO: temporary solution for hiding LoadingProgressWindow
@@ -519,6 +511,27 @@ NSString *const RCTInstanceDidLoadBundle = @"RCTInstanceDidLoadBundle";
   dispatch_async(dispatch_get_main_queue(), ^{
     [self.versionManager selectDevMenuItemWithKey:key host:self.reactHost bundleURL:[self bundleUrl]];
   });
+}
+
+- (RCTDevSettings *)_devSettings
+{
+  return (RCTDevSettings *)[self.reactModuleRegistry moduleForName:"DevSettings"];
+}
+
+- (BOOL)isHotLoadingEnabled
+{
+  return [[self _devSettings] isHotLoadingEnabled];
+}
+
+- (BOOL)isHotLoadingAvailable
+{
+  return [[self _devSettings] isHotLoadingAvailable];
+}
+
+- (BOOL)isPerfMonitorAvailable
+{
+  id perfMonitor = [self.reactModuleRegistry moduleForName:"PerfMonitor"];
+  return perfMonitor != nil && [self enablesDeveloperTools];
 }
 
 #pragma mark - RN configuration

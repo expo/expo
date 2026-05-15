@@ -23,3 +23,23 @@ class SharedPreferencesDelegate(
     }
   }
 }
+
+fun stringPreferences(
+  preferences: SharedPreferences,
+  defaultValue: String = ""
+) = StringSharedPreferencesDelegate(preferences, defaultValue)
+
+class StringSharedPreferencesDelegate(
+  private val preferences: SharedPreferences,
+  private val defaultValue: String
+) {
+  operator fun getValue(thisRef: Any?, property: KProperty<*>): String {
+    return preferences.getString(property.name, defaultValue) ?: defaultValue
+  }
+
+  operator fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
+    preferences.edit(commit = true) {
+      putString(property.name, value)
+    }
+  }
+}

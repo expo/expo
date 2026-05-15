@@ -2,11 +2,11 @@
 'use client';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.usePreventZoomTransitionDismissal = usePreventZoomTransitionDismissal;
-const native_1 = require("@react-navigation/native");
 const react_1 = require("react");
 const zoom_transition_context_1 = require("./zoom-transition-context");
 const descriptors_context_1 = require("../../fork/native-stack/descriptors-context");
 const navigationParams_1 = require("../../navigationParams");
+const native_1 = require("../../react-navigation/native");
 const useNavigation_1 = require("../../useNavigation");
 const stack_1 = require("../../utils/stack");
 const stackPresentation_1 = require("../../utils/stackPresentation");

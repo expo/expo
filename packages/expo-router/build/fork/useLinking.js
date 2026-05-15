@@ -1,37 +1,4 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -39,14 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.series = void 0;
 exports.useLinking = useLinking;
 exports.getInitialURLWithTimeout = getInitialURLWithTimeout;
-const native_1 = require("@react-navigation/native");
 const fast_deep_equal_1 = __importDefault(require("fast-deep-equal"));
-const React = __importStar(require("react"));
+const react_1 = require("react");
 const createMemoryHistory_1 = require("./createMemoryHistory");
 const getPathFromState_1 = require("./getPathFromState");
 const serverLocationContext_1 = require("../global-state/serverLocationContext");
 const storeContext_1 = require("../global-state/storeContext");
 const utils_1 = require("../global-state/utils");
+const native_1 = require("../react-navigation/native");
 /**
  * Find the matching navigation state that changed between 2 navigation states
  * e.g.: a -> b -> c -> d and a -> b -> c -> e -> f, if history in b changed, b is the matching state
@@ -91,7 +58,7 @@ const linkingHandlers = [];
 function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.getStateFromPath, getPathFromState = native_1.getPathFromState, getActionFromState = native_1.getActionFromState, }, onUnhandledLinking) {
     const independent = (0, native_1.useNavigationIndependentTree)();
     const store = (0, storeContext_1.useExpoRouterStore)();
-    React.useEffect(() => {
+    (0, react_1.useEffect)(() => {
         if (process.env.NODE_ENV === 'production') {
             return undefined;
         }
@@ -118,23 +85,23 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
             }
         };
     }, [enabled, independent]);
-    const [history] = React.useState(createMemoryHistory_1.createMemoryHistory);
+    const [history] = (0, react_1.useState)(createMemoryHistory_1.createMemoryHistory);
     // We store these options in ref to avoid re-creating getInitialState and re-subscribing listeners
     // This lets user avoid wrapping the items in `React.useCallback` or `React.useMemo`
     // Not re-creating `getInitialState` is important coz it makes it easier for the user to use in an effect
-    const enabledRef = React.useRef(enabled);
-    const configRef = React.useRef(config);
-    const getStateFromPathRef = React.useRef(getStateFromPath);
-    const getPathFromStateRef = React.useRef(getPathFromState);
-    const getActionFromStateRef = React.useRef(getActionFromState);
-    React.useEffect(() => {
+    const enabledRef = (0, react_1.useRef)(enabled);
+    const configRef = (0, react_1.useRef)(config);
+    const getStateFromPathRef = (0, react_1.useRef)(getStateFromPath);
+    const getPathFromStateRef = (0, react_1.useRef)(getPathFromState);
+    const getActionFromStateRef = (0, react_1.useRef)(getActionFromState);
+    (0, react_1.useEffect)(() => {
         enabledRef.current = enabled;
         configRef.current = config;
         getStateFromPathRef.current = getStateFromPath;
         getPathFromStateRef.current = getPathFromState;
         getActionFromStateRef.current = getActionFromState;
     });
-    const validateRoutesNotExistInRootState = React.useCallback((state) => {
+    const validateRoutesNotExistInRootState = (0, react_1.useCallback)((state) => {
         // START FORK
         // Instead of using the rootState, we use INTERNAL_SLOT_NAME, which is the only route in the root navigator in Expo Router
         // const navigation = ref.current;
@@ -148,12 +115,14 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         return state?.routes.some((r) => !routeNames.includes(r.name));
         // END FORK
     }, [ref]);
-    const server = React.use(serverLocationContext_1.ServerContext);
-    const getInitialState = React.useCallback(() => {
+    const server = (0, react_1.use)(serverLocationContext_1.ServerContext);
+    const getInitialState = (0, react_1.useCallback)(() => {
         let value;
         if (enabledRef.current) {
             const location = server?.location ?? (typeof window !== 'undefined' ? window.location : undefined);
-            const path = location ? location.pathname + location.search : undefined;
+            const path = location
+                ? location.pathname + location.search + (location.hash ?? '')
+                : undefined;
             if (path) {
                 value = getStateFromPathRef.current(path, configRef.current);
             }
@@ -171,10 +140,10 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
         return thenable;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-    const previousIndexRef = React.useRef(undefined);
-    const previousStateRef = React.useRef(undefined);
-    const pendingPopStatePathRef = React.useRef(undefined);
-    React.useEffect(() => {
+    const previousIndexRef = (0, react_1.useRef)(undefined);
+    const previousStateRef = (0, react_1.useRef)(undefined);
+    const pendingPopStatePathRef = (0, react_1.useRef)(undefined);
+    (0, react_1.useEffect)(() => {
         previousIndexRef.current = history.index;
         return history.listen(() => {
             const navigation = ref.current;
@@ -254,7 +223,7 @@ function useLinking(ref, { enabled = true, config, getStateFromPath = native_1.g
             }
         });
     }, [enabled, history, onUnhandledLinking, ref, validateRoutesNotExistInRootState]);
-    React.useEffect(() => {
+    (0, react_1.useEffect)(() => {
         if (!enabled) {
             return;
         }

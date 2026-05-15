@@ -31,6 +31,27 @@ export default function AgeRangeScreen() {
     }
   };
 
+  const checkEligibility = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      const eligible = await AgeRange.isEligibleForAgeFeaturesAsync();
+      setResult(
+        eligible === null
+          ? 'null (unsupported on this OS / platform)'
+          : `isEligibleForAgeFeatures: ${eligible}`
+      );
+    } catch (err: any) {
+      if (err?.code === 'ERR_AGE_RANGE_NOT_AVAILABLE') {
+        setResult('ERR_AGE_RANGE_NOT_AVAILABLE');
+        return;
+      }
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
   const faultyRequestAgeRange = async () => {
     setError(null);
     setResult(null);
@@ -62,6 +83,11 @@ export default function AgeRangeScreen() {
         <Text style={styles.warning}>Note: This API requires iOS 26.0 or later.</Text>
       )}
 
+      <Button
+        onPress={checkEligibility}
+        title="Check Age Features Eligibility (iOS 26.2+)"
+        style={styles.button}
+      />
       <Button onPress={requestAgeRange} title="Request Age Range" style={styles.button} />
       <Button
         onPress={faultyRequestAgeRange}

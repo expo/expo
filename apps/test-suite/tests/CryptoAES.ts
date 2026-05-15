@@ -142,7 +142,7 @@ export async function test({ describe, it, expect, beforeAll }) {
 
         const sealedData = await aesEncryptAsync(base64Plaintext, key);
         expect(sealedData).toBeDefined();
-        expect(sealedData.ciphertext.length).toBeGreaterThan(0);
+        expect(sealedData.combinedSize).toBeGreaterThan(0);
         expect(sealedData.ivSize).toBe(DEFAULT_IV_LENGTH);
         expect(sealedData.tagSize).toBe(DEFAULT_TAG_LENGTH);
 

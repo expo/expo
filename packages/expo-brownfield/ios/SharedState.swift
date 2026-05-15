@@ -21,7 +21,7 @@ public final class SharedState: SharedObject {
     value = newValue
     lock.unlock()
 
-    emit(event: "change", arguments: ["value": newValue])
+    emit(event: "change", payload: ["value": newValue])
     BrownfieldStateInternal.shared.notifySubscribers(key, newValue)
     BrownfieldStateInternal.shared.maybeNotifyKeyRecreated(key)
   }

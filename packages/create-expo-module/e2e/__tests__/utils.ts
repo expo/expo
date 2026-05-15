@@ -12,7 +12,10 @@ export const projectRoot = getTemporaryPath();
 
 /** Create a new temporary path for e2e tests */
 export function getTemporaryPath() {
-  return path.join(os.tmpdir(), 'create-expo-module-e2e-' + Math.random().toString(36).substring(2));
+  return path.join(
+    os.tmpdir(),
+    'create-expo-module-e2e-' + Math.random().toString(36).substring(2)
+  );
 }
 
 /** Get the path within the default project root or temporary path */
@@ -34,11 +37,13 @@ export function ensureFolderExists(folder: string) {
 
 /** Run `create-expo-module` asynchronously, with default settings for CI */
 export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOptions = {}) {
-  const cwdPath = typeof cwd === 'string' ? cwd : cwd?.toString() ?? projectRoot;
+  const cwdPath = typeof cwd === 'string' ? cwd : (cwd?.toString() ?? projectRoot);
   return spawnAsync('node', [bin, ...args], {
     cwd: cwdPath,
     env: {
       ...process.env,
+      // NOTE(@kitten): pnpm currently passes on and consumes all its workspace configs, which breaks isolation
+      npm_config_minimum_release_age: '0',
       // Force non-interactive mode for CI
       CI: '1',
       // Disable telemetry
@@ -91,9 +96,22 @@ export function expectFileNotExists(projectName: string, ...filePath: string[]) 
   expect({ [targetPath]: fs.existsSync(targetPath) }).toEqual({ [targetPath]: false });
 }
 
+/**
+ * Creates a temporary directory with a minimal package.json, simulating an Expo project root.
+ * Used for --local module tests. The caller is responsible for cleaning up.
+ */
+export function createFakeProject(name?: string): string {
+  const projectPath = name ? path.join(projectRoot, name) : getTemporaryPath();
+  fs.mkdirSync(projectPath, { recursive: true });
+  fs.writeFileSync(
+    path.join(projectPath, 'package.json'),
+    JSON.stringify({ name: 'test-app', version: '1.0.0' })
+  );
+  return projectPath;
+}
+
 /** Read and parse a JSON file from the test project */
 export function readJson(projectName: string, ...filePath: string[]) {
   const targetPath = getTestPath(projectName, ...filePath);
   return JSON.parse(fs.readFileSync(targetPath, { encoding: 'utf8' }));
 }
-

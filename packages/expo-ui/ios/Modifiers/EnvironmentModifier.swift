@@ -6,6 +6,8 @@ import SwiftUI
 internal enum EnvironmentKeyType: String, Enumerable {
   case editMode
   case colorScheme
+  case locale
+  case timeZone
 }
 
 internal enum EditModeType: String, Enumerable {
@@ -55,6 +57,18 @@ internal struct EnvironmentModifier: ViewModifier, Record {
     case .colorScheme:
       if let colorScheme = ColorSchemeType(rawValue: value) {
         content.environment(\.colorScheme, colorScheme.toNativeColorScheme())
+      } else {
+        content
+      }
+    case .locale:
+      if Locale.availableIdentifiers.contains(value) {
+        content.environment(\.locale, Locale(identifier: value))
+      } else {
+        content
+      }
+    case .timeZone:
+      if let tz = TimeZone(identifier: value) {
+        content.environment(\.timeZone, tz)
       } else {
         content
       }

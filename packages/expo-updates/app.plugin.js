@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withUpdates')
+module.exports = require('./plugin/build/withUpdates');

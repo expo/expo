@@ -1,5 +1,5 @@
-import { BarcodeType, BarcodeScanningResult, CameraCapturedPicture, CameraPictureOptions, PermissionResponse } from './Camera.types';
-import { ExponentCameraRef } from './ExpoCamera.web';
+import type { BarcodeType, BarcodeScanningResult, CameraCapturedPicture, CameraPictureOptions, PermissionResponse } from './Camera.types';
+import type { ExponentCameraRef } from './ExpoCamera.web';
 declare const _default: {
     isModernBarcodeScannerAvailable: boolean;
     toggleRecordingAsyncAvailable: boolean;

@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import arg from 'arg';
+import type arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import { Command } from '../../bin/cli';
+import type { Command } from '../../bin/cli';
 import { assertWithOptionsArgs, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 
@@ -74,6 +74,9 @@ export const expoExport: Command = async (argv) => {
   }).catch(logCmdError);
 
   const projectRoot = path.resolve(parsed.projectRoot);
+  const { installEventLogger, getWellKnownTemporaryLogFile } = await import('../events/index.js');
+  installEventLogger(getWellKnownTemporaryLogFile(projectRoot, 'export'));
+
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, {
     ...args,

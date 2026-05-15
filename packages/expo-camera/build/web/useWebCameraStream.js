@@ -41,7 +41,7 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
     });
     const [stream, setStream] = React.useState(null);
     const mediaTrackSettings = React.useMemo(() => {
-        return stream ? stream.getTracks()[0].getSettings() : null;
+        return stream?.getTracks()[0]?.getSettings() ?? null;
     }, [stream]);
     // The actual camera type - this can be different from the incoming camera type.
     const type = React.useMemo(() => {
@@ -50,7 +50,7 @@ export function useWebCameraStream(video, preferredType, settings, { onCameraRea
         }
         // On desktop no value will be returned, in this case we should assume the cameraType is 'front'
         const { facingMode = 'user' } = mediaTrackSettings;
-        return FacingModeToCameraType[facingMode];
+        return FacingModeToCameraType[facingMode] ?? null;
     }, [mediaTrackSettings]);
     const getStreamDeviceAsync = React.useCallback(async () => {
         try {

@@ -4,6 +4,7 @@ export function toCommonJS(filename: string, code: string) {
   const result = transformSync(code, {
     filename,
     babelrc: false,
+    configFile: false,
     plugins: [
       [
         require('@babel/plugin-transform-modules-commonjs'),

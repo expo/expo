@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
+import type { AppStateStatus } from 'react-native';
+import { AppState } from 'react-native';
 
 import { clearSharedPayloads, getResolvedSharedPayloadsAsync, getSharedPayloads } from './Sharing';
-import { ResolvedSharePayload, SharePayload, UseIncomingShareResult } from './Sharing.types';
+import type { ResolvedSharePayload, SharePayload, UseIncomingShareResult } from './Sharing.types';
 
 function sharePayloadsAreEqual(a: SharePayload[], b: SharePayload[]): boolean {
   if (a.length !== b.length) {

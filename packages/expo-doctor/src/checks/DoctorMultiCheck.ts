@@ -1,6 +1,6 @@
 import semver from 'semver';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export interface DoctorMultiCheckItemBase {
   getMessage: ((packageName: string) => string) | (() => string);
@@ -8,9 +8,9 @@ export interface DoctorMultiCheckItemBase {
 }
 
 //
-export abstract class DoctorMultiCheck<TCheckItem extends DoctorMultiCheckItemBase>
-  implements DoctorCheck
-{
+export abstract class DoctorMultiCheck<
+  TCheckItem extends DoctorMultiCheckItemBase,
+> implements DoctorCheck {
   abstract readonly checkItems: TCheckItem[];
 
   abstract description: string;

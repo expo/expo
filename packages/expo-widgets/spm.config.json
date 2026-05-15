@@ -1,0 +1,40 @@
+{
+  "$schema": "../../tools/src/prebuilds/schemas/spm.config.schema.json",
+  "products": [
+    {
+      "name": "ExpoWidgets",
+      "podName": "ExpoWidgets",
+      "platforms": [
+        "iOS(.v16)"
+      ],
+      "externalDependencies": [
+        "ReactNativeDependencies",
+        "React",
+        "Hermes",
+        "expo-modules-core/ExpoModulesCore",
+        "expo-modules-core/ExpoModulesWorklets",
+        "@expo/ui/ExpoUI"
+      ],
+      "targets": [
+        {
+          "type": "swift",
+          "name": "ExpoWidgets",
+          "path": "ios",
+          "pattern": "**/*.swift",
+          "dependencies": [
+            "ReactNativeDependencies",
+            "React",
+            "Hermes",
+            "expo-modules-core/ExpoModulesCore",
+            "expo-modules-core/ExpoModulesWorklets",
+            "@expo/ui/ExpoUI"
+          ],
+          "linkedFrameworks": [
+            "Foundation",
+            "UIKit"
+          ]
+        }
+      ]
+    }
+  ]
+}

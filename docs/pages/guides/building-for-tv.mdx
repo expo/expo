@@ -8,6 +8,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -17,7 +18,7 @@ React Native is supported on Android TV and Apple TV through the [React Native T
 
 Using the React Native TV library as the `react-native` dependency in an Expo project, it becomes capable of targeting both mobile (Android, iOS) and TV (Android TV, Apple TV) devices.
 
-## Prerequisites
+## Project changes required
 
 The necessary changes to the native Android and iOS files are minimal and can be automated with a [config plugin](https://github.com/react-native-tvos/config-tv/tree/main/packages/config-tv) if you use [prebuild](/more/glossary-of-terms/#prebuild). Below is a list of changes made by the config plugins, which you can alternatively apply manually:
 
@@ -38,16 +39,36 @@ The necessary changes to the native Android and iOS files are minimal and can be
 
 ### Android TV
 
-- [Node.js (LTS)](https://nodejs.org/en/) on macOS or Linux.
-- Android Studio (Iguana or later).
-- In the Android Studio SDK manager, select the dropdown for the Android SDK you are using (API version 31 or later), and make sure an Android TV system image is selected for installation. (For Apple silicon, choose the ARM 64 image. Otherwise, choose the Intel x86_64 image).
-- After installing the Android TV system image, create an Android TV emulator using that image (the process is the same as creating an Android phone emulator).
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    Install [Node.js (LTS)](https://nodejs.org/en/) on macOS or Linux.
+  </Requirement>
+  <Requirement title="Android Studio (Iguana or later)">
+    Install Android Studio Iguana or later.
+  </Requirement>
+  <Requirement title="Android TV system image">
+    In the Android Studio SDK manager, select the dropdown for the Android SDK you are using (API
+    version 31 or later), and make sure an Android TV system image is selected for installation. For
+    Apple silicon, choose the ARM 64 image. Otherwise, choose the Intel x86_64 image.
+  </Requirement>
+  <Requirement title="Android TV emulator">
+    After installing the Android TV system image, create an Android TV emulator using that image
+    (the process is the same as creating an Android phone emulator).
+  </Requirement>
+</Prerequisites>
 
 ### Apple TV
 
-- [Node.js (LTS)](https://nodejs.org/en/) on macOS.
-- Xcode 16 or later.
-- tvOS SDK 17 or later. (This is not installed automatically with Xcode. You can install it later with `xcodebuild -downloadAllPlatforms`).
+<Prerequisites>
+  <Requirement title="Node.js (LTS)">
+    Install [Node.js (LTS)](https://nodejs.org/en/) on macOS.
+  </Requirement>
+  <Requirement title="Xcode 16 or later">Install Xcode 16 or later.</Requirement>
+  <Requirement title="tvOS SDK 17 or later">
+    tvOS SDK 17 or later is not installed automatically with Xcode. You can install it later with
+    `xcodebuild -downloadAllPlatforms`.
+  </Requirement>
+</Prerequisites>
 
 ## Quick start
 
@@ -70,7 +91,7 @@ At this time, TV applications work with the following libraries and APIs listed 
 - [Audio](/versions/latest/sdk/audio)
 - [Asset](/versions/latest/sdk/asset/)
 - [AsyncStorage](/versions/latest/sdk/async-storage/)
-- [AV](/versions/latest/sdk/av/)
+- [AV](/versions/v54.0.0/sdk/av/)
 - [BackgroundTask](/versions/latest/sdk/background-task/)
 - [BlurView](/versions/latest/sdk/blur-view/)
 - [BuildProperties](/versions/latest/sdk/build-properties/)

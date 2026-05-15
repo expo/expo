@@ -1,7 +1,7 @@
 import { Platform, UnavailabilityError, uuid } from 'expo-modules-core';
 
 import NotificationScheduler from './NotificationScheduler';
-import {
+import type {
   NativeCalendarTriggerInput,
   NativeDailyTriggerInput,
   NativeDateTriggerInput,
@@ -11,11 +11,8 @@ import {
   NativeWeeklyTriggerInput,
   NativeYearlyTriggerInput,
 } from './NotificationScheduler.types';
-import {
-  NotificationRequestInput,
-  NotificationTriggerInput,
-  SchedulableTriggerInputTypes,
-} from './Notifications.types';
+import type { NotificationRequestInput, NotificationTriggerInput } from './Notifications.types';
+import { SchedulableTriggerInputTypes } from './Notifications.types';
 import { hasValidTriggerObject } from './hasValidTriggerObject';
 
 /**

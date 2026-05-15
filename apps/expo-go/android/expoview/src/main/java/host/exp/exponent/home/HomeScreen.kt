@@ -2,6 +2,11 @@ package host.exp.exponent.home
 
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +24,7 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,7 +54,15 @@ fun HomeScreen(
   val snacks by viewModel.snacks.dataFlow.collectAsStateWithLifecycle()
 
   val account by viewModel.account.dataFlow.collectAsStateWithLifecycle()
-  val isRefreshing by viewModel.account.loadingFlow.collectAsStateWithLifecycle()
+  val isAccountRefreshing by viewModel.account.loadingFlow.collectAsStateWithLifecycle()
+  val isNsdRefreshing by viewModel.isNsdRefreshing.collectAsStateWithLifecycle()
+  var userTriggeredRefresh by remember { mutableStateOf(false) }
+  val isRefreshing = userTriggeredRefresh && (isAccountRefreshing || isNsdRefreshing)
+
+  // Clear the flag once loading finishes
+  if (!isAccountRefreshing && !isNsdRefreshing) {
+    userTriggeredRefresh = false
+  }
   val apps by viewModel.apps.dataFlow.collectAsStateWithLifecycle()
   val developmentServers by viewModel.developmentServers.collectAsStateWithLifecycle()
 
@@ -62,8 +76,10 @@ fun HomeScreen(
 
   val state = rememberPullToRefreshState()
   val onRefresh: () -> Unit = {
+    userTriggeredRefresh = true
     viewModel.account.refresh()
     viewModel.apps.refresh()
+    viewModel.refreshNsd()
   }
 
   var showHelpDialog by remember { mutableStateOf(false) }
@@ -111,44 +127,65 @@ fun HomeScreen(
           image = painterResource(id = R.drawable.terminal_icon),
           action = { SmallActionButton(label = "HELP", onClick = { showHelpDialog = true }) }
         ) {
-          for (session in developmentServers) {
-            DevSessionRow(session = session)
-            HorizontalDivider()
-          }
-          if (developmentServers.isEmpty()) {
-            LocalServerTutorial(
-              isSignedIn = account != null,
-              modifier = Modifier.padding(16.dp, 16.dp),
-              onLoginClick = onLoginClick
-            )
-            HorizontalDivider()
-          }
-          EnterUrlRow()
-          HorizontalDivider()
-          ClickableItemRow(
-            text = "Scan QR",
-            icon = {
-              Icon(
-                painter = painterResource(id = R.drawable.qr_code),
-                contentDescription = "Scan QR Code",
-                modifier = Modifier.size(24.dp)
-              )
+          val animatedItems = rememberAnimatedItemsState(
+            items = developmentServers,
+            key = { it.url }
+          )
+
+          AnimatedContent(
+            targetState = developmentServers,
+            contentKey = { state -> state.isNotEmpty() },
+            transitionSpec = {
+              fadeIn(tween(300)) togetherWith fadeOut(tween(300))
             },
-            onClick = {
-              viewModel.scanQR(
-                context,
-                onSuccess = { url ->
-                  uriHandler.openUri(url)
+            label = "dev-servers-transition"
+          ) { servers ->
+            Column {
+              if (servers.isNotEmpty()) {
+                for ((session, visibleState) in animatedItems) {
+                  key(session.url) {
+                    AnimatedDevSessionRow(
+                      session = session,
+                      visibleState = visibleState
+                    )
+                  }
+                }
+              } else {
+                LocalServerTutorial(
+                  isSignedIn = account != null,
+                  modifier = Modifier.padding(16.dp, 16.dp),
+                  onLoginClick = onLoginClick
+                )
+                HorizontalDivider()
+              }
+              EnterUrlRow()
+              HorizontalDivider()
+              ClickableItemRow(
+                text = "Scan QR",
+                icon = {
+                  Icon(
+                    painter = painterResource(id = R.drawable.qr_code),
+                    contentDescription = "Scan QR Code",
+                    modifier = Modifier.size(24.dp)
+                  )
                 },
-                onError = { error ->
-                  Toast.makeText(context, error, Toast.LENGTH_LONG).show()
-                },
-                onNoPlayServices = {
-                  fallbackQrScannerLauncher.launch(Unit)
+                onClick = {
+                  viewModel.scanQR(
+                    context,
+                    onSuccess = { url ->
+                      uriHandler.openUri(url)
+                    },
+                    onError = { error ->
+                      Toast.makeText(context, error, Toast.LENGTH_LONG).show()
+                    },
+                    onNoPlayServices = {
+                      fallbackQrScannerLauncher.launch(Unit)
+                    }
+                  )
                 }
               )
             }
-          )
+          }
         }
 
         if (!recents.isEmpty()) {

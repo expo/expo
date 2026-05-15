@@ -161,7 +161,7 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
 
     blurView.setupWith(dimezisBlurTarget)
       .setFrameClearDrawable(decorView.background)
-      .setBlurRadius(blurRadius)
+      .setBlurRadius(blurRadius / blurReduction)
 
     blurConfiguration = BlurViewConfiguration.DIMEZIS
   }

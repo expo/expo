@@ -1,18 +1,17 @@
 'use client';
 
-import {
-  BottomTabNavigationEventMap,
-  BottomTabNavigationOptions,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import { ParamListBase, TabNavigationState } from '@react-navigation/native';
-import React, { ComponentProps } from 'react';
+import type { ComponentProps } from 'react';
 import { Pressable, Platform } from 'react-native';
 
 import { withLayoutContext } from './withLayoutContext';
 import { Link } from '../link/Link';
-import { Href } from '../types';
-import { tabRouterOverride } from './TabRouter';
+import type {
+  BottomTabNavigationEventMap,
+  BottomTabNavigationOptions,
+} from '../react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '../react-navigation/bottom-tabs';
+import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
+import type { Href } from '../types';
 import { Protected } from '../views/Protected';
 
 // This is the only way to access the navigator.
@@ -73,7 +72,7 @@ const ExpoTabs = withLayoutContext<
  */
 const Tabs = Object.assign(
   (props: ComponentProps<typeof ExpoTabs>) => {
-    return <ExpoTabs {...props} UNSTABLE_router={tabRouterOverride} />;
+    return <ExpoTabs {...props} />;
   },
   {
     Screen: ExpoTabs.Screen,

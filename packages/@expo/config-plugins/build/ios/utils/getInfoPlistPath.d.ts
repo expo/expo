@@ -1,4 +1,4 @@
-import { XcodeProject } from 'xcode';
+import type { XcodeProject } from 'xcode';
 /**
  * Find the Info.plist path linked to a specific build configuration.
  *

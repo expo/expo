@@ -1,7 +1,18 @@
 import { Color, Label, Stack, useLocalSearchParams } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
-import { View, Text, Switch, ScrollView, StyleSheet, Pressable, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  Switch,
+  ScrollView,
+  StyleSheet,
+  Pressable,
+  Alert,
+  Platform,
+} from 'react-native';
+
+import { searchIcon, closeIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 
 export default function HeaderItemsScreen() {
   const params = useLocalSearchParams();
@@ -92,9 +103,15 @@ export default function HeaderItemsScreen() {
         style={styles.customHeaderElement}>
         <SymbolView
           size={20}
-          tintColor={Color.ios.systemBlue}
+          tintColor={Platform.select({
+            ios: Color.ios.systemBlue,
+            android: Color.android.dynamic.primary,
+          })}
           style={{ width: 20, height: 20 }}
-          name="heart.fill"
+          name={{
+            ios: 'heart.fill',
+            android: 'favorite',
+          }}
         />
       </Pressable>
     );
@@ -111,7 +128,7 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="left">
           <Stack.Toolbar.Button
             hidden={!showLeftButton1}
-            icon="arrow.left"
+            icon={process.env.EXPO_OS === 'ios' ? 'arrow.left' : searchIcon}
             onPress={handleLeftButton1Press}
           />
           <Stack.Toolbar.Button
@@ -161,8 +178,12 @@ export default function HeaderItemsScreen() {
 
           <Stack.Toolbar.Menu
             icon={require('../../../assets/expo-logo.png')}
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
             title="Actions"
-            tintColor={Color.ios.systemBrown}>
+            tintColor={Platform.select({
+              ios: Color.ios.systemBrown,
+              android: Color.android.dynamic.primary,
+            })}>
             {/* Simple actions */}
             <Stack.Toolbar.MenuAction
               icon={require('../../../assets/expo-transparent.png')}
@@ -187,8 +208,12 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu
             hidden={!showRightMenu1}
-            icon="ellipsis.circle"
+            icon={process.env.EXPO_OS === 'ios' ? 'ellipsis.circle' : moreVertIcon}
             title="Actions"
+            tintColor={Platform.select({
+              ios: Color.ios.systemBrown,
+              android: Color.android.dynamic.primary,
+            })}
             style={{
               color: '#00f',
               fontFamily: 'Arial',
@@ -204,11 +229,16 @@ export default function HeaderItemsScreen() {
             </Stack.Toolbar.Badge>
 
             {/* Simple actions */}
-            <Stack.Toolbar.MenuAction onPress={handleSendEmail}>
+            <Stack.Toolbar.MenuAction
+              icon={process.env.EXPO_OS === 'ios' ? undefined : sendIcon}
+              onPress={handleSendEmail}>
               <Stack.Toolbar.Label>Send email</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="paperplane" />
             </Stack.Toolbar.MenuAction>
-            <Stack.Toolbar.MenuAction destructive onPress={handleDeleteEmail}>
+            <Stack.Toolbar.MenuAction
+              icon={process.env.EXPO_OS === 'ios' ? undefined : deleteIcon}
+              destructive
+              onPress={handleDeleteEmail}>
               <Stack.Toolbar.Label>Delete email</Stack.Toolbar.Label>
               <Stack.Toolbar.Icon sf="trash" />
             </Stack.Toolbar.MenuAction>
@@ -337,7 +367,7 @@ export default function HeaderItemsScreen() {
 
           <Stack.Toolbar.Button
             hidden={!showSearchButton}
-            icon="magnifyingglass"
+            icon={process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : searchIcon}
             onPress={handleSearchPress}
           />
 

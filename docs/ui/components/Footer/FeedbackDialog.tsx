@@ -4,8 +4,8 @@ import { XIcon } from '@expo/styleguide-icons/outline/XIcon';
 import * as Dialog from '@radix-ui/react-dialog';
 import { useState } from 'react';
 
-import { InlineHelp } from 'ui/components/InlineHelp';
 import { Input, Textarea } from '~/ui/components/Form';
+import { InlineHelp } from '~/ui/components/InlineHelp';
 import { CALLOUT, LABEL, RawH2 } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
@@ -64,7 +64,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
           <Dialog.Content
             className={mergeClasses(
               'dialog-content',
-              'border-default bg-default top-0 left-0 max-h-[90vh] w-[90vw] max-w-[500px] overflow-hidden rounded-lg border break-words shadow-md outline-0 backface-hidden',
+              'border-default bg-default top-0 left-0 max-h-[90vh] w-[90vw] max-w-[500px] overflow-hidden rounded-lg border wrap-break-word shadow-md outline-0 backface-hidden',
               'data-[state=open]:animate-slideUpAndFadeIn',
               'data-[state=closed]:animate-fadeOut'
             )}>

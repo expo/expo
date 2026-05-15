@@ -205,7 +205,9 @@ class UpdatesStateMachine(
         )
         is UpdatesStateEvent.Download -> context.copyAndIncrementSequenceNumber(
           downloadProgress = 0.0,
-          isDownloading = true
+          isDownloading = true,
+          downloadStartTime = Date(),
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadProgress -> context.copyAndIncrementSequenceNumber(
           downloadProgress = event.progress
@@ -214,12 +216,16 @@ class UpdatesStateMachine(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true,
-          downloadProgress = 1.0
+          downloadProgress = 1.0,
+          downloadStartTime = null,
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithRollback -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
-          isUpdatePending = true
+          isUpdatePending = true,
+          downloadStartTime = null,
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
@@ -228,11 +234,14 @@ class UpdatesStateMachine(
           downloadedManifest = event.manifest,
           rollback = null,
           isUpdatePending = true,
-          isUpdateAvailable = true
+          isUpdateAvailable = true,
+          downloadFinishTime = Date()
         )
         is UpdatesStateEvent.DownloadError -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
-          downloadError = event.error
+          downloadError = event.error,
+          downloadStartTime = null,
+          downloadFinishTime = null
         )
         is UpdatesStateEvent.Restart -> context.copyAndIncrementSequenceNumber(
           isRestarting = true

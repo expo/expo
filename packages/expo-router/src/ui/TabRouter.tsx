@@ -1,16 +1,15 @@
+import type { TriggerMap } from './common';
 import {
-  CommonNavigationAction,
-  ParamListBase,
-  TabRouter as RNTabRouter,
-  Router,
-  TabActionType as RNTabActionType,
-  TabNavigationState,
-  TabRouterOptions as RNTabRouterOptions,
+  type CommonNavigationAction,
+  type ParamListBase,
+  type Router,
+  type TabActionType as RNTabActionType,
+  type TabNavigationState,
+  type TabRouterOptions as RNTabRouterOptions,
   type StackActionType,
   type NavigationAction,
-} from '@react-navigation/native';
-
-import { TriggerMap } from './common';
+  TabRouter as RNTabRouter,
+} from '../react-navigation/native';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
@@ -87,7 +86,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       let shouldReset = !state.history?.some((item) => item.key === route?.key) && !route.state;
 
       if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
-        shouldReset = state.routes[state.index ?? 0].key !== route.key;
+        shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
       }
 
       if (shouldReset) {

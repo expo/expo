@@ -8,14 +8,13 @@ import expo.modules.kotlin.exception.PropSetException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.types.AnyType
-import kotlin.reflect.KProperty1
 import kotlin.reflect.full.instanceParameter
 import kotlin.reflect.full.memberFunctions
 
 class ComposeViewProp(
   name: String,
   anyType: AnyType,
-  val property: KProperty1<*, *>
+  val propertyGetter: (Any) -> Any?
 ) : AnyViewProp(name, anyType) {
   private var _isStateProp = false
 
@@ -38,6 +37,7 @@ class ComposeViewProp(
       if (onView is ComposeFunctionHolder<*>) {
         // Use current props state, not the initial props instance
         val currentProps = onView.propsMutableState.value
+        // TODO(@lukmccall): We should remove the copy call
         val copy = currentProps::class.memberFunctions.firstOrNull { it.name == "copy" }
         if (copy == null) {
           logger.warn("⚠️ Props are not a data class with default values for all properties, cannot set prop $name dynamically.")
@@ -51,7 +51,7 @@ class ComposeViewProp(
         return@exceptionDecorator
       }
 
-      val mutableState = property.getter.call(props)
+      val mutableState = propertyGetter(props)
       if (mutableState is MutableState<*>) {
         (mutableState as MutableState<Any?>).value = type.convert(prop, appContext)
       } else {
@@ -65,7 +65,7 @@ class ComposeViewProp(
     return this
   }
 
-  override val isNullable: Boolean = anyType.kType.isMarkedNullable
+  override val isNullable: Boolean = anyType.typeDescriptor.isNullable
 
   override val isStateProp: Boolean
     get() = _isStateProp

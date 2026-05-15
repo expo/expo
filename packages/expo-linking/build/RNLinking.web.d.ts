@@ -1,4 +1,4 @@
-import { URLListener } from './Linking.types';
+import type { URLListener } from './Linking.types';
 declare const _default: {
     addEventListener(type: "url", listener: URLListener): {
         remove(): void;

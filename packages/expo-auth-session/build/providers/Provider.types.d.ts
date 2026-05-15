@@ -1,4 +1,4 @@
-import { AuthRequestConfig } from '../AuthRequest.types';
+import type { AuthRequestConfig } from '../AuthRequest.types';
 export type ProviderAuthRequestConfig = AuthRequestConfig & {
     /**
      * Language for the sign in UI, in the form of ISO 639-1 language code optionally followed by a dash

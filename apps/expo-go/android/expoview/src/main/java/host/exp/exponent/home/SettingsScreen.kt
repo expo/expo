@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -38,12 +40,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import expo.modules.core.utilities.VRUtilities
 import expo.modules.devmenu.DevMenuPreferences
 import host.exp.exponent.generated.ExponentBuildConstants
+import host.exp.exponent.nsd.NsdPreferences
 import host.exp.exponent.services.ThemeSetting
 import host.exp.expoview.R
 import kotlinx.coroutines.launch
@@ -77,6 +81,8 @@ fun SettingsScreen(
       )
 
       DeveloperMenuSection(viewModel.devMenuPreferencesAdapter)
+
+      NsdSection(viewModel.nsdPreferences)
 
       AppInfoSection(
         clientVersion = viewModel.expoVersion ?: "unknown",
@@ -313,6 +319,56 @@ fun DeveloperMenuSection(
           devMenuPreference.showFab = newValue
         },
         iconPainter = painterResource(R.drawable.fab)
+      )
+    }
+  }
+}
+
+@Composable
+fun NsdSection(
+  nsdPreferences: NsdPreferences
+) {
+  var filterBySlug by remember { mutableStateOf(nsdPreferences.filterBySlug) }
+
+  DisposableEffect(true) {
+    val onNewPreferences = {
+      filterBySlug = nsdPreferences.filterBySlug
+    }
+
+    nsdPreferences.addOnChangeListener(onNewPreferences)
+    onDispose {
+      nsdPreferences.removeOnChangeListener(onNewPreferences)
+    }
+  }
+
+  LabeledGroup(label = "Network Service Discovery") {
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(16.dp),
+      verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+      Text(
+        text = "Filter discovered dev servers by their advertised metadata.",
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+      )
+
+      OutlinedTextField(
+        value = filterBySlug,
+        onValueChange = { newValue ->
+          filterBySlug = newValue
+          nsdPreferences.filterBySlug = newValue
+        },
+        label = { Text("Filter by slug") },
+        placeholder = { Text("my-project-slug") },
+        singleLine = true,
+        shape = RoundedCornerShape(8.dp),
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.None,
+          autoCorrectEnabled = false
+        ),
+        modifier = Modifier.fillMaxWidth()
       )
     }
   }

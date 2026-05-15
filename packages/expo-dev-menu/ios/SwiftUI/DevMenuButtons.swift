@@ -75,7 +75,3 @@ struct DevMenuToggleButton: View {
     .opacity(disabled ? 0.6 : 1.0)
   }
 }
-
-#Preview {
-  DevMenuActionButton(title: "Action", icon: "person.fast") {}
-}

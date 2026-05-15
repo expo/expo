@@ -1,5 +1,5 @@
-import { RefObject } from 'react';
-import { ViewProps, View } from 'react-native';
+import type { RefObject } from 'react';
+import type { ViewProps, View } from 'react-native';
 
 /**
  * Blur method to use on Android.

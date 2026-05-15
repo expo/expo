@@ -1,4 +1,4 @@
-import { DynamicConvention, RouteNode } from './Route';
+import type { DynamicConvention, RouteNode } from './Route';
 import { matchGroupName } from './matchers';
 
 function sortDynamicConvention(a: DynamicConvention, b: DynamicConvention) {
@@ -24,8 +24,8 @@ export function sortRoutes(a: RouteNode, b: RouteNode): number {
     }
 
     for (let i = 0; i < a.dynamic.length; i++) {
-      const aDynamic = a.dynamic[i];
-      const bDynamic = b.dynamic[i];
+      const aDynamic = a.dynamic[i]!;
+      const bDynamic = b.dynamic[i]!;
 
       if (aDynamic.notFound && bDynamic.notFound) {
         const s = sortDynamicConvention(aDynamic, bDynamic);

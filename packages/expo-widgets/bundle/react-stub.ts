@@ -1,3 +1,5 @@
+export const Fragment = 'react.fragment';
+
 export const Children = {
   toArray(children: unknown) {
     if (children === undefined || children === null) {

@@ -10,7 +10,6 @@ import { InlineHelp } from '~/ui/components/InlineHelp';
 import { Tag } from '~/ui/components/Tag/Tag';
 import { CALLOUT } from '~/ui/components/Text';
 
-import { APIBoxSectionHeader } from './APIBoxSectionHeader';
 import { CommentData } from '../APIDataTypes';
 import {
   getAllTagData,
@@ -20,6 +19,7 @@ import {
   parseCommentContent,
 } from '../APISectionUtils';
 import { ELEMENT_SPACING, STYLES_SECONDARY } from '../styles';
+import { APIBoxSectionHeader } from './APIBoxSectionHeader';
 import { APISectionPlatformTags } from './APISectionPlatformTags';
 
 type Props = {
@@ -43,7 +43,7 @@ export const APICommentTextBlock = ({
   emptyCommentFallback,
 }: Props) => {
   const content = comment?.summary ? getCommentContent(comment.summary) : undefined;
-  const hasContent = Boolean(content?.length) || Boolean(afterContent);
+  const hasContent = (content?.length ?? 0) > 0 || Boolean(afterContent);
 
   const paramTags = hasContent ? getParamTags(content) : undefined;
   const parsedContent = (

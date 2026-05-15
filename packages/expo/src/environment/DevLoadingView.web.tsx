@@ -1,13 +1,9 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { NativeEventEmitter } from 'react-native';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import * as emitter from '../devLoadingViewEmitter';
 
 const MIN_DURATION = 400;
 const ANIMATION_DURATION = 150;
-
-const emitter = new NativeEventEmitter({
-  addListener() {},
-  removeListeners() {},
-});
 
 export default function DevLoadingView() {
   const show = useFastRefresh();
@@ -129,7 +125,7 @@ function useFastRefresh() {
       show.remove();
       hide.remove();
     };
-  }, [emitter]);
+  }, []);
 
   return isShown;
 }

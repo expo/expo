@@ -220,6 +220,20 @@ fun getAssetDimensionsFromCursor(
 ): Pair<Int, Int> {
   val uri = cursor.getString(localUriColumnIndex)
   if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+    // Fast path: read dimensions from MediaStore cursor (no file I/O).
+    // MediaStore populates these when the media scanner indexes the file.
+    val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
+    val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
+    val width = cursor.getInt(widthIndex)
+    val height = cursor.getInt(heightIndex)
+    if (width > 0 && height > 0) {
+      val orientationIndex = cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION)
+      val orientation = cursor.getInt(orientationIndex)
+
+      return maybeRotateAssetSize(width, height, orientation)
+    }
+
+    // Slow fallback for files not yet indexed by the media scanner.
     val videoUri = Uri.parse("file://$uri")
     try {
       contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->

@@ -1,129 +1,114 @@
 import { requireNativeView } from 'expo';
 import { type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
- * Colors for list item's core elements.
+ * Colors for list item elements, matching `ListItemDefaults.colors()`.
  */
 export type ListItemColors = {
   containerColor?: ColorValue;
-  headlineColor?: ColorValue;
-  leadingIconColor?: ColorValue;
-  trailingIconColor?: ColorValue;
-  supportingColor?: ColorValue;
-  overlineColor?: ColorValue;
+  contentColor?: ColorValue;
+  leadingContentColor?: ColorValue;
+  trailingContentColor?: ColorValue;
+  supportingContentColor?: ColorValue;
+  overlineContentColor?: ColorValue;
 };
 
 export type ListItemProps = {
   /**
-   * The main text content of the list item.
-   */
-  headline: string;
-  /**
-   * Optional supporting text displayed below the headline.
-   */
-  supportingText?: string;
-  /**
-   * Optional overline text displayed above the headline.
-   */
-  overlineText?: string;
-  /**
-   * The background color of the list item.
-   */
-  color?: ColorValue;
-  /**
-   * Colors for list item's core elements.
+   * Colors for list item elements.
    */
   colors?: ListItemColors;
   /**
-   * Callback that is called when the list item is pressed.
+   * Tonal elevation in dp.
+   * @default ListItemDefaults.Elevation
    */
-  onPress?: () => void;
+  tonalElevation?: number;
+  /**
+   * Shadow elevation in dp.
+   * @default ListItemDefaults.Elevation
+   */
+  shadowElevation?: number;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
+  modifiers?: ModifierConfig[];
   /**
-   * Children containing Leading and Trailing slots.
+   * Children containing slot sub-components.
    */
   children?: React.ReactNode;
 };
 
-type LeadingProps = {
-  children: React.ReactNode;
-};
-
-type TrailingProps = {
-  children: React.ReactNode;
-};
-
-type SupportingContentProps = {
-  children: React.ReactNode;
-};
-
-type NativeListItemProps = Omit<ListItemProps, 'onPress'> & {
-  onPress?: () => void;
-};
-
-type NativeSlotViewProps = {
+type SlotProps = {
   slotName: string;
   children: React.ReactNode;
 };
 
-const ListItemNativeView: React.ComponentType<NativeListItemProps> = requireNativeView(
+const ListItemNativeView: React.ComponentType<ListItemProps> = requireNativeView(
   'ExpoUI',
   'ListItemView'
 );
 
-const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
-  'ExpoUI',
-  'SlotView'
-);
+const SlotNativeView: React.ComponentType<SlotProps> = requireNativeView('ExpoUI', 'SlotView');
 
-/**
- * Leading content slot for ListItem.
- */
-export function ListItemLeading(props: LeadingProps) {
-  return <SlotNativeView slotName="leading">{props.children}</SlotNativeView>;
+function transformProps(props: ListItemProps): ListItemProps {
+  const { modifiers, ...restProps } = props;
+  return {
+    modifiers,
+    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
+    ...restProps,
+  };
 }
 
 /**
- * Trailing content slot for ListItem.
+ * Headline content slot. Overrides the `headline` string prop.
  */
-export function ListItemTrailing(props: TrailingProps) {
-  return <SlotNativeView slotName="trailing">{props.children}</SlotNativeView>;
+function HeadlineContent(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="headlineContent">{props.children}</SlotNativeView>;
 }
 
 /**
- * Custom supporting content slot for ListItem.
- * When provided, this takes precedence over the `supportingText` prop.
- * @platform android
+ * Overline content slot. Overrides the `overlineText` string prop.
  */
-export function ListItemSupportingContent(props: SupportingContentProps) {
+function OverlineContent(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="overlineContent">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Supporting content slot. Overrides the `supportingText` string prop.
+ */
+function SupportingContent(props: { children: React.ReactNode }) {
   return <SlotNativeView slotName="supportingContent">{props.children}</SlotNativeView>;
 }
 
 /**
- * A list item component following Material 3 design guidelines.
+ * Leading content slot (icon, avatar, etc).
  */
-function ListItemComponent(props: ListItemProps) {
-  const { children, modifiers, onPress, ...restProps } = props;
-
-  return (
-    <ListItemNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      {...restProps}
-      onPress={onPress}>
-      {children}
-    </ListItemNativeView>
-  );
+function LeadingContent(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="leadingContent">{props.children}</SlotNativeView>;
 }
 
-ListItemComponent.Leading = ListItemLeading;
-ListItemComponent.Trailing = ListItemTrailing;
-ListItemComponent.SupportingContent = ListItemSupportingContent;
+/**
+ * Trailing content slot (icon, text, switch, etc).
+ */
+function TrailingContent(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="trailingContent">{props.children}</SlotNativeView>;
+}
+
+/**
+ * A list item matching Compose's `ListItem`.
+ */
+function ListItemComponent(props: ListItemProps) {
+  const { children, ...restProps } = props;
+  return <ListItemNativeView {...transformProps(restProps)}>{children}</ListItemNativeView>;
+}
+
+ListItemComponent.HeadlineContent = HeadlineContent;
+ListItemComponent.OverlineContent = OverlineContent;
+ListItemComponent.SupportingContent = SupportingContent;
+ListItemComponent.LeadingContent = LeadingContent;
+ListItemComponent.TrailingContent = TrailingContent;
 
 export { ListItemComponent as ListItem };

@@ -22,6 +22,8 @@ private func sanitizeUrlString(_ urlString: String) -> String? {
   return sanitizedUrl
 }
 
+private let urlInputAnimation = Animation.easeInOut(duration: 0.3)
+
 struct DevServersView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
   @Binding var showingInfoDialog: Bool
@@ -33,7 +35,7 @@ struct DevServersView: View {
       let sanitizedURL = sanitizeUrlString(urlText)
       if let validURL = sanitizedURL {
         viewModel.openApp(url: validURL)
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(urlInputAnimation) {
           showingURLInput = false
         }
         urlText = ""
@@ -59,6 +61,9 @@ struct DevServersView: View {
             }
           }
         }
+        if viewModel.hasEmbeddedBundle {
+          embeddedBundleRow
+        }
         enterUrl
       }
     }
@@ -73,13 +78,14 @@ struct DevServersView: View {
   private var enterUrl: some View {
     VStack(spacing: 20) {
       Button {
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(urlInputAnimation) {
           showingURLInput.toggle()
         }
       } label: {
         HStack {
-          Image(systemName: showingURLInput ? "chevron.down" : "chevron.right")
+          Image(systemName: "chevron.right")
             .font(.headline)
+            .rotationEffect(.degrees(showingURLInput ? 90 : 0))
           Text("Enter URL manually")
             #if os(tvOS)
             .font(.system(size: 28))
@@ -95,6 +101,10 @@ struct DevServersView: View {
 
       if showingURLInput {
         TextField("exp://", text: $urlText)
+          .onSubmit {
+            connectToURL()
+          }
+          .submitLabel(.go)
         #if !os(macOS)
           .autocapitalization(.none)
         #endif
@@ -113,12 +123,38 @@ struct DevServersView: View {
         connectButton
       }
     }
-    .animation(.easeInOut, value: showingURLInput)
+    .animation(urlInputAnimation, value: showingURLInput)
     .padding()
     .background(showingURLInput ?
       Color.expoSecondarySystemBackground :
       Color.expoSystemBackground)
     .clipShape(RoundedRectangle(cornerRadius: 12))
+  }
+
+  private var embeddedBundleRow: some View {
+    Button {
+      viewModel.loadLocalBundle()
+    } label: {
+      HStack {
+        Image(systemName: "doc.fill")
+          .foregroundColor(.blue)
+          .frame(width: 12)
+        Text("Load embedded bundle")
+          .foregroundColor(.primary)
+        Spacer()
+        if viewModel.isLoadingLocalBundle {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
+      }
+      .padding()
+      .background(Color.expoSecondarySystemBackground)
+      .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+    .buttonStyle(PlainButtonStyle())
   }
 
   private var header: some View {

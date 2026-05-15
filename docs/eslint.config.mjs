@@ -1,63 +1,24 @@
-import nextPlugin from '@next/eslint-plugin-next';
-import { defineConfig, globalIgnores } from 'eslint/config';
 import universeNodeConfig from 'eslint-config-universe/flat/node.js';
 import universeTypescriptAnalysisConfig from 'eslint-config-universe/flat/shared/typescript-analysis.js';
 import universeWebConfig from 'eslint-config-universe/flat/web.js';
 import betterTailwindcss from 'eslint-plugin-better-tailwindcss';
 import lodash from 'eslint-plugin-lodash';
 import * as mdx from 'eslint-plugin-mdx';
-import testingLibrary from 'eslint-plugin-testing-library';
-import unicorn from 'eslint-plugin-unicorn'; // eslint-disable-line
-
-const CLASS_NAME_PREFIXES = ['container', 'icon', 'text'];
-
-const CLASS_NAME_PATTERN = '(c|C)lass(Name)?$';
+import oxlint from 'eslint-plugin-oxlint';
+import unicorn from 'eslint-plugin-unicorn';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 const TAILWIND_SETTINGS = {
   entryPoint: 'styles/global.css',
   callees: ['mergeClasses'],
-  attributes: [`^(${CLASS_NAME_PREFIXES.join('|')})?${CLASS_NAME_PATTERN}`],
+  attributes: ['^(container|icon|text)?(c|C)lass(Name)?$'],
 };
 
-const CORE_RULES = {
-  'prettier/prettier': 'error',
-  'no-void': ['warn', { allowAsStatement: true }],
+// Rules that are still active in ESLint (not migrated to oxlint or oxfmt)
+const ACTIVE_RULES = {
   'no-return-await': 'off',
-  'import/order': [
-    'error',
-    {
-      groups: [['external', 'builtin'], 'internal', ['parent', 'sibling']],
-      'newlines-between': 'always',
-      alphabetize: {
-        order: 'asc',
-      },
-      pathGroups: [
-        {
-          pattern: '~/**',
-          group: 'internal',
-        },
-      ],
-    },
-  ],
-  curly: 'warn',
-  eqeqeq: ['error', 'always', { null: 'ignore' }],
-  'import/no-cycle': ['error', { maxDepth: '∞' }],
   'lodash/import-scope': [2, 'method'],
   'unicorn/better-regex': 'warn',
-  'unicorn/consistent-date-clone': 'warn',
-  'unicorn/explicit-length-check': 'warn',
-  'unicorn/new-for-builtins': 'warn',
-  'unicorn/no-useless-spread': 'warn',
-  'unicorn/no-unnecessary-array-splice-count': 'warn',
-  'unicorn/prefer-array-some': 'warn',
-  'unicorn/prefer-at': 'warn',
-  'unicorn/prefer-date-now': 'warn',
-  'unicorn/prefer-set-has': 'warn',
-  'unicorn/prefer-includes': 'warn',
-  'unicorn/prefer-regexp-test': 'warn',
-  'unicorn/prefer-node-protocol': 'warn',
-  'unicorn/prefer-string-slice': 'warn',
-  'unicorn/throw-new-error': 'warn',
   'unicorn/prevent-abbreviations': [
     'warn',
     {
@@ -72,6 +33,27 @@ const CORE_RULES = {
   ],
 };
 
+// Rules not auto-detected by eslint-plugin-oxlint:
+// - oxfmt handles these (not in .oxlintrc.json)
+// - type-aware TS rules (eslint-plugin-oxlint doesn't read type-aware overrides)
+// - @next/next/no-img-element (set to 'off' in oxlint, so the plugin skips it)
+const MIGRATED_RULES_MANUAL = {
+  'prettier/prettier': 'off',
+  'import/order': 'off',
+  'prefer-promise-reject-errors': 'off',
+  '@typescript-eslint/await-thenable': 'off',
+  '@typescript-eslint/no-confusing-void-expression': 'off',
+  '@typescript-eslint/no-floating-promises': 'off',
+  '@typescript-eslint/no-for-in-array': 'off',
+  '@typescript-eslint/no-misused-promises': 'off',
+  '@typescript-eslint/no-unnecessary-type-assertion': 'off',
+  '@typescript-eslint/only-throw-error': 'off',
+  '@typescript-eslint/prefer-includes': 'off',
+  '@typescript-eslint/prefer-nullish-coalescing': 'off',
+  '@typescript-eslint/return-await': 'off',
+  '@next/next/no-img-element': 'off',
+};
+
 export default defineConfig([
   globalIgnores([
     '**/.cache',
@@ -79,7 +61,6 @@ export default defineConfig([
     '**/.swc/',
     '**/.wrangler/',
     '**/.worker-test/',
-    '**/.yarn/',
     '**/.vale',
     '**/node_modules',
     '**/out',
@@ -93,6 +74,17 @@ export default defineConfig([
   universeWebConfig,
   universeNodeConfig,
   universeTypescriptAnalysisConfig,
+
+  // Auto-disable ESLint rules that oxlint handles (reads .oxlintrc.json)
+  // Filter out MDX ignore since ESLint still needs to lint MDX via eslint-plugin-mdx
+  ...oxlint
+    .buildFromOxlintConfigFile('./.oxlintrc.json')
+    .map(c => (c.ignores ? { ...c, ignores: c.ignores.filter(p => p !== '**/*.{md,mdx}') } : c)),
+
+  // Manual overrides for rules the auto plugin misses
+  {
+    rules: MIGRATED_RULES_MANUAL,
+  },
 
   // Overrides needed to make flat config rules work
   {
@@ -113,7 +105,6 @@ export default defineConfig([
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
     plugins: {
-      '@next/next': nextPlugin,
       'better-tailwindcss': betterTailwindcss,
       lodash,
       unicorn,
@@ -122,16 +113,26 @@ export default defineConfig([
       'better-tailwindcss': TAILWIND_SETTINGS,
     },
     rules: {
-      ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules,
-      ...CORE_RULES,
-      'lodash/import-scope': [2, 'method'],
-      '@next/next/no-img-element': 'off',
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      '@typescript-eslint/explicit-function-return-type': [
-        'off',
+      ...ACTIVE_RULES,
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      'better-tailwindcss/enforce-shorthand-classes': 'error',
+      'better-tailwindcss/no-unknown-classes': [
+        'error',
         {
-          allowExpressions: true,
+          ignore: [
+            'diff-.+',
+            'react-player',
+            'dark-theme',
+            'dialog-.+',
+            'terminal-snippet',
+            'table-wrapper',
+            'tutorial-code-annotation',
+            'max-sm:.+',
+            'max-medium:.+',
+            'max-md-gutters:.+',
+            '\\[table_&\\]:.+',
+            '\\[table_&\\]',
+          ],
         },
       ],
       '@typescript-eslint/naming-convention': [
@@ -170,73 +171,10 @@ export default defineConfig([
           },
         },
       ],
-      '@typescript-eslint/await-thenable': 'error',
-      '@typescript-eslint/no-misused-promises': [
-        'error',
-        {
-          checksVoidReturn: false,
-        },
-      ],
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/return-await': ['error', 'always'],
-      '@typescript-eslint/no-confusing-non-null-assertion': 'warn',
-      '@typescript-eslint/no-extra-non-null-assertion': 'warn',
-      '@typescript-eslint/prefer-as-const': 'warn',
-      '@typescript-eslint/prefer-includes': 'warn',
       '@typescript-eslint/prefer-readonly': 'warn',
       '@typescript-eslint/prefer-string-starts-ends-with': 'warn',
-      '@typescript-eslint/ban-ts-comment': [
-        'warn',
-        {
-          minimumDescriptionLength: 3,
-          'ts-check': false,
-          'ts-expect-error': 'allow-with-description',
-          'ts-ignore': true,
-          'ts-nocheck': true,
-        },
-      ],
-      '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
-      '@typescript-eslint/prefer-nullish-coalescing': [
-        'warn',
-        {
-          ignoreConditionalTests: true,
-          ignoreMixedLogicalExpressions: true,
-        },
-      ],
-      '@typescript-eslint/no-restricted-types': 'warn',
       'react/no-this-in-sfc': 'off',
-      'react/no-unknown-property': ['error', { ignore: ['css', 'mask-type'] }],
       'react/no-unescaped-entities': 'off',
-      'react/jsx-key': [
-        'error',
-        {
-          checkFragmentShorthand: true,
-          checkKeyMustBeforeSpread: true,
-          warnOnDuplicates: true,
-        },
-      ],
-      'better-tailwindcss/enforce-consistent-class-order': 'off',
-      'better-tailwindcss/enforce-consistent-line-wrapping': 'off',
-      'better-tailwindcss/enforce-shorthand-classes': 'error',
-      'better-tailwindcss/no-unknown-classes': [
-        'error',
-        {
-          ignore: [
-            'diff-.+',
-            'react-player',
-            'dark-theme',
-            'dialog-.+',
-            'terminal-snippet',
-            'table-wrapper',
-            'tutorial-code-annotation',
-            'max-sm:.+',
-            'max-medium:.+',
-            'max-md-gutters:.+',
-            '\\[table_&\\]:.+',
-            '\\[table_&\\]',
-          ],
-        },
-      ],
       'no-restricted-properties': [
         'warn',
         {
@@ -260,34 +198,39 @@ export default defineConfig([
 
   // JavaScript/Node files configuration
   {
-    files: ['**/*.js', '**/*.cjs', '**/*.ts'],
+    files: ['**/*.js', '**/*.cjs'],
     plugins: {
       lodash,
       unicorn,
     },
     extends: [universeNodeConfig],
-    rules: CORE_RULES,
+    rules: {
+      ...ACTIVE_RULES,
+      ...MIGRATED_RULES_MANUAL,
+      ...Object.fromEntries(
+        oxlint
+          .buildFromOxlintConfigFile('./.oxlintrc.json')
+          .flatMap(c => Object.entries(c.rules ?? {}))
+      ),
+    },
   },
 
   // MDX configuration
   {
     ...mdx.flat,
+    files: ['**/*.mdx'],
     languageOptions: {
       ...mdx.flat.languageOptions,
       parserOptions: { extensions: ['.js', '.md', '.mdx'] },
     },
     rules: {
       ...mdx.flat.rules,
+      'import/no-unresolved': 'error',
+      'no-unused-vars': ['warn', { vars: 'all', args: 'none', ignoreRestSiblings: true }],
       'no-unused-expressions': 'off',
       'no-useless-escape': 'off',
       'no-irregular-whitespace': 'off',
       'react/self-closing-comp': 'off',
     },
-  },
-
-  // Test files configuration
-  {
-    files: ['**/*-test.[jt]s?(x)'],
-    ...testingLibrary.configs['flat/react'],
   },
 ]);

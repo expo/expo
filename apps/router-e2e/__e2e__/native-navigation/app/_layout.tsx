@@ -1,9 +1,10 @@
 import { Stack, unstable_navigationEvents } from 'expo-router';
+import { DefaultTheme, ThemeProvider } from 'expo-router/react-navigation';
 
 const appStart = Date.now();
 
 unstable_navigationEvents.enable();
-(['pageWillRender', 'pageFocused', 'pageBlurred', 'pageRemoved'] as const).forEach((eventType) => {
+(['pagePreloaded', 'pageFocused', 'pageBlurred', 'pageRemoved'] as const).forEach((eventType) => {
   unstable_navigationEvents.addListener(eventType, (event) => {
     console.log(
       `[${Date.now() - appStart}ms] ${eventType}:`,
@@ -13,8 +14,18 @@ unstable_navigationEvents.enable();
     );
   });
 });
-unstable_navigationEvents.saveCurrentPathname();
 
 export default function Layout() {
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <ThemeProvider
+      value={{
+        ...DefaultTheme,
+        colors: {
+          ...DefaultTheme.colors,
+          text: '#0F0',
+        },
+      }}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </ThemeProvider>
+  );
 }

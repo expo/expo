@@ -17,6 +17,9 @@ const KNOWN_STICKY_DEPENDENCIES = [
   // NOTE: react-native won't be in autolinking output, since it's special
   // We include it here manually, since we know it should be an unduplicated direct dependency
   'react-native',
+  // NOTE: We may redirect dependencies from react-native to react-native-web. This fails if
+  // a sub-dependency cannot access react-native-web, so we define it here
+  'react-native-web',
   // Peer dependencies from expo
   'react-native-webview',
   '@expo/dom-webview',
@@ -36,7 +39,8 @@ const KNOWN_STICKY_DEPENDENCIES = [
 ];
 
 const AUTOLINKING_PLATFORMS = ['android', 'ios', 'web'] as const;
-type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
+
+export type AutolinkingPlatform = (typeof AUTOLINKING_PLATFORMS)[number];
 
 const escapeDependencyName = (dependency: string) =>
   dependency.replace(/[*.?()[\]]/g, (x) => `\\${x}`);
@@ -140,7 +144,7 @@ export function createAutolinkingModuleResolver(
     const moduleMatch = moduleDescription.moduleTestRe.exec(moduleName);
     if (moduleMatch) {
       const resolvedModulePath =
-        moduleDescription.resolvedModulePaths[moduleMatch[1]] || moduleName;
+        moduleDescription.resolvedModulePaths[moduleMatch[1]!] || moduleName;
       // We instead resolve as if it was a dependency from within the module (self-require/import)
       const context: ResolutionContext = {
         ...immutableContext,

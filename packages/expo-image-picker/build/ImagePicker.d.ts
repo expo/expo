@@ -1,5 +1,5 @@
-import { PermissionExpiration, PermissionHookOptions, PermissionResponse, PermissionStatus } from 'expo-modules-core';
-import { CameraPermissionResponse, ImagePickerErrorResult, ImagePickerOptions, ImagePickerResult, MediaLibraryPermissionResponse } from './ImagePicker.types';
+import { PermissionStatus, type PermissionExpiration, type PermissionHookOptions, type PermissionResponse } from 'expo';
+import type { CameraPermissionResponse, ImagePickerErrorResult, ImagePickerOptions, ImagePickerResult, MediaLibraryPermissionResponse } from './ImagePicker.types';
 /**
  * Checks user's permissions for accessing camera.
  * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).

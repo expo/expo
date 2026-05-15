@@ -7,7 +7,7 @@
  */
 
 import { parseErrorStack } from './parseErrorStack';
-import { ExtendedExceptionData } from '../LogBox';
+import type { ExtendedExceptionData } from '../LogBox';
 import { withoutANSIColorStyles } from './withoutANSIStyles';
 
 /**

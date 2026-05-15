@@ -52,6 +52,7 @@ class ExpoRequestCdpInterceptorTest {
     params = json.getJSONObject("params")
     Truth.assertThat(method).isEqualTo("Network.requestWillBeSentExtraInfo")
     Truth.assertThat(params.getString("requestId")).isEqualTo(requestId)
+    Truth.assertThat(params.getJSONArray("associatedCookies").length()).isEqualTo(0)
 
     // Network.responseReceived
     json = JSONObject(mockDelegate.events[2])

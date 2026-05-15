@@ -16,6 +16,7 @@ type NativeInterfaceState = {
   runtimeVersion: string;
   embeddedUpdateId: string;
   launchedUpdateId: string;
+  downloadTimeMs: number | null;
   type?: string | null;
   manifest?: ExpoUpdatesManifest | null;
 };
@@ -39,6 +40,7 @@ function useNativeInterfaceState() {
     runtimeVersion,
     embeddedUpdateId,
     launchedUpdateId,
+    downloadTimeMs: null,
   });
   const listener = React.useCallback((event: any) => {
     setState({
@@ -47,6 +49,7 @@ function useNativeInterfaceState() {
       runtimeVersion,
       embeddedUpdateId,
       launchedUpdateId: ExpoUpdatesE2ETestModule.getLaunchedUpdateId(),
+      downloadTimeMs: ExpoUpdatesE2ETestModule.getDownloadTimeMs(),
     });
   }, []);
   React.useEffect(() => {
@@ -312,6 +315,10 @@ export default function App() {
       <TestValue
         testID="nativeInterfaceState.availableUpdateId"
         value={`${nativeInterfaceState.manifest?.id}`}
+      />
+      <TestValue
+        testID="nativeInterfaceState.downloadTimeMs"
+        value={`${nativeInterfaceState.downloadTimeMs}`}
       />
 
       <Text>Log messages</Text>

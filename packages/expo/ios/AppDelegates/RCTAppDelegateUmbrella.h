@@ -16,7 +16,7 @@
 
 #if __has_include(<React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>)
 #import <React_RCTAppDelegate/React-RCTAppDelegate-umbrella.h>
-#else
+#elif __has_include(<React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h>)
 #import <React_RCTAppDelegate/React_RCTAppDelegate-umbrella.h>
 #endif
 

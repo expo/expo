@@ -1,23 +1,7 @@
 'use client';
-import {
-  CommonNavigationAction,
-  NavigationAction,
-  ParamListBase,
-  PartialRoute,
-  PartialState,
-  Route,
-  RouterConfigOptions,
-  StackRouter as RNStackRouter,
-  StackActionType,
-  StackNavigationState,
-  type RouteProp,
-} from '@react-navigation/native';
-import {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-} from '@react-navigation/native-stack';
 import { nanoid } from 'nanoid/non-secure';
-import React, { Children, ComponentProps, useMemo } from 'react';
+import type { ComponentProps } from 'react';
+import { Children, useMemo } from 'react';
 
 import { withLayoutContext } from './withLayoutContext';
 import { createNativeStackNavigator } from '../fork/native-stack/createNativeStackNavigator';
@@ -30,17 +14,36 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
-import { SingularOptions, getSingularId } from '../useScreens';
+import type { SingularOptions } from '../useScreens';
+import { getSingularId } from '../useScreens';
 import {
   type StackScreenProps,
   StackHeader,
   StackScreen,
   StackSearchBar,
+  StackTitle,
   StackToolbar,
   appendScreenStackPropsToOptions,
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
+import {
+  type CommonNavigationAction,
+  type NavigationAction,
+  type ParamListBase,
+  type PartialRoute,
+  type PartialState,
+  type Route,
+  type RouterConfigOptions,
+  type StackActionType,
+  type StackNavigationState,
+  StackRouter as RNStackRouter,
+  type RouteProp,
+} from '../react-navigation/native';
+import type {
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+} from '../react-navigation/native-stack';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
 
@@ -214,7 +217,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
           } else if (action.type === 'NAVIGATE') {
-            const currentRoute = state.routes[state.index];
+            const currentRoute = state.routes[state.index]!;
 
             // If the route matches the current one, then navigate to it
             if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
@@ -293,7 +296,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 routes = state.routes.filter((r) => r.key !== route.key);
               } else if (action.type === 'NAVIGATE' && state.routes.length > 0) {
                 // The navigation action should only replace the last route if it has the same name and path params.
-                const lastRoute = state.routes[state.routes.length - 1];
+                const lastRoute = state.routes[state.routes.length - 1]!;
                 if (
                   getSingularId(lastRoute.name, { params: lastRoute.params }) ===
                   getSingularId(route.name, { params })
@@ -353,7 +356,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             ...state,
             index: routes.length - 1,
             preloadedRoutes: state.preloadedRoutes.filter(
-              (route) => routes[routes.length - 1].key !== route.key
+              (route) => routes[routes.length - 1]!.key !== route.key
             ),
             routes,
           };
@@ -364,7 +367,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
           const zoomTransitionId = getZoomTransitionIdFromAction(action);
           if (zoomTransitionId) {
-            const lastRoute = result.routes[result.routes.length - 1];
+            const lastRoute = result.routes[result.routes.length - 1]!;
             const key = lastRoute.key;
             const modifiedLastRoute: typeof lastRoute = {
               ...lastRoute,
@@ -409,6 +412,8 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             );
           }
 
+          const preloadZoomTransitionId = getZoomTransitionIdFromAction(action);
+
           if (route) {
             return {
               ...state,
@@ -416,30 +421,43 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                 if (r.key !== route?.key) {
                   return r;
                 }
+                const mergedParams =
+                  routeParamList[action.payload.name] !== undefined
+                    ? {
+                        ...routeParamList[action.payload.name],
+                        ...action.payload.params,
+                      }
+                    : action.payload.params;
                 return {
                   ...r,
-                  params:
-                    routeParamList[action.payload.name] !== undefined
-                      ? {
-                          ...routeParamList[action.payload.name],
-                          ...action.payload.params,
-                        }
-                      : action.payload.params,
+                  params: preloadZoomTransitionId
+                    ? {
+                        ...mergedParams,
+                        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
+                      }
+                    : mergedParams,
                 };
               }),
             };
           } else {
             // START FORK
+            const preloadedRouteKey = `${action.payload.name}-${nanoid()}`;
+            const preloadedRouteParams =
+              routeParamList[action.payload.name] !== undefined
+                ? {
+                    ...routeParamList[action.payload.name],
+                    ...action.payload.params,
+                  }
+                : action.payload.params;
             const currentPreloadedRoute: (typeof state)['preloadedRoutes'][number] = {
-              key: `${action.payload.name}-${nanoid()}`,
+              key: preloadedRouteKey,
               name: action.payload.name,
-              params:
-                routeParamList[action.payload.name] !== undefined
-                  ? {
-                      ...routeParamList[action.payload.name],
-                      ...action.payload.params,
-                    }
-                  : action.payload.params,
+              params: preloadZoomTransitionId
+                ? {
+                    ...preloadedRouteParams,
+                    [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
+                  }
+                : preloadedRouteParams,
             };
             // END FORK
             return {
@@ -515,8 +533,9 @@ function filterSingular<
     return state;
   }
 
+  // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
   const currentIndex = state.index || state.routes.length - 1;
-  const current = state.routes[currentIndex];
+  const current = state.routes[currentIndex]!;
   const name = current.name;
 
   const id = getId?.({ params: current.params });
@@ -606,6 +625,7 @@ const Stack = Object.assign(
     Protected,
     Header: StackHeader,
     SearchBar: StackSearchBar,
+    Title: StackTitle,
     Toolbar: StackToolbar,
   }
 );

@@ -3,7 +3,7 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.ExpectedType
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 private fun createDeferredValue(
   value: Any,
@@ -46,7 +46,7 @@ private fun createDeferredValues(
   value: Any,
   context: AppContext?,
   list: List<Pair<ExpectedType, TypeConverter<*>>>,
-  typeList: List<KType>
+  typeList: List<TypeDescriptor>
 ): List<DeferredValue> {
   var wasConverted = false
   val result = list.map { (expectedType, converter) ->
@@ -67,10 +67,10 @@ private fun createDeferredValues(
 
 class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType
+  eitherTypeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<Either<FirstType, SecondType>>() {
-  private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
-  private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
+  private val firstJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(0))
+  private val secondJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(1))
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
     firstJavaType
   )
@@ -108,11 +108,11 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
 
 class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType
+  eitherTypeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<EitherOfThree<FirstType, SecondType, ThirdType>>() {
-  private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
-  private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
-  private val thirdJavaType = requireNotNull(eitherType.arguments.getOrNull(2)?.type)
+  private val firstJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(0))
+  private val secondJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(1))
+  private val thirdJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(2))
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
     firstJavaType
   )
@@ -154,12 +154,12 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
 
 class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType
+  eitherTypeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<EitherOfFour<FirstType, SecondType, ThirdType, FourthType>>() {
-  private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
-  private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
-  private val thirdJavaType = requireNotNull(eitherType.arguments.getOrNull(2)?.type)
-  private val fourthJavaType = requireNotNull(eitherType.arguments.getOrNull(3)?.type)
+  private val firstJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(0))
+  private val secondJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(1))
+  private val thirdJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(2))
+  private val fourthJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(3))
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
     firstJavaType
   )

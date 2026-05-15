@@ -51,14 +51,12 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms       = {
-    :ios => '15.1',
-    :osx => '11.0',
-    :tvos => '15.1'
+    :ios => '16.4',
+    :osx => '13.4',
+    :tvos => '16.4'
   }
   s.swift_version  = '6.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
-  s.static_framework = true
-  s.header_dir     = 'ExpoModulesCore'
 
   header_search_paths = []
   if ENV['USE_FRAMEWORKS']
@@ -97,6 +95,7 @@ Pod::Spec.new do |s|
       '"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header"',
       '"$(PODS_ROOT)/Headers/Private/Yoga"', # Expo.h -> ExpoModulesCore-umbrella.h -> Fabric ViewProps.h -> Private Yoga headers
     ],
+    'OTHER_LDFLAGS' => '$(inherited) -lc++', # C++ standard library - will propagate to dependant targets
   }
 
   if use_hermes
@@ -106,19 +105,24 @@ Pod::Spec.new do |s|
     s.dependency 'React-jsc'
   end
 
-  s.dependency 'ExpoModulesJSI'
-
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-NativeModulesApple'
   s.dependency 'React-RCTFabric'
 
+  # ExpoModulesJSI is re-exported by ExpoModulesCore's swiftinterface, so it must be a CocoaPods dep in both source and prebuilt modes.
+  s.dependency 'ExpoModulesJSI'
+
   install_modules_dependencies(s)
 
-  s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-  s.exclude_files = ['ios/JSI', 'ios/Tests', 'ios/Worklets', 'common/cpp/JSI']
-  s.compiler_flags = compiler_flags
-  s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
+    s.static_framework = true
+    s.header_dir     = 'ExpoModulesCore'
+    s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
+    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsAdapter']
+    s.compiler_flags = compiler_flags
+    s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
+  end
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'

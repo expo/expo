@@ -14,7 +14,7 @@ exports.parseParameter = parseParameter;
 const routing_1 = require("expo-router/internal/routing");
 const utils_1 = require("expo-router/internal/utils");
 function isNotFoundRoute(route) {
-    return route.dynamic && route.dynamic[route.dynamic.length - 1].notFound;
+    return route.dynamic != null && (route.dynamic[route.dynamic.length - 1]?.notFound ?? false);
 }
 function uniqueBy(arr, key) {
     const seen = new Set();

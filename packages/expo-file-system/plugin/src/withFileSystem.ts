@@ -5,10 +5,18 @@ import {
   withInfoPlist,
 } from 'expo/config-plugins';
 
-const pkg = require('expo-file-system/package.json');
+const pkg = require('../../package.json');
 
-type FileSystemProps = {
+export type FileSystemProps = {
+  /**
+   * Whether to enable `LSSupportsOpeningDocumentsInPlace`, allowing the app to open documents in place.
+   * @platform ios
+   */
   supportsOpeningDocumentsInPlace?: boolean;
+  /**
+   * Whether to enable `UIFileSharingEnabled`, making the app's Documents directory accessible through the Files app.
+   * @platform ios
+   */
   enableFileSharing?: boolean;
 };
 

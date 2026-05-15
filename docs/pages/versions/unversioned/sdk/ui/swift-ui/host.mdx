@@ -3,7 +3,7 @@ title: Host
 description: A SwiftUI Host component that enables SwiftUI components in React Native.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['ios', 'tvos']
+platforms: ['ios', 'tvos', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -37,6 +37,26 @@ export default function MatchContentsExample() {
         }}>
         Click
       </Button>
+    </Host>
+  );
+}
+```
+
+> **Note:** Do not use `matchContents` on the same axis as a scroll container (`ScrollView`, `List`, `Form`, `LazyHStack`, `LazyVStack`). `matchContents` resolves to SwiftUI's `.fixedSize`, which sizes the scroll container to its content. It also leaves nothing past the viewport to scroll into, so scrolling silently stops working. Use `matchContents={{ vertical: true }}` together with `style={{ width: '100%' }}` (or any finite width on the scroll axis).
+
+```tsx ScrollViewMatchContents.tsx
+import { Host, HStack, ScrollView, Text } from '@expo/ui/swift-ui';
+
+export default function ScrollViewMatchContents() {
+  return (
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <ScrollView axes="horizontal">
+        <HStack spacing={12}>
+          {Array.from({ length: 20 }).map((_, i) => (
+            <Text key={i}>Item {i}</Text>
+          ))}
+        </HStack>
+      </ScrollView>
     </Host>
   );
 }

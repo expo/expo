@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-import { AutolinkingOptions } from '../../commands/autolinkingOptions';
+import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { taskAll } from '../../concurrency';
 import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
 import { scanFilesRecursively } from '../../utils';
@@ -199,7 +199,7 @@ export function convertPackageWithGradleToProjectName(
 export function searchGradlePropertyFirst(contents: string, propertyName: string): string | null {
   const lines = contents.split('\n');
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i]?.trim();
     if (line && !line.startsWith('#')) {
       const eok = line.indexOf('=');
       const key = line.slice(0, eok);

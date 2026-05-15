@@ -52,7 +52,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         .permissions?
         .getPermissionUsingRequesterClass(
           requesterClass(writeOnly),
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }
@@ -63,7 +63,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         .permissions?
         .askForPermission(
           usingRequesterClass: requesterClass(writeOnly),
-          resolve: promise.resolver,
+          resolve: promise.legacyResolver,
           reject: promise.legacyRejecter
         )
     }

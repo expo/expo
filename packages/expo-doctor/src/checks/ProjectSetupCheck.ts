@@ -1,9 +1,10 @@
 import fs from 'fs';
-import { glob, GlobOptions } from 'glob';
+import type { GlobOptions } from 'glob';
+import { glob } from 'glob';
 import path from 'path';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
-import { existsAndIsNotIgnoredAsync, isFileIgnoredAsync } from '../utils/files';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import { isFileIgnoredAsync } from '../utils/files';
 
 export class ProjectSetupCheck implements DoctorCheck {
   description = 'Check for common project setup issues';

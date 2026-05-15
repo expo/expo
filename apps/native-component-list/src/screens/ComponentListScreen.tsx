@@ -15,8 +15,10 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScreenConfig } from 'src/types/ScreenConfig';
 import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking';
+
+import { useTheme } from '../../../common/ThemeProvider';
+import type { ScreenConfig } from '../types/ScreenConfig';
 
 export interface ListElement {
   screenName?: string;
@@ -64,6 +66,7 @@ function LinkButton({
   disabled?: boolean;
   children?: React.ReactNode;
 }) {
+  const { theme } = useTheme();
   const { buildAction } = useLinkBuilder();
   const action: NavigationAction = buildAction(href);
 
@@ -86,7 +89,7 @@ function LinkButton({
         {...rest}
         style={[
           {
-            backgroundColor: isPressed ? '#dddddd' : undefined,
+            backgroundColor: isPressed ? theme.background.hover : undefined,
           },
           rest.style,
         ]}>
@@ -96,13 +99,19 @@ function LinkButton({
   }
 
   return (
-    <TouchableHighlight underlayColor="#dddddd" onPress={onPress} {...props} {...rest}>
+    <TouchableHighlight
+      underlayColor={theme.background.hover}
+      onPress={onPress}
+      {...props}
+      {...rest}>
       {children}
     </TouchableHighlight>
   );
 }
 
 export default function ComponentListScreen(props: Props) {
+  const { theme } = useTheme();
+
   React.useEffect(() => {
     StatusBar.setHidden(false);
   }, []);
@@ -119,14 +128,14 @@ export default function ComponentListScreen(props: Props) {
       <LinkButton
         disabled={!isAvailable}
         href={route ?? screenName ?? exampleName}
-        style={[styles.rowTouchable]}>
+        style={[styles.rowTouchable, { borderBottomColor: theme.border.secondary }]}>
         <View
           pointerEvents="none"
           style={[styles.row, !isAvailable && styles.disabledRow, { paddingRight: 10 + right }]}>
           {props.renderItemRight && props.renderItemRight(item)}
-          <Text style={styles.rowLabel}>{exampleName}</Text>
+          <Text style={[styles.rowLabel, { color: theme.text.default }]}>{exampleName}</Text>
           <Text style={styles.rowDecorator}>
-            <Ionicons name="chevron-forward" size={18} color="#595959" />
+            <Ionicons name="chevron-forward" size={18} color={theme.icon.secondary} />
           </Text>
         </View>
       </LinkButton>
@@ -156,7 +165,10 @@ export default function ComponentListScreen(props: Props) {
       removeClippedSubviews={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
-      contentContainerStyle={{ backgroundColor: '#fff', paddingBottom: isMobile ? 0 : bottom }}
+      style={{ backgroundColor: theme.background.screen }}
+      contentContainerStyle={{
+        paddingBottom: isMobile ? 0 : bottom,
+      }}
       data={sortedApis}
       keyExtractor={keyExtractor}
       renderItem={renderExampleSection}
@@ -182,7 +194,6 @@ const styles = StyleSheet.create({
   },
   rowTouchable: {
     borderBottomWidth: 1.0 / PixelRatio.get(),
-    borderBottomColor: '#dddddd',
   },
   disabledRow: {
     opacity: 0.3,

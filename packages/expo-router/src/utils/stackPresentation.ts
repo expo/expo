@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 
 const MODAL_PRESENTATIONS: NativeStackNavigationOptions['presentation'][] = [
   'modal',

@@ -16,7 +16,7 @@ function parseMetroError(message) {
     if (!e) {
         return null;
     }
-    const [, content, fileName, row, column, codeFrame] = e;
+    const [, content = '', fileName = '', row = '', column = '', codeFrame = ''] = e;
     return {
         content,
         fileName,
@@ -31,7 +31,7 @@ function parseBabelTransformError(message) {
         return null;
     }
     // Transform errors are thrown from inside the Babel transformer.
-    const [, fileName, content, row, column, codeFrame] = e;
+    const [, fileName = '', content = '', row = '', column = '', codeFrame = ''] = e;
     return {
         content,
         fileName,
@@ -46,7 +46,7 @@ function parseBabelCodeFrameError(message) {
         return null;
     }
     // Codeframe errors are thrown from any use of buildCodeFrameError.
-    const [, fileName, content, codeFrame] = e;
+    const [, fileName = '', content = '', codeFrame = ''] = e;
     //TODO: In the future we should send metadata from @expo/cli, but at the moment
     // parsing the message is the only way that work across all LogBox scenarios
     // (build web, build ios, build android, hmr web, hmr native).
@@ -61,3 +61,4 @@ function parseBabelCodeFrameError(message) {
         missingModule,
     };
 }
+//# sourceMappingURL=metroBuildErrorsFormat.js.map

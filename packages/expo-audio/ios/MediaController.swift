@@ -11,51 +11,79 @@ class MediaController {
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
+  private var artworkLoadToken: UUID?
+  private var currentArtworkItemIdentifier: ObjectIdentifier?
+  private var isLiveStream = false
 
   func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
-    if let previous = activePlayer, previous.id != player?.id {
-      previous.isActiveForLockScreen = false
-    }
-
-    activePlayer = player
-    player?.isActiveForLockScreen = true
-
-    DispatchQueue.main.async {
-      if let player {
-        self.enableRemoteCommands(options: options)
-        self.updateNowPlayingInfo(for: player)
-      } else {
-        self.disableRemoteCommands()
-        self.clearNowPlayingInfo()
-      }
+    performOnMain {
+      self.setActivePlayerOnMain(player, options: options)
     }
   }
 
   func updateNowPlayingInfo(for player: AudioPlayer) {
+    performOnMain {
+      self.updateNowPlayingInfoOnMain(for: player)
+    }
+  }
+
+  private func setActivePlayerOnMain(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
+    if let previous = activePlayer, previous.id != player?.id {
+      previous.isActiveForLockScreen = false
+      resetArtworkState()
+      currentArtworkItemIdentifier = nil
+    }
+
+    activePlayer = player
+    player?.isActiveForLockScreen = true
+    isLiveStream = options?.isLiveStream ?? player?.isLive ?? false
+
+    if let player {
+      enableRemoteCommands(options: options)
+      updateNowPlayingInfoOnMain(for: player)
+    } else {
+      disableRemoteCommands()
+      clearNowPlayingInfoOnMain()
+    }
+  }
+
+  private func updateNowPlayingInfoOnMain(for player: AudioPlayer) {
     guard player.id == activePlayer?.id else {
       return
     }
+
+    let nextArtworkItemIdentifier = player.ref.currentItem.map { ObjectIdentifier($0) }
+    if currentArtworkItemIdentifier != nextArtworkItemIdentifier {
+      resetArtworkState()
+      currentArtworkItemIdentifier = nextArtworkItemIdentifier
+    }
+
     var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
 
     applyPlaybackInfo(&nowPlayingInfo, for: player)
 
     if let userMetadata = player.metadata {
       applyUserMetadata(&nowPlayingInfo, from: userMetadata)
+      applyArtwork(&nowPlayingInfo, from: userMetadata, for: player, currentItemIdentifier: nextArtworkItemIdentifier)
     } else {
+      resetArtworkState()
+      nowPlayingInfo.removeValue(forKey: MPMediaItemPropertyArtwork)
       applyAssetMetadata(&nowPlayingInfo, for: player)
     }
 
     nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
-
-    if let artworkUrl = player.metadata?.artworkUrl {
-      loadArtworkIfNeeded(from: artworkUrl)
-    }
   }
 
   private func applyPlaybackInfo(_ info: inout [String: Any], for player: AudioPlayer) {
-    info[MPMediaItemPropertyPlaybackDuration] = player.duration
-    info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
-    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 1.0
+    if isLiveStream {
+      info[MPNowPlayingInfoPropertyIsLiveStream] = true
+      info.removeValue(forKey: MPMediaItemPropertyPlaybackDuration)
+      info.removeValue(forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime)
+    } else {
+      info[MPMediaItemPropertyPlaybackDuration] = player.duration
+      info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+    }
+    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 0.0
     info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
   }
 
@@ -102,45 +130,101 @@ class MediaController {
     }
   }
 
-  private func loadArtworkIfNeeded(from url: URL) {
-    if currentArtworkUrl == url, let cachedArtwork {
-      var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [:]
-      nowPlayingInfo[MPMediaItemPropertyArtwork] = cachedArtwork
-      nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+  private func applyArtwork(
+    _ info: inout [String: Any],
+    from metadata: Metadata,
+    for player: AudioPlayer,
+    currentItemIdentifier: ObjectIdentifier?
+  ) {
+    guard let artworkUrl = metadata.artworkUrl else {
+      resetArtworkState()
+      info.removeValue(forKey: MPMediaItemPropertyArtwork)
       return
     }
 
-    currentArtworkUrl = url
-    loadArtworkFromURL(url: url) { [weak self] artwork in
-      guard let self, let artwork else {
+    if currentArtworkUrl != artworkUrl {
+      currentArtworkUrl = artworkUrl
+      cachedArtwork = nil
+      artworkLoadToken = nil
+    }
+
+    if let cachedArtwork {
+      info[MPMediaItemPropertyArtwork] = cachedArtwork
+      return
+    }
+
+    guard artworkLoadToken == nil else {
+      return
+    }
+
+    let loadToken = UUID()
+    artworkLoadToken = loadToken
+
+    loadArtworkFromURL(url: artworkUrl) { [weak self] artwork in
+      guard let self, self.artworkLoadToken == loadToken else {
         return
       }
+
+      self.artworkLoadToken = nil
+
+      guard self.activePlayer?.id == player.id,
+            self.currentArtworkUrl == artworkUrl,
+            self.currentArtworkItemIdentifier == currentItemIdentifier else {
+        return
+      }
+
+      guard let artwork else {
+        return
+      }
+
       self.cachedArtwork = artwork
-      var nowPlayingInfo = self.nowPlayingInfoCenter.nowPlayingInfo ?? [:]
-      nowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
-      self.nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
+
+      var latestNowPlayingInfo = self.nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
+      latestNowPlayingInfo[MPMediaItemPropertyArtwork] = artwork
+      self.nowPlayingInfoCenter.nowPlayingInfo = latestNowPlayingInfo
     }
   }
 
-  func clearNowPlayingInfo() {
+  private func clearNowPlayingInfoOnMain() {
     nowPlayingInfoCenter.nowPlayingInfo = nil
     activePlayer = nil
+    isLiveStream = false
+    resetArtworkState()
+    currentArtworkItemIdentifier = nil
+  }
+
+  private func performOnMain(_ operation: @escaping () -> Void) {
+    if Thread.isMainThread {
+      operation()
+    } else {
+      DispatchQueue.main.async(execute: operation)
+    }
+  }
+
+  private func resetArtworkState() {
+    currentArtworkUrl = nil
+    cachedArtwork = nil
+    artworkLoadToken = nil
   }
 
   private func loadArtworkFromURL(url: URL, completion: @escaping (MPMediaItemArtwork?) -> Void) {
     URLSession.shared.dataTask(with: url) { data, _, error in
       if error != nil {
-        completion(nil)
+        self.performOnMain {
+          completion(nil)
+        }
         return
       }
 
       guard let data, let image = UIImage(data: data) else {
-        completion(nil)
+        self.performOnMain {
+          completion(nil)
+        }
         return
       }
 
       let artwork = MPMediaItemArtwork(boundsSize: image.size) { _ in image }
-      DispatchQueue.main.async {
+      self.performOnMain {
         completion(artwork)
       }
     }
@@ -222,7 +306,7 @@ class MediaController {
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
-    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = true
+    remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !isLiveStream
     remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
     remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
   }

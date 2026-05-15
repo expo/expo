@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platforms      = {
-    :ios => '15.1'
+    :ios => '16.4'
   }
   s.swift_version  = '5.9'
   s.source         = { git: 'https://github.com/expo/expo.git' }
@@ -20,18 +20,13 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'ExpoUI'
 
+  s.source_files = "**/*.{h,m,swift}"
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
-
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-    s.source_files = "**/*.h"
-    s.vendored_frameworks = "#{s.name}.xcframework"
-  else
-    s.source_files = "**/*.{h,m,swift}"
-  end
 
   project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=#{ENV['PROJECT_ROOT']}\n" : ""
   build_bundle_script = {
@@ -47,7 +42,7 @@ Pod::Spec.new do |s|
     :script => %Q{
       echo "Preparing ExpoWidgets.bundle..."
       source="#{__dir__}/../bundle/build/ExpoWidgets.bundle"
-      dest="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ExpoWidgets.bundle"
+      dest="${BUILT_PRODUCTS_DIR}/ExpoWidgets.bundle"
       echo "Copying ${source} to ${dest}"
       cp "${source}" "${dest}"
     },

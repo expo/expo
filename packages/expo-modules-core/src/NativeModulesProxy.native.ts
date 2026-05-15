@@ -32,26 +32,28 @@ if (LegacyNativeProxy) {
     // copy methods
     // TODO(@kitten): Annotate `NativeProxy` with abstract types to avoid implicit `any`
     NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo: any) => {
-      NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
-        // Use the new proxy to call methods on legacy modules, if possible.
-        if (ExpoNativeProxy?.callMethod) {
-          return ExpoNativeProxy.callMethod(moduleName, methodInfo.name, args);
-        }
+      if (NativeModulesProxy[moduleName]) {
+        NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
+          // Use the new proxy to call methods on legacy modules, if possible.
+          if (ExpoNativeProxy?.callMethod) {
+            return ExpoNativeProxy.callMethod(moduleName, methodInfo.name, args);
+          }
 
-        // Otherwise fall back to the legacy proxy.
-        // This is deprecated and might be removed in SDK47 or later.
-        const { key, argumentsCount } = methodInfo;
-        if (argumentsCount !== args.length) {
-          return Promise.reject(
-            new Error(
-              `Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${
-                argumentsCount === 1 ? 'argument' : 'arguments'
-              } but received ${args.length}`
-            )
-          );
-        }
-        return LegacyNativeProxy.callMethod(moduleName, key, args);
-      };
+          // Otherwise fall back to the legacy proxy.
+          // This is deprecated and might be removed in SDK47 or later.
+          const { key, argumentsCount } = methodInfo;
+          if (argumentsCount !== args.length) {
+            return Promise.reject(
+              new Error(
+                `Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${
+                  argumentsCount === 1 ? 'argument' : 'arguments'
+                } but received ${args.length}`
+              )
+            );
+          }
+          return LegacyNativeProxy.callMethod(moduleName, key, args);
+        };
+      }
     });
   });
 }

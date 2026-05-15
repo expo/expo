@@ -3,7 +3,7 @@ title: Host
 description: A Jetpack Compose Host component for bridging React Native and Jetpack Compose.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
-platforms: ['android']
+platforms: ['android', 'expo-go']
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -27,7 +27,45 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 export default function MatchContents() {
   return (
     <Host matchContents>
-      <Button onPress={() => console.log('Pressed')}>Sized to content</Button>
+      <Button onClick={() => console.log('Pressed')}>Sized to content</Button>
+    </Host>
+  );
+}
+```
+
+> **Note:** Do not use `matchContents` on the same axis as a scrollable child (`LazyRow`, `LazyColumn`, `Carousel`, or anything using `Modifier.horizontalScroll`/`verticalScroll`). Scrollables require a finite max constraint on their scroll axis and `matchContents` propagates an unbounded one.
+
+The following example crashes:
+
+```tsx MatchContentsCrash.tsx
+import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
+
+export default function MatchContentsCrash() {
+  return (
+    <Host matchContents>
+      <LazyRow>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Text key={i}>Item {i}</Text>
+        ))}
+      </LazyRow>
+    </Host>
+  );
+}
+```
+
+Either drop `matchContents` on the scroll axis or give the `Host` a finite size on that axis via `style`:
+
+```tsx MatchContentsFix.tsx
+import { Host, LazyRow, Text } from '@expo/ui/jetpack-compose';
+
+export default function MatchContentsFix() {
+  return (
+    <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
+      <LazyRow>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Text key={i}>Item {i}</Text>
+        ))}
+      </LazyRow>
     </Host>
   );
 }
@@ -43,7 +81,7 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 export default function HostWithStyle() {
   return (
     <Host style={{ padding: 16, backgroundColor: '#f0f0f0', borderRadius: 8 }}>
-      <Button onPress={() => console.log('Pressed')}>Styled host</Button>
+      <Button onClick={() => console.log('Pressed')}>Styled host</Button>
     </Host>
   );
 }

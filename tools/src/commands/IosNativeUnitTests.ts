@@ -54,13 +54,6 @@ export async function iosNativeUnitTests({ packages }: { packages?: string }) {
     packagesToTest.push(pkg.packageName);
   }
 
-  // @tsapeta: `expo-modules-core` has two podspecs – for the core and for the JSI. This is supported by autolinking,
-  // but not by expotools and as a result only `ExpoModulesJSI` tests are being included. Here we make sure the tests
-  // for the core are included. Long-term plan is to move JSI pod to a separate package, then this can be removed.
-  if (packagesToTest.includes('expo-modules-core')) {
-    targetsToTest.unshift(`ExpoModulesCore-Unit-Tests`);
-  }
-
   if (packageNamesFilter.length && !targetsToTest.length) {
     throw new Error(
       `No packages were found with the specified names: ${packageNamesFilter.join(', ')}`

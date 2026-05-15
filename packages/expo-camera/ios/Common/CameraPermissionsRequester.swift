@@ -1,4 +1,5 @@
 import ExpoModulesCore
+internal import React
 import AVFoundation
 
 let cameraKey = "NSCameraUsageDescription"

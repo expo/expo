@@ -3,11 +3,10 @@
 #import <objc/runtime.h>
 #import <string.h>
 
+#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
-#import <ExpoModulesCore/Swift.h>
-
-#import <ExpoModulesJSI/EXJSIConversions.h>
+#import <ExpoModulesCore/EXJSIConversions.h>
 
 #import <React/RCTComponentViewFactory.h>
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
@@ -105,10 +104,10 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
     flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
   }
 
-  ComponentName componentName = ComponentName { flavor->c_str() };
-  ComponentHandle componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+  react::ComponentName componentName = react::ComponentName { flavor->c_str() };
+  react::ComponentHandle componentHandle = reinterpret_cast<react::ComponentHandle>(componentName);
 
-  return ComponentDescriptorProvider {
+  return react::ComponentDescriptorProvider {
     componentHandle,
     componentName,
     flavor,
@@ -148,7 +147,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   const auto &eventEmitter = static_cast<const ExpoViewEventEmitter &>(*_eventEmitter);
 
   eventEmitter.dispatch([normalizeEventName(eventName) UTF8String], [payload](jsi::Runtime &runtime) {
-    return jsi::Value(runtime, expo::convertObjCObjectToJSIValue(runtime, payload));
+    return expo::convertObjCObjectToJSIValue(runtime, payload);
   });
 }
 
@@ -159,7 +158,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
   // Implemented in `ExpoFabricView.swift`
 }
 
-- (void)updateState:(State::Shared const &)state oldState:(State::Shared const &)oldState
+- (void)updateState:(react::State::Shared const &)state oldState:(react::State::Shared const &)oldState
 {
   _state = std::static_pointer_cast<const ExpoViewShadowNode<>::ConcreteState>(state);
 }
@@ -173,7 +172,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 {
   if (_state) {
 #if REACT_NATIVE_TARGET_VERSION >= 82
-    _state->updateState(ExpoViewState(width,height), EventQueue::UpdateMode::unstable_Immediate);
+    _state->updateState(ExpoViewState(width,height), react::EventQueue::UpdateMode::unstable_Immediate);
 #else
     _state->updateState(ExpoViewState(width,height));
 #endif
@@ -193,7 +192,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
     float heightValue = height ? [height floatValue] : std::numeric_limits<float>::quiet_NaN();
 #if REACT_NATIVE_TARGET_VERSION >= 82
     // synchronous update is only available in React Native 0.82 and above
-    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), EventQueue::UpdateMode::unstable_Immediate);
+    _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue), react::EventQueue::UpdateMode::unstable_Immediate);
 #else
     _state->updateState(expo::ExpoViewState::withStyleDimensions(widthValue, heightValue));
 #endif
@@ -202,15 +201,123 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
 #pragma mark - Component registration
 
-+ (void)registerComponent:(nonnull EXViewModuleWrapper *)viewModule appContext:(nonnull EXAppContext *)appContext
++ (void)registerComponent:(nonnull id)viewModule appContext:(nonnull id<EXAppContextProtocol>)appContext
 {
-  Class wrappedViewModuleClass = [EXViewModuleWrapper createViewModuleWrapperClassWithModule:viewModule appId:appContext.appIdentifier];
-  Class viewClass = [ExpoFabricView makeViewClassForAppContext:appContext
-                                                    moduleName:[viewModule moduleName]
-                                                      viewName:[viewModule viewName]
-                                                     className:NSStringFromClass(wrappedViewModuleClass)];
+  // Cache classes and selectors using dispatch_once to avoid repeated lookups
+  static Class viewModuleWrapperClass;
+  static Class expoFabricViewClass;
+  static SEL createWrapperSelector;
+  static SEL makeViewSelector;
+  static SEL moduleNameSelector;
+  static SEL viewNameSelector;
 
-  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    // EXViewModuleWrapper is defined in Swift - use runtime lookup
+    viewModuleWrapperClass = NSClassFromString(@"EXViewModuleWrapper");
+    if (!viewModuleWrapperClass) {
+      NSLog(@"[ExpoFabricViewObjC] Warning: Could not find class "
+            @"'EXViewModuleWrapper'");
+    }
+    // ExpoFabricView is defined in Swift - use runtime lookup
+    expoFabricViewClass = NSClassFromString(@"ExpoFabricView");
+    if (!expoFabricViewClass) {
+      NSLog(@"[ExpoFabricViewObjC] Warning: Could not find class "
+            @"'ExpoFabricView'");
+    }
+    // Cache all selectors
+    createWrapperSelector =
+        NSSelectorFromString(@"createViewModuleWrapperClassWithModule:appId:");
+    makeViewSelector = NSSelectorFromString(
+        @"makeViewClassForAppContext:moduleName:viewName:className:");
+    moduleNameSelector = NSSelectorFromString(@"moduleName");
+    viewNameSelector = NSSelectorFromString(@"viewName");
+  });
+
+  if (!viewModuleWrapperClass) {
+    NSLog(@"[ExpoFabricViewObjC] Error: Cannot register component - "
+          @"EXViewModuleWrapper class not found");
+    return;
+  }
+
+  if (!expoFabricViewClass) {
+    NSLog(@"[ExpoFabricViewObjC] Error: Cannot register component - "
+          @"ExpoFabricView class not found");
+    return;
+  }
+
+  Class wrappedViewModuleClass = nil;
+  NSString *appId = [appContext appIdentifier];
+
+  if (![viewModuleWrapperClass respondsToSelector:createWrapperSelector]) {
+    NSLog(@"[ExpoFabricViewObjC] Error: EXViewModuleWrapper does not respond "
+          @"to createViewModuleWrapperClassWithModule:appId:");
+    return;
+  }
+
+  NSMethodSignature *sig =
+      [viewModuleWrapperClass methodSignatureForSelector:createWrapperSelector];
+  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:sig];
+  [invocation setTarget:viewModuleWrapperClass];
+  [invocation setSelector:createWrapperSelector];
+  [invocation setArgument:&viewModule atIndex:2];
+  [invocation setArgument:&appId atIndex:3];
+  [invocation invoke];
+  [invocation getReturnValue:&wrappedViewModuleClass];
+
+  if (!wrappedViewModuleClass) {
+    NSLog(@"[ExpoFabricViewObjC] Error: Failed to create wrapped view module "
+          @"class for module: %@",
+          viewModule);
+    return;
+  }
+
+  if (![expoFabricViewClass respondsToSelector:makeViewSelector]) {
+    NSLog(@"[ExpoFabricViewObjC] Error: ExpoFabricView does not respond to "
+          @"makeViewClassForAppContext:moduleName:viewName:className:");
+    return;
+  }
+
+  // Get moduleName and viewName from viewModule using cached selectors
+  NSString *moduleName = nil;
+  NSString *viewName = nil;
+  if ([viewModule respondsToSelector:moduleNameSelector]) {
+    moduleName = [viewModule performSelector:moduleNameSelector];
+  } else {
+    NSLog(@"[ExpoFabricViewObjC] Warning: viewModule does not respond to "
+          @"moduleName selector");
+  }
+  if ([viewModule respondsToSelector:viewNameSelector]) {
+    viewName = [viewModule performSelector:viewNameSelector];
+  } else {
+    NSLog(@"[ExpoFabricViewObjC] Warning: viewModule does not respond to "
+          @"viewName selector");
+  }
+
+  NSString *className = NSStringFromClass(wrappedViewModuleClass);
+  NSMethodSignature *makeViewSig =
+      [expoFabricViewClass methodSignatureForSelector:makeViewSelector];
+  NSInvocation *makeViewInvocation =
+      [NSInvocation invocationWithMethodSignature:makeViewSig];
+  [makeViewInvocation setTarget:expoFabricViewClass];
+  [makeViewInvocation setSelector:makeViewSelector];
+  id appContextArg = appContext;
+  [makeViewInvocation setArgument:&appContextArg atIndex:2];
+  [makeViewInvocation setArgument:&moduleName atIndex:3];
+  [makeViewInvocation setArgument:&viewName atIndex:4];
+  [makeViewInvocation setArgument:&className atIndex:5];
+  [makeViewInvocation invoke];
+
+  Class viewClass = nil;
+  [makeViewInvocation getReturnValue:&viewClass];
+
+  if (viewClass) {
+    [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  } else {
+    NSLog(@"[ExpoFabricViewObjC] Error: Failed to create view class for "
+          @"module: %@, view: %@",
+          moduleName, viewName);
+  }
 }
 
 @end

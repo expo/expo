@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.pathToHtmlSafeName = pathToHtmlSafeName;
 exports.getHotReplaceTemplate = getHotReplaceTemplate;
 exports.wrapDevelopmentCSS = wrapDevelopmentCSS;
-exports.escapeBackticksAndOctals = escapeBackticksAndOctals;
 function pathToHtmlSafeName(path) {
     return path.replace(/[^a-zA-Z0-9_]/g, '_');
 }
@@ -13,13 +12,14 @@ function getHotReplaceTemplate(id) {
     // to replace.
     const attr = JSON.stringify(pathToHtmlSafeName(id));
     return `style.setAttribute('data-expo-css-hmr', ${attr});
-  const previousStyle = document.querySelector('[data-expo-css-hmr=${attr}]');
+  var previousStyle = document.querySelector('[data-expo-css-hmr=${attr}]');
   if (previousStyle) {
     previousStyle.parentNode.replaceChild(style, previousStyle);
   }`;
 }
+// WARN: The emitted code below is hand-authored as ES5 so it can be embedded
+// verbatim into a Metro module factory without going through Babel
 function wrapDevelopmentCSS(props) {
-    const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
     // Ensure we had HMR support to the CSS module in development.
     // Why?
     // -----
@@ -41,12 +41,17 @@ function wrapDevelopmentCSS(props) {
     // update is consumed at this level. React-Refresh no longer has to walk past
     // the stub, the rest of the graph (including the edited component) hot-swaps
     // normally, and local state is preserved.
-    const injectClientStyle = `const head = document.head || document.getElementsByTagName('head')[0];
-const style = document.createElement('style');
+    // `JSON.stringify` produces a valid JS string literal: it escapes embedded
+    // quotes, backslashes, control characters, and Unicode line separators. It
+    // also closes the `${`-interpolation footgun that template literals carry
+    // when the CSS body contains a literal `${`.
+    const cssLiteral = JSON.stringify(props.src);
+    const injectClientStyle = `var head = document.head || document.getElementsByTagName('head')[0];
+var style = document.createElement('style');
 ${getHotReplaceTemplate(props.filename)}
 style.setAttribute('data-expo-loader', 'css');
 if (!style.parentNode) head.appendChild(style);
-const css = \`${withBackTicksEscaped}\`;
+var css = ${cssLiteral};
 if (style.styleSheet){
   style.styleSheet.cssText = css;
 } else {
@@ -55,8 +60,8 @@ if (style.styleSheet){
     // When bundling React Server Components, add an iife which will broadcast the client JS script to the root client bundle.
     // This will ensure the global CSS is available in the browser in development.
     if (props.reactServer) {
-        const injectStyle = `(()=>{${injectClientStyle}})();`;
-        return `(() => {
+        const injectStyle = `(function(){${injectClientStyle}})();`;
+        return `(function () {
 if (typeof __expo_rsc_inject_module === 'function') {
   __expo_rsc_inject_module({
     id: ${JSON.stringify(props.filename)},
@@ -67,23 +72,13 @@ if (typeof __expo_rsc_inject_module === 'function') {
 }
 })();`;
     }
-    const injectStyle = `(() => {
+    return `(function () {
 if (typeof window === 'undefined') {
-  return
+  return;
 }
 ${injectClientStyle}
 
 if (module.hot) module.hot.accept();
 })();`;
-    return injectStyle;
-}
-function escapeBackticksAndOctals(str) {
-    if (typeof str !== 'string') {
-        return '';
-    }
-    return str
-        .replace(/\\/g, '\\\\')
-        .replace(/`/g, '\\`')
-        .replace(/[\x00-\x07]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
 }
 //# sourceMappingURL=css.js.map

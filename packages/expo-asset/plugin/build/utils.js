@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ACCEPTED_TYPES = exports.MEDIA_TYPES = exports.FONT_TYPES = exports.IMAGE_TYPES = void 0;
+exports.ACCEPTED_TYPES = exports.MODEL_TYPES = exports.MEDIA_TYPES = exports.FONT_TYPES = exports.IMAGE_TYPES = void 0;
 exports.resolveAssetPaths = resolveAssetPaths;
 exports.validateAssets = validateAssets;
 const config_plugins_1 = require("expo/config-plugins");
@@ -12,7 +12,15 @@ const path_1 = __importDefault(require("path"));
 exports.IMAGE_TYPES = ['.png', '.jpg', '.gif'];
 exports.FONT_TYPES = ['.otf', '.ttf'];
 exports.MEDIA_TYPES = ['.mp4', '.mp3', '.lottie', '.riv'];
-exports.ACCEPTED_TYPES = ['.json', '.db', ...exports.IMAGE_TYPES, ...exports.MEDIA_TYPES, ...exports.FONT_TYPES];
+exports.MODEL_TYPES = ['.glb'];
+exports.ACCEPTED_TYPES = [
+    '.json',
+    '.db',
+    ...exports.IMAGE_TYPES,
+    ...exports.MEDIA_TYPES,
+    ...exports.FONT_TYPES,
+    ...exports.MODEL_TYPES,
+];
 async function resolveAssetPaths(assets, projectRoot) {
     const promises = assets.map(async (p) => {
         const resolvedPath = path_1.default.resolve(projectRoot, p);

@@ -84,7 +84,7 @@ describe('server rendering with async routes', () => {
           return filename.replace(/-[a-f0-9]{20,}\.js$/, '-<HASH>.js');
         });
 
-        const routeName = route.page.replace('/', '');
+        const routeName = path.basename(route.page);
         expect(jsFilenames).toEqual(['_layout-<HASH>.js', `${routeName}-<HASH>.js`]);
       }
     });

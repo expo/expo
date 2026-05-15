@@ -1,5 +1,4 @@
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
@@ -145,6 +144,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
             {
               key: expect.any(String),
               name: '(group)',
+              params: { initial: false, params: { initial: false }, screen: 'orange' },
               path: undefined,
               state: {
                 index: 1,
@@ -233,6 +233,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
             {
               key: expect.any(String),
               name: '(group)',
+              params: { params: {}, screen: 'orange' },
               path: undefined,
               state: {
                 index: 0,

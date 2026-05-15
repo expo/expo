@@ -1,9 +1,9 @@
 import { requireNativeView } from 'expo';
-import { NativeSyntheticEvent } from 'react-native';
+import type { NativeSyntheticEvent } from 'react-native';
 
 import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 export type PopoverViewProps = {
   children: React.ReactNode;

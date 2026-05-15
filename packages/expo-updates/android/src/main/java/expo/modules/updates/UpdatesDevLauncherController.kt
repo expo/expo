@@ -3,6 +3,7 @@ package expo.modules.updates
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.easclient.EASClientID
@@ -33,9 +34,11 @@ import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.json.JSONObject
@@ -104,6 +107,7 @@ class UpdatesDevLauncherController(
     get() = throw Exception("IUpdatesController.bundleAssetName should not be called in dev client")
 
   override val reloadScreenManager = ReloadScreenManager()
+  override var reactHost: WeakReference<ReactHost> = WeakReference(null)
 
   override fun onEventListenerStartObserving() {
     // no-op for UpdatesDevLauncherController
@@ -139,6 +143,9 @@ class UpdatesDevLauncherController(
 
   override val updateUrl: Uri?
     get() = updatesConfiguration?.updateUrl
+
+  override val requestHeaders: Map<String, String>?
+    get() = updatesConfiguration?.requestHeaders
 
   override fun subscribeToUpdatesStateChanges(listener: UpdatesStateChangeListener): UpdatesStateChangeSubscription {
     return DisabledUpdatesStateChangeSubscription()
@@ -181,7 +188,8 @@ class UpdatesDevLauncherController(
       databaseHolder.database,
       fileDownloader,
       updatesDirectory,
-      null
+      null,
+      controllerScope
     )
     controllerScope.launch {
       val progressJob = launch {
@@ -213,6 +221,8 @@ class UpdatesDevLauncherController(
           return@launch
         }
         launchUpdate(loaderResult.updateEntity, updatesConfiguration!!, fileDownloader, callback)
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         // reset controller's configuration to what it was before this request
         updatesConfiguration = previousUpdatesConfiguration
@@ -307,6 +317,8 @@ class UpdatesDevLauncherController(
           get() = launcher.launchAssetFile!!
       })
       runReaper()
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       // reset controller's configuration to what it was before this request
       updatesConfiguration = previousUpdatesConfiguration
@@ -383,7 +395,7 @@ class UpdatesDevLauncherController(
   }
 
   override fun shutdown() {
-    // no-op
+    controllerScope.cancel()
   }
 
   companion object {

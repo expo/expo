@@ -40,14 +40,14 @@ exports.Navigator = Navigator;
 exports.useNavigatorContext = useNavigatorContext;
 exports.Slot = Slot;
 exports.DefaultNavigator = DefaultNavigator;
-const native_1 = require("@react-navigation/native");
+const jsx_runtime_1 = require("react/jsx-runtime");
 const React = __importStar(require("react"));
-const react_native_is_edge_to_edge_1 = require("react-native-is-edge-to-edge");
 const react_native_safe_area_context_1 = require("react-native-safe-area-context");
 const Screen_1 = require("./Screen");
 const Route_1 = require("../Route");
 const StackClient_1 = require("../layouts/StackClient");
 const withLayoutContext_1 = require("../layouts/withLayoutContext");
+const native_1 = require("../react-navigation/native");
 const useScreens_1 = require("../useScreens");
 exports.NavigatorContext = React.createContext(null);
 if (process.env.NODE_ENV !== 'production') {
@@ -71,7 +71,7 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
         // Used for getting the parent with navigation.getParent('/normalized/path')
         ...routerOptions,
         id: contextKey,
-        children: sortedScreens || [<Screen_1.Screen key="default"/>],
+        children: sortedScreens || [(0, jsx_runtime_1.jsx)(Screen_1.Screen, {}, "default")],
         screenOptions,
         initialRouteName,
     });
@@ -80,13 +80,11 @@ function Navigator({ initialRouteName, screenOptions, children, router, routerOp
         console.warn(`Navigator at "${contextKey}" has no children.`);
         return null;
     }
-    return (<exports.NavigatorContext.Provider value={{
+    return ((0, jsx_runtime_1.jsx)(exports.NavigatorContext.Provider, { value: {
             ...navigation,
             contextKey,
             router,
-        }}>
-      {nonScreenChildren}
-    </exports.NavigatorContext.Provider>);
+        }, children: nonScreenChildren }));
 }
 /**
  * @hidden
@@ -109,7 +107,7 @@ function SlotNavigator(props) {
         id: contextKey,
         children: (0, useScreens_1.useSortedScreens)(screens ?? [], protectedScreens),
     });
-    return (<NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>);
+    return ((0, jsx_runtime_1.jsx)(NavigationContent, { children: descriptors[state.routes[state.index].key].render() }));
 }
 /**
  * Renders the currently selected content.
@@ -127,13 +125,13 @@ function Slot(props) {
     const context = React.use(exports.NavigatorContext);
     if (context?.contextKey !== contextKey) {
         // The _layout has changed since the last navigator
-        return <SlotNavigator {...props}/>;
+        return (0, jsx_runtime_1.jsx)(SlotNavigator, { ...props });
     }
     /*
      * The user has defined a custom navigator
      * <Navigator><Slot /></Navigator>
      */
-    return <NavigatorSlot />;
+    return (0, jsx_runtime_1.jsx)(NavigatorSlot, {});
 }
 /**
  * Render the current navigator content.
@@ -147,12 +145,10 @@ function NavigatorSlot() {
  * The default navigator for the app when no root _layout is provided.
  */
 function DefaultNavigator() {
-    if (process.env.EXPO_OS === 'android' && (0, react_native_is_edge_to_edge_1.isEdgeToEdge)()) {
-        return <SlotNavigator />;
+    if (process.env.EXPO_OS === 'android') {
+        return (0, jsx_runtime_1.jsx)(SlotNavigator, {});
     }
-    return (<react_native_safe_area_context_1.SafeAreaView style={{ flex: 1 }}>
-      <SlotNavigator />
-    </react_native_safe_area_context_1.SafeAreaView>);
+    return ((0, jsx_runtime_1.jsx)(react_native_safe_area_context_1.SafeAreaView, { style: { flex: 1 }, children: (0, jsx_runtime_1.jsx)(SlotNavigator, {}) }));
 }
 Navigator.Slot = NavigatorSlot;
 Navigator.useContext = useNavigatorContext;

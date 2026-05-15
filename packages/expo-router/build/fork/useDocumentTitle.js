@@ -34,6 +34,9 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.useDocumentTitle = useDocumentTitle;
+/*
+ * This file is unchanged, except for fixing imports and removing eslint comments
+ */
 const React = __importStar(require("react"));
 // import type { DocumentTitleOptions } from './types';
 /**

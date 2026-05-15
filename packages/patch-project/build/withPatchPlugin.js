@@ -89,7 +89,7 @@ async function determinePatchFilePathAsync(projectRoot, platform, templateChecks
     const patchFilePath = path_1.default.join(patchRoot, `${platform}+${templateChecksum}.patch`);
     const patchFiles = await getPatchFilesAsync(patchRoot, platform);
     const patchExists = patchFiles.includes(path_1.default.basename(patchFilePath));
-    if (patchFiles.length > 0 && !patchExists) {
+    if (patchFiles[0] != null && !patchExists) {
         const firstPatchFilePath = path_1.default.join(patchRoot, patchFiles[0]);
         config_plugins_1.WarningAggregator.addWarningForPlatform(platform, 'withPatchPlugin', `Having patch files in ${patchRoot} but none matching "${patchFilePath}", using "${firstPatchFilePath}" instead.`);
     }

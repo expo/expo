@@ -193,11 +193,10 @@ it('nested layouts', async () => {
   expect(await screen.findByText('HomeNested')).toBeOnTheScreen();
 
   expect(AppLayout).toHaveBeenCalledTimes(1);
-  expect(TabsLayout).toHaveBeenCalledTimes(2);
-  expect(StackLayout).toHaveBeenCalledTimes(2);
+  expect(TabsLayout).toHaveBeenCalledTimes(1);
+  expect(StackLayout).toHaveBeenCalledTimes(1);
   expect(Index).toHaveBeenCalledTimes(1);
-  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-  expect(Home).toHaveBeenCalledTimes(2);
+  expect(Home).toHaveBeenCalledTimes(1);
   expect(HomeNested).toHaveBeenCalledTimes(1);
 });
 
@@ -238,9 +237,8 @@ it('deep linking nested groups', async () => {
 
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(AppLayout).toHaveBeenCalledTimes(1);
-  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-  expect(TabsLayout).toHaveBeenCalledTimes(2);
-  expect(HomeLayout).toHaveBeenCalledTimes(2);
+  expect(TabsLayout).toHaveBeenCalledTimes(1);
+  expect(HomeLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsLayout).toHaveBeenCalledTimes(1);
   expect(NestedTabsLayout).toHaveBeenCalledTimes(1);
   expect(OtherTabsIndex).toHaveBeenCalledTimes(1);

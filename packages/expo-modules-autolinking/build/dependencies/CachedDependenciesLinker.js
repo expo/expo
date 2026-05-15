@@ -4,12 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.makeCachedDependenciesLinker = makeCachedDependenciesLinker;
+exports.isNativeModuleAsync = isNativeModuleAsync;
 exports.scanDependencyResolutionsForPlatform = scanDependencyResolutionsForPlatform;
 exports.scanExpoModuleResolutionsForPlatform = scanExpoModuleResolutionsForPlatform;
 const fs_1 = __importDefault(require("fs"));
 const resolution_1 = require("./resolution");
 const rncliLocal_1 = require("./rncliLocal");
 const scanning_1 = require("./scanning");
+const types_1 = require("./types");
 const utils_1 = require("./utils");
 const findModules_1 = require("../autolinking/findModules");
 const autolinkingOptions_1 = require("../commands/autolinkingOptions");
@@ -29,9 +31,9 @@ function makeCachedDependenciesLinker(params) {
     let recursiveDependencies;
     return {
         memoizer,
-        async getOptionsForPlatform(platform) {
+        async getOptionsForPlatform(platform, extraInclude) {
             const options = await autolinkingOptionsLoader.getPlatformOptions(platform);
-            return makeCachedDependenciesSearchOptions(options);
+            return makeCachedDependenciesSearchOptions(options, extraInclude);
         },
         async loadReactNativeProjectConfig() {
             if (reactNativeProjectConfig === undefined) {
@@ -64,39 +66,42 @@ function makeCachedDependenciesLinker(params) {
         },
     };
 }
-async function scanDependencyResolutionsForPlatform(linker, platform, include) {
-    const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
-    const includeNames = new Set(include);
+async function isNativeModuleAsync(resolution, reactNativeProjectConfig, platform, excludeNames) {
+    const [reactNativeModule, expoModule] = await Promise.all([
+        (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, excludeNames),
+        (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames),
+    ]);
+    return !!reactNativeModule || !!expoModule;
+}
+async function scanDependencyResolutionsForPlatform(linker, platform, extraInclude) {
+    const opts = await linker.getOptionsForPlatform(platform, extraInclude);
     const reactNativeProjectConfig = await linker.loadReactNativeProjectConfig();
     const resolutions = (0, utils_1.mergeResolutionResults)(await Promise.all([
         linker.scanDependenciesFromRNProjectConfig(),
-        ...searchPaths.map((searchPath) => {
+        ...opts.searchPaths.map((searchPath) => {
             return linker.scanDependenciesInSearchPath(searchPath);
         }),
         linker.scanDependenciesRecursively(),
     ]));
     return await linker.memoizer.withMemoizer(async () => {
         const dependencies = await (0, utils_1.filterMapResolutionResult)(resolutions, async (resolution) => {
-            if (excludeNames.has(resolution.name)) {
+            if (opts.excludeNames.has(resolution.name)) {
                 return null;
             }
-            else if (includeNames.has(resolution.name)) {
+            else if (opts.includeNames.has(resolution.name)) {
                 return resolution;
             }
-            else if (resolution.source === 2 /* DependencyResolutionSource.RN_CLI_LOCAL */) {
+            else if (resolution.source === types_1.DependencyResolutionSource.RN_CLI_LOCAL) {
                 // If the dependency was resolved frpom the React Native project config, we'll only
                 // attempt to resolve it as a React Native module
-                const reactNativeModuleDesc = await (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, excludeNames);
+                const reactNativeModuleDesc = await (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, opts.excludeNames);
                 if (!reactNativeModuleDesc) {
                     return null;
                 }
             }
             else {
-                const [reactNativeModule, expoModule] = await Promise.all([
-                    (0, reactNativeConfig_1.resolveReactNativeModule)(resolution, reactNativeProjectConfig, platform, excludeNames),
-                    (0, findModules_1.resolveExpoModule)(resolution, platform, excludeNames),
-                ]);
-                if (!reactNativeModule && !expoModule) {
+                const isNativeModule = await isNativeModuleAsync(resolution, reactNativeProjectConfig, platform, opts.excludeNames);
+                if (!isNativeModule) {
                     return null;
                 }
             }
@@ -105,8 +110,8 @@ async function scanDependencyResolutionsForPlatform(linker, platform, include) {
         return dependencies;
     });
 }
-async function scanExpoModuleResolutionsForPlatform(linker, platform) {
-    const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform);
+async function scanExpoModuleResolutionsForPlatform(linker, platform, extraInclude) {
+    const { excludeNames, searchPaths } = await linker.getOptionsForPlatform(platform, extraInclude);
     const resolutions = (0, utils_1.mergeResolutionResults)(await Promise.all([
         ...searchPaths.map((searchPath) => {
             return linker.scanDependenciesInSearchPath(searchPath);
@@ -121,8 +126,9 @@ async function scanExpoModuleResolutionsForPlatform(linker, platform) {
         });
     });
 }
-const makeCachedDependenciesSearchOptions = (options) => ({
+const makeCachedDependenciesSearchOptions = (options, extraInclude) => ({
     excludeNames: new Set(options.exclude),
+    includeNames: new Set(extraInclude ? [...options.include, ...extraInclude] : options.include),
     searchPaths: options.nativeModulesDir && fs_1.default.existsSync(options.nativeModulesDir)
         ? [options.nativeModulesDir, ...(options.searchPaths ?? [])]
         : (options.searchPaths ?? []),

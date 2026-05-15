@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src/react-navigation/index.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;AAAA,2CAAyB;AACzB,6CAA2B","sourcesContent":["export * from './native';\nexport * from './elements';\n"]}

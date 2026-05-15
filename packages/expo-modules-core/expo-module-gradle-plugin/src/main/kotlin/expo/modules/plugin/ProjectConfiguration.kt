@@ -13,6 +13,7 @@ import expo.modules.plugin.android.createExpoPublishTask
 import expo.modules.plugin.android.createExpoPublishToMavenLocalTask
 import expo.modules.plugin.android.createReleasePublication
 import expo.modules.plugin.gradle.ExpoModuleExtension
+import io.github.lukmccall.pika.PikaGradleExtension
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.internal.extensions.core.extra
@@ -30,11 +31,29 @@ internal fun Project.applyDefaultPlugins() {
   }
 }
 
+internal fun Project.applyPikaPlugin() {
+  if (!plugins.hasPlugin("io.github.lukmccall.pika")) {
+    plugins.apply("io.github.lukmccall.pika")
+  }
+
+  val pika = extensions.getByType(PikaGradleExtension::class.java)
+  pika.introspectableAnnotation("expo.modules.kotlin.types.OptimizedRecord")
+  pika.introspectableAnnotation("expo.modules.kotlin.views.OptimizedComposeProps")
+}
+
+internal fun Project.configurePika(shouldBeEnabled: Boolean = true) {
+  val pika = extensions.getByType(PikaGradleExtension::class.java)
+  pika.enabled = shouldBeEnabled
+}
+
 internal fun Project.applyKotlin(kotlinVersion: String, kspVersion: String) {
   extra.set("kotlinVersion", kotlinVersion)
   extra.set("kspVersion", kspVersion)
 
   project.dependencies.add("implementation", "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion")
+  // kotlinx-coroutines-core requires annotations:23.0.0 while kotlin-stdlib uses 13.0.
+  // Gradle 9's consistent resolution rejects this mismatch, so we force the higher version.
+  project.dependencies.add("implementation", "org.jetbrains:annotations:23.0.0")
 }
 
 internal fun Project.applyDefaultDependencies() {

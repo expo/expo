@@ -3,7 +3,15 @@ import { TriangleDownIcon } from '@expo/styleguide-icons/custom/TriangleDownIcon
 import { ListIcon } from '@expo/styleguide-icons/outline/ListIcon';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/compat/router';
-import { type ComponentType, type PropsWithChildren, useEffect, useRef, useState } from 'react';
+import {
+  Children,
+  isValidElement,
+  type ComponentType,
+  type PropsWithChildren,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink';
@@ -11,10 +19,6 @@ import { PermalinkIcon } from '~/ui/components/Permalink';
 import { Requirement } from './Requirement';
 
 type PrerequisitesProps = PropsWithChildren<{
-  /**
-   * The number of requirements for the prerequisites.
-   */
-  numberOfRequirements: number;
   /**
    * If the prerequisites should be rendered "open" by default.
    */
@@ -24,12 +28,15 @@ type PrerequisitesProps = PropsWithChildren<{
 
 const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
   ({
-    numberOfRequirements = 1,
     children,
     className,
     headingManager,
     open = false,
   }: PrerequisitesProps & HeadingManagerProps) => {
+    const requirementChildren = Children.toArray(children).filter(
+      child => isValidElement(child) && child.type === Requirement
+    );
+    const numberOfRequirements = requirementChildren.length;
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(open);
     const detailsRef = useRef<HTMLDetailsElement>(null);
@@ -61,7 +68,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
         id={heading.current.slug}
         className={mergeClasses(
           'border-default mb-3 scroll-m-4 rounded-md border p-0',
-          '[&[open]]:shadow-xs',
+          '[[open]]:shadow-xs',
           '[h4+&]:mt-3 [li>&]:mt-3 [p+&]:mt-3',
           className
         )}
@@ -77,7 +84,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             'hocus:bg-subtle'
           )}>
           <div className="flex items-center">
-            <div className="mt-[5px] mr-2 ml-1.5 self-baseline">
+            <div className="mt-1.25 mr-2 ml-1.5 self-baseline">
               <TriangleDownIcon
                 className={mergeClasses(
                   'icon-sm text-icon-default',
@@ -108,7 +115,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             </LinkBase>
           </div>
           <div>
-            <p className="text-secondary text-xs">
+            <p className="text-secondary text-sm">
               {numberOfRequirements} requirement{numberOfRequirements === 1 ? '' : 's'}
             </p>
           </div>
@@ -120,7 +127,18 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
             height: isOpen ? 'auto' : 0,
           }}
           className="overflow-hidden">
-          <div>{children}</div>
+          <div>
+            {requirementChildren.map((child, index) => (
+              <div
+                key={index}
+                className={mergeClasses('border-default flex items-baseline gap-1.5 border-t p-5')}>
+                {numberOfRequirements > 1 && (
+                  <p className="mb-2 text-right font-medium">{index + 1}.</p>
+                )}
+                {child}
+              </div>
+            ))}
+          </div>
         </motion.div>
       </details>
     );

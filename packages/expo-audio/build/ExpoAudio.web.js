@@ -131,5 +131,6 @@ export function clearAllPreloadedSources() {
 export function getPreloadedSources() {
     return AudioModule.getPreloadedSources();
 }
+export { useAudioStream } from './AudioStream.web';
 export { AudioModule };
 //# sourceMappingURL=ExpoAudio.web.js.map

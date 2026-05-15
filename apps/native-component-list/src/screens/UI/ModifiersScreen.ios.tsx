@@ -14,6 +14,7 @@ import {
   Capsule,
   Stepper,
   Spacer,
+  Image,
 } from '@expo/ui/swift-ui';
 import {
   background,
@@ -66,15 +67,17 @@ import {
   lineLimit,
   contentShape,
   shapes,
+  resizable,
 } from '@expo/ui/swift-ui/modifiers';
+import { useAssets } from 'expo-asset';
 import { useState } from 'react';
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text as RNText,
   View,
   useWindowDimensions,
-  Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -123,6 +126,8 @@ export default function ModifiersScreen() {
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
   const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
+  const [assets] = useAssets([require('../../../assets/images/logo-wordmark.png')]);
+  const wordmarkUri = assets?.[0]?.localUri;
 
   return (
     <ScrollView>
@@ -569,6 +574,38 @@ export default function ModifiersScreen() {
               📐 2:1 Aspect ratio blue card
             </Text>
 
+            {wordmarkUri && (
+              <HStack spacing={16}>
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>Forced 1:1</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      resizable(),
+                      aspectRatio({ ratio: 1, contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      background('#EAF4FF'),
+                      border({ color: '#3498DB', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>Intrinsic ratio</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      resizable(),
+                      aspectRatio({ contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      background('#E8F8F5'),
+                      border({ color: '#16A085', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+              </HStack>
+            )}
+
             <Text
               modifiers={[
                 background('#E67E22'),
@@ -689,8 +726,8 @@ export default function ModifiersScreen() {
               ))}
             </HStack>
             <Stepper
-              onValueChanged={setContainerRelativeFrameCount}
-              defaultValue={containerRelativeFrameCount}
+              onValueChange={setContainerRelativeFrameCount}
+              value={containerRelativeFrameCount}
               label={`Items count: ${containerRelativeFrameCount}`}
             />
           </Section>

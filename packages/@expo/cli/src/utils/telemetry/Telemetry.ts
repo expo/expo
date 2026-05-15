@@ -2,7 +2,7 @@ import crypto from 'node:crypto';
 
 import { FetchClient } from './clients/FetchClient';
 import { FetchDetachedClient } from './clients/FetchDetachedClient';
-import { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
+import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
 import { createContext } from './utils/context';
 import { getAnonymousId } from '../../api/user/UserSettings';
 import { env } from '../env';

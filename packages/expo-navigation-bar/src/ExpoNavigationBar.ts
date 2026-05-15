@@ -1,10 +1,6 @@
 import type { EventSubscription } from 'expo-modules-core';
 
-import type {
-  NavigationBarButtonStyle,
-  NavigationBarVisibility,
-  NavigationBarVisibilityEvent,
-} from './NavigationBar.types';
+import type { NavigationBarVisibility, NavigationBarVisibilityEvent } from './NavigationBar.types';
 
 export default {} as {
   addListener: (
@@ -12,8 +8,7 @@ export default {} as {
     listener: (event: NavigationBarVisibilityEvent) => void
   ) => EventSubscription;
 
-  setButtonStyleAsync: (style: NavigationBarButtonStyle) => Promise<void>;
-
-  setVisibilityAsync: (visibility: NavigationBarVisibility) => Promise<void>;
+  setStyle: (style: 'light' | 'dark') => Promise<void>;
+  setHidden: (hidden: boolean) => Promise<void>;
   getVisibilityAsync: () => Promise<NavigationBarVisibility>;
 };

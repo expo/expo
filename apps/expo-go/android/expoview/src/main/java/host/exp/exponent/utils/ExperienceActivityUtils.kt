@@ -6,25 +6,20 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.WindowManager
 import host.exp.exponent.ExponentManifest
-import android.view.WindowInsets
 import host.exp.exponent.ExponentManifest.BitmapListener
 import android.graphics.Bitmap
 import android.app.ActivityManager.TaskDescription
 import android.graphics.Color
 import android.os.Build
 import android.view.View
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
-import expo.modules.jsonutils.getNullable
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import host.exp.exponent.analytics.EXL
 
 object ExperienceActivityUtils {
   private val TAG = ExperienceActivityUtils::class.java.simpleName
-
-  private const val STATUS_BAR_STYLE_DARK_CONTENT = "dark-content"
-  private const val STATUS_BAR_STYLE_LIGHT_CONTENT = "light-content"
 
   fun updateOrientation(manifest: Manifest, activity: Activity) {
     val orientation = manifest.getOrientation()
@@ -80,94 +75,29 @@ object ExperienceActivityUtils {
 
   // region StatusBar configuration
 
-  /**
-   * React Native is not using flag [WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS] nor view/manifest attribute 'android:windowTranslucentStatus'
-   * (https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_TRANSLUCENT_STATUS)
-   * (https://developer.android.com/reference/android/R.attr.html#windowTranslucentStatus)
-   * Instead it's using [WindowInsets] to limit available space on the screen ([com.facebook.react.modules.statusbar.StatusBarModule.setTranslucent]).
-   *
-   *
-   * In case 'android:'windowTranslucentStatus' is used in activity's theme, it has to be removed in order to make RN's Status Bar API work.
-   * Out approach to achieve translucency of StatusBar has to be aligned with RN's approach to ensure [com.facebook.react.modules.statusbar.StatusBarModule] works.
-   *
-   *
-   * Links to follow in case of need of more detailed understating.
-   * https://chris.banes.dev/talks/2017/becoming-a-master-window-fitter-lon/
-   * https://www.youtube.com/watch?v=_mGDMVRO3iE
-   */
+  @Suppress("DEPRECATION")
   fun configureStatusBar(manifest: Manifest, activity: Activity) {
-    val statusBarOptions = manifest.getAndroidStatusBarOptions()
-    val statusBarStyle = statusBarOptions?.getNullable<String>(ExponentManifest.MANIFEST_STATUS_BAR_APPEARANCE)
+    val statusBarOptions = manifest.getAndroidStatusBarOptions() ?: return
 
-    val statusBarHidden = statusBarOptions != null && statusBarOptions.optBoolean(
-      ExponentManifest.MANIFEST_STATUS_BAR_HIDDEN,
-      false
-    )
+    val style = statusBarOptions.optString("style")
+    val hidden = statusBarOptions.optBoolean("hidden")
 
     activity.runOnUiThread {
-      // clear android:windowTranslucentStatus flag from Window as RN achieves translucency using WindowInsets
-      activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
+      val window = activity.window
 
-      setHidden(statusBarHidden, activity)
+      // clear android:windowTranslucentStatus flag as Window is edge-to-edge
+      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
 
-      setTranslucent(activity)
+      WindowInsetsControllerCompat(window, window.decorView).run {
+        if (hidden) {
+          hide(WindowInsetsCompat.Type.statusBars())
+        }
 
-      setStyle(statusBarStyle, activity)
-
-      setColor(Color.TRANSPARENT, activity)
-    }
-  }
-
-  @UiThread
-  fun setColor(color: Int, activity: Activity) {
-    activity
-      .window
-      .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-    activity
-      .window.statusBarColor = color
-  }
-
-  @UiThread
-  fun setTranslucent(activity: Activity) {
-    // As the status bar is translucent, hook into the window insets calculations
-    // and consume all the top insets so no padding will be added under the status bar.
-    val decorView = activity.window.decorView
-    decorView.setOnApplyWindowInsetsListener { v: View, insets: WindowInsets? ->
-      val defaultInsets = v.onApplyWindowInsets(insets)
-      defaultInsets.replaceSystemWindowInsets(
-        defaultInsets.systemWindowInsetLeft,
-        0,
-        defaultInsets.systemWindowInsetRight,
-        defaultInsets.systemWindowInsetBottom
-      )
-    }
-    ViewCompat.requestApplyInsets(decorView)
-  }
-
-  /**
-   * @return Effective style that is actually applied to the status bar.
-   */
-  @UiThread
-  private fun setStyle(style: String?, activity: Activity) {
-    val decorView = activity.window.decorView
-    decorView.systemUiVisibility = when (style) {
-      STATUS_BAR_STYLE_LIGHT_CONTENT ->
-        decorView.systemUiVisibility and View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR.inv()
-      STATUS_BAR_STYLE_DARK_CONTENT ->
-        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-      else ->
-        decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-    }
-  }
-
-  @UiThread
-  private fun setHidden(hidden: Boolean, activity: Activity) {
-    if (hidden) {
-      activity.window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-      activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-    } else {
-      activity.window.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN)
-      activity.window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        when (style) {
+          "dark" -> isAppearanceLightStatusBars = true
+          "light" -> isAppearanceLightStatusBars = false
+        }
+      }
     }
   }
 
@@ -201,45 +131,34 @@ object ExperienceActivityUtils {
     )
   }
 
+  @Suppress("DEPRECATION")
   fun setNavigationBar(manifest: Manifest, activity: Activity) {
     val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
 
-    // Set icon color of navigation bar
-    val navBarAppearance = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_APPEARANCE)
-    if (navBarAppearance != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      try {
-        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        activity.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        if (navBarAppearance == "dark-content") {
-          val decorView = activity.window.decorView
-          var flags = decorView.systemUiVisibility
-          flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-          decorView.systemUiVisibility = flags
-        }
-      } catch (e: Throwable) {
-        EXL.e(TAG, e)
-      }
-    }
+    val enforceContrast = navBarOptions.optBoolean("enforceContrast", true)
+    val style = navBarOptions.optString("style")
+    val hidden = navBarOptions.optBoolean("hidden")
 
-    // Set visibility of navigation bar
-    val navBarVisible = navBarOptions.getNullable<String>(ExponentManifest.MANIFEST_NAVIGATION_BAR_VISIBILITY)
-    if (navBarVisible != null) {
-      // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
-      // design your app to hide the status bar whenever you hide the navigation bar."
-      val decorView = activity.window.decorView
-      var flags = decorView.systemUiVisibility
-      when (navBarVisible) {
-        "leanback" ->
-          flags =
-            flags or (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN)
-        "immersive" ->
-          flags =
-            flags or (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE)
-        "sticky-immersive" ->
-          flags =
-            flags or (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+    activity.runOnUiThread {
+      val window = activity.window
+
+      // clear android:windowTranslucentNavigation flag as Window is edge-to-edge
+      window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        window.isNavigationBarContrastEnforced = enforceContrast
       }
-      decorView.systemUiVisibility = flags
+
+      WindowInsetsControllerCompat(window, window.decorView).run {
+        if (hidden) {
+          hide(WindowInsetsCompat.Type.navigationBars())
+        }
+
+        when (style) {
+          "dark" -> isAppearanceLightNavigationBars = true
+          "light" -> isAppearanceLightNavigationBars = false
+        }
+      }
     }
   }
 

@@ -1,5 +1,5 @@
 import * as PackageManager from '@expo/package-manager';
-import resolveFrom from 'resolve-from';
+import { resolveFrom, resolveGlobal } from '@expo/require-utils';
 import semver from 'semver';
 
 import * as Log from '../../../log';
@@ -7,7 +7,6 @@ import { delayAsync } from '../../../utils/delay';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
-import { resolveGlobal } from '../../../utils/resolveGlobal';
 
 const debug = require('debug')('expo:doctor:externalModule') as typeof console.log;
 
@@ -158,7 +157,13 @@ export class ExternalModule<TModule> {
 
   /** Resolve a copy that's installed in the project. Exposed for testing. */
   _resolveLocal(moduleId: string): string {
-    return resolveFrom(this.projectRoot, moduleId);
+    const target = resolveFrom(this.projectRoot, moduleId);
+    if (!target) {
+      throw Object.assign(new Error(`Module "${moduleId}" could not be resolved in the project.`), {
+        code: 'MODULE_NOT_FOUND',
+      });
+    }
+    return target;
   }
 
   /** Resolve a copy that's installed globally. Exposed for testing. */

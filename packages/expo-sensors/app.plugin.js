@@ -1,1 +1,1 @@
-module.exports = require('./plugin/build/withSensors')
+module.exports = require('./plugin/build/withSensors');

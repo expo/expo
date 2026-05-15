@@ -4,7 +4,9 @@ import android.graphics.Bitmap
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 internal class GetImageOptions : Record {
   @Field(key = "format")
   var imageFormat: ImageFormat = ImageFormat.JPG
@@ -13,11 +15,13 @@ internal class GetImageOptions : Record {
   var jpegQuality: Double = 1.0
 }
 
+@OptimizedRecord
 internal class GetStringOptions : Record {
   @Field
   var preferredFormat: StringFormat = StringFormat.PLAIN
 }
 
+@OptimizedRecord
 internal class SetStringOptions : Record {
   @Field
   var inputFormat: StringFormat = StringFormat.PLAIN

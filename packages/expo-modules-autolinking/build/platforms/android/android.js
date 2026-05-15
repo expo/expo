@@ -160,7 +160,7 @@ function convertPackageWithGradleToProjectName(packageName, buildGradleFile) {
 function searchGradlePropertyFirst(contents, propertyName) {
     const lines = contents.split('\n');
     for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
+        const line = lines[i]?.trim();
         if (line && !line.startsWith('#')) {
             const eok = line.indexOf('=');
             const key = line.slice(0, eok);

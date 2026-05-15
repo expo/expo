@@ -34,13 +34,17 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
   const isSelected = isRouteActive(info, router?.asPath, router?.pathname);
 
   useEffect(() => {
-    if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {
-      setTimeout(() => {
-        if (ref?.current) {
-          ref.current.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 50);
+    if (!isSelected || !ref?.current) {
+      return;
     }
+    const timeoutId = setTimeout(() => {
+      if (ref?.current && !isLinkInViewport(ref.current)) {
+        ref.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 50);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   if (info.hidden) {
@@ -57,7 +61,7 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
       href={info.href}
       ref={ref}
       className={mergeClasses(
-        'group text-secondary -ml-2.5 flex w-full scroll-m-[60px] items-center p-1 pr-0 text-xs decoration-0',
+        'group text-secondary -ml-2.5 flex w-full scroll-m-[60px] items-center p-1 pr-0 text-sm decoration-0',
         'hocus:text-link [&_svg]:hocus:text-icon-info',
         isSelected && 'text-link [&_svg]:text-icon-info',
         info.isDeprecated && 'line-through',

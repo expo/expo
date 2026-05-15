@@ -11,7 +11,7 @@ function _configPlugins() {
   };
   return data;
 }
-const toCamelCase = s => s.replace(/-./g, x => x.toUpperCase()[1]);
+const toCamelCase = s => s.replace(/-./g, x => x.toUpperCase()?.[1] ?? '');
 function isModuleExcluded(config, packageName) {
   // Skip using the versioned plugin when autolinking is enabled
   // and doesn't link the native module.

@@ -17,6 +17,7 @@ import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.CoroutineScope
 import org.json.JSONObject
@@ -189,6 +190,8 @@ class LoaderTask(
           callback.onFinishedAllLoading()
         }
       }
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       if (!shouldCheckForUpdate) {
         finish(e)
@@ -209,6 +212,8 @@ class LoaderTask(
       isRunning = false
       runReaper()
       callback.onFinishedAllLoading()
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       finish(e)
       isRunning = false
@@ -296,10 +301,12 @@ class LoaderTask(
         )
       ) {
         try {
-          val embeddedLoader = EmbeddedLoader(context, configuration, logger, database, directory)
+          val embeddedLoader = EmbeddedLoader(context, configuration, logger, database, directory, scope)
           embeddedLoader.load { _ ->
             Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
           }
+        } catch (e: CancellationException) {
+          throw e
         } catch (e: Exception) {
           logger.error("Unexpected error copying embedded update", e, UpdatesErrorCode.Unknown)
         }
@@ -315,7 +322,7 @@ class LoaderTask(
   private suspend fun launchRemoteUpdateInBackground() {
     val database = databaseHolder.database
     callback.onRemoteCheckForUpdateStarted()
-    val remoteLoader = RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate)
+    val remoteLoader = RemoteLoader(context, configuration, logger, database, fileDownloader, directory, candidateLauncher?.launchedUpdate, scope)
 
     remoteLoader.assetLoadProgressBlock = { progress ->
       callback.onRemoteUpdateProgressChanged(progress)

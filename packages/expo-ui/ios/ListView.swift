@@ -11,27 +11,19 @@ final class ListProps: UIBaseViewProps {
 struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
   @State private var selection = Set<AnyHashable>()
-  @State private var prevSelection = Set<AnyHashable>()
-
-  init(props: ListProps) {
-    self.props = props
-    let initialSelection = Self.getHashableSetFromEither(props.selection)
-    _selection = State(initialValue: initialSelection)
-    _prevSelection = State(initialValue: initialSelection)
-  }
 
   var body: some View {
     List(selection: $selection) {
       Children()
     }
+    .onAppear {
+      selection = Self.getHashableSetFromEither(props.selection)
+    }
+    .onChange(of: props.selection) { newValue in
+      selection = Self.getHashableSetFromEither(newValue)
+    }
     .onChange(of: selection) { newSelection in
       handleSelectionChange(selection: newSelection)
-    }
-    .onReceive(props.selection.publisher) { newValue in
-      let hashableSet = Self.getHashableSetFromEither(newValue)
-      if prevSelection == hashableSet { return }
-      selection = hashableSet
-      prevSelection = hashableSet
     }
   }
 

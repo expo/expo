@@ -12,55 +12,84 @@ struct LiveActivityAttributes: ActivityAttributes {
 
 @available(iOS 16.1, *)
 public struct WidgetLiveActivity: Widget {
+  @Environment(\.self) var env
+  
   let widgetContext: AppContext = AppContext()
+  
+  var environment: [String: Any] {
+    return getLiveActivityEnvironment(environment: env)
+  }
 
   public init() {}
 
   public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
-      let nodes = getLiveActivityNodes(forName: context.state.name, props: context.state.props)
-      if #available(iOS 18.0, *) {
-        LiveActivityBanner(context: context, nodes: nodes)
-      } else {
-        liveActivitySection("banner", source: context.activityID, nodes: nodes)
-      }
+      let nodes = getLiveActivityNodes(
+        forName: context.state.name,
+        props: context.state.props,
+        environment: environment
+      )
+      LiveActivityBannerView(context: context, nodes: nodes)
     } dynamicIsland: { context in
-      let nodes = getLiveActivityNodes(forName: context.state.name, props: context.state.props)
+      let nodes = getLiveActivityNodes(
+        forName: context.state.name,
+        props: context.state.props,
+        environment: environment
+      )
       return DynamicIsland {
-        expandedContent(source: context.activityID, nodes: nodes)
+        DynamicIslandExpandedRegion(.center) {
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedCenter")
+        }
+        DynamicIslandExpandedRegion(.leading) {
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedLeading")
+        }
+        DynamicIslandExpandedRegion(.trailing) {
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedTrailing")
+        }
+        DynamicIslandExpandedRegion(.bottom) {
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedBottom")
+        }
       } compactLeading: {
-        liveActivitySection("compactLeading", source: context.activityID, nodes: nodes)
+        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactLeading")
       } compactTrailing: {
-        liveActivitySection("compactTrailing", source: context.activityID, nodes: nodes)
+        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactTrailing")
       } minimal: {
-        liveActivitySection("minimal", source: context.activityID, nodes: nodes)
+        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal")
       }
       .widgetURL(getLiveActivityUrl(forName: context.state.name))
     }
     .supplementalActivityFamiliesIfAvailable()
   }
+}
 
-  @DynamicIslandExpandedContentBuilder
-  private func expandedContent(source: String, nodes: [String: Any]?) -> DynamicIslandExpandedContent<some View> {
-    DynamicIslandExpandedRegion(.center) {
-      liveActivitySection("expandedCenter", source: source, nodes: nodes)
-    }
-    DynamicIslandExpandedRegion(.leading) {
-      liveActivitySection("expandedLeading", source: source, nodes: nodes)
-    }
-    DynamicIslandExpandedRegion(.trailing) {
-      liveActivitySection("expandedTrailing", source: source, nodes: nodes)
-    }
-    DynamicIslandExpandedRegion(.bottom) {
-      liveActivitySection("expandedBottom", source: source, nodes: nodes)
+@available(iOS 16.1, *)
+private struct LiveActivitySectionView: View {
+  let context: ActivityViewContext<LiveActivityAttributes>
+  let nodes: [String: Any]
+  let sectionName: String
+
+  var body: some View {
+    if let node = nodes[sectionName] as? [String: Any] {
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
+    } else {
+      EmptyView()
     }
   }
+}
 
-  private func liveActivitySection(_ sectionName: String, source: String, nodes: [String: Any]?) -> some View {
-    guard let node = nodes?[sectionName] as? [String: Any] else {
-      return AnyView(EmptyView())
+@available(iOS 16.1, *)
+private struct LiveActivityBannerView: View {
+  var context: ActivityViewContext<LiveActivityAttributes>
+  let nodes: [String: Any]
+
+  var body: some View {
+    if #available(iOS 18.0, *) {
+      LiveActivityBanner(context: context, nodes: nodes)
+    } else if let node = nodes["banner"] as? [String: Any] {
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
+    } else {
+      EmptyView()
     }
-    return AnyView(WidgetsDynamicView(source: source, kind: .liveActivity, node: node))
   }
 }
 

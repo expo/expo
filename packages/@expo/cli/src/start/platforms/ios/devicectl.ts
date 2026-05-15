@@ -6,12 +6,13 @@
  */
 
 import JsonFile from '@expo/json-file';
-import spawnAsync, { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import { spawn, execSync } from 'child_process';
 import fs from 'fs';
 import assert from 'node:assert';
-import { Ora } from 'ora';
+import type { Ora } from 'ora';
 import { EOL } from 'os';
 import path from 'path';
 
@@ -291,7 +292,7 @@ async function installAppWithDeviceCtlInternalAsync(
 
         const match = str.match(/(\d+)%\.\.\./);
         if (match) {
-          updateProgress(parseInt(match[1], 10));
+          updateProgress(parseInt(match[1]!, 10));
         } else if (hasStarted) {
           updateProgress(100);
         }
@@ -345,7 +346,7 @@ export async function launchAppWithDeviceCtl(deviceId: string, bundleId: string)
 
 /** Find all error codes from the output log */
 function getDeviceCtlErrorCodes(log: string): string[] {
-  return [...log.matchAll(/BSErrorCodeDescription\s+=\s+(.*)$/gim)].map(([_line, code]) => code);
+  return [...log.matchAll(/BSErrorCodeDescription\s+=\s+(.*)$/gim)].map(([_line, code]) => code!);
 }
 
 let hasEverBeenInstalled: boolean | undefined;

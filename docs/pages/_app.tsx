@@ -17,7 +17,6 @@ import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCo
 import { markdownComponents } from '~/ui/components/Markdown';
 import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
-
 import '~/common/suppress-trailing-slash-warning';
 import '~/styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
@@ -68,7 +67,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       <StructuredData id="website" data={websiteSchema} />
-      {/* eslint-disable-next-line react/no-unknown-property */}
+      {/* oxlint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         html,
         body,

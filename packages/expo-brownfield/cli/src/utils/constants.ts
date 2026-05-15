@@ -1,6 +1,6 @@
 import type { XCFrameworkSpec } from './types';
 
-export const XCFramework: Record<string, XCFrameworkSpec> = {
+export const XCFramework = {
   Hermes: {
     path: 'ios/Pods/hermes-engine/destroot/Library/Frameworks/universal/hermesvm.xcframework',
     name: 'hermesvm',
@@ -16,4 +16,4 @@ export const XCFramework: Record<string, XCFrameworkSpec> = {
     name: 'ReactNativeDependencies',
     targets: ['ReactNativeDependencies'],
   },
-};
+} satisfies Record<string, XCFrameworkSpec>;

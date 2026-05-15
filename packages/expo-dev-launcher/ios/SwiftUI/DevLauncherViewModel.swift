@@ -52,6 +52,7 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
+  @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
 
   @Published var devServers: [DevServer] = []
@@ -77,6 +78,13 @@ class DevLauncherViewModel: ObservableObject {
 
   var isLoggedIn: Bool {
     return isAuthenticated && user != nil
+  }
+
+  var hasEmbeddedBundle: Bool {
+    guard let enabled = Bundle.main.object(forInfoDictionaryKey: "EXDevClientEmbeddedBundle") as? Bool, enabled else {
+      return false
+    }
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle") != nil
   }
 
   init() {
@@ -164,6 +172,22 @@ class DevLauncherViewModel: ObservableObject {
   func clearRecentlyOpenedApps() {
     EXDevLauncherController.sharedInstance().clearRecentlyOpenedApps()
     self.recentlyOpenedApps = []
+  }
+
+  func loadLocalBundle() {
+    guard !isLoadingLocalBundle else { return }
+    isLoadingLocalBundle = true
+
+    EXDevLauncherController.sharedInstance().loadLocalBundle(onSuccess: { [weak self] in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+      }
+    }, onError: { [weak self] error in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+        self?.showErrorAlert(error.localizedDescription)
+      }
+    })
   }
 
   func isCompatibleRuntime(_ runtimeVersion: String) -> Bool {

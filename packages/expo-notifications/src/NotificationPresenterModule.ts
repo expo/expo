@@ -1,4 +1,4 @@
-import { NotificationPresenterModule } from './NotificationPresenterModule.types';
+import type { NotificationPresenterModule } from './NotificationPresenterModule.types';
 
 export default {
   addListener: () => {},

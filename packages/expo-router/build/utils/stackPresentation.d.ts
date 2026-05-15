@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 /**
  * Helper to determine if a given screen should be treated as a modal-type presentation
  *

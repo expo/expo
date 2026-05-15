@@ -1,4 +1,4 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 /**
  * Registry mapping route keys to composition component options.
  *

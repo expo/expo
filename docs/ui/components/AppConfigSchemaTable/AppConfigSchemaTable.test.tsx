@@ -2,10 +2,9 @@ import { screen } from '@testing-library/react';
 
 import { renderWithHeadings } from '~/common/test-utilities';
 
+import AppConfigSchemaTable from './';
 import { formatSchema, createDescription } from './helpers';
 import { Property } from './types';
-
-import AppConfigSchemaTable from './';
 
 const TEST_SCHEMA: Record<string, Property> = {
   name: {
@@ -15,12 +14,12 @@ const TEST_SCHEMA: Record<string, Property> = {
       bareWorkflow: "Edit the 'Display Name' field in Xcode",
     },
   },
-  androidNavigationBar: {
-    description: 'Configuration for the bottom navigation bar on Android.',
+  splash: {
+    description: 'Configuration for loading and splash screen for standalone apps.',
     type: 'object',
     properties: {
-      visible: {
-        description: 'Determines how and when the navigation bar is shown.',
+      resizeMode: {
+        description: 'Determines how the image will be displayed in the splash loading screen.',
         type: 'string',
         properties: {
           always: {
@@ -28,10 +27,10 @@ const TEST_SCHEMA: Record<string, Property> = {
             type: 'boolean',
           },
         },
-        enum: ['leanback', 'immersive', 'sticky-immersive'],
+        enum: ['cover', 'contain'],
       },
       backgroundColor: {
-        description: 'Specifies the background color of the navigation bar. ',
+        description: 'Color to fill the loading screen background. ',
         type: 'string',
         pattern: '^#|(&#x23;)\\d{6}$',
         meta: {
@@ -95,11 +94,9 @@ describe('AppConfigSchemaPropertiesTable', () => {
   });
 
   test('description includes all required components', () => {
-    renderWithHeadings(
-      <AppConfigSchemaTable schema={{ entry: TEST_SCHEMA.androidNavigationBar }} />
-    );
+    renderWithHeadings(<AppConfigSchemaTable schema={{ entry: TEST_SCHEMA.splash }} />);
 
-    expect(screen.getByText('Specifies the background color of the navigation bar.'));
+    expect(screen.getByText('Color to fill the loading screen background.'));
     expect(screen.getByText('6 character long hex color string, eg:'));
   });
 });
@@ -109,16 +106,16 @@ describe('formatSchema', () => {
   test('name is property at root level', () => {
     expect(formattedSchema[0].name).toBe('name');
   });
-  test('androidNavigationBar has two subproperties', () => {
+  test('splash has two subproperties', () => {
     expect(formattedSchema[1].subproperties.length).toBe(2);
   });
-  test('visible is androidNavigationBar subproperty', () => {
-    expect(formattedSchema[1].subproperties[0].name).toBe('visible');
+  test('resizeMode is splash subproperty', () => {
+    expect(formattedSchema[1].subproperties[0].name).toBe('resizeMode');
   });
-  test('always is visible subproperty', () => {
+  test('always is resizeMode subproperty', () => {
     expect(formattedSchema[1].subproperties[0].subproperties[0].name).toBe('always');
   });
-  test('backgroundColor is androidNavigationBar subproperty', () => {
+  test('backgroundColor is splash subproperty', () => {
     expect(formattedSchema[1].subproperties[1].name).toBe('backgroundColor');
   });
   test('intentFilters is property at root level', () => {

@@ -187,7 +187,7 @@ class JSDecoratorsBridgingObject(jniDeallocator: JNIDeallocator) : Destructible 
       }
 
       val constructor = constructor
-      val ownerClass = (constructor.ownerType?.classifier as? kotlin.reflect.KClass<*>)?.java
+      val ownerClass = constructor.ownerType?.jClass
 
       registerClass(
         name,

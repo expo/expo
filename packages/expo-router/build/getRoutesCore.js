@@ -26,6 +26,12 @@ function getRoutes(contextModule, options) {
         return null;
     }
     const rootNode = flattenDirectoryTreeToRoutes(directoryTree, options);
+    const importMode = options.importMode || process.env.EXPO_ROUTER_IMPORT_MODE;
+    if (process.env.NODE_ENV === 'development' &&
+        importMode === 'sync' &&
+        !options.ignoreRequireErrors) {
+        validateRouteTreeExports(rootNode);
+    }
     if (middleware) {
         rootNode.middleware = middleware;
     }
@@ -253,6 +259,10 @@ function getDirectoryTree(contextModule, options) {
                     if (loaderExport && typeof loaderExport !== 'function') {
                         throw new Error(`Route "${filePath}" exports a loader that is not a function.`);
                     }
+                    const metadataExport = routeModule?.generateMetadata;
+                    if (metadataExport && typeof metadataExport !== 'function') {
+                        throw new Error(`Route "${filePath}" exports generateMetadata that is not a function.`);
+                    }
                 }
                 return routeModule;
             },
@@ -303,23 +313,6 @@ function getDirectoryTree(contextModule, options) {
             }
             node.type = 'rewrite';
             processedRedirectsRewrites.add(meta.route);
-        }
-        if (process.env.NODE_ENV === 'development') {
-            // If the user has set the `EXPO_ROUTER_IMPORT_MODE` to `sync` then we should
-            // filter the missing routes.
-            if (node.type !== 'api' && importMode === 'sync') {
-                const routeItem = node.loadRoute();
-                // Have a warning for nullish ex
-                const route = routeItem?.default;
-                if (route == null) {
-                    // Do not throw an error since a user may just be creating a new route.
-                    console.warn(`Route "${filePath}" is missing the required default export. Ensure a React component is exported as default.`);
-                    continue;
-                }
-                if (['boolean', 'number', 'string'].includes(typeof route)) {
-                    throw new Error(`The default export from route "${filePath}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`);
-                }
-            }
         }
         /**
          * A single filepath may be extrapolated into multiple routes if it contains array syntax.
@@ -493,13 +486,36 @@ pathToRemove = '') {
     }
     return layout;
 }
+function validateRouteTreeExports(node) {
+    if (process.env.NODE_ENV !== 'development' || node.type === 'api') {
+        return;
+    }
+    function runtimeValidateRouteNode(node) {
+        const routeItem = node.loadRoute();
+        // Have a warning for nullish ex
+        const route = routeItem?.default;
+        if (route == null) {
+            // Do not throw an error since a user may just be creating a new route.
+            console.warn(`Route "${node.contextKey}" is missing the required default export. Ensure a React component is exported as default.`);
+        }
+        if (['boolean', 'number', 'string'].includes(typeof route)) {
+            throw new Error(`The default export from route "${node.contextKey}" is an unsupported type: "${typeof route}". Only React Components are supported as default exports from route files.`);
+        }
+    }
+    runtimeValidateRouteNode(node);
+    for (const child of node.children) {
+        validateRouteTreeExports(child);
+    }
+}
 function getFileMeta(originalKey, options, redirects, rewrites) {
     // Remove the leading `./`
     const key = (0, matchers_1.removeSupportedExtensions)((0, matchers_1.removeFileSystemDots)(originalKey));
     let route = key;
     const parts = (0, matchers_1.removeFileSystemDots)(originalKey).split('/');
     const filename = parts[parts.length - 1];
-    const [filenameWithoutExtensions, platformExtension] = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
+    const filenameParts = (0, matchers_1.removeSupportedExtensions)(filename).split('.');
+    const filenameWithoutExtensions = filenameParts[0];
+    const platformExtension = filenameParts[1];
     const isLayout = filenameWithoutExtensions === '_layout';
     const isApi = originalKey.match(/\+api\.(\w+\.)?[jt]sx?$/);
     if (filenameWithoutExtensions.startsWith('(') && filenameWithoutExtensions.endsWith(')')) {
@@ -728,6 +744,6 @@ function getMostSpecific(routes) {
     }
     // This works even tho routes is holey array (e.g it might have index 0 and 2 but not 1)
     // `.length` includes the holes in its count
-    return routes[routes.length - 1];
+    return route;
 }
 //# sourceMappingURL=getRoutesCore.js.map

@@ -1,14 +1,10 @@
 'use client';
-import {
-  useNavigation as useUpstreamNavigation,
-  NavigationProp,
-  NavigationState,
-  useStateForPath,
-} from '@react-navigation/native';
 
 import { getRootStackRouteNames } from './global-state/utils';
 import { resolveHref } from './link/href';
-import { Href } from './types';
+import type { NavigationProp, NavigationState } from './react-navigation/native';
+import { useNavigation as useUpstreamNavigation, useStateForPath } from './react-navigation/native';
+import type { Href } from './types';
 
 /**
  * Returns the underlying React Navigation [`navigation` object](https://reactnavigation.org/docs/navigation-object)

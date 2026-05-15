@@ -6,7 +6,7 @@ import {
   ValidationError as ValidationResult,
 } from './validate';
 
-export { JSONSchema } from './JSONSchema';
+export type { JSONSchema } from './JSONSchema';
 
 const CACHE_SYMBOL = Symbol('@expo/schema-utils');
 
@@ -25,8 +25,8 @@ const flattenValidationResults = (
     keyword: input.keyword,
     value: input.value,
   });
-  for (let idx = 0; input.cause && idx < input.cause.length; idx++) {
-    flattenValidationResults(input.cause[idx], output);
+  for (const cause of input.cause ?? []) {
+    flattenValidationResults(cause, output);
   }
   return output;
 };

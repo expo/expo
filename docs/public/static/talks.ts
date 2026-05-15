@@ -438,6 +438,12 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'Introducing Expo Agent (beta): build real, production-quality native apps from your browser',
+    event: 'Expo Tutorials',
+    videoId: '3yyy32R0s2k',
+    uploadDate: '2026-03-10',
+  },
+  {
     title: "What's new in Expo SDK 55",
     event: 'Expo Tutorials',
     videoId: 'q72aeXsbF9c',

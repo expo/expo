@@ -22,6 +22,8 @@ type ActionOptions = {
   week?: string;
   label?: string;
   staleDays?: string;
+  issue?: string;
+  unblocked?: boolean;
 };
 
 type IssueItem = Awaited<ReturnType<typeof listAllOpenIssuesAsync>>[number];
@@ -109,6 +111,14 @@ function getLabels(issue: { labels: IssueItem['labels'] }): { name?: string }[] 
 function truncate(str: string, len: number): string {
   if (str.length <= len) return str;
   return str.slice(0, len - 1) + '…';
+}
+
+/** Count how many terminal rows a string occupies, accounting for line wrapping. */
+function terminalLines(text: string): number {
+  const cols = process.stdout.columns || 80;
+  // Strip ANSI escape codes to get the visible character count
+  const visible = text.replace(/\x1b\[[0-9;]*m/g, '').length;
+  return Math.max(1, Math.ceil(visible / cols));
 }
 
 async function batchAsync<T, R>(
@@ -525,8 +535,14 @@ function clearLines(count: number): void {
 }
 
 function categoryLineCount(categories: CategoryInfo[]): number {
-  // Each category: prefix line + guidance line + blank line, plus the hint line
-  return categories.length * 3 + 1;
+  // Each category: prefix line + guidance line(s) + blank line, plus the hint line
+  let lines = 1; // hint line
+  for (const cat of categories) {
+    lines += 1; // prefix/label line
+    lines += terminalLines(`       ${cat.guidance}`); // guidance may wrap
+    lines += 1; // blank line
+  }
+  return lines;
 }
 
 function itemListLineCount(category: CategoryInfo, selectedIndex: number): number {
@@ -535,8 +551,8 @@ function itemListLineCount(category: CategoryInfo, selectedIndex: number): numbe
   const visibleItems = end - start;
   const hasAbove = start > 0 ? 1 : 0;
   const hasBelow = end < total ? 1 : 0;
-  // Title + guidance + blank + above? + items + below? + blank + hint
-  return 3 + hasAbove + visibleItems + hasBelow + 2;
+  // Title + guidance (may wrap) + blank + above? + items + below? + blank + hint
+  return 1 + terminalLines(`  ${category.guidance}`) + 1 + hasAbove + visibleItems + hasBelow + 2;
 }
 
 async function interactiveDashboard(options: ActionOptions, spinner: ora.Ora) {
@@ -982,7 +998,67 @@ async function showDetailInteractive(item: QueueItem): Promise<void> {
   }
 }
 
+async function actionUnblockedIssue(issueNumber: number): Promise<void> {
+  const spinner = ora('Authenticating…').start();
+
+  try {
+    await getAuthenticatedUserAsync();
+  } catch {
+    spinner.fail('GitHub authentication failed. Set the GITHUB_TOKEN environment variable.');
+    process.exit(1);
+  }
+
+  if (!(await isAuthenticatedAsync())) {
+    spinner.fail('Unblocked API not configured. Set UNBLOCKED_API_KEY env var.');
+    process.exit(1);
+  }
+
+  spinner.text = `Fetching issue #${issueNumber}…`;
+  const issue = await getIssueAsync(issueNumber);
+  const isPR = 'pull_request' in issue && !!issue.pull_request;
+
+  const item: QueueItem = {
+    number: issue.number,
+    title: issue.title,
+    author: issue.user?.login ?? '-',
+    category: '',
+    isPR,
+  };
+
+  spinner.text = `Fetching details for #${issueNumber}…`;
+  const detail = await fetchDetailData(item);
+
+  spinner.text = `Loading comments for #${issueNumber}…`;
+  const comments = detail.comments > 0 ? await listAllCommentsAsync(detail.number) : [];
+
+  spinner.text = `Analyzing #${issueNumber} with Unblocked…`;
+  let analysisText: string;
+  try {
+    analysisText = await analyzeIssueAsync(detail, comments);
+  } catch (err: any) {
+    spinner.fail(`Analysis error: ${err.message ?? err}`);
+    process.exit(1);
+  }
+
+  spinner.stop();
+
+  // Print detail summary + analysis
+  const lines = renderDetailView(detail, true, false, analysisText);
+  for (const line of lines) logger.info(line);
+}
+
 async function action(options: ActionOptions) {
+  // Direct unblocked analysis mode — no interactive UI
+  if (options.unblocked && options.issue) {
+    const issueNumber = parseInt(options.issue, 10);
+    if (isNaN(issueNumber)) {
+      logger.error(`Invalid issue number: ${options.issue}`);
+      process.exit(1);
+    }
+    await actionUnblockedIssue(issueNumber);
+    return;
+  }
+
   const spinner = ora('Authenticating…').start();
 
   // Auth check
@@ -1029,5 +1105,10 @@ export default (program: Command) => {
     )
     .option('-l, --label <label>', 'Filter by GitHub label.')
     .option('-s, --stale-days <days>', 'Custom stale threshold in days (default: 14).')
+    .option('-i, --issue <number>', 'Issue or PR number to inspect directly.')
+    .option(
+      '--unblocked',
+      'Run Unblocked analysis directly on the issue (requires --issue). Outputs analysis without interactive UI.'
+    )
     .asyncAction(action);
 };

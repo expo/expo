@@ -1,17 +1,16 @@
+import SwiftUI
 import WidgetKit
 import Foundation
 
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
-  let layout = WidgetsStorage.getString(forKey: "__expo_widgets_\(name)_layout") ?? ""
   let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") ?? []
 
   let entries: [WidgetsTimelineEntry?] = timeline.enumerated().map { index, entry in
     if let entry = entry as? [String: Any], let timestamp = entry["timestamp"] as? Int, let props = entry["props"] as? [String: Any] {
-      let node = evaluateLayout(layout: layout, props: props, timestamp: timestamp, family: family)
       return WidgetsTimelineEntry(
         date: Date(timeIntervalSince1970: Double(timestamp) / 1000),
-        source: name,
-        node: node,
+        name: name,
+        props: props,
         entryIndex: index
       )
     }
@@ -21,41 +20,92 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
   return entries.compactMap(\.self)
 }
 
-func evaluateLayout(
-  layout: String,
-  props: [String: Any],
-  timestamp: Int,
-  family: WidgetFamily
-) -> [String: Any]? {
-  guard let context = createWidgetContext(layout: layout, props: props) else {
-    return nil
+public func createRedBox(message: String, stack: String? = nil) -> [String: Any] {
+  var props: [String: Any] = ["message": message]
+  if let stack {
+    props["stack"] = stack
   }
-  let familyKey: String? = getKeyFor(widgetFamily: family)
-
-  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [timestamp, familyKey as Any]
-  )
-  return result?.toObject() as? [String: Any]
+  return ["type": "RedBoxView", "props": props]
 }
 
-func getLiveActivityNodes(forName name: String, props: String = "{}") -> [String: Any] {
+public func evaluateLayout(
+  layout: String,
+  props: [String: Any],
+  environment: [String: Any]
+) -> [String: Any] {
+  switch evaluateWidgetLayout(layout: layout, props: props, environment: environment) {
+  case .success(let result):
+    return result
+  case .failure(let error):
+    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
+    return createRedBox(message: error.message)
+  }
+}
+
+func getLiveActivityNodes(forName name: String, props: String = "{}", environment: [String: Any]) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
   let propsData = props.data(using: .utf8)
-  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] }
-  guard let context = createWidgetContext(layout: layout, props: propsDict ?? [:]) else {
-    return [:]
-  }
+  let propsDict = propsData.flatMap { try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any] } ?? [:]
 
-  let result = context.objectForKeyedSubscript("__expoWidgetRender")?.call(
-    withArguments: [Int(Date.now.timeIntervalSince1970 * 1000)]
-  )
-  return result?.toObject() as? [String: Any] ?? [:]
+  switch evaluateWidgetLayout(layout: layout, props: propsDict, environment: environment) {
+  case .success(let result):
+    return result
+  case .failure(let error):
+    print("[ExpoWidgets] Layout evaluation failed: \(error.message)")
+    return ["banner": createRedBox(message: error.message)]
+  }
 }
 
 func getLiveActivityUrl(forName name: String) -> URL? {
-  let data = WidgetsStorage.getData(forKey: "__expo_widgets_live_activity_\(name)_url")
-  if let data, let url = String(data: data, encoding: .utf8) {
-    return URL(string: url)
+  guard let urlString = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_url") else {
+    return nil
   }
-  return nil
+  return URL(string: urlString)
+}
+
+public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any] {
+  var env: [String: Any] = [
+    "showsContainerBackground": environment.showsWidgetContainerBackground,
+    "widgetFamily": environment.widgetFamily.description,
+    "colorScheme": "\(environment.colorScheme)"
+  ]
+
+  if #available(iOS 16.0, *) {
+    env["isLuminanceReduced"] = environment.isLuminanceReduced
+    env["widgetRenderingMode"] = environment.widgetRenderingMode.description
+    env["showsWidgetLabel"] = environment.showsWidgetLabel
+  }
+  if #available(iOS 17.0, *) {
+    env["widgetContentMargins"] = [
+      "top": environment.widgetContentMargins.top,
+      "bottom": environment.widgetContentMargins.bottom,
+      "leading": environment.widgetContentMargins.leading,
+      "trailing": environment.widgetContentMargins.trailing,
+    ]
+  }
+  if #available(iOS 26.0, *) {
+    env["levelOfDetail"] = environment.levelOfDetail == .simplified ? "simplified" : environment.levelOfDetail == .default ? "default" : nil
+  }
+  return env
+}
+
+func getLiveActivityEnvironment(environment: EnvironmentValues) -> [String: Any] {
+  var env: [String: Any] = [
+    "colorScheme": "\(environment.colorScheme)"
+  ]
+
+  if #available(iOS 16.0, *) {
+    env["isLuminanceReduced"] = environment.isLuminanceReduced
+  }
+  if #available(iOS 16.1, *) {
+    env["isActivityFullscreen"] = environment.isActivityFullscreen
+  }
+  if #available(iOS 18.0, *) {
+    env["isActivityUpdateReduced"] = environment.isActivityUpdateReduced
+    env["activityFamily"] = "\(environment.activityFamily)"
+  }
+  if #available(iOS 26.0, *) {
+    env["levelOfDetail"] = environment.levelOfDetail == .simplified ? "simplified" : environment.levelOfDetail == .default ? "default" : nil
+  }
+  return env
 }

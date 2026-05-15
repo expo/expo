@@ -8,17 +8,24 @@ import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
 To build your project into an app locally using your machine, you have to manually generate native code before testing the debug build or creating a production build for it to submit to the app store. There are two ways you can build your app locally. This guide provides a brief introduction to both methods and references to other guides that are necessary to create this workflow.
 
-## Prerequisites
-
-You need to install and set up Android Studio and Xcode to compile and run Android and iOS projects on your local machine. See the following on how to set up these tools:
-
-- [Android Studio](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)
-- [Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)
+<Prerequisites>
+  <Requirement title="Android Studio">
+    [Set up Android
+    Studio](/get-started/set-up-your-environment/?platform=android&device=physical&mode=development-build&buildEnv=local#set-up-an-android-device-with-a-development-build)
+    to compile and run Android projects on your local machine.
+  </Requirement>
+  <Requirement title="Xcode">
+    [Set up
+    Xcode](/get-started/set-up-your-environment/?platform=ios&device=physical&mode=development-build&buildEnv=local#set-up-an-ios-device-with-a-development-build)
+    to compile and run iOS projects on your local machine.
+  </Requirement>
+</Prerequisites>
 
 ## Local app compilation
 
@@ -87,8 +94,6 @@ If you install [`expo-dev-client`](/develop/development-builds/introduction/) to
 To create a development build, you can use [local app compilation](#local-app-compilation) commands (`npx expo run:[android|ios]`) which will create a debug build and start the development server.
 
 ## Local builds using Android product flavors
-
-> **warning** This feature is only available for SDK 52 and later.
 
 If you have a custom Android project with multiple product flavors using different application IDs, you can configure `npx expo run:android` to use the correct flavor and build type. Expo supports both `--variant` and `--app-id` to customize the build and launch behavior.
 

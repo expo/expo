@@ -1,5 +1,4 @@
 import { act, screen } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 import { expectAssignable } from 'tsd';
 
@@ -187,6 +186,10 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 3,
@@ -215,6 +218,10 @@ test('dismissAll nested', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
+                    params: {
+                      params: {},
+                      screen: 'index',
+                    },
                     path: undefined,
                     state: {
                       index: 2,
@@ -304,6 +311,10 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 3,
@@ -332,6 +343,10 @@ test('dismissAll nested', () => {
                   {
                     key: expect.any(String),
                     name: 'two',
+                    params: {
+                      params: {},
+                      screen: 'index',
+                    },
                     path: undefined,
                     state: {
                       index: 0,
@@ -409,6 +424,10 @@ test('dismissAll nested', () => {
             {
               key: expect.any(String),
               name: 'one',
+              params: {
+                params: {},
+                screen: 'index',
+              },
               path: undefined,
               state: {
                 index: 0,
@@ -468,8 +487,7 @@ test('pushing in a nested stack should only rerender the nested stack', () => {
   testRouter.push('/one/two/a');
   expect(RootLayout).toHaveBeenCalledTimes(1);
   expect(NestedLayout).toHaveBeenCalledTimes(1);
-  // TODO(@ubax): Investigate extra render caused by react-navigation params cleanup
-  expect(NestedNestedLayout).toHaveBeenCalledTimes(2);
+  expect(NestedNestedLayout).toHaveBeenCalledTimes(1);
 });
 
 test('can preserve the nested initialRouteName when navigating to a nested stack', () => {
@@ -766,7 +784,7 @@ describe('function-form options', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(MockedScreenStackItem.mock.calls[0][0].headerConfig?.title).toBe('Page: index');
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('Page: index');
   });
 
   it('calls function-form options with route and navigation', () => {
@@ -782,7 +800,7 @@ describe('function-form options', () => {
     });
 
     expect(optionsFn).toHaveBeenCalled();
-    const arg = optionsFn.mock.calls[0][0];
+    const arg = optionsFn.mock.calls[0]![0];
     expect(arg).toHaveProperty('route');
     expect(arg).toHaveProperty('navigation');
     expect(arg.route).toHaveProperty('name', 'index');
@@ -807,7 +825,7 @@ describe('function-form options', () => {
 
     expect(screen.getByTestId('profile')).toBeVisible();
 
-    expect(MockedScreenStackItem.mock.calls[2][0].headerConfig?.title).toBe('Page: profile');
+    expect(MockedScreenStackItem.mock.calls[2]![0].headerConfig?.title).toBe('Page: profile');
   });
 
   it('warns when function-form options are used in page context', () => {
@@ -828,5 +846,121 @@ describe('function-form options', () => {
     );
 
     spy.mockRestore();
+  });
+});
+
+describe('Screen options with /index suffix normalization', () => {
+  it('should apply Screen options when name omits /index suffix', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="settings/general" options={{ title: 'General Settings' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'settings/general/index': () => <Text testID="settings">Settings</Text>,
+      },
+      { initialUrl: '/settings/general' }
+    );
+
+    expect(screen.getByTestId('settings')).toBeVisible();
+    expect(screen).toHavePathname('/settings/general');
+
+    // Verify the title option is actually applied
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('General Settings');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should apply options when _layout exists alongside index', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Flow' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'otp/[flow]/_layout': () => <Stack />,
+        'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+      },
+      { initialUrl: '/otp/signin' }
+    );
+
+    expect(screen.getByTestId('otp')).toBeVisible();
+    expect(screen).toHavePathname('/otp/signin');
+
+    // Verify the title option is actually applied
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('OTP Flow');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should apply options when _layout exists without index', () => {
+    const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Stack id={undefined}>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Flow' }} />
+          </Stack>
+        ),
+        index: () => <Text testID="index">Index</Text>,
+        'otp/[flow]/_layout': () => <Stack />,
+        'otp/[flow]/step1': () => <Text testID="step1">Step 1</Text>,
+      },
+      { initialUrl: '/otp/signin/step1' }
+    );
+
+    expect(screen.getByTestId('step1')).toBeVisible();
+    expect(screen).toHavePathname('/otp/signin/step1');
+
+    // Verify the title option is actually applied
+    expect(MockedScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('OTP Flow');
+
+    expect(spy).not.toHaveBeenCalledWith(
+      expect.stringContaining('[Layout children]'),
+      expect.anything()
+    );
+
+    spy.mockRestore();
+  });
+
+  it('should throw when both name="otp/[flow]" and name="otp/[flow]/index" are used', () => {
+    expect(() =>
+      renderRouter(
+        {
+          _layout: () => (
+            <Stack id={undefined}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="otp/[flow]" options={{ title: 'OTP Short' }} />
+              <Stack.Screen name="otp/[flow]/index" options={{ title: 'OTP Full' }} />
+            </Stack>
+          ),
+          index: () => <Text testID="index">Index</Text>,
+          'otp/[flow]/index': () => <Text testID="otp">OTP</Text>,
+        },
+        { initialUrl: '/otp/signin' }
+      )
+    ).toThrow('Screen names must be unique');
   });
 });

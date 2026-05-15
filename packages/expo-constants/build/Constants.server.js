@@ -1,6 +1,5 @@
-import { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 import ExponentConstants from './ExponentConstants.web.js';
-export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, };
+export { AppOwnership, ExecutionEnvironment, UserInterfaceIdiom, } from './Constants.types';
 const PARSED_MANIFEST = (() => {
     if (typeof ExponentConstants?.manifest === 'string') {
         return JSON.parse(ExponentConstants.manifest);

@@ -6,7 +6,6 @@ export type {
   Web as ExpoConfigWeb,
   Android as ExpoConfigAndroid,
   IOS as ExpoConfigIOS,
-  Splash as ExpoConfigSplash,
   IOSIcons as ExpoConfigIOSIcons,
   AndroidIntentFiltersData as ExpoConfigAndroidIntentFiltersData,
 } from '@expo/config-types';
@@ -91,6 +90,7 @@ export type ExpoGoConfig = {
   packagerOpts: {
     [key: string]: any;
   };
+  username?: string;
 };
 
 export type EASConfig = {

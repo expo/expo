@@ -359,10 +359,10 @@ describe('convertHtmlToMarkdown', () => {
 
   it('returns redirect pointer for meta refresh pages', () => {
     const html =
-      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/introduction/"></head><body><div id="__next"></div></body></html>';
+      '<html><head><meta http-equiv="refresh" content="0; url=/get-started/create-a-project/"></head><body><div id="__next"></div></body></html>';
     const result = convertHtmlToMarkdown(html);
-    expect(result).toContain('/get-started/introduction/');
-    expect(result).toContain('https://docs.expo.dev/get-started/introduction/');
+    expect(result).toContain('/get-started/create-a-project/');
+    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project/');
     expect(result).toContain('redirects to');
   });
 
@@ -557,7 +557,7 @@ describe('platform indicators', () => {
     const html = `<main>
       <div class="mb-2 inline-flex empty:hidden">
         <span data-text="true">
-          <span class="text-xs font-medium text-tertiary">Only for: </span>
+          <span class="text-sm font-medium text-tertiary">Only for: </span>
           <div data-md="platform-badge">
             <svg viewBox="0 0 24 24"><path/></svg>
             <span class="whitespace-nowrap">iOS</span>
@@ -1105,7 +1105,7 @@ describe('API returns section', () => {
       '<div data-md="api-returns" class="flex flex-row items-start gap-2">',
       '<div class="flex flex-row items-center gap-2">',
       '<svg viewBox="0 0 24 24"><path/></svg>',
-      '<span class="text-xs">Returns:</span>',
+      '<span class="text-sm">Returns:</span>',
       '</div>',
       '<code>Promise</code>',
       '</div></main>',

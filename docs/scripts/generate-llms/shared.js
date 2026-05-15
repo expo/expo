@@ -1,6 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { buildAgentInstructions } from '../agent-instructions.ts';
+
 export const OUTPUT_DIRECTORY_NAME = 'public';
 export const BUILD_OUTPUT_DIR = 'out';
 export const DOCS_BASE_URL = 'https://docs.expo.dev';
@@ -20,9 +22,45 @@ const LLMS_FILES = [
     filename: 'llms-sdk.txt',
     description: 'Complete documentation for the latest Expo SDK',
   },
+  {
+    filename: 'llms-sdk-v54.0.0.txt',
+    description: 'Complete documentation for Expo SDK 54',
+  },
+  {
+    filename: 'llms-sdk-v53.0.0.txt',
+    description: 'Complete documentation for Expo SDK 53',
+  },
+  {
+    filename: 'llms-sdk-v52.0.0.txt',
+    description: 'Complete documentation for Expo SDK 52',
+  },
+  {
+    filename: 'llms-sdk-v51.0.0.txt',
+    description: 'Complete documentation for Expo SDK 51',
+  },
 ];
 
 const CONTENT_SEPARATOR = '\n\n---\n\n';
+
+const AGENT_INSTRUCTIONS_BLOCK_REGEX = /<AgentInstructions>[\S\s]*?<\/AgentInstructions>\n*/g;
+
+const DOC_INDEX_BLOCKQUOTE =
+  '> For the complete documentation index, see [llms.txt](/llms.txt). Use this Use this file to discover all available pages.';
+
+export function stripAgentInstructions(content) {
+  return content.replace(AGENT_INSTRUCTIONS_BLOCK_REGEX, '');
+}
+
+export function stripDocIndexBlockquote(content) {
+  return content.replaceAll(DOC_INDEX_BLOCKQUOTE + '\n\n', '');
+}
+
+export function toBlockquote(text) {
+  return text
+    .split('\n')
+    .map(line => (line.length > 0 ? `> ${line}` : '>'))
+    .join('\n');
+}
 
 export function ensureBuildOutputDir(buildOutputDirName = BUILD_OUTPUT_DIR) {
   const buildDir = path.join(process.cwd(), buildOutputDirName);
@@ -101,7 +139,12 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
       continue;
     }
 
-    const content = fs.readFileSync(markdownPath, 'utf8').trim();
+    const rawContent = fs.readFileSync(markdownPath, 'utf8').trim();
+    if (!rawContent) {
+      continue;
+    }
+
+    const content = stripDocIndexBlockquote(stripAgentInstructions(rawContent)).trim();
     if (!content) {
       continue;
     }
@@ -130,7 +173,9 @@ export function generateCrossLinksSection(currentFilename) {
 }
 
 export function composeMarkdownDocument({ title, description, contentChunks, currentFilename }) {
-  let fullContent = `# ${title}\n\n${description}\n\n`;
+  let fullContent = `# ${title}\n\n${toBlockquote(description)}\n`;
+  fullContent += DOC_INDEX_BLOCKQUOTE + '\n\n';
+  fullContent += buildAgentInstructions('<page-url>') + '\n';
 
   for (const content of contentChunks) {
     fullContent += content + CONTENT_SEPARATOR;

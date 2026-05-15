@@ -1,0 +1,48 @@
+{
+  "name": "expo-modules-jsi",
+  "version": "56.0.4",
+  "description": "The JavaScript Interface for Expo Modules",
+  "main": "index.js",
+  "sideEffects": [],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "default": "./index.js"
+    }
+  },
+  "scripts": {
+    "build": "apple/scripts/build-xcframework.sh",
+    "test": "apple/scripts/test.sh"
+  },
+  "keywords": [
+    "expo",
+    "modules",
+    "jsi",
+    "expo-modules",
+    "react-native"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-modules-jsi"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "650 Industries, Inc.",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-jsi",
+  "dependencies": {},
+  "devDependencies": {},
+  "peerDependencies": {
+    "react-native": "*"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./apple/scripts/build-xcframework.sh",
+      "./apple/scripts/create-stub-xcframework.sh",
+      "./apple/scripts/generate-modulemap.sh",
+      "./apple/scripts/test.sh"
+    ]
+  }
+}

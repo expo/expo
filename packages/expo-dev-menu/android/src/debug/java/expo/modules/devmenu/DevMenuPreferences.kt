@@ -3,6 +3,8 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.os.Bundle
 import expo.modules.devmenu.helpers.preferences
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
@@ -54,12 +56,28 @@ class DevMenuDefaultPreferences(
 ) : DevMenuPreferences {
   private val sharedPreferences = application.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
 
+  private val metaData: Bundle? = try {
+    application.packageManager.getApplicationInfo(
+      application.packageName,
+      PackageManager.GET_META_DATA
+    ).metaData
+  } catch (_: Exception) {
+    null
+  }
+
+  private val fabDefault = metaDataBool("EXDevMenuShowFloatingActionButton", true)
+  private val showsAtLaunchDefault = metaDataBool("EXDevMenuShowsAtLaunch", true)
+  private val isOnboardingFinishedDefault = metaDataBool("EXDevMenuIsOnboardingFinished", false)
+
   private val listeners = mutableListOf<() -> Unit>()
 
   // The preference manager does not currently store a strong reference to the listener.
   private val mainListener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
     listeners.forEach { it() }
   }
+
+  private fun metaDataBool(key: String, fallback: Boolean): Boolean =
+    metaData?.getBoolean(key, fallback) ?: fallback
 
   init {
     sharedPreferences.registerOnSharedPreferenceChangeListener(mainListener)
@@ -83,11 +101,11 @@ class DevMenuDefaultPreferences(
     by preferences(sharedPreferences, true)
 
   override var showsAtLaunch: Boolean
-    by preferences(sharedPreferences, false)
+    by preferences(sharedPreferences, showsAtLaunchDefault)
 
   override var isOnboardingFinished: Boolean
-    by preferences(sharedPreferences, false)
+    by preferences(sharedPreferences, isOnboardingFinishedDefault)
 
   override var showFab: Boolean
-    by preferences(sharedPreferences, true)
+    by preferences(sharedPreferences, fabDefault)
 }

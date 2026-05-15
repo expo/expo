@@ -1,16 +1,17 @@
 import spawnAsync from '@expo/spawn-async';
 import { ExpoRunFormatter } from '@expo/xcpretty';
 import chalk from 'chalk';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import type { SpawnOptionsWithoutStdio } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import { BuildProps, ProjectInfo } from './XcodeBuild.types';
+import type { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
 import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 import * as Log from '../../log';
-import { OSType } from '../../start/platforms/ios/simctl';
+import type { OSType } from '../../start/platforms/ios/simctl';
 import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
@@ -46,19 +47,19 @@ export function matchEstimatedBinaryPath(buildOutput: string): string | null {
   const appBinaryPathMatch = buildOutput.match(
     /(\/(?:\\\s|[^ ])+\/Developer\/Xcode\/DerivedData\/(?:\\\s|[^ ])+\/Build\/Products\/(?:Debug|Release)-(?:[^\s/]+)\/(?:\\\s|[^ ])+\.app)/
   );
-  if (!appBinaryPathMatch?.length) {
+  const pathFiltered = appBinaryPathMatch?.filter((a) => typeof a === 'string' && a);
+  if (!pathFiltered?.length) {
     throw new CommandError(
       'XCODE_BUILD',
       `Malformed xcodebuild results: app binary path was not generated in build output. Report this issue and run your project with Xcode instead.`
     );
   } else {
     // Sort for the shortest
-    const shortestPath = (appBinaryPathMatch.filter((a) => typeof a === 'string' && a) as string[])
+    const shortestPath = pathFiltered
       .sort((a: string, b: string) => a.length - b.length)[0]
-      .trim();
-
+      ?.trim();
     Log.debug(`Found app binary path: ${shortestPath}`);
-    return shortestPath;
+    return shortestPath ?? null;
   }
 }
 /**
@@ -88,9 +89,9 @@ export function getAppBinaryPath(buildOutput: string) {
 
     const binaryPath = path.join(
       // Use the shortest defined env variable (usually there's just one).
-      CONFIGURATION_BUILD_DIR[0],
+      CONFIGURATION_BUILD_DIR[0]!,
       // Use the last defined env variable.
-      UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]
+      UNLOCALIZED_RESOURCES_FOLDER_PATH[UNLOCALIZED_RESOURCES_FOLDER_PATH.length - 1]!
     );
 
     // If the app has a space in the name it'll fail because it isn't escaped properly by Xcode.
@@ -123,15 +124,16 @@ export function getEscapedPath(filePath: string): string {
 export function extractEnvVariableFromBuild(buildOutput: string, variableName: string) {
   // Xcode can sometimes escape `=` with a backslash or put the value in quotes
   const reg = new RegExp(`export ${variableName}\\\\?=(.*)$`, 'mg');
-  const matched = [...buildOutput.matchAll(reg)];
-
+  const matched = [...buildOutput.matchAll(reg)]
+    .map((value) => value[1])
+    .filter((value): value is string => !!value);
   if (!matched || !matched.length) {
     throw new CommandError(
       'XCODE_BUILD',
       `Malformed xcodebuild results: "${variableName}" variable was not generated in build output. Report this issue and run your project with Xcode instead.`
     );
   }
-  return matched.map((value) => value[1]).filter(Boolean) as string[];
+  return matched;
 }
 
 export function getProcessOptions({
@@ -215,12 +217,6 @@ export async function getXcodeBuildArgsAsync(
     // Since CLI builds don't need these features, disabling it saves build time and disk I/O.
     'COMPILER_INDEX_STORE_ENABLE=NO',
   ];
-
-  // Use -quiet flag to reduce xcodebuild output noise when not in debug/verbose mode.
-  // This reduces output processing overhead and makes logs cleaner.
-  if (!env.EXPO_DEBUG) {
-    args.push('-quiet');
-  }
 
   // Skip code signing setup for generic simulator builds (no device).
   if (

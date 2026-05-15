@@ -1,93 +1,32 @@
 import SwiftUI
 import ExpoModulesCore
 
-enum KeyboardType: String, Enumerable {
-  case defaultKeyboard = "default"
-  case emailAddress = "email-address"
-  case numeric = "numeric"
-  case phonePad = "phone-pad"
-  case asciiCapable = "ascii-capable"
-  case numbersAndPunctuation = "numbers-and-punctuation"
-  case url = "url"
-  case namePhonePad = "name-phone-pad"
-  case decimalPad = "decimal-pad"
-  case twitter = "twitter"
-  case webSearch = "web-search"
-  case asciiCapableNumberPad = "ascii-capable-number-pad"
+enum TextFieldAxis: String, Enumerable {
+  case horizontal
+  case vertical
 }
 
 final class TextFieldProps: UIBaseViewProps {
-  @Field var defaultValue: String = ""
-  @Field var placeholder: String = ""
-  @Field var multiline: Bool = false
-  @Field var numberOfLines: Int?
-  @Field var keyboardType: KeyboardType = KeyboardType.defaultKeyboard
-  @Field var autocorrection: Bool = true
-  @Field var allowNewlines: Bool = true
+  @Field var text: ObservableState = ObservableState(value: "")
+  @Field var selection: ObservableState = ObservableState(value: ["start": 0, "end": 0])
+  @Field var maxLength: Int?
   @Field var autoFocus: Bool = false
-  var onValueChanged = EventDispatcher()
-  var onFocusChanged = EventDispatcher()
-  var onSelectionChanged = EventDispatcher()
-  var onSubmit = EventDispatcher()
-}
-
-func getKeyboardType(_ keyboardType: KeyboardType?) -> UIKeyboardType {
-  guard let keyboardType = keyboardType else {
-    return .default
-  }
-  switch keyboardType {
-  case .defaultKeyboard:
-    return .default
-  case .emailAddress:
-    return .emailAddress
-  case .numeric:
-    return .numberPad
-  case .phonePad:
-    return .phonePad
-  case .asciiCapable:
-    return .asciiCapable
-  case .numbersAndPunctuation:
-    return .numbersAndPunctuation
-  case .url:
-    return .URL
-  case .namePhonePad:
-    return .namePhonePad
-  case .decimalPad:
-    return .decimalPad
-  case .twitter:
-    return .twitter
-  case .webSearch:
-    return .webSearch
-  case .asciiCapableNumberPad:
-    return .asciiCapableNumberPad
-  }
+  @Field var placeholder: String = ""
+  @Field var axis: TextFieldAxis = .horizontal
+  @Field var onTextChangeSync: WorkletCallback?
+  var onTextChange = EventDispatcher()
+  var onFocusChange = EventDispatcher()
+  var onSelectionChange = EventDispatcher()
 }
 
 class TextFieldManager: ObservableObject {
   @Published var text: String
   @Published var isFocused: Bool
 
-#if !os(tvOS)
-  @Published var _selection: Any?
-  @available(iOS 18.0, macOS 15.0, *)
-  var selection: SwiftUI.TextSelection? {
-    get { _selection as? SwiftUI.TextSelection }
-    set { _selection = newValue }
-  }
-#endif
-
   init(initialText: String = "") {
     self.text = initialText
     self.isFocused = false
   }
-}
-
-func allowMultiLine() -> Bool {
-#if os(tvOS)
-  return false
-#else
-  return true
-#endif
 }
 
 struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
@@ -100,7 +39,11 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setText(_ text: String) {
-    textManager.text = text
+    props.text.value = text
+  }
+
+  func clear() {
+    props.text.value = ""
   }
 
   func focus() {
@@ -121,108 +64,191 @@ struct TextFieldView: ExpoSwiftUI.View, ExpoSwiftUI.FocusableView {
   }
 
   func setSelection(start: Int, end: Int) {
-#if !os(tvOS)
-    if #available(iOS 18.0, macOS 15.0, *) {
-      let lowerBound = min(start, end)
-      let upperBound = max(start, end)
-      let startIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(lowerBound, textManager.text.count))
-      let endIndex = textManager.text.index(textManager.text.startIndex, offsetBy: min(upperBound, textManager.text.count))
-      textManager.selection = SwiftUI.TextSelection(range: startIndex..<endIndex)
-    }
-#endif
+    let text = (props.text.value as? String) ?? ""
+    let lower = max(0, min(min(start, end), text.count))
+    let upper = max(0, min(max(start, end), text.count))
+    props.selection.value = ["start": lower, "end": upper]
   }
 
-  var text: some View {
-    let text = if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
-#if !os(tvOS)
-      TextField(
-        props.placeholder,
-        text: $textManager.text,
-        selection: $textManager.selection,
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
-      )
-#else
-      TextField(
-        props.placeholder,
-        text: $textManager.text,
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
-      )
-#endif
-    } else if #available(iOS 16.0, tvOS 16.0, *) {
-      TextField(
-        props.placeholder,
-        text: $textManager.text,
-        axis: (props.multiline && allowMultiLine()) ? .vertical : .horizontal
-      )
-    } else {
-      TextField(
-        props.placeholder,
-        text: $textManager.text
-      )
-    }
-    return text.lineLimit((props.multiline && allowMultiLine()) ? props.numberOfLines : 1)
-      .modifier(UIBaseViewModifier(props: props))
-      .fixedSize(horizontal: false, vertical: true)
-      .keyboardType(getKeyboardType(props.keyboardType))
-      .autocorrectionDisabled(!props.autocorrection)
-      .focused($isFocused)
-      .onSubmit({
-        if props.allowNewlines && props.multiline && allowMultiLine() {
-          if textManager.text.filter({ $0 == "\n" }).count < props.numberOfLines ?? Int.max - 1 {
-            textManager.text.append("\n")
-
-            // when selection state is set, the cursor does not auto update to added newline
-#if !os(tvOS)
-            if #available(iOS 18.0, macOS 15.0, *) {
-              let cursorPosition = textManager.text.endIndex
-              textManager.selection = SwiftUI.TextSelection(range: cursorPosition..<cursorPosition)
-            }
-#endif
-          }
-          isFocused = true
-        }
-        props.onSubmit(["value": textManager.text])
-      })
+  private var promptText: Text? {
+    guard let slot = props.children?.slot("placeholder") else { return nil }
+    return slot.props.children?
+      .compactMap { ($0.childView as? TextView)?.buildText() }
+      .first
   }
 
   var body: some View {
-    let baseView = text
+#if !os(tvOS)
+    if #available(iOS 18.0, macOS 15.0, *) {
+      StatefulSelectableTextField(
+        state: props.text,
+        selection: props.selection,
+        props: props,
+        textManager: textManager,
+        isFocused: $isFocused,
+        promptText: promptText
+      )
+    } else {
+      StatefulTextField(
+        state: props.text,
+        props: props,
+        textManager: textManager,
+        isFocused: $isFocused,
+        promptText: promptText
+      )
+    }
+#else
+    StatefulTextField(
+      state: props.text,
+      props: props,
+      textManager: textManager,
+      isFocused: $isFocused,
+      promptText: promptText
+    )
+#endif
+  }
+}
+
+private func extractInt(_ raw: Any?, _ key: String) -> Int? {
+  guard let dict = raw as? NSDictionary, let value = dict[key] as? NSNumber else {
+    return nil
+  }
+  return value.intValue
+}
+
+private struct StatefulTextField: View {
+  @ObservedObject var state: ObservableState
+  @ObservedObject var props: TextFieldProps
+  @ObservedObject var textManager: TextFieldManager
+  @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
+
+  private var swiftUIAxis: Axis {
+    props.axis == .vertical ? .vertical : .horizontal
+  }
+
+  @ViewBuilder
+  var textField: some View {
+    let textBinding = state.binding("")
+    if #available(iOS 16.0, tvOS 16.0, *) {
+      TextField(
+        promptText == nil ? props.placeholder : "",
+        text: textBinding,
+        prompt: promptText,
+        axis: swiftUIAxis
+      )
+      .focused($isFocused)
+    } else {
+      TextField(
+        promptText == nil ? props.placeholder : "",
+        text: textBinding,
+        prompt: promptText
+      )
+      .focused($isFocused)
+    }
+  }
+
+  var body: some View {
+    textField
       .onAppear {
-        textManager.text = props.defaultValue
         if props.autoFocus {
           isFocused = true
         }
       }
-      .onChange(of: textManager.text) { newValue in
-        props.onValueChanged(["value": newValue])
+      .onChange(of: state.value as? String) { newValue in
+        if let max = props.maxLength, let str = newValue, str.count > max {
+          state.value = String(str.prefix(max))
+          return
+        }
+        props.onTextChange(["value": newValue])
+        props.onTextChangeSync?.invoke(arguments: [newValue])
       }
       .onChange(of: textManager.isFocused) { newValue in
         isFocused = newValue
       }
       .onChange(of: isFocused) { newValue in
         textManager.isFocused = newValue
-        props.onFocusChanged(["value": newValue])
+        props.onFocusChange(["value": newValue])
       }
-
-#if !os(tvOS)
-    if #available(iOS 18.0, macOS 15.0, *) {
-      return baseView.onChange(of: textManager.selection) {
-        if let selection = textManager.selection {
-          if case let .selection(range) = selection.indices {
-            let clampedLower = range.lowerBound < textManager.text.endIndex ? range.lowerBound : textManager.text.endIndex
-            let clampedUpper = range.upperBound < textManager.text.endIndex ? range.upperBound : textManager.text.endIndex
-
-            let start = textManager.text.distance(from: textManager.text.startIndex, to: clampedLower)
-            let end = textManager.text.distance(from: textManager.text.startIndex, to: clampedUpper)
-            props.onSelectionChanged(["start": start, "end": end])
-          }
-        }
-      }
-    } else {
-      return baseView
-    }
-#else
-    return baseView
-#endif
   }
 }
+
+#if !os(tvOS)
+@available(iOS 18.0, macOS 15.0, *)
+private struct StatefulSelectableTextField: View {
+  @ObservedObject var state: ObservableState
+  @ObservedObject var selection: ObservableState
+  @ObservedObject var props: TextFieldProps
+  @ObservedObject var textManager: TextFieldManager
+  @FocusState.Binding var isFocused: Bool
+  let promptText: Text?
+
+  @State private var localSelection: SwiftUI.TextSelection?
+
+  private var swiftUIAxis: Axis {
+    props.axis == .vertical ? .vertical : .horizontal
+  }
+
+  var body: some View {
+    let textBinding = state.binding("")
+    TextField(
+      promptText == nil ? props.placeholder : "",
+      text: textBinding,
+      selection: $localSelection,
+      prompt: promptText,
+      axis: swiftUIAxis
+    )
+    .focused($isFocused)
+    .onAppear {
+      if props.autoFocus {
+        isFocused = true
+      }
+    }
+    .onChange(of: localSelection) { newSel in
+      let text = (state.value as? String) ?? ""
+      var start = text.count
+      var end = text.count
+      if let sel = newSel, case let .selection(range) = sel.indices {
+        let clampedLower = range.lowerBound < text.endIndex ? range.lowerBound : text.endIndex
+        let clampedUpper = range.upperBound < text.endIndex ? range.upperBound : text.endIndex
+        start = text.distance(from: text.startIndex, to: clampedLower)
+        end = text.distance(from: text.startIndex, to: clampedUpper)
+      }
+      let prevStart = extractInt(selection.value, "start")
+      let prevEnd = extractInt(selection.value, "end")
+      if prevStart == start && prevEnd == end { return }
+      selection.value = ["start": start, "end": end]
+      props.onSelectionChange(["start": start, "end": end])
+    }
+    .onChange(of: state.value as? String) { newValue in
+      if let max = props.maxLength, let str = newValue, str.count > max {
+        state.value = String(str.prefix(max))
+        return
+      }
+      props.onTextChange(["value": newValue])
+      props.onTextChangeSync?.invoke(arguments: [newValue])
+    }
+    .onChange(of: textManager.isFocused) { newValue in
+      isFocused = newValue
+    }
+    .onChange(of: isFocused) { newValue in
+      textManager.isFocused = newValue
+      props.onFocusChange(["value": newValue])
+    }
+    .onChange(of: selection.value as? NSDictionary) { _ in
+      guard let start = extractInt(selection.value, "start"),
+            let end = extractInt(selection.value, "end") else { return }
+      let text = (state.value as? String) ?? ""
+      let lower = max(0, min(min(start, end), text.count))
+      let upper = max(0, min(max(start, end), text.count))
+      let startIdx = text.index(text.startIndex, offsetBy: lower)
+      let endIdx = text.index(text.startIndex, offsetBy: upper)
+      let newSel = SwiftUI.TextSelection(range: startIdx..<endIdx)
+      if localSelection != newSel {
+        localSelection = newSel
+      }
+    }
+  }
+}
+
+#endif

@@ -1,5 +1,4 @@
-import type { PropertiesItem } from '@expo/config-plugins/build/android/Properties';
-import { type ConfigPlugin, withGradleProperties } from 'expo/config-plugins';
+import { type AndroidConfig, type ConfigPlugin, withGradleProperties } from 'expo/config-plugins';
 
 import { checkPlugin } from '../../common';
 
@@ -19,7 +18,7 @@ const withGradlePropertiesPlugin: ConfigPlugin = (config) => {
   });
 };
 
-const getDevMenuReleaseConfiguration = (): PropertiesItem[] => {
+const getDevMenuReleaseConfiguration = (): AndroidConfig.Properties.PropertiesItem[] => {
   return [
     {
       type: 'comment',

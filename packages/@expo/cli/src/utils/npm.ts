@@ -1,5 +1,5 @@
 import { IOSConfig } from '@expo/config-plugins';
-import { JSONValue } from '@expo/json-file';
+import type { JSONValue } from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { TarTypeFlag } from 'multitars';
 import assert from 'node:assert';
@@ -178,6 +178,10 @@ export async function packNpmTarballAsync(packageDir: string): Promise<string> {
   ).stdout?.trim();
   try {
     const [json] = JSON.parse(results) as { filename: string }[];
+    assert(
+      typeof json?.filename === 'string',
+      'Expected filename property on JSON array of type "string"'
+    );
     return path.resolve(packageDir, json.filename);
   } catch (error: any) {
     const cmdString = `npm ${cmdArgs.join(' ')}`;

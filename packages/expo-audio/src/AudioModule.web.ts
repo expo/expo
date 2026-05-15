@@ -1,6 +1,6 @@
-import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
+import { type PermissionResponse, PermissionStatus } from 'expo';
 
-import { AudioMode, AudioSource } from './Audio.types';
+import type { AudioMode, AudioSource } from './Audio.types';
 import { activePlayers } from './AudioPlayer.web';
 import { getUserMedia, getSourceUri, preloadCache } from './AudioUtils.web';
 

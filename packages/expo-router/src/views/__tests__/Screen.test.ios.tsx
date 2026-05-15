@@ -1,8 +1,8 @@
-import type { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { screen } from '@testing-library/react-native';
 import { View } from 'react-native';
 
 import Stack from '../../layouts/Stack';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 import { renderRouter } from '../../testing-library';
 
 type HeaderTitleFunction = Extract<
@@ -92,12 +92,12 @@ describe('Screen', () => {
     });
 
     expect(headerTitle).toHaveBeenCalledTimes(2);
-    expect(headerTitle.mock.calls[0][0]).toEqual(
+    expect(headerTitle.mock.calls[0]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })
     );
-    expect(headerTitle.mock.calls[1][0]).toEqual(
+    expect(headerTitle.mock.calls[1]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })
@@ -111,12 +111,12 @@ describe('Screen', () => {
     });
 
     expect(headerTitle).toHaveBeenCalledTimes(2);
-    expect(headerTitle.mock.calls[0][0]).toEqual(
+    expect(headerTitle.mock.calls[0]![0]).toEqual(
       expect.objectContaining({
         children: 'index',
       })
     );
-    expect(headerTitle.mock.calls[1][0]).toEqual(
+    expect(headerTitle.mock.calls[1]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })

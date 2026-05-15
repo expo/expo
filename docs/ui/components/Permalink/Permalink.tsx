@@ -1,9 +1,10 @@
 import { Button, mergeClasses } from '@expo/styleguide';
-import { Children, isValidElement, type PropsWithChildren } from 'react';
+import { Children, isValidElement, useContext, type PropsWithChildren } from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
 import withHeadingManager, { HeadingManagerProps } from '~/common/withHeadingManager';
 import { PermalinkIcon } from '~/ui/components/Permalink/PermalinkIcon';
+import { InsideTabsContext } from '~/ui/components/Tabs/InsideTabsContext';
 
 import { PermalinkBase } from './PermalinkBase';
 
@@ -15,6 +16,8 @@ type Props = PropsWithChildren<{
 }>;
 
 const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
+  const insideTabs = useContext(InsideTabsContext);
+
   // NOTE(jim): Not the greatest way to generate permalinks.
   // for now I've shortened the length of permalinks.
   const component = isValidElement<PropsWithChildren<{ className?: string }>>(props.children)
@@ -32,10 +35,14 @@ const Permalink = withHeadingManager((props: Props & HeadingManagerProps) => {
     return children;
   }
 
+  const additionalProps = insideTabs
+    ? { ...props.additionalProps, hideInSidebar: true }
+    : props.additionalProps;
+
   const heading = props.headingManager.addHeading(
     children,
     props.nestingLevel,
-    props.additionalProps,
+    additionalProps,
     props.id
   );
 

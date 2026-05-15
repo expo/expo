@@ -12,7 +12,7 @@
 
 type MetroRequire = {
   (id: number): unknown;
-  importAll: <T>(id: number) => T;
+  importAll: <T>(id: number, moduleName?: string) => T;
 };
 
 type DependencyMapPaths = { [moduleID: number | string]: unknown } | null;
@@ -62,9 +62,13 @@ function maybeLoadBundle(moduleID: number, paths: DependencyMapPaths): void | Pr
   return undefined;
 }
 
-function asyncRequireImpl<T>(moduleID: number, paths: DependencyMapPaths): Promise<T> | T {
+function asyncRequireImpl<T>(
+  moduleID: number,
+  paths: DependencyMapPaths,
+  moduleName?: string
+): Promise<T> | T {
   const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
-  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID);
+  const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
 
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
@@ -76,9 +80,9 @@ function asyncRequireImpl<T>(moduleID: number, paths: DependencyMapPaths): Promi
 async function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
-  moduleName?: string // unused
+  moduleName?: string
 ): Promise<T> {
-  return asyncRequireImpl<T>(moduleID, paths);
+  return asyncRequireImpl<T>(moduleID, paths, moduleName);
 }
 
 // Synchronous version of asyncRequire, which can still return a promise

@@ -9,7 +9,7 @@ platforms: ['android']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-A radio button component for selecting a single option from a set. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/components/radio-button) for more information.
+A radio button component for selecting a single option from a set. Maps to the official Jetpack Compose [RadioButton](https://developer.android.com/develop/ui/compose/components/radio-button) API.
 
 ## Installation
 
@@ -18,6 +18,8 @@ A radio button component for selecting a single option from a set. See the [offi
 ## Usage
 
 ### Basic radio button
+
+A standalone radio button with an `onClick` handler.
 
 ```tsx BasicRadioButton.tsx
 import { useState } from 'react';
@@ -34,44 +36,46 @@ export default function BasicRadioButton() {
 }
 ```
 
-### Radio button group
+### Radio group (recommended)
 
-Combine multiple `RadioButton` components to create a single-selection group.
+The recommended pattern for a radio group follows the [Compose accessibility guidelines](https://developer.android.com/develop/ui/compose/components/radio-button):
 
-```tsx RadioButtonGroup.tsx
+- Wrap the group in a `Column` with the `selectableGroup()` modifier so screen readers treat the options as a group.
+- Apply the `selectable` modifier with `role: 'radioButton'` on each `Row`, making the entire row (including the label) tappable.
+- Pass no `onClick` to the `RadioButton` itself, the row handles the interaction. This provides a larger touch target.
+
+```tsx RadioGroup.tsx
 import { useState } from 'react';
-import { Host, Column, RadioButton, ListItem } from '@expo/ui/jetpack-compose';
+import { Host, Column, Row, RadioButton, Text } from '@expo/ui/jetpack-compose';
+import {
+  selectable,
+  selectableGroup,
+  fillMaxWidth,
+  height,
+  padding,
+} from '@expo/ui/jetpack-compose/modifiers';
 
-export default function RadioButtonGroup() {
-  const [selectedOption, setSelectedOption] = useState('option1');
+export default function RadioGroup() {
+  const [selectedOption, setSelectedOption] = useState('Calls');
+  const options = ['Calls', 'Missed', 'Friends'];
 
   return (
     <Host matchContents>
-      <Column>
-        <ListItem headline="Option 1" onPress={() => setSelectedOption('option1')}>
-          <ListItem.Trailing>
-            <RadioButton
-              selected={selectedOption === 'option1'}
-              onClick={() => setSelectedOption('option1')}
-            />
-          </ListItem.Trailing>
-        </ListItem>
-        <ListItem headline="Option 2" onPress={() => setSelectedOption('option2')}>
-          <ListItem.Trailing>
-            <RadioButton
-              selected={selectedOption === 'option2'}
-              onClick={() => setSelectedOption('option2')}
-            />
-          </ListItem.Trailing>
-        </ListItem>
-        <ListItem headline="Option 3" onPress={() => setSelectedOption('option3')}>
-          <ListItem.Trailing>
-            <RadioButton
-              selected={selectedOption === 'option3'}
-              onClick={() => setSelectedOption('option3')}
-            />
-          </ListItem.Trailing>
-        </ListItem>
+      <Column modifiers={[selectableGroup()]}>
+        {options.map(label => (
+          <Row
+            key={label}
+            verticalAlignment="center"
+            modifiers={[
+              fillMaxWidth(),
+              height(56),
+              selectable(label === selectedOption, () => setSelectedOption(label), 'radioButton'),
+              padding(16, 0, 16, 0),
+            ]}>
+            <RadioButton selected={label === selectedOption} />
+            <Text modifiers={[padding(16, 0, 0, 0)]}>{label}</Text>
+          </Row>
+        ))}
       </Column>
     </Host>
   );

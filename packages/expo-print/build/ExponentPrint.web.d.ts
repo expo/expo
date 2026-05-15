@@ -1,4 +1,4 @@
-import { OrientationType } from './Print.types';
+import type { OrientationType } from './Print.types';
 declare const _default: {
     readonly Orientation: OrientationType;
     print(): Promise<void>;

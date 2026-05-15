@@ -1,7 +1,7 @@
 import assert from 'assert';
 import { boolish } from 'getenv';
 
-import { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
 import { PluginError } from '../utils/errors';
 import {
   assertInternalProjectRoot,

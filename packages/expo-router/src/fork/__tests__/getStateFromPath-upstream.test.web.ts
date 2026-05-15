@@ -1,7 +1,7 @@
 import { expect, test } from '@jest/globals';
-import type { InitialState } from '@react-navigation/routers';
 import { produce } from 'immer';
 
+import type { InitialState } from '../../react-navigation/routers';
 import { findFocusedRoute } from '../findFocusedRoute';
 import { getPathFromState } from '../getPathFromState';
 import { getStateFromPath } from '../getStateFromPath';

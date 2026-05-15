@@ -14,17 +14,38 @@ public final class ExpoUIModule: Module {
       }
     }
 
+    // MARK: - Observable State
+
+    makeWorkletCallbackClass()
+
+    Class(ObservableState.self) {
+      Constructor { (initial: [String: Any]) -> ObservableState in
+        return ObservableState(value: initial["value"])
+      }
+
+      Function("getValue") { (state: ObservableState) -> Any in
+        return state.value ?? NSNull()
+      }
+
+      Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
+        state.value = wrapper["value"]
+      }
+    }
+
     // MARK: - Module Functions
 
     AsyncFunction("completeRefresh") { (id: String) in
       RefreshableManager.shared.completeRefresh(id: id)
     }
 
-    // MARK: - Views with AsyncFunctions that need to explicitly add `.modifier(UIBaseViewModifier(props: props))`
+    // MARK: - Expo UI Views with AsyncFunctions
 
-    View(SecureFieldView.self) {
+    ExpoUIView(SecureFieldView.self) {
       AsyncFunction("setText") { (view: SecureFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: SecureFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: SecureFieldView) in
         view.blur()
@@ -33,9 +54,12 @@ public final class ExpoUIModule: Module {
         view.focus()
       }
     }
-    View(TextFieldView.self) {
+    ExpoUIView(TextFieldView.self) {
       AsyncFunction("setText") { (view: TextFieldView, text: String) in
         view.setText(text)
+      }
+      AsyncFunction("clear") { (view: TextFieldView) in
+        view.clear()
       }
       AsyncFunction("blur") { (view: TextFieldView) in
         view.blur()
@@ -47,7 +71,7 @@ public final class ExpoUIModule: Module {
         view.setSelection(start: start, end: end)
       }
     }
-    View(ShareLinkView.self) {
+    ExpoUIView(ShareLinkView.self) {
       AsyncFunction("setItem") { (view: ShareLinkView, url: String?) in
         guard let url, let validURL = URL(string: url) else {
           view.rejectContinuation()
@@ -67,6 +91,7 @@ public final class ExpoUIModule: Module {
 
     // MARK: - Expo UI Views
 
+    ExpoUIView(AlertView.self)
     ExpoUIView(BottomSheetView.self)
     ExpoUIView(ExpoUI.Button.self)
     ExpoUIView(ChartView.self)
@@ -85,6 +110,8 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GaugeView.self)
     ExpoUIView(GroupView.self)
     ExpoUIView(HStackView.self)
+    ExpoUIView(LazyHStackView.self)
+    ExpoUIView(LazyVStackView.self)
     ExpoUIView(ImageView.self)
     ExpoUIView(LabelView.self)
     ExpoUIView(ListView.self)
@@ -105,6 +132,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
     ExpoUIView(ScrollViewComponent.self)
+    ExpoUIView(SwipeActionsView.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)
@@ -114,7 +142,15 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ConcentricRectangleView.self)
     ExpoUIView(DividerView.self)
     ExpoUIView(PopoverView.self)
+    ExpoUIView(OverlayView.self)
+    ExpoUIView(MaskView.self)
     ExpoUIView(GridView.self)
     ExpoUIView(AccessoryWidgetBackgroundView.self)
+    ExpoUIView(LinkView.self)
+    ExpoUIView(TabView.self)
+    ExpoUIView(Tab.self)
+
+    // Experimental SwiftUI state support to trigger synchronous state updates from UI worklet.
+    ExpoUIView(SyncToggleView.self)
   }
 }

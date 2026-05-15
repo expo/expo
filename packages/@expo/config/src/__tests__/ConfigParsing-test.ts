@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
@@ -6,7 +6,8 @@ import { getConfig } from '../Config';
 
 const fsReal = jest.requireActual('fs') as typeof fs;
 
-jest.mock('fs');
+jest.mock('fs', () => require('memfs').fs);
+jest.mock('node:fs', () => require('memfs').fs);
 
 // NOTE: For testing, we need to bypass the jest-require here and only eval
 jest.mock('@expo/require-utils', () => {

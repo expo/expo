@@ -1,11 +1,15 @@
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
-import React, { type ReactNode } from 'react';
+import { type ReactNode } from 'react';
+import type { ColorValue } from 'react-native';
 import { type ToolbarPlacement } from './context';
+import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
 export interface StackToolbarProps {
     /**
      * Child elements to compose the toolbar. Can include Stack.Toolbar.Button,
      * Stack.Toolbar.Menu, Stack.Toolbar.View, Stack.Toolbar.Spacer, and
-     * Stack.Toolbar.SearchBarSlot (bottom only) components.
+     * Stack.Toolbar.SearchBarSlot (bottom placement, iOS only) components.
+     *
+     * @platform android
+     * @platform ios
      */
     children?: ReactNode;
     /**
@@ -13,9 +17,12 @@ export interface StackToolbarProps {
      *
      * - `'left'`: Renders items in the left area of the header.
      * - `'right'`: Renders items in the right area of the header.
-     * - `'bottom'`: Renders items in the bottom toolbar (iOS only).
+     * - `'bottom'`: Renders items in the bottom toolbar.
      *
      * @default 'bottom'
+     *
+     * @platform android
+     * @platform ios
      */
     placement?: ToolbarPlacement;
     /**
@@ -25,15 +32,40 @@ export interface StackToolbarProps {
      * Only applies to `placement="left"` and `placement="right"`.
      *
      * @default false
+     *
+     * @platform android
+     * @platform ios
      */
     asChild?: boolean;
+    /**
+     * When `true`, disables automatic keyboard (IME) padding on the bottom toolbar.
+     *
+     * Only applies to `placement="bottom"` on Android.
+     *
+     * @default false
+     * @platform android
+     */
+    disableImePadding?: boolean;
+    /**
+     * Tint color applied to toolbar items (buttons, menu icons, text).
+     * Individual items can override this with their own `tintColor` prop.
+     *
+     * @platform android
+     */
+    tintColor?: ColorValue;
+    /**
+     * Background color for the toolbar and its menus.
+     *
+     * @platform android
+     */
+    backgroundColor?: ColorValue;
 }
 /**
  * The component used to configure the stack toolbar.
  *
  * - Use `placement="left"` to customize the left side of the header.
  * - Use `placement="right"` to customize the right side of the header.
- * - Use `placement="bottom"` (default) to show a bottom toolbar (iOS only).
+ * - Use `placement="bottom"` (default) to show a bottom toolbar.
  *
  * If multiple instances of this component are rendered for the same screen,
  * the last one rendered in the component tree takes precedence.
@@ -88,19 +120,20 @@ export interface StackToolbarProps {
  * ```
  *
  * @experimental
+ * @platform android
  * @platform ios
  */
 export declare const StackToolbar: {
-    (props: StackToolbarProps): React.JSX.Element;
-    Button: React.FC<import("./StackToolbarButton").StackToolbarButtonProps>;
-    Menu: React.FC<import("./StackToolbarMenu").StackToolbarMenuProps>;
-    MenuAction: React.FC<import("./StackToolbarMenu").StackToolbarMenuActionProps>;
-    SearchBarSlot: React.FC<import("./StackToolbarSearchBarSlot").StackToolbarSearchBarSlotProps>;
-    Spacer: React.FC<import("./StackToolbarSpacer").StackToolbarSpacerProps>;
-    View: React.FC<import("./StackToolbarView").StackToolbarViewProps>;
-    Label: React.FC<import("./toolbar-primitives").StackToolbarLabelProps>;
-    Icon: React.FC<import("./toolbar-primitives").StackToolbarIconProps>;
-    Badge: React.FC<import("./toolbar-primitives").StackToolbarBadgeProps>;
+    (props: StackToolbarProps): import("react/jsx-runtime").JSX.Element;
+    Button: import("react").FC<import("./StackToolbarButton").StackToolbarButtonProps>;
+    Menu: import("react").FC<import("./StackToolbarMenu").StackToolbarMenuProps>;
+    MenuAction: import("react").FC<import("./StackToolbarMenu").StackToolbarMenuActionProps>;
+    SearchBarSlot: import("react").FC<import("./StackToolbarSearchBarSlot").StackToolbarSearchBarSlotProps>;
+    Spacer: import("react").FC<import("./StackToolbarSpacer").StackToolbarSpacerProps>;
+    View: import("react").FC<import("./StackToolbarView").StackToolbarViewProps>;
+    Label: import("react").FC<import("./toolbar-primitives").StackToolbarLabelProps>;
+    Icon: import("react").FC<import("./toolbar-primitives").StackToolbarIconProps>;
+    Badge: import("react").FC<import("./toolbar-primitives").StackToolbarBadgeProps>;
 };
 export declare function appendStackToolbarPropsToOptions(options: NativeStackNavigationOptions, props: StackToolbarProps): NativeStackNavigationOptions;
 export default StackToolbar;

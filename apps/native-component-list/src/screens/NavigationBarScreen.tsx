@@ -1,4 +1,4 @@
-import * as NavigationBar from 'expo-navigation-bar';
+import { NavigationBar, NavigationBarStyle } from 'expo-navigation-bar';
 import * as React from 'react';
 import { Platform, ScrollView, Text } from 'react-native';
 
@@ -12,11 +12,11 @@ export default function NavigationBarScreen() {
         {Platform.OS !== 'android' && (
           <Text style={{ marginVertical: 8, fontSize: 16 }}>⚠️ NavigationBar is Android-only</Text>
         )}
-        <Section title="Visibility">
-          <VisibilityExample />
-        </Section>
         <Section title="Appearance">
-          <ButtonStyleExample />
+          <StyleExample />
+        </Section>
+        <Section title="Visibility">
+          <HiddenExample />
         </Section>
       </Page>
     </ScrollView>
@@ -27,29 +27,44 @@ NavigationBarScreen.navigationOptions = {
   title: 'Navigation Bar',
 };
 
-function VisibilityExample() {
-  const visibility = NavigationBar.useVisibility();
-  const nextVisibility = visibility === 'visible' ? 'hidden' : 'visible';
+const STYLES: NavigationBarStyle[] = ['auto', 'inverted', 'light', 'dark'];
+
+function StyleExample() {
+  const [style, setStyle] = React.useState<NavigationBarStyle>('auto');
+  const nextStyle = STYLES[STYLES.findIndex((item) => item === style) + 1] ?? 'auto';
+
+  React.useEffect(() => {
+    NavigationBar.setStyle('auto');
+    return () => NavigationBar.setStyle('auto');
+  }, []);
+
   return (
     <Button
-      title={`Toggle Visibility: ${nextVisibility}`}
+      title={`Toggle style: ${nextStyle}`}
       onPress={() => {
-        NavigationBar.setVisibilityAsync(nextVisibility);
+        NavigationBar.setStyle(nextStyle);
+        setStyle(nextStyle);
       }}
     />
   );
 }
 
-function ButtonStyleExample() {
-  const [style, setStyle] = React.useState<NavigationBar.NavigationBarStyle>('light');
-  const nextStyle = style === 'light' ? 'dark' : 'light';
+function HiddenExample() {
+  const [hidden, setHidden] = React.useState(false);
+  const nextHidden = !hidden;
+
+  React.useEffect(() => {
+    NavigationBar.setHidden(false);
+    return () => NavigationBar.setHidden(false);
+  }, []);
+
   return (
     <Button
+      title={`Toggle hidden: ${nextHidden}`}
       onPress={() => {
-        NavigationBar.setStyle(nextStyle);
-        setStyle(nextStyle);
+        NavigationBar.setHidden(nextHidden);
+        setHidden(nextHidden);
       }}
-      title={`Toggle bar style: ${nextStyle}`}
     />
   );
 }

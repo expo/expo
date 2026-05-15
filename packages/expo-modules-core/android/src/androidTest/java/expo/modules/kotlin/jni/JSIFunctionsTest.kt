@@ -15,6 +15,7 @@ import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 import org.junit.Test
+import expo.modules.kotlin.types.OptimizedRecord
 
 class JSIFunctionsTest {
   enum class SimpleEnumClass : Enumerable {
@@ -202,6 +203,7 @@ class JSIFunctionsTest {
 
   @Test
   fun records_should_be_obtainable_as_function_argument() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       var x: Int = 0
@@ -571,6 +573,7 @@ class JSIFunctionsTest {
 
   @Test
   fun complex_types_should_be_convertible() {
+    @OptimizedRecord
     data class InlineRecord(@Field var name: String = "") : Record
 
     withSingleModule({

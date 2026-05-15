@@ -87,6 +87,15 @@ export const getCanonicalUrl = (path: string) => {
   }
 };
 
+export const getMarkdownPath = (asPath: string) => {
+  const path = asPath.split('?')[0].split('#')[0];
+  if (path === '' || path === '/') {
+    return '/index.md';
+  }
+  const stripped = path.endsWith('/') ? path.slice(0, -1) : path;
+  return stripped + '.md';
+};
+
 export const isRouteActive = (
   info?: NavigationRoute | NavigationRouteWithSection,
   asPath?: string,

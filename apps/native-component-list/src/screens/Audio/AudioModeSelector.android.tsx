@@ -12,12 +12,14 @@ export default function AudioModeSelector() {
   }>({
     next: {
       interruptionMode: 'doNotMix',
+      playsInSilentMode: true,
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
     },
     current: {
       interruptionMode: 'doNotMix',
+      playsInSilentMode: true,
       shouldPlayInBackground: false,
       shouldRouteThroughEarpiece: false,
       allowsBackgroundRecording: false,
@@ -28,13 +30,14 @@ export default function AudioModeSelector() {
     try {
       await setAudioModeAsync(state.next);
       setState((state) => ({ ...state, current: state.next }));
-    } catch (error) {
+    } catch (error: any) {
       alert(error.message);
     }
   };
 
   const modesEqual = (modeA: Partial<AudioMode>, modeB: Partial<AudioMode>) =>
     modeA.interruptionMode === modeB.interruptionMode &&
+    modeA.playsInSilentMode === modeB.playsInSilentMode &&
     modeA.shouldRouteThroughEarpiece === modeB.shouldRouteThroughEarpiece &&
     modeA.shouldPlayInBackground === modeB.shouldPlayInBackground &&
     modeA.allowsBackgroundRecording === modeB.allowsBackgroundRecording;
@@ -94,6 +97,10 @@ export default function AudioModeSelector() {
 
   return (
     <View style={{ marginTop: 5 }}>
+      {renderToggle({
+        title: 'Plays in silent mode',
+        valueName: 'playsInSilentMode',
+      })}
       {renderToggle({
         title: 'Play through earpiece',
         valueName: 'shouldRouteThroughEarpiece',

@@ -1,4 +1,4 @@
-import { type ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 export type RadioButtonProps = {
     /**
      * Whether the radio button is selected.
@@ -11,10 +11,10 @@ export type RadioButtonProps = {
     /**
      * Modifiers for the component.
      */
-    modifiers?: ExpoModifier[];
+    modifiers?: ModifierConfig[];
 };
 /**
  * A Material Design radio button.
  */
-export declare function RadioButton(props: RadioButtonProps): import("react").JSX.Element;
+export declare function RadioButton(props: RadioButtonProps): import("react/jsx-runtime").JSX.Element;
 //# sourceMappingURL=index.d.ts.map

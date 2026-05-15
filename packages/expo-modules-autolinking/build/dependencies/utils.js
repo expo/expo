@@ -9,6 +9,7 @@ exports.filterMapResolutionResult = filterMapResolutionResult;
 exports.mergeResolutionResults = mergeResolutionResults;
 const path_1 = __importDefault(require("path"));
 const concurrency_1 = require("../concurrency");
+const types_1 = require("./types");
 const NODE_MODULES_PATTERN = `${path_1.default.sep}node_modules${path_1.default.sep}`;
 // The default dependencies we exclude don't contain dependency chains leading to autolinked modules
 function defaultShouldIncludeDependency(dependencyName) {
@@ -108,7 +109,7 @@ async function filterMapResolutionResult(results, filterMap) {
         const result = resolution ? await filterMap(resolution) : null;
         // If we failed to find a matching resolution from `searchPaths`, also try the other duplicates
         // to see if the `searchPaths` result is not a module but another is
-        if (resolution?.source === 1 /* DependencyResolutionSource.SEARCH_PATH */ && !result) {
+        if (resolution?.source === types_1.DependencyResolutionSource.SEARCH_PATH && !result) {
             for (let idx = 0; resolution.duplicates && idx < resolution.duplicates.length; idx++) {
                 const duplicate = resolution.duplicates[idx];
                 const duplicateResult = await filterMap({ ...resolution, ...duplicate });
@@ -129,7 +130,7 @@ async function filterMapResolutionResult(results, filterMap) {
     return output;
 }
 function mergeResolutionResults(results, base) {
-    if (base == null && results.length === 1) {
+    if (base == null && results.length === 1 && results[0] != null) {
         return results[0];
     }
     const output = base == null ? Object.create(null) : base;

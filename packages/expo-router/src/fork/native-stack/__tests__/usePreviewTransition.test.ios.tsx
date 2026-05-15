@@ -1,7 +1,7 @@
-import type { ParamListBase, StackNavigationState } from '@react-navigation/native';
 import { renderHook, act, type RenderHookOptions } from '@testing-library/react-native';
 
 import { useLinkPreviewContext } from '../../../link/preview/LinkPreviewContext';
+import type { ParamListBase, StackNavigationState } from '../../../react-navigation/native';
 import type { NativeStackDescriptor, NativeStackDescriptorMap } from '../descriptors-context';
 import { usePreviewTransition } from '../usePreviewTransition';
 
@@ -139,7 +139,7 @@ describe('usePreviewTransition', () => {
 
     // After transitionStart, the hook should synthesize state with the preloaded route
     expect(result.current.computedState.routes).toHaveLength(2);
-    expect(result.current.computedState.routes[1].key).toBe('preview-key');
+    expect(result.current.computedState.routes[1]!.key).toBe('preview-key');
     expect(result.current.computedState.index).toBe(1);
     expect(result.current.computedState.preloadedRoutes).toHaveLength(0);
 

@@ -1,7 +1,8 @@
 'use client';
-import { useRoute } from '@react-navigation/native';
-import { isValidElement, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { isValidElement } from 'react';
 
+import { useRoute } from '../react-navigation/native';
 import { useNavigation } from '../useNavigation';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
 import { isRoutePreloadedInStack } from '../utils/stack';

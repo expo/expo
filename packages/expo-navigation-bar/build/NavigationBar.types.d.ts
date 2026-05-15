@@ -1,26 +1,11 @@
 /**
- * Appearance of the foreground elements in the navigation bar, i.e. the color of the menu, back, home button icons.
- *
- * - `dark` makes buttons **darker** to adjust for a mostly light nav bar.
- * - `light` makes buttons **lighter** to adjust for a mostly dark nav bar.
- */
-export type NavigationBarButtonStyle = 'light' | 'dark';
-/**
  * Visibility of the navigation bar.
+ * @deprecated This will be removed in a future release.
  */
 export type NavigationBarVisibility = 'visible' | 'hidden';
 /**
- * Interaction behavior for the system navigation bar.
- * @deprecated This will be removed in a future release.
- */
-export type NavigationBarBehavior = 'overlay-swipe' | 'inset-swipe' | 'inset-touch';
-/**
- * Navigation bar positional mode.
- * @deprecated This will be removed in a future release.
- */
-export type NavigationBarPosition = 'relative' | 'absolute';
-/**
  * Current system UI visibility state. Due to platform constraints, this will return when the status bar visibility changes as well as the navigation bar.
+ * @deprecated This will be removed in a future release.
  */
 export type NavigationBarVisibilityEvent = {
     /**
@@ -41,4 +26,24 @@ export type NavigationBarVisibilityEvent = {
  * - `inverted` the bar colors are inverted in relation to the current theme.
  */
 export type NavigationBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
+export type NavigationBarProps = {
+    /**
+     * Sets the color of the navigation bar buttons. Default value is `"auto"`
+     * which picks the appropriate value according to the active color scheme,
+     * eg: if your app is dark mode, the style will be `"light"`.
+     *
+     * > This will have an effect when the following conditions are met:
+     * > - The device navigation bar is using buttons.
+     * > - The `enforceContrast` option of the `expo-navigation-bar` plugin is set to `false`.
+     *
+     * > Due to a bug in the Android 15 emulator this function may have no effect. Try a physical device or an emulator with a different version of Android.
+     *
+     * @default 'auto'
+     */
+    style?: NavigationBarStyle;
+    /**
+     * If the navigation bar is hidden.
+     */
+    hidden?: boolean;
+};
 //# sourceMappingURL=NavigationBar.types.d.ts.map

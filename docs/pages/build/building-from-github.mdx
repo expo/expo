@@ -6,16 +6,13 @@ description: Learn how to trigger builds on EAS for your app using the Expo GitH
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 
 This guide explains how to trigger builds directly from your GitHub repository using the Expo GitHub App.
 
-## Prerequisites
-
-### Set the `image` field in your eas.json
-
-For the build profiles you want to use with GitHub, specify an [`image`](/eas/json/#image) to use for the native platform in **eas.json**.
-
-Use the `latest` image if your project's configuration does not rely on a specific [build image](/build-reference/infrastructure/). For example:
+<Prerequisites>
+  <Requirement title="Set the image field in eas.json">
+    For the build profiles you want to use with GitHub, specify an [`image`](/eas/json/#image) to use for the native platform in **eas.json**. Use the `latest` image if your project's configuration does not rely on a specific [build image](/build-reference/infrastructure/). For example:
 
 ```json eas.json
 {
@@ -33,16 +30,15 @@ Use the `latest` image if your project's configuration does not rely on a specif
 }
 ```
 
-### Run a successful build from your local machine
-
-To trigger EAS builds from a GitHub repo, you'll need to configure your project for EAS Build and successfully run a build from your computer for each platform that you'd like to support on GitHub.
-
-If you haven't successfully run `eas build -p [all|ios|android]` yet, see [Create your first build](/build/setup/) for more information. Once you have, continue with the steps in this guide.
-
-The following must also be true:
-
-- An Expo user in the organization must have a linked GitHub user with access to the target repository. Check **Account settings** > **Overview** > **User settings** > [**Connections**](https://expo.dev/settings#connections) and verify that your GitHub user account is linked.
-- You must accept the permissions requested by the [Expo GitHub app](https://github.com/settings/installations).
+  </Requirement>
+  <Requirement title="A successful build from your local machine">
+    To trigger EAS builds from a GitHub repository, you'll need to configure your project for EAS Build and successfully run a build from your computer for each platform that you'd like to support on GitHub. If you haven't successfully run `eas build -p [all|ios|android]` yet, see [Create your first build](/build/setup/) for more information.
+  </Requirement>
+  <Requirement title="Linked GitHub account and app permissions">
+    - An Expo user in the organization must have a linked GitHub user with access to the target repository. Check **Account settings** > **Overview** > **User settings** > [**Connections**](https://expo.dev/settings#connections) and verify that your GitHub user account is linked.
+    - You must accept the permissions requested by the [Expo GitHub app](https://github.com/settings/installations).
+  </Requirement>
+</Prerequisites>
 
 ## Configure your app for GitHub
 
@@ -175,7 +171,7 @@ When a commit is pushed to the main branch, this workflow will create Android an
 
 #### Set up build triggers
 
-> **warning** **Deprecated:** This feature is deprecated and disabled for new projects. We recommend using [EAS Workflows](/eas/workflows/get-started/) instead.
+> **warning** **[Deprecated](/more/release-statuses/#deprecated):** This feature is deprecated and disabled for new projects. We recommend using [EAS Workflows](/eas/workflows/get-started/) instead.
 
 <Collapsible summary="Learn how to set up build triggers">
 

@@ -129,11 +129,22 @@ export const buildCompoundNameByComponent = (components: GeneratedData[]) => {
   const { componentNameByPropsType, propertiesByEntry, baseNameByEntry } =
     collectComponentMetadata(components);
 
+  const targetNames = new Set<string>();
+  components.forEach(entry => {
+    const properties = propertiesByEntry.get(entry) ?? [];
+    properties.forEach(property => {
+      const target = resolveComponentTargetFromProperty(property, componentNameByPropsType);
+      if (target) {
+        targetNames.add(target);
+      }
+    });
+  });
+
   const directMap = new Map<string, string>();
 
   components.forEach(entry => {
     const parentName = baseNameByEntry.get(entry);
-    if (!parentName) {
+    if (!parentName || targetNames.has(parentName)) {
       return;
     }
     const properties = propertiesByEntry.get(entry) ?? [];
@@ -143,6 +154,9 @@ export const buildCompoundNameByComponent = (components: GeneratedData[]) => {
       }
       const target = resolveComponentTargetFromProperty(property, componentNameByPropsType);
       if (!target) {
+        return;
+      }
+      if (directMap.has(target)) {
         return;
       }
       directMap.set(target, `${parentName}.${property.name}`);
@@ -167,6 +181,9 @@ export const buildCompoundNameByComponent = (components: GeneratedData[]) => {
       }
       const target = resolveComponentTargetFromProperty(property, componentNameByPropsType);
       if (!target) {
+        return;
+      }
+      if (directMap.has(target)) {
         return;
       }
       compoundMap.set(target, `${parentAlias}.${property.name}`);

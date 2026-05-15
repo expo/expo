@@ -17,7 +17,8 @@ import ShowMoreButton from './ShowMoreButton';
 import { StackTraceList } from './StackTraceList';
 import { DevServerContext, useDevServer } from '../ContextDevServer';
 import * as LogBoxData from '../Data/LogBoxData';
-import { LogBoxLog, useLogs } from '../Data/LogBoxLog';
+import type { LogBoxLog } from '../Data/LogBoxLog';
+import { useLogs } from '../Data/LogBoxLog';
 import type { Message, LogLevel, StackType } from '../Data/Types';
 import { classNames } from '../utils/classNames';
 import { getFormattedStackTrace } from '../utils/devServerEndpoints';
@@ -143,7 +144,9 @@ function LogBoxContent({
     if (logs.length - 1 <= 0) {
       // Only one log, minimize the overlay and dismiss (remove) the log.
       onMinimize(() => {
-        LogBoxData.dismiss(logs[0]);
+        if (logs[0] != null) {
+          LogBoxData.dismiss(logs[0]);
+        }
       });
     } else if (selectedLogIndex <= logs.length - 1) {
       // Multiple logs, calculate the new selected, select it and dismiss (remove) the previously selected.
@@ -154,7 +157,9 @@ function LogBoxContent({
       if (toDismissIndex !== 0) {
         LogBoxData.setSelectedLog(toDismissIndex - 1);
       }
-      LogBoxData.dismiss(logs[toDismissIndex]);
+      if (logs[toDismissIndex] != null) {
+        LogBoxData.dismiss(logs[toDismissIndex]);
+      }
     }
   };
 
@@ -177,8 +182,12 @@ function LogBoxContent({
       const prevIndex = selected - 1 < 0 ? lastIndex : selected - 1;
       const nextIndex = selected + 1 > lastIndex ? 0 : selected + 1;
       for (const type of ['component', 'stack'] as const) {
-        LogBoxData.symbolicateLogLazy(type, logs[prevIndex]);
-        LogBoxData.symbolicateLogLazy(type, logs[nextIndex]);
+        if (logs[prevIndex] != null) {
+          LogBoxData.symbolicateLogLazy(type, logs[prevIndex]);
+        }
+        if (logs[nextIndex] != null) {
+          LogBoxData.symbolicateLogLazy(type, logs[nextIndex]);
+        }
       }
     }
   }, [logs, selectedLogIndex]);
@@ -284,7 +293,8 @@ function LogBoxContent({
         />
 
         {
-          <div style={{ padding: '0 1rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
+          <div
+            style={{ padding: '0 1rem 3.5rem', gap: 10, display: 'flex', flexDirection: 'column' }}>
             {codeFrames.map(([key, codeFrame]) => {
               // If no frame from a stack is expanded, likely no frame is from user code, let's not show the code snippet.
               // This avoid cluttering the overlay with irrelevant code frames of node_modules and internals.

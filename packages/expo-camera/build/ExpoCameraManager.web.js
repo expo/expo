@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { PermissionStatus, } from './Camera.types';
+import { PermissionStatus } from './Camera.types';
 import * as WebBarcodeScanner from './web/WebBarcodeScanner';
 import { canGetUserMedia, isBackCameraAvailableAsync, isFrontCameraAvailableAsync, } from './web/WebUserMediaManager';
 function getUserMedia(constraints) {
@@ -103,7 +103,11 @@ export default {
         return {};
     },
     async isAvailableAsync() {
-        return canGetUserMedia();
+        if (!canGetUserMedia() || !navigator.mediaDevices.enumerateDevices) {
+            return false;
+        }
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        return devices.some((device) => device.kind === 'videoinput');
     },
     async takePicture(options, camera) {
         return camera.takePicture(options);

@@ -16,7 +16,6 @@ internal struct ToggleView: ExpoSwiftUI.View {
 
   init(props: ToggleProps) {
     self.props = props
-    _checked = State(initialValue: props.isOn ?? false)
   }
 
   var body: some View {
@@ -30,11 +29,10 @@ internal struct ToggleView: ExpoSwiftUI.View {
         ])
       }
       .onChange(of: props.isOn) { newValue in
-        guard let newValue else {
-          checked = false
-          return
-        }
-        checked = newValue
+        checked = newValue ?? false
+      }
+      .onAppear {
+        checked = props.isOn ?? false
       }
   }
 

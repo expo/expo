@@ -1,96 +1,436 @@
 import { requireNativeView } from 'expo';
-import React from 'react';
+import { type ColorValue } from 'react-native';
 
-import { ExpoModifier } from '../../types';
+import { type ModifierConfig } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 /**
- * Available text style variants for chip labels.
+ * Colors for AssistChip.
  */
-export type ChipTextStyle =
-  | 'labelSmall'
-  | 'labelMedium'
-  | 'labelLarge'
-  | 'bodySmall'
-  | 'bodyMedium'
-  | 'bodyLarge';
+export type AssistChipColors = {
+  containerColor?: ColorValue;
+  labelColor?: ColorValue;
+  leadingIconContentColor?: ColorValue;
+  trailingIconContentColor?: ColorValue;
+};
 
-export interface ChipProps {
+/**
+ * Colors for FilterChip.
+ */
+export type FilterChipColors = {
+  containerColor?: ColorValue;
+  labelColor?: ColorValue;
+  iconColor?: ColorValue;
+  selectedContainerColor?: ColorValue;
+  selectedLabelColor?: ColorValue;
+  selectedLeadingIconColor?: ColorValue;
+  selectedTrailingIconColor?: ColorValue;
+};
+
+/**
+ * Colors for InputChip.
+ */
+export type InputChipColors = {
+  containerColor?: ColorValue;
+  labelColor?: ColorValue;
+  leadingIconColor?: ColorValue;
+  trailingIconColor?: ColorValue;
+  selectedContainerColor?: ColorValue;
+  selectedLabelColor?: ColorValue;
+  selectedLeadingIconColor?: ColorValue;
+  selectedTrailingIconColor?: ColorValue;
+};
+
+/**
+ * Colors for SuggestionChip.
+ */
+export type SuggestionChipColors = {
+  containerColor?: ColorValue;
+  labelColor?: ColorValue;
+  iconContentColor?: ColorValue;
+};
+
+/**
+ * Border configuration for chips.
+ */
+export type ChipBorder = {
   /**
-   * The variant of the chip.
+   * Border width in dp.
+   * @default 1
    */
-  variant?: 'assist' | 'filter' | 'input' | 'suggestion';
-
+  width?: number;
   /**
-   * The text label to display on the chip
+   * Border color.
    */
-  label: string;
+  color?: ColorValue;
+};
 
-  /**
-   * Optional leading icon name (using Material Icons). Used for assist, filter, input (avatar icon), and suggestion chips.
-   */
-  leadingIcon?: string;
+type SlotChildProps = {
+  children: React.ReactNode;
+};
 
-  /**
-   * Optional trailing icon name (using Material Icons). Used for assist, filter, and input chips. For input chips, defaults to `filled.Close` if not specified.
-   */
-  trailingIcon?: string;
+type NativeSlotViewProps = {
+  slotName: string;
+  children: React.ReactNode;
+};
 
-  /**
-   * Size of the icon in density-independent pixels (dp). Defaults to 18.
-   */
-  iconSize?: number;
+const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeView(
+  'ExpoUI',
+  'SlotView'
+);
 
-  /**
-   * Text style variant for the chip label. Defaults to `labelSmall`.
-   */
-  textStyle?: ChipTextStyle;
+// region AssistChip
 
+export type AssistChipProps = {
   /**
-   * Whether the chip is enabled and can be clicked. Used for assist, filter and input chips.
+   * Whether the chip is enabled and can be clicked.
+   * @default true
    */
   enabled?: boolean;
-
   /**
-   * Whether the chip is selected. Used only for filter chips.
+   * Colors for the chip's container, label, and icons.
    */
-  selected?: boolean;
-
+  colors?: AssistChipColors;
+  /**
+   * Elevation in dp.
+   */
+  elevation?: number;
+  /**
+   * Border configuration.
+   */
+  border?: ChipBorder;
+  /**
+   * Callback fired when the chip is clicked.
+   */
+  onClick?: () => void;
   /**
    * Modifiers for the component.
    */
-  modifiers?: ExpoModifier[];
-
+  modifiers?: ModifierConfig[];
   /**
-   * Callback fired when the chip is clicked. Used for assist and filter chips.
+   * Children containing Label, LeadingIcon, and TrailingIcon slots.
    */
-  onPress?: () => void;
+  children: React.ReactNode;
+};
 
-  /**
-   * Callback fired when the chip is dismissed. Only used for input chips.
-   */
-  onDismiss?: () => void;
-}
+type NativeAssistChipProps = Omit<AssistChipProps, 'onClick'> & {
+  onNativeClick?: () => void;
+};
 
-type NativeChipProps = ChipProps;
-// Native component declaration using the same pattern as Button
-const ChipNativeView: React.ComponentType<NativeChipProps> = requireNativeView(
+const AssistChipNativeView: React.ComponentType<NativeAssistChipProps> = requireNativeView(
   'ExpoUI',
-  'ChipView'
+  'AssistChipView'
 );
 
-function transformChipProps(props: ChipProps): NativeChipProps {
-  const { modifiers, ...restProps } = props;
-  return {
-    modifiers,
-    ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
-    ...restProps,
-  };
+/**
+ * Label slot for AssistChip.
+ */
+function AssistChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
 }
 
 /**
- * Displays a native chip component.
+ * Leading icon slot for AssistChip.
  */
-export function Chip(props: ChipProps): React.JSX.Element {
-  return <ChipNativeView {...transformChipProps(props)} />;
+function AssistChipLeadingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
 }
+
+/**
+ * Trailing icon slot for AssistChip.
+ */
+function AssistChipTrailingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * An assist chip that helps users complete actions and primary tasks.
+ */
+function AssistChipComponent(props: AssistChipProps) {
+  const { children, modifiers, onClick, ...restProps } = props;
+
+  return (
+    <AssistChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onNativeClick={onClick}>
+      {children}
+    </AssistChipNativeView>
+  );
+}
+
+AssistChipComponent.Label = AssistChipLabel;
+AssistChipComponent.LeadingIcon = AssistChipLeadingIcon;
+AssistChipComponent.TrailingIcon = AssistChipTrailingIcon;
+
+export { AssistChipComponent as AssistChip };
+
+// endregion
+
+// region FilterChip
+
+export type FilterChipProps = {
+  /**
+   * Whether the chip is currently selected.
+   */
+  selected: boolean;
+  /**
+   * Whether the chip is enabled and can be interacted with.
+   */
+  enabled?: boolean;
+  /**
+   * Colors for the chip's container, label, icon, and selected states.
+   */
+  colors?: FilterChipColors;
+  /**
+   * Elevation in dp.
+   */
+  elevation?: number;
+  /**
+   * Border configuration.
+   */
+  border?: ChipBorder;
+  /**
+   * Callback fired when the chip is clicked.
+   */
+  onClick?: () => void;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+  /**
+   * Children containing Label, LeadingIcon, and TrailingIcon slots.
+   */
+  children: React.ReactNode;
+};
+
+type NativeFilterChipProps = Omit<FilterChipProps, 'onClick'> & {
+  onNativeClick?: () => void;
+};
+
+const FilterChipNativeView: React.ComponentType<NativeFilterChipProps> = requireNativeView(
+  'ExpoUI',
+  'FilterChipView'
+);
+
+/**
+ * Label slot for FilterChip.
+ */
+function FilterChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Leading icon slot for FilterChip.
+ */
+function FilterChipLeadingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="leadingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Trailing icon slot for FilterChip.
+ */
+function FilterChipTrailingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * A filter chip component for refining content with selection/deselection.
+ */
+function FilterChipComponent(props: FilterChipProps) {
+  const { children, modifiers, onClick, ...restProps } = props;
+
+  return (
+    <FilterChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onNativeClick={onClick}>
+      {children}
+    </FilterChipNativeView>
+  );
+}
+
+FilterChipComponent.Label = FilterChipLabel;
+FilterChipComponent.LeadingIcon = FilterChipLeadingIcon;
+FilterChipComponent.TrailingIcon = FilterChipTrailingIcon;
+
+export { FilterChipComponent as FilterChip };
+
+// endregion
+
+// region InputChip
+
+export type InputChipProps = {
+  /**
+   * Whether the chip is enabled and can be interacted with.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Whether the chip is selected.
+   * @default false
+   */
+  selected?: boolean;
+  /**
+   * Colors for the chip's container, label, icons, and selected states.
+   */
+  colors?: InputChipColors;
+  /**
+   * Elevation in dp.
+   */
+  elevation?: number;
+  /**
+   * Border configuration.
+   */
+  border?: ChipBorder;
+  /**
+   * Callback fired when the chip is clicked.
+   */
+  onClick?: () => void;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+  /**
+   * Children containing Label, Avatar, and TrailingIcon slots.
+   */
+  children: React.ReactNode;
+};
+
+type NativeInputChipProps = Omit<InputChipProps, 'onClick'> & {
+  onNativeClick?: () => void;
+};
+
+const InputChipNativeView: React.ComponentType<NativeInputChipProps> = requireNativeView(
+  'ExpoUI',
+  'InputChipView'
+);
+
+/**
+ * Label slot for InputChip.
+ */
+function InputChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Avatar slot for InputChip.
+ */
+function InputChipAvatar(props: SlotChildProps) {
+  return <SlotNativeView slotName="avatar">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Trailing icon slot for InputChip.
+ */
+function InputChipTrailingIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="trailingIcon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * An input chip that represents user input and can be dismissed.
+ */
+function InputChipComponent(props: InputChipProps) {
+  const { children, modifiers, onClick, ...restProps } = props;
+
+  return (
+    <InputChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onNativeClick={onClick}>
+      {children}
+    </InputChipNativeView>
+  );
+}
+
+InputChipComponent.Label = InputChipLabel;
+InputChipComponent.Avatar = InputChipAvatar;
+InputChipComponent.TrailingIcon = InputChipTrailingIcon;
+
+export { InputChipComponent as InputChip };
+
+// endregion
+
+// region SuggestionChip
+
+export type SuggestionChipProps = {
+  /**
+   * Whether the chip is enabled and can be clicked.
+   * @default true
+   */
+  enabled?: boolean;
+  /**
+   * Colors for the chip's container, label, and icon.
+   */
+  colors?: SuggestionChipColors;
+  /**
+   * Elevation in dp.
+   */
+  elevation?: number;
+  /**
+   * Border configuration.
+   */
+  border?: ChipBorder;
+  /**
+   * Callback fired when the chip is clicked.
+   */
+  onClick?: () => void;
+  /**
+   * Modifiers for the component.
+   */
+  modifiers?: ModifierConfig[];
+  /**
+   * Children containing Label and Icon slots.
+   */
+  children: React.ReactNode;
+};
+
+type NativeSuggestionChipProps = Omit<SuggestionChipProps, 'onClick'> & {
+  onNativeClick?: () => void;
+};
+
+const SuggestionChipNativeView: React.ComponentType<NativeSuggestionChipProps> = requireNativeView(
+  'ExpoUI',
+  'SuggestionChipView'
+);
+
+/**
+ * Label slot for SuggestionChip.
+ */
+function SuggestionChipLabel(props: SlotChildProps) {
+  return <SlotNativeView slotName="label">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Icon slot for SuggestionChip.
+ */
+function SuggestionChipIcon(props: SlotChildProps) {
+  return <SlotNativeView slotName="icon">{props.children}</SlotNativeView>;
+}
+
+/**
+ * A suggestion chip that offers contextual suggestions and recommendations.
+ */
+function SuggestionChipComponent(props: SuggestionChipProps) {
+  const { children, modifiers, onClick, ...restProps } = props;
+
+  return (
+    <SuggestionChipNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      onNativeClick={onClick}>
+      {children}
+    </SuggestionChipNativeView>
+  );
+}
+
+SuggestionChipComponent.Label = SuggestionChipLabel;
+SuggestionChipComponent.Icon = SuggestionChipIcon;
+
+export { SuggestionChipComponent as SuggestionChip };
+
+// endregion

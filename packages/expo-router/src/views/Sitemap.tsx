@@ -1,26 +1,19 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import Constants from 'expo-constants';
 import React from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Platform,
-  StatusBar,
-  ViewStyle,
-} from 'react-native';
+import type { ViewStyle } from 'react-native';
+import { Image, StyleSheet, Text, View, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { NoSSR } from './NoSSR';
-import { Pressable, PressableProps } from './Pressable';
-import { useSitemap, SitemapType } from './useSitemap';
+import type { PressableProps } from './Pressable';
+import { Pressable } from './Pressable';
+import type { SitemapType } from './useSitemap';
+import { useSitemap } from './useSitemap';
 import { Link } from '../link/Link';
-import { canOverrideStatusBarBehavior } from '../utils/statusbar';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 
 const INDENT = 20;
 
@@ -60,7 +53,7 @@ export function getNavOptions(): NativeStackNavigationOptions {
   };
 }
 
-export function Sitemap() {
+export const Sitemap: React.FC = () => {
   // Following the https://github.com/expo/expo/blob/ubax/router/move-404-and-sitemap-to-root/packages/expo-router/src/getRoutesSSR.ts#L38
   // we need to ensure that the Sitemap component is not rendered on the server.
   return (
@@ -68,7 +61,7 @@ export function Sitemap() {
       <SitemapInner />
     </NoSSR>
   );
-}
+};
 
 function SitemapInner() {
   const sitemap = useSitemap();
@@ -79,7 +72,6 @@ function SitemapInner() {
   const Wrapper = Platform.OS === 'android' ? SafeAreaView : View;
   return (
     <Wrapper style={styles.container} testID="expo-router-sitemap">
-      {canOverrideStatusBarBehavior && <StatusBar barStyle="light-content" />}
       <ScrollView
         contentContainerStyle={styles.scroll}
         automaticallyAdjustContentInsets
@@ -232,11 +224,11 @@ function ArrowIcon({ rotation = 0 }: { rotation?: number }) {
 
 function SystemInfo() {
   const getHermesVersion = () => {
-    if (!global.HermesInternal) {
+    if (!(global as any).HermesInternal) {
       return null;
     }
 
-    const HERMES_RUNTIME = global.HermesInternal?.getRuntimeProperties?.() ?? {};
+    const HERMES_RUNTIME = (global as any).HermesInternal?.getRuntimeProperties?.() ?? {};
     const HERMES_VERSION = HERMES_RUNTIME['OSS Release Version'];
     const isStaticHermes = HERMES_RUNTIME['Static Hermes'];
 

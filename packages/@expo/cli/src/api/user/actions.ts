@@ -2,12 +2,15 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
-import { Actor, getUserAsync, loginAsync, browserLoginAsync } from './user';
+import type { Actor } from './user';
+import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { isInteractive } from '../../utils/interactive';
 import { learnMore } from '../../utils/link';
-import promptAsync, { confirmAsync, Question, selectAsync } from '../../utils/prompts';
+import type { Question } from '../../utils/prompts';
+import promptAsync, { selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
 
 /** Show login prompt while prompting for missing credentials. */
@@ -98,6 +101,13 @@ export async function tryGetUserAsync(): Promise<Actor | null> {
 
   if (user) {
     return user;
+  }
+
+  // In non-interactive environments (CI, non-TTY) we can't prompt for login. Proceed
+  // anonymously so callers like the Expo Go manifest code-signing flow degrade
+  // gracefully instead of bubbling a NON_INTERACTIVE error to the client.
+  if (!isInteractive()) {
+    return null;
   }
 
   const choices = [

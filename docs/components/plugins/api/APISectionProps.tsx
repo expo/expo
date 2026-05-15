@@ -26,7 +26,7 @@ import {
   resolveTypeName,
 } from './APISectionUtils';
 import { APICommentTextBlock } from './components/APICommentTextBlock';
-import { ELEMENT_SPACING, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
+import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } from './styles';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -115,7 +115,9 @@ const renderProps = (
     .filter((dec, i, arr) => arr.findIndex(t => t?.name === dec?.name) === i);
 
   return (
-    <div key={`props-definition-${def.name}`} className="[&>*]:last:mb-0!">
+    <div
+      key={`props-definition-${def.name}`}
+      className={mergeClasses(STYLES_APIBOX, '[&>*:last-child]:mb-0!')}>
       {propsDeclarations?.map(prop =>
         prop
           ? renderProp(

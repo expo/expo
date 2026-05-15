@@ -11,7 +11,7 @@ hideTOC: true
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-> **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &mdash; use [development builds](/develop/development-builds/introduction/) to try it out.
+> **important** **This library is currently in [alpha](/more/release-statuses/#alpha) and will frequently experience breaking changes.** It is not available in the Expo Go app &mdash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
 The Jetpack Compose components in `@expo/ui/jetpack-compose` allow you to build fully native Android interfaces using Jetpack Compose from React Native.
 
@@ -29,7 +29,7 @@ import { Host, Button } from '@expo/ui/jetpack-compose';
 export function SaveButton() {
   return (
     <Host matchContents>
-      <Button onPress={() => alert('Saved!')}>Save changes</Button>
+      <Button onClick={() => alert('Saved!')}>Save changes</Button>
     </Host>
   );
 }

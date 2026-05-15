@@ -6,8 +6,10 @@ description: Learn how to integrate EAS Update into your existing native Android
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FAQ } from '~/ui/components/FAQ';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
 > **info** If your project is a **greenfield React Native app** &mdash; primarily built with React Native from the start, and the entry point of the app is React Native, then skip this guide and proceed to [Get started with EAS Update](/eas-update/getting-started/).
 
@@ -15,18 +17,46 @@ This guide explains how to integrate EAS Update in an existing native app, somet
 
 Instructions are not available for older Expo SDK and React Native versions. Additional hands-on support for integrating with older versions can only be provided for enterprise customers ([contact us](https://expo.dev/contact)).
 
-## Prerequisites
-
 > **warning** The following instructions may not work for all projects. The specifics of integrating EAS Update into existing projects depend heavily on the specifics of your app, and so you may need to adapt the instructions to your unique setup. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues) or open a pull request to suggest improvements to this guide.
 
-You should have a brownfield native project with React Native installed and configured to render a root view. If you don't have this yet, follow the [Integration with Existing Apps](https://reactnative.dev/docs/integration-with-existing-apps) guide from the React Native documentation and then come back here once you have followed the steps.
-
-- Your app must be using the [latest Expo SDK version and its supported React Native version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
-- Remove any other update library integration from your app, such as react-native-code-push, and ensure that your app compiles and runs successfully in both debug and release on your supported platforms.
-- Support for Expo modules (through the `expo` package) must be installed and configured in your project. [Learn more](/brownfield/overview/).
-- Your **metro.config.js** [must extend `expo/metro-config`](/guides/customizing-metro/#customizing) .
-- Your **babel.config.js** [must extend `babel-preset-expo`](/versions/latest/config/babel/).
-- The command `npx expo export -p android` must run successfully in your project if it supports Android, and `npx expo export -p ios` if it supports iOS.
+<Prerequisites>
+  <Requirement title="A brownfield native project with React Native">
+    You should have a brownfield native project with React Native installed and configured to render
+    a root view. If you don't have this yet, follow the [Integration with Existing
+    Apps](https://reactnative.dev/docs/integration-with-existing-apps) guide from the React Native
+    documentation and then come back here.
+  </Requirement>
+  <Requirement title="Latest Expo SDK and supported React Native">
+    Your app must be using the [latest Expo SDK version and its supported React Native
+    version](/versions/latest/#each-expo-sdk-version-depends-on-a-react-native-version).
+  </Requirement>
+  <Requirement title="No other update libraries">
+    Remove any other update library integration from your app, such as `react-native-code-push`, and
+    ensure that your app compiles and runs successfully in both debug and release on your supported
+    platforms.
+  </Requirement>
+  <Requirement title="Expo modules installed">
+    Support for Expo modules (through the `expo` package) must be installed and configured in your
+    project. See [Integrating Expo tools into existing native apps](/brownfield/overview/) for more
+    information.
+  </Requirement>
+  <Requirement title="metro.config.js extends expo/metro-config">
+    Your **metro.config.js** [must extend
+    `expo/metro-config`](/guides/customizing-metro/#customizing).
+  </Requirement>
+  <Requirement title="babel.config.js extends babel-preset-expo">
+    Your **babel.config.js** [must extend `babel-preset-expo`](/versions/latest/config/babel/).
+  </Requirement>
+  <Requirement
+    title={
+      <>
+        <CODE>npx expo export</CODE> runs successfully
+      </>
+    }>
+    The command `npx expo export -p android` must run successfully in your project if it supports
+    Android, and `npx expo export -p ios` if it supports iOS.
+  </Requirement>
+</Prerequisites>
 
 ## Installation and basic configuration
 
@@ -40,7 +70,7 @@ The next step is to disable the default behavior of `expo-updates` to automatica
 
 ### Disable automatic setup on Android
 
-Modify **android/settings.gradle** to set the property that disables automatic updates initialization, as in the example below:
+Modify **android/gradle.properties** to set the property that disables automatic updates initialization, as in the example below:
 
 <DiffBlock source="/static/diffs/eas-update-custom-initialization.diff" />
 
@@ -54,18 +84,12 @@ Pass in the environment variable to CocoaPods installation to disable automatic 
 
 The next step is to integrate `expo-updates` into your Android and iOS projects so that your app will use `expo-updates` as the source of your app JavaScript in release builds.
 
-<Collapsible summary="Example">
-
-A complete working example is available at [this GitHub repository](https://github.com/expo/CustomRNView) .
-
-</Collapsible>
-
 ### Integrating expo-updates with your React Native bundling
 
 1. Ensure that your Metro config extends the Expo config, as in this example:
 
    ```js metro.config.js
-   // Learn more https://docs.expo.io/guides/customizing-metro
+   // Learn more https://docs.expo.dev/guides/customizing-metro
    const { getDefaultConfig } = require('expo/metro-config');
 
    /** @type {import('expo/metro-config').MetroConfig} */
@@ -108,58 +132,106 @@ A complete working example is available at [this GitHub repository](https://gith
 
 ### Integrating expo-updates on Android
 
-The following instructions assume you have an app written in Kotlin, with one or more native activities. Open **android/app/src/main/java/com/\<your-app-name\>/MainActivity.kt** and follow the steps below.
+The following instructions assume you have an app written in Kotlin. You will need to update two files: **MainApplication.kt** and **MainActivity.kt**.
+
+#### MainApplication changes
+
+Open **android/app/src/main/java/com/\<your-app-name\>/MainApplication.kt** and follow the steps below.
+
+1. Your application class should implement `ReactApplication`.
+2. Override `reactHost` to use `ExpoReactHostFactory.getDefaultReactHost()`. This sets up the React host with proper expo-updates integration.
+3. In `onCreate()`, call `loadReactNative()` and `ApplicationLifecycleDispatcher.onApplicationCreate()` to initialize Expo modules.
+
+```kotlin android/app/src/main/java/com/<your-app-name>/MainApplication.kt
+package com.yourpackagename
+
+import android.app.Application
+import android.content.res.Configuration
+
+import com.facebook.react.PackageList
+import com.facebook.react.ReactApplication
+import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
+import com.facebook.react.ReactHost
+import com.facebook.react.common.ReleaseLevel
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
+
+import expo.modules.ApplicationLifecycleDispatcher
+import expo.modules.ExpoReactHostFactory
+
+// Step 1
+class MainApplication : Application(), ReactApplication {
+
+  // Step 2
+  override val reactHost: ReactHost by lazy {
+    ExpoReactHostFactory.getDefaultReactHost(
+      context = applicationContext,
+      packageList =
+        PackageList(this).packages.apply {
+          // Packages that cannot be autolinked yet can be added manually here, for example:
+          // add(MyReactNativePackage())
+        }
+    )
+  }
+
+  // Step 3
+  override fun onCreate() {
+    super.onCreate()
+    DefaultNewArchitectureEntryPoint.releaseLevel = try {
+      ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
+    } catch (e: IllegalArgumentException) {
+      ReleaseLevel.STABLE
+    }
+    loadReactNative(this)
+    ApplicationLifecycleDispatcher.onApplicationCreate(this)
+  }
+
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
+  }
+}
+```
+
+#### MainActivity changes
+
+Open **android/app/src/main/java/com/\<your-app-name\>/MainActivity.kt** and follow the steps below.
 
 1. Your React Native activity should subclass `com.facebook.react.ReactActivity`.
-2. In this activity, add code to `onCreate()` to initialize the updates system. The initialization should not happen in the main thread (otherwise a lockup and ANR will occur).
-3. Override `getMainComponentName()` to return the name of the app you registered in your JS entry point above.
-4. Show the React Native view, by overriding the `createReactActivityDelegate()` method as shown below.
+2. Override `getMainComponentName()` to return the name of the app you registered in your JS entry point above.
+3. Override `createReactActivityDelegate()` using `ReactActivityDelegateWrapper` as shown below.
 
 ```kotlin android/app/src/main/java/com/<your-app-name>/MainActivity.kt
 package com.yourpackagename
 
-import android.content.Context
 import android.os.Bundle
+
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
 import com.facebook.react.defaults.DefaultReactActivityDelegate
+
 import expo.modules.ReactActivityDelegateWrapper
-import expo.modules.updates.UpdatesController
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 // Step 1
 class MainActivity : ReactActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        CoroutineScope(Dispatchers.IO).launch {
-            startUpdatesController(applicationContext)
-        }
-    }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(null)
+  }
 
-    // Step 2
-    private fun startUpdatesController(context: Context) {
-        UpdatesController.initialize(context)
-        // Call the synchronous `launchAssetFile()` function to wait for updates ready
-        UpdatesController.instance.launchAssetFile
-    }
+  // Step 2
+  override fun getMainComponentName(): String = "App"
 
-    // Step 3
-    override fun getMainComponentName(): String = "App"
-
-    // Step 4
-    override fun createReactActivityDelegate(): ReactActivityDelegate {
-        return ReactActivityDelegateWrapper(
-            this,
-            BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
-            object : DefaultReactActivityDelegate(
-                this,
-                mainComponentName,
-                fabricEnabled
-            ) {})
-    }
+  // Step 3
+  override fun createReactActivityDelegate(): ReactActivityDelegate {
+    return ReactActivityDelegateWrapper(
+      this,
+      BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
+      object : DefaultReactActivityDelegate(
+        this,
+        mainComponentName,
+        fabricEnabled
+      ) {})
+  }
 }
 ```
 

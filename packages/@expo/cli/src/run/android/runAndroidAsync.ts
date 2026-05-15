@@ -3,10 +3,10 @@ import fs from 'fs';
 import path from 'path';
 
 import { resolveInstallApkNameAsync } from './resolveInstallApkName';
-import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions';
+import type { Options, ResolvedOptions } from './resolveOptions';
+import { resolveOptionsAsync } from './resolveOptions';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
-import type { AndroidOpenInCustomProps } from '../../start/platforms/android/AndroidPlatformManager';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { CommandError } from '../../utils/errors';
@@ -104,7 +104,7 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     await installAppAsync(androidProjectRoot, props);
   }
 
-  await manager.getDefaultDevServer().openCustomRuntimeAsync<AndroidOpenInCustomProps>(
+  await manager.getDefaultDevServer().openCustomRuntimeAsync(
     'emulator',
     {
       applicationId: props.packageName,

@@ -15,9 +15,15 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 
 ## How to upgrade to the latest SDK version
 
+### Upgrade with an AI coding agent
+
+If you use an AI coding agent, install [Expo Skills](/skills/) and use the [`upgrading-expo` skill](/skills/#available-expo-skills). The skill provides guidelines for upgrading Expo SDK versions and fixing dependency issues. Review any proposed changes and check the SDK changelog for version-specific instructions.
+
+### Upgrade manually
+
 <Step label="1">
 
-### Upgrade the Expo SDK
+#### Upgrade the Expo SDK
 
 Install the new version of the Expo package:
 
@@ -36,7 +42,7 @@ Depending on which SDK you're upgrading to, substitute `expo@^55.0.0` with the v
 
 <Step label="2">
 
-### Upgrade dependencies
+#### Upgrade dependencies
 
 Upgrade all dependencies to match the installed SDK version. Then run [`expo-doctor`](/develop/tools/#expo-doctor) command to check for common problems.
 
@@ -49,7 +55,7 @@ Upgrade all dependencies to match the installed SDK version. Then run [`expo-doc
 
 <Step label="3">
 
-### Update native projects
+#### Update native projects
 
 - **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with EAS Build.
 - **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an **ios** directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
@@ -58,7 +64,7 @@ Upgrade all dependencies to match the installed SDK version. Then run [`expo-doc
 
 <Step label="4">
 
-### Follow the release notes for any other instructions
+#### Follow the release notes for any other instructions
 
 Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading to. They contain important information about breaking changes, deprecations, and other changes that may affect your app. Refer to the "Upgrading your app" section at the bottom of the release notes page for any additional instructions.
 

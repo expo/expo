@@ -7,8 +7,9 @@ import { Platform, StyleSheet, type ViewProps, type ColorValue } from 'react-nat
 
 import type { BasicTextStyle } from '../../utils/font';
 
+// TODO(@kitten): Replace with `globalThis`, add typings in `expo`
 const areNativeViewsAvailable =
-  process.env.EXPO_OS === 'ios' && !Platform.isTV && global.RN$Bridgeless === true;
+  process.env.EXPO_OS === 'ios' && !Platform.isTV && (global as any).RN$Bridgeless === true;
 
 // #region Action View
 export interface NativeLinkPreviewActionProps {

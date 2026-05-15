@@ -24,8 +24,7 @@ export type RequestHandler = (
 const STORE = new AsyncLocalStorage();
 
 export interface RequestHandlerParams
-  extends ExpoRequestHandlerParams,
-    Partial<ExpoRequestHandlerInput> {
+  extends ExpoRequestHandlerParams, Partial<ExpoRequestHandlerInput> {
   handleRouteError?(error: Error): Promise<Response>;
 }
 
@@ -77,20 +76,45 @@ export function createRequestHandler(
 function convertRawHeaders(requestHeaders: readonly string[]): Headers {
   const headers = new Headers();
   for (let index = 0; index < requestHeaders.length; index += 2) {
-    headers.append(requestHeaders[index], requestHeaders[index + 1]);
+    const name = requestHeaders[index];
+    const value = requestHeaders[index + 1];
+    if (name != null && value != null) {
+      headers.append(name, value);
+    }
   }
   return headers;
 }
 
 // Convert an http request to an expo request
 export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request {
-  const url = new URL(req.url!, `http://${req.headers.host}`);
+  const proto = 'encrypted' in req.socket && !!req.socket.encrypted ? 'https' : 'http';
+  const url = new URL(req.url!, `${proto}://${req.headers.host}`);
 
   // Abort action/loaders once we can no longer write a response or request aborts
   const controller = new AbortController();
-  res.once('close', () => controller.abort());
-  res.once('error', (err) => controller.abort(err));
-  req.once('error', (err) => controller.abort(err));
+
+  res.once('close', () => {
+    if (!res.writableEnded) {
+      if (!controller.signal.aborted) {
+        controller.abort();
+      }
+      if (!req.destroyed) {
+        req.destroy();
+      }
+    }
+  });
+
+  res.once('error', (err) => {
+    if (err.name !== 'AbortError' && !controller.signal.aborted) {
+      controller.abort(err);
+    }
+  });
+
+  req.once('error', (err) => {
+    if (err.name !== 'AbortError' && !controller.signal.aborted) {
+      controller.abort(err);
+    }
+  });
 
   const init: RequestInit = {
     method: req.method,
@@ -122,7 +146,9 @@ const assignOutgoingMessageHeaders = (outgoing: http.OutgoingMessage, headers: H
   }
   // We don't use `setHeaders` due to a Bun bug (Fix: https://github.com/oven-sh/bun/pull/27050)
   for (const key in collection) {
-    outgoing.setHeader(key, collection[key]);
+    if (collection[key] != null) {
+      outgoing.setHeader(key, collection[key]);
+    }
   }
 };
 

@@ -66,7 +66,7 @@ export const mdComponents: Components = {
         {children}
       </PrismCodeBlock>
     ) : (
-      <CODE className="inline! py-0 break-words">{children}</CODE>
+      <CODE className="inline! py-0 wrap-break-word">{children}</CODE>
     );
   },
   pre: ({ children }) => <>{children}</>,
@@ -185,11 +185,12 @@ export const resolveTypeName = (
     tail,
   } = typeDefinition;
 
+  const builtinTypes = new Set(['Record', 'React.ComponentProps', 'Set', 'Map']);
   try {
     if (name) {
       if (type === 'reference') {
         if (typeArguments) {
-          if (name === 'Record' || name === 'React.ComponentProps') {
+          if (builtinTypes.has(name)) {
             return (
               <>
                 {name}
@@ -248,7 +249,7 @@ export const resolveTypeName = (
       return <>{resolveTypeName(elementType, sdkVersion)}[]</>;
     } else if (elementType?.declaration) {
       if (type === 'array') {
-        const { parameters, type: paramType } = elementType.declaration.indexSignature ?? {};
+        const { parameters, type: paramType } = elementType.declaration.indexSignatures?.[0] ?? {};
         if (parameters && paramType) {
           return (
             <>
@@ -425,7 +426,7 @@ export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div className="flex items-start gap-1">
       <span className={STYLES_SECONDARY}>Default:</span>
-      <CODE className="text-[90!%]">{defaultValue}</CODE>
+      <CODE className="text-[90%]!">{defaultValue}</CODE>
     </div>
   ) : undefined;
 

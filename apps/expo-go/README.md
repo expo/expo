@@ -32,15 +32,15 @@ If you need to make native code changes to your Expo project, such as adding cus
 - Install [direnv](http://direnv.net/) and [Homebrew](https://brew.sh/).
 - Clone this repo; we recommend cloning it to a directory whose full path does not include any spaces (you should clone all the submodules with `git clone --recurse-submodules`).
 - Run `brew bundle` in the root directory.
-- Run `yarn` in the root directory.
-- Run `yarn setup:native` in the root directory.
-- Run `yarn build` in the `packages/expo` directory.
+- Run `pnpm install` in the root directory.
+- Run `pnpm setup:native` in the root directory.
+- Run `pnpm build` in the `packages/expo` directory.
 
 ## Building Expo Go
 
 1. Set up React Native
 
-Go to the `react-native-lab/react-native` directory and run `yarn install` to install its dependencies.
+Run `pnpm install:react-native-lab` in the monorepo root (or: Go to the `react-native-lab/react-native` directory and run `yarn install`)
 
 You can build the React Native Android dep using `./gradlew :packages:react-native:ReactAndroid:buildCMakeDebug` in `react-native-lab/react-native` directory. This is optional because React Native will be built anyway when you build Expo Go, but can help to narrow down a potential issue surface area.
 

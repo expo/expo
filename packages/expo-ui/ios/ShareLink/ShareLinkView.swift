@@ -97,7 +97,7 @@ struct ShareLinkView: ExpoSwiftUI.View {
 
   var body: some View {
  #if !os(tvOS)
-    shareLink.modifier(UIBaseViewModifier(props: props))
+    shareLink
       .onDisappear {
         // cleanup if unmounted mid async request
         if #available(iOS 16.0, *) {

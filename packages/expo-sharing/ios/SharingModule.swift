@@ -21,16 +21,14 @@ public final class SharingModule: Module {
       let activityController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
       activityController.title = options.dialogTitle
 
-      activityController.completionWithItemsHandler = { type, completed, _, _ in
-        // user shared an item
-        if type != nil && completed {
-          promise.resolve(nil)
-        }
-
-        // dismissed without action
-        if type == nil && !completed {
-          promise.resolve(nil)
-        }
+      activityController.completionWithItemsHandler = { _, _, _, _ in
+        // Resolve unconditionally. UIActivityViewController invokes this once
+        // on dismissal for every (activityType, completed) permutation. The
+        // previous implementation only resolved two of four cases, leaking
+        // the promise when the user picked an activity and then cancelled
+        // its follow-up dialog (e.g. tapped Print, then cancelled the print
+        // dialog: activityType != nil, completed == false).
+        promise.resolve(nil)
       }
 
       guard let currentViewcontroller = appContext?.utilities?.currentViewController() else {

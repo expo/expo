@@ -9,9 +9,9 @@ struct LiveActivityBanner: View {
 
   var body: some View {
     if activityFamily == .small, let node = nodes?["bannerSmall"] as? [String: Any] {
-      WidgetsDynamicView(source: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
     } else if let node = nodes?["banner"] as? [String: Any] {
-      WidgetsDynamicView(source: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
     } else {
       EmptyView()
     }

@@ -6,17 +6,15 @@
 import { createConnectMiddleware } from '@expo/metro/metro';
 import type { RunServerOptions } from '@expo/metro/metro';
 import MetroHmrServer, { type Client as MetroHmrClient } from '@expo/metro/metro/HmrServer';
-import Server from '@expo/metro/metro/Server';
+import type Server from '@expo/metro/metro/Server';
 import createWebsocketServer from '@expo/metro/metro/lib/createWebsocketServer';
 import type { ConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import http from 'http';
 import https from 'https';
-import type { AddressInfo } from 'net';
-import { parse } from 'url';
 import type { WebSocketServer } from 'ws';
 
-import { MetroBundlerDevServer } from './MetroBundlerDevServer';
+import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { Log } from '../../../log';
 import type { ConnectAppType } from '../middleware/server.types';
 
@@ -25,6 +23,13 @@ export interface SecureServerOptions {
   readonly cert: string | Buffer;
   readonly ca: string | Buffer;
   readonly requestCert: boolean;
+}
+
+export interface ServerAddressInfo {
+  protocol: 'http' | 'https';
+  address: string;
+  family: string;
+  port: number;
 }
 
 interface RunServerOptionsFork {
@@ -59,7 +64,7 @@ export const runServer = async (
     mockServer: boolean;
   }
 ): Promise<{
-  address: AddressInfo | null;
+  address: ServerAddressInfo | null;
   server: http.Server | https.Server;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
   metro: Server;
@@ -88,10 +93,13 @@ export const runServer = async (
   const serverApp = middleware as ConnectAppType;
 
   let httpServer: http.Server | https.Server;
+  let protocol: 'http' | 'https';
 
   if (secureServerOptions != null) {
+    protocol = 'https';
     httpServer = https.createServer(secureServerOptions, serverApp);
   } else {
+    protocol = 'http';
     httpServer = http.createServer(serverApp);
   }
 
@@ -171,10 +179,10 @@ export const runServer = async (
       });
 
       httpServer.on('upgrade', (request, socket, head) => {
-        const { pathname } = parse(request.url!);
+        const { pathname } = new URL(request.url!, 'http://localhost');
         if (pathname != null && websocketEndpoints[pathname]) {
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
-            websocketEndpoints[pathname].emit('connection', ws, request);
+            websocketEndpoints[pathname]?.emit('connection', ws, request);
           });
         } else {
           socket.destroy();
@@ -182,9 +190,18 @@ export const runServer = async (
       });
 
       const address = httpServer.address();
+      assert(
+        address == null || typeof address === 'object',
+        'Expected httpServer.address() to be an object'
+      );
 
       resolve({
-        address: address && typeof address === 'object' ? address : null,
+        address: {
+          protocol,
+          address: address?.address ?? host ?? 'localhost',
+          family: address?.family ?? 'ipv4',
+          port: address?.port ?? config.server.port,
+        },
         server: httpServer,
         hmrServer,
         metro: metroServer,

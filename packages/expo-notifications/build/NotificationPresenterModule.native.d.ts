@@ -1,4 +1,4 @@
-import { NotificationPresenterModule } from './NotificationPresenterModule.types';
+import type { NotificationPresenterModule } from './NotificationPresenterModule.types';
 declare const _default: NotificationPresenterModule;
 export default _default;
 //# sourceMappingURL=NotificationPresenterModule.native.d.ts.map

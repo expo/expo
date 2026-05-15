@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 0.9.2 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.14 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.13 - 2026-04-09
+
+### 💡 Others
+
+- Use `@expo/require-utils` for sharp resolution ([#44236](https://github.com/expo/expo/pull/44236) by [@kitten](https://github.com/kitten))
+
 ## 0.8.12 — 2026-02-03
 
 _This version does not introduce any user-facing changes._
