@@ -241,6 +241,14 @@ export function isLocalEnvKey(name: string): boolean {
     case 'BROWSER_ARGS':
     case 'HTTP_PROXY':
     case 'http_proxy':
+    case 'HTTPS_PROXY':
+    case 'https_proxy':
+    case 'ALL_PROXY':
+    case 'all_proxy':
+    case 'NO_PROXY':
+    case 'no_proxy':
+    case 'FTP_PROXY':
+    case 'ftp_proxy':
     case 'SSL_CRT_FILE':
     case 'SSL_KEY_FILE':
     case 'REACT_NATIVE_PACKAGER_HOSTNAME':
