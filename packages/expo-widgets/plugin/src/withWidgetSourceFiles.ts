@@ -12,11 +12,22 @@ type WidgetSourceFilesProps = {
   onFilesGenerated: (files: string[]) => void;
 };
 
+function assertSwiftIdentifier(name: string): void {
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+    throw new Error(
+      `Invalid widget name ${JSON.stringify(name)}: must be a valid Swift identifier (letters, digits, and underscores; not starting with a digit).`
+    );
+  }
+}
+
 const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
   config,
   { widgets, targetName, onFilesGenerated, groupIdentifier }
-) =>
-  withDangerousMod(config, [
+) => {
+  for (const widget of widgets) {
+    assertSwiftIdentifier(widget.name);
+  }
+  return withDangerousMod(config, [
     'ios',
     async (config) => {
       const projectRoot = config.modRequest.platformProjectRoot;
@@ -50,6 +61,7 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
       return config;
     },
   ]);
+};
 
 const createIndexSwift = (widgets: WidgetConfig[], targetPath: string): string => {
   const indexFilePath = path.join(targetPath, `index.swift`);
