@@ -1,16 +1,15 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
-import { useNativeState } from '../../State/useNativeState';
 import { DropdownMenuItem } from '../../jetpack-compose/DropdownMenu/DropdownMenuItem';
 import {
   ExposedDropdownMenuBox,
   ExposedDropdownMenu,
 } from '../../jetpack-compose/ExposedDropdownMenuBox';
 import { Text } from '../../jetpack-compose/Text';
-import { TextField } from '../../jetpack-compose/TextField';
-import { menuAnchor } from '../../jetpack-compose/modifiers';
+import { TextField, type TextFieldRef } from '../../jetpack-compose/TextField';
+import { menuAnchor, onVisibilityChanged } from '../../jetpack-compose/modifiers';
 
 /**
  * Android implementation of `Picker`.
@@ -25,20 +24,26 @@ export function Picker<T extends PickerItemValue>({
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
   const [expanded, setExpanded] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const textFieldRef = useRef<TextFieldRef>(null);
 
   const selectedLabel = items.find((item) => item.value === selectedValue)?.label ?? '';
-  // `useNativeState` captures its initial value only once.
-  // Push the current label every time it changes — otherwise the anchor `TextField` stays on the first-render label when `selectedValue` updates.
-  const labelState = useNativeState(selectedLabel);
+  // The anchor `TextField` is uncontrolled — push the current label imperatively once the view is on screen.
   useEffect(() => {
-    labelState.value = selectedLabel;
-  }, [selectedLabel, labelState]);
+    if (!isVisible) return;
+    textFieldRef.current?.setText(selectedLabel);
+  }, [selectedLabel, isVisible]);
 
   return (
     <ExposedDropdownMenuBox
       expanded={expanded}
       onExpandedChange={enabled ? setExpanded : undefined}>
-      <TextField value={labelState} readOnly enabled={enabled} modifiers={[menuAnchor()]} />
+      <TextField
+        ref={textFieldRef}
+        readOnly
+        enabled={enabled}
+        modifiers={[menuAnchor(), onVisibilityChanged((visible) => setIsVisible(visible))]}
+      />
       <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
         {items.map((item) => (
           <DropdownMenuItem
