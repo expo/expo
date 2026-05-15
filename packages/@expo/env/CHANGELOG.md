@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Add `getOriginalEnv` and `getOriginalEnvValue` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+
 ### 🐛 Bug fixes
 
+- Exclude system environment variables from being loaded by `@expo/env`, bypassable using `$EXPO_UNSAFE_DOTENV_KEYS` ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- Differentiate between personal environment variables for .local env files and system environment variables, which are both now blocked respectively when they're misused ([#45831](https://github.com/expo/expo/pull/45831) by [@kitten](https://github.com/kitten))
 
 ## 2.2.1 — 2026-05-06
 
