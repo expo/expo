@@ -134,6 +134,11 @@ export function isIgnoredEnvKey(name: string) {
     case 'TERMINFO':
       return true;
 
+    // Windows-owned
+    case 'SYSTEMROOT':
+    case 'SystemRoot':
+      return true;
+
     // User tools
     case 'EDITOR':
     case 'VISUAL':
