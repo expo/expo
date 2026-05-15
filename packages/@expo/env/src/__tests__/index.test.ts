@@ -636,6 +636,108 @@ describe(getOriginalEnvValue, () => {
   });
 });
 
+describe('isLocalEnvKey policy', () => {
+  it('skips local-only keys when loaded from a non-.local file', () => {
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON({ '.env': 'ANDROID_HOME=/evil/sdk\nUNRELATED=ok' }, '/');
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.ANDROID_HOME).toBeUndefined();
+    expect(result.env.UNRELATED).toBe('ok');
+  });
+
+  it('allows local-only keys when loaded from .env.local', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON({ '.env.local': 'ANDROID_HOME=/dev/sdk' }, '/');
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.ANDROID_HOME).toBe('/dev/sdk');
+  });
+
+  it('allows local-only keys when loaded from .env.<mode>.local', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.JAVA_HOME;
+    vol.fromJSON({ '.env.development.local': 'JAVA_HOME=/opt/jdk-17' }, '/');
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.JAVA_HOME).toBe('/opt/jdk-17');
+  });
+
+  it('skips local-only keys from .env.<mode> (committed mode file)', () => {
+    process.env.NODE_ENV = 'production';
+    vol.fromJSON({ '.env.production': 'ANDROID_HOME=/evil/sdk' }, '/');
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.ANDROID_HOME).toBeUndefined();
+  });
+
+  it('prefers the .local value when both files set a local-only key', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON(
+      {
+        '.env': 'ANDROID_HOME=/committed-attacker',
+        '.env.local': 'ANDROID_HOME=/developer-override',
+      },
+      '/'
+    );
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.ANDROID_HOME).toBe('/developer-override');
+  });
+
+  it('honors EXPO_UNSAFE_DOTENV_KEYS to allow a local-only key in any file', () => {
+    const prev = process.env.EXPO_UNSAFE_DOTENV_KEYS;
+    process.env.EXPO_UNSAFE_DOTENV_KEYS = 'ANDROID_HOME';
+    try {
+      jest.isolateModules(() => {
+        const mod = require('../');
+        vol.fromJSON({ '.env': 'ANDROID_HOME=/explicit-opt-in' }, '/');
+
+        const result = mod.parseProjectEnv('/', { systemEnv: {} });
+        expect(result.env.ANDROID_HOME).toBe('/explicit-opt-in');
+      });
+    } finally {
+      if (prev === undefined) delete process.env.EXPO_UNSAFE_DOTENV_KEYS;
+      else process.env.EXPO_UNSAFE_DOTENV_KEYS = prev;
+    }
+  });
+
+  it('blocks the committed-attacker scenario end-to-end via loadProjectEnv', () => {
+    delete process.env.ANDROID_HOME;
+    vol.fromJSON({ '.env': 'ANDROID_HOME=/attacker/sdk' }, '/');
+
+    loadProjectEnv('/');
+    expect(process.env.ANDROID_HOME).toBeUndefined();
+  });
+
+  it('fully blocks package-manager registry/install vars even in .local files', () => {
+    process.env.NODE_ENV = 'development';
+    delete process.env.NPM_CONFIG_REGISTRY;
+    delete process.env.YARN_REGISTRY;
+    delete process.env.PNPM_HOME;
+    delete process.env.BUN_INSTALL;
+    vol.fromJSON(
+      {
+        '.env.local': [
+          'NPM_CONFIG_REGISTRY=https://attacker.example/npm',
+          'YARN_REGISTRY=https://attacker.example/yarn',
+          'PNPM_HOME=/attacker/pnpm',
+          'BUN_INSTALL=/attacker/bun',
+        ].join('\n'),
+      },
+      '/'
+    );
+
+    const result = parseProjectEnv('/', { systemEnv: {} });
+    expect(result.env.NPM_CONFIG_REGISTRY).toBeUndefined();
+    expect(result.env.YARN_REGISTRY).toBeUndefined();
+    expect(result.env.PNPM_HOME).toBeUndefined();
+    expect(result.env.BUN_INSTALL).toBeUndefined();
+  });
+});
+
 describe(logLoadedEnv, () => {
   const envInfo: ReturnType<typeof loadEnvFiles> = {
     result: 'loaded',

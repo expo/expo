@@ -4,7 +4,7 @@ import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { isIgnoredEnvKey, isUnsafeAllowedEnvKey } from './constants';
+import { isIgnoredEnvKey, isLocalEnvKey, isUnsafeAllowedEnvKey } from './constants';
 import { parse, expand, type EnvOutput } from './parse';
 
 const debug = require('debug')('expo:env') as typeof console.log;
@@ -120,6 +120,7 @@ export function parseEnvFiles(
     try {
       const envFileContent = fs.readFileSync(envFile, 'utf8');
       const envFileParsed = parse(envFileContent);
+      const isLocalFile = path.basename(envFile).endsWith('.local');
 
       loadedEnvFiles.push(envFile);
       debug(`Loaded environment variables from: ${envFile}`);
@@ -127,6 +128,10 @@ export function parseEnvFiles(
       for (const key of Object.keys(envFileParsed)) {
         if (isIgnoredEnvKey(key)) {
           debug(`"${key}" is blocked from dotenv files, skipping in: ${envFile}`);
+          continue;
+        }
+        if (!isLocalFile && isLocalEnvKey(key)) {
+          debug(`"${key}" is only allowed in .local env files, skipping in: ${envFile}`);
           continue;
         }
         if (typeof loadedEnvVars[key] !== 'undefined') {

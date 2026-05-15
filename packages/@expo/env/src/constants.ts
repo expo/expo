@@ -18,8 +18,10 @@ export function isIgnoredEnvKey(name: string) {
     return false;
   }
 
-  // NOTE(@kitten): We exclude home vars such as ANDROID_HOME, JDK_HOME, DEVELOPER_DIR, etc
-  // These could legitimately be customised per-project, and should be loaded
+  // NOTE(@kitten): Per-developer tool roots (ANDROID_HOME, JDK_HOME, DEVELOPER_DIR,
+  // npm/pnpm/yarn/bun paths, etc) are not blocked here — see `isLocalEnvKey`, which
+  // restricts them to `.local` env files (gitignored by convention) so committed
+  // `.env*` files cannot redirect them.
   switch (name) {
     // NOTE: Expo internal env vars
     case '__EXPO_ENV_LOADED':
@@ -154,6 +156,79 @@ export function isIgnoredEnvKey(name: string) {
     case 'DIRENV_FILE':
     case 'DIRENV_WATCHES':
     case 'DIRENV_DIFF':
+      return true;
+
+    // Package-manager registry/install roots. No legitimate per-project `.env`
+    // use case — the established mechanism for each is a dedicated config file
+    // (`.npmrc`, `.yarnrc.yml`, `.bunfig.toml`) — and a malicious value is a
+    // supply-chain RCE the moment the CLI shells out to npm/yarn/pnpm/bun.
+    case 'NPM_CONFIG_REGISTRY':
+    case 'NPM_CONFIG_PREFIX':
+    case 'NPM_CONFIG_USERCONFIG':
+    case 'NPM_CONFIG_GLOBALCONFIG':
+    case 'NPM_CONFIG_CACHE':
+    case 'YARN_REGISTRY':
+    case 'YARN_CACHE_FOLDER':
+    case 'YARN_GLOBAL_FOLDER':
+    case 'PNPM_HOME':
+    case 'BUN_INSTALL':
+    case 'BUN_INSTALL_BIN':
+    case 'COCOAPODS_HOME':
+    case 'CMAKE_HOME':
+      return true;
+
+    default:
+      return false;
+  }
+}
+
+/**
+ * Whether a dotenv key represents per-developer/per-machine configuration that
+ * should only be loaded from `.local` env files (e.g. `.env.local`,
+ * `.env.development.local`). Committed `.env*` files cannot set these — that
+ * prevents a malicious project from redirecting developer-tool roots (e.g.
+ * `ANDROID_HOME`) via a supply-chain attack, while still letting developers
+ * pin them in their gitignored `.local` overrides.
+ *
+ * Honors `EXPO_UNSAFE_DOTENV_KEYS`: opt-in keys are allowed in any env file.
+ */
+export function isLocalEnvKey(name: string): boolean {
+  if (safeKeys.has(name)) return false;
+  switch (name) {
+    // Android tooling
+    case 'ANDROID_HOME':
+    case 'ANDROID_SDK_ROOT':
+    case 'ANDROID_NDK_HOME':
+    case 'ANDROID_NDK_ROOT':
+    case 'ANDROID_AVD_HOME':
+    case 'ANDROID_EMULATOR_HOME':
+    case 'GRADLE_HOME':
+    case 'GRADLE_USER_HOME':
+    case 'KOTLIN_HOME':
+      return true;
+
+    // JVM tooling
+    case 'JAVA_HOME':
+    case 'JDK_HOME':
+    case 'JRE_HOME':
+      return true;
+
+    // Apple tooling
+    case 'DEVELOPER_DIR':
+    case 'XCODE_DEVELOPER_DIR_PATH':
+      return true;
+
+    // CocoaPods / Fastlane (secrets and non-exec config)
+    case 'COCOAPODS_DISABLE_STATS':
+    case 'FASTLANE_USER':
+    case 'FASTLANE_PASSWORD':
+    case 'FASTLANE_SESSION':
+    case 'FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD':
+      return true;
+
+    // Android NDK (per-project NDK version pinning is common)
+    case 'NDK_HOME':
+    case 'NDK_ROOT':
       return true;
 
     default:
