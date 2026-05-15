@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix `useNativeState` recreating the `ObservableState` when initial value changes; the seed is now captured once via `useRef`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+- [ios] Fix `BottomSheet` leaving an invisible touch-blocking host mounted after a programmatic dismiss. The swift-ui `BottomSheet` now owns its mount lifecycle, unmounting once SwiftUI's `.sheet(onDismiss:)` fires. ([#45812](https://github.com/expo/expo/issues/45812) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
