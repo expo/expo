@@ -66,6 +66,7 @@ function BasicSection() {
 function ScrollProgressSection() {
   const progress = useSharedValue(0);
   const [state, setState] = React.useState<'idle' | 'dragging' | 'settling'>('idle');
+  const [page, setPage] = React.useState(0);
   const pageCount = 4;
 
   const onPageScroll = (e: { nativeEvent: { position: number; offset: number } }) => {
@@ -93,14 +94,20 @@ function ScrollProgressSection() {
       <PagerView
         style={styles.pager}
         onPageScroll={onPageScroll}
-        onPageScrollStateChanged={(e) => setState(e.nativeEvent.pageScrollState)}>
+        onPageScrollStateChanged={(e) => setState(e.nativeEvent.pageScrollState)}
+        onPageSelected={(e) => setPage(e.nativeEvent.position)}>
         <ColorPage key="1" index={0} label="Swipe →" />
         <ColorPage key="2" index={1} />
         <ColorPage key="3" index={2} />
         <ColorPage key="4" index={3} label="Last" />
       </PagerView>
-      <View style={[styles.stateBadge, styles.stateBadgeAlign, stateBadgeStyle(state)]}>
-        <Text style={styles.stateBadgeText}>{state}</Text>
+      <View style={styles.row}>
+        <View style={[styles.stateBadge, stateBadgeStyle(state)]}>
+          <Text style={styles.stateBadgeText}>{state}</Text>
+        </View>
+        <Text style={styles.label}>
+          Page {page + 1} / {pageCount}
+        </Text>
       </View>
       <Button title="Block JS for 4 seconds" onPress={() => blockJSFor(4000)} />
     </Section>
@@ -122,12 +129,17 @@ function stateBadgeStyle(state: 'idle' | 'dragging' | 'settling') {
 function ToggleScrollSection() {
   const pagerRef = React.useRef<React.ComponentRef<typeof PagerView>>(null);
   const [enabled, setEnabled] = React.useState(true);
+  const [page, setPage] = React.useState(0);
 
   return (
     <Section
       title="Toggle scroll"
       hint="setScrollEnabled disables user swipes; programmatic navigation still works.">
-      <PagerView ref={pagerRef} style={styles.pager} scrollEnabled={enabled}>
+      <PagerView
+        ref={pagerRef}
+        style={styles.pager}
+        scrollEnabled={enabled}
+        onPageSelected={(e) => setPage(e.nativeEvent.position)}>
         <ColorPage key="1" index={0} label={enabled ? 'Swipe enabled' : 'Swipe disabled'} />
         <ColorPage key="2" index={1} label="Page 2" />
         <ColorPage key="3" index={2} label="Page 3" />
@@ -141,6 +153,7 @@ function ToggleScrollSection() {
             pagerRef.current?.setScrollEnabled(next);
           }}
         />
+        <Text style={styles.label}>Page {page + 1} / 3</Text>
         <Button title="Go to page 3" onPress={() => pagerRef.current?.setPage(2)} />
       </View>
     </Section>
@@ -182,34 +195,44 @@ function DynamicPagesSection() {
 }
 
 function InitialPageSection() {
+  const [page, setPage] = React.useState(2);
   return (
     <Section
       title="Initial page"
       hint="initialPage={2} — pager should boot showing 'Page 3 (initial)'. Read once on mount; later changes are ignored.">
-      <PagerView style={styles.pager} initialPage={2}>
+      <PagerView
+        style={styles.pager}
+        initialPage={2}
+        onPageSelected={(e) => setPage(e.nativeEvent.position)}>
         <ColorPage key="1" index={0} />
         <ColorPage key="2" index={1} />
         <ColorPage key="3" index={2} label="Page 3 (initial)" />
         <ColorPage key="4" index={3} />
       </PagerView>
+      <Text style={[styles.label, styles.labelAlign]}>Page {page + 1} / 4</Text>
     </Section>
   );
 }
 
 function RTLSection() {
   const [rtl, setRtl] = React.useState(false);
+  const [page, setPage] = React.useState(0);
 
   return (
     <Section title="Layout direction" hint="Toggle between LTR and RTL paging (Android only).">
       <PagerView
         key={rtl ? 'rtl' : 'ltr'}
         style={styles.pager}
-        layoutDirection={rtl ? 'rtl' : 'ltr'}>
+        layoutDirection={rtl ? 'rtl' : 'ltr'}
+        onPageSelected={(e) => setPage(e.nativeEvent.position)}>
         <ColorPage key="1" index={0} label="First" />
         <ColorPage key="2" index={1} label="Second" />
         <ColorPage key="3" index={2} label="Third" />
       </PagerView>
-      <Button title={rtl ? 'Switch to LTR' : 'Switch to RTL'} onPress={() => setRtl((v) => !v)} />
+      <View style={styles.row}>
+        <Button title={rtl ? 'Switch to LTR' : 'Switch to RTL'} onPress={() => setRtl((v) => !v)} />
+        <Text style={styles.label}>Page {page + 1} / 3</Text>
+      </View>
     </Section>
   );
 }
@@ -246,9 +269,11 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   label: { fontSize: 15, fontWeight: '600' },
+  labelAlign: { alignSelf: 'flex-start' },
   progressBarTrack: { height: 6, borderRadius: 3, backgroundColor: '#EEE', overflow: 'hidden' },
   progressBarFill: { height: '100%', backgroundColor: '#6200EE' },
   stateBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  stateBadgeAlign: { alignSelf: 'flex-start' },
   stateBadgeText: { color: '#FFF', fontSize: 12, fontWeight: '600' },
+  refDemoHost: { height: 240, borderRadius: 12, overflow: 'hidden' },
+  refTile: { flex: 1, alignItems: 'center', justifyContent: 'center' },
 });

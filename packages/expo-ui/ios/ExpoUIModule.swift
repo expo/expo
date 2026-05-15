@@ -137,11 +137,7 @@ public final class ExpoUIModule: Module {
     ExpoUIView(ZStackView.self)
     ExpoUIView(GlassEffectContainerView.self)
     ExpoUIView(LabeledContentView.self)
-    ExpoUIView(ScrollViewComponent.self) {
-      AsyncFunction("scrollToId") { (view: ScrollViewComponent, id: String, animated: Bool) in
-        view.scrollToId(id: id, animated: animated)
-      }
-    }
+    ExpoUIView(ScrollViewComponent.self)
     ExpoUIView(RectangleView.self)
     ExpoUIView(RoundedRectangleView.self)
     ExpoUIView(EllipseView.self)

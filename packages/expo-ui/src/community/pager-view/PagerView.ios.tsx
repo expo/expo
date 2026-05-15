@@ -10,7 +10,7 @@ import { Platform } from 'react-native';
 
 import { wrapNativeEvent, type PagerViewProps } from './types';
 import { worklets } from '../../State/optionalWorklets';
-import { useNativeState } from '../../State/useNativeState';
+import { useNativeState, writeStateOnUI } from '../../State/useNativeState';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
 import { LazyHStack } from '../../swift-ui/LazyHStack';
@@ -23,10 +23,12 @@ import {
 import {
   containerRelativeFrame,
   id,
+  onScrollPhaseChange,
   scrollDisabled,
   scrollPosition,
   scrollTargetBehavior,
   scrollTargetLayout,
+  useScrollGeometryChange,
 } from '../../swift-ui/modifiers';
 
 function phaseToPageState(phase: ScrollPhase): 'idle' | 'dragging' | 'settling' {
@@ -95,26 +97,26 @@ export function PagerView(props: PagerViewProps) {
   useImperativeHandle(
     ref,
     () => ({
-      setPage: (page: number) => {
-        activePageState.setValueAnimated(String(page));
-      },
-      setPageWithoutAnimation: (page: number) => {
-        activePageState.value = String(page);
-      },
+      setPage: (page: number) => writeStateOnUI(activePageState, String(page), { animated: true }),
+      setPageWithoutAnimation: (page: number) => writeStateOnUI(activePageState, String(page)),
       setScrollEnabled: setScrollEnabledState,
     }),
     [activePageState]
   );
 
-  // Only wire onScrollGeometryChange when the consumer asks for continuous
-  // progress — onPageSelected is covered by the scrollPosition writeback.
-  const handleScrollGeometry = onPageScroll ? buildHandleScrollGeometry(onPageScroll) : undefined;
+  // Geometry modifier: wraps `onPageScroll` so per-frame work runs on the UI
+  // runtime when the consumer's callback is a worklet, otherwise as a regular
+  // JS event. The hook is called unconditionally; it returns `null` when the
+  // consumer didn't provide a callback so the modifier is skipped below.
+  const geometryModifier = useScrollGeometryChange(
+    onPageScroll ? buildHandleScrollGeometry(onPageScroll) : undefined
+  );
 
-  const handleScrollPhase = onPageScrollStateChanged
-    ? (phase: ScrollPhase) => {
-        onPageScrollStateChanged(wrapNativeEvent({ pageScrollState: phaseToPageState(phase) }));
-      }
-    : undefined;
+  const phaseModifier = onPageScrollStateChanged
+    ? onScrollPhaseChange((phase) =>
+        onPageScrollStateChanged(wrapNativeEvent({ pageScrollState: phaseToPageState(phase) }))
+      )
+    : null;
 
   const pages = Children.toArray(children)
     .filter((child): child is ReactElement => isValidElement(child))
@@ -133,16 +135,13 @@ export function PagerView(props: PagerViewProps) {
     scrollTargetBehavior('paging'),
     scrollDisabled(!scrollEnabledState),
     scrollPosition(activePageState, { onChange: handleScrolledIDChange }),
+    ...(geometryModifier ? [geometryModifier] : []),
+    ...(phaseModifier ? [phaseModifier] : []),
   ];
 
   return (
     <Host style={style ?? { flex: 1 }}>
-      <ScrollView
-        axes="horizontal"
-        showsIndicators={false}
-        modifiers={modifiers}
-        onScrollPhaseChange={handleScrollPhase}
-        onScrollGeometryChange={handleScrollGeometry}>
+      <ScrollView axes="horizontal" showsIndicators={false} modifiers={modifiers}>
         <LazyHStack spacing={0} modifiers={[scrollTargetLayout()]}>
           {pages}
         </LazyHStack>
@@ -159,10 +158,11 @@ function geometryToPageScroll(geometry: ScrollGeometry): { position: number; off
 }
 
 /**
- * Returns the right `ScrollView.onScrollGeometryChange` handler for the
- * consumer's `onPageScroll` callback. If the consumer's callback is a
- * worklet, the wrapper is also a worklet so the per-frame mapping runs on
- * the UI runtime; otherwise the wrapper is a regular JS function.
+ * Returns the right geometry handler for the consumer's `onPageScroll`
+ * callback. If the consumer's callback is a worklet, the wrapper is also a
+ * worklet so the per-frame mapping runs on the UI runtime; otherwise the
+ * wrapper is a regular JS function. The `useScrollGeometryChange` hook
+ * detects the wrapper's worklet-ness from its prototype.
  *
  * The worklet branch must be a literal arrow with `'worklet'` as the first
  * statement so babel-plugin-worklets can serialize it for the UI runtime;

@@ -23,6 +23,11 @@ export type ObservableState<T> = SharedObject & {
    * new value. On platforms where the underlying API has no equivalent, this
    * is treated as an instant write.
    *
+   * Writing from the JS thread triggers a development-time warning. To
+   * silence it, route the write through the UI runtime — easiest is the
+   * `writeStateOnUI` helper from this module, which wraps the call in
+   * `scheduleOnUI`.
+   *
    * @platform ios
    */
   setValueAnimated(value: T): void;
@@ -39,6 +44,44 @@ export function useNativeState<T>(initialValue: T): ObservableState<T> {
     defineValueProperty(state);
     return state;
   }, []) as ObservableState<T>;
+}
+
+/**
+ * Writes `value` into the observable state on the native UI runtime — wraps
+ * the call in `scheduleOnUI` so the mutation happens on the same thread
+ * SwiftUI observes, avoiding the JS-thread dev warning. Pass `animated: true`
+ * to wrap the write in SwiftUI's `withAnimation` transaction (iOS-only;
+ * elsewhere it falls back to an instant write).
+ *
+ * Implementation note: worklets bypass the JS-side `defineProperty` sugar
+ * (`state.value =`, `state.setValueAnimated(v)`), so the worklet body calls
+ * the underlying native SharedObject methods directly with their wrapped
+ * signature (`{ value }`). The asymmetry is hidden inside this helper; call
+ * sites pass plain values.
+ *
+ * When `react-native-worklets` is not installed, falls back to a JS-thread
+ * write (which trips the dev warning — a one-time signal that the project
+ * isn't set up for worklet-routed writes).
+ */
+export function writeStateOnUI<T>(
+  state: ObservableState<T>,
+  value: T,
+  options?: { animated?: boolean }
+): void {
+  const animated = options?.animated === true;
+  if (!worklets) {
+    if (animated) state.setValueAnimated(value);
+    else state.value = value;
+    return;
+  }
+  worklets.scheduleOnUI(() => {
+    'worklet';
+    if (animated) {
+      (state as any).setValueAnimated({ value });
+    } else {
+      (state as any).setValue({ value });
+    }
+  });
 }
 
 type NativeObservableState = {
@@ -59,8 +102,9 @@ function defineValueProperty(state: NativeObservableState): void {
     if (__DEV__ && !warnedOnJSWrite && worklets && !worklets.isUIRuntime()) {
       warnedOnJSWrite = true;
       console.warn(
-        'ObservableState.value was set from the JS thread, the result may be unexpected. ' +
-          'Use a worklet to update the state.'
+        'ObservableState was written from the JS thread. To write on the native UI runtime, ' +
+          "wrap the call in `scheduleOnUI(() => { 'worklet'; … })` from react-native-worklets, " +
+          'or use the `writeStateOnUI` helper from @expo/ui/swift-ui.'
       );
     }
   };

@@ -1,1 +1,1 @@
-{"version":3,"file":"PagerView.ios.d.ts","sourceRoot":"","sources":["../../../src/community/pager-view/PagerView.ios.tsx"],"names":[],"mappings":"AAUA,OAAO,EAAmB,KAAK,cAAc,EAAE,MAAM,SAAS,CAAC;AAkC/D;;;;;;;;;;;GAWG;AACH,wBAAgB,SAAS,CAAC,KAAK,EAAE,cAAc,2CA+F9C"}
+{"version":3,"file":"PagerView.ios.d.ts","sourceRoot":"","sources":["../../../src/community/pager-view/PagerView.ios.tsx"],"names":[],"mappings":"AAUA,OAAO,EAAmB,KAAK,cAAc,EAAE,MAAM,SAAS,CAAC;AAoC/D;;;;;;;;;;;GAWG;AACH,wBAAgB,SAAS,CAAC,KAAK,EAAE,cAAc,2CA4F9C"}
