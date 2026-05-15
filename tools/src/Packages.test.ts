@@ -4,6 +4,15 @@ import { describe, it } from 'node:test';
 
 import { getPackageByName } from './Packages';
 
+type ModuleWithResolveFilename = typeof Module & {
+  _resolveFilename: (
+    request: string,
+    parent: NodeJS.Module | undefined,
+    isMain: boolean,
+    options: unknown
+  ) => string;
+};
+
 describe('getPackageByName', () => {
   it('resolves packages whose directory matches their name', () => {
     const pkg = getPackageByName('expo-router');
@@ -26,8 +35,9 @@ describe('getPackageByName', () => {
   });
 
   it('falls back to the workspace package list for scoped packages without a direct package path', () => {
-    const originalResolveFilename = Module._resolveFilename;
-    Module._resolveFilename = function (request, parent, isMain, options) {
+    const moduleWithResolveFilename = Module as ModuleWithResolveFilename;
+    const originalResolveFilename = moduleWithResolveFilename._resolveFilename;
+    moduleWithResolveFilename._resolveFilename = function (request, parent, isMain, options) {
       if (request === '@expo/ui/package.json') {
         throw new Error('Simulated missing direct package path');
       }
@@ -39,7 +49,7 @@ describe('getPackageByName', () => {
       assert.ok(pkg);
       assert.equal(pkg.packageName, '@expo/ui');
     } finally {
-      Module._resolveFilename = originalResolveFilename;
+      moduleWithResolveFilename._resolveFilename = originalResolveFilename;
     }
   });
 
