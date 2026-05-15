@@ -25,8 +25,12 @@ export function AppJSBanner() {
 
   useEffect(() => {
     if (isLoaded && isAppJSBannerVisible && showAppJSConfShoutout) {
-      const id = requestAnimationFrame(() => setIsOpen(true));
-      return () => cancelAnimationFrame(id);
+      const id = requestAnimationFrame(() => {
+        setIsOpen(true);
+      });
+      return () => {
+        cancelAnimationFrame(id);
+      };
     }
   }, [isLoaded, isAppJSBannerVisible, showAppJSConfShoutout]);
 
