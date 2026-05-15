@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { WidgetConfig } from './types/WidgetConfig.type';
+import { WidgetFamily } from './types/WidgetFamily.type';
 
 type WidgetSourceFilesProps = {
   targetName: string;
@@ -12,11 +13,41 @@ type WidgetSourceFilesProps = {
   onFilesGenerated: (files: string[]) => void;
 };
 
-function assertSwiftIdentifier(name: string): void {
-  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+const VALID_WIDGET_FAMILIES: ReadonlySet<string> = new Set(Object.values(WidgetFamily));
+
+function assertSwiftIdentifier(value: unknown, label: string): asserts value is string {
+  if (typeof value !== 'string' || !/^[A-Za-z_][A-Za-z0-9_]*$/.test(value)) {
+    throw new Error(`Invalid ${label} ${JSON.stringify(value)}: must be a Swift identifier.`);
+  }
+}
+
+function assertWidgetFamily(value: unknown): asserts value is WidgetFamily {
+  if (typeof value !== 'string' || !VALID_WIDGET_FAMILIES.has(value)) {
     throw new Error(
-      `Invalid widget name ${JSON.stringify(name)}: must be a valid Swift identifier (letters, digits, and underscores; not starting with a digit).`
+      `Invalid supportedFamilies entry ${JSON.stringify(value)}: must be one of ${[...VALID_WIDGET_FAMILIES].join(', ')}.`
     );
+  }
+}
+
+function validateWidget(widget: WidgetConfig): void {
+  assertSwiftIdentifier(widget.name, 'widget name');
+  for (const family of widget.supportedFamilies) {
+    assertWidgetFamily(family);
+  }
+  if (widget.configuration) {
+    for (const [paramName, param] of Object.entries(widget.configuration.parameters)) {
+      assertSwiftIdentifier(paramName, 'parameter name');
+      if (param.type === 'number' && typeof param.default !== 'number') {
+        throw new Error(`Invalid default for ${JSON.stringify(paramName)}: must be a number.`);
+      } else if (param.type === 'boolean' && typeof param.default !== 'boolean') {
+        throw new Error(`Invalid default for ${JSON.stringify(paramName)}: must be a boolean.`);
+      } else if (param.type === 'enum') {
+        assertSwiftIdentifier(param.default, `default for ${JSON.stringify(paramName)}`);
+        for (const value of param.values) {
+          assertSwiftIdentifier(value.value, `enum case for ${JSON.stringify(paramName)}`);
+        }
+      }
+    }
   }
 }
 
@@ -25,7 +56,7 @@ const withWidgetSourceFiles: ConfigPlugin<WidgetSourceFilesProps> = (
   { widgets, targetName, onFilesGenerated, groupIdentifier }
 ) => {
   for (const widget of widgets) {
-    assertSwiftIdentifier(widget.name);
+    validateWidget(widget);
   }
   return withDangerousMod(config, [
     'ios',
@@ -155,8 +186,8 @@ struct ${widget.name}: Widget {
     StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
       WidgetsEntryView(entry: entry)
     }
-    .configurationDisplayName("${widget.displayName}")
-    .description("${widget.description}")
+    .configurationDisplayName(${JSON.stringify(widget.displayName)})
+    .description(${JSON.stringify(widget.description)})
     .supportedFamilies([.${widget.supportedFamilies.join(', .')}])${widget.contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
@@ -167,8 +198,8 @@ internal import ExpoWidgets
 
 // AppIntent
 struct ${widget.name}ConfigurationAppIntent: WidgetConfigurationIntent {
-  static var title: LocalizedStringResource = "${widget.configuration?.title ?? widget.displayName} Configuration"
-${widget.configuration?.description ? `  static var description: LocalizedStringResource = "${widget.configuration?.description}"\n` : ''}
+  static var title: LocalizedStringResource = ${JSON.stringify(`${widget.configuration?.title ?? widget.displayName} Configuration`)}
+${widget.configuration?.description ? `  static var description: LocalizedStringResource = ${JSON.stringify(widget.configuration.description)}\n` : ''}
 ${Object.entries(widget.configuration?.parameters ?? {})
   .map(([name, param]) => {
     let paramType: string;
@@ -188,7 +219,7 @@ ${Object.entries(widget.configuration?.parameters ?? {})
       default:
         paramType = 'String';
     }
-    return `  @Parameter(title: "${param.title}", default: ${param.type === 'string' ? `"${param.default}"` : param.type === 'number' ? param.default : param.type === 'boolean' ? param.default : `${widget.name}${name[0]?.toUpperCase() + name.slice(1)}Enum.${param.default}`})\n  var ${name}: ${paramType}`;
+    return `  @Parameter(title: ${JSON.stringify(param.title)}, default: ${param.type === 'string' ? JSON.stringify(param.default) : param.type === 'number' ? param.default : param.type === 'boolean' ? param.default : `${widget.name}${name[0]?.toUpperCase() + name.slice(1)}Enum.${param.default}`})\n  var ${name}: ${paramType}`;
   })
   .join('\n')}
 
@@ -208,12 +239,12 @@ enum ${paramTypeName}: String, CaseIterable, AppEnum {
     })
     .join('\n  ')}
 
-  static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "${param.title}")
+  static var typeDisplayRepresentation = TypeDisplayRepresentation(name: ${JSON.stringify(param.title)})
 
   static var caseDisplayRepresentations: [${paramTypeName}: DisplayRepresentation] = [
     ${param.values
       .map((value) => {
-        return `.${value.value}: DisplayRepresentation(title: "${value.name}")`;
+        return `.${value.value}: DisplayRepresentation(title: ${JSON.stringify(value.name)})`;
       })
       .join(',\n    ')}
   ]
@@ -313,8 +344,8 @@ struct ${widget.name}: Widget {
     return AppIntentConfiguration(kind: name, intent: ${widget.name}ConfigurationAppIntent.self, provider: ${widget.name}TimelineProvider()) { entry in
       ${widget.name}EntryView(entry: entry)
     }
-    .configurationDisplayName("${widget.displayName}")
-    .description("${widget.description}")
+    .configurationDisplayName(${JSON.stringify(widget.displayName)})
+    .description(${JSON.stringify(widget.description)})
     .supportedFamilies([.${widget.supportedFamilies.join(', .')}])${widget.contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
