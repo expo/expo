@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { execSync } from 'child_process';
 import fs from 'fs-extra';
+import { glob } from 'glob';
 import path from 'path';
 
 import { getPrecompileDir } from '../Directories';
@@ -191,6 +192,28 @@ export const Frameworks = {
       Frameworks.getFrameworksOutputPath(buildPath, buildType, versionPrefix),
       `${productName}.xcframework`
     );
+  },
+
+  /**
+   * Finds an xcframework at either a non-versioned or versioned output path.
+   * Versioned paths have the format:
+   * output/<packageVersion>/<rnVersion>/<hermesVersion>/<flavor>/xcframeworks/
+   */
+  findFrameworkAtAnyVersion: (
+    buildPath: string,
+    productName: string,
+    buildType: BuildFlavor
+  ): string | null => {
+    const nonVersioned = Frameworks.getFrameworkPath(buildPath, productName, buildType);
+    if (fs.existsSync(nonVersioned)) {
+      return nonVersioned;
+    }
+
+    const matches = glob.sync(
+      `output/*/*/*/${buildType.toLowerCase()}/xcframeworks/${productName}.xcframework`,
+      { cwd: buildPath, absolute: true }
+    );
+    return matches[0] ?? null;
   },
 
   /**
