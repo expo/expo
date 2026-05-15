@@ -30,7 +30,8 @@ const PATTERNS: Record<GradleFieldKind, { pattern: RegExp; shape: string }> = {
   },
   mavenVersion: {
     pattern: MAVEN_VERSION,
-    shape: 'a Maven-compatible version (letters, digits, dots, hyphens, underscores, or plus signs)',
+    shape:
+      'a Maven-compatible version (letters, digits, dots, hyphens, underscores, or plus signs)',
   },
   envVarName: {
     pattern: ENV_VAR_NAME,
