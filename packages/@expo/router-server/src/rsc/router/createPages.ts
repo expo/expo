@@ -53,30 +53,21 @@ export type CreatePagesFn = (
 function compilePathMatcher(path: string, suffix?: 'page' | 'layout'): IdMatcher {
   // Reuse expo-router-server's canonical regex builder so RSC matching agrees with
   // the URL manifest about brackets, group routes (optional), wildcards, and +not-found.
-  const safePath = path.startsWith('/') ? path : '/' + path;
-  const { namedParameterizedRoute, routeKeys, wildcardKeys } = getNamedParametrizedRoute(
-    safePath || '/'
-  );
-  // The canonical regex assumes a leading-slash pathname per segment, so concatenating
-  // a suffix can produce double slashes for the root path. Collapse them, then anchor.
-  const pattern = (namedParameterizedRoute + (suffix ? '/' + suffix : '')).replace(/\/{2,}/g, '/');
-  const regex = new RegExp(`^${pattern}/?$`);
+  const { namedParameterizedRoute, routeKeys, wildcardKeys } = getNamedParametrizedRoute(path);
+  // Strip a trailing slash before appending the suffix so the root path doesn't
+  // produce `//page` when concatenated.
+  const base = namedParameterizedRoute.replace(/\/$/, '');
+  const regex = new RegExp(`^${suffix ? `${base}/${suffix}` : base}/?$`);
   return (target) => {
-    // Normalize ID targets (e.g. `posts/123/page`) to the pathname shape the canonical
-    // regex expects (`/posts/123/page`).
-    const normalized = target.startsWith('/') ? target : '/' + target;
-    const match = regex.exec(normalized);
+    // Targets are either IDs (`posts/123/page`) or pathnames (`/posts/123`).
+    // The canonical regex expects a leading slash, so add one for IDs.
+    const match = regex.exec(target.startsWith('/') ? target : '/' + target);
     if (!match) return null;
     const params: SlugMapping = {};
-    const groups = match.groups;
-    if (groups) {
-      for (const cleanedKey in groups) {
-        const value = groups[cleanedKey];
-        if (value === undefined) continue;
-        const originalName = routeKeys[cleanedKey];
-        if (originalName == null) continue;
-        params[originalName] = wildcardKeys.has(cleanedKey) ? value.split('/') : value;
-      }
+    for (const [cleanedKey, originalName] of Object.entries(routeKeys)) {
+      const value = match.groups?.[cleanedKey];
+      if (value === undefined) continue;
+      params[originalName] = wildcardKeys.has(cleanedKey) ? value.split('/') : value;
     }
     return params;
   };
@@ -119,9 +110,6 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
   let sortedEntries: Entry[] = [];
 
   const register = (entry: Entry) => {
-    // entry.path is the public-facing URL pathname (must start with `/`);
-    // top-level `./index.tsx` arrives as `''` and root layouts as `''`/`/`.
-    entry.path = normalizePath(entry.path);
     const key = `${entry.kind}:${entry.path}`;
     const existing = entriesByKey.get(key);
     if (existing && existing.component !== entry.component) {
@@ -134,8 +122,12 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     if (configured) {
       throw new Error('no longer available');
     }
+    // Normalize once up-front: top-level `./index.tsx` arrives as `''`, and
+    // everything downstream (the matcher, the registry key, the resolver) wants
+    // a URL-shaped pathname.
+    const path = normalizePath(page.path);
     const noSsr = !!page.unstable_disableSSR;
-    const segments = page.path.split('/').filter(Boolean);
+    const segments = path.split('/').filter(Boolean);
     let numSlugs = 0;
     let numWildcards = 0;
     for (const segment of segments) {
@@ -147,14 +139,14 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
 
     if (page.render === 'static' && numSlugs === 0) {
       register({
-        path: page.path,
+        path,
         component: page.component,
         kind: 'page',
         isDynamic: false,
         isWildcard: false,
         noSsr,
-        matchId: compilePathMatcher(page.path, 'page'),
-        matchesPathname: buildMatchesPathname(page.path),
+        matchId: compilePathMatcher(path, 'page'),
+        matchesPathname: buildMatchesPathname(path),
       });
       return;
     }
@@ -206,22 +198,22 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
 
     if (page.render === 'dynamic') {
       if (numWildcards > 1) {
-        throw new Error('Invalid page configuration: ' + page.path);
+        throw new Error('Invalid page configuration: ' + path);
       }
       register({
-        path: page.path,
+        path,
         component: page.component,
         kind: 'page',
         isDynamic: true,
         isWildcard: numWildcards === 1,
         noSsr,
-        matchId: compilePathMatcher(page.path, 'page'),
-        matchesPathname: buildMatchesPathname(page.path),
+        matchId: compilePathMatcher(path, 'page'),
+        matchesPathname: buildMatchesPathname(path),
       });
       return;
     }
 
-    throw new Error('Invalid page configuration: ' + page.path);
+    throw new Error('Invalid page configuration: ' + path);
   };
 
   const createLayout = (layout: CreateLayoutInput): void => {
@@ -231,15 +223,16 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     if (layout.render !== 'static' && layout.render !== 'dynamic') {
       throw new Error('Invalid layout configuration');
     }
+    const path = normalizePath(layout.path);
     register({
-      path: layout.path,
+      path,
       component: layout.component as FunctionComponent<any>,
       kind: 'layout',
-      isDynamic: layout.render === 'dynamic' || isDynamicPath(layout.path),
+      isDynamic: layout.render === 'dynamic' || isDynamicPath(path),
       isWildcard: false,
       noSsr: false,
-      matchId: compilePathMatcher(layout.path, 'layout'),
-      matchesPathname: buildMatchesPathname(layout.path),
+      matchId: compilePathMatcher(path, 'layout'),
+      matchesPathname: buildMatchesPathname(path),
     });
   };
 
