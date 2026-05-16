@@ -191,15 +191,23 @@ export function createPages(
   const dynamicPagePathMap = new Map<string, [PathSpec, FunctionComponent<any>]>();
   const wildcardPagePathMap = new Map<string, [PathSpec, FunctionComponent<any>]>();
   const dynamicLayoutPathMap = new Map<string, [PathSpec, FunctionComponent<any>]>();
-  const staticComponentMap = new Map<string, FunctionComponent<any>>();
+  const staticComponentMap = new Map<
+    string,
+    { component: FunctionComponent<any>; kind: 'page' | 'layout' }
+  >();
   const noSsrSet = new WeakSet<PathSpec>();
   const buildDataMap = new Map<string, unknown>();
 
-  const registerStaticComponent = (id: string, component: FunctionComponent<any>) => {
-    if (staticComponentMap.has(id) && staticComponentMap.get(id) !== component) {
+  const registerStaticComponent = (
+    id: string,
+    component: FunctionComponent<any>,
+    kind: 'page' | 'layout'
+  ) => {
+    const existing = staticComponentMap.get(id);
+    if (existing && existing.component !== component) {
       throw new Error(`Duplicated component for: ${id}`);
     }
-    staticComponentMap.set(id, component);
+    staticComponentMap.set(id, { component, kind });
   };
 
   const createPage: CreatePage = (page) => {
@@ -226,7 +234,7 @@ export function createPages(
     if (page.render === 'static' && numSlugs === 0) {
       staticPathSet.add([page.path, pathSpec]);
       const id = joinPath(page.path, 'page').replace(/^\//, '');
-      registerStaticComponent(id, page.component);
+      registerStaticComponent(id, page.component, 'page');
     } else if (page.render === 'static' && numSlugs > 0 && 'staticPaths' in page) {
       const staticPaths = page.staticPaths.map((item) =>
         (Array.isArray(item) ? item : [item]).map(sanitizeSlug)
@@ -259,7 +267,7 @@ export function createPages(
         const id = joinPath(...pathItems, 'page');
         const WrappedComponent = (props: Record<string, unknown>) =>
           createElement(page.component as any, { ...props, ...mapping });
-        registerStaticComponent(id, WrappedComponent);
+        registerStaticComponent(id, WrappedComponent, 'page');
       }
     } else if (page.render === 'dynamic' && numWildcards === 0) {
       if (dynamicPagePathMap.has(page.path)) {
@@ -282,7 +290,7 @@ export function createPages(
     }
     if (layout.render === 'static') {
       const id = joinPath(layout.path, 'layout').replace(/^\//, '');
-      registerStaticComponent(id, layout.component);
+      registerStaticComponent(id, layout.component, 'layout');
     } else if (layout.render === 'dynamic') {
       if (dynamicLayoutPathMap.has(layout.path)) {
         throw new Error(`Duplicated dynamic path: ${layout.path}`);
@@ -364,22 +372,22 @@ export function createPages(
     },
     async (id, { unstable_setShouldSkip, unstable_buildConfig }) => {
       await configure(unstable_buildConfig);
-      const staticComponent = staticComponentMap.get(id);
-      if (staticComponent) {
+      const staticEntry = staticComponentMap.get(id);
+      if (staticEntry) {
         unstable_setShouldSkip([]);
-        return staticComponent;
+        return staticEntry;
       }
       for (const [_, [pathSpec, Component]] of dynamicPagePathMap) {
         const mapping = getPathMapping([...pathSpec, { type: 'literal', name: 'page' }], id);
         if (mapping) {
           if (Object.keys(mapping).length === 0) {
             unstable_setShouldSkip();
-            return Component;
+            return { component: Component, kind: 'page' };
           }
           const WrappedComponent = (props: Record<string, unknown>) =>
             createElement(Component, { ...props, ...mapping });
           unstable_setShouldSkip();
-          return WrappedComponent;
+          return { component: WrappedComponent, kind: 'page' };
         }
       }
       for (const [_, [pathSpec, Component]] of wildcardPagePathMap) {
@@ -388,7 +396,7 @@ export function createPages(
           const WrappedComponent = (props: Record<string, unknown>) =>
             createElement(Component, { ...props, ...mapping });
           unstable_setShouldSkip();
-          return WrappedComponent;
+          return { component: WrappedComponent, kind: 'page' };
         }
       }
       for (const [_, [pathSpec, Component]] of dynamicLayoutPathMap) {
@@ -398,7 +406,7 @@ export function createPages(
             throw new Error('[Bug] layout should not have slugs');
           }
           unstable_setShouldSkip();
-          return Component;
+          return { component: Component, kind: 'layout' };
         }
       }
       unstable_setShouldSkip([]); // negative cache

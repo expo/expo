@@ -63,13 +63,17 @@ export function unstable_defineRouter(
     }>
   >,
   getComponent: (
-    componentId: string, // "**/layout" or "**/page"
+    componentId: string,
     options: {
       // TODO setShouldSkip API is too hard to understand
       unstable_setShouldSkip: (val?: ShouldSkipValue) => void;
       unstable_buildConfig: BuildConfig | undefined;
     }
-  ) => Promise<FunctionComponent<RouteProps> | FunctionComponent<RoutePropsForLayout> | null>
+  ) => Promise<
+    | { component: FunctionComponent<RouteProps>; kind: 'page' }
+    | { component: FunctionComponent<RoutePropsForLayout>; kind: 'layout' }
+    | null
+  >
 ): ReturnType<typeof defineEntries> {
   type MyPathConfig = {
     pattern: string;
@@ -128,6 +132,7 @@ export function unstable_defineRouter(
       ? new Set(parsedParams.skip.filter((v): v is string => typeof v === 'string'))
       : new Set<string>();
     const componentIds = getComponentIds(pathname);
+    const kinds = new Map<string, 'page' | 'layout'>();
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
         componentIds.map(async (id) => {
@@ -138,19 +143,20 @@ export function unstable_defineRouter(
               delete shouldSkipObj[id];
             }
           };
-          const component = await getComponent(id, {
+          const resolved = await getComponent(id, {
             unstable_setShouldSkip: setShouldSkip,
             unstable_buildConfig: buildConfig,
           });
-          if (!component) {
+          if (!resolved) {
             return [];
           }
+          kinds.set(id, resolved.kind);
           const element = createElement(
-            component as FunctionComponent<{
+            resolved.component as FunctionComponent<{
               path: string;
               query?: string;
             }>,
-            id.endsWith('/layout') ? { path: pathname } : { path: pathname, query },
+            resolved.kind === 'layout' ? { path: pathname } : { path: pathname, query },
             createElement(Children)
           );
           return [[id, element]] as const;
@@ -161,7 +167,7 @@ export function unstable_defineRouter(
       // Honour skip only for entries the component opted into via unstable_setShouldSkip; layouts are never skippable.
       .filter(([id]) => {
         if (!skip.has(id)) return true;
-        if (id === 'layout' || id.endsWith('/layout')) return true;
+        if (kinds.get(id) === 'layout') return true;
         return !(id in shouldSkipObj);
       });
     entries.push([SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
