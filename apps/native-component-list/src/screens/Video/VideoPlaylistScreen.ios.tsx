@@ -21,7 +21,7 @@ import HeadingText from '../../components/HeadingText';
 type PlaylistItem = {
   id: string;
   title: string;
-  source: VideoPlaylistSource;
+  source: Extract<VideoPlaylistSource, { source: unknown }>;
 };
 
 const INITIAL_ITEMS: PlaylistItem[] = [
@@ -219,10 +219,11 @@ export default function VideoPlaylistScreen() {
               <Button
                 key={item.id}
                 style={screenStyles.trackButton}
-                buttonStyle={[
-                  screenStyles.trackButtonInner,
-                  index === status.currentIndex && screenStyles.activeTrackButton,
-                ]}
+                buttonStyle={
+                  index === status.currentIndex
+                    ? screenStyles.activeTrackButtonInner
+                    : screenStyles.trackButtonInner
+                }
                 title={`${index + 1}. ${item.title}`}
                 onPress={() => playlist.skipTo(index)}
               />
@@ -325,7 +326,8 @@ const screenStyles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#666',
   },
-  activeTrackButton: {
+  activeTrackButtonInner: {
+    alignItems: 'flex-start',
     backgroundColor: '#1b7f3a',
   },
   statusBox: {
