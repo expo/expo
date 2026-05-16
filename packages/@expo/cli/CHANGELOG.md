@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Use `resolveRouterModule` helper for RSC router module resolution ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+
 ## 56.1.5 — 2026-05-15
 
 ### 🐛 Bug fixes
