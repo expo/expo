@@ -21,7 +21,6 @@ import {
 import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 import { createElement } from 'react';
 
-import { getPathMapping } from '../path';
 import type { PathSpec } from '../path';
 import { rerender } from '../server';
 import type {
@@ -57,6 +56,7 @@ export function unstable_defineRouter(
     Iterable<{
       pattern: string;
       path: PathSpec;
+      matchesPathname: (pathname: string) => boolean;
       isStatic?: boolean;
       noSsr?: boolean;
       data?: unknown; // For build: put in customData
@@ -78,6 +78,7 @@ export function unstable_defineRouter(
   type MyPathConfig = {
     pattern: string;
     pathname: PathSpec;
+    matchesPathname: (pathname: string) => boolean;
     isStatic?: boolean | undefined;
     customData: { noSsr?: boolean; is404: boolean; data: unknown };
   }[];
@@ -95,6 +96,7 @@ export function unstable_defineRouter(
         return {
           pattern: item.pattern,
           pathname: item.path,
+          matchesPathname: item.matchesPathname,
           isStatic: item.isStatic,
           customData: { is404, noSsr: !!item.noSsr, data: item.data },
         };
@@ -107,7 +109,7 @@ export function unstable_defineRouter(
     buildConfig: BuildConfig | undefined
   ): Promise<['FOUND', 'NO_SSR'?] | ['NOT_FOUND', 'HAS_404'?]> => {
     const pathConfig = await getMyPathConfig(buildConfig);
-    const found = pathConfig.find(({ pathname: pathSpec }) => getPathMapping(pathSpec, pathname));
+    const found = pathConfig.find(({ matchesPathname }) => matchesPathname(pathname));
     return found
       ? found.customData.noSsr
         ? ['FOUND', 'NO_SSR']

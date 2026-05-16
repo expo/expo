@@ -325,6 +325,7 @@ export function createPages(
       const paths: {
         pattern: string;
         path: PathSpec;
+        matchesPathname: (pathname: string) => boolean;
         isStatic: boolean;
         noSsr: boolean;
         data: unknown;
@@ -343,6 +344,7 @@ export function createPages(
         paths.push({
           pattern: path2regexp(parsePathWithSlug(path)),
           path: pathSpec,
+          matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
           isStatic,
           noSsr,
           data: buildDataMap.get(path),
@@ -353,6 +355,7 @@ export function createPages(
         paths.push({
           pattern: path2regexp(parsePathWithSlug(path)),
           path: pathSpec,
+          matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
           isStatic: false,
           noSsr,
           data: buildDataMap.get(path),
@@ -363,6 +366,7 @@ export function createPages(
         paths.push({
           pattern: path2regexp(parsePathWithSlug(path)),
           path: pathSpec,
+          matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
           isStatic: false,
           noSsr,
           data: buildDataMap.get(path),
