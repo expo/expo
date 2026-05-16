@@ -105,6 +105,7 @@ export async function renderRscWithImportsAsync(
       config,
       input,
       method,
+      headers,
       contentType,
       decodedBody: searchParams.get('x-expo-params'),
     },
