@@ -1,11 +1,10 @@
 import { matchDynamicName } from 'expo-router/internal/routing';
-import type { RouteProps } from 'expo-router/internal/rsc';
+import { mintComponentId, type RouteProps } from 'expo-router/internal/rsc';
 import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
 import { unstable_defineRouter } from './defineRouter';
 import { getNamedParametrizedRoute } from '../../getServerManifest';
-import { joinPath } from '../path';
 import type { BuildConfig } from '../server';
 
 type ComponentKind = 'page' | 'layout';
@@ -145,7 +144,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     }
 
     if (page.render === 'static' && numSlugs === 0) {
-      const id = joinPath(page.path, 'page').replace(/^\//, '');
+      const id = mintComponentId(page.path, 'page');
       registerStatic({
         id,
         path: page.path,
@@ -185,7 +184,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
             mapping[dynamic.name] = pathItems[pathItems.length - 1]!;
           }
         }
-        const id = joinPath(...pathItems, 'page');
+        const id = mintComponentId(pathItems.join('/'), 'page');
         const concretePath = '/' + pathItems.join('/');
         const WrappedComponent = (props: Record<string, unknown>) =>
           createElement(page.component as any, { ...props, ...mapping });
@@ -226,7 +225,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       throw new Error('no longer available');
     }
     if (layout.render === 'static') {
-      const id = joinPath(layout.path, 'layout').replace(/^\//, '');
+      const id = mintComponentId(layout.path, 'layout');
       registerStatic({
         id,
         path: layout.path,

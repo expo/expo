@@ -3,6 +3,8 @@ export {
   getComponentIds,
   getInputString,
   parseInputString,
+  mintComponentId,
+  type ComponentIdKind,
   PARAM_KEY_SKIP,
   SHOULD_SKIP_ID,
   LOCATION_ID,
