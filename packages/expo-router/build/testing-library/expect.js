@@ -1,5 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+function printMatcherDiff(context, expected, received) {
+    return context.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', context.expand !== false);
+}
 expect.extend({
     toHavePathname(screen, expected) {
         const received = screen.getPathname();
@@ -30,7 +33,7 @@ expect.extend({
             pass,
             message: () => this.utils.matcherHint('toHaveSegments') +
                 '\n\n' +
-                this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+                printMatcherDiff(this, expected, received),
         };
     },
     toHaveSearchParams(screen, expected) {
@@ -40,7 +43,7 @@ expect.extend({
             pass,
             message: () => this.utils.matcherHint('toHaveSearchParams') +
                 '\n\n' +
-                this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+                printMatcherDiff(this, expected, received),
         };
     },
     toHaveRouterState(screen, expected) {
@@ -50,7 +53,7 @@ expect.extend({
             pass,
             message: () => this.utils.matcherHint('toHaveRouterState') +
                 '\n\n' +
-                this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+                printMatcherDiff(this, expected, received),
         };
     },
 });

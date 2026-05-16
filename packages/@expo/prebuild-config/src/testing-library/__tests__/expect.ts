@@ -6,6 +6,20 @@ import { getInfoPlistPathLikePrebuild, getProjectRootLikePrebuild } from './preb
 
 const cacheSymbol = Symbol('jest.prebuild.cache');
 
+function printMatcherDiff(
+  context: jest.MatcherContext,
+  expected: unknown,
+  received: unknown
+): string {
+  return context.utils.printDiffOrStringify(
+    expected,
+    received,
+    'Expected',
+    'Received',
+    context.expand !== false
+  );
+}
+
 expect.extend({
   toMatchInfoPlist(
     config: ExportedConfig & {
@@ -22,13 +36,7 @@ expect.extend({
         message: () =>
           this.utils.matcherHint('toMatchInfoPlist') +
           '\n\n' +
-          this.utils.printDiffOrStringify(
-            expected,
-            config[cacheSymbol]!.infoPlist,
-            'Expected',
-            'Received',
-            this.expand !== false
-          ),
+          printMatcherDiff(this, expected, config[cacheSymbol]!.infoPlist),
       };
     }
 
@@ -44,13 +52,7 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toMatchInfoPlist') +
         '\n\n' +
-        this.utils.printDiffOrStringify(
-          expected,
-          infoPlist,
-          'Expected',
-          'Received',
-          this.expand !== false
-        ),
+        printMatcherDiff(this, expected, infoPlist),
     };
   },
   toMatchAppleEntitlements(config: ExportedConfig, expected: any) {
@@ -63,13 +65,7 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toMatchAppleEntitlements') +
         '\n\n' +
-        this.utils.printDiffOrStringify(
-          expected,
-          data,
-          'Expected',
-          'Received',
-          this.expand !== false
-        ),
+        printMatcherDiff(this, expected, data),
     };
   },
   toHaveModHistory(config: ExportedConfig, name: string) {
@@ -103,13 +99,7 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toMatchAndroidProjectBuildGradle') +
         '\n\n' +
-        this.utils.printDiffOrStringify(
-          expected,
-          received,
-          'Expected',
-          'Received',
-          this.expand !== false
-        ),
+        printMatcherDiff(this, expected, received),
     };
   },
 });

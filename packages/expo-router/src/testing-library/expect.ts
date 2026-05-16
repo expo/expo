@@ -1,3 +1,17 @@
+function printMatcherDiff(
+  context: jest.MatcherContext,
+  expected: unknown,
+  received: unknown
+): string {
+  return context.utils.printDiffOrStringify(
+    expected,
+    received,
+    'Expected',
+    'Received',
+    context.expand !== false
+  );
+}
+
 expect.extend({
   toHavePathname(screen, expected) {
     const received = screen.getPathname();
@@ -31,13 +45,7 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toHaveSegments') +
         '\n\n' +
-        this.utils.printDiffOrStringify(
-          expected,
-          received,
-          'Expected',
-          'Received',
-          this.expand !== false
-        ),
+        printMatcherDiff(this, expected, received),
     };
   },
   toHaveSearchParams(screen, expected) {
@@ -48,13 +56,7 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toHaveSearchParams') +
         '\n\n' +
-        this.utils.printDiffOrStringify(
-          expected,
-          received,
-          'Expected',
-          'Received',
-          this.expand !== false
-        ),
+        printMatcherDiff(this, expected, received),
     };
   },
   toHaveRouterState(screen, expected) {
@@ -65,13 +67,7 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toHaveRouterState') +
         '\n\n' +
-        this.utils.printDiffOrStringify(
-          expected,
-          received,
-          'Expected',
-          'Received',
-          this.expand !== false
-        ),
+        printMatcherDiff(this, expected, received),
     };
   },
 });
