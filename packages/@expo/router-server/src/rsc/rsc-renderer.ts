@@ -40,6 +40,7 @@ export type RenderRscArgs = {
   input: string;
   context: Record<string, unknown> | undefined;
   body?: ReadableStream | undefined;
+  method?: 'GET' | 'POST';
   contentType?: string | undefined;
   decodedBody?: unknown;
   moduleIdCallback?: (module: {
@@ -197,7 +198,9 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
   }
 
   const actionId = decodeActionId(input);
-  if (actionId) {
+  if (actionId && args.method !== 'POST') {
+    throw new Error(`Server action "${actionId}" rejected: Invalid method`);
+  } else if (actionId) {
     if (
       !opts.isExporting &&
       // @ts-ignore
@@ -228,10 +231,10 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     }
 
     return renderWithContextWithAction(context, fn, args);
+  } else {
+    // method === 'GET'
+    return renderWithContext(context, input, decodedBody);
   }
-
-  // method === 'GET'
-  return renderWithContext(context, input, decodedBody);
 }
 
 // TODO is this correct? better to use a library?
