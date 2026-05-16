@@ -374,7 +374,9 @@ export function createPages(
       await configure(unstable_buildConfig);
       const staticEntry = staticComponentMap.get(id);
       if (staticEntry) {
-        unstable_setShouldSkip([]);
+        if (staticEntry.kind === 'page') {
+          unstable_setShouldSkip([]);
+        }
         return staticEntry;
       }
       for (const [_, [pathSpec, Component]] of dynamicPagePathMap) {
