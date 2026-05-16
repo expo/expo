@@ -3,12 +3,34 @@ function printMatcherDiff(
   expected: unknown,
   received: unknown
 ): string {
+  if (context.isNot) {
+    return printMatcherValues(context, expected, received);
+  }
+
   return context.utils.printDiffOrStringify(
     expected,
     received,
     'Expected',
     'Received',
     context.expand !== false
+  );
+}
+
+function getMatcherHint(context: jest.MatcherContext, matcherName: string): string {
+  return context.utils.matcherHint(matcherName, undefined, undefined, {
+    isNot: context.isNot,
+    promise: context.promise,
+  });
+}
+
+function printMatcherValues(
+  context: jest.MatcherContext,
+  expected: unknown,
+  received: unknown
+): string {
+  return (
+    `Expected: ${context.isNot ? 'not ' : ''}${context.utils.printExpected(expected)}\n` +
+    `Received: ${context.utils.printReceived(received)}`
   );
 }
 
@@ -19,10 +41,9 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toHavePathname') +
+        getMatcherHint(this, 'toHavePathname') +
         '\n\n' +
-        `Expected: ${this.utils.printExpected(expected)}\n` +
-        `Received: ${this.utils.printReceived(received)}`,
+        printMatcherValues(this, expected, received),
     };
   },
   toHavePathnameWithParams(screen, expected) {
@@ -31,10 +52,9 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toHavePathnameWithParams') +
+        getMatcherHint(this, 'toHavePathnameWithParams') +
         '\n\n' +
-        `Expected: ${this.utils.printExpected(expected)}\n` +
-        `Received: ${this.utils.printReceived(received)}`,
+        printMatcherValues(this, expected, received),
     };
   },
   toHaveSegments(screen, expected) {
@@ -43,7 +63,7 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toHaveSegments') +
+        getMatcherHint(this, 'toHaveSegments') +
         '\n\n' +
         printMatcherDiff(this, expected, received),
     };
@@ -54,7 +74,7 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toHaveSearchParams') +
+        getMatcherHint(this, 'toHaveSearchParams') +
         '\n\n' +
         printMatcherDiff(this, expected, received),
     };
@@ -65,7 +85,7 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toHaveRouterState') +
+        getMatcherHint(this, 'toHaveRouterState') +
         '\n\n' +
         printMatcherDiff(this, expected, received),
     };

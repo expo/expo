@@ -11,6 +11,13 @@ function printMatcherDiff(
   expected: unknown,
   received: unknown
 ): string {
+  if (context.isNot) {
+    return (
+      `Expected: ${context.isNot ? 'not ' : ''}${context.utils.printExpected(expected)}\n` +
+      `Received: ${context.utils.printReceived(received)}`
+    );
+  }
+
   return context.utils.printDiffOrStringify(
     expected,
     received,
@@ -18,6 +25,13 @@ function printMatcherDiff(
     'Received',
     context.expand !== false
   );
+}
+
+function getMatcherHint(context: jest.MatcherContext, matcherName: string): string {
+  return context.utils.matcherHint(matcherName, undefined, undefined, {
+    isNot: context.isNot,
+    promise: context.promise,
+  });
 }
 
 expect.extend({
@@ -34,7 +48,7 @@ expect.extend({
       return {
         pass,
         message: () =>
-          this.utils.matcherHint('toMatchInfoPlist') +
+          getMatcherHint(this, 'toMatchInfoPlist') +
           '\n\n' +
           printMatcherDiff(this, expected, config[cacheSymbol]!.infoPlist),
       };
@@ -50,7 +64,7 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toMatchInfoPlist') +
+        getMatcherHint(this, 'toMatchInfoPlist') +
         '\n\n' +
         printMatcherDiff(this, expected, infoPlist),
     };
@@ -63,7 +77,7 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toMatchAppleEntitlements') +
+        getMatcherHint(this, 'toMatchAppleEntitlements') +
         '\n\n' +
         printMatcherDiff(this, expected, data),
     };
@@ -97,7 +111,7 @@ expect.extend({
     return {
       pass,
       message: () =>
-        this.utils.matcherHint('toMatchAndroidProjectBuildGradle') +
+        getMatcherHint(this, 'toMatchAndroidProjectBuildGradle') +
         '\n\n' +
         printMatcherDiff(this, expected, received),
     };

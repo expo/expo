@@ -39,6 +39,10 @@ jest.mock('../icons/withAndroidIcons', () => {
   };
 });
 
+const expoUpdatesPackageJsonFixture = {
+  [require.resolve('expo-updates/package.json')]: JSON.stringify({ version: '0.10.0' }),
+};
+
 function getLargeConfig(): ExportedConfig {
   // A very extensive Expo Config.
   return {
@@ -572,6 +576,7 @@ describe('built-in plugins', () => {
       {
         // Required to link react-native-maps
         './node_modules/react-native-maps/package.json': JSON.stringify({}),
+        ...expoUpdatesPackageJsonFixture,
         // App files
         'config/GoogleService-Info.plist': googleServiceInfoFixture,
         'config/google-services.json': '{}',

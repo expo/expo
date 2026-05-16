@@ -11,6 +11,12 @@ it('toHavePathname', () => {
   expect(screen).toHavePathname('/home');
 });
 
+it('formats negated matcher messages', () => {
+  renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
+  expect(() => expect(screen).not.toHavePathname('/home')).toThrow(/\.not\.toHavePathname/);
+  expect(() => expect(screen).not.toHavePathname('/home')).toThrow(/Expected: not/);
+});
+
 it('toHavePathnameWithParams', () => {
   renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
   expect(screen).toHavePathnameWithParams('/home?test=true');
