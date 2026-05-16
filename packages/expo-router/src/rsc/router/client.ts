@@ -132,6 +132,11 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
     });
   }, []);
 
+  // TODO: Mint IDs from the active RouteNode's `contextKey` (via expo-router's
+  // RouterStore) so they're group-aware and canonical. Today they're URL-derived
+  // and omit `(group)` segments — the server's iterating resolver bridges this via
+  // optional-group regex matching, but the asymmetry should go away if/when the
+  // canonical-ID convention needs to include groups (e.g. signed skip tokens).
   const componentIds = getComponentIds(route.path);
 
   //  const refetchRoute = () => {
