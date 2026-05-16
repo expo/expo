@@ -114,6 +114,35 @@ describe('createPages', () => {
     expect(entries).toHaveProperty('about/page');
   });
 
+  it('prefers non-wildcard pages over wildcard pages when both could match', async () => {
+    const NonWildcardPage: FunctionComponent<any> = () => null;
+    const WildcardPage: FunctionComponent<any> = () => null;
+
+    const router = build(async ({ createPage, createLayout }) => {
+      createLayout({ component: NullComponent, path: '' as any, render: 'static' });
+      // Register wildcard FIRST so registration order can't accidentally satisfy the test.
+      createPage({
+        component: WildcardPage,
+        path: '/posts/[...rest]' as any,
+        render: 'dynamic',
+      });
+      createPage({
+        component: NonWildcardPage,
+        path: '/posts/[id]' as any,
+        render: 'dynamic',
+      });
+    });
+
+    const entries = await render(router, 'posts/123');
+    expect(entries).not.toBeNull();
+    expect(entries).toHaveProperty('posts/123/page');
+
+    const pageElement = entries!['posts/123/page'] as { type: FunctionComponent };
+    // The matched component should be the non-wildcard page (single segment) even though
+    // the wildcard would also match.
+    expect(pageElement.type.name).toBe('WrappedComponent');
+  });
+
   it('ignores non-string skip entries without crashing', async () => {
     const router = build(async ({ createPage, createLayout }) => {
       createLayout({ component: NullComponent, path: '' as any, render: 'static' });
