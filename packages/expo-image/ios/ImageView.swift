@@ -349,7 +349,7 @@ public final class ImageView: ExpoView {
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
     let path = localAssetName(from: source.uri)
 
-    if let path, !path.isEmpty, let local = UIImage(named: path) {
+    if let path, let local = UIImage(named: path) {
       renderSourceImage(local)
       return true
     }
