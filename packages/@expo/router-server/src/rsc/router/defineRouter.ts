@@ -50,6 +50,11 @@ const safeJsonParse = (str: unknown) => {
   return undefined;
 };
 
+const parseSkipList = (value: unknown): Set<string> => {
+  if (!Array.isArray(value)) return new Set();
+  return new Set(value.filter((v): v is string => typeof v === 'string'));
+};
+
 export function unstable_defineRouter(
   getPathConfig: () => Promise<
     Iterable<{
@@ -124,14 +129,19 @@ export function unstable_defineRouter(
     const parsedParams = safeJsonParse(params);
 
     const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-    const skip = Array.isArray(parsedParams?.skip)
-      ? new Set(parsedParams.skip.filter((v): v is string => typeof v === 'string'))
-      : new Set<string>();
+    const skip = parseSkipList(parsedParams?.skip);
     const componentIds = getComponentIds(pathname);
-    const kinds = new Map<string, 'page' | 'layout'>();
+    const pageId = componentIds[componentIds.length - 1];
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
         componentIds.map(async (id) => {
+          // `getComponentIds` always emits layouts before the terminal page. Use
+          // the position as a fast-path skip (kind isn't known until we resolve);
+          // the kind-based check after resolve is the authoritative defense.
+          const isPage = id === pageId;
+          if (isPage && skip.has(id)) {
+            return [];
+          }
           const setShouldSkip = (val?: ShouldSkipValue) => {
             if (val) {
               shouldSkipObj[id] = val;
@@ -146,26 +156,22 @@ export function unstable_defineRouter(
           if (!resolved) {
             return [];
           }
-          kinds.set(id, resolved.kind);
+          // Honor skip only for entries the resolver opted into shouldSkipObj; layouts are never skippable.
+          if (skip.has(id) && resolved.kind !== 'layout' && shouldSkipObj[id] != null) {
+            return [];
+          }
           const element = createElement(
             resolved.component as FunctionComponent<{
               path: string;
               query?: string;
             }>,
-            resolved.kind === 'layout' ? { path: pathname } : { path: pathname, query },
+            isPage ? { path: pathname, query } : { path: pathname },
             createElement(Children)
           );
           return [[id, element]] as const;
         })
       )
-    )
-      .flat()
-      // Honour skip only for entries the component opted into via unstable_setShouldSkip; layouts are never skippable.
-      .filter(([id]) => {
-        if (!skip.has(id)) return true;
-        if (kinds.get(id) === 'layout') return true;
-        return !(id in shouldSkipObj);
-      });
+    ).flat();
     entries.push([SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
     entries.push([LOCATION_ID, [pathname, query]]);
     return Object.fromEntries(entries);
