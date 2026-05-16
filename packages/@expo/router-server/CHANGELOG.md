@@ -15,6 +15,7 @@
 
 - [Internal] Align RSC server routing with expo-server/expo-router's canonical matchers ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
 - Enforce that RSC `skip` parameter cannot skip layouts anymore ([#45900](https://github.com/expo/expo/pull/45900) by [@kitten](https://github.com/kitten))
+- [Internal] Remove RSC render context and remove render store global ([#45908](https://github.com/expo/expo/pull/45908) by [@kitten](https://github.com/kitten))
 
 ## 56.0.8 — 2026-05-13
 
