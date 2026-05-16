@@ -65,9 +65,10 @@ export function createServerComponentsMiddleware(
     routerOptions: Record<string, any>;
   }
 ) {
-  const routerModule = useClientRouter
-    ? require.resolve('@expo/router-server/build/rsc/router/noopRouter')
-    : require.resolve('@expo/router-server/build/rsc/router/expo-definedRouter');
+  const {
+    resolveRouterModule,
+  } = require('@expo/router-server/build/rsc/router') as typeof import('@expo/router-server/build/rsc/router');
+  const routerModule = resolveRouterModule(useClientRouter);
 
   const rscMiddleware = getRscMiddleware({
     config: {},
@@ -309,7 +310,7 @@ export function createServerComponentsMiddleware(
     }
 
     const router = await ssrLoadModule<
-      typeof import('@expo/router-server/build/rsc/router/expo-definedRouter')
+      import('@expo/router-server/build/rsc/router').RouterModule
     >(
       routerModule,
       {
