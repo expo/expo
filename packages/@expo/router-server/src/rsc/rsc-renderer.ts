@@ -218,10 +218,8 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       throw new Error('Experimental support for React Server Functions is not enabled');
     }
 
-    const args = Array.isArray(decodedBody) ? decodedBody : [];
-
+    const actionArgs = Array.isArray(decodedBody) ? decodedBody : [];
     const chunkInfo = serverConfig[actionId];
-
     if (!chunkInfo) {
       throw new Error(`Could not find server action "${actionId}" in the server config.`);
     }
@@ -233,10 +231,14 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
     const mod: any = globalThis.__webpack_require__(chunkInfo.id);
 
     let fn: ((...args: unknown[]) => unknown) | undefined;
-    if (chunkInfo.name === '*' || chunkInfo.name === '') {
-      fn = mod.__esModule === true && 'default' in mod ? mod.default : mod;
+    if (mod == null || (typeof mod !== 'object' && typeof mod !== 'function')) {
+      fn = undefined;
+    } else if (chunkInfo.name === '*' || chunkInfo.name === '') {
+      fn = mod.__esModule === true && Object.hasOwn(mod, 'default') ? mod.default : mod;
+    } else if (Object.hasOwn(mod, chunkInfo.name)) {
+      fn = mod[chunkInfo.name];
     } else {
-      fn = Object.hasOwn(mod, chunkInfo.name) ? mod[chunkInfo.name] : undefined;
+      fn = undefined;
     }
 
     if (typeof fn !== 'function') {
@@ -245,7 +247,7 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
       );
     }
 
-    return renderWithContextWithAction(context, fn, args);
+    return renderWithContextWithAction(context, fn, actionArgs);
   } else {
     // method === 'GET'
     return renderWithContext(context, input, decodedBody);
