@@ -68,6 +68,35 @@ describe('expo-file-system new API', () => {
     await expect(file.json()).resolves.toEqual({ hello: 'world' });
   });
 
+  it('File.formData parses from file bytes', async () => {
+    const originalResponse = global.Response;
+    const formData = new FormData();
+    const buffer = new ArrayBuffer(3);
+    const response = {
+      formData: jest.fn().mockResolvedValue(formData),
+    };
+    const ResponseMock = jest.fn().mockReturnValue(response);
+    const file = new File(Paths.cache, 'form-data.txt');
+
+    jest.spyOn(file, 'arrayBuffer').mockResolvedValue(buffer);
+    Object.defineProperty(file, 'type', {
+      configurable: true,
+      get: () => 'multipart/form-data; boundary=test',
+    });
+    global.Response = ResponseMock as typeof Response;
+
+    try {
+      await expect(file.formData()).resolves.toBe(formData);
+    } finally {
+      global.Response = originalResponse;
+    }
+
+    expect(ResponseMock).toHaveBeenCalledWith(buffer, {
+      headers: { 'Content-Type': 'multipart/form-data; boundary=test' },
+    });
+    expect(response.formData).toHaveBeenCalledTimes(1);
+  });
+
   it('Directory has inherited methods from native mock', () => {
     const dir = new Directory(Paths.document, 'subdir');
     expect(typeof dir.delete).toBe('function');

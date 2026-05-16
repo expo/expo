@@ -192,8 +192,10 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
     return JSON.parse(await this.text());
   }
 
-  formData(): ReturnType<Response['formData']> {
-    return new Response(this).formData();
+  async formData(): ReturnType<Response['formData']> {
+    return new Response(await this.arrayBuffer(), {
+      headers: this.type ? { 'Content-Type': this.type } : undefined,
+    }).formData();
   }
 
   stream(): ReadableStream<Uint8Array<ArrayBuffer>> {
