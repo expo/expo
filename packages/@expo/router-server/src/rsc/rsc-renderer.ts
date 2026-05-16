@@ -231,9 +231,15 @@ export async function renderRsc(args: RenderRscArgs, opts: RenderRscOpts): Promi
 
     // Import module.
     const mod: any = globalThis.__webpack_require__(chunkInfo.id);
-    const fn = chunkInfo.name === '*' ? chunkInfo.name : mod[chunkInfo.name] || mod;
 
-    if (!fn) {
+    let fn: ((...args: unknown[]) => unknown) | undefined;
+    if (chunkInfo.name === '*' || chunkInfo.name === '') {
+      fn = mod.__esModule === true && 'default' in mod ? mod.default : mod;
+    } else {
+      fn = Object.hasOwn(mod, chunkInfo.name) ? mod[chunkInfo.name] : undefined;
+    }
+
+    if (typeof fn !== 'function') {
       throw new Error(
         `Could not find server action: ${actionId}. Module: ${JSON.stringify(chunkInfo, null, 2)}`
       );
