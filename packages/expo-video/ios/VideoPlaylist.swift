@@ -214,9 +214,9 @@ internal final class VideoPlaylist: SharedObject, VideoPlayerObserverDelegate {
     currentIndex = 0
     error = nil
     player.ref.pause()
-    Task {
-      try? await player.replaceCurrentItem(with: nil)
-      emitStatus()
+    player.replaceCurrentItem(withPreloadedItem: nil)
+    DispatchQueue.main.async { [weak self] in
+      self?.emitStatus()
     }
   }
 
@@ -349,13 +349,14 @@ internal final class VideoPlaylist: SharedObject, VideoPlayerObserverDelegate {
 
   private func handlePlayToEnd() {
     guard !sources.isEmpty else {
-      emitStatus(with: ["didJustFinish": true])
+      emitStatus(with: ["didJustFinish": true, "playing": false])
       return
     }
 
     guard autoAdvance else {
       shouldPlayWhenReady = false
-      emitStatus(with: ["didJustFinish": true])
+      player.ref.pause()
+      emitStatus(with: ["didJustFinish": true, "playing": false])
       return
     }
 
@@ -374,7 +375,8 @@ internal final class VideoPlaylist: SharedObject, VideoPlayerObserverDelegate {
     case .none:
       if currentIndex >= sources.count - 1 {
         shouldPlayWhenReady = false
-        emitStatus(with: ["didJustFinish": true])
+        player.ref.pause()
+        emitStatus(with: ["didJustFinish": true, "playing": false])
       } else {
         transition(to: currentIndex + 1, shouldPlay: true)
       }
@@ -603,8 +605,6 @@ internal final class VideoPlaylist: SharedObject, VideoPlayerObserverDelegate {
     }
 
     player.ref.pause()
-    Task {
-      try? await player.replaceCurrentItem(with: nil)
-    }
+    player.replaceCurrentItem(withPreloadedItem: nil)
   }
 }
