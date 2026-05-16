@@ -11,11 +11,7 @@ function build(fn: Parameters<typeof createPages>[0]) {
   return createPages(fn);
 }
 
-async function render(
-  router: ReturnType<typeof createPages>,
-  input: string,
-  params?: unknown
-) {
+async function render(router: ReturnType<typeof createPages>, input: string, params?: unknown) {
   return router.renderEntries(input, {
     params: params == null ? undefined : JSON.stringify(params),
     buildConfig: undefined,
@@ -83,7 +79,7 @@ describe('createPages', () => {
     });
 
     const entries = await render(router, 'about');
-    const shouldSkip = entries![SHOULD_SKIP_ID] as Array<[string, unknown]>;
+    const shouldSkip = entries![SHOULD_SKIP_ID] as [string, unknown][];
     const optedInIds = new Set(shouldSkip.map(([id]) => id));
 
     expect(optedInIds.has('about/page')).toBe(true);
