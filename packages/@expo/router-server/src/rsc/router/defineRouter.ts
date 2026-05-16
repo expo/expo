@@ -124,12 +124,16 @@ export function unstable_defineRouter(
     const parsedParams = safeJsonParse(params);
 
     const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
-    const skip = Array.isArray(parsedParams?.skip) ? (parsedParams?.skip as unknown[]) : [];
+    const skip = Array.isArray(parsedParams?.skip)
+      ? new Set(parsedParams.skip.filter((v): v is string => typeof v === 'string'))
+      : new Set<string>();
     const componentIds = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
         componentIds.map(async (id) => {
-          if (skip?.includes(id)) {
+          // Layouts must always render so they can enforce auth/loader logic for descendants.
+          const isLayout = id === 'layout' || id.endsWith('/layout');
+          if (!isLayout && skip.has(id)) {
             return [];
           }
           const setShouldSkip = (val?: ShouldSkipValue) => {
