@@ -77,11 +77,7 @@ async function loadStaticParamsForRoute(route: RouteNode): Promise<string[][] | 
   });
 }
 
-async function registerRouteTree(
-  api: CreatePagesApi,
-  route: RouteNode,
-  getRouteOptions: Parameters<typeof getRoutes>[1] | undefined
-): Promise<void> {
+async function registerRouteTree(api: CreatePagesApi, route: RouteNode): Promise<void> {
   const layoutPath = getContextKey(route.contextKey).replace(/\/index$/, '');
   const loaded = route.loadRoute();
 
@@ -101,7 +97,7 @@ async function registerRouteTree(
   await Promise.all(
     route.children.sort(sortRoutes).map(async (child) => {
       if (child.type === 'layout') {
-        await registerRouteTree(api, child, getRouteOptions);
+        await registerRouteTree(api, child);
         return;
       }
       const childPath = getContextKey(child.contextKey).replace(/\/index$/, '');
@@ -146,10 +142,6 @@ export default (getRouteOptions?: Parameters<typeof getRoutes>[1]): EntriesDev =
       importMode: 'lazy',
     });
     if (!routes) return;
-    await registerRouteTree(
-      { createPage, createLayout, unstable_setBuildData },
-      routes,
-      getRouteOptions
-    );
+    await registerRouteTree({ createPage, createLayout, unstable_setBuildData }, routes);
   }),
 });
