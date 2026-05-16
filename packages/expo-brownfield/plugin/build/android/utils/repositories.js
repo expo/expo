@@ -10,11 +10,11 @@ const repositoryTemplates = {
     localMaven: () => ['    localDefault {', '        type.set("localMaven")', '    }'],
     localDirectory: (count, publication, projectRoot) => {
         const nameOrPlaceholder = publication.name ?? `localDirectory${count + 1}`;
-        const resolvedPath = (0, validation_1.escapeGroovyDoubleQuotedString)(standardizePath(publication.path, projectRoot));
+        const resolvedPath = standardizePath(publication.path, projectRoot);
         return [
             `    ${nameOrPlaceholder} {`,
             '        type.set("localDirectory")',
-            `        url.set("file://${resolvedPath}")`,
+            `        url.set("file://${(0, validation_1.escapeGroovyDoubleQuotedString)(resolvedPath)}")`,
             '    }',
         ];
     },
