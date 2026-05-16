@@ -12,7 +12,12 @@ export type RouteProps = {
   hash: string;
 };
 
-export { getComponentIds, mintComponentId, type ComponentIdKind } from './idMinting';
+export {
+  getComponentIds,
+  mintComponentId,
+  type ComponentIdKind,
+  type ComponentIds,
+} from './idMinting';
 
 export function getInputString(path: string): string {
   if (!path.startsWith('/')) {

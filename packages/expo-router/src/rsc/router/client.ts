@@ -137,7 +137,8 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
   // and omit `(group)` segments — the server's iterating resolver bridges this via
   // optional-group regex matching, but the asymmetry should go away if/when the
   // canonical-ID convention needs to include groups (e.g. signed skip tokens).
-  const componentIds = getComponentIds(route.path);
+  const { layouts, page } = getComponentIds(route.path);
+  const componentIds = [...layouts, page];
 
   //  const refetchRoute = () => {
   //   const loc = parseRoute(new URL(getHref()));
@@ -161,7 +162,8 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
       startTransition(() => {
         setRoute(route);
       });
-      const componentIds = getComponentIds(route.path);
+      const { layouts, page } = getComponentIds(route.path);
+      const componentIds = [...layouts, page];
       if (
         checkCache &&
         componentIds.every((id) => {
@@ -194,7 +196,8 @@ const InnerRouter = ({ routerData }: { routerData: RouterData }) => {
 
   const prefetchRoute: PrefetchRoute = useCallback(
     (route) => {
-      const componentIds = getComponentIds(route.path);
+      const { layouts, page } = getComponentIds(route.path);
+      const componentIds = [...layouts, page];
       const shouldSkip = routerData[0];
       const skip = getSkipList(shouldSkip, componentIds, route, cachedRef.current);
       if (componentIds.every((id) => skip.includes(id))) {

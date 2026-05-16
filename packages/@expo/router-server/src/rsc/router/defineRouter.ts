@@ -130,15 +130,14 @@ export function unstable_defineRouter(
 
     const query = typeof parsedParams?.query === 'string' ? parsedParams.query : '';
     const skip = parseSkipList(parsedParams?.skip);
-    const componentIds = getComponentIds(pathname);
-    const pageId = componentIds[componentIds.length - 1];
+    const { layouts, page } = getComponentIds(pathname);
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
-        componentIds.map(async (id) => {
-          // `getComponentIds` always emits layouts before the terminal page. Use
-          // the position as a fast-path skip (kind isn't known until we resolve);
-          // the kind-based check after resolve is the authoritative defense.
-          const isPage = id === pageId;
+        [...layouts, page].map(async (id) => {
+          // `getComponentIds` separates the terminal page from layouts. Use that
+          // structural distinction as a fast-path skip (kind isn't known until we
+          // resolve); the kind-based check after resolve is the authoritative defense.
+          const isPage = id === page;
           if (isPage && skip.has(id)) {
             return [];
           }
@@ -226,12 +225,12 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
         return null;
       }
     }
-    const componentIds = getComponentIds(pathname);
+    const { layouts, page } = getComponentIds(pathname);
     const input = getInputString(pathname);
     const html = createElement(
       ServerRouter as FunctionComponent<Omit<ComponentProps<typeof ServerRouter>, 'children'>>,
       { route: { path: pathname, query: searchParams.toString(), hash: '' } },
-      componentIds.reduceRight(
+      [...layouts, page].reduceRight(
         (acc: ReactNode, id) => createElement(Slot, { id, fallback: acc }, acc),
         null
       )

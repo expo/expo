@@ -5,6 +5,7 @@ export {
   parseInputString,
   mintComponentId,
   type ComponentIdKind,
+  type ComponentIds,
   PARAM_KEY_SKIP,
   SHOULD_SKIP_ID,
   LOCATION_ID,
