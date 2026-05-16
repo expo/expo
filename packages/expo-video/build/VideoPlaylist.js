@@ -55,7 +55,7 @@ export function useVideoPlaylist(options = {}) {
     assertVideoPlaylistIsSupported();
     const { sources = [], initialIndex = 0, loop = 'none', preloadNext = false, autoAdvance = true, updateInterval = 500, } = options;
     const normalizedSources = normalizePlaylistSources(sources);
-    return useReleasingSharedObject(() => new (NativeVideoModule.VideoPlaylist)(normalizedSources, initialIndex, updateInterval, loop, preloadNext, autoAdvance), []);
+    return useReleasingSharedObject(() => new NativeVideoModule.VideoPlaylist(normalizedSources, initialIndex, updateInterval, loop, preloadNext, autoAdvance), []);
 }
 /**
  * Returns status updates for a [`VideoPlaylist`](#videoplaylist).
