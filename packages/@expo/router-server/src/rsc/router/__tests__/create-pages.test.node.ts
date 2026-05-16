@@ -1,6 +1,6 @@
 import type { FunctionComponent } from 'react';
 
-import { createPages } from '../expo-definedRouter';
+import { createPages } from '../createPages';
 
 const SHOULD_SKIP_ID = '/SHOULD_SKIP';
 const LOCATION_ID = '/LOCATION';
