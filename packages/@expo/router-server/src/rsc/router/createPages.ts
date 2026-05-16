@@ -4,7 +4,7 @@ import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
 import { unstable_defineRouter } from './defineRouter';
-import { getNamedParametrizedRoute } from '../../getServerManifest';
+import { getNamedParametrizedRoute } from '../../getNamedParametrizedRoute';
 import type { BuildConfig } from '../server';
 
 type ComponentKind = 'page' | 'layout';

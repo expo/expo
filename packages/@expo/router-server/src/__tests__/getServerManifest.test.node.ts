@@ -1,7 +1,7 @@
 import type { RequireContext } from 'expo-router';
 import { getExactRoutes } from 'expo-router/internal/routing';
 
-import { getServerManifest, parseParameter } from '../getServerManifest';
+import { getServerManifest } from '../getServerManifest';
 
 function createMockContextModule(map: Record<string, Record<string, any>> = {}) {
   const contextModule = jest.fn((key) => map[key]);
@@ -115,16 +115,6 @@ it(`converts a server manifest with nested root group and root layout`, () => {
       },
     ],
     notFoundRoutes: [],
-  });
-});
-
-describe(parseParameter, () => {
-  it(`matches optionals using non-standard from router v1`, () => {
-    expect(parseParameter('[...all]')).toEqual({
-      name: 'all',
-      optional: true,
-      repeat: true,
-    });
   });
 });
 
