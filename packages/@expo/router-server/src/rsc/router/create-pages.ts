@@ -188,9 +188,10 @@ export function createPages(
 
   // TODO I think there's room for improvement to refactor these structures
   const staticPathSet = new Set<[string, PathSpec]>();
-  const dynamicPagePathMap = new Map<string, [PathSpec, FunctionComponent<any>]>();
-  const wildcardPagePathMap = new Map<string, [PathSpec, FunctionComponent<any>]>();
-  const dynamicLayoutPathMap = new Map<string, [PathSpec, FunctionComponent<any>]>();
+  type IdMatcher = (id: string) => Record<string, string | string[]> | null;
+  const dynamicPagePathMap = new Map<string, [PathSpec, FunctionComponent<any>, IdMatcher]>();
+  const wildcardPagePathMap = new Map<string, [PathSpec, FunctionComponent<any>, IdMatcher]>();
+  const dynamicLayoutPathMap = new Map<string, [PathSpec, FunctionComponent<any>, IdMatcher]>();
   const staticComponentMap = new Map<
     string,
     { component: FunctionComponent<any>; kind: 'page' | 'layout' }
@@ -273,12 +274,22 @@ export function createPages(
       if (dynamicPagePathMap.has(page.path)) {
         throw new Error(`Duplicated dynamic path: ${page.path}`);
       }
-      dynamicPagePathMap.set(page.path, [pathSpec, page.component]);
+      const pageSpec: PathSpec = [...pathSpec, { type: 'literal', name: 'page' }];
+      dynamicPagePathMap.set(page.path, [
+        pathSpec,
+        page.component,
+        (id) => getPathMapping(pageSpec, id),
+      ]);
     } else if (page.render === 'dynamic' && numWildcards === 1) {
       if (wildcardPagePathMap.has(page.path)) {
         throw new Error(`Duplicated dynamic path: ${page.path}`);
       }
-      wildcardPagePathMap.set(page.path, [pathSpec, page.component]);
+      const pageSpec: PathSpec = [...pathSpec, { type: 'literal', name: 'page' }];
+      wildcardPagePathMap.set(page.path, [
+        pathSpec,
+        page.component,
+        (id) => getPathMapping(pageSpec, id),
+      ]);
     } else {
       throw new Error('Invalid page configuration: ' + page.path);
     }
@@ -296,7 +307,12 @@ export function createPages(
         throw new Error(`Duplicated dynamic path: ${layout.path}`);
       }
       const pathSpec = parsePathWithSlug(layout.path);
-      dynamicLayoutPathMap.set(layout.path, [pathSpec, layout.component]);
+      const layoutSpec: PathSpec = [...pathSpec, { type: 'literal', name: 'layout' }];
+      dynamicLayoutPathMap.set(layout.path, [
+        pathSpec,
+        layout.component,
+        (id) => getPathMapping(layoutSpec, id),
+      ]);
     } else {
       throw new Error('Invalid layout configuration');
     }
@@ -383,8 +399,8 @@ export function createPages(
         }
         return staticEntry;
       }
-      for (const [_, [pathSpec, Component]] of dynamicPagePathMap) {
-        const mapping = getPathMapping([...pathSpec, { type: 'literal', name: 'page' }], id);
+      for (const [_, [, Component, matchId]] of dynamicPagePathMap) {
+        const mapping = matchId(id);
         if (mapping) {
           if (Object.keys(mapping).length === 0) {
             unstable_setShouldSkip();
@@ -396,8 +412,8 @@ export function createPages(
           return { component: WrappedComponent, kind: 'page' };
         }
       }
-      for (const [_, [pathSpec, Component]] of wildcardPagePathMap) {
-        const mapping = getPathMapping([...pathSpec, { type: 'literal', name: 'page' }], id);
+      for (const [_, [, Component, matchId]] of wildcardPagePathMap) {
+        const mapping = matchId(id);
         if (mapping) {
           const WrappedComponent = (props: Record<string, unknown>) =>
             createElement(Component, { ...props, ...mapping });
@@ -405,8 +421,8 @@ export function createPages(
           return { component: WrappedComponent, kind: 'page' };
         }
       }
-      for (const [_, [pathSpec, Component]] of dynamicLayoutPathMap) {
-        const mapping = getPathMapping([...pathSpec, { type: 'literal', name: 'layout' }], id);
+      for (const [_, [, Component, matchId]] of dynamicLayoutPathMap) {
+        const mapping = matchId(id);
         if (mapping) {
           if (Object.keys(mapping).length) {
             throw new Error('[Bug] layout should not have slugs');
