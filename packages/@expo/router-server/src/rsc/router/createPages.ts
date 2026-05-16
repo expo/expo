@@ -95,6 +95,12 @@ function hasPathPrefix(prefix: string, path: string): boolean {
   return path === prefix || path.startsWith(prefix + '/');
 }
 
+/** Normalize a registration path to a URL-shaped pathname (always starts with `/`). */
+function normalizePath(path: string): string {
+  if (path === '' || path === '/') return '/';
+  return path.startsWith('/') ? path : '/' + path;
+}
+
 function sanitizeSlug(slug: string): string {
   return slug.replace(/\./g, '').replace(/ /g, '-');
 }
@@ -113,6 +119,9 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
   let sortedEntries: Entry[] = [];
 
   const register = (entry: Entry) => {
+    // entry.path is the public-facing URL pathname (must start with `/`);
+    // top-level `./index.tsx` arrives as `''` and root layouts as `''`/`/`.
+    entry.path = normalizePath(entry.path);
     const key = `${entry.kind}:${entry.path}`;
     const existing = entriesByKey.get(key);
     if (existing && existing.component !== entry.component) {
@@ -235,7 +244,9 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
   };
 
   const unstable_setBuildData = (path: string, data: unknown) => {
-    buildDataMap.set(path, data);
+    // Key by the same normalized pathname `register` uses, so the lookup at
+    // `buildDataMap.get(entry.path)` finds it regardless of caller convention.
+    buildDataMap.set(normalizePath(path), data);
   };
 
   let ready: Promise<void> | undefined;
