@@ -15,7 +15,7 @@ import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
 import { unstable_defineRouter } from './defineRouter';
-import { joinPath, getPathMapping } from '../path';
+import { joinPath } from '../path';
 import type { PathSpec, PathSpecItem } from '../path';
 import type { BuildConfig } from '../server';
 
@@ -30,6 +30,39 @@ function parsePathSpec(path: string): PathSpec {
         ? { type: 'wildcard', name: match.name }
         : { type: 'group', name: match.name };
     });
+}
+
+const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
+
+function compilePathMatcher(
+  path: string,
+  suffix?: 'page' | 'layout'
+): (target: string) => Record<string, string | string[]> | null {
+  const slugs: { name: string; deep: boolean }[] = [];
+  const parts: string[] = [];
+  for (const segment of path.split('/').filter(Boolean)) {
+    const dynamic = matchDynamicName(segment);
+    if (dynamic) {
+      slugs.push(dynamic);
+      parts.push(dynamic.deep ? '(.+?)' : '([^/]+)');
+    } else {
+      parts.push(segment.replace(REGEX_ESCAPE, '\\$&'));
+    }
+  }
+  if (suffix) parts.push(suffix);
+  const regex = new RegExp(`^/?${parts.join('/')}$`);
+  return (target) => {
+    const match = regex.exec(target);
+    if (!match) return null;
+    const params: Record<string, string | string[]> = {};
+    for (let i = 0; i < slugs.length; i++) {
+      const value = match[i + 1];
+      if (value === undefined) continue;
+      const slug = slugs[i]!;
+      params[slug.name] = slug.deep ? value.split('/') : value;
+    }
+    return params;
+  };
 }
 
 const hasPathSpecPrefix = (prefix: PathSpec, path: PathSpec) => {
@@ -288,21 +321,19 @@ export function createPages(
       if (dynamicPagePathMap.has(page.path)) {
         throw new Error(`Duplicated dynamic path: ${page.path}`);
       }
-      const pageSpec: PathSpec = [...pathSpec, { type: 'literal', name: 'page' }];
       dynamicPagePathMap.set(page.path, [
         pathSpec,
         page.component,
-        (id) => getPathMapping(pageSpec, id),
+        compilePathMatcher(page.path, 'page'),
       ]);
     } else if (page.render === 'dynamic' && numWildcards === 1) {
       if (wildcardPagePathMap.has(page.path)) {
         throw new Error(`Duplicated dynamic path: ${page.path}`);
       }
-      const pageSpec: PathSpec = [...pathSpec, { type: 'literal', name: 'page' }];
       wildcardPagePathMap.set(page.path, [
         pathSpec,
         page.component,
-        (id) => getPathMapping(pageSpec, id),
+        compilePathMatcher(page.path, 'page'),
       ]);
     } else {
       throw new Error('Invalid page configuration: ' + page.path);
@@ -321,11 +352,10 @@ export function createPages(
         throw new Error(`Duplicated dynamic path: ${layout.path}`);
       }
       const pathSpec = parsePathSpec(layout.path);
-      const layoutSpec: PathSpec = [...pathSpec, { type: 'literal', name: 'layout' }];
       dynamicLayoutPathMap.set(layout.path, [
         pathSpec,
         layout.component,
-        (id) => getPathMapping(layoutSpec, id),
+        compilePathMatcher(layout.path, 'layout'),
       ]);
     } else {
       throw new Error('Invalid layout configuration');
@@ -369,10 +399,10 @@ export function createPages(
           }
           return true;
         })();
-
+        const matchPath = compilePathMatcher(path);
         paths.push({
           path: pathSpec,
-          matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
+          matchesPathname: (pathname) => matchPath(pathname) != null,
           isStatic,
           noSsr,
           data: buildDataMap.get(path),
@@ -380,9 +410,10 @@ export function createPages(
       }
       for (const [path, [pathSpec]] of dynamicPagePathMap) {
         const noSsr = noSsrSet.has(pathSpec);
+        const matchPath = compilePathMatcher(path);
         paths.push({
           path: pathSpec,
-          matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
+          matchesPathname: (pathname) => matchPath(pathname) != null,
           isStatic: false,
           noSsr,
           data: buildDataMap.get(path),
@@ -390,9 +421,10 @@ export function createPages(
       }
       for (const [path, [pathSpec]] of wildcardPagePathMap) {
         const noSsr = noSsrSet.has(pathSpec);
+        const matchPath = compilePathMatcher(path);
         paths.push({
           path: pathSpec,
-          matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
+          matchesPathname: (pathname) => matchPath(pathname) != null,
           isStatic: false,
           noSsr,
           data: buildDataMap.get(path),
