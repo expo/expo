@@ -28,7 +28,16 @@ public final class ExpoUIModule: Module {
       }
 
       Function("setValue") { (state: ObservableState, wrapper: [String: Any]) in
-        state.value = wrapper["value"]
+        let newValue = wrapper["value"]
+        // SwiftUI requires ObservableObject mutations on the UI thread; otherwise
+        // we can see warnings in Xcode and sometimes unexpected behavior.
+        if Thread.isMainThread {
+          state.value = newValue
+        } else {
+          DispatchQueue.main.sync {
+            state.value = newValue
+          }
+        }
       }
     }
 
