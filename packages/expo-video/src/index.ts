@@ -6,6 +6,7 @@ export {
 } from './VideoModule';
 export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
+export { createVideoPlaylist, useVideoPlaylist, useVideoPlaylistStatus } from './VideoPlaylist';
 
 export type {
   VideoContentFit,
@@ -19,6 +20,7 @@ export { createVideoPlayer } from './VideoPlayer';
 export { default as VideoAirPlayButton } from './VideoAirPlayButton';
 
 export type * from './VideoPlayer.types';
+export type * from './VideoPlaylist.types';
 
 export type * from './VideoPlayerEvents.types';
 export type * from './VideoAirPlayButton.types';
