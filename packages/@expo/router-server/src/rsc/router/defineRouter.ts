@@ -131,11 +131,6 @@ export function unstable_defineRouter(
     const entries: (readonly [string, ReactNode])[] = (
       await Promise.all(
         componentIds.map(async (id) => {
-          // Layouts must always render so they can enforce auth/loader logic for descendants.
-          const isLayout = id === 'layout' || id.endsWith('/layout');
-          if (!isLayout && skip.has(id)) {
-            return [];
-          }
           const setShouldSkip = (val?: ShouldSkipValue) => {
             if (val) {
               shouldSkipObj[id] = val;
@@ -161,7 +156,14 @@ export function unstable_defineRouter(
           return [[id, element]] as const;
         })
       )
-    ).flat();
+    )
+      .flat()
+      // Honour skip only for entries the component opted into via unstable_setShouldSkip; layouts are never skippable.
+      .filter(([id]) => {
+        if (!skip.has(id)) return true;
+        if (id === 'layout' || id.endsWith('/layout')) return true;
+        return !(id in shouldSkipObj);
+      });
     entries.push([SHOULD_SKIP_ID, Object.entries(shouldSkipObj)]);
     entries.push([LOCATION_ID, [pathname, query]]);
     return Object.fromEntries(entries);
