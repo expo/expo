@@ -44,7 +44,13 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toMatchInfoPlist') +
         '\n\n' +
-        this.utils.printDiffOrStringify(expected, infoPlist, 'Expected', 'Received', this.expand !== false),
+        this.utils.printDiffOrStringify(
+          expected,
+          infoPlist,
+          'Expected',
+          'Received',
+          this.expand !== false
+        ),
     };
   },
   toMatchAppleEntitlements(config: ExportedConfig, expected: any) {
@@ -57,7 +63,13 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toMatchAppleEntitlements') +
         '\n\n' +
-        this.utils.printDiffOrStringify(expected, data, 'Expected', 'Received', this.expand !== false),
+        this.utils.printDiffOrStringify(
+          expected,
+          data,
+          'Expected',
+          'Received',
+          this.expand !== false
+        ),
     };
   },
   toHaveModHistory(config: ExportedConfig, name: string) {
@@ -91,7 +103,13 @@ expect.extend({
       message: () =>
         this.utils.matcherHint('toMatchAndroidProjectBuildGradle') +
         '\n\n' +
-        this.utils.printDiffOrStringify(expected, received, 'Expected', 'Received', this.expand !== false),
+        this.utils.printDiffOrStringify(
+          expected,
+          received,
+          'Expected',
+          'Received',
+          this.expand !== false
+        ),
     };
   },
 });
