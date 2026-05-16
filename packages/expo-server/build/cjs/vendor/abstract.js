@@ -77,7 +77,33 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                 request = new Request(url, request);
             }
         }
-        // First, test static routes and loader data requests
+        // First, test API routes — but only commit if the module exports a handler
+        // for the current method. For GET/HEAD without a handler, fall through to
+        // HTML routes (co-located page+api pattern). For other methods, return 405.
+        for (const route of manifest.apiRoutes) {
+            if (!route.namedRegex.test(url.pathname)) {
+                continue;
+            }
+            const mod = await getApiRoute(route);
+            // Development bundling errors — surface immediately
+            if ((0, matchers_1.isResponse)(mod)) {
+                return mod;
+            }
+            if (mod && typeof mod === 'object') {
+                const handler = mod[request.method];
+                if (handler && typeof handler === 'function') {
+                    return await respondAPI(mod, request, route);
+                }
+                // No handler for this method — for non-GET/HEAD, return 405 (the API
+                // route exists but doesn't support this method). For GET/HEAD, continue
+                // checking other API routes or fall through to HTML routes.
+                if (request.method !== 'GET' && request.method !== 'HEAD') {
+                    return await respondAPI(mod, request, route);
+                }
+                continue;
+            }
+        }
+        // Next, test static routes and loader data requests
         if (request.method === 'GET' || request.method === 'HEAD') {
             const isLoaderRequest = url.pathname.startsWith('/_expo/loaders/');
             const matchedPath = isLoaderRequest
@@ -101,14 +127,6 @@ function createRequestHandler({ getRoutesManifest, getHtml, getApiRoute, getMidd
                 const html = await getHtml(request, route);
                 return respondHTML(html, route);
             }
-        }
-        // Next, test API routes
-        for (const route of manifest.apiRoutes) {
-            if (!route.namedRegex.test(url.pathname)) {
-                continue;
-            }
-            const mod = await getApiRoute(route);
-            return await respondAPI(mod, request, route);
         }
         // Finally, test 404 routes
         if (request.method === 'GET' || request.method === 'HEAD') {

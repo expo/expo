@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed API routes (`+api.ts`) being shadowed by catch-all page routes for GET/HEAD requests by checking API routes first with method-aware fallthrough. by [@tyrauber](https://github.com/tyrauber)
+
 ### 💡 Others
 
 ## 56.0.2 — 2026-05-13
