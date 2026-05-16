@@ -5,6 +5,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../../../../log';
+import { getCombinedKnownVersionsAsync } from '../getVersionedPackages';
 import {
   getVersionedDependenciesAsync,
   isDependencyVersionIncorrect,
@@ -381,6 +382,41 @@ describe('getVersionedDependenciesAsync (TV)', () => {
 
     const incorrect = await getVersionedDependenciesAsync(projectRoot, exp as any, pkg);
     expect(incorrect).toEqual([]);
+  });
+
+  it('uses the bundled react-native-tvos version when present in bundledNativeModules', async () => {
+    jest.mocked(getCombinedKnownVersionsAsync).mockReturnValueOnce({
+      'expo-splash-screen': '~1.2.3',
+      'expo-updates': '~2.3.4',
+      firebase: '9.1.0',
+      expo: '49.0.7',
+      'react-native': '0.85.3',
+      'react-native-tvos': '0.85.3-0',
+    } as any);
+    vol.fromJSON(
+      {
+        'node_modules/expo/package.json': JSON.stringify({ version: '55.0.0' }),
+        'node_modules/react-native/package.json': JSON.stringify({
+          name: 'react-native-tvos',
+          version: '0.83.0-0',
+        }),
+      },
+      projectRoot
+    );
+    const exp = { sdkVersion: '55.0.0' };
+    const pkg = {
+      dependencies: { 'react-native': 'npm:react-native-tvos@0.83.0-0' },
+    };
+
+    const incorrect = await getVersionedDependenciesAsync(projectRoot, exp as any, pkg);
+    expect(incorrect).toEqual([
+      {
+        packageName: 'react-native',
+        packageType: 'dependencies',
+        expectedVersionOrRange: 'npm:react-native-tvos@0.85.3-0',
+        actualVersion: '0.83.0-0',
+      },
+    ]);
   });
 
   it('leaves the expected version untouched for non-TV projects with an outdated react-native', async () => {

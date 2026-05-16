@@ -65,7 +65,27 @@ describe(isReactNativeTvProjectAsync, () => {
 });
 
 describe(correctReactNativeTvVersion, () => {
-  it('derives the <major>.<minor>-stable dist-tag from a plain react-native version', () => {
+  it('prefers the bundled react-native-tvos version when present', () => {
+    expect(
+      correctReactNativeTvVersion('0.85.3', {
+        'react-native': '0.85.3',
+        'react-native-tvos': '0.85.3-0',
+      })
+    ).toBe('npm:react-native-tvos@0.85.3-0');
+  });
+
+  it('prefers the bundled react-native-tvos version even when react-native is a prerelease', () => {
+    expect(
+      correctReactNativeTvVersion('0.85.3-rc.1', {
+        'react-native-tvos': '0.85.3-rc.1',
+      })
+    ).toBe('npm:react-native-tvos@0.85.3-rc.1');
+  });
+
+  it('derives the <major>.<minor>-stable dist-tag when bundled has no react-native-tvos', () => {
+    expect(correctReactNativeTvVersion('0.85.3', { 'react-native': '0.85.3' })).toBe(
+      'npm:react-native-tvos@0.85-stable'
+    );
     expect(correctReactNativeTvVersion('0.85.3')).toBe('npm:react-native-tvos@0.85-stable');
   });
 
@@ -84,8 +104,9 @@ describe(correctReactNativeTvVersion, () => {
     expect(correctReactNativeTvVersion('^0.85.3-rc.1')).toBe('npm:react-native-tvos@next');
   });
 
-  it('throws on a non-semver react-native version', () => {
-    expect(() => correctReactNativeTvVersion('not-a-version')).toThrow(/not a valid semver/);
+  it('falls back to @latest when the react-native version is not parseable', () => {
+    expect(correctReactNativeTvVersion('not-a-version')).toBe('npm:react-native-tvos@latest');
+    expect(correctReactNativeTvVersion('')).toBe('npm:react-native-tvos@latest');
   });
 });
 

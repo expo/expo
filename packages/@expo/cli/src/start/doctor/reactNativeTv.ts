@@ -30,26 +30,37 @@ export async function isReactNativeTvProjectAsync(projectRoot: string): Promise<
 }
 
 /**
- * Derives the `react-native-tvos` install spec that matches a given `react-native`
- * version. `react-native-tvos` ships a dist-tag per minor line in the form
- * `<major>.<minor>-stable`, so for `react-native@0.85.3` we install
- * `npm:react-native-tvos@0.85-stable`. For a prerelease `react-native` (e.g.
- * `0.85.3-rc.1`), the upstream stable line doesn't exist yet, so we target the
- * `next` dist-tag instead.
+ * Picks the `react-native-tvos` install spec for a TV project. Resolution order:
  *
- * Throws if `reactNativeVersion` is not a parseable semver value or range.
+ * 1. If `bundledNativeModules` lists `react-native-tvos`, install that exact
+ *    version. The map is the merged result of the SDK versions endpoint and the
+ *    local `expo/bundledNativeModules.json`, so this is the same source of
+ *    truth used for every other package.
+ * 2. Otherwise derive from the bundled `react-native` version: stable
+ *    `react-native` lines have a matching `<major>.<minor>-stable` dist-tag on
+ *    `react-native-tvos`; prerelease lines (e.g. `0.85.3-rc.1`) target `next`.
+ * 3. If `bundledReactNativeVersion` isn't a parseable semver value, fall back
+ *    to `npm:react-native-tvos@latest`.
  */
-export function correctReactNativeTvVersion(reactNativeVersion: string): string {
-  let minVersion: semver.SemVer | null;
-  try {
-    minVersion = semver.minVersion(reactNativeVersion);
-  } catch {
-    minVersion = null;
+export function correctReactNativeTvVersion(
+  bundledReactNativeVersion: string,
+  bundledNativeModules?: Record<string, string>
+): string {
+  const bundledTvVersion = bundledNativeModules?.[REACT_NATIVE_TVOS_PACKAGE_NAME];
+  if (bundledTvVersion) {
+    return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${bundledTvVersion}`;
+  }
+
+  let minVersion: semver.SemVer | null = null;
+  if (bundledReactNativeVersion) {
+    try {
+      minVersion = semver.minVersion(bundledReactNativeVersion);
+    } catch {
+      minVersion = null;
+    }
   }
   if (!minVersion) {
-    throw new Error(
-      `Cannot derive a react-native-tvos version from "${reactNativeVersion}": not a valid semver value.`
-    );
+    return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@latest`;
   }
   if (minVersion.prerelease.length > 0) {
     return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@next`;

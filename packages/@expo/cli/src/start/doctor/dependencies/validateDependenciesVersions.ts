@@ -252,7 +252,10 @@ function findIncorrectDependencies(
         incorrectDeps.push({
           packageName,
           packageType: findDependencyType(pkg, packageName),
-          expectedVersionOrRange: correctReactNativeTvVersion(bundledReactNativeVersion),
+          expectedVersionOrRange: correctReactNativeTvVersion(
+            bundledReactNativeVersion,
+            bundledNativeModules
+          ),
           actualVersion,
         });
       }
