@@ -338,6 +338,79 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+### Video playlists&ensp;<PlatformTags platforms={['ios']} />
+
+`VideoPlaylist` manages a list of video sources while exposing one stable [`VideoPlayer`](#videoplayer). Pass `playlist.player` to [`VideoView`](#videoview); the player object stays the same when the playlist advances.
+
+The `sources` option passed to [`useVideoPlaylist`](#usevideoplaylistoptions) is used only as the initial playlist contents. After creation, update the playlist with `add`, `insert`, `remove`, `clear`, or `replaceAll`.
+
+> **Note:** `VideoPlaylist` is currently available on iOS. Android and web throw unsupported-platform errors until their playlist implementations are added.
+
+```tsx
+import { useVideoPlaylist, useVideoPlaylistStatus, VideoView } from 'expo-video';
+import { Button, StyleSheet, Text, View } from 'react-native';
+
+export default function PlaylistScreen() {
+  const playlist = useVideoPlaylist({
+    sources: [
+      {
+        id: 'bunny',
+        source: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      },
+      {
+        id: 'elephants',
+        source:
+          'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
+      },
+    ],
+    loop: 'all',
+    preloadNext: true,
+  });
+  const status = useVideoPlaylistStatus(playlist);
+
+  return (
+    <View style={styles.contentContainer}>
+      <VideoView player={playlist.player} style={styles.video} />
+      <Text>
+        Video {status.currentIndex + 1} of {status.sourceCount}
+      </Text>
+      <View style={styles.controlsContainer}>
+        <Button title="Previous" disabled={!status.canPlayPrevious} onPress={() => playlist.previous()} />
+        <Button
+          title={status.playing ? 'Pause' : 'Play'}
+          onPress={() => {
+            if (status.playing) {
+              playlist.pause();
+            } else {
+              playlist.play();
+            }
+          }}
+        />
+        <Button title="Next" disabled={!status.canPlayNext} onPress={() => playlist.next()} />
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  contentContainer: {
+    flex: 1,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  video: {
+    width: 350,
+    height: 275,
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    padding: 10,
+  },
+});
+```
+
 ### Using the VideoPlayer directly
 
 In most cases, the [`useVideoPlayer`](#usevideoplayersource-setup) hook should be used to create a `VideoPlayer` instance. It manages the player's lifecycle and ensures that it is properly disposed of when the component is unmounted. However, in some advanced use cases, it might be necessary to create a `VideoPlayer` that does not get automatically destroyed when the component is unmounted.
