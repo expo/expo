@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Added `@expo/ui/community/slider`, a drop-in replacement for `@react-native-community/slider`. ([#45623](https://github.com/expo/expo/pull/45623) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Added `withAnimated(animation, body)` in `@expo/ui/swift-ui`, mirroring SwiftUI's `withAnimation(_:_:)`. ([#45893](https://github.com/expo/expo/pull/45893) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
