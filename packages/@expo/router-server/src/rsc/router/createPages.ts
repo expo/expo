@@ -4,6 +4,7 @@ import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
 import { unstable_defineRouter } from './defineRouter';
+import { getNamedParametrizedRoute } from '../../getServerManifest';
 import { joinPath } from '../path';
 import type { BuildConfig } from '../server';
 
@@ -62,31 +63,33 @@ export type CreatePagesFn = (
   opts: { unstable_buildConfig: BuildConfig | undefined }
 ) => Promise<void>;
 
-const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
-
 function compilePathMatcher(path: string, suffix?: 'page' | 'layout'): IdMatcher {
-  const slugs: { name: string; deep: boolean }[] = [];
-  const parts: string[] = [];
-  for (const segment of path.split('/').filter(Boolean)) {
-    const dynamic = matchDynamicName(segment);
-    if (dynamic) {
-      slugs.push(dynamic);
-      parts.push(dynamic.deep ? '(.+?)' : '([^/]+)');
-    } else {
-      parts.push(segment.replace(REGEX_ESCAPE, '\\$&'));
-    }
-  }
-  if (suffix) parts.push(suffix);
-  const regex = new RegExp(`^/?${parts.join('/')}$`);
+  // Reuse expo-router-server's canonical regex builder so RSC matching agrees with
+  // the URL manifest about brackets, group routes (optional), wildcards, and +not-found.
+  const safePath = path.startsWith('/') ? path : '/' + path;
+  const { namedParameterizedRoute, routeKeys, wildcardKeys } = getNamedParametrizedRoute(
+    safePath || '/'
+  );
+  // The canonical regex assumes a leading-slash pathname per segment, so concatenating
+  // a suffix can produce double slashes for the root path. Collapse them, then anchor.
+  const pattern = (namedParameterizedRoute + (suffix ? '/' + suffix : '')).replace(/\/{2,}/g, '/');
+  const regex = new RegExp(`^${pattern}/?$`);
   return (target) => {
-    const match = regex.exec(target);
+    // Normalize ID targets (e.g. `posts/123/page`) to the pathname shape the canonical
+    // regex expects (`/posts/123/page`).
+    const normalized = target.startsWith('/') ? target : '/' + target;
+    const match = regex.exec(normalized);
     if (!match) return null;
     const params: SlugMapping = {};
-    for (let i = 0; i < slugs.length; i++) {
-      const value = match[i + 1];
-      if (value === undefined) continue;
-      const slug = slugs[i]!;
-      params[slug.name] = slug.deep ? value.split('/') : value;
+    const groups = match.groups;
+    if (groups) {
+      for (const cleanedKey in groups) {
+        const value = groups[cleanedKey];
+        if (value === undefined) continue;
+        const originalName = routeKeys[cleanedKey];
+        if (originalName == null) continue;
+        params[originalName] = wildcardKeys.has(cleanedKey) ? value.split('/') : value;
+      }
     }
     return params;
   };

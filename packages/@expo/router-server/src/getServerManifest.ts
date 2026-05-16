@@ -239,67 +239,72 @@ function removeTrailingSlash(route: string): string {
   return route.replace(/\/$/, '') || '/';
 }
 
-function getNamedParametrizedRoute(route: string) {
+export function getNamedParametrizedRoute(route: string): {
+  namedParameterizedRoute: string;
+  routeKeys: Record<string, string>;
+  /** Cleaned route-key names whose captures should be split into arrays (wildcards). */
+  wildcardKeys: Set<string>;
+} {
   const segments = removeTrailingSlash(route).slice(1).split('/');
   const getSafeRouteKey = buildGetSafeRouteKey();
   const routeKeys: Record<string, string> = {};
-  return {
-    namedParameterizedRoute: segments
-      .map((segment, index) => {
-        if (segment === '+not-found' && index === segments.length - 1) {
-          segment = '[...not-found]';
+  const wildcardKeys = new Set<string>();
+  const namedParameterizedRoute = segments
+    .map((segment, index) => {
+      if (segment === '+not-found' && index === segments.length - 1) {
+        segment = '[...not-found]';
+      }
+      if (/^\[.*\]$/.test(segment)) {
+        const { name, optional, repeat } = parseParameter(segment);
+        // replace any non-word characters since they can break
+        // the named regex
+        let cleanedKey = name.replace(/\W/g, '');
+        let invalidKey = false;
+
+        // check if the key is still invalid and fallback to using a known
+        // safe key
+        if (cleanedKey.length === 0 || cleanedKey.length > 30) {
+          invalidKey = true;
         }
-        if (/^\[.*\]$/.test(segment)) {
-          const { name, optional, repeat } = parseParameter(segment);
-          // replace any non-word characters since they can break
-          // the named regex
-          let cleanedKey = name.replace(/\W/g, '');
-          let invalidKey = false;
+        if (!isNaN(parseInt(cleanedKey.slice(0, 1), 10))) {
+          invalidKey = true;
+        }
 
-          // check if the key is still invalid and fallback to using a known
-          // safe key
-          if (cleanedKey.length === 0 || cleanedKey.length > 30) {
-            invalidKey = true;
-          }
-          if (!isNaN(parseInt(cleanedKey.slice(0, 1), 10))) {
-            invalidKey = true;
-          }
+        // Prevent duplicates after sanitizing the key
+        if (cleanedKey in routeKeys) {
+          invalidKey = true;
+        }
 
-          // Prevent duplicates after sanitizing the key
-          if (cleanedKey in routeKeys) {
-            invalidKey = true;
-          }
+        if (invalidKey) {
+          cleanedKey = getSafeRouteKey();
+        }
 
-          if (invalidKey) {
-            cleanedKey = getSafeRouteKey();
-          }
-
-          routeKeys[cleanedKey] = name;
-          return repeat
-            ? optional
-              ? `(?:/(?<${cleanedKey}>.+?))?`
-              : `/(?<${cleanedKey}>.+?)`
-            : `/(?<${cleanedKey}>[^/]+?)`;
-        } else if (/^\(.*\)$/.test(segment)) {
-          const groupName = matchGroupName(segment)!
-            .split(',')
-            .map((group) => group.trim())
-            .filter(Boolean);
-          if (groupName.length > 1) {
-            const optionalSegment = `\\((?:${groupName.map(escapeStringRegexp).join('|')})\\)`;
-            // Make section optional
-            return `(?:/${optionalSegment})?`;
-          } else {
-            // Use simpler regex for single groups
-            return `(?:/${escapeStringRegexp(segment)})?`;
-          }
+        routeKeys[cleanedKey] = name;
+        if (repeat) wildcardKeys.add(cleanedKey);
+        return repeat
+          ? optional
+            ? `(?:/(?<${cleanedKey}>.+?))?`
+            : `/(?<${cleanedKey}>.+?)`
+          : `/(?<${cleanedKey}>[^/]+?)`;
+      } else if (/^\(.*\)$/.test(segment)) {
+        const groupName = matchGroupName(segment)!
+          .split(',')
+          .map((group) => group.trim())
+          .filter(Boolean);
+        if (groupName.length > 1) {
+          const optionalSegment = `\\((?:${groupName.map(escapeStringRegexp).join('|')})\\)`;
+          // Make section optional
+          return `(?:/${optionalSegment})?`;
         } else {
-          return `/${escapeStringRegexp(segment)}`;
+          // Use simpler regex for single groups
+          return `(?:/${escapeStringRegexp(segment)})?`;
         }
-      })
-      .join(''),
-    routeKeys,
-  };
+      } else {
+        return `/${escapeStringRegexp(segment)}`;
+      }
+    })
+    .join('');
+  return { namedParameterizedRoute, routeKeys, wildcardKeys };
 }
 
 // regexp is based on https://github.com/sindresorhus/escape-string-regexp
