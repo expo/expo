@@ -211,10 +211,9 @@ export abstract class BundlerDevServer {
       location: {
         // The port is the main thing we want to send back.
         port: options.port,
-        // localhost isn't always correct.
-        host: 'localhost',
+        host: process.env.REACT_NATIVE_PACKAGER_HOSTNAME?.trim() || 'localhost',
         // http is the only supported protocol on native.
-        url: `http://localhost:${options.port}`,
+        url: `http://${process.env.REACT_NATIVE_PACKAGER_HOSTNAME?.trim() || 'localhost'}:${options.port}`,
         protocol: 'http',
       },
       middleware: {},
