@@ -6009,6 +6009,9 @@ importers:
 
   packages/jest-expo:
     dependencies:
+      '@expo/metro-config':
+        specifier: workspace:~56.0.6
+        version: link:../@expo/metro-config
       '@jest/create-cache-key-function':
         specifier: ^29.2.1
         version: 29.7.0

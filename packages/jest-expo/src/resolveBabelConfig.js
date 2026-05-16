@@ -1,42 +1,33 @@
-const fs = require('node:fs');
+const { resolveBabelrcName } = require('@expo/metro-config/build/loadBabelConfig');
 const path = require('node:path');
 
 /**
- * Resolve the babel `configFile` option.
+ * Resolve the babel options that match Expo CLI's project-root config lookup.
  */
 function resolveBabelConfig(projectRoot) {
-  // Project-wide configs (babel.config.*) apply to all files including those
-  // in node_modules, so Babel's default resolution handles everything.
-  const projectWideConfigs = [
-    'babel.config.js',
-    'babel.config.cjs',
-    'babel.config.mjs',
-    'babel.config.json',
-  ];
-  const hasProjectWideConfig = projectWideConfigs.some((configFileName) =>
-    fs.existsSync(path.resolve(projectRoot, configFileName))
-  );
-  if (hasProjectWideConfig) {
-    return null;
+  const foundBabelRCName = resolveBabelrcName(projectRoot);
+  if (foundBabelRCName) {
+    return {
+      extends: path.resolve(projectRoot, foundBabelRCName),
+    };
   }
 
-  // Directory-scoped configs (.babelrc, .babelrc.js) only apply to files
-  // within their directory tree. They won't transform files outside that tree
-  // (e.g. node_modules/react-native/jest/setup.js), so we must still provide
-  // the expo babel preset via configFile.
-
   try {
-    return require.resolve('expo/internal/babel-preset', {
-      paths: [projectRoot, __dirname],
-    });
+    return {
+      configFile: require.resolve('expo/internal/babel-preset', {
+        paths: [projectRoot, __dirname],
+      }),
+    };
   } catch {
     try {
       // TODO(@kitten): Temporary, since our E2E tests don't use monorepo
       // packages consistently, including the `expo` package
-      return require.resolve('babel-preset-expo');
+      return {
+        configFile: require.resolve('babel-preset-expo'),
+      };
     } catch (error) {
       if (error.code === 'MODULE_NOT_FOUND') {
-        return null;
+        return {};
       }
       throw error;
     }

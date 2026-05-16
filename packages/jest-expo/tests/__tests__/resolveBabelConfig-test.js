@@ -17,23 +17,33 @@ function withTempProject(files, callback) {
   }
 }
 
-it.each(['babel.config.js', 'babel.config.cjs', 'babel.config.mjs', 'babel.config.json'])(
-  'defers to Babel default resolution for %s',
-  (configFileName) => {
-    withTempProject([configFileName], (projectRoot) => {
-      expect(resolveBabelConfig(projectRoot)).toBeNull();
+it.each([
+  '.babelrc',
+  '.babelrc.js',
+  '.babelrc.cjs',
+  '.babelrc.mjs',
+  '.babelrc.json',
+  '.babelrc.cts',
+  'babel.config.js',
+  'babel.config.cjs',
+  'babel.config.mjs',
+  'babel.config.json',
+  'babel.config.cts',
+  'babel.config.ts',
+  'babel.config.mts',
+])('extends the Expo Metro resolved config for %s', (configFileName) => {
+  withTempProject([configFileName], (projectRoot) => {
+    expect(resolveBabelConfig(projectRoot)).toEqual({
+      extends: path.join(projectRoot, configFileName),
     });
-  }
-);
+  });
+});
 
-it.each(['.babelrc', '.babelrc.js'])(
-  'uses the Expo babel preset for directory-scoped %s',
-  (configFileName) => {
-    withTempProject([configFileName], (projectRoot) => {
-      expect(resolveBabelConfig(projectRoot)).toContain('babel-preset');
-    });
-  }
-);
+it('uses the Expo babel preset when the project has no babel config', () => {
+  withTempProject([], (projectRoot) => {
+    expect(resolveBabelConfig(projectRoot).configFile).toContain('babel-preset');
+  });
+});
 
 it('resolves configs from the project root, not the current working directory', () => {
   const previousCwd = process.cwd();
@@ -42,7 +52,9 @@ it('resolves configs from the project root, not the current working directory', 
     withTempProject([], (cwd) => {
       try {
         process.chdir(cwd);
-        expect(resolveBabelConfig(projectRoot)).toBeNull();
+        expect(resolveBabelConfig(projectRoot)).toEqual({
+          extends: path.join(projectRoot, 'babel.config.js'),
+        });
       } finally {
         process.chdir(previousCwd);
       }

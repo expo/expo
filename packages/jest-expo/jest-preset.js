@@ -26,10 +26,7 @@ if (upstreamBabelJest) {
 const babelOpts = {
   caller: { name: 'metro', bundler: 'metro', platform: 'ios' },
 };
-const babelConfigFile = resolveBabelConfig(process.cwd());
-if (babelConfigFile) {
-  babelOpts.configFile = babelConfigFile;
-}
+Object.assign(babelOpts, resolveBabelConfig(process.cwd()));
 jestPreset.transform['\\.[jt]sx?$'] = ['babel-jest', babelOpts];
 
 /* Update this when metro changes their default extensions */
