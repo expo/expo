@@ -232,12 +232,9 @@ export const callServerRSC = async (
   fetchCache = defaultFetchCache
 ) => {
   const url = getAdjustedRemoteFilePath(BASE_PATH + encodeInput(encodeActionId(actionId)));
-  const response =
-    args === undefined
-      ? fetch(url, { headers: ACTION_HEADERS })
-      : encodeReply(args).then((body) =>
-          fetch(url, { method: 'POST', body, headers: ACTION_HEADERS })
-        );
+  const response = encodeReply(args ?? []).then((body) =>
+    fetch(url, { method: 'POST', body, headers: ACTION_HEADERS })
+  );
   const data = createFromFetch<Awaited<Elements>>(checkStatus(response), {
     callServer: (actionId: string, args: unknown[]) => callServerRSC(actionId, args, fetchCache),
   });
