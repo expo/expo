@@ -1,5 +1,5 @@
 import { matchDynamicName } from 'expo-router/internal/routing';
-import { mintComponentId, type RouteProps } from 'expo-router/internal/rsc';
+import type { RouteProps } from 'expo-router/internal/rsc';
 import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
@@ -11,31 +11,19 @@ type ComponentKind = 'page' | 'layout';
 type SlugMapping = Record<string, string | string[]>;
 type IdMatcher = (id: string) => SlugMapping | null;
 
-type StaticEntry = {
-  id: string;
-  /** Path used for prefix checks (literal pathname, e.g. `/posts/1`). */
+type Entry = {
+  /** Registered path, may contain `[slug]`, `[...wildcard]`, or `(group)` segments. */
   path: string;
   component: FunctionComponent<any>;
   kind: ComponentKind;
-  noSsr: boolean;
-  matchesPathname: (pathname: string) => boolean;
-};
-
-type DynamicEntry = {
-  /** Registered path with brackets for dynamic segments, e.g. `/posts/[id]`. */
-  path: string;
-  component: FunctionComponent<any>;
-  kind: ComponentKind;
+  /** True if the path contains any slug or wildcard segments. */
+  isDynamic: boolean;
+  /** True if the path contains a wildcard `[...rest]` segment. */
   isWildcard: boolean;
-  matchId: IdMatcher;
   noSsr: boolean;
+  matchId: IdMatcher;
   matchesPathname: (pathname: string) => boolean;
 };
-
-function buildMatchesPathname(path: string): (pathname: string) => boolean {
-  const matcher = compilePathMatcher(path);
-  return (pathname) => matcher(pathname) != null;
-}
 
 export type CreatePageInput = {
   path: string;
@@ -94,6 +82,15 @@ function compilePathMatcher(path: string, suffix?: 'page' | 'layout'): IdMatcher
   };
 }
 
+function buildMatchesPathname(path: string): (pathname: string) => boolean {
+  const matcher = compilePathMatcher(path);
+  return (pathname) => matcher(pathname) != null;
+}
+
+function isDynamicPath(path: string): boolean {
+  return path.split('/').some((segment) => matchDynamicName(segment) != null);
+}
+
 function hasPathPrefix(prefix: string, path: string): boolean {
   return path === prefix || path.startsWith(prefix + '/');
 }
@@ -103,29 +100,25 @@ function sanitizeSlug(slug: string): string {
 }
 
 /**
- * Build an RSC router from a registration callback. The callback receives a
- * `createPage`/`createLayout` API that records entries into an ID-keyed registry.
+ * Build an RSC router from a registration callback. Imitates `expo-server`'s
+ * URL routing: each registered component carries a regex matcher, and the
+ * resolver iterates the registry in specificity order, first match wins.
+ * No exact-key lookup: this lets paths with `(group)` segments match runtime
+ * IDs that don't include them.
  */
 export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defineRouter> {
   let configured = false;
-  const staticPageIdToEntry = new Map<string, StaticEntry>();
-  const staticLayoutIdToEntry = new Map<string, StaticEntry>();
-  const dynamicEntries: DynamicEntry[] = [];
+  const entriesByKey = new Map<string, Entry>();
   const buildDataMap = new Map<string, unknown>();
+  let sortedEntries: Entry[] = [];
 
-  const registerStatic = (entry: StaticEntry) => {
-    const target = entry.kind === 'page' ? staticPageIdToEntry : staticLayoutIdToEntry;
-    const existing = target.get(entry.id);
+  const register = (entry: Entry) => {
+    const key = `${entry.kind}:${entry.path}`;
+    const existing = entriesByKey.get(key);
     if (existing && existing.component !== entry.component) {
-      throw new Error(`Duplicated component for: ${entry.id}`);
+      throw new Error(`Duplicated component for ${entry.kind}: ${entry.path}`);
     }
-    target.set(entry.id, entry);
-  };
-
-  const ensureUniqueDynamic = (path: string, kind: ComponentKind) => {
-    if (dynamicEntries.some((e) => e.path === path && e.kind === kind)) {
-      throw new Error(`Duplicated dynamic path: ${path}`);
-    }
+    entriesByKey.set(key, entry);
   };
 
   const createPage = (page: CreatePageInput): void => {
@@ -144,13 +137,14 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     }
 
     if (page.render === 'static' && numSlugs === 0) {
-      const id = mintComponentId(page.path, 'page');
-      registerStatic({
-        id,
+      register({
         path: page.path,
         component: page.component,
         kind: 'page',
+        isDynamic: false,
+        isWildcard: false,
         noSsr,
+        matchId: compilePathMatcher(page.path, 'page'),
         matchesPathname: buildMatchesPathname(page.path),
       });
       return;
@@ -184,16 +178,17 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
             mapping[dynamic.name] = pathItems[pathItems.length - 1]!;
           }
         }
-        const id = mintComponentId(pathItems.join('/'), 'page');
         const concretePath = '/' + pathItems.join('/');
         const WrappedComponent = (props: Record<string, unknown>) =>
           createElement(page.component as any, { ...props, ...mapping });
-        registerStatic({
-          id,
+        register({
           path: concretePath,
           component: WrappedComponent,
           kind: 'page',
+          isDynamic: false,
+          isWildcard: false,
           noSsr,
+          matchId: compilePathMatcher(concretePath, 'page'),
           matchesPathname: buildMatchesPathname(concretePath),
         });
       }
@@ -204,14 +199,14 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       if (numWildcards > 1) {
         throw new Error('Invalid page configuration: ' + page.path);
       }
-      ensureUniqueDynamic(page.path, 'page');
-      dynamicEntries.push({
+      register({
         path: page.path,
         component: page.component,
         kind: 'page',
+        isDynamic: true,
         isWildcard: numWildcards === 1,
-        matchId: compilePathMatcher(page.path, 'page'),
         noSsr,
+        matchId: compilePathMatcher(page.path, 'page'),
         matchesPathname: buildMatchesPathname(page.path),
       });
       return;
@@ -224,32 +219,19 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     if (configured) {
       throw new Error('no longer available');
     }
-    if (layout.render === 'static') {
-      const id = mintComponentId(layout.path, 'layout');
-      registerStatic({
-        id,
-        path: layout.path,
-        component: layout.component as FunctionComponent<any>,
-        kind: 'layout',
-        noSsr: false,
-        matchesPathname: buildMatchesPathname(layout.path),
-      });
-      return;
+    if (layout.render !== 'static' && layout.render !== 'dynamic') {
+      throw new Error('Invalid layout configuration');
     }
-    if (layout.render === 'dynamic') {
-      ensureUniqueDynamic(layout.path, 'layout');
-      dynamicEntries.push({
-        path: layout.path,
-        component: layout.component as FunctionComponent<any>,
-        kind: 'layout',
-        isWildcard: false,
-        matchId: compilePathMatcher(layout.path, 'layout'),
-        noSsr: false,
-        matchesPathname: buildMatchesPathname(layout.path),
-      });
-      return;
-    }
-    throw new Error('Invalid layout configuration');
+    register({
+      path: layout.path,
+      component: layout.component as FunctionComponent<any>,
+      kind: 'layout',
+      isDynamic: layout.render === 'dynamic' || isDynamicPath(layout.path),
+      isWildcard: false,
+      noSsr: false,
+      matchId: compilePathMatcher(layout.path, 'layout'),
+      matchesPathname: buildMatchesPathname(layout.path),
+    });
   };
 
   const unstable_setBuildData = (path: string, data: unknown) => {
@@ -265,16 +247,13 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       );
       await ready;
       configured = true;
-      // Non-wildcard pages must take priority over wildcard pages so a more
-      // specific match wins. Layouts and pages don't collide (different ID
-      // suffix), so layout order doesn't matter.
-      dynamicEntries.sort((a, b) => {
-        if (a.kind !== b.kind) return a.kind === 'page' ? -1 : 1;
-        if (a.kind === 'page') {
-          if (a.isWildcard !== b.isWildcard) return a.isWildcard ? 1 : -1;
-        }
-        return 0;
-      });
+      // Resolver iterates this once per request and takes the first matchId hit.
+      // Non-wildcard pages must out-rank wildcards so a more specific path wins; the
+      // matcher's `/page` vs `/layout` suffix prevents cross-kind false matches, so
+      // page-vs-layout order is irrelevant.
+      sortedEntries = Array.from(entriesByKey.values()).sort(
+        (a, b) => Number(a.isWildcard) - Number(b.isWildcard)
+      );
     }
     await ready;
   };
@@ -283,8 +262,8 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     async () => {
       await configure();
       const dynamicLayoutPaths: string[] = [];
-      for (const entry of dynamicEntries) {
-        if (entry.kind === 'layout') dynamicLayoutPaths.push(entry.path);
+      for (const entry of sortedEntries) {
+        if (entry.kind === 'layout' && entry.isDynamic) dynamicLayoutPaths.push(entry.path);
       }
       const isUnderDynamicLayout = (pagePath: string) =>
         dynamicLayoutPaths.some((lp) => hasPathPrefix(lp, pagePath));
@@ -296,21 +275,12 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         noSsr: boolean;
         data: unknown;
       }[] = [];
-      for (const entry of staticPageIdToEntry.values()) {
-        paths.push({
-          path: entry.path,
-          matchesPathname: entry.matchesPathname,
-          isStatic: !isUnderDynamicLayout(entry.path),
-          noSsr: entry.noSsr,
-          data: buildDataMap.get(entry.path),
-        });
-      }
-      for (const entry of dynamicEntries) {
+      for (const entry of sortedEntries) {
         if (entry.kind !== 'page') continue;
         paths.push({
           path: entry.path,
           matchesPathname: entry.matchesPathname,
-          isStatic: false,
+          isStatic: !entry.isDynamic && !isUnderDynamicLayout(entry.path),
           noSsr: entry.noSsr,
           data: buildDataMap.get(entry.path),
         });
@@ -319,31 +289,15 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     },
     async (id, { unstable_setShouldSkip, unstable_buildConfig }) => {
       await configure(unstable_buildConfig);
-      const staticPage = staticPageIdToEntry.get(id);
-      if (staticPage) {
-        unstable_setShouldSkip([]);
-        return {
-          component: staticPage.component as FunctionComponent<RouteProps>,
-          kind: 'page',
-        };
-      }
-      const staticLayout = staticLayoutIdToEntry.get(id);
-      if (staticLayout) {
-        return {
-          component: staticLayout.component as FunctionComponent<
-            Omit<RouteProps, 'searchParams'> & { children: ReactNode }
-          >,
-          kind: 'layout',
-        };
-      }
-      for (const entry of dynamicEntries) {
+      for (const entry of sortedEntries) {
         const mapping = entry.matchId(id);
         if (!mapping) continue;
         if (entry.kind === 'layout') {
           if (Object.keys(mapping).length) {
             throw new Error('[Bug] layout should not have slugs');
           }
-          unstable_setShouldSkip();
+          // Layouts never opt into shouldSkipObj — they must render on every request to
+          // enforce their auth/loader effects.
           return {
             component: entry.component as FunctionComponent<
               Omit<RouteProps, 'searchParams'> & { children: ReactNode }
@@ -351,7 +305,13 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
             kind: 'layout',
           };
         }
-        unstable_setShouldSkip();
+        // Static pages opt into shouldSkipObj so the client can cache them across
+        // navigations. Dynamic pages don't (their content depends on slugs).
+        if (entry.isDynamic) {
+          unstable_setShouldSkip();
+        } else {
+          unstable_setShouldSkip([]);
+        }
         if (Object.keys(mapping).length === 0) {
           return { component: entry.component as FunctionComponent<RouteProps>, kind: 'page' };
         }

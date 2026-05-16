@@ -114,6 +114,24 @@ describe('createPages', () => {
     expect(entries).toHaveProperty('about/page');
   });
 
+  it('matches static pages under group segments', async () => {
+    // Expo Router uses `(group)` segments for filesystem organization; they
+    // do not appear in runtime URLs. The matcher must treat them as optional
+    // so a page at `/(auth)/login` resolves for URL `/login`.
+    const router = build(async ({ createPage, createLayout }) => {
+      createLayout({ component: NullComponent, path: '' as any, render: 'static' });
+      createPage({
+        component: NullComponent,
+        path: '/(auth)/login' as any,
+        render: 'static',
+      });
+    });
+
+    const entries = await render(router, 'login');
+    expect(entries).not.toBeNull();
+    expect(entries).toHaveProperty('login/page');
+  });
+
   it('prefers non-wildcard pages over wildcard pages when both could match', async () => {
     const NonWildcardPage: FunctionComponent<any> = () => null;
     const WildcardPage: FunctionComponent<any> = () => null;
