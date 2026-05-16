@@ -147,6 +147,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'Community Menu replacement',
+    route: 'ui/community-menu',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CommunityMenuScreen'));
+    },
+  },
+  {
     name: 'Switch component',
     route: 'ui/switch',
     options: {},
@@ -360,6 +368,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./SurfaceScreen'));
+    },
+  },
+  {
+    name: 'Snackbar component',
+    route: 'ui/snackbar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SnackbarScreen'));
     },
   },
   {

@@ -10,6 +10,17 @@
 
 ### 💡 Others
 
+## 56.0.5 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed xcframework build cache not invalidating when React-jsi headers change. ([#45735](https://github.com/expo/expo/pull/45735) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added support for `facebook::jsi::IRuntime` so the package builds against React Native 0.86+, while staying compatible with 0.85 and react-native-tvos. ([#45728](https://github.com/expo/expo/pull/45728) by [@zoontek](https://github.com/zoontek))
+
 ## 56.0.3 — 2026-05-11
 
 ### 🐛 Bug fixes

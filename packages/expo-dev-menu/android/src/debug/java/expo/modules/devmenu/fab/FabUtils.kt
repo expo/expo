@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.IntOffset
 import expo.modules.devmenu.fab.ExpoVelocityTracker.PointF
 import kotlin.math.roundToInt
@@ -46,6 +47,15 @@ internal fun Offset.coerceIn(minX: Float = 0f, maxX: Float, minY: Float = 0f, ma
   return this.copy(
     x = this.x.coerceIn(minX, maxX),
     y = this.y.coerceIn(minY, maxY)
+  )
+}
+
+internal fun Offset.coerceIn(rect: Rect): Offset {
+  return this.coerceIn(
+    minX = rect.left,
+    maxX = rect.right,
+    minY = rect.top,
+    maxY = rect.bottom
   )
 }
 

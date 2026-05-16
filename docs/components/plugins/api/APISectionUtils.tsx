@@ -185,11 +185,12 @@ export const resolveTypeName = (
     tail,
   } = typeDefinition;
 
+  const builtinTypes = new Set(['Record', 'React.ComponentProps', 'Set', 'Map']);
   try {
     if (name) {
       if (type === 'reference') {
         if (typeArguments) {
-          if (name === 'Record' || name === 'React.ComponentProps') {
+          if (builtinTypes.has(name)) {
             return (
               <>
                 {name}

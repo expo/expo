@@ -114,6 +114,52 @@ export default function RNTriggerDropdownMenuExample() {
 }
 ```
 
+### Long-press trigger
+
+Jetpack Compose has no dedicated long-press menu primitive — you compose one from a [`combinedClickable`](./modifiers.mdx) modifier on the trigger view plus the existing controlled `DropdownMenu`. The menu anchors to the trigger automatically.
+
+```tsx LongPressDropdownMenuExample.tsx
+import { Host, DropdownMenu, DropdownMenuItem, Text } from '@expo/ui/jetpack-compose';
+import { background, combinedClickable } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+export default function LongPressDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <DropdownMenu expanded={isExpanded} onDismissRequest={() => setIsExpanded(false)}>
+        <DropdownMenu.Trigger>
+          <Text
+            modifiers={[
+              background('#e0e0e0'),
+              combinedClickable({
+                onClick: () => console.log('Short tap'),
+                onLongClick: () => setIsExpanded(true),
+              }),
+            ]}>
+            Long-press me
+          </Text>
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Items>
+          <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <Text>Copy</Text>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            elementColors={{ textColor: '#B3261E' }}
+            onClick={() => setIsExpanded(false)}>
+            <DropdownMenuItem.Text>
+              <Text>Delete</Text>
+            </DropdownMenuItem.Text>
+          </DropdownMenuItem>
+        </DropdownMenu.Items>
+      </DropdownMenu>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

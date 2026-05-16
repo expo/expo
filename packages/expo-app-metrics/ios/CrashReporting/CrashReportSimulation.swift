@@ -31,7 +31,6 @@ func simulateCrashReport() {
   )
   AppMetricsActor.isolated {
     AppMetrics.mainSession.storeCrashReport(report)
-    try? AppMetrics.storage.commit()
   }
 }
 

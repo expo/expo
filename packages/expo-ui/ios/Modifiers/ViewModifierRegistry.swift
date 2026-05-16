@@ -1846,5 +1846,9 @@ extension ViewModifierRegistry {
     register("containerBackground") { params, appContext, _ in
       return try ContainerBackgroundModifier(from: params, appContext: appContext)
     }
+
+    register("symbolEffect") { params, appContext, _ in
+      return try SymbolEffectModifier(from: params, appContext: appContext)
+    }
   }
 }

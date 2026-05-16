@@ -28,7 +28,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
+      <Tooltip.Content sideOffset={8} className="max-w-75 text-center">
         <FOOTNOTE>Open the contextual AI assistant for this SDK page</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>
@@ -42,7 +42,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
         <Button
           type="button"
           theme="quaternary"
-          className={mergeClasses('min-h-[36px] justify-center px-2.5')}
+          className={mergeClasses('min-h-9 justify-center px-2.5')}
           onClick={onClick}
           aria-pressed={isActive}
           aria-label="Ask about this configuration page with AI">
@@ -54,7 +54,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           </div>
         </Button>
       </Tooltip.Trigger>
-      <Tooltip.Content sideOffset={8} className="max-w-[300px] text-center">
+      <Tooltip.Content sideOffset={8} className="max-w-75 text-center">
         <FOOTNOTE>Open the contextual AI assistant for this configuration reference</FOOTNOTE>
       </Tooltip.Content>
     </Tooltip.Root>

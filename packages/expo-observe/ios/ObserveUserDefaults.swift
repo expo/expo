@@ -35,8 +35,8 @@ internal final class ObserveUserDefaults: UserDefaults {
    Enum with keys used within this user defaults database.
    */
   private enum Keys: String {
-    case lastDispatchedEntryId
-    case lastDispatchedLogEntryId
+    case lastDispatchedMetricId
+    case lastDispatchedLogId
     case lastDispatchDate
     case config
     case bundleDefaults
@@ -65,29 +65,29 @@ internal final class ObserveUserDefaults: UserDefaults {
   }
 
   /**
-   Id of the last dispatched entry. It is used to prevent dispatching entries multiple times. The ids reflect the order of creation.
-   Using the creation date is not the best idea as the device's date can be changed by the user or shift along with the timezone.
+   Id of the last metric row dispatched. Each successful dispatch advances this past the largest id
+   in the batch so the next dispatch reads only newer rows. Auto-increment ids are monotonic in
+   SQLite, so a date-independent cursor avoids drift when the device clock changes.
    */
-  static var lastDispatchedEntryId: Int {
+  static var lastDispatchedMetricId: Int64 {
     get {
-      return defaults.object(forKey: Keys.lastDispatchedEntryId.rawValue) as? Int ?? -1
+      return (defaults.object(forKey: Keys.lastDispatchedMetricId.rawValue) as? Int64) ?? -1
     }
     set {
-      defaults.set(newValue, forKey: Keys.lastDispatchedEntryId.rawValue)
+      defaults.set(newValue, forKey: Keys.lastDispatchedMetricId.rawValue)
     }
   }
 
   /**
-   Id of the last entry whose logs were dispatched. Tracked separately from `lastDispatchedEntryId`
-   so that a logs request failure does not block metrics dispatch (and vice versa) — both signals
-   move forward independently.
+   Id of the last log row dispatched. Tracked separately from the metric cursor so a logs request
+   failure does not block metrics dispatch (and vice versa) — both signals move forward independently.
    */
-  static var lastDispatchedLogEntryId: Int {
+  static var lastDispatchedLogId: Int64 {
     get {
-      return defaults.object(forKey: Keys.lastDispatchedLogEntryId.rawValue) as? Int ?? -1
+      return (defaults.object(forKey: Keys.lastDispatchedLogId.rawValue) as? Int64) ?? -1
     }
     set {
-      defaults.set(newValue, forKey: Keys.lastDispatchedLogEntryId.rawValue)
+      defaults.set(newValue, forKey: Keys.lastDispatchedLogId.rawValue)
     }
   }
 

@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import type { PermissionResponse } from 'expo';
 /**
  * Alias for `PermissionResponse` type exported by `expo-modules-core`.
  */

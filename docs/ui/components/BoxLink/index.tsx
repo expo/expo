@@ -22,14 +22,14 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
       // Used by scripts/generate-markdown-pages-utils.js to extract card link title/description
       data-md="card-link"
       className={mergeClasses(
-        'group border-default mb-3 flex flex-row justify-between rounded-md border border-solid px-4 py-3 transition',
+        'group mb-3 flex flex-row justify-between rounded-md border border-solid border-default px-4 py-3 transition',
         'hocus:bg-subtle hocus:shadow-xs'
       )}
       data-testid={testID}
       openInNewTab={isExternal}>
       <div className="flex flex-row gap-4">
         {Icon && (
-          <div className="bg-element group-hover:bg-hover flex h-9 min-w-[36px] items-center justify-center self-center rounded-md transition">
+          <div className="flex h-9 min-w-9 items-center justify-center self-center rounded-md bg-element transition group-hover:bg-hover">
             <Icon className="icon-lg text-icon-default" />
           </div>
         )}
@@ -39,7 +39,7 @@ export function BoxLink({ title, description, href, testID, Icon, imageUrl }: Bo
           {description && <CALLOUT theme="secondary">{description}</CALLOUT>}
         </div>
       </div>
-      <ArrowIcon className="text-icon-secondary ml-3 min-w-[20px] content-end self-center" />
+      <ArrowIcon className="ml-3 min-w-5 content-end self-center text-icon-secondary" />
     </LinkBase>
   );
 }

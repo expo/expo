@@ -2,7 +2,7 @@
 // Derived from: https://github.com/evanw/node-source-map-support/blob/7b5b81e/source-map-support.js
 
 import * as nodeModule from 'node:module';
-import url from 'node:url';
+import path from 'node:path';
 
 let stackTraceInstalled = false;
 
@@ -122,12 +122,7 @@ function wrapCallSite(site: NodeJS.CallSite, state: WalkState): string {
     return String(site);
   }
 
-  // `originalSource` is a `file://` URL. `fileURLToPath` correctly handles drive letters
-  // and percent-encoded characters; a naive `file://` strip would yield `/C:/foo/bar.ts`
-  // on Windows.
-  const originalSource = entry.originalSource.startsWith('file://')
-    ? url.fileURLToPath(entry.originalSource)
-    : entry.originalSource;
+  const originalSource = maybeFileURLToPath(entry.originalSource);
 
   // Node's runtime exposes a `name` field on the source map entry even though
   // `@types/node` omits it from `SourceMapping`. Read it defensively.
@@ -157,6 +152,19 @@ function wrapCallSite(site: NodeJS.CallSite, state: WalkState): string {
   wrapped.getColumnNumber = () => position.column;
   wrapped.getScriptNameOrSourceURL = () => position.source;
   return String(wrapped);
+}
+
+function maybeFileURLToPath(maybeFileURL: string): string {
+  if (maybeFileURL.startsWith('file://')) {
+    let pathname = maybeFileURL.slice('file://'.length);
+    if (pathname[0] === '/') pathname = pathname.slice(1);
+    try {
+      pathname = decodeURIComponent(pathname);
+    } catch {}
+    return path.sep !== '/' ? pathname.replaceAll('/', path.sep) : '/' + pathname;
+  } else {
+    return maybeFileURL;
+  }
 }
 
 interface ClonedCallSite extends NodeJS.CallSite {

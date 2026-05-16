@@ -1,4 +1,4 @@
-import type { PermissionResponse } from 'expo-modules-core';
+import { type PermissionResponse } from 'expo';
 type SensorEventName = 'deviceorientation' | 'devicemotion';
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;

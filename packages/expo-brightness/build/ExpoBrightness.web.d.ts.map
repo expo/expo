@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoBrightness.web.d.ts","sourceRoot":"","sources":["../src/ExpoBrightness.web.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;;2BAW7B,OAAO,CAAC,kBAAkB,CAAC;+BAGvB,OAAO,CAAC,kBAAkB,CAAC;;AAJ9D,wBAOE"}
+{"version":3,"file":"ExpoBrightness.web.d.ts","sourceRoot":"","sources":["../src/ExpoBrightness.web.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,kBAAkB,EAAoB,MAAM,MAAM,CAAC;;2BAUlC,OAAO,CAAC,kBAAkB,CAAC;+BAGvB,OAAO,CAAC,kBAAkB,CAAC;;AAJ9D,wBAOE"}

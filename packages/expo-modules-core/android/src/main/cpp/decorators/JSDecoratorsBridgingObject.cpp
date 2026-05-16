@@ -2,10 +2,20 @@
 
 #include "JSDecoratorsBridgingObject.h"
 
+#include "JSFunctionsDecorator.h"
+#include "JSPropertiesDecorator.h"
+#include "JSConstantsDecorator.h"
+#include "JSObjectDecorator.h"
 #include "JSClassesDecorator.h"
 #include "../types/ReturnType.h"
 
 namespace expo {
+
+JSDecoratorsBridgingObject::~JSDecoratorsBridgingObject() = default;
+
+JSClassesDecorator* JSDecoratorsBridgingObject::getClassDecorator() const {
+  return classDecorator.get();
+}
 
 jni::local_ref<jni::HybridClass<JSDecoratorsBridgingObject>::jhybriddata>
 JSDecoratorsBridgingObject::initHybrid(jni::alias_ref<jhybridobject> jThis) {

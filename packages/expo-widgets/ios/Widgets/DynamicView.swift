@@ -81,6 +81,8 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
       render(UnevenRoundedRectangleView.self, UnevenRoundedRectangleViewProps.self)
     case "GaugeView":
       render(GaugeView.self, GaugeProps.self)
+    case "ChartView":
+      render(ChartView.self, ChartProps.self)
     case "Button":
       if #available(iOS 17.0, *) {
         switch kind {

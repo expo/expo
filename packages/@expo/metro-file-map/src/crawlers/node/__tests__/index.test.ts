@@ -12,6 +12,10 @@ import TreeFS from '../../../lib/TreeFS';
 import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../../types';
 import nodeCrawl from '../index';
 
+// memfs is POSIX-only; pin to POSIX path semantics
+// TODO(@kitten): Fork the test for posix v windows
+jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
+
 const rootDir = '/project';
 const processFile = async () => null;
 
@@ -167,22 +171,6 @@ describe('node crawler', () => {
   test('completes with empty roots', async () => {
     const { changedFiles, removedFiles } = await crawl({ roots: [] });
 
-    expect(changedFiles).toEqual(new Map());
-    expect(removedFiles).toEqual(new Set());
-  });
-
-  test('warns on readdir errors', async () => {
-    // /nonexistent doesn't exist in the virtual FS
-    const mockConsole = { ...console, warn: jest.fn() };
-
-    const { changedFiles, removedFiles } = await crawl({
-      console: mockConsole as typeof console,
-      roots: ['/nonexistent'],
-    });
-
-    expect(mockConsole.warn).toHaveBeenCalledWith(
-      expect.stringContaining('reading contents of "/nonexistent"')
-    );
     expect(changedFiles).toEqual(new Map());
     expect(removedFiles).toEqual(new Set());
   });

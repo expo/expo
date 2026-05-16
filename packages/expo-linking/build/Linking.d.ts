@@ -2,7 +2,7 @@ import type { EmitterSubscription } from 'react-native';
 import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Add a handler to `Linking` changes by listening to the `url` event type and providing the handler.
- * It is recommended to use the [`useURL()`](#useurl) hook instead.
+ * It is recommended to use the [`useLinkingURL()`](#uselinkingurl) hook instead.
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventtype).

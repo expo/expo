@@ -153,8 +153,10 @@ it(`supports url with abstract imports for style attributes in CSS module`, asyn
     }
   );
   expect(artifacts.length).toBe(2);
-  // Ensure the HMR code contains the updates.
-  expect(artifacts[0].source).toMatch('mask:url(\\"data:xxx\\")');
+  // Ensure the HMR code contains the updates. The CSS shim path bypasses the
+  // minifier, so the embedded URL is preserved as a template literal (`"…"`)
+  // rather than the previously-minified string-literal form (`\"…\"`).
+  expect(artifacts[0].source).toMatch(/mask:url\(\\?"data:xxx\\?"\)/);
   expect(artifacts[1].source).toMatch(
     '.EcQGha_appIcon{-webkit-mask:url("data:xxx") 50%/100% 100% no-repeat;mask:url("data:xxx") 50%/100% 100% no-repeat}'
   );

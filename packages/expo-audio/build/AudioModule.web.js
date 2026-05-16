@@ -1,4 +1,4 @@
-import { PermissionStatus } from 'expo-modules-core';
+import { PermissionStatus } from 'expo';
 import { activePlayers } from './AudioPlayer.web';
 import { getUserMedia, getSourceUri, preloadCache } from './AudioUtils.web';
 export { AudioPlayerWeb } from './AudioPlayer.web';

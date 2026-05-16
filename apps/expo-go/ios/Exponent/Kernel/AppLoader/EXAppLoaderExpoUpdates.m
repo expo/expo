@@ -19,6 +19,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString * const kSnackRuntimeProjectId = @"933fd9c0-1666-11e7-afca-d980795c5824";
+
 @interface EXAppLoaderExpoUpdates ()
 
 @property (nonatomic, strong, nullable) NSURL *manifestUrl;
@@ -221,6 +223,49 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
 
+  // Require the CLI user to be signed in and match the Expo Go user (physical devices only).
+  // Only enforced for dev-server manifests — published updates don't include
+  // expoGo.username and are validated server-side.
+#if !TARGET_OS_SIMULATOR
+  BOOL isDevServer = update.manifest.isUsingDeveloperTool;
+  NSString *manifestUsername = [update.manifest expoGoUsername];
+  NSString *expoGoUsername = [[ExpoGoHomeBridge shared] authenticatedUsername];
+  if (isDevServer && (manifestUsername == nil || [manifestUsername length] == 0)) {
+    NSString *message;
+    if (expoGoUsername != nil && [expoGoUsername length] > 0) {
+      message = [NSString stringWithFormat:
+        @"You're signed in to Expo Go as \"%@\", but not signed in to Expo CLI. Run \"npx expo login\" on your computer to sign in to Expo CLI as \"%@\" so you can open this project.",
+        expoGoUsername, expoGoUsername];
+    } else {
+      message = @"You need to be signed in to Expo Go and Expo CLI to open your project. Run \"npx expo login\" on your computer to sign in with Expo CLI.";
+    }
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1026
+                             userInfo:@{NSLocalizedDescriptionKey: message,
+                                        EXShowTryAgainButtonKey: @YES}];
+    if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
+    return;
+  }
+  if (isDevServer && (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername])) {
+    NSString *message;
+    if (expoGoUsername == nil || [expoGoUsername length] == 0) {
+      message = [NSString stringWithFormat:
+        @"You're signed in to Expo CLI as \"%@\", but not signed in to Expo Go. Sign in to Expo Go as \"%@\" to open this project.",
+        manifestUsername, manifestUsername];
+    } else {
+      message = [NSString stringWithFormat:
+        @"You're signed in to Expo CLI as \"%@\" and to Expo Go as \"%@\" — these accounts need to match to open this project.",
+        manifestUsername, expoGoUsername];
+    }
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1027
+                             userInfo:@{NSLocalizedDescriptionKey: message,
+                                        EXShowTryAgainButtonKey: @YES}];
+    if (self.delegate) { [self.delegate appLoader:self didFailWithError:_error]; }
+    return;
+  }
+#endif
+
   _remoteUpdateStatus = kEXAppLoaderRemoteUpdateStatusDownloading;
   [self _setShouldShowRemoteUpdateStatus:update.manifest];
   EXManifestsManifest *processedManifest = [self _processManifest:update.manifest];
@@ -350,10 +395,143 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_beginRequest
 {
   _startupStartTime = [NSDate now];
+
+  // Check if we should use the embedded Snack runtime
+  if ([self _shouldUseEmbeddedSnackRuntime]) {
+    [self _loadEmbeddedSnackRuntime];
+    return;
+  }
+
   if (![self _initializeDatabase]) {
     return;
   }
   [self _startLoaderTask];
+}
+
+- (BOOL)_isSnackUrl
+{
+  NSString *urlString = _httpManifestUrl.absoluteString;
+  return [urlString containsString:kSnackRuntimeProjectId];
+}
+
+- (BOOL)_shouldUseEmbeddedSnackRuntime
+{
+  if (![self _isSnackUrl]) {
+    return NO;
+  }
+
+  return [EXBuildConstants sharedInstance].useEmbeddedSnackRuntime;
+}
+
+- (void)_loadEmbeddedSnackRuntime
+{
+  _shouldShowRemoteUpdateStatus = NO;
+
+  // Load the embedded manifest.json
+  NSString *manifestPath = [[NSBundle mainBundle] pathForResource:@"manifest" ofType:@"json" inDirectory:@"SnackRuntime"];
+  if (!manifestPath) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1000
+                             userInfo:@{NSLocalizedDescriptionKey: @"Embedded Snack runtime manifest not found"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  NSData *manifestData = [NSData dataWithContentsOfFile:manifestPath];
+  if (!manifestData) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1001
+                             userInfo:@{NSLocalizedDescriptionKey: @"Failed to read embedded Snack runtime manifest"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  NSError *jsonError;
+  NSMutableDictionary *manifestJson = [[NSJSONSerialization JSONObjectWithData:manifestData options:NSJSONReadingMutableContainers error:&jsonError] mutableCopy];
+  if (jsonError || !manifestJson) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1002
+                             userInfo:@{NSLocalizedDescriptionKey: @"Failed to parse embedded Snack runtime manifest"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  // Load the bundle
+  NSString *bundlePath = [[NSBundle mainBundle] pathForResource:@"snack-runtime" ofType:@"hbc" inDirectory:@"SnackRuntime"];
+  if (!bundlePath) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1003
+                             userInfo:@{NSLocalizedDescriptionKey: @"Embedded Snack runtime bundle not found"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  NSData *bundleData = [NSData dataWithContentsOfFile:bundlePath];
+  if (!bundleData) {
+    _error = [NSError errorWithDomain:@"EXAppLoader"
+                                 code:1004
+                             userInfo:@{NSLocalizedDescriptionKey: @"Failed to read embedded Snack runtime bundle"}];
+    if (self.delegate) {
+      [self.delegate appLoader:self didFailWithError:_error];
+    }
+    return;
+  }
+
+  // Update launchAsset.url to point to the actual local file path
+  // ExpoUpdatesManifest.bundleUrl() reads from launchAsset.url
+  NSURL *bundleUrl = [NSURL fileURLWithPath:bundlePath];
+  NSMutableDictionary *launchAsset = [manifestJson[@"launchAsset"] mutableCopy] ?: [NSMutableDictionary new];
+  launchAsset[@"url"] = bundleUrl.absoluteString;
+  manifestJson[@"launchAsset"] = launchAsset;
+
+  // Add required fields if not present
+  if (!manifestJson[@"scopeKey"]) {
+    manifestJson[@"scopeKey"] = [NSString stringWithFormat:@"@snack/embedded-%@", [EXVersions sharedInstance].sdkVersion];
+  }
+  if (!manifestJson[@"isVerified"]) {
+    manifestJson[@"isVerified"] = @YES;
+  }
+
+  // Ensure extra.expoClient exists for SDK version detection
+  NSMutableDictionary *extra = [manifestJson[@"extra"] mutableCopy] ?: [NSMutableDictionary new];
+  NSMutableDictionary *expoClient = [extra[@"expoClient"] mutableCopy] ?: [NSMutableDictionary new];
+  if (!expoClient[@"sdkVersion"]) {
+    expoClient[@"sdkVersion"] = [EXVersions sharedInstance].sdkVersion;
+  }
+  if (!expoClient[@"name"]) {
+    expoClient[@"name"] = @"Snack";
+  }
+  if (!expoClient[@"slug"]) {
+    expoClient[@"slug"] = @"snack";
+  }
+  extra[@"expoClient"] = expoClient;
+  extra[@"scopeKey"] = manifestJson[@"scopeKey"];
+  manifestJson[@"extra"] = extra;
+
+  EXManifestsManifest *manifest = [EXManifestsManifestFactory manifestForManifestJSON:manifestJson];
+
+  // Create launcher with asset files map for JS to resolve embedded assets
+  EXEmbeddedSnackLauncher *launcher = [[EXEmbeddedSnackLauncher alloc] initWithManifestJson:manifestJson bundleUrl:bundleUrl];
+  _appLauncher = launcher;
+
+  _startupEndTime = [NSDate now];
+  _optimisticManifest = manifest;
+  _confirmedManifest = manifest;
+  _bundle = bundleData;
+  _isUpToDate = YES;
+
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:_optimisticManifest];
+    [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
+  }
 }
 
 - (void)_startLoaderTask

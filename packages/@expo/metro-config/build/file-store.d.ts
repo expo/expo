@@ -1,4 +1,5 @@
 import UpstreamFileStore from '@expo/metro/metro-cache/stores/FileStore';
+export declare function tryRenameAndDeleteAsync(root: string): boolean;
 export declare class FileStore<T> extends UpstreamFileStore<T> {
     private readonly _root;
     constructor(options: {

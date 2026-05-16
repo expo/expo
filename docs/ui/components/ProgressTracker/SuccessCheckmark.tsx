@@ -10,7 +10,7 @@ export function SuccessCheckmark({ size = 'md', className }: Props) {
   return (
     <div
       className={mergeClasses(
-        'border-success bg-success flex items-center justify-center rounded-full border-2',
+        'flex items-center justify-center rounded-full border-2 border-success bg-success',
         size === 'md' && 'size-20',
         size === 'sm' && 'size-15',
         className
@@ -19,7 +19,7 @@ export function SuccessCheckmark({ size = 'md', className }: Props) {
         className={mergeClasses(
           'text-success',
           size === 'md' && 'size-10',
-          size === 'sm' && 'size-[30px]'
+          size === 'sm' && 'size-7.5'
         )}
       />
     </div>

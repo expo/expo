@@ -158,8 +158,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      AsyncFunction("getStoredEntries") Coroutine { -> sessionManager.getAllSessions() }
-
       AsyncFunction("getAllSessions") Coroutine { ->
         sessionManager.getAllSessions().map { JsSession.fromSessionWithMetrics(it) }
       }
@@ -184,10 +182,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
     scope.launch {
       sessionManager.updateEnvironmentForActiveSessions(environment)
     }
-  }
-
-  fun getEnvironment(): String? {
-    return AppMetricsPreferences.getEnvironment(context)
   }
 
   override fun updatesStateDidChange(event: Map<String, Any>) {

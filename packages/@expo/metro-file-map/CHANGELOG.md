@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 56.0.3 — 2026-05-15
+
+### 💡 Others
+
+- [Internal] Restructure symlink traversal and cycle detection ([#45688](https://github.com/expo/expo/pull/45688) by [@kitten](https://github.com/kitten))
+
+## 56.0.2 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- Fix `'..'` at root handling to align with Metro ([#45687](https://github.com/expo/expo/pull/45687) by [@kitten](https://github.com/kitten))
+- Fork disk cache binary file for Bun ([#45677](https://github.com/expo/expo/pull/45677) by [@kitten](https://github.com/kitten))
+
+### 💡 Others
+
+- Forcefully exclude `.cxx/` folders from file discovery and watchers ([#45722](https://github.com/expo/expo/pull/45722) by [@kitten](https://github.com/kitten))
+
 ## 56.0.1 — 2026-05-11
 
 ### 🐛 Bug fixes

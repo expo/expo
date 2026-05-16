@@ -10,14 +10,24 @@ function ResourceSavingView({ visible, children, style, ...rest }) {
         // @ts-expect-error: hidden exists on web, but not in React Native
         , { 
             // @ts-expect-error: hidden exists on web, but not in React Native
-            hidden: !visible, style: [{ display: visible ? 'flex' : 'none' }, styles.container, style], pointerEvents: visible ? 'auto' : 'none', ...rest, children: children }));
+            hidden: !visible, style: [
+                { pointerEvents: visible ? 'auto' : 'none', display: visible ? 'flex' : 'none' },
+                styles.container,
+                style,
+            ], ...rest, children: children }));
     }
-    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [styles.container, style], 
-        // box-none doesn't seem to work properly on Android
-        pointerEvents: visible ? 'auto' : 'none', children: (0, jsx_runtime_1.jsx)(react_native_1.View, { collapsable: false, removeClippedSubviews: 
+    return ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
+            // box-none doesn't seem to work properly on Android
+            { pointerEvents: visible ? 'auto' : 'none' },
+            styles.container,
+            style,
+        ], children: (0, jsx_runtime_1.jsx)(react_native_1.View, { collapsable: false, removeClippedSubviews: 
             // On iOS & macOS, set removeClippedSubviews to true only when not focused
             // This is an workaround for a bug where the clipped view never re-appears
-            react_native_1.Platform.OS === 'ios' || react_native_1.Platform.OS === 'macos' ? !visible : true, pointerEvents: visible ? 'auto' : 'none', style: visible ? styles.attached : styles.detached, children: children }) }));
+            react_native_1.Platform.OS === 'ios' || react_native_1.Platform.OS === 'macos' ? !visible : true, style: [
+                { pointerEvents: visible ? 'auto' : 'none' },
+                visible ? styles.attached : styles.detached,
+            ], children: children }) }));
 }
 const styles = react_native_1.StyleSheet.create({
     container: {

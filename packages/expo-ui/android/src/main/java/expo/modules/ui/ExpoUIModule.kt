@@ -86,7 +86,8 @@ class ExpoUIModule : Module() {
     //region Views use expo-modules-core DSL for uncommon features
 
     View(HostView::class) {
-      Events("onLayoutContent")
+      // See ShadowNodeSyncFlush.kt for why onExpoUISyncFlush is needed.
+      Events("onLayoutContent", "onExpoUISyncFlush")
 
       OnViewDidUpdateProps { view ->
         view.onViewDidUpdateProps()
@@ -123,7 +124,10 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class)
+    View(RNHostView::class) {
+      // See ShadowNodeSyncFlush.kt for why this internal phantom event is needed.
+      Events("onExpoUISyncFlush")
+    }
 
     View(SlotView::class) {
       Events("onSlotEvent")
@@ -135,6 +139,8 @@ class ExpoUIModule : Module() {
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
     View(RichTooltipView::class)
+    // Class-based view so SnackbarHostView can read its styling via findChildOfType
+    View(SnackbarView::class)
 
     //endregion Views use expo-modules-core DSL for uncommon features
 
@@ -589,6 +595,14 @@ class ExpoUIModule : Module() {
     ExpoUIView<AnimatedVisibilityProps>("AnimatedVisibilityView") {
       Content { props ->
         AnimatedVisibilityContent(props)
+      }
+    }
+
+    ExpoUIView<SnackbarHostProps>("SnackbarHostView") {
+      val showSnackbar by AsyncFunction<SnackbarShowOptions>()
+
+      Content { props ->
+        SnackbarHostContent(props, showSnackbar)
       }
     }
 

@@ -16,16 +16,16 @@ export function CommandLineTools() {
       <GridContainer>
         <GridCell
           className={mergeClasses(
-            'bg-subtle from-subtle to-palette-purple3 min-h-[192px] bg-linear-to-br from-15%',
+            'min-h-48 bg-subtle bg-linear-to-br from-subtle from-15% to-palette-purple3',
             'selection:bg-palette-purple5'
           )}>
-          <AppleAppStoreIcon className="text-palette-purple10 absolute -right-10 -bottom-16 size-72! opacity-10" />
+          <AppleAppStoreIcon className="absolute -right-10 -bottom-16 size-72! text-palette-purple10 opacity-10" />
           <div className="relative z-10 flex flex-col gap-4">
-            <h2 className="text-palette-purple10! heading-lg flex items-center gap-2 font-bold!">
+            <h2 className="flex items-center gap-2 heading-lg font-bold! text-palette-purple10!">
               <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
             </h2>
             <div>
-              <Terminal cmd={['$ npx testflight']} className="asset-shadow rounded-md" />
+              <Terminal cmd={['$ npx testflight']} className="rounded-md asset-shadow" />
               <CALLOUT theme="secondary">
                 This is an iOS-only command that will upload your app to TestFlight.
               </CALLOUT>
@@ -34,17 +34,17 @@ export function CommandLineTools() {
         </GridCell>
         <GridCell
           className={mergeClasses(
-            'bg-subtle from-subtle to-palette-green3 min-h-[192px] bg-linear-to-br from-15%',
+            'min-h-48 bg-subtle bg-linear-to-br from-subtle from-15% to-palette-green3',
             'selection:bg-palette-green4'
           )}>
           <Cloud01DuotoneIcon className="absolute -right-8 -bottom-20 size-80! text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
           <div className="relative z-10 flex flex-col gap-4">
-            <h2 className="heading-lg flex items-center gap-2 font-bold! text-[#1e8a5f]! dark:text-[#4eca8c]!">
+            <h2 className="flex items-center gap-2 heading-lg text-[#1e8a5f]! font-bold! dark:text-[#4eca8c]!">
               <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
               your web app
             </h2>
             <div>
-              <Terminal cmd={['$ npx eas-cli deploy']} className="asset-shadow rounded-md" />
+              <Terminal cmd={['$ npx eas-cli deploy']} className="rounded-md asset-shadow" />
               <CALLOUT theme="secondary">
                 For prerequisites and complete instructions, see{' '}
                 <A href="/deploy/web/#export-your-web-project/">our guide</A>.

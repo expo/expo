@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from 'react';
 import type {
   ExpoBrownfieldStateModuleSpec,
   KeyRecreatedEvent,
+  SharedStateChangeEvent,
 } from './ExpoBrownfieldStateModule.types';
 
 const ExpoBrownfieldStateModule = requireNativeModule<ExpoBrownfieldStateModuleSpec>(
@@ -63,12 +64,15 @@ export function deleteSharedState(key: string): void {
  */
 export function addSharedStateListener<T = any>(
   key: string,
-  callback: (value: T | undefined) => void
+  callback: (event: SharedStateChangeEvent<T> | undefined) => void
 ): EventSubscription {
   const state = getSharedObject(key);
-  const subscription = state.addListener('change', (event: T | undefined) => {
-    callback(event);
-  });
+  const subscription = state.addListener(
+    'change',
+    (event: SharedStateChangeEvent<T> | undefined) => {
+      callback(event);
+    }
+  );
 
   return {
     remove: () => subscription.remove(),

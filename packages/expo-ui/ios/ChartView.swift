@@ -77,7 +77,7 @@ struct RuleChartStyle: Record {
   @Field var dashArray: [Double]?
 }
 
-final class ChartProps: UIBaseViewProps {
+public final class ChartProps: UIBaseViewProps {
   @Field var data: [ChartDataPoint] = []
   @Field var type: ChartType = .line
   @Field var showGrid: Bool = true
@@ -93,8 +93,12 @@ final class ChartProps: UIBaseViewProps {
   @Field var ruleStyle: RuleChartStyle?
 }
 
-struct ChartView: ExpoSwiftUI.View {
-  @ObservedObject var props: ChartProps
+public struct ChartView: ExpoSwiftUI.View {
+  @ObservedObject public var props: ChartProps
+
+  public init(props: ChartProps) {
+    self.props = props
+  }
 
   @available(iOS 16.0, tvOS 16.0, *)
   private func createBaseBarMark(for dataPoint: ChartDataPoint) -> BarMark {
@@ -188,7 +192,7 @@ struct ChartView: ExpoSwiftUI.View {
     return ruleMark.lineStyle(.init(lineWidth: CGFloat(lineWidth)))
   }
 
-  var body: some View {
+  public var body: some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
       let hasIndividualColors = props.data.contains { $0.color != nil }
 
