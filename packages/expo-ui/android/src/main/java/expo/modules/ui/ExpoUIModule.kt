@@ -2,6 +2,8 @@
 
 package expo.modules.ui
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
@@ -79,7 +81,15 @@ class ExpoUIModule : Module() {
       }
 
       Function("setValue") { state: ObservableState, wrapper: Map<String, Any?> ->
-        state.value = wrapper["value"]
+        val newValue = wrapper["value"]
+        // Update state on the UI thread
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+          state.value = newValue
+        } else {
+          Handler(Looper.getMainLooper()).post {
+            state.value = newValue
+          }
+        }
       }
     }
 

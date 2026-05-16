@@ -10,12 +10,12 @@ const ExpoUI = requireNativeModule('ExpoUI');
  */
 export type ObservableState<T> = SharedObject & {
   /**
-   * The current value. Reads and writes are safe from any thread.
+   * The current value.
    *
-   * On iOS, JS-thread writes hop to the main thread to apply, which adds a
-   * small synchronous wait per write. For frequent updates (typing, gestures,
-   * animations) prefer writing from a worklet so the update applies directly
-   * on the UI thread.
+   * Writes from a UI worklet are synchronous and immediately readable. Writes
+   * from the JS thread are scheduled to the UI thread asynchronously, the new value is not readable until the update has been
+   * applied. Prefer writing from a worklet when you need synchronous updates
+   * (typing, gestures, animations).
    */
   value: T;
 };

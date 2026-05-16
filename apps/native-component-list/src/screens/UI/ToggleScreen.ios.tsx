@@ -84,14 +84,7 @@ function SharedStateToggle() {
           console.log('[UI thread] isOn:', value);
         }}
       />
-      <Button
-        label="Toggle from JS"
-        onPress={() => {
-          const next = !isOn.value;
-          isOn.value = next;
-          console.log('[JS] write:', next, 'sync read-back:', isOn.value);
-        }}
-      />
+      <Button label="Toggle from JS" onPress={() => (isOn.value = !isOn.value)} />
       <Button label="Toggle from Worklet" onPress={toggleFromWorklet} />
     </>
   );
