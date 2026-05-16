@@ -9,12 +9,22 @@ function withTempProject(files, callback) {
 
   try {
     for (const file of files) {
-      fs.writeFileSync(path.join(projectRoot, file), 'module.exports = {};');
+      fs.writeFileSync(path.join(projectRoot, file), getBabelConfigFixture(file));
     }
     return callback(projectRoot);
   } finally {
     fs.rmSync(projectRoot, { recursive: true, force: true });
   }
+}
+
+function getBabelConfigFixture(file) {
+  if (file === '.babelrc' || file.endsWith('.json')) {
+    return '{}';
+  }
+  if (file.endsWith('.mjs') || file.endsWith('.mts')) {
+    return 'export default {};';
+  }
+  return 'module.exports = {};';
 }
 
 it.each([
