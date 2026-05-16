@@ -82,11 +82,12 @@ class ExpoUIModule : Module() {
 
       Function("setValue") { state: ObservableState, wrapper: Map<String, Any?> ->
         val newValue = wrapper["value"]
+        val mainLooper = Looper.getMainLooper()
         // Update state on the UI thread
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (mainLooper.isCurrentThread) {
           state.value = newValue
         } else {
-          Handler(Looper.getMainLooper()).post {
+          Handler(mainLooper).post {
             state.value = newValue
           }
         }
