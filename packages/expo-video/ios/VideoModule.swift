@@ -378,6 +378,87 @@ public final class VideoModule: Module {
       }
     }
 
+    Class(VideoPlaylist.self) {
+      Constructor {
+        (
+          sources: [VideoPlaylistSource],
+          initialIndex: Int,
+          updateInterval: Double,
+          loopMode: VideoPlaylistLoopMode,
+          preloadNext: Bool,
+          autoAdvance: Bool
+        ) -> VideoPlaylist in
+        return try VideoPlaylist(
+          sources: sources,
+          initialIndex: initialIndex,
+          interval: updateInterval,
+          loopMode: loopMode,
+          preloadNext: preloadNext,
+          autoAdvance: autoAdvance
+        )
+      }
+
+      Property("id") { playlist in
+        playlist.id
+      }
+
+      Property("player") { playlist in
+        playlist.player
+      }
+
+      Property("currentStatus") { playlist in
+        playlist.currentStatus
+      }
+
+      Function("play") { playlist in
+        playlist.play()
+      }
+
+      Function("pause") { playlist in
+        playlist.pause()
+      }
+
+      AsyncFunction("next") { playlist in
+        playlist.next()
+      }
+
+      AsyncFunction("previous") { playlist in
+        playlist.previous()
+      }
+
+      AsyncFunction("skipTo") { (playlist, index: Int) in
+        playlist.skipTo(index: index)
+      }
+
+      AsyncFunction("seekTo") { (playlist: VideoPlaylist, seconds: Double) in
+        await playlist.seekTo(seconds: seconds)
+      }
+
+      Function("add") { (playlist, source: VideoPlaylistSource) in
+        playlist.add(source: source)
+      }
+
+      Function("insert") { (playlist, source: VideoPlaylistSource, index: Int) in
+        playlist.insert(source: source, at: index)
+      }
+
+      AsyncFunction("remove") { (playlist, index: Int) in
+        playlist.remove(at: index)
+      }
+
+      Function("clear") { playlist in
+        playlist.clear()
+      }
+
+      AsyncFunction("replaceAll") { (playlist, sources: [VideoPlaylistSource], options: VideoPlaylistReplaceOptions?) in
+        playlist.replaceAll(sources: sources, options: options)
+      }
+
+      Function("destroy") { playlist in
+        playlist.destroy()
+      }
+    }
+
     Class(VideoThumbnail.self) {
       Property("width", \.ref.size.width)
       Property("height", \.ref.size.height)
