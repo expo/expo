@@ -130,6 +130,7 @@ const NO_CACHE_HEADERS: Record<string, string> =
         Expires: '0',
       };
 
+// `expo-platform` is required server-side on action to force a cross-origin preflight check
 const ACTION_HEADERS = {
   ...NO_CACHE_HEADERS,
   accept: RSC_CONTENT_TYPE,
