@@ -137,6 +137,15 @@ export const VideoScreens = [
 
 if (Platform.OS === 'ios') {
   VideoScreens.push({
+    name: 'Video Playlist',
+    route: 'video/playlist',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./VideoPlaylistScreen'));
+    },
+  });
+
+  VideoScreens.push({
     // Name "Live Text Interaction" is already taken by the expo-image screens
     name: 'Video Live Text Interaction',
     route: 'video/live-text-interaction',
