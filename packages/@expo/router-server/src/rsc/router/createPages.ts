@@ -19,6 +19,7 @@ type StaticEntry = {
   component: FunctionComponent<any>;
   kind: ComponentKind;
   noSsr: boolean;
+  matchesPathname: (pathname: string) => boolean;
 };
 
 type DynamicEntry = {
@@ -29,7 +30,13 @@ type DynamicEntry = {
   isWildcard: boolean;
   matchId: IdMatcher;
   noSsr: boolean;
+  matchesPathname: (pathname: string) => boolean;
 };
+
+function buildMatchesPathname(path: string): (pathname: string) => boolean {
+  const matcher = compilePathMatcher(path);
+  return (pathname) => matcher(pathname) != null;
+}
 
 export type CreatePageInput = {
   path: string;
@@ -146,7 +153,14 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
 
     if (page.render === 'static' && numSlugs === 0) {
       const id = joinPath(page.path, 'page').replace(/^\//, '');
-      registerStatic({ id, path: page.path, component: page.component, kind: 'page', noSsr });
+      registerStatic({
+        id,
+        path: page.path,
+        component: page.component,
+        kind: 'page',
+        noSsr,
+        matchesPathname: buildMatchesPathname(page.path),
+      });
       return;
     }
 
@@ -189,6 +203,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
           component: WrappedComponent,
           kind: 'page',
           noSsr,
+          matchesPathname: buildMatchesPathname(concretePath),
         });
       }
       return;
@@ -206,6 +221,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         isWildcard: numWildcards === 1,
         matchId: compilePathMatcher(page.path, 'page'),
         noSsr,
+        matchesPathname: buildMatchesPathname(page.path),
       });
       return;
     }
@@ -225,6 +241,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         component: layout.component as FunctionComponent<any>,
         kind: 'layout',
         noSsr: false,
+        matchesPathname: buildMatchesPathname(layout.path),
       });
       return;
     }
@@ -237,6 +254,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         isWildcard: false,
         matchId: compilePathMatcher(layout.path, 'layout'),
         noSsr: false,
+        matchesPathname: buildMatchesPathname(layout.path),
       });
       return;
     }
@@ -289,10 +307,9 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       }[] = [];
       for (const entry of staticIdToEntry.values()) {
         if (entry.kind !== 'page') continue;
-        const matchPath = compilePathMatcher(entry.path);
         paths.push({
           path: parsePathSpec(entry.path),
-          matchesPathname: (pathname) => matchPath(pathname) != null,
+          matchesPathname: entry.matchesPathname,
           isStatic: !isUnderDynamicLayout(entry.path),
           noSsr: entry.noSsr,
           data: buildDataMap.get(entry.path),
@@ -300,10 +317,9 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       }
       for (const entry of dynamicEntries) {
         if (entry.kind !== 'page') continue;
-        const matchPath = compilePathMatcher(entry.path);
         paths.push({
           path: parsePathSpec(entry.path),
-          matchesPathname: (pathname) => matchPath(pathname) != null,
+          matchesPathname: entry.matchesPathname,
           isStatic: false,
           noSsr: entry.noSsr,
           data: buildDataMap.get(entry.path),
