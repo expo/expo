@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [jetpack-compose] Added `Snackbar` component. ([#45667](https://github.com/expo/expo/pull/45667) by [@nishan](https://github.com/intergalacticspacehighway))
+- Allow writing to native state from the JS thread. ([#45901](https://github.com/expo/expo/pull/45901) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

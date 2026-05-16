@@ -15,7 +15,6 @@ export type ObservableState<T> = SharedObject & {
    * Writes from a UI worklet are synchronous and immediately readable. Writes
    * from the JS thread are scheduled to the UI thread asynchronously, the new value is not readable until the update has been
    * applied. Prefer writing from a worklet when you need synchronous updates
-   * (typing, gestures, animations).
    */
   value: T;
 };
