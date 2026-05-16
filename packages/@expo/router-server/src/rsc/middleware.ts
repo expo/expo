@@ -67,11 +67,11 @@ export async function renderRscWithImportsAsync(
   imports: ImportMap,
   { body, platform, searchParams, config, method, input, contentType, headers }: RenderRscArgs
 ): Promise<ReadableStream<any>> {
-  globalThis.__expo_platform_header = platform;
   if (method === 'POST' && !body) {
     throw new Error('Server request must be provided when method is POST (server actions)');
   }
 
+  // Must stay per-request; sharing this object across renders would leak headers between concurrent requests.
   const context = { __expo_requestHeaders: headers };
   const router = await imports.router();
   const entries = router.default({
