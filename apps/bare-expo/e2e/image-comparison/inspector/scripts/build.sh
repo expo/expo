@@ -21,12 +21,15 @@ echo "Building for iOS Simulator..."
 xcrun -sdk iphonesimulator swiftc \
     -target arm64-apple-ios16.0-simulator \
     -emit-library \
+    -O \
     -module-name IOSScreenInspectorFramework \
     -o "$BIN_DIR/IOSScreenInspectorFramework_sim_arm64" \
     "$SRC_DIR/ScreenInspector.swift" \
     "$SRC_DIR/UICapture.swift" \
     "$SRC_DIR/constructor.c" \
-    -Xlinker -install_name -Xlinker @rpath/IOSScreenInspectorFramework.framework/IOSScreenInspectorFramework
+    -Xlinker -install_name -Xlinker @rpath/IOSScreenInspectorFramework.framework/IOSScreenInspectorFramework \
+    -Xlinker -fixup_chains \
+    -Xlinker -dead_strip
 
 # Create universal simulator framework binary
 echo "Creating universal simulator framework..."
