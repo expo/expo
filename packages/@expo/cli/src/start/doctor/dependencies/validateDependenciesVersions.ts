@@ -10,10 +10,15 @@ import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import { resolveAllPackageVersionsAsync } from './resolvePackages';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
+import {
+  correctReactNativeTvVersion,
+  isReactNativeTvProjectAsync,
+  reactNativeTvVersionMatchesBundled,
+} from '../reactNativeTv';
 
 const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
-type IncorrectDependency = {
+export type IncorrectDependency = {
   packageName: string;
   packageType: 'dependencies' | 'devDependencies';
   expectedVersionOrRange: string;
@@ -123,8 +128,17 @@ export async function getVersionedDependenciesAsync(
     resolvedPackagesToCheck
   );
   debug(`Package versions: %O`, packageVersions);
+  // Detect TV projects via the installed `react-native` package's `name`, since
+  // `pkg.dependencies['react-native']` can vary across package managers.
+  const isReactNativeTvProject = await isReactNativeTvProjectAsync(projectRoot);
+  debug(`react-native-tvos project: %O`, isReactNativeTvProject);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
-  let incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
+  let incorrectDeps = findIncorrectDependencies(
+    pkg,
+    packageVersions,
+    combinedKnownPackages,
+    isReactNativeTvProject
+  );
   debug(`Incorrect dependencies: %O`, incorrectDeps);
 
   if (pkg?.expo?.install?.exclude) {
@@ -217,13 +231,35 @@ function getPackagesToCheck(
 function findIncorrectDependencies(
   pkg: PackageJSONConfig,
   packageVersions: Record<string, string>,
-  bundledNativeModules: BundledNativeModules
+  bundledNativeModules: BundledNativeModules,
+  isReactNativeTvProject: boolean
 ): IncorrectDependency[] {
+  // For TV projects, compare the installed `major.minor` against the bundled
+  // `react-native` `major.minor` — `react-native-tvos` follows the upstream
+  // minor lines via a `<major>.<minor>-stable` dist-tag, so a matching minor
+  // means the TV variant is up to date.
   const packages = Object.keys(packageVersions);
   const incorrectDeps: IncorrectDependency[] = [];
   for (const packageName of packages) {
-    const expectedVersionOrRange = bundledNativeModules[packageName]!;
     const actualVersion = packageVersions[packageName]!;
+
+    if (isReactNativeTvProject && packageName === 'react-native') {
+      const bundledReactNativeVersion = bundledNativeModules['react-native'];
+      if (
+        bundledReactNativeVersion &&
+        !reactNativeTvVersionMatchesBundled(actualVersion, bundledReactNativeVersion)
+      ) {
+        incorrectDeps.push({
+          packageName,
+          packageType: findDependencyType(pkg, packageName),
+          expectedVersionOrRange: correctReactNativeTvVersion(bundledReactNativeVersion),
+          actualVersion,
+        });
+      }
+      continue;
+    }
+
+    const expectedVersionOrRange = bundledNativeModules[packageName]!;
     if (isDependencyVersionIncorrect(packageName, actualVersion, expectedVersionOrRange)) {
       incorrectDeps.push({
         packageName,
