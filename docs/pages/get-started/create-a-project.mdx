@@ -1,28 +1,63 @@
----
-title: Create a project
-description: Learn how to create a new Expo project.
-hideTOC: true
----
+// Android aplikacija "Radni dani" // Funkcije: // - unos i uređivanje podataka // - automatski izračun sati // - unos kilometara // - pregled po mjesecima // - izgled prema originalnoj tablici
 
-import { Terminal } from '~/ui/components/Snippet';
+export default function RadniDaniApp() { const rows = [ { rd: '01.', datum: 'Subota 02.05.', relacija: 'Šulinec -> B.Selo -> Ivanić -> Šulinec', vrijeme: '06:00 - 14:15', rh: '8', km: '89', }, { rd: '02.', datum: 'Ponedjeljak 04.05.', relacija: 'Šulinec -> B.Selo -> M.Ves -> V.Dubrava -> Šulinec', vrijeme: '06:00 - 13:45', rh: '8', km: '214', }, { rd: '03.', datum: 'Utorak 05.05.', relacija: 'Šulinec -> M.Ves -> V.Dubrava -> Šulinec', vrijeme: '06:00 - 17:20', rh: '11', km: '314', }, { rd: '04.', datum: 'Srijeda 06.05.', relacija: 'Šulinec -> B.Selo -> M.Ves -> Šulinec', vrijeme: '06:00 - 17:35', rh: '12', km: '189', }, { rd: '05.', datum: 'Četvrtak 07.05.', relacija: 'Šulinec -> Ljubeščica -> Križevci -> Šulinec', vrijeme: '06:00 - 16:35', rh: '11', km: '273', }, ];
 
-Expo is a React Native framework that makes developing Android and iOS apps easier. Our framework provides file-based routing, a standard library of native modules, and much more. Expo is open source with an active community on [GitHub](https://github.com/expo/expo) and [Discord](https://chat.expo.dev).
+return ( <div className="min-h-screen bg-gray-100 flex justify-center items-start p-4"> <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-300"> <div className="bg-blue-700 text-white p-4 sticky top-0"> <div className="flex items-center justify-between"> <div> <h1 className="text-2xl font-bold">Radni Dani</h1> <p className="text-sm opacity-90">05. mjesec - Svibanj 2026.</p> </div> <button className="bg-white/20 px-3 py-2 rounded-xl text-sm"> PDF </button> </div> </div>
 
-We also make [Expo Application Services (EAS)](https://expo.dev/eas), a set of services that complement the Expo framework in each step of the development process.
+<div className="bg-lime-400 text-center py-3 border-b-4 border-yellow-400">
+      <h2 className="text-red-600 font-bold text-lg">
+        Radni Dani - 05. mjesec - Svibanj 2026.
+      </h2>
+    </div>
 
-## System requirements
+    <div className="overflow-y-auto max-h-[70vh]">
+      {rows.map((row, index) => (
+        <div
+          key={index}
+          className="border-b border-gray-300 bg-sky-100 p-3"
+        >
+          <div className="flex justify-between items-center mb-2">
+            <div className="bg-yellow-300 px-2 py-1 rounded font-bold">
+              {row.rd}
+            </div>
+            <div className="text-sm font-semibold text-gray-700">
+              {row.datum}
+            </div>
+          </div>
 
-- [Node.js (LTS)](https://nodejs.org/en/).
-- macOS, Windows (Powershell and [WSL 2](https://expo.fyi/wsl)), and Linux are supported.
+          <div className="space-y-2 text-sm">
+            <div>
+              <span className="font-bold">Relacija:</span>
+              <div className="text-gray-800 mt-1">{row.relacija}</div>
+            </div>
 
-We recommend starting with the default project created by `create-expo-app`. The default project includes example code to help you get started.
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-white rounded-xl p-2 text-center shadow-sm">
+                <div className="text-xs text-gray-500">Radni dan</div>
+                <div className="font-bold">{row.vrijeme}</div>
+              </div>
 
-To create a new project, run the following command:
+              <div className="bg-white rounded-xl p-2 text-center shadow-sm">
+                <div className="text-xs text-gray-500">R/h</div>
+                <div className="font-bold text-red-600">{row.rh}</div>
+              </div>
 
-<Terminal cmd={['$ npx create-expo-app@latest --template default@sdk-55']} />
+              <div className="bg-white rounded-xl p-2 text-center shadow-sm">
+                <div className="text-xs text-gray-500">Km</div>
+                <div className="font-bold">{row.km}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
 
-> **Note:** During the SDK 55 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-55` to create an SDK 55 project. You can also choose a different template by adding the [`--template` option](/more/create-expo/#--template).
+    <div className="p-4 border-t bg-white sticky bottom-0">
+      <button className="w-full bg-blue-700 hover:bg-blue-800 text-white py-4 rounded-2xl font-bold text-lg shadow-lg transition-all">
+        + DODAJ NOVI UNOS
+      </button>
+    </div>
+  </div>
+</div>
 
-## Next step
-
-You have a project. Now it's time to set up your development environment so that you can start developing.
+); }
