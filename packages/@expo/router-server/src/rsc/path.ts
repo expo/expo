@@ -86,25 +86,6 @@ export type PathSpecItem =
   | { type: 'wildcard'; name?: string };
 export type PathSpec = readonly PathSpecItem[];
 
-export const parsePathWithSlug = (path: string): PathSpec =>
-  path
-    .split('/')
-    .filter(Boolean)
-    .map((name) => {
-      let type: 'literal' | 'group' | 'wildcard' = 'literal';
-      const isSlug = name.startsWith('[') && name.endsWith(']');
-      if (isSlug) {
-        type = 'group';
-        name = name.slice(1, -1);
-      }
-      const isWildcard = name.startsWith('...');
-      if (isWildcard) {
-        type = 'wildcard';
-        name = name.slice(3);
-      }
-      return { type, name };
-    });
-
 export const getPathMapping = (
   pathSpec: PathSpec,
   pathname: string
@@ -158,18 +139,3 @@ export const getPathMapping = (
   return mapping;
 };
 
-/**
- * Transform a path spec to a regular expression.
- */
-export const path2regexp = (path: PathSpec) => {
-  const parts = path.map(({ type, name }) => {
-    if (type === 'literal') {
-      return name;
-    } else if (type === 'group') {
-      return `([^/]+)`;
-    } else {
-      return `(.*)`;
-    }
-  });
-  return `^/${parts.join('/')}$`;
-};

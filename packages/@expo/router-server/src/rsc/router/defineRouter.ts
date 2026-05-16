@@ -54,7 +54,6 @@ const safeJsonParse = (str: unknown) => {
 export function unstable_defineRouter(
   getPathConfig: () => Promise<
     Iterable<{
-      pattern: string;
       path: PathSpec;
       matchesPathname: (pathname: string) => boolean;
       isStatic?: boolean;
@@ -76,7 +75,6 @@ export function unstable_defineRouter(
   >
 ): ReturnType<typeof defineEntries> {
   type MyPathConfig = {
-    pattern: string;
     pathname: PathSpec;
     matchesPathname: (pathname: string) => boolean;
     isStatic?: boolean | undefined;
@@ -94,7 +92,6 @@ export function unstable_defineRouter(
           item.path[0]!.type === 'literal' &&
           item.path[0]!.name === '404';
         return {
-          pattern: item.pattern,
           pathname: item.path,
           matchesPathname: item.matchesPathname,
           isStatic: item.isStatic,

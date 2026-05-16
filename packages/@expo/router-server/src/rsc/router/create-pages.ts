@@ -15,7 +15,7 @@ import { createElement } from 'react';
 import type { FunctionComponent, ReactNode } from 'react';
 
 import { unstable_defineRouter } from './defineRouter';
-import { joinPath, getPathMapping, path2regexp } from '../path';
+import { joinPath, getPathMapping } from '../path';
 import type { PathSpec, PathSpecItem } from '../path';
 import type { BuildConfig } from '../server';
 
@@ -353,7 +353,6 @@ export function createPages(
     async () => {
       await configure();
       const paths: {
-        pattern: string;
         path: PathSpec;
         matchesPathname: (pathname: string) => boolean;
         isStatic: boolean;
@@ -372,7 +371,6 @@ export function createPages(
         })();
 
         paths.push({
-          pattern: path2regexp(parsePathSpec(path)),
           path: pathSpec,
           matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
           isStatic,
@@ -383,7 +381,6 @@ export function createPages(
       for (const [path, [pathSpec]] of dynamicPagePathMap) {
         const noSsr = noSsrSet.has(pathSpec);
         paths.push({
-          pattern: path2regexp(parsePathSpec(path)),
           path: pathSpec,
           matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
           isStatic: false,
@@ -394,7 +391,6 @@ export function createPages(
       for (const [path, [pathSpec]] of wildcardPagePathMap) {
         const noSsr = noSsrSet.has(pathSpec);
         paths.push({
-          pattern: path2regexp(parsePathSpec(path)),
           path: pathSpec,
           matchesPathname: (pathname) => getPathMapping(pathSpec, pathname) != null,
           isStatic: false,
