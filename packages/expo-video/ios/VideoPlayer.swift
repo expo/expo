@@ -212,25 +212,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       throw PlayerItemLoadException("The provided uri \(url) is a local PHAsset URL. This kind of URL can only be loaded asynchrynously. Use `VideoPlayer.replaceAsync` in order to load this item")
     }
 
-    if let drm = videoSource.drm {
-      try drm.type.assertIsSupported()
-      contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
-    }
-
-    playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
-    playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
-
-    // The current item has to be replaced from the main thread. When replacing from other queues
-    // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
-    // which causes crashes.
-    DispatchQueue.main.async { [weak self] in
-      guard let self else {
-        return
-      }
-      self.ref.replaceCurrentItem(with: playerItem)
-      self.dangerousPropertiesStore.ownerIsReplacing = false
-      self.dangerousPropertiesStore.applyProperties(to: self)
-    }
+    try configure(playerItem: playerItem, for: videoSource)
+    applyCurrentItem(playerItem)
   }
 
   /**
@@ -243,20 +226,51 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     dangerousPropertiesStore.ownerIsReplacing = true
-    guard let playerItem = try await videoSourceLoader.load(videoSource: videoSource) else {
+    guard let playerItem = try await loadPlayerItem(with: videoSource, using: videoSourceLoader) else {
       // Resolve the promise without applying the source. The loading task has been cancelled.
       // The caller that cancelled this task should handle dangerousPropertiesStore
       return
     }
 
-    if let drm = videoSource.drm {
-      try drm.type.assertIsSupported()
-      self.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
+    applyCurrentItem(playerItem)
+  }
+
+  func loadPlayerItem(with videoSource: VideoSource, using loader: VideoSourceLoader) async throws -> VideoPlayerItem? {
+    guard videoSource.uri != nil else {
+      return nil
     }
 
-    playerItem.audioTimePitchAlgorithm = self.preservesPitch ? .spectral : .varispeed
-    playerItem.preferredForwardBufferDuration = self.bufferOptions.preferredForwardBufferDuration
+    guard let playerItem = try await loader.load(videoSource: videoSource) else {
+      return nil
+    }
 
+    try configure(playerItem: playerItem, for: videoSource)
+    return playerItem
+  }
+
+  func replaceCurrentItem(withPreloadedItem playerItem: VideoPlayerItem?) {
+    dangerousPropertiesStore.ownerIsReplacing = true
+    videoSourceLoader.cancelCurrentTask()
+
+    guard let playerItem else {
+      clearCurrentItem()
+      return
+    }
+
+    applyCurrentItem(playerItem)
+  }
+
+  private func configure(playerItem: VideoPlayerItem, for videoSource: VideoSource) throws {
+    if let drm = videoSource.drm {
+      try drm.type.assertIsSupported()
+      contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
+    }
+
+    playerItem.audioTimePitchAlgorithm = preservesPitch ? .spectral : .varispeed
+    playerItem.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+  }
+
+  private func applyCurrentItem(_ playerItem: VideoPlayerItem) {
     // The current item has to be replaced from the main thread. When replacing from other queues
     // sometimes the KVOs will try to deliver updates after the item has been changed or player deallocated,
     // which causes crashes.
@@ -265,8 +279,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         return
       }
       self.ref.replaceCurrentItem(with: playerItem)
-      dangerousPropertiesStore.ownerIsReplacing = false
-      dangerousPropertiesStore.applyProperties(to: self)
+      self.dangerousPropertiesStore.ownerIsReplacing = false
+      self.dangerousPropertiesStore.applyProperties(to: self)
     }
   }
 
