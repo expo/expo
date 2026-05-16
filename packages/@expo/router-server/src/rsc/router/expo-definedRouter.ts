@@ -414,6 +414,19 @@ async function loadStaticParamsForRoute(route: RouteNode): Promise<string[][] | 
   });
 }
 
+type RouteSettings = {
+  render?: 'static' | 'dynamic';
+  unstable_disableSSR?: boolean;
+};
+
+function readSettings(loaded: { unstable_settings?: unknown }): RouteSettings {
+  const raw = (loaded.unstable_settings ?? {}) as Record<string, unknown>;
+  const render = raw.render === 'static' || raw.render === 'dynamic' ? raw.render : undefined;
+  const unstable_disableSSR =
+    typeof raw.unstable_disableSSR === 'boolean' ? raw.unstable_disableSSR : undefined;
+  return { render, unstable_disableSSR };
+}
+
 async function registerRouteTree(
   api: CreatePagesApi,
   route: RouteNode,
@@ -428,11 +441,11 @@ async function registerRouteTree(
     );
   }
 
+  const layoutSettings = readSettings(loaded);
   api.createLayout({
     component: loaded.default! as any,
     path: layoutPath,
-    render: 'static',
-    ...loaded.unstable_settings,
+    render: layoutSettings.render ?? 'static',
   });
 
   await Promise.all(
@@ -443,22 +456,22 @@ async function registerRouteTree(
       }
       const childPath = getContextKey(child.contextKey).replace(/\/index$/, '');
       const childLoaded = child.loadRoute();
-      const settings = childLoaded.unstable_settings;
+      const settings = readSettings(childLoaded);
 
       if (childLoaded.generateStaticParams) {
         api.createPage({
           component: childLoaded.default as any,
           path: childPath,
           render: 'static',
-          ...childLoaded.unstable_settings,
           staticPaths: (await loadStaticParamsForRoute(child)) as any,
+          unstable_disableSSR: settings.unstable_disableSSR,
         });
-        if (settings?.render !== 'static') {
+        if (settings.render !== 'static') {
           api.createPage({
             component: childLoaded.default as any,
             path: childPath,
             render: 'dynamic',
-            ...settings,
+            unstable_disableSSR: settings.unstable_disableSSR,
           });
         }
         return;
@@ -467,8 +480,8 @@ async function registerRouteTree(
       api.createPage({
         component: childLoaded.default as any,
         path: childPath,
-        render: 'dynamic',
-        ...settings,
+        render: settings.render ?? 'dynamic',
+        unstable_disableSSR: settings.unstable_disableSSR,
       });
     })
   );
