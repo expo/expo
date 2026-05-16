@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sortRoutes = exports.stripGroupSegmentsFromPath = exports.removeSupportedExtensions = exports.matchGroupName = exports.isTypedRoute = exports.getContextKey = exports.getRoutesCore = exports.generateDynamic = exports.extrapolateGroups = exports.getExactRoutes = exports.getRoutes = exports.getReactNavigationConfig = void 0;
+exports.sortRoutes = exports.stripGroupSegmentsFromPath = exports.removeSupportedExtensions = exports.matchGroupName = exports.matchDynamicName = exports.isTypedRoute = exports.getContextKey = exports.getRoutesCore = exports.generateDynamic = exports.extrapolateGroups = exports.getExactRoutes = exports.getRoutes = exports.getReactNavigationConfig = void 0;
 var getReactNavigationConfig_1 = require("../getReactNavigationConfig");
 Object.defineProperty(exports, "getReactNavigationConfig", { enumerable: true, get: function () { return getReactNavigationConfig_1.getReactNavigationConfig; } });
 var getRoutes_1 = require("../getRoutes");
@@ -13,6 +13,7 @@ Object.defineProperty(exports, "getRoutesCore", { enumerable: true, get: functio
 var matchers_1 = require("../matchers");
 Object.defineProperty(exports, "getContextKey", { enumerable: true, get: function () { return matchers_1.getContextKey; } });
 Object.defineProperty(exports, "isTypedRoute", { enumerable: true, get: function () { return matchers_1.isTypedRoute; } });
+Object.defineProperty(exports, "matchDynamicName", { enumerable: true, get: function () { return matchers_1.matchDynamicName; } });
 Object.defineProperty(exports, "matchGroupName", { enumerable: true, get: function () { return matchers_1.matchGroupName; } });
 Object.defineProperty(exports, "removeSupportedExtensions", { enumerable: true, get: function () { return matchers_1.removeSupportedExtensions; } });
 Object.defineProperty(exports, "stripGroupSegmentsFromPath", { enumerable: true, get: function () { return matchers_1.stripGroupSegmentsFromPath; } });

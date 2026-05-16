@@ -6,12 +6,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { ReactNode } from 'react';
-import type { PathSpec } from './path';
 export declare const REQUEST_HEADERS = "__expo_requestHeaders";
 type Config = any;
 type Elements = Record<string, ReactNode>;
 export type BuildConfig = {
-    pathname: string | PathSpec;
+    pathname: string;
     isStatic?: boolean | undefined;
     entries?: {
         input: string;
@@ -46,7 +45,7 @@ export type EntriesDev = {
 export type EntriesPrd = EntriesDev & {
     loadConfig: () => Promise<Config>;
     loadModule: (id: string) => Promise<unknown>;
-    dynamicHtmlPaths: [pathSpec: PathSpec, htmlHead: string][];
+    dynamicHtmlPaths: [pathname: string, htmlHead: string][];
     publicIndexHtml: string;
 };
 type RenderStore = {
