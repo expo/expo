@@ -286,7 +286,6 @@ internal final class VideoPlaylist: SharedObject, VideoPlayerObserverDelegate {
 
     transitionGeneration += 1
     let generation = transitionGeneration
-    let previousIndex = currentIndex
     currentIndex = index
     shouldPlayWhenReady = shouldPlay
     emitStatus()
@@ -296,11 +295,11 @@ internal final class VideoPlaylist: SharedObject, VideoPlayerObserverDelegate {
       guard let self else {
         return
       }
-      await self.transition(to: index, previousIndex: previousIndex, shouldPlay: shouldPlay, generation: generation)
+      await self.transition(to: index, shouldPlay: shouldPlay, generation: generation)
     }
   }
 
-  private func transition(to index: Int, previousIndex: Int, shouldPlay: Bool, generation: Int) async {
+  private func transition(to index: Int, shouldPlay: Bool, generation: Int) async {
     guard validIndex(index), !Task.isCancelled else {
       return
     }

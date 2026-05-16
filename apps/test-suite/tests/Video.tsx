@@ -2,10 +2,16 @@
 
 import { EventSubscription } from 'expo-modules-core';
 import {
+  createVideoPlaylist,
   createVideoPlayer,
   SourceLoadEventPayload,
   SubtitleTrack,
   TimeUpdateEventPayload,
+  useVideoPlaylist,
+  useVideoPlaylistStatus,
+  VideoPlaylist,
+  VideoPlaylistEvents,
+  VideoPlaylistStatus,
   VideoPlayer,
   VideoPlayerEvents,
   VideoPlayerStatus,
@@ -14,6 +20,7 @@ import {
   VideoView,
 } from 'expo-video';
 import React from 'react';
+import { Platform } from 'react-native';
 
 import { mountAndWaitFor } from './helpers';
 
@@ -243,6 +250,7 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
     expectAudioTracks: false,
     expectSubtitleTracks: false,
   };
+  const itIos = Platform.OS === 'ios' ? it : t.xit;
 
   /**
    * Reusable function to run the standard suite of tests for a given source.
@@ -563,6 +571,281 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
     });
   });
 
+  describe('VideoPlaylist', () => {
+    itIos('Creates a playlist with local and remote sources and exposes a stable player', async () => {
+      const playlist = createVideoPlaylist({
+        sources: [
+          { id: 'local', source: localVideoSource },
+          { id: 'remote', source: bigBuckBunnySource },
+        ],
+        initialIndex: 1,
+      });
+
+      try {
+        expect(playlist.player).toBeDefined();
+        const stablePlayer = playlist.player;
+        const status = await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 1 && status.sourceCount === 2 && status.isLoaded
+        );
+
+        expect(playlist.player).toBe(stablePlayer);
+        expect((status.currentSource as { id?: string })?.id).toBe('remote');
+      } finally {
+        playlist.release();
+      }
+    });
+
+    itIos('useVideoPlaylistStatus receives play, pause, time, load, and end updates', async () => {
+      const statuses: VideoPlaylistStatus[] = [];
+      let resolvePlaylist: (playlist: VideoPlaylist) => void = () => {};
+      const playlistPromise = new Promise<VideoPlaylist>((resolve) => {
+        resolvePlaylist = resolve;
+      });
+
+      function PlaylistStatusProbe() {
+        const playlist = useVideoPlaylist({
+          sources: [{ id: 'local', source: localVideoSource }],
+          updateInterval: 100,
+        });
+        const status = useVideoPlaylistStatus(playlist);
+
+        React.useEffect(() => {
+          resolvePlaylist(playlist);
+        }, [playlist]);
+
+        React.useEffect(() => {
+          statuses.push(status);
+        }, [status]);
+
+        return null;
+      }
+
+      setPortalChild(<PlaylistStatusProbe />);
+      const playlist = await playlistPromise;
+
+      await waitForPlaylistStatusTo(playlist, (status) => status.isLoaded);
+      playlist.play();
+      await waitForPlaylistStatusTo(playlist, (status) => status.playing);
+      await playlist.seekTo(13);
+      await waitForPlaylistStatusTo(playlist, (status) => status.currentTime > 10);
+      playlist.pause();
+      await waitForPlaylistStatusTo(playlist, (status) => !status.playing && status.isLoaded);
+      playlist.play();
+      await waitForPlaylistStatusTo(playlist, (status) => status.didJustFinish);
+
+      expect(statuses.some((status) => status.isLoaded)).toBe(true);
+      expect(statuses.some((status) => status.playing)).toBe(true);
+      expect(statuses.some((status) => status.currentTime > 10)).toBe(true);
+      expect(statuses.some((status) => status.didJustFinish)).toBe(true);
+      cleanupPortal();
+    });
+
+    itIos('next, previous, and skipTo update currentIndex and preserve play intent', async () => {
+      const playlist = createVideoPlaylist({
+        sources: [
+          { id: 'first', source: localVideoSource },
+          { id: 'second', source: localVideoSource },
+          { id: 'third', source: localVideoSource },
+        ],
+      });
+
+      try {
+        await waitForPlaylistStatusTo(playlist, (status) => status.isLoaded);
+        playlist.play();
+        await waitForPlaylistStatusTo(playlist, (status) => status.playing);
+
+        await playlist.next();
+        await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 1 && status.playing && status.isLoaded
+        );
+
+        await playlist.previous();
+        await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 0 && status.playing && status.isLoaded
+        );
+
+        await playlist.skipTo(2);
+        const status = await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 2 && status.playing && status.isLoaded
+        );
+        expect((status.currentSource as { id?: string })?.id).toBe('third');
+      } finally {
+        playlist.release();
+      }
+    });
+
+    itIos('playToEnd advances, loops, wraps, and stops according to loop mode', async () => {
+      const autoAdvancePlaylist = createVideoPlaylist({
+        sources: [
+          { id: 'first', source: localVideoSource },
+          { id: 'second', source: localVideoSource },
+        ],
+      });
+      const singleLoopPlaylist = createVideoPlaylist({
+        sources: [{ id: 'single', source: localVideoSource }],
+        loop: 'single',
+      });
+      const allLoopPlaylist = createVideoPlaylist({
+        sources: [
+          { id: 'first', source: localVideoSource },
+          { id: 'second', source: localVideoSource },
+        ],
+        initialIndex: 1,
+        loop: 'all',
+      });
+
+      try {
+        await waitForPlaylistStatusTo(autoAdvancePlaylist, (status) => status.isLoaded);
+        await autoAdvancePlaylist.seekTo(13);
+        autoAdvancePlaylist.play();
+        await waitForPlaylistStatusTo(
+          autoAdvancePlaylist,
+          (status) => status.currentIndex === 1 && status.isLoaded
+        );
+        await autoAdvancePlaylist.seekTo(13);
+        autoAdvancePlaylist.play();
+        await waitForPlaylistStatusTo(
+          autoAdvancePlaylist,
+          (status) => status.currentIndex === 1 && status.didJustFinish && !status.playing
+        );
+
+        await waitForPlaylistStatusTo(singleLoopPlaylist, (status) => status.isLoaded);
+        await singleLoopPlaylist.seekTo(13);
+        singleLoopPlaylist.play();
+        await waitForPlaylistStatusTo(
+          singleLoopPlaylist,
+          (status) => status.currentIndex === 0 && status.didJustFinish
+        );
+        await waitForPlaylistStatusTo(
+          singleLoopPlaylist,
+          (status) => status.currentIndex === 0 && status.playing && status.currentTime < 5
+        );
+
+        await waitForPlaylistStatusTo(allLoopPlaylist, (status) => status.isLoaded);
+        await allLoopPlaylist.seekTo(13);
+        allLoopPlaylist.play();
+        await waitForPlaylistStatusTo(
+          allLoopPlaylist,
+          (status) => status.currentIndex === 0 && status.isLoaded
+        );
+      } finally {
+        autoAdvancePlaylist.release();
+        singleLoopPlaylist.release();
+        allLoopPlaylist.release();
+      }
+    });
+
+    itIos('add, insert, remove, clear, and replaceAll update source state', async () => {
+      const playlist = createVideoPlaylist({
+        sources: [
+          { id: 'a', source: localVideoSource },
+          { id: 'b', source: localVideoSource },
+        ],
+        initialIndex: 1,
+      });
+
+      try {
+        await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 1 && status.isLoaded
+        );
+
+        playlist.add({ id: 'c', source: localVideoSource });
+        await waitForPlaylistStatusTo(playlist, (status) => status.sourceCount === 3);
+
+        playlist.insert({ id: 'd', source: localVideoSource }, 1);
+        await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.sourceCount === 4 && status.currentIndex === 2
+        );
+
+        await playlist.remove(0);
+        await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.sourceCount === 3 && status.currentIndex === 1
+        );
+
+        await playlist.replaceAll(
+          [
+            { id: 'x', source: localVideoSource },
+            { id: 'b', source: localVideoSource },
+          ],
+          { preserveCurrentSource: true }
+        );
+        const preservedStatus = await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.sourceCount === 2 && status.currentIndex === 1 && status.isLoaded
+        );
+        expect((preservedStatus.currentSource as { id?: string })?.id).toBe('b');
+
+        playlist.clear();
+        const emptyStatus = await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.sourceCount === 0
+        );
+        expect(emptyStatus.currentIndex).toBe(0);
+        expect(emptyStatus.currentSource).toBeNull();
+      } finally {
+        playlist.release();
+      }
+    });
+
+    itIos('Rapid navigation only applies the latest requested transition', async () => {
+      const playlist = createVideoPlaylist({
+        sources: [
+          { id: 'first', source: localVideoSource },
+          { id: 'second', source: bigBuckBunnySource },
+          { id: 'third', source: localVideoSource },
+        ],
+      });
+
+      try {
+        await waitForPlaylistStatusTo(playlist, (status) => status.isLoaded);
+        const firstTransition = playlist.skipTo(1);
+        const secondTransition = playlist.skipTo(2);
+        await Promise.all([firstTransition, secondTransition]);
+
+        const status = await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 2 && status.isLoaded
+        );
+        expect((status.currentSource as { id?: string })?.id).toBe('third');
+      } finally {
+        playlist.release();
+      }
+    });
+
+    itIos('preloadNext advances correctly without replacing the exposed player', async () => {
+      const playlist = createVideoPlaylist({
+        sources: [
+          { id: 'first', source: localVideoSource },
+          { id: 'second', source: localVideoSource },
+        ],
+        preloadNext: true,
+      });
+
+      try {
+        const stablePlayer = playlist.player;
+        await waitForPlaylistStatusTo(playlist, (status) => status.isLoaded);
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        await playlist.next();
+        const status = await waitForPlaylistStatusTo(
+          playlist,
+          (status) => status.currentIndex === 1 && status.isLoaded
+        );
+
+        expect((status.currentSource as { id?: string })?.id).toBe('second');
+        expect(playlist.player).toBe(stablePlayer);
+      } finally {
+        playlist.release();
+      }
+    });
+  });
+
   describe('VideoViewEvents', () => {
     /*
      * Only testing a single event, because all other events require user input
@@ -864,5 +1147,37 @@ async function waitForEventTo<EventName extends keyof VideoPlayerEvents>(
     });
   } finally {
     subscription?.remove();
+  }
+}
+
+async function waitForPlaylistStatusTo(
+  playlist: VideoPlaylist,
+  comparator: (status: VideoPlaylistStatus) => boolean,
+  timeout: number = 15000
+): Promise<VideoPlaylistStatus> {
+  if (comparator(playlist.currentStatus)) {
+    return playlist.currentStatus;
+  }
+
+  let subscription: EventSubscription | null = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  try {
+    return await new Promise((resolve, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error(`waitForPlaylistStatusTo: Timed out after ${timeout}ms.`));
+      }, timeout);
+
+      subscription = playlist.addListener('playlistStatusUpdate', ((status: VideoPlaylistStatus) => {
+        if (comparator(status)) {
+          resolve(status);
+        }
+      }) as VideoPlaylistEvents['playlistStatusUpdate']);
+    });
+  } finally {
+    subscription?.remove();
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
   }
 }

@@ -213,6 +213,11 @@ export declare class VideoPlaylist extends SharedObject<VideoPlaylistEvents> {
   );
 
   /**
+   * Unique identifier for the playlist instance.
+   */
+  readonly id: string;
+
+  /**
    * Stable player owned by this playlist.
    */
   readonly player: VideoPlayer;

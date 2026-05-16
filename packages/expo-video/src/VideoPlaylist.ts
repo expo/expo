@@ -89,7 +89,7 @@ export function useVideoPlaylist(options: VideoPlaylistOptions = {}): VideoPlayl
 
   return useReleasingSharedObject(
     () =>
-      new (NativeVideoModule.VideoPlaylist!)(
+      new NativeVideoModule.VideoPlaylist!(
         normalizedSources,
         initialIndex,
         updateInterval,
