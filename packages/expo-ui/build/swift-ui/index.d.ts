@@ -34,7 +34,7 @@ export * from './Spacer';
 export * from './Stepper';
 export * from './Text';
 export { useNativeState } from '../State/useNativeState';
-export { withAnimated } from './withAnimated';
+export { withAnimated, type WithAnimatedCompletionCriteria } from './withAnimated';
 export * from './SyncToggle';
 export * from './TabView';
 export * from './Toggle';
