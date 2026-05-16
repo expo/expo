@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
-import resolveAssetSource from './resolveAssetSource';
+import resolveAssetSource from './resolveAssetSource.web';
+import { generateVideoThumbnailsAsync } from './web/VideoThumbnailGenerator.web';
 export function useVideoPlayer(source, setup) {
     const parsedSource = typeof source === 'string' ? { uri: source } : source;
     return useMemo(() => {
@@ -272,8 +273,13 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
         });
         this.playing = true;
     }
-    generateThumbnailsAsync(times) {
-        throw new Error('Generating video thumbnails is not supported on Web yet');
+    generateThumbnailsAsync(times, options = {}) {
+        const uri = getSourceUri(this.src);
+        if (uri == null) {
+            return Promise.resolve([]);
+        }
+        const headers = getSourceHeaders(this.src);
+        return generateVideoThumbnailsAsync({ uri, headers }, times, options);
     }
     _synchronizeWithFirstVideo(video) {
         const firstVideo = [...this._mountedVideos][0];
@@ -384,5 +390,14 @@ export default class VideoPlayerWeb extends globalThis.expo.SharedObject {
             this._emitOnce(video, 'sourceChange', { source: this.src, oldSource: this.previousSrc });
         };
     }
+}
+function getSourceHeaders(source) {
+    if (source == null ||
+        typeof source !== 'object' ||
+        Array.isArray(source) ||
+        !('headers' in source)) {
+        return undefined;
+    }
+    return source.headers;
 }
 //# sourceMappingURL=VideoPlayer.web.js.map

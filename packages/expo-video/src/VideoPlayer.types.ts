@@ -306,8 +306,10 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   /**
    * Generates thumbnails from the currently played asset. The thumbnails are references to native images,
    * thus they can be used as a source of the `Image` component from `expo-image`.
+   * On web, the generated thumbnail references wrap JPEG data URLs.
    * @platform android
    * @platform ios
+   * @platform web
    */
   generateThumbnailsAsync(
     times: number | number[],
@@ -323,6 +325,7 @@ export type VideoThumbnailOptions = {
    * If provided, the generated thumbnail will not exceed this width in pixels, preserving its aspect ratio.
    * @platform android
    * @platform ios
+   * @platform web
    */
   maxWidth?: number;
 
@@ -330,6 +333,7 @@ export type VideoThumbnailOptions = {
    * If provided, the generated thumbnail will not exceed this height in pixels, preserving its aspect ratio.
    * @platform android
    * @platform ios
+   * @platform web
    */
   maxHeight?: number;
 };
