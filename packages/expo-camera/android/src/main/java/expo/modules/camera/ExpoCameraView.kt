@@ -611,8 +611,16 @@ class ExpoCameraView(
       if (mirror) {
         setMirrorMode(MirrorMode.MIRROR_MODE_ON_FRONT_ONLY)
       }
-      setVideoStabilizationEnabled(videoStabilizationMode.isEnabled())
+      setVideoStabilizationEnabled(isVideoStabilizationEnabled())
     }.build()
+  }
+
+  private fun isVideoStabilizationEnabled(): Boolean {
+    val isStabilizationSupported = camera?.cameraInfo?.let { cameraInfo ->
+      Recorder.getVideoCapabilities(cameraInfo).isStabilizationSupported
+    } ?: false
+
+    return isStabilizationSupported && videoStabilizationMode.isEnabled()
   }
 
   private fun startFocusMetering() {
