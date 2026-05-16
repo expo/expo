@@ -80,10 +80,3 @@ export const extname = (filePath: string) => {
   return index > 0 ? filePath.slice(index) : '';
 };
 
-export type PathSpecItem =
-  | { type: 'literal'; name: string }
-  | { type: 'group'; name?: string }
-  | { type: 'wildcard'; name?: string };
-export type PathSpec = readonly PathSpecItem[];
-
-

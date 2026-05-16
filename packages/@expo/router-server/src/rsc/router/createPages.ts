@@ -5,7 +5,6 @@ import type { FunctionComponent, ReactNode } from 'react';
 
 import { unstable_defineRouter } from './defineRouter';
 import { joinPath } from '../path';
-import type { PathSpec, PathSpecItem } from '../path';
 import type { BuildConfig } from '../server';
 
 type ComponentKind = 'page' | 'layout';
@@ -64,19 +63,6 @@ export type CreatePagesFn = (
 ) => Promise<void>;
 
 const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
-
-function parsePathSpec(path: string): PathSpec {
-  return path
-    .split('/')
-    .filter(Boolean)
-    .map((segment): PathSpecItem => {
-      const match = matchDynamicName(segment);
-      if (!match) return { type: 'literal', name: segment };
-      return match.deep
-        ? { type: 'wildcard', name: match.name }
-        : { type: 'group', name: match.name };
-    });
-}
 
 function compilePathMatcher(path: string, suffix?: 'page' | 'layout'): IdMatcher {
   const slugs: { name: string; deep: boolean }[] = [];
@@ -145,12 +131,14 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       throw new Error('no longer available');
     }
     const noSsr = !!page.unstable_disableSSR;
-    const pathSpec = parsePathSpec(page.path);
+    const segments = page.path.split('/').filter(Boolean);
     let numSlugs = 0;
     let numWildcards = 0;
-    for (const item of pathSpec) {
-      if (item.type !== 'literal') numSlugs++;
-      if (item.type === 'wildcard') numWildcards++;
+    for (const segment of segments) {
+      const dynamic = matchDynamicName(segment);
+      if (!dynamic) continue;
+      numSlugs++;
+      if (dynamic.deep) numWildcards++;
     }
 
     if (page.render === 'static' && numSlugs === 0) {
@@ -180,19 +168,18 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         const mapping: SlugMapping = {};
         let slugIndex = 0;
         const pathItems: string[] = [];
-        for (const { type, name } of pathSpec) {
-          switch (type) {
-            case 'literal':
-              pathItems.push(name!);
-              break;
-            case 'wildcard':
-              mapping[name!] = staticPath.slice(slugIndex);
-              staticPath.slice(slugIndex++).forEach((slug) => pathItems.push(slug));
-              break;
-            case 'group':
-              pathItems.push(staticPath[slugIndex++]!);
-              mapping[name!] = pathItems[pathItems.length - 1]!;
-              break;
+        for (const segment of segments) {
+          const dynamic = matchDynamicName(segment);
+          if (!dynamic) {
+            pathItems.push(segment);
+            continue;
+          }
+          if (dynamic.deep) {
+            mapping[dynamic.name] = staticPath.slice(slugIndex);
+            staticPath.slice(slugIndex++).forEach((slug) => pathItems.push(slug));
+          } else {
+            pathItems.push(staticPath[slugIndex++]!);
+            mapping[dynamic.name] = pathItems[pathItems.length - 1]!;
           }
         }
         const id = joinPath(...pathItems, 'page');
@@ -301,7 +288,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         dynamicLayoutPaths.some((lp) => hasPathPrefix(lp, pagePath));
 
       const paths: {
-        path: PathSpec;
+        path: string;
         matchesPathname: (pathname: string) => boolean;
         isStatic: boolean;
         noSsr: boolean;
@@ -309,7 +296,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       }[] = [];
       for (const entry of staticPageIdToEntry.values()) {
         paths.push({
-          path: parsePathSpec(entry.path),
+          path: entry.path,
           matchesPathname: entry.matchesPathname,
           isStatic: !isUnderDynamicLayout(entry.path),
           noSsr: entry.noSsr,
@@ -319,7 +306,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
       for (const entry of dynamicEntries) {
         if (entry.kind !== 'page') continue;
         paths.push({
-          path: parsePathSpec(entry.path),
+          path: entry.path,
           matchesPathname: entry.matchesPathname,
           isStatic: false,
           noSsr: entry.noSsr,

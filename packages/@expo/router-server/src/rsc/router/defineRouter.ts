@@ -21,7 +21,6 @@ import {
 import type { ComponentProps, FunctionComponent, ReactNode } from 'react';
 import { createElement } from 'react';
 
-import type { PathSpec } from '../path';
 import { rerender } from '../server';
 import type {
   BuildConfig,
@@ -54,7 +53,7 @@ const safeJsonParse = (str: unknown) => {
 export function unstable_defineRouter(
   getPathConfig: () => Promise<
     Iterable<{
-      path: PathSpec;
+      path: string;
       matchesPathname: (pathname: string) => boolean;
       isStatic?: boolean;
       noSsr?: boolean;
@@ -75,7 +74,7 @@ export function unstable_defineRouter(
   >
 ): ReturnType<typeof defineEntries> {
   type MyPathConfig = {
-    pathname: PathSpec;
+    pathname: string;
     matchesPathname: (pathname: string) => boolean;
     isStatic?: boolean | undefined;
     customData: { noSsr?: boolean; is404: boolean; data: unknown };
@@ -86,18 +85,16 @@ export function unstable_defineRouter(
       return buildConfig as MyPathConfig;
     }
     if (!cachedPathConfig) {
-      cachedPathConfig = Array.from(await getPathConfig()).map((item) => {
-        const is404 =
-          item.path.length === 1 &&
-          item.path[0]!.type === 'literal' &&
-          item.path[0]!.name === '404';
-        return {
-          pathname: item.path,
-          matchesPathname: item.matchesPathname,
-          isStatic: item.isStatic,
-          customData: { is404, noSsr: !!item.noSsr, data: item.data },
-        };
-      });
+      cachedPathConfig = Array.from(await getPathConfig()).map((item) => ({
+        pathname: item.path,
+        matchesPathname: item.matchesPathname,
+        isStatic: item.isStatic,
+        customData: {
+          is404: item.path === '/404',
+          noSsr: !!item.noSsr,
+          data: item.data,
+        },
+      }));
     }
     return cachedPathConfig;
   };
@@ -178,12 +175,10 @@ export function unstable_defineRouter(
     const pathConfig = await getMyPathConfig();
     const path2moduleIds: Record<string, string[]> = {};
 
-    for (const { pathname: pathSpec } of pathConfig) {
-      if (pathSpec.some(({ type }) => type !== 'literal')) {
+    for (const { pathname } of pathConfig) {
+      if (pathname.includes('[')) {
         continue;
       }
-
-      const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
       const input = getInputString(pathname);
       const moduleIds = await unstable_collectClientModules(input);
       path2moduleIds[pathname] = moduleIds;
@@ -196,15 +191,14 @@ globalThis.__EXPO_ROUTER_PREFETCH__ = (path) => {
   }
 };`;
     const buildConfig: BuildConfig = [];
-    for (const { pathname: pathSpec, isStatic, customData } of pathConfig) {
+    for (const { pathname, isStatic, customData } of pathConfig) {
       const entries: BuildConfig[number]['entries'] = [];
-      if (pathSpec.every(({ type }) => type === 'literal')) {
-        const pathname = '/' + pathSpec.map(({ name }) => name).join('/');
+      if (!pathname.includes('[')) {
         const input = getInputString(pathname);
         entries.push({ input, isStatic });
       }
       buildConfig.push({
-        pathname: pathSpec,
+        pathname,
         isStatic,
         entries,
         customCode,
