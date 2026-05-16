@@ -1,4 +1,170 @@
----
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Linking, Alert } from 'react-native';
+import * as Speech from 'expo-speech';
+import * as SpeechRecognition from 'expo-speech-recognition';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export default function App() {
+  const [listening, setListening] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [response, setResponse] = useState('');
+  const [conversation, setConversation] = useState([]);
+
+  useEffect(() => {
+    requestPermissions();
+    loadHistory();
+  }, []);
+
+  const requestPermissions = async () => {
+    const { status } = await SpeechRecognition.requestPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Denied', 'Please allow microphone access to use Jarvis.');
+    }
+  };
+
+  const speak = (text) => {
+    // Jarvis जैसी आवाज के लिए pitch और rate सेट किया गया है
+    Speech.speak(text, { language: 'en', pitch: 0.8, rate: 0.9 });
+    setResponse(text);
+    addToHistory('Jarvis', text);
+  };
+
+  const addToHistory = (sender, msg) => {
+    const newEntry = { sender, msg, time: new Date().toLocaleTimeString() };
+    setConversation(prev => [newEntry, ...prev].slice(0, 30));
+    saveToStorage(newEntry);
+  };
+
+  const saveToStorage = async (entry) => {
+    try {
+      const saved = await AsyncStorage.getItem('jarvis_history');
+      const history = saved ? JSON.parse(saved) : [];
+      const updatedHistory = [entry, ...history].slice(0, 30);
+      await AsyncStorage.setItem('jarvis_history', JSON.stringify(updatedHistory));
+    } catch (e) { console.error(e); }
+  };
+
+  const loadHistory = async () => {
+    const saved = await AsyncStorage.getItem('jarvis_history');
+    if (saved) setConversation(JSON.parse(saved));
+  };
+
+  const processCommand = (command) => {
+    const lower = command.toLowerCase();
+
+    // 1. कॉल डायल करना
+    if (lower.includes('call')) {
+      const phoneNumber = command.replace(/[^0-9]/g, ''); 
+      if (phoneNumber.length >= 10) {
+        speak(`Initiating protocol. Opening dialer for ${phoneNumber}, sir.`);
+        Linking.openURL(`tel:${phoneNumber}`);
+      } else {
+        speak("I need a valid number to place a call, sir.");
+      }
+    } 
+    // 2. व्हाट्सएप खोलना
+    else if (lower.includes('open whatsapp')) {
+      speak("Accessing WhatsApp encryption, sir.");
+      Linking.openURL('whatsapp://').catch(() => speak("WhatsApp is not installed on this device."));
+    }
+    // 3. यूट्यूब खोलना
+    else if (lower.includes('open youtube')) {
+      speak("Opening YouTube media, sir.");
+      Linking.openURL('https://www.youtube.com');
+    }
+    // 4. गूगल सर्च
+    else if (lower.includes('search for')) {
+      const query = lower.replace('search for', '').trim();
+      speak(`Searching the global database for ${query}.`);
+      Linking.openURL(`https://www.google.com/search?q=${query}`);
+    }
+    // 5. समय और तारीख
+    else if (lower.includes('time')) {
+      const now = new Date();
+      speak(`The current time is ${now.toLocaleTimeString()}, sir.`);
+    }
+    else if (lower.includes('date')) {
+      speak(`Today is ${new Date().toDateString()}, sir.`);
+    }
+    // 6. सामान्य बातचीत
+    else if (lower.includes('hello') || lower.includes('jarvis')) {
+      speak('At your service, sir. All systems are operational.');
+    }
+    else if (lower.includes('who are you')) {
+      speak('I am Jarvis, your personal AI assistant.');
+    }
+    else {
+      speak("Command not recognized in my database, sir.");
+    }
+  };
+
+  const startListening = async () => {
+    setListening(true);
+    setTranscript('');
+    try {
+      const result = await SpeechRecognition.recognizeAsync({
+        language: 'en-US',
+        prompt: 'System Online. Awaiting command...',
+      });
+      if (result && result.text) {
+        setTranscript(result.text);
+        addToHistory('You', result.text);
+        processCommand(result.text);
+      }
+    } catch (error) {
+      speak('Audio input error, sir. Please try again.');
+    } finally {
+      setListening(false);
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>JARVIS AI</Text>
+      <View style={styles.glowLine} />
+      
+      <TouchableOpacity 
+        style={[styles.micButton, listening && styles.micActive]} 
+        onPress={startListening} 
+        disabled={listening}
+      >
+        <View style={styles.innerCircle}>
+          <Text style={styles.micText}>{listening ? 'LISTENING...' : 'ACTIVATE'}</Text>
+        </View>
+      </TouchableOpacity>
+      
+      <View style={styles.displayArea}>
+        {transcript !== '' && <Text style={styles.transcript}>USER: {transcript}</Text>}
+        {response !== '' && <Text style={styles.response}>JARVIS: {response}</Text>}
+      </View>
+      
+      <Text style={styles.historyTitle}>SYSTEM LOGS</Text>
+      <ScrollView style={styles.history}>
+        {conversation.map((item, idx) => (
+          <Text key={idx} style={styles.historyItem}>
+            [{item.time}] {item.sender}: {item.msg}
+          </Text>
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 25, backgroundColor: '#02060c' },
+  title: { fontSize: 36, fontWeight: 'bold', color: '#00fbff', textAlign: 'center', marginTop: 40, letterSpacing: 8 },
+  glowLine: { height: 2, backgroundColor: '#00fbff', width: '60%', alignSelf: 'center', marginBottom: 20, shadowColor: '#00fbff', shadowRadius: 10, shadowOpacity: 0.8 },
+  micButton: { backgroundColor: '#0a192f', width: 180, height: 180, borderRadius: 90, alignSelf: 'center', justifyContent: 'center', alignItems: 'center', marginVertical: 30, borderWidth: 2, borderColor: '#00fbff', shadowColor: '#00fbff', shadowRadius: 15, shadowOpacity: 0.5 },
+  micActive: { borderColor: '#ff0055', shadowColor: '#ff0055' },
+  innerCircle: { width: 150, height: 150, borderRadius: 75, backgroundColor: '#112240', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#00fbff' },
+  micText: { color: '#00fbff', fontSize: 14, fontWeight: 'bold', letterSpacing: 2 },
+  displayArea: { minHeight: 120, justifyContent: 'center', backgroundColor: '#0a192f', borderRadius: 10, padding: 15, borderWidth: 0.5, borderColor: '#112240' },
+  transcript: { color: '#8892b0', fontSize: 14, textAlign: 'center', fontStyle: 'italic' },
+  response: { color: '#00fbff', fontSize: 18, fontWeight: 'bold', textAlign: 'center', marginTop: 10 },
+  historyTitle: { color: '#444', fontSize: 12, marginTop: 25, marginBottom: 5, letterSpacing: 2 },
+  history: { flex: 1 },
+  historyItem: { color: '#2a3a4a', fontSize: 11, marginBottom: 4, fontFamily: 'monospace' },
+});---
 title: EAS Build
 sidebar_title: Introduction
 description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
