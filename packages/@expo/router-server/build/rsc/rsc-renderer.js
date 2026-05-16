@@ -127,7 +127,20 @@ async function renderRsc(args, opts) {
         }
     }
     const actionId = (0, rsc_1.decodeActionId)(input);
-    if (actionId) {
+    // CSRF preflight checks
+    // - Enforces Sec-Fetch-Site isn't "cross-site"
+    // - Otherwise, we enforce expo-platform to enforce preflight
+    const fetchSite = args.headers?.['sec-fetch-site'];
+    if (actionId && args.method !== 'POST') {
+        throw new Error(`Server action "${actionId}" rejected: Invalid method`);
+    }
+    else if (actionId && fetchSite === 'cross-site') {
+        throw new Error(`Server action "${actionId}" rejected: Cross-site request`);
+    }
+    else if (actionId && !fetchSite && !args.headers?.['expo-platform']) {
+        throw new Error(`Server action "${actionId}" rejected: Missing required header`);
+    }
+    else if (actionId) {
         if (!opts.isExporting &&
             // @ts-ignore
             !process.env.EXPO_UNSTABLE_SERVER_FUNCTIONS) {
@@ -148,8 +161,10 @@ async function renderRsc(args, opts) {
         }
         return renderWithContextWithAction(context, fn, args);
     }
-    // method === 'GET'
-    return renderWithContext(context, input, decodedBody);
+    else {
+        // method === 'GET'
+        return renderWithContext(context, input, decodedBody);
+    }
 }
 // TODO is this correct? better to use a library?
 const parseFormData = (body, contentType) => {

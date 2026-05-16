@@ -61,6 +61,8 @@ async function renderRscWithImportsAsync(distFolder, imports, { body, platform, 
         context,
         config,
         input,
+        method,
+        headers,
         contentType,
         decodedBody: searchParams.get('x-expo-params'),
     }, {
