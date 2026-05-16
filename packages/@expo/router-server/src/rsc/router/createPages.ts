@@ -120,16 +120,18 @@ function sanitizeSlug(slug: string): string {
  */
 export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defineRouter> {
   let configured = false;
-  const staticIdToEntry = new Map<string, StaticEntry>();
+  const staticPageIdToEntry = new Map<string, StaticEntry>();
+  const staticLayoutIdToEntry = new Map<string, StaticEntry>();
   const dynamicEntries: DynamicEntry[] = [];
   const buildDataMap = new Map<string, unknown>();
 
   const registerStatic = (entry: StaticEntry) => {
-    const existing = staticIdToEntry.get(entry.id);
+    const target = entry.kind === 'page' ? staticPageIdToEntry : staticLayoutIdToEntry;
+    const existing = target.get(entry.id);
     if (existing && existing.component !== entry.component) {
       throw new Error(`Duplicated component for: ${entry.id}`);
     }
-    staticIdToEntry.set(entry.id, entry);
+    target.set(entry.id, entry);
   };
 
   const ensureUniqueDynamic = (path: string, kind: ComponentKind) => {
@@ -305,8 +307,7 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
         noSsr: boolean;
         data: unknown;
       }[] = [];
-      for (const entry of staticIdToEntry.values()) {
-        if (entry.kind !== 'page') continue;
+      for (const entry of staticPageIdToEntry.values()) {
         paths.push({
           path: parsePathSpec(entry.path),
           matchesPathname: entry.matchesPathname,
@@ -329,19 +330,22 @@ export function createPages(fn: CreatePagesFn): ReturnType<typeof unstable_defin
     },
     async (id, { unstable_setShouldSkip, unstable_buildConfig }) => {
       await configure(unstable_buildConfig);
-      const staticEntry = staticIdToEntry.get(id);
-      if (staticEntry) {
-        if (staticEntry.kind === 'page') {
-          unstable_setShouldSkip([]);
-        }
-        return staticEntry.kind === 'layout'
-          ? {
-              component: staticEntry.component as FunctionComponent<
-                Omit<RouteProps, 'searchParams'> & { children: ReactNode }
-              >,
-              kind: 'layout',
-            }
-          : { component: staticEntry.component as FunctionComponent<RouteProps>, kind: 'page' };
+      const staticPage = staticPageIdToEntry.get(id);
+      if (staticPage) {
+        unstable_setShouldSkip([]);
+        return {
+          component: staticPage.component as FunctionComponent<RouteProps>,
+          kind: 'page',
+        };
+      }
+      const staticLayout = staticLayoutIdToEntry.get(id);
+      if (staticLayout) {
+        return {
+          component: staticLayout.component as FunctionComponent<
+            Omit<RouteProps, 'searchParams'> & { children: ReactNode }
+          >,
+          kind: 'layout',
+        };
       }
       for (const entry of dynamicEntries) {
         const mapping = entry.matchId(id);
