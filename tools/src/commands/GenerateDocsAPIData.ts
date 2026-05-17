@@ -169,6 +169,10 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/icon': ['universal/Icon/index.tsx', 'expo-ui'],
   'expo-ui/universal/spacer': ['universal/Spacer/index.tsx', 'expo-ui'],
   'expo-ui/universal/textinput': ['universal/TextInput/index.tsx', 'expo-ui'],
+  'expo-ui/universal/collapsible': ['universal/Collapsible/index.tsx', 'expo-ui'],
+  'expo-ui/universal/list': ['universal/List/index.tsx', 'expo-ui'],
+  'expo-ui/universal/listitem': ['universal/ListItem/index.ts', 'expo-ui'],
+  'expo-ui/universal/picker': ['universal/Picker/index.ts', 'expo-ui'],
 };
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
