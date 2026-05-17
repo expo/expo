@@ -42,6 +42,11 @@ export interface AutolinkingOptions {
    * @defaultValue `[]`
    */
   flags?: Record<string, any>;
+  /**
+   * Resolve modules via their `Package.swift` (SwiftPM) instead of `*.podspec` (CocoaPods).
+   * @defaultValue `false`
+   */
+  swiftpm?: boolean;
 }
 
 const isJSONObject = (x: unknown): x is Record<string, unknown> =>
@@ -140,6 +145,10 @@ const parsePackageJsonOptions = (
   if (isJSONObject(mergedOptions.flags)) {
     outputOptions.flags = { ...mergedOptions.flags };
   }
+  // swiftpm
+  if (typeof mergedOptions.swiftpm === 'boolean') {
+    outputOptions.swiftpm = mergedOptions.swiftpm;
+  }
   return outputOptions;
 };
 
@@ -151,6 +160,7 @@ export interface AutolinkingCommonArguments {
   // NOTE(@kitten): These are added to other `exclude` entries
   exclude?: string[] | null;
   platform?: SupportedPlatform | null;
+  swiftpm?: boolean | null;
 }
 
 export function registerAutolinkingArguments(command: commander.Command): commander.Command {
@@ -183,6 +193,8 @@ interface ArgumentsAutolinkingOptions {
   extraSearchPaths?: string[];
   /** Added native module names to exclude from autolined native modules (Usually passed as CLI argument) */
   extraExclude?: string[];
+  /** Override for the `swiftpm` autolinking option, passed via CLI flag. */
+  swiftpm: boolean;
 }
 
 const parseExtraArgumentsOptions = (
@@ -198,6 +210,7 @@ const parseExtraArgumentsOptions = (
     commandRoot,
     extraSearchPaths,
     extraExclude,
+    swiftpm: args.swiftpm === true,
   };
 };
 
@@ -260,6 +273,9 @@ export function createAutolinkingOptionsLoader(
       if (extraArgumentsOptions.extraExclude) {
         options.exclude = [...(options.exclude ?? []), ...extraArgumentsOptions.extraExclude];
       }
+      if (extraArgumentsOptions.swiftpm) {
+        options.swiftpm = true;
+      }
 
       return {
         ...normalizeAutolinkingOptions(options, appRoot),
@@ -283,5 +299,6 @@ const normalizeAutolinkingOptions = (
     include: options.include ?? [],
     buildFromSource: options.buildFromSource,
     flags: options.flags,
+    swiftpm: options.swiftpm ?? false,
   };
 };

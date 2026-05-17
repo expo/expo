@@ -15,25 +15,39 @@ export async function resolveModulesAsync(
 ): Promise<ModuleDescriptor[]> {
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
   // Additional output property for Cocoapods flags
-  const extraOutput = { flags: autolinkingOptions.flags };
+  const extraOutput = {
+    flags: autolinkingOptions.flags,
+    swiftpm: autolinkingOptions.swiftpm,
+  };
 
-  const moduleDescriptorList = await taskAll(
-    Object.entries(searchResults),
-    async ([packageName, revision]) => {
-      const resolvedModule = await platformLinking.resolveModuleAsync(
-        packageName,
-        revision,
-        extraOutput
-      );
-      return resolvedModule
-        ? {
-            ...resolvedModule,
-            packageVersion: revision.version,
-            packageName: resolvedModule.packageName ?? packageName,
-          }
-        : null;
+  const resolveOne = async ([packageName, revision]: [string, SearchResults[string]]) => {
+    const resolvedModule = await platformLinking.resolveModuleAsync(
+      packageName,
+      revision,
+      extraOutput
+    );
+    return resolvedModule
+      ? {
+          ...resolvedModule,
+          packageVersion: revision.version,
+          packageName: resolvedModule.packageName ?? packageName,
+        }
+      : null;
+  };
+
+  // SwiftPM mode shells out to `swift package dump-package`, whose calls race on
+  // the shared `~/Library/Caches/org.swift.swiftpm` cache and intermittently fail
+  // when run in parallel. Resolve sequentially for now; revisit once we wire up
+  // a per-project cache path.
+  let moduleDescriptorList;
+  if (autolinkingOptions.swiftpm) {
+    moduleDescriptorList = [];
+    for (const entry of Object.entries(searchResults)) {
+      moduleDescriptorList.push(await resolveOne(entry));
     }
-  );
+  } else {
+    moduleDescriptorList = await taskAll(Object.entries(searchResults), resolveOne);
+  }
 
   return moduleDescriptorList
     .filter((moduleDescriptor) => moduleDescriptor != null)

@@ -12,6 +12,7 @@ function hasCoreFeatures(module) {
 function resolveCommand(cli) {
     return (0, autolinkingOptions_1.registerAutolinkingArguments)(cli.command('resolve [searchPaths...]'))
         .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+        .option('--swiftpm', 'Resolve modules via their Package.swift (SwiftPM) instead of *.podspec (CocoaPods).', () => true, false)
         .action(async (searchPaths, commandArguments) => {
         const platform = commandArguments.platform ?? 'apple';
         const autolinkingOptionsLoader = (0, autolinkingOptions_1.createAutolinkingOptionsLoader)({

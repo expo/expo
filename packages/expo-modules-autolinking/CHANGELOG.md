@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add experimental `--swiftpm` flag to the `resolve` command, which resolves Expo modules via their `Package.swift` instead of `*.podspec`. Output descriptors gain a `swiftPackage` field with the package identity, on-disk path, and `.library` product names. ([@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

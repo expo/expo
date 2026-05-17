@@ -13,6 +13,7 @@ import type {
   PackageRevision,
 } from '../../types';
 import { listFilesInDirectories, fileExistsAsync } from '../../utils';
+import { resolveSwiftPackageModuleAsync } from './swiftpm';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
@@ -54,8 +55,12 @@ export function getSwiftModuleNames(
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
-  extraOutput: { flags?: Record<string, any> }
+  extraOutput: { flags?: Record<string, any>; swiftpm?: boolean }
 ): Promise<ModuleDescriptorIos | null> {
+  if (extraOutput.swiftpm) {
+    return resolveSwiftPackageModuleAsync(packageName, revision, extraOutput);
+  }
+
   const podspecFiles = await findPodspecFiles(revision);
   if (!podspecFiles.length) {
     return null;

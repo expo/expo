@@ -70,9 +70,26 @@ export interface ModuleIosConfig {
   name: string | null;
   class: string;
 }
+/**
+ * Describes a SwiftPM package that exposes an Expo module's sources.
+ */
+export interface ModuleSwiftPackageInfo {
+  /** SwiftPM package identity (typically the directory basename). */
+  packageName: string;
+  /** Absolute path to the directory containing `Package.swift`. */
+  packagePath: string;
+  /** Names of `.library` products to depend on. */
+  productNames: string[];
+}
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
   modules: ModuleIosConfig[];
   pods: ModuleIosPodspecInfo[];
+  /**
+   * Identity, on-disk path, and `.library` product names of the module's
+   * SwiftPM package, read from its `Package.swift`. Populated only when the
+   * resolver runs in `--swiftpm` mode.
+   */
+  swiftPackage?: ModuleSwiftPackageInfo;
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];
   appDelegateSubscribers: string[];

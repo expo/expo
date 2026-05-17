@@ -8,8 +8,11 @@ const platforms_1 = require("../platforms");
 async function resolveModulesAsync(searchResults, autolinkingOptions) {
     const platformLinking = (0, platforms_1.getLinkingImplementationForPlatform)(autolinkingOptions.platform);
     // Additional output property for Cocoapods flags
-    const extraOutput = { flags: autolinkingOptions.flags };
-    const moduleDescriptorList = await (0, concurrency_1.taskAll)(Object.entries(searchResults), async ([packageName, revision]) => {
+    const extraOutput = {
+        flags: autolinkingOptions.flags,
+        swiftpm: autolinkingOptions.swiftpm,
+    };
+    const resolveOne = async ([packageName, revision]) => {
         const resolvedModule = await platformLinking.resolveModuleAsync(packageName, revision, extraOutput);
         return resolvedModule
             ? {
@@ -18,7 +21,21 @@ async function resolveModulesAsync(searchResults, autolinkingOptions) {
                 packageName: resolvedModule.packageName ?? packageName,
             }
             : null;
-    });
+    };
+    // SwiftPM mode shells out to `swift package dump-package`, whose calls race on
+    // the shared `~/Library/Caches/org.swift.swiftpm` cache and intermittently fail
+    // when run in parallel. Resolve sequentially for now; revisit once we wire up
+    // a per-project cache path.
+    let moduleDescriptorList;
+    if (autolinkingOptions.swiftpm) {
+        moduleDescriptorList = [];
+        for (const entry of Object.entries(searchResults)) {
+            moduleDescriptorList.push(await resolveOne(entry));
+        }
+    }
+    else {
+        moduleDescriptorList = await (0, concurrency_1.taskAll)(Object.entries(searchResults), resolveOne);
+    }
     return moduleDescriptorList
         .filter((moduleDescriptor) => moduleDescriptor != null)
         .sort((a, b) => a.packageName.localeCompare(b.packageName));

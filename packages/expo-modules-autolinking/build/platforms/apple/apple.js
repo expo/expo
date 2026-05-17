@@ -14,6 +14,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const iosInlineModules_1 = require("../../inlineModules/iosInlineModules");
 const utils_1 = require("../../utils");
+const swiftpm_1 = require("./swiftpm");
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
 const APPLE_EXTRA_BUILD_DEPS_KEY = 'apple.extraPods';
 function getConfiguration(options) {
@@ -39,6 +40,9 @@ function getSwiftModuleNames(pods, swiftModuleNames) {
 }
 /** Resolves module search result with additional details required for iOS platform. */
 async function resolveModuleAsync(packageName, revision, extraOutput) {
+    if (extraOutput.swiftpm) {
+        return (0, swiftpm_1.resolveSwiftPackageModuleAsync)(packageName, revision, extraOutput);
+    }
     const podspecFiles = await findPodspecFiles(revision);
     if (!podspecFiles.length) {
         return null;
