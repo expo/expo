@@ -300,6 +300,9 @@ const withAndroidPrecompiledHeaders = (config, props) => {
         if (config.modResults.language === 'groovy') {
             config.modResults.contents = updateBuildGradleForPCH(config.modResults.contents);
         }
+        else {
+            throw new Error('Precompiled headers are not supported with Kotlin build.gradle files. Convert android/app/build.gradle.kts to Groovy, or disable `android.usePrecompiledHeaders`.');
+        }
         return config;
     });
     config = (0, config_plugins_1.withDangerousMod)(config, [
@@ -318,33 +321,39 @@ const withAndroidPrecompiledHeaders = (config, props) => {
     return config;
 };
 exports.withAndroidPrecompiledHeaders = withAndroidPrecompiledHeaders;
-function updateBuildGradleForPCH(contents) {
-    let newContents = contents;
-    if (!newContents.includes('externalNativeBuild')) {
-        const androidBlockMatch = newContents.match(/^android\s*\{/m);
-        if (!androidBlockMatch || androidBlockMatch.index == null) {
-            throw new Error('Cannot configure precompiled headers: unable to find the top-level `android` block in build.gradle.');
-        }
-        const blockStart = androidBlockMatch.index;
-        const openBracePos = newContents.indexOf('{', blockStart);
-        let depth = 1;
-        let pos = openBracePos + 1;
-        while (pos < newContents.length && depth > 0) {
-            if (newContents[pos] === '{')
+function findBlockClosingLineIndex(lines, blockStartIndex) {
+    let depth = 0;
+    for (let i = blockStartIndex; i < lines.length; i++) {
+        const line = lines[i] ?? '';
+        for (const ch of line) {
+            if (ch === '{') {
                 depth++;
-            else if (newContents[pos] === '}')
+            }
+            else if (ch === '}') {
                 depth--;
-            pos++;
+            }
         }
-        const closingBracePos = pos - 1;
-        const insertion = '\n    externalNativeBuild {\n        cmake {\n            path "src/main/jni/CMakeLists.txt"\n        }\n    }\n';
-        newContents =
-            newContents.substring(0, closingBracePos) +
-                insertion +
-                newContents.substring(closingBracePos);
+        if (depth === 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+function updateBuildGradleForPCH(contents) {
+    let result = contents;
+    if (!result.includes('externalNativeBuild')) {
+        const block = `    externalNativeBuild {\n        cmake {\n            path "src/main/jni/CMakeLists.txt"\n        }\n    }`;
+        const lines = result.split('\n');
+        const androidStart = lines.findIndex((line) => /^android\s*\{/.test(line));
+        const closingIndex = findBlockClosingLineIndex(lines, androidStart);
+        if (closingIndex < 0) {
+            throw new Error('Cannot configure precompiled headers: unable to find the `android` block in build.gradle.');
+        }
+        lines.splice(closingIndex, 0, block);
+        result = lines.join('\n');
     }
     const sectionOptions = { tag: 'expo-build-properties-pch', commentPrefix: '//' };
-    newContents = (0, fileContentsUtils_1.purgeContents)(newContents, sectionOptions);
-    newContents = (0, fileContentsUtils_1.appendContents)(newContents, androidPCHTemplates_1.STUB_PCH_GRADLE_TASK, sectionOptions);
-    return newContents;
+    result = (0, fileContentsUtils_1.purgeContents)(result, sectionOptions);
+    result = (0, fileContentsUtils_1.appendContents)(result, androidPCHTemplates_1.STUB_PCH_GRADLE_TASK, sectionOptions);
+    return result;
 }
