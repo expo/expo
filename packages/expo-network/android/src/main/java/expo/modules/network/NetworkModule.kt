@@ -32,6 +32,7 @@ class NetworkModule : Module() {
     get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
   private val mainHandler = Handler(Looper.getMainLooper())
   private val DELAY_MS = 250
+  private var isNetworkCallbackRegistered = false
 
   private val emitRunnable = Runnable { emitNetworkState() }
 
@@ -62,6 +63,7 @@ class NetworkModule : Module() {
       //
       // We still post to the main looper because sendEvent must run on the
       // main thread; we just skip the artificial delay.
+      mainHandler.removeCallbacks(emitRunnable)
       mainHandler.post {
         try {
           val activeNetwork = connectivityManager.activeNetwork
@@ -108,14 +110,27 @@ class NetworkModule : Module() {
     OnCreate {
       try {
         connectivityManager.registerDefaultNetworkCallback(networkCallback)
+        isNetworkCallbackRegistered = true
+      } catch (e: SecurityException) {
+        Log.w(TAG, "expo-network cannot observe internet reachability: missing ACCESS_NETWORK_STATE permission", e)
       } catch (e: RuntimeException) {
-        Log.e(TAG, "Too many callbacks registered, cannot observe internet reachability!", e)
+        Log.e(TAG, "expo-network cannot observe internet reachability, too many callbacks registered!", e)
       }
     }
 
     OnDestroy {
       mainHandler.removeCallbacks(emitRunnable)
-      connectivityManager.unregisterNetworkCallback(networkCallback)
+      if (isNetworkCallbackRegistered) {
+        try {
+          connectivityManager.unregisterNetworkCallback(networkCallback)
+        } catch (e: SecurityException) {
+          Log.w(TAG, "expo-network could not unregister network callback: missing ACCESS_NETWORK_STATE permission", e)
+        } catch (e: Exception) {
+          Log.w(TAG, "expo-network could not unregister network callback during teardown", e)
+        } finally {
+          isNetworkCallbackRegistered = false
+        }
+      }
     }
 
     AsyncFunction("getNetworkStateAsync") {
@@ -218,7 +233,7 @@ class NetworkModule : Module() {
       val manager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
       manager.connectionInfo
     } catch (e: Exception) {
-      Log.e(TAG, e.message ?: "Wi-Fi information could not be acquired")
+      Log.e(TAG, e.message ?: "expo-network could not acquire Wi-Fi information")
       throw NetworkWifiException(e)
     }
 

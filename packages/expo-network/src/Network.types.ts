@@ -13,8 +13,10 @@ export type NetworkState = {
   isConnected?: boolean;
   /**
    * If the internet is reachable with the currently active network connection. On Android, this
-   * requires the active network to have confirmed internet access (`NET_CAPABILITY_VALIDATED`) and
-   * not be suspended. On iOS, this value will always be the same as `isConnected`.
+   * requires the active network to have internet capability (`NET_CAPABILITY_INTERNET`), confirmed
+   * internet access (`NET_CAPABILITY_VALIDATED`), and a usable connection state. VPN connections
+   * also require non-zero downstream bandwidth. On iOS, this value will always be the same as
+   * `isConnected`.
    */
   isInternetReachable?: boolean;
 };

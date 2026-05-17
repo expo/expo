@@ -135,6 +135,25 @@ class IsInternetReachableTest {
   }
 
   @Test
+  fun `returns false when disconnected on pre-API 29`() {
+    val networkInfo = ShadowNetworkInfo.newInstance(
+      NetworkInfo.DetailedState.DISCONNECTED,
+      ConnectivityManager.TYPE_WIFI,
+      0,
+      false,
+      NetworkInfo.State.DISCONNECTED
+    )
+    every { connectivityManager.activeNetwork } returns network
+    every { connectivityManager.getNetworkCapabilities(network) } returns capabilities
+    every { connectivityManager.getNetworkInfo(network) } returns networkInfo
+    every { capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) } returns true
+    every { capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) } returns true
+    every { capabilities.hasTransport(any()) } returns false
+
+    assertThat(isInternetReachable(connectivityManager, Build.VERSION_CODES.P)).isFalse()
+  }
+
+  @Test
   fun `returns false when networkInfo is null on pre-API 29`() {
     every { connectivityManager.activeNetwork } returns network
     every { connectivityManager.getNetworkCapabilities(network) } returns capabilities
