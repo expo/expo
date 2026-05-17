@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.clearAndroidStateOnBackgroundUnmount = clearAndroidStateOnBackgroundUnmount;
 exports.useStore = useStore;
 const expo_constants_1 = __importDefault(require("expo-constants"));
 const react_1 = require("react");
@@ -19,6 +20,15 @@ const getRoutes_1 = require("../getRoutes");
 const native_1 = require("../react-navigation/native");
 const useScreens_1 = require("../useScreens");
 const url_1 = require("../utils/url");
+function clearAndroidStateOnBackgroundUnmount(appState) {
+    // Android can keep the JS VM alive after the user backgrounds the app by backing out.
+    // In that case the next launcher start should not reuse the last navigation state as initialState.
+    // Keep the state for foreground activity recreation, which is why this Android reuse exists.
+    if (react_native_1.Platform.OS === 'android' && appState !== 'active') {
+        store_1.storeRef.current.state = undefined;
+        store_1.storeRef.current.routeInfo = undefined;
+    }
+}
 function useStore(context, linkingConfigOptions, serverUrl) {
     const navigationRef = (0, native_1.useNavigationContainerRef)();
     const config = expo_constants_1.default.expoConfig?.extra?.router;
@@ -93,7 +103,7 @@ function useStore(context, linkingConfigOptions, serverUrl) {
     }
     (0, react_1.useEffect)(() => {
         return () => {
-            // listener();
+            clearAndroidStateOnBackgroundUnmount(react_native_1.AppState.currentState);
             const animationFrame = (0, store_1.getSplashScreenAnimationFrame)();
             if (animationFrame) {
                 cancelAnimationFrame(animationFrame);

@@ -3,7 +3,7 @@
 import Constants from 'expo-constants';
 import type { ComponentType } from 'react';
 import { Fragment, useEffect } from 'react';
-import { Platform } from 'react-native';
+import { AppState, Platform, type AppStateStatus } from 'react-native';
 
 import { getRouteInfoFromState } from './getRouteInfoFromState';
 import { getCachedRouteInfo, setCachedRouteInfo } from './routeInfoCache';
@@ -24,6 +24,16 @@ import { useNavigationContainerRef } from '../react-navigation/native';
 import type { RequireContext } from '../types';
 import { getQualifiedRouteComponent } from '../useScreens';
 import { shouldLinkExternally } from '../utils/url';
+
+export function clearAndroidStateOnBackgroundUnmount(appState: AppStateStatus | null | undefined) {
+  // Android can keep the JS VM alive after the user backgrounds the app by backing out.
+  // In that case the next launcher start should not reuse the last navigation state as initialState.
+  // Keep the state for foreground activity recreation, which is why this Android reuse exists.
+  if (Platform.OS === 'android' && appState !== 'active') {
+    storeRef.current.state = undefined;
+    storeRef.current.routeInfo = undefined;
+  }
+}
 
 export function useStore(
   context: RequireContext,
@@ -113,7 +123,7 @@ export function useStore(
 
   useEffect(() => {
     return () => {
-      // listener();
+      clearAndroidStateOnBackgroundUnmount(AppState.currentState);
 
       const animationFrame = getSplashScreenAnimationFrame();
       if (animationFrame) {

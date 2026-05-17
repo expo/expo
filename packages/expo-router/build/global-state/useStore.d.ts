@@ -1,7 +1,9 @@
 import type { ComponentType } from 'react';
+import { type AppStateStatus } from 'react-native';
 import type { ReactNavigationState, StoreRedirects } from './types';
 import type { ExpoLinkingOptions, LinkingConfigOptions } from '../getLinkingConfig';
 import type { RequireContext } from '../types';
+export declare function clearAndroidStateOnBackgroundUnmount(appState: AppStateStatus | null | undefined): void;
 export declare function useStore(context: RequireContext, linkingConfigOptions: LinkingConfigOptions, serverUrl?: string): {
     shouldShowTutorial(): boolean;
     readonly state: ReactNavigationState | undefined;

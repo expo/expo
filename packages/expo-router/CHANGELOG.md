@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Clear stale Android navigation state after background unmounts to avoid restoring deep-linked routes on launcher relaunch. ([#44879](https://github.com/expo/expo/issues/44879) by [@ya-nsh](https://github.com/ya-nsh))
+
 ### 💡 Others
 
 ## 56.2.1 — 2026-05-15
