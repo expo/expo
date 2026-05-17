@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- `Package.swift` now defaults to consuming the prebuilt xcframework; opt into the source build with `EXPO_MODULES_JSI_BUILD_FROM_SOURCE=1`. ([@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

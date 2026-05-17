@@ -27,9 +27,14 @@
 
 set -eo pipefail
 
-PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Tests need the source-build manifest shape (the binary-target consumer
+# manifest has no test target).
+export EXPO_MODULES_JSI_BUILD_FROM_SOURCE=1
 
-source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+APPLE_DIR="${PACKAGE_DIR}/apple"
+
+source "${APPLE_DIR}/scripts/xcframework-helpers.sh"
 
 # Resolve PODS_ROOT with fallback logic (from xcframework-helpers.sh).
 # Must be passed to subprocess calls, not exported, to avoid polluting the environment.
@@ -37,7 +42,7 @@ resolve_pods_root "$PACKAGE_DIR"
 
 # --- Symlink xcframeworks for SwiftPM binary targets ---
 
-TEST_FRAMEWORKS_DIR="${PACKAGE_DIR}/.test-frameworks"
+TEST_FRAMEWORKS_DIR="${APPLE_DIR}/.test-frameworks"
 mkdir -p "$TEST_FRAMEWORKS_DIR"
 
 link_xcframework() {
@@ -64,7 +69,7 @@ link_xcframework "ReactNativeDependencies" \
 
 # --- Generate the jsi module map ---
 
-env PODS_ROOT="$PODS_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
+env PODS_ROOT="$PODS_ROOT" "${APPLE_DIR}/scripts/generate-modulemap.sh"
 
 # --- Pick a simulator destination ---
 
@@ -98,10 +103,12 @@ fi
 # --- Run the tests ---
 
 cd "$PACKAGE_DIR"
-exec env PODS_ROOT="$PODS_ROOT" xcodebuild test \
-  -scheme ExpoModulesJSI \
+exec env PODS_ROOT="$PODS_ROOT" \
+  EXPO_MODULES_JSI_BUILD_FROM_SOURCE="$EXPO_MODULES_JSI_BUILD_FROM_SOURCE" \
+  xcodebuild test \
+  -scheme "expo-modules-jsi" \
   -destination "$DESTINATION" \
-  -derivedDataPath "${PACKAGE_DIR}/.DerivedData" \
+  -derivedDataPath "${APPLE_DIR}/.DerivedData" \
   -disableAutomaticPackageResolution \
   -skipPackagePluginValidation \
   -skipMacroValidation \

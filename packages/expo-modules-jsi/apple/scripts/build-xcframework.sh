@@ -25,17 +25,22 @@
 
 set -euo pipefail
 
-PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# Build from source — without this, Package.swift emits a `.binaryTarget` and
+# the precondition trips when the xcframework doesn't exist yet.
+export EXPO_MODULES_JSI_BUILD_FROM_SOURCE=1
+
+PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+APPLE_DIR="${PACKAGE_DIR}/apple"
 PACKAGE_NAME="ExpoModulesJSI"
-XCFRAMEWORK_PATH="${PACKAGE_DIR}/Products/${PACKAGE_NAME}.xcframework"
+XCFRAMEWORK_PATH="${APPLE_DIR}/Products/${PACKAGE_NAME}.xcframework"
 
 CONFIGURATION="Release"
-DERIVED_DATA_PATH="${PACKAGE_DIR}/.DerivedData"
-SPM_BUILD_PATH="${PACKAGE_DIR}/.build"
-SPM_WORKSPACE_PATH="${PACKAGE_DIR}/.swiftpm"
+DERIVED_DATA_PATH="${APPLE_DIR}/.DerivedData"
+SPM_BUILD_PATH="${APPLE_DIR}/.build"
+SPM_WORKSPACE_PATH="${APPLE_DIR}/.swiftpm"
 BUILD_PRODUCTS_PATH="${DERIVED_DATA_PATH}/Build/Products"
 
-source "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+source "${APPLE_DIR}/scripts/xcframework-helpers.sh"
 
 resolve_pods_root "$PACKAGE_DIR"
 
@@ -68,15 +73,15 @@ log() {
 
 # Directories and files that affect the build output.
 SOURCE_DIRS=(
-  "${PACKAGE_DIR}/Sources/ExpoModulesJSI"
-  "${PACKAGE_DIR}/Sources/ExpoModulesJSI-Cxx"
-  "${PACKAGE_DIR}/APINotes"
+  "${APPLE_DIR}/Sources/ExpoModulesJSI"
+  "${APPLE_DIR}/Sources/ExpoModulesJSI-Cxx"
+  "${APPLE_DIR}/APINotes"
 )
 SOURCE_FILES=(
   "${PACKAGE_DIR}/Package.swift"
-  "${PACKAGE_DIR}/scripts/build-xcframework.sh"
-  "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
-  "${PACKAGE_DIR}/scripts/xcframework-helpers.sh"
+  "${APPLE_DIR}/scripts/build-xcframework.sh"
+  "${APPLE_DIR}/scripts/create-stub-xcframework.sh"
+  "${APPLE_DIR}/scripts/xcframework-helpers.sh"
   # JSI headers we compile against. `cat` follows the symlinks CocoaPods
   # installs into Pods/Headers/Public so the real header contents get hashed.
   "${PODS_ROOT}/Headers/Public/React-jsi/jsi/jsi.h"
@@ -154,13 +159,15 @@ build_slice() {
 
   # Use env -i to clear inherited Xcode environment variables from the parent build.
   # Without this, the nested xcodebuild inherits SDKROOT, PLATFORM_NAME, etc.
-  # which causes SDK/platform mismatches. PODS_ROOT and RN_ROOT are forwarded
-  # explicitly because Package.swift reads them to resolve header search paths.
+  # which causes SDK/platform mismatches. PODS_ROOT, RN_ROOT, and the
+  # source-build mode switch are forwarded explicitly because Package.swift
+  # reads them to resolve header search paths and pick the builder shape.
   # Run from PACKAGE_DIR so xcodebuild finds the SPM package, not the Pods project.
   (cd "$PACKAGE_DIR" && env -i PATH="$PATH" HOME="$HOME" PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" \
+    EXPO_MODULES_JSI_BUILD_FROM_SOURCE="$EXPO_MODULES_JSI_BUILD_FROM_SOURCE" \
     xcodebuild \
     build \
-    -scheme "$PACKAGE_NAME" \
+    -scheme "expo-modules-jsi" \
     -sdk "$platform" \
     -destination "generic/platform=${destination}" \
     -derivedDataPath "$DERIVED_DATA_PATH" \
@@ -239,7 +246,7 @@ build_slice() {
 # Pods (via direnv's EXPO_ROOT_DIR, with a script-relative computation as a
 # last resort) so manual / npm-script invocations also work.
 if [[ -z "${PODS_ROOT:-}" ]]; then
-  : "${EXPO_ROOT_DIR:=$(cd "${PACKAGE_DIR}/../../.." && pwd)}"
+  : "${EXPO_ROOT_DIR:=$(cd "${PACKAGE_DIR}/../.." && pwd)}"
   PODS_ROOT="${EXPO_ROOT_DIR}/apps/bare-expo/ios/Pods"
 fi
 if [[ ! -d "$PODS_ROOT" ]]; then
@@ -279,8 +286,8 @@ if [[ -f "${PODS_ROOT}/Local Podspecs/React-Core.podspec.json" ]]; then
 fi
 
 # Generate the module map for the `jsi` Clang module.
-env PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${PACKAGE_DIR}/scripts/generate-modulemap.sh"
-GENERATED_MODULE_MAP="${PACKAGE_DIR}/.generated/module.modulemap"
+env PODS_ROOT="$PODS_ROOT" RN_ROOT="$RN_ROOT" "${APPLE_DIR}/scripts/generate-modulemap.sh"
+GENERATED_MODULE_MAP="${APPLE_DIR}/.generated/module.modulemap"
 SOURCE_FILES+=("$GENERATED_MODULE_MAP")
 
 if [[ "$CLEAN" == true ]]; then
@@ -289,7 +296,7 @@ if [[ "$CLEAN" == true ]]; then
   # Re-stamp stub slices so the post-clean state matches a fresh `pod install`:
   # CocoaPods reads Info.plist before this script runs, and would fail to
   # resolve any slice not declared there.
-  "${PACKAGE_DIR}/scripts/create-stub-xcframework.sh"
+  "${APPLE_DIR}/scripts/create-stub-xcframework.sh"
 fi
 
 # Determine which platforms to build.

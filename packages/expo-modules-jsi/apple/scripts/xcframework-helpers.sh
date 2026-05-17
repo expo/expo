@@ -11,7 +11,7 @@ resolve_pods_root() {
   local package_dir="$1"
 
   if [[ -z "${PODS_ROOT:-}" ]]; then
-    : "${EXPO_ROOT_DIR:=$(cd "${package_dir}/../../.." && pwd)}"
+    : "${EXPO_ROOT_DIR:=$(cd "${package_dir}/../.." && pwd)}"
     PODS_ROOT="${EXPO_ROOT_DIR}/apps/bare-expo/ios/Pods"
   fi
   if [[ ! -d "$PODS_ROOT" ]]; then
