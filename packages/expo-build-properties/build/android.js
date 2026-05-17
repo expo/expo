@@ -3,12 +3,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.withAndroidSettingsGradle = exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.withAndroidPrecompiledHeaders = exports.withAndroidSettingsGradle = exports.withAndroidDayNightTheme = exports.withAndroidQueries = exports.withAndroidCleartextTraffic = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
 exports.updateAndroidProguardRules = updateAndroidProguardRules;
 exports.updateAndroidSettingsGradle = updateAndroidSettingsGradle;
+exports.updateBuildGradleForPCH = updateBuildGradleForPCH;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
+const androidPCHTemplates_1 = require("./androidPCHTemplates");
 const androidQueryUtils_1 = require("./androidQueryUtils");
 const fileContentsUtils_1 = require("./fileContentsUtils");
 const pluginConfig_1 = require("./pluginConfig");
@@ -288,5 +290,61 @@ function updateAndroidSettingsGradle({ contents, buildFromSource, }) {
         ];
         newContents += addCodeBlock.join('\n');
     }
+    return newContents;
+}
+const withAndroidPrecompiledHeaders = (config, props) => {
+    if (!props.android?.usePrecompiledHeaders) {
+        return config;
+    }
+    config = (0, config_plugins_1.withAppBuildGradle)(config, (config) => {
+        if (config.modResults.language === 'groovy') {
+            config.modResults.contents = updateBuildGradleForPCH(config.modResults.contents);
+        }
+        return config;
+    });
+    config = (0, config_plugins_1.withDangerousMod)(config, [
+        'android',
+        async (config) => {
+            const jniDir = path_1.default.join(config.modRequest.platformProjectRoot, 'app', 'src', 'main', 'jni');
+            await fs_1.default.promises.mkdir(jniDir, { recursive: true });
+            await Promise.all([
+                fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'CMakeLists.txt'), androidPCHTemplates_1.PCH_CMAKE_CONTENTS),
+                fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'OnLoad.cpp'), androidPCHTemplates_1.PCH_ONLOAD_CONTENTS),
+                fs_1.default.promises.writeFile(path_1.default.join(jniDir, 'pch.h'), androidPCHTemplates_1.PCH_HEADER_CONTENTS),
+            ]);
+            return config;
+        },
+    ]);
+    return config;
+};
+exports.withAndroidPrecompiledHeaders = withAndroidPrecompiledHeaders;
+function updateBuildGradleForPCH(contents) {
+    let newContents = contents;
+    if (!newContents.includes('externalNativeBuild')) {
+        const androidBlockMatch = newContents.match(/^android\s*\{/m);
+        if (!androidBlockMatch || androidBlockMatch.index == null) {
+            throw new Error('Cannot configure precompiled headers: unable to find the top-level `android` block in build.gradle.');
+        }
+        const blockStart = androidBlockMatch.index;
+        const openBracePos = newContents.indexOf('{', blockStart);
+        let depth = 1;
+        let pos = openBracePos + 1;
+        while (pos < newContents.length && depth > 0) {
+            if (newContents[pos] === '{')
+                depth++;
+            else if (newContents[pos] === '}')
+                depth--;
+            pos++;
+        }
+        const closingBracePos = pos - 1;
+        const insertion = '\n    externalNativeBuild {\n        cmake {\n            path "src/main/jni/CMakeLists.txt"\n        }\n    }\n';
+        newContents =
+            newContents.substring(0, closingBracePos) +
+                insertion +
+                newContents.substring(closingBracePos);
+    }
+    const sectionOptions = { tag: 'expo-build-properties-pch', commentPrefix: '//' };
+    newContents = (0, fileContentsUtils_1.purgeContents)(newContents, sectionOptions);
+    newContents = (0, fileContentsUtils_1.appendContents)(newContents, androidPCHTemplates_1.STUB_PCH_GRADLE_TASK, sectionOptions);
     return newContents;
 }
