@@ -38,6 +38,11 @@ export interface AutolinkingOptions {
      * @defaultValue `[]`
      */
     flags?: Record<string, any>;
+    /**
+     * Resolve modules via their `Package.swift` (SwiftPM) instead of `*.podspec` (CocoaPods).
+     * @defaultValue `false`
+     */
+    swiftpm?: boolean;
 }
 export declare const filterMapSearchPaths: (searchPaths: unknown, basePath: string) => string[] | undefined;
 /** Common commandline arguments for autolinking commands (Not to be confused with `AutolinkingOptions` */
@@ -46,6 +51,7 @@ export interface AutolinkingCommonArguments {
     searchPaths?: string[] | null;
     exclude?: string[] | null;
     platform?: SupportedPlatform | null;
+    swiftpm?: boolean | null;
 }
 export declare function registerAutolinkingArguments(command: commander.Command): commander.Command;
 export interface LinkingOptionsLoader {

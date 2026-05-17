@@ -92,6 +92,10 @@ const parsePackageJsonOptions = (packageJson, appRoot, platform) => {
     if (isJSONObject(mergedOptions.flags)) {
         outputOptions.flags = { ...mergedOptions.flags };
     }
+    // swiftpm
+    if (typeof mergedOptions.swiftpm === 'boolean') {
+        outputOptions.swiftpm = mergedOptions.swiftpm;
+    }
     return outputOptions;
 };
 function registerAutolinkingArguments(command) {
@@ -114,6 +118,7 @@ const parseExtraArgumentsOptions = (args) => {
         commandRoot,
         extraSearchPaths,
         extraExclude,
+        swiftpm: args.swiftpm === true,
     };
 };
 const findPackageJsonPathAsync = async (commandRoot) => {
@@ -156,6 +161,9 @@ function createAutolinkingOptionsLoader(argumentsOptions) {
             if (extraArgumentsOptions.extraExclude) {
                 options.exclude = [...(options.exclude ?? []), ...extraArgumentsOptions.extraExclude];
             }
+            if (extraArgumentsOptions.swiftpm) {
+                options.swiftpm = true;
+            }
             return {
                 ...normalizeAutolinkingOptions(options, appRoot),
                 platform,
@@ -174,6 +182,7 @@ const normalizeAutolinkingOptions = (options, appRoot) => {
         include: options.include ?? [],
         buildFromSource: options.buildFromSource,
         flags: options.flags,
+        swiftpm: options.swiftpm ?? false,
     };
 };
 //# sourceMappingURL=autolinkingOptions.js.map

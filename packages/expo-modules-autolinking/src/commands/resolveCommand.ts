@@ -23,12 +23,19 @@ function hasCoreFeatures(
 
 interface ResolveArguments extends AutolinkingCommonArguments {
   json?: boolean | null;
+  swiftpm?: boolean | null;
 }
 
 /** Searches for available expo modules and resolves the results for given platform. */
 export function resolveCommand(cli: commander.CommanderStatic) {
   return registerAutolinkingArguments(cli.command('resolve [searchPaths...]'))
     .option('-j, --json', 'Output results in the plain JSON format.', () => true, false)
+    .option(
+      '--swiftpm',
+      'Resolve modules via their Package.swift (SwiftPM) instead of *.podspec (CocoaPods).',
+      () => true,
+      false
+    )
     .action(async (searchPaths: string[] | null, commandArguments: ResolveArguments) => {
       const platform = commandArguments.platform ?? 'apple';
       const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
