@@ -45,7 +45,7 @@ This package is not meant to be installed directly. It ships as a transitive nat
 # Distribution
 
 - **CocoaPods** via `apple/ExpoModulesJSI.podspec` &mdash; distributed as a static framework with a vendored `ExpoModulesJSI.xcframework`.
-- **Swift Package Manager** via `apple/Package.swift`.
+- **Swift Package Manager** via `Package.swift`. Defaults to a `.binaryTarget` pointing at `apple/Products/ExpoModulesJSI.xcframework`; set `EXPO_MODULES_JSI_BUILD_FROM_SOURCE=1` to switch to the source-build shape used by `apple/scripts/build-xcframework.sh` and `apple/scripts/test.sh`.
 
 # Building
 
