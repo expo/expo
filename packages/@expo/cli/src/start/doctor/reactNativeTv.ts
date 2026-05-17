@@ -2,7 +2,16 @@ import JsonFile from '@expo/json-file';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { env } from '../../utils/env';
+import { fetch } from '../../utils/fetch';
+
 export const REACT_NATIVE_TVOS_PACKAGE_NAME = 'react-native-tvos';
+
+const debug = require('debug')('expo:doctor:reactNativeTv') as typeof console.log;
+
+const NPM_DIST_TAGS_URL = `https://registry.npmjs.org/-/package/${REACT_NATIVE_TVOS_PACKAGE_NAME}/dist-tags`;
+
+const LATEST_FALLBACK_SPEC = `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@latest`;
 
 /**
  * Detects whether this is a TV project by inspecting the installed
@@ -30,31 +39,43 @@ export async function isReactNativeTvProjectAsync(projectRoot: string): Promise<
 }
 
 /**
- * Derives the `react-native-tvos` install spec that matches a given `react-native`
- * version. `react-native-tvos` ships a dist-tag per minor line in the form
- * `<major>.<minor>-stable`, so for `react-native@0.85.3` we install
- * `npm:react-native-tvos@0.85-stable`. For a prerelease `react-native` (e.g.
- * `0.85.3-rc.1`), the upstream stable line doesn't exist yet, so we target the
- * `next` dist-tag instead.
+ * Returns the install spec to use for `react-native-tvos` given the bundled
+ * `react-native` version.
  *
- * Throws if `reactNativeVersion` is not a parseable semver value or range.
+ * `react-native-tvos` ships a dist-tag per minor line in the form
+ * `<major>.<minor>-stable` and a rolling `next` tag for prereleases. We derive
+ * the expected tag from the bundled `react-native` version (stable → `-stable`,
+ * prerelease → `next`) and then verify the tag is actually published by
+ * fetching the package's `dist-tags` from the npm registry. If the derived tag
+ * isn't published (or the registry can't be reached), we fall back to
+ * `npm:react-native-tvos@latest` so the install still resolves to something
+ * usable.
  */
-export function correctReactNativeTvVersion(reactNativeVersion: string): string {
-  let minVersion: semver.SemVer | null;
-  try {
-    minVersion = semver.minVersion(reactNativeVersion);
-  } catch {
-    minVersion = null;
-  }
-  if (!minVersion) {
-    throw new Error(
-      `Cannot derive a react-native-tvos version from "${reactNativeVersion}": not a valid semver value.`
+export async function correctReactNativeTvVersion(
+  bundledReactNativeVersion: string
+): Promise<string> {
+  const derivedTag = deriveDistTag(bundledReactNativeVersion);
+  if (!derivedTag) {
+    debug(
+      `Could not derive a react-native-tvos dist-tag from "${bundledReactNativeVersion}"; falling back to @latest`
     );
+    return LATEST_FALLBACK_SPEC;
   }
-  if (minVersion.prerelease.length > 0) {
-    return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@next`;
+  // In offline mode skip the npm dist-tags lookup and trust the derived tag —
+  // any other CLI code path that needs a network request also bails on
+  // `EXPO_OFFLINE` (see `validateDependenciesVersionsAsync`).
+  if (env.EXPO_OFFLINE) {
+    debug(`EXPO_OFFLINE is set; skipping npm dist-tags lookup for react-native-tvos`);
+    return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${derivedTag}`;
   }
-  return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${minVersion.major}.${minVersion.minor}-stable`;
+  const publishedTags = await fetchReactNativeTvDistTagsAsync();
+  if (publishedTags.has(derivedTag)) {
+    return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${derivedTag}`;
+  }
+  debug(
+    `Derived react-native-tvos dist-tag "${derivedTag}" is not published; falling back to @latest`
+  );
+  return LATEST_FALLBACK_SPEC;
 }
 
 /**
@@ -73,4 +94,57 @@ export function reactNativeTvVersionMatchesBundled(
     return false;
   }
   return actual.major === bundled.major && actual.minor === bundled.minor;
+}
+
+function deriveDistTag(reactNativeVersion: string): string | undefined {
+  if (!reactNativeVersion) {
+    return undefined;
+  }
+  let minVersion: semver.SemVer | null = null;
+  try {
+    minVersion = semver.minVersion(reactNativeVersion);
+  } catch {
+    minVersion = null;
+  }
+  if (!minVersion) {
+    return undefined;
+  }
+  if (minVersion.prerelease.length > 0) {
+    return 'next';
+  }
+  return `${minVersion.major}.${minVersion.minor}-stable`;
+}
+
+async function fetchReactNativeTvDistTagsAsync(): Promise<Set<string>> {
+  let response;
+  try {
+    response = await fetch(NPM_DIST_TAGS_URL);
+  } catch (error: any) {
+    debug(`npm dist-tags lookup threw: ${error?.message ?? error}`);
+    return new Set();
+  }
+  // Always read the body to release the underlying stream — even on a non-2xx —
+  // before deciding what to do with it. Parse JSON manually so a malformed
+  // body never escapes as a rejected promise.
+  let body = '';
+  try {
+    body = await response.text();
+  } catch (error: any) {
+    debug(`npm dist-tags body read threw: ${error?.message ?? error}`);
+    return new Set();
+  }
+  if (!response.ok) {
+    debug(`npm dist-tags lookup failed with status ${response.status}`);
+    return new Set();
+  }
+  let json: unknown;
+  try {
+    json = JSON.parse(body);
+  } catch {
+    return new Set();
+  }
+  if (!json || typeof json !== 'object') {
+    return new Set();
+  }
+  return new Set(Object.keys(json as Record<string, unknown>));
 }
